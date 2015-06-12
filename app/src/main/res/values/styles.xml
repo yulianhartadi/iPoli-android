@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="Theme.iPoli" parent="Base.Theme.iPoli"></style>
+
+    <style name="Base.Theme.iPoli" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_blue_500</item>
+        <item name="colorPrimaryDark">@color/md_blue_700</item>
+        <item name="colorAccent">@color/md_red_a400</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+
+</resources>
