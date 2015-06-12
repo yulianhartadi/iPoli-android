@@ -131,13 +131,13 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     protected void onResume() {
         super.onResume();
-        PoliBus.get().register(this);
+        EventBus.get().register(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        PoliBus.get().unregister(this);
+        EventBus.get().unregister(this);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -164,8 +164,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     public void onInit(int status) {
-        textToSpeech.speak(getString(R.string.welcome_message), TextToSpeech.QUEUE_ADD, null);
-        post(new NewMessageEvent(getString(R.string.welcome_message), Author.iPoli));
+        String welcomeMessage = getString(R.string.welcome_message, "Poli");
+        textToSpeech.speak(welcomeMessage, TextToSpeech.QUEUE_ADD, null);
+        post(new NewMessageEvent(welcomeMessage, Author.iPoli));
         textToSpeech.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {
@@ -207,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void post(Object event) {
-        PoliBus.get().post(event);
+        EventBus.get().post(event);
     }
 
     @Override

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">iPoli</string>
     <string name="speak_hint">Listening…</string>
-    <string name="welcome_message">Welcome back</string>
+    <string name="welcome_message">Hey %s, how can I help you</string>
 </resources>

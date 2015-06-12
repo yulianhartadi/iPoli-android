@@ -6,10 +6,11 @@ import com.squareup.otto.Bus;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class PoliBus {
+public class EventBus {
     private static Bus instance = null;
 
-    private PoliBus() {}
+    private EventBus() {
+    }
 
     public static Bus get() {
         if (instance == null) {

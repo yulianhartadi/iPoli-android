@@ -51,13 +51,13 @@ public class ConversationFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        PoliBus.get().unregister(this);
+        EventBus.get().unregister(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        PoliBus.get().register(this);
+        EventBus.get().register(this);
     }
 
     public static class MessageViewAdapter
