@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.ui;
+package com.curiousily.ipoli;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,13 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
 import com.curiousily.ipoli.assistant.event.ReadyEvent;
 import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
 import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
-import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
+import com.curiousily.ipoli.ui.ConversationFragment;
+import com.curiousily.ipoli.ui.InputFragment;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
