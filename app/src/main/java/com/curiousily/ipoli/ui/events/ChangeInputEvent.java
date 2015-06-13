@@ -1,13 +1,13 @@
-package com.curiousily.ipoli.events;
+package com.curiousily.ipoli.ui.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class AppendInputEvent {
+public class ChangeInputEvent {
     private final String input;
 
-    public AppendInputEvent(String input) {
+    public ChangeInputEvent(String input) {
         this.input = input;
     }
 

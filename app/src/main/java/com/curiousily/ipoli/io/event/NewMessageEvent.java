@@ -1,5 +1,6 @@
-package com.curiousily.ipoli.events;
+package com.curiousily.ipoli.io.event;
 
+import com.curiousily.ipoli.ui.events.Author;
 import com.curiousily.ipoli.models.Message;
 
 /**

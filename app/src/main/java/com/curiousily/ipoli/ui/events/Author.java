@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.events;
+package com.curiousily.ipoli.ui.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

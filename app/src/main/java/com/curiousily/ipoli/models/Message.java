@@ -1,6 +1,6 @@
 package com.curiousily.ipoli.models;
 
-import com.curiousily.ipoli.events.Author;
+import com.curiousily.ipoli.ui.events.Author;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -1,4 +1,4 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.assistant;
 
 import android.text.TextUtils;
 

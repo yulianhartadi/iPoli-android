@@ -1,0 +1,194 @@
+package com.curiousily.ipoli.ui;
+
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+
+import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.assistant.Assistant;
+import com.curiousily.ipoli.io.event.GetInputEvent;
+import com.curiousily.ipoli.io.event.NewAnswerEvent;
+import com.curiousily.ipoli.io.event.NewMessageEvent;
+import com.curiousily.ipoli.io.event.NewQueryEvent;
+import com.curiousily.ipoli.io.speaker.Speaker;
+import com.curiousily.ipoli.io.speaker.event.SpeakerReadyEvent;
+import com.curiousily.ipoli.io.speaker.event.UtteranceDoneEvent;
+import com.curiousily.ipoli.io.speaker.event.UtteranceStartEvent;
+import com.curiousily.ipoli.io.speech.VoiceRecognizer;
+import com.curiousily.ipoli.io.speech.event.RecognizerReadyForSpeechEvent;
+import com.curiousily.ipoli.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.ui.events.Author;
+import com.squareup.otto.Subscribe;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 6/12/15.
+ */
+public class MainActivity extends AppCompatActivity {
+
+    @InjectView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @InjectView(R.id.voice_button)
+    FloatingActionButton voiceButton;
+
+    @InjectView(R.id.nav_view)
+    NavigationView navigationView;
+
+    private Speaker speaker;
+    private VoiceRecognizer recognizer;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
+        initUI(savedInstanceState);
+        initAssistant();
+    }
+
+    private void initUI(Bundle savedInstanceState) {
+        setupActionBar();
+        setupDrawerContent();
+        if (savedInstanceState != null) {
+            return;
+        }
+        addConversionFragment();
+    }
+
+    private void setupActionBar() {
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @OnClick(R.id.voice_button)
+    public void onVoiceButtonClick() {
+        post(new GetInputEvent());
+    }
+
+    private void addConversionFragment() {
+        ConversationFragment firstFragment = new ConversationFragment();
+        firstFragment.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, firstFragment).commit();
+    }
+
+    private void initAssistant() {
+        speaker = new Speaker(this);
+        recognizer = new VoiceRecognizer(this);
+        new Assistant();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.get().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.get().unregister(this);
+    }
+
+    private void setupDrawerContent() {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        drawerLayout.closeDrawers();
+                        return true;
+                    }
+                });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Subscribe
+    public void onAnswerReceived(NewAnswerEvent e) {
+//        Log.d("PoliVoice", "Answer received");
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(InputFragment.FRAGMENT_TAG);
+        if (fragment != null) {
+            removeInputFragment(fragment);
+        }
+        post(new NewMessageEvent(e.getAnswer(), Author.iPoli));
+    }
+
+    private void removeInputFragment(Fragment fragment) {
+        FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
+        fm.remove(fragment);
+        fm.commit();
+    }
+
+    @Subscribe
+    public void onQueryReceived(NewQueryEvent e) {
+        post(new NewMessageEvent(e.getQuery(), Author.User));
+    }
+
+    @Subscribe
+    public void onSpeakerReady(SpeakerReadyEvent e) {
+        String welcomeMessage = getString(R.string.welcome_message, "Poli");
+        post(new NewAnswerEvent(welcomeMessage));
+    }
+
+    @Subscribe
+    public void onUtteranceStart(UtteranceStartEvent e) {
+        voiceButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
+    }
+
+    @Subscribe
+    public void onUtteranceDone(UtteranceDoneEvent e) {
+        voiceButton.setImageResource(R.drawable.ic_mic_white_48dp);
+    }
+
+    @Subscribe
+    public void onRecognizerReadyForSpeech(RecognizerReadyForSpeechEvent e) {
+        InputFragment fragment = new InputFragment();
+        fragment.show(getSupportFragmentManager(), InputFragment.FRAGMENT_TAG);
+    }
+
+    @Subscribe
+    public void onSpeakerNoMatchError(SpeakerNoMatchError e) {
+        post(new NewAnswerEvent(getString(R.string.speech_not_recognized_error)));
+    }
+
+    private void post(Object event) {
+        EventBus.get().post(event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        speaker.onDestroy();
+        recognizer.onDestroy();
+    }
+}

@@ -1,4 +1,4 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.curiousily.ipoli.events.AppendInputEvent;
-import com.curiousily.ipoli.events.ChangeInputEvent;
-import com.curiousily.ipoli.events.ClearInputEvent;
+import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -34,7 +34,7 @@ public class InputFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_input, container, false);
         ButterKnife.inject(this, view);
-        inputQuery.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34);
+        inputQuery.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
         inputQuery.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -49,7 +49,7 @@ public class InputFragment extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.length() == 0) {
-                    inputQuery.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34);
+                    inputQuery.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
                 } else {
                     inputQuery.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
                 }
@@ -57,16 +57,6 @@ public class InputFragment extends DialogFragment {
         });
 
         return view;
-    }
-
-    @Subscribe
-    public void onClearInput(ClearInputEvent e) {
-        inputQuery.setText("");
-    }
-
-    @Subscribe
-    public void onAppendInput(AppendInputEvent e) {
-        inputQuery.append(e.getInput());
     }
 
     @Subscribe

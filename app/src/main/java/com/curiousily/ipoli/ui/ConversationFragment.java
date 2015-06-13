@@ -1,8 +1,10 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,9 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.curiousily.ipoli.events.Author;
-import com.curiousily.ipoli.events.NewMessageEvent;
+import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.io.event.NewMessageEvent;
 import com.curiousily.ipoli.models.Message;
+import com.curiousily.ipoli.ui.events.Author;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -67,9 +71,11 @@ public class ConversationFragment extends Fragment {
         public static class ViewHolder extends RecyclerView.ViewHolder {
 
             public final TextView textView;
+            private final CardView view;
 
             public ViewHolder(View view) {
                 super(view);
+                this.view = (CardView) view;
                 textView = (TextView) view.findViewById(R.id.message_text);
             }
         }
@@ -97,8 +103,10 @@ public class ConversationFragment extends Fragment {
             Author author = message.getAuthor();
             switch (author) {
                 case User:
+                    holder.textView.setGravity(GravityCompat.END);
                     break;
                 default:
+                    holder.textView.setGravity(GravityCompat.START);
             }
         }
 
