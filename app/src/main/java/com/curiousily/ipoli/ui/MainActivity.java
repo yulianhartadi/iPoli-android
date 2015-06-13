@@ -16,9 +16,8 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.assistant.Assistant;
 import com.curiousily.ipoli.io.event.GetInputEvent;
-import com.curiousily.ipoli.io.event.NewAnswerEvent;
-import com.curiousily.ipoli.io.event.NewMessageEvent;
-import com.curiousily.ipoli.io.event.NewQueryEvent;
+import com.curiousily.ipoli.io.event.NewResponseEvent;
+import com.curiousily.ipoli.io.gui.ConversationPresenter;
 import com.curiousily.ipoli.io.speaker.Speaker;
 import com.curiousily.ipoli.io.speaker.event.SpeakerReadyEvent;
 import com.curiousily.ipoli.io.speaker.event.UtteranceDoneEvent;
@@ -26,7 +25,6 @@ import com.curiousily.ipoli.io.speaker.event.UtteranceStartEvent;
 import com.curiousily.ipoli.io.speech.VoiceRecognizer;
 import com.curiousily.ipoli.io.speech.event.RecognizerReadyForSpeechEvent;
 import com.curiousily.ipoli.io.speech.event.SpeakerNoMatchError;
-import com.curiousily.ipoli.ui.events.Author;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -64,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initUI(Bundle savedInstanceState) {
+        voiceButton.setEnabled(false);
         setupActionBar();
         setupDrawerContent();
         if (savedInstanceState != null) {
@@ -96,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private void initAssistant() {
         speaker = new Speaker(this);
         recognizer = new VoiceRecognizer(this);
+        new ConversationPresenter();
         new Assistant();
     }
 
@@ -134,13 +134,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onAnswerReceived(NewAnswerEvent e) {
+    public void onAnswerReceived(NewResponseEvent e) {
 //        Log.d("PoliVoice", "Answer received");
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(InputFragment.FRAGMENT_TAG);
         if (fragment != null) {
             removeInputFragment(fragment);
         }
-        post(new NewMessageEvent(e.getAnswer(), Author.iPoli));
     }
 
     private void removeInputFragment(Fragment fragment) {
@@ -150,23 +149,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onQueryReceived(NewQueryEvent e) {
-        post(new NewMessageEvent(e.getQuery(), Author.User));
-    }
-
-    @Subscribe
     public void onSpeakerReady(SpeakerReadyEvent e) {
+        voiceButton.setEnabled(true);
         String welcomeMessage = getString(R.string.welcome_message, "Poli");
-        post(new NewAnswerEvent(welcomeMessage));
+        post(new NewResponseEvent(welcomeMessage));
     }
 
     @Subscribe
     public void onUtteranceStart(UtteranceStartEvent e) {
+        voiceButton.setEnabled(false);
         voiceButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
     }
 
     @Subscribe
     public void onUtteranceDone(UtteranceDoneEvent e) {
+        voiceButton.setEnabled(true);
         voiceButton.setImageResource(R.drawable.ic_mic_white_48dp);
     }
 
@@ -178,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onSpeakerNoMatchError(SpeakerNoMatchError e) {
-        post(new NewAnswerEvent(getString(R.string.speech_not_recognized_error)));
+        post(new NewResponseEvent(getString(R.string.speech_not_recognized_error)));
     }
 
     private void post(Object event) {

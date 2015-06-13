@@ -16,7 +16,7 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.io.event.NewMessageEvent;
 import com.curiousily.ipoli.models.Message;
-import com.curiousily.ipoli.ui.events.Author;
+import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class ConversationFragment extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             Message message = values.get(position);
             holder.textView.setText(message.getText());
-            Author author = message.getAuthor();
+            ChangeInputEvent.Author author = message.getAuthor();
             switch (author) {
                 case User:
                     holder.textView.setGravity(GravityCompat.END);

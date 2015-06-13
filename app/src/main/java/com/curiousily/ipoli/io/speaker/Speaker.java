@@ -5,7 +5,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.NewAnswerEvent;
+import com.curiousily.ipoli.io.event.NewResponseEvent;
 import com.curiousily.ipoli.io.speaker.event.SpeakerReadyEvent;
 import com.curiousily.ipoli.io.speaker.event.UtteranceDoneEvent;
 import com.curiousily.ipoli.io.speaker.event.UtteranceStartEvent;
@@ -31,10 +31,10 @@ public class Speaker extends UtteranceProgressListener implements TextToSpeech.O
     }
 
     @Subscribe
-    public void onNewAnswer(NewAnswerEvent e) {
+    public void onNewAnswer(NewResponseEvent e) {
         HashMap<String, String> params = new HashMap<>();
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "response");
-        textToSpeech.speak(e.getAnswer(), TextToSpeech.QUEUE_ADD, params);
+        textToSpeech.speak(e.getResponse(), TextToSpeech.QUEUE_ADD, params);
     }
 
     @Override

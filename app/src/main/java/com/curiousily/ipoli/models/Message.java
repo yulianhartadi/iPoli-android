@@ -1,6 +1,6 @@
 package com.curiousily.ipoli.models;
 
-import com.curiousily.ipoli.ui.events.Author;
+import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -9,18 +9,18 @@ import com.curiousily.ipoli.ui.events.Author;
 public class Message {
     private final String text;
 
-    public Message(String text, Author author) {
+    public Message(String text, ChangeInputEvent.Author author) {
         this.text = text;
         this.author = author;
     }
 
-    private final Author author;
+    private final ChangeInputEvent.Author author;
 
     public String getText() {
         return text;
     }
 
-    public Author getAuthor() {
+    public ChangeInputEvent.Author getAuthor() {
         return author;
     }
 }

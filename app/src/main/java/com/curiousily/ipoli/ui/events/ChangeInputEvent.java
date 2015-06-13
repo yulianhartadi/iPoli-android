@@ -14,4 +14,8 @@ public class ChangeInputEvent {
     public String getInput() {
         return input;
     }
+
+    public enum Author {
+        iPoli, User
+    }
 }

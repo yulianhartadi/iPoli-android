@@ -1,7 +1,7 @@
 package com.curiousily.ipoli.assistant;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.NewAnswerEvent;
+import com.curiousily.ipoli.io.event.NewResponseEvent;
 import com.curiousily.ipoli.io.event.NewQueryEvent;
 import com.squareup.otto.Subscribe;
 
@@ -21,6 +21,6 @@ public class Assistant {
     @Subscribe
     public void onNewQuery(NewQueryEvent e) {
         String response = chat.respond(e.getQuery());
-        EventBus.get().post(new NewAnswerEvent(response));
+        EventBus.get().post(new NewResponseEvent(response));
     }
 }

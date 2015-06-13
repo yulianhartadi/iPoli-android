@@ -1,7 +1,7 @@
 package com.curiousily.ipoli.io.event;
 
-import com.curiousily.ipoli.ui.events.Author;
 import com.curiousily.ipoli.models.Message;
+import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -11,7 +11,7 @@ public class NewMessageEvent {
 
     private final Message message;
 
-    public NewMessageEvent(String text, Author author) {
+    public NewMessageEvent(String text, ChangeInputEvent.Author author) {
         this.message = new Message(text, author);
     }
 
