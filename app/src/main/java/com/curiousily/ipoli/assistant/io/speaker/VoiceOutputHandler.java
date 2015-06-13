@@ -5,12 +5,10 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
+import com.curiousily.ipoli.assistant.OutputHandler;
 import com.curiousily.ipoli.assistant.io.speaker.event.SpeakerReadyEvent;
 import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
 import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
-import com.curiousily.ipoli.ui.events.ShutdownEvent;
-import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -19,21 +17,14 @@ import java.util.Locale;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/15.
  */
-public class Speaker extends UtteranceProgressListener implements TextToSpeech.OnInitListener {
+public class VoiceOutputHandler extends UtteranceProgressListener implements TextToSpeech.OnInitListener, OutputHandler {
 
     private TextToSpeech textToSpeech;
 
-    public Speaker(Context context) {
+    public VoiceOutputHandler(Context context) {
         EventBus.get().register(this);
         textToSpeech = new TextToSpeech(context, this);
         textToSpeech.setLanguage(Locale.US);
-    }
-
-    @Subscribe
-    public void onNewAnswer(NewResponseEvent e) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "response");
-        textToSpeech.speak(e.getResponse(), TextToSpeech.QUEUE_ADD, params);
     }
 
     @Override
@@ -44,18 +35,12 @@ public class Speaker extends UtteranceProgressListener implements TextToSpeech.O
 
     @Override
     public void onStart(String utteranceId) {
-//        Log.d("PoliVoice", "Utterance start");
-//        post(new UtteranceStartEvent());
-
         post(new UtteranceStartEvent());
     }
 
     @Override
     public void onDone(String utteranceId) {
         post(new UtteranceDoneEvent());
-
-//        Log.d("PoliVoice", "Utterance done");
-
     }
 
     @Override
@@ -67,8 +52,20 @@ public class Speaker extends UtteranceProgressListener implements TextToSpeech.O
         EventBus.get().post(event);
     }
 
-    @Subscribe
-    public void onShutdown(ShutdownEvent e) {
+    @Override
+    public void shutdown() {
         textToSpeech.shutdown();
+    }
+
+    @Override
+    public void showResponse(String response) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "response");
+        textToSpeech.speak(response, TextToSpeech.QUEUE_ADD, params);
+    }
+
+    @Override
+    public void showQuery(String query) {
+
     }
 }

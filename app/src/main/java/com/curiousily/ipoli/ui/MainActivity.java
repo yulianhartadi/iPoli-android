@@ -14,14 +14,11 @@ import android.view.MenuItem;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
-import com.curiousily.ipoli.assistant.Assistant;
-import com.curiousily.ipoli.assistant.io.event.GetInputEvent;
-import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
-import com.curiousily.ipoli.assistant.io.speaker.event.SpeakerReadyEvent;
-import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
-import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.assistant.event.ReadyEvent;
+import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
+import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
+import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
+import com.curiousily.ipoli.assistant.iPoli;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -45,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.nav_view)
     NavigationView navigationView;
-    private Assistant assistant;
+
+    private iPoli iPoli;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.voice_button)
     public void onVoiceButtonClick() {
-        post(new GetInputEvent());
+        iPoli.requestInput();
     }
 
     private void addConversionFragment() {
@@ -88,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAssistant() {
-        assistant = new Assistant(this);
+        iPoli = new iPoli(this);
     }
 
     @Override
@@ -125,15 +123,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Subscribe
-    public void onAnswerReceived(NewResponseEvent e) {
-//        Log.d("PoliVoice", "Answer received");
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(InputFragment.FRAGMENT_TAG);
-        if (fragment != null) {
-            removeInputFragment(fragment);
-        }
-    }
-
     private void removeInputFragment(Fragment fragment) {
         FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
         fm.remove(fragment);
@@ -141,43 +130,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onSpeakerReady(SpeakerReadyEvent e) {
+    public void onAssistantReady(ReadyEvent e) {
         voiceButton.setEnabled(true);
-        String welcomeMessage = getString(R.string.welcome_message, "Poli");
-        post(new NewResponseEvent(welcomeMessage));
     }
 
     @Subscribe
-    public void onUtteranceStart(UtteranceStartEvent e) {
+    public void onAssistantStartedResponding(StartRespondingEvent e) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(InputFragment.FRAGMENT_TAG);
+        if (fragment != null) {
+            removeInputFragment(fragment);
+        }
         voiceButton.setEnabled(false);
         voiceButton.setImageResource(R.drawable.ic_volume_up_white_24dp);
     }
 
     @Subscribe
-    public void onUtteranceDone(UtteranceDoneEvent e) {
+    public void onAssistantStoppedResponding(DoneRespondingEvent e) {
         voiceButton.setEnabled(true);
         voiceButton.setImageResource(R.drawable.ic_mic_white_48dp);
     }
 
     @Subscribe
-    public void onRecognizerReadyForSpeech(RecognizerReadyForSpeechEvent e) {
+    public void onAssistantReadyForQuery(ReadyForQueryEvent e) {
         InputFragment fragment = new InputFragment();
         fragment.show(getSupportFragmentManager(), InputFragment.FRAGMENT_TAG);
-    }
-
-    @Subscribe
-    public void onSpeakerNoMatchError(SpeakerNoMatchError e) {
-        post(new NewResponseEvent(getString(R.string.speech_not_recognized_error)));
-    }
-
-    private void post(Object event) {
-        EventBus.get().post(event);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        assistant.shutdown();
+        iPoli.shutdown();
 
     }
 }
