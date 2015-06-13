@@ -8,6 +8,7 @@ import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
 import com.curiousily.ipoli.assistant.io.gui.ConversationPresenter;
 import com.curiousily.ipoli.assistant.io.speaker.Speaker;
 import com.curiousily.ipoli.assistant.io.speech.VoiceRecognizer;
+import com.curiousily.ipoli.ui.events.ShutdownEvent;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -29,6 +30,14 @@ public class Assistant {
     @Subscribe
     public void onNewQuery(NewQueryEvent e) {
         String response = chat.respond(e.getQuery());
-        EventBus.get().post(new NewResponseEvent(response));
+        post(new NewResponseEvent(response));
+    }
+
+    public void shutdown() {
+        post(new ShutdownEvent());
+    }
+
+    private void post(Object event) {
+        EventBus.get().post(event);
     }
 }

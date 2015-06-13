@@ -22,7 +22,6 @@ import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
 import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
-import com.curiousily.ipoli.ui.events.ShutdownEvent;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.nav_view)
     NavigationView navigationView;
+    private Assistant assistant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAssistant() {
-        new Assistant(this);
+        assistant = new Assistant(this);
     }
 
     @Override
@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.get().post(new ShutdownEvent());
+        assistant.shutdown();
+
     }
 }
