@@ -1,9 +1,9 @@
-package com.curiousily.ipoli.io.gui;
+package com.curiousily.ipoli.assistant.io.gui;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.NewResponseEvent;
-import com.curiousily.ipoli.io.event.NewMessageEvent;
-import com.curiousily.ipoli.io.event.NewQueryEvent;
+import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
+import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
+import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.squareup.otto.Subscribe;
 

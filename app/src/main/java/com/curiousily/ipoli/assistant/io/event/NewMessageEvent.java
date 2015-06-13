@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.io.event;
+package com.curiousily.ipoli.assistant.io.event;
 
 import com.curiousily.ipoli.models.Message;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;

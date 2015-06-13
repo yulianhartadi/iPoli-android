@@ -1,14 +1,15 @@
-package com.curiousily.ipoli.io.speaker;
+package com.curiousily.ipoli.assistant.io.speaker;
 
-import android.app.Activity;
+import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.NewResponseEvent;
-import com.curiousily.ipoli.io.speaker.event.SpeakerReadyEvent;
-import com.curiousily.ipoli.io.speaker.event.UtteranceDoneEvent;
-import com.curiousily.ipoli.io.speaker.event.UtteranceStartEvent;
+import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.SpeakerReadyEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
+import com.curiousily.ipoli.ui.events.ShutdownEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
@@ -20,13 +21,11 @@ import java.util.Locale;
  */
 public class Speaker extends UtteranceProgressListener implements TextToSpeech.OnInitListener {
 
-    private final Activity activity;
     private TextToSpeech textToSpeech;
 
-    public Speaker(Activity activity) {
-        this.activity = activity;
+    public Speaker(Context context) {
         EventBus.get().register(this);
-        textToSpeech = new TextToSpeech(activity, this);
+        textToSpeech = new TextToSpeech(context, this);
         textToSpeech.setLanguage(Locale.US);
     }
 
@@ -48,22 +47,13 @@ public class Speaker extends UtteranceProgressListener implements TextToSpeech.O
 //        Log.d("PoliVoice", "Utterance start");
 //        post(new UtteranceStartEvent());
 
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                post(new UtteranceStartEvent());
-            }
-        });
+        post(new UtteranceStartEvent());
     }
 
     @Override
     public void onDone(String utteranceId) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                post(new UtteranceDoneEvent());
-            }
-        });
+        post(new UtteranceDoneEvent());
+
 //        Log.d("PoliVoice", "Utterance done");
 
     }
@@ -77,7 +67,8 @@ public class Speaker extends UtteranceProgressListener implements TextToSpeech.O
         EventBus.get().post(event);
     }
 
-    public void onDestroy() {
+    @Subscribe
+    public void onShutdown(ShutdownEvent e) {
         textToSpeech.shutdown();
     }
 }

@@ -15,16 +15,14 @@ import android.view.MenuItem;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.assistant.Assistant;
-import com.curiousily.ipoli.io.event.GetInputEvent;
-import com.curiousily.ipoli.io.event.NewResponseEvent;
-import com.curiousily.ipoli.io.gui.ConversationPresenter;
-import com.curiousily.ipoli.io.speaker.Speaker;
-import com.curiousily.ipoli.io.speaker.event.SpeakerReadyEvent;
-import com.curiousily.ipoli.io.speaker.event.UtteranceDoneEvent;
-import com.curiousily.ipoli.io.speaker.event.UtteranceStartEvent;
-import com.curiousily.ipoli.io.speech.VoiceRecognizer;
-import com.curiousily.ipoli.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.assistant.io.event.GetInputEvent;
+import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.SpeakerReadyEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
+import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.ui.events.ShutdownEvent;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -48,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.nav_view)
     NavigationView navigationView;
-
-    private Speaker speaker;
-    private VoiceRecognizer recognizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAssistant() {
-        speaker = new Speaker(this);
-        recognizer = new VoiceRecognizer(this);
-        new ConversationPresenter();
-        new Assistant();
+        new Assistant(this);
     }
 
     @Override
@@ -185,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        speaker.onDestroy();
-        recognizer.onDestroy();
+        EventBus.get().post(new ShutdownEvent());
     }
 }

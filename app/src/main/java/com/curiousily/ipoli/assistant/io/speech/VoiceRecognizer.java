@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.io.speech;
+package com.curiousily.ipoli.assistant.io.speech;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +9,12 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.GetInputEvent;
-import com.curiousily.ipoli.io.event.NewQueryEvent;
-import com.curiousily.ipoli.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.assistant.io.event.GetInputEvent;
+import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
+import com.curiousily.ipoli.ui.events.ShutdownEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -106,7 +107,8 @@ public class VoiceRecognizer implements RecognitionListener {
         EventBus.get().post(event);
     }
 
-    public void onDestroy() {
+    @Subscribe
+    public void onShutdown(ShutdownEvent e) {
         recognizer.destroy();
     }
 }

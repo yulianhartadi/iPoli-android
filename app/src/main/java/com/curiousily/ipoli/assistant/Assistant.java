@@ -1,8 +1,13 @@
 package com.curiousily.ipoli.assistant;
 
+import android.content.Context;
+
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.io.event.NewResponseEvent;
-import com.curiousily.ipoli.io.event.NewQueryEvent;
+import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
+import com.curiousily.ipoli.assistant.io.event.NewResponseEvent;
+import com.curiousily.ipoli.assistant.io.gui.ConversationPresenter;
+import com.curiousily.ipoli.assistant.io.speaker.Speaker;
+import com.curiousily.ipoli.assistant.io.speech.VoiceRecognizer;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -13,9 +18,12 @@ public class Assistant {
 
     private ElizaChat chat;
 
-    public Assistant() {
+    public Assistant(Context context) {
         EventBus.get().register(this);
         chat = new ElizaChat();
+        new Speaker(context);
+        new VoiceRecognizer(context);
+        new ConversationPresenter();
     }
 
     @Subscribe

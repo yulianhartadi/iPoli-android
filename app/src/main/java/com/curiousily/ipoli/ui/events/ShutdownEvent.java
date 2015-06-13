@@ -1,8 +1,8 @@
-package com.curiousily.ipoli.io.speaker.event;
+package com.curiousily.ipoli.ui.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/15.
  */
-public class SpeakerReadyEvent {
+public class ShutdownEvent {
 }
