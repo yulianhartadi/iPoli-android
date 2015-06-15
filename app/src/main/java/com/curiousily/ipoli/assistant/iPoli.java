@@ -54,7 +54,7 @@ public class iPoli {
         Log.d("PoliVoice", "Ready to speak");
         post(new ReadyEvent());
         for (OutputHandler h : outputHandlers) {
-            String welcomeMessage = context.getString(R.string.welcome_message, "Poli");
+            String welcomeMessage = context.getString(R.string.welcome_message);
             h.showResponse(welcomeMessage);
         }
     }

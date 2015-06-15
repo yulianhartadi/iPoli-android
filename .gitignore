@@ -7,5 +7,6 @@
 /captures
 .idea/
 market/
+art/
 *.iml
 *FirebaseConstants.java
