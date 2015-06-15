@@ -12,6 +12,7 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.InputHandler;
 import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.RmsChangedEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
@@ -33,7 +34,6 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
 
     @Override
     public void onReadyForSpeech(Bundle params) {
-//        Log.d("PoliVoice", "Ready to speak");
         post(new RecognizerReadyForSpeechEvent());
     }
 
@@ -44,12 +44,13 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
 
     @Override
     public void onRmsChanged(float rmsdB) {
-
+        Log.d("PoliVoice", "RMS changed " + rmsdB);
+        post(new RmsChangedEvent(rmsdB));
     }
 
     @Override
     public void onBufferReceived(byte[] buffer) {
-
+        Log.d("PoliVoice", "Buffer received");
     }
 
     @Override
@@ -80,6 +81,7 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
 
     @Override
     public void onPartialResults(Bundle partialResults) {
+        Log.d("PoliVoice", "Partial results");
         fireChangeInputEvent(getInput(partialResults));
     }
 

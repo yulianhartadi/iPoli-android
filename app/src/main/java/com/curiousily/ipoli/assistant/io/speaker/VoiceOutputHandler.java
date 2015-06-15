@@ -3,6 +3,7 @@ package com.curiousily.ipoli.assistant.io.speaker;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.util.Log;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.OutputHandler;
@@ -29,8 +30,8 @@ public class VoiceOutputHandler extends UtteranceProgressListener implements Tex
 
     @Override
     public void onInit(int status) {
-        post(new SpeakerReadyEvent());
         textToSpeech.setOnUtteranceProgressListener(this);
+        post(new SpeakerReadyEvent());
     }
 
     @Override

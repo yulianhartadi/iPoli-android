@@ -61,6 +61,7 @@ public class iPoli {
 
     @Subscribe
     public void onUtteranceStart(UtteranceStartEvent e) {
+        Log.d("PoliVoice", "Utterance start");
         post(new StartRespondingEvent());
     }
 
