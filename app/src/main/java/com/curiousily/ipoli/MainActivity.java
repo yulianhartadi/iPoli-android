@@ -23,6 +23,7 @@ import com.curiousily.ipoli.assistant.iPoli;
 import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
+import com.firebase.client.Firebase;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Firebase.setAndroidContext(this);
         ButterKnife.inject(this);
         initUI(savedInstanceState);
         initAssistant();
