@@ -35,7 +35,6 @@ import butterknife.OnClick;
  */
 public class MainActivity extends AppCompatActivity {
 
-    public static final int VOICE_INPUT_ANIMATION_DURATION_MS = 50;
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             removeInputFragment(fragment);
         }
         voiceButton.clearAnimation();
-        voiceButton.animate().setDuration(VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(1.0f).scaleY(1.0f).start();
+        voiceButton.animate().setDuration(Constants.VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(1.0f).scaleY(1.0f).start();
         voiceButton.setEnabled(false);
     }
 
@@ -172,10 +171,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onRmsChanged(RmsChangedEvent e) {
-        float height = e.getRmsdB();
-        height /= 5;
-        height = Math.max(Math.min(height, 2.0f), 0.5f);
-        voiceButton.animate().setDuration(VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(height).scaleY(height).start();
+        float rmsdB = e.getRmsdB();
+        rmsdB /= Constants.RMS_FILTER_VOICE_ANIMATION;
+        rmsdB = Math.max(Math.min(rmsdB, Constants.MAX_VOICE_ANIMATION_SCALE), Constants.MIN_VOICE_ANIMATION_SCALE);
+        voiceButton.animate().setDuration(Constants.VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(rmsdB).scaleY(rmsdB).start();
     }
 
     @Override
