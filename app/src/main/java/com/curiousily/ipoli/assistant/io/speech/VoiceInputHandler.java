@@ -12,8 +12,8 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.InputHandler;
 import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.RmsChangedEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.SpeechNoMatchEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
     @Override
     public void onRmsChanged(float rmsdB) {
         Log.d("PoliVoice", "RMS changed " + rmsdB);
-        post(new RmsChangedEvent(rmsdB));
+        post(new VoiceRmsChangedEvent(rmsdB));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
     public void onError(int error) {
         if (error == SpeechRecognizer.ERROR_NO_MATCH) {
             recognizer.setRecognitionListener(null);
-            post(new SpeakerNoMatchError());
+            post(new SpeechNoMatchEvent());
         }
         Log.d("PoliVoice", "Speaker error " + error);
     }

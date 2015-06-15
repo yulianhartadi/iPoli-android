@@ -20,7 +20,7 @@ import com.curiousily.ipoli.assistant.event.ReadyEvent;
 import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
 import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
-import com.curiousily.ipoli.assistant.io.speech.event.RmsChangedEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
 import com.squareup.otto.Subscribe;
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onRmsChanged(RmsChangedEvent e) {
+    public void onRmsChanged(VoiceRmsChangedEvent e) {
         float rmsdB = e.getRmsdB();
         rmsdB /= Constants.RMS_FILTER_VOICE_ANIMATION;
         rmsdB = Math.max(Math.min(rmsdB, Constants.MAX_VOICE_ANIMATION_SCALE), Constants.MIN_VOICE_ANIMATION_SCALE);

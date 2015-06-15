@@ -18,7 +18,7 @@ import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
 import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
 import com.curiousily.ipoli.assistant.io.speech.VoiceInputHandler;
 import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.SpeakerNoMatchError;
+import com.curiousily.ipoli.assistant.io.speech.event.SpeechNoMatchEvent;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class iPoli {
     }
 
     @Subscribe
-    public void onSpeakerNoMatchError(SpeakerNoMatchError e) {
+    public void onSpeechNoMatchError(SpeechNoMatchEvent e) {
         post(new DidNotUnderstandEvent());
         for (OutputHandler h : outputHandlers) {
             String m = context.getString(R.string.speech_not_recognized_error);
