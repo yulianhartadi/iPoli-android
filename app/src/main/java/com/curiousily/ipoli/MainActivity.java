@@ -1,9 +1,13 @@
 package com.curiousily.ipoli;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -23,8 +27,10 @@ import com.curiousily.ipoli.assistant.iPoli;
 import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.models.Message;
+import com.curiousily.ipoli.ui.AlertDialogFragment;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
+import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.HitBuilders;
@@ -58,10 +64,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!isOnline()) {
+            DialogFragment newFragment = AlertDialogFragment.newInstance(
+                    R.string.no_internet_dialog_title,
+                    R.string.no_internet_dialog_message);
+            newFragment.show(getSupportFragmentManager(), "dialog");
+            return;
+        }
+        initAssistant();
         Firebase.setAndroidContext(this);
         ButterKnife.inject(this);
         initUI(savedInstanceState);
-        initAssistant();
     }
 
     private void initUI(Bundle savedInstanceState) {
@@ -149,8 +162,9 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             removeInputFragment(fragment);
         }
-        voiceButton.clearAnimation();
-        voiceButton.animate().setDuration(Constants.VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(1.0f).scaleY(1.0f).start();
+        voiceButton.animate().cancel();
+        voiceButton.setScaleX(1.0f);
+        voiceButton.setScaleY(1.0f);
         voiceButton.setEnabled(false);
     }
 
@@ -188,16 +202,29 @@ public class MainActivity extends AppCompatActivity {
         String messageType = message.author == ChangeInputEvent.Author.User ? "query" : "response";
         post(TrackEvent.from(new HitBuilders.EventBuilder(
                 "assistant", messageType).setLabel(message.text).build()));
+    }
 
+    @Subscribe
+    public void onAlertDialogClick(AlertDialogClickEvent e) {
+        finish();
     }
 
     private void post(Object event) {
         EventBus.get().post(event);
     }
 
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return (netInfo != null && netInfo.isConnected());
+
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        iPoli.shutdown();
+        if (iPoli != null) {
+            iPoli.shutdown();
+        }
     }
 }
