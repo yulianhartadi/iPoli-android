@@ -6,6 +6,7 @@ import com.curiousily.ipoli.AnalyticsConstants;
 import com.curiousily.ipoli.BuildConfig;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.events.TrackEvent;
+import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Subscribe;
@@ -21,6 +22,15 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        initAnalytics();
+        initFirebase();
+    }
+
+    private void initFirebase() {
+        Firebase.setAndroidContext(this);
+    }
+
+    private void initAnalytics() {
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setDryRun(BuildConfig.DEBUG);
         tracker = analytics.newTracker(AnalyticsConstants.TRACKING_CODE);

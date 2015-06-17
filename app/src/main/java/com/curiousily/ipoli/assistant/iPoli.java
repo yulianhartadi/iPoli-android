@@ -5,11 +5,15 @@ import android.util.Log;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
-import com.curiousily.ipoli.assistant.event.DidNotUnderstandEvent;
-import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
-import com.curiousily.ipoli.assistant.event.ReadyEvent;
-import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
-import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
+import com.curiousily.ipoli.assistant.events.DidNotUnderstandEvent;
+import com.curiousily.ipoli.assistant.events.DoneRespondingEvent;
+import com.curiousily.ipoli.assistant.events.ReadyEvent;
+import com.curiousily.ipoli.assistant.events.ReadyForQueryEvent;
+import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
+import com.curiousily.ipoli.assistant.intents.ChatIntentHandler;
+import com.curiousily.ipoli.assistant.intents.IntentHandler;
+import com.curiousily.ipoli.assistant.intents.LogIntentHandler;
+import com.curiousily.ipoli.assistant.intents.events.IntentProcessedEvent;
 import com.curiousily.ipoli.assistant.io.GuiOutputHandler;
 import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speaker.VoiceOutputHandler;
@@ -31,9 +35,10 @@ import java.util.List;
 public class iPoli {
 
     private final Context context;
-    private ElizaChat chat = new ElizaChat();
     private List<InputHandler> inputHandlers = new ArrayList<>();
     private List<OutputHandler> outputHandlers = new ArrayList<>();
+    private List<IntentHandler> intentHandlers = new ArrayList<>();
+    private IntentHandler defaultIntentHandler;
 
     public iPoli(Context context) {
         this.context = context;
@@ -41,6 +46,8 @@ public class iPoli {
         outputHandlers.add(new VoiceOutputHandler(context));
         outputHandlers.add(new GuiOutputHandler());
         inputHandlers.add(new VoiceInputHandler(context));
+        intentHandlers.add(new LogIntentHandler(context));
+        defaultIntentHandler = new ChatIntentHandler(context);
     }
 
     public void requestInput() {
@@ -89,9 +96,23 @@ public class iPoli {
         for (OutputHandler outputHandler : outputHandlers) {
             outputHandler.showQuery(e.getQuery());
         }
-        String response = chat.respond(e.getQuery());
+        respond(e.getQuery());
+    }
+
+    private void respond(String query) {
+        for (IntentHandler intentHandler : intentHandlers) {
+            if (intentHandler.canHandle(query)) {
+                intentHandler.process(query);
+                return;
+            }
+        }
+        defaultIntentHandler.process(query);
+    }
+
+    @Subscribe
+    public void onIntentProcessed(IntentProcessedEvent e) {
         for (OutputHandler outputHandler : outputHandlers) {
-            outputHandler.showResponse(response);
+            outputHandler.showResponse(e.getResponse());
         }
     }
 

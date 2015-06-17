@@ -19,20 +19,23 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.curiousily.ipoli.app.events.TrackEvent;
-import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
-import com.curiousily.ipoli.assistant.event.ReadyEvent;
-import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
-import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
+import com.curiousily.ipoli.assistant.events.DoneRespondingEvent;
+import com.curiousily.ipoli.assistant.events.ReadyEvent;
+import com.curiousily.ipoli.assistant.events.ReadyForQueryEvent;
+import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
 import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
+import com.curiousily.ipoli.auth.AuthListener;
+import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
+import com.curiousily.ipoli.auth.events.UserAuthenticatedEvent;
 import com.curiousily.ipoli.models.Message;
+import com.curiousily.ipoli.models.User;
 import com.curiousily.ipoli.ui.AlertDialogFragment;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
-import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.HitBuilders;
 import com.squareup.otto.Subscribe;
 
@@ -44,7 +47,7 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AuthListener {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -61,20 +64,25 @@ public class MainActivity extends AppCompatActivity {
     private iPoli iPoli;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (!isOnline()) {
-            DialogFragment newFragment = AlertDialogFragment.newInstance(
-                    R.string.no_internet_dialog_title,
-                    R.string.no_internet_dialog_message);
-            newFragment.show(getSupportFragmentManager(), "dialog");
+            showAlertDialog(R.string.no_internet_dialog_title, R.string.no_internet_dialog_message);
             return;
         }
-        initAssistant();
-        Firebase.setAndroidContext(this);
+        FirebaseUserAuthenticator userAuthenticator = new FirebaseUserAuthenticator();
+        userAuthenticator.authenticateAnonymousUser(this);
         ButterKnife.inject(this);
         initUI(savedInstanceState);
+    }
+
+    private void showAlertDialog(int title, int message) {
+        DialogFragment newFragment = AlertDialogFragment.newInstance(
+                title,
+                message);
+        newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
+
     }
 
     private void initUI(Bundle savedInstanceState) {
@@ -217,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return (netInfo != null && netInfo.isConnected());
+    }
+
+    @Subscribe
+    public void onUserAuthenticated(UserAuthenticatedEvent e) {
 
     }
 
@@ -226,5 +238,16 @@ public class MainActivity extends AppCompatActivity {
         if (iPoli != null) {
             iPoli.shutdown();
         }
+    }
+
+    @Override
+    public void onUserAuthenticated(User user) {
+        initAssistant();
+
+    }
+
+    @Override
+    public void onUnableToAuthenticateUser() {
+        showAlertDialog(R.string.user_login_error_dialog_title, R.string.user_login_error_dialog_message);
     }
 }
