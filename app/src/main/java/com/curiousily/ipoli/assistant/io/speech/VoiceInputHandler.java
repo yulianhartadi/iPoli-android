@@ -12,8 +12,8 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.InputHandler;
 import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.SpeechNoMatchEvent;
+import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 import java.util.ArrayList;
@@ -67,6 +67,7 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
 
     @Override
     public void onResults(Bundle results) {
+        recognizer.setRecognitionListener(null);
         String input = getInput(results);
         fireChangeInputEvent(input);
         post(new NewQueryEvent(input));
