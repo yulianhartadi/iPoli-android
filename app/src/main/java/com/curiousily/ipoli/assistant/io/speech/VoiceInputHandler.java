@@ -44,7 +44,6 @@ public class VoiceInputHandler implements RecognitionListener, InputHandler {
 
     @Override
     public void onRmsChanged(float rmsdB) {
-        Log.d("PoliVoice", "RMS changed " + rmsdB);
         post(new VoiceRmsChangedEvent(rmsdB));
     }
 

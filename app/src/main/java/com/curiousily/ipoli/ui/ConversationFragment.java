@@ -96,8 +96,8 @@ public class ConversationFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             Message message = values.get(position);
-            holder.textView.setText(message.getText());
-            ChangeInputEvent.Author author = message.getAuthor();
+            holder.textView.setText(message.text);
+            ChangeInputEvent.Author author = message.author;
             switch (author) {
                 case User:
                     holder.textView.setGravity(GravityCompat.END);

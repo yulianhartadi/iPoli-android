@@ -11,19 +11,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.curiousily.ipoli.app.events.TrackEvent;
 import com.curiousily.ipoli.assistant.event.DoneRespondingEvent;
 import com.curiousily.ipoli.assistant.event.ReadyEvent;
 import com.curiousily.ipoli.assistant.event.ReadyForQueryEvent;
 import com.curiousily.ipoli.assistant.event.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
+import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
 import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
+import com.curiousily.ipoli.models.Message;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
+import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.firebase.client.Firebase;
+import com.google.android.gms.analytics.HitBuilders;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -139,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onAssistantStartedResponding(StartRespondingEvent e) {
-        Log.d("PoliVoice", "Started responding");
         voiceButton.setImageResource(R.drawable.ic_volume_up_white_48dp);
         voiceButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.md_blue_a400)));
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(InputFragment.FRAGMENT_TAG);
@@ -177,6 +180,19 @@ public class MainActivity extends AppCompatActivity {
         rmsdB /= Constants.RMS_FILTER_VOICE_ANIMATION;
         rmsdB = Math.max(Math.min(rmsdB, Constants.MAX_VOICE_ANIMATION_SCALE), Constants.MIN_VOICE_ANIMATION_SCALE);
         voiceButton.animate().setDuration(Constants.VOICE_INPUT_ANIMATION_DURATION_MS).scaleX(rmsdB).scaleY(rmsdB).start();
+    }
+
+    @Subscribe
+    public void onNewMessage(NewMessageEvent e) {
+        Message message = e.getMessage();
+        String messageType = message.author == ChangeInputEvent.Author.User ? "query" : "response";
+        post(TrackEvent.from(new HitBuilders.EventBuilder(
+                "assistant", messageType).setLabel(message.text).build()));
+
+    }
+
+    private void post(Object event) {
+        EventBus.get().post(event);
     }
 
     @Override

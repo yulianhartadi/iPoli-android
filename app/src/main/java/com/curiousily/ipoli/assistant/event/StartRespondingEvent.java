@@ -5,4 +5,5 @@ package com.curiousily.ipoli.assistant.event;
  * on 6/13/15.
  */
 public class StartRespondingEvent {
+
 }
