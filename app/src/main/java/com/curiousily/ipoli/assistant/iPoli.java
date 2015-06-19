@@ -14,10 +14,9 @@ import com.curiousily.ipoli.assistant.events.DoneRespondingEvent;
 import com.curiousily.ipoli.assistant.events.ReadyEvent;
 import com.curiousily.ipoli.assistant.events.ReadyForQueryEvent;
 import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
-import com.curiousily.ipoli.assistant.intents.ChatIntentHandler;
-import com.curiousily.ipoli.assistant.intents.IntentHandler;
-import com.curiousily.ipoli.assistant.intents.LogIntentHandler;
-import com.curiousily.ipoli.assistant.intents.events.IntentProcessedEvent;
+import com.curiousily.ipoli.assistant.handlers.ChatIntentHandler;
+import com.curiousily.ipoli.assistant.handlers.IntentHandler;
+import com.curiousily.ipoli.assistant.handlers.events.IntentProcessedEvent;
 import com.curiousily.ipoli.assistant.io.GuiOutputHandler;
 import com.curiousily.ipoli.assistant.io.events.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speaker.VoiceOutputHandler;
@@ -51,7 +50,6 @@ public class iPoli {
         outputHandlers.add(new VoiceOutputHandler(context));
         outputHandlers.add(new GuiOutputHandler());
         inputHandlers.add(new VoiceInputHandler(context));
-        intentHandlers.add(new LogIntentHandler(context));
         intentHandlers.add(new ChatIntentHandler(context));
         storageManager = new StorageManager();
     }
@@ -114,7 +112,7 @@ public class iPoli {
         Response r = e.getResponse();
         for (IntentHandler intentHandler : intentHandlers) {
             if (intentHandler.canHandle(r.intent)) {
-                intentHandler.process(r.text);
+                intentHandler.process(r.intent);
                 return;
             }
         }

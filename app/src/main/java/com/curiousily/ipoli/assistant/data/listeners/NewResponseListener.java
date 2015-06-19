@@ -1,10 +1,9 @@
 package com.curiousily.ipoli.assistant.data.listeners;
 
-import android.util.Log;
-
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.data.events.NewResponseEvent;
 import com.curiousily.ipoli.assistant.data.models.Response;
+import com.curiousily.ipoli.assistant.handlers.intents.ChatIntent;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.FirebaseError;
@@ -26,10 +25,9 @@ public class NewResponseListener implements ChildEventListener {
         long createdAt = (long) v.get("created_at");
         if (createdAt >= START_TIME) {
             Response r = new Response();
-            r.intent = (String) v.get("intent");
+            Map<String, String> i = (Map<String, String>) v.get("intent");
+            r.intent = new ChatIntent(i.get("response"));
             r.userId = (String) v.get("user_id");
-            r.text = (String) v.get("text");
-            Log.d("PoliVoice", r.intent);
             EventBus.get().post(new NewResponseEvent(r));
         }
     }

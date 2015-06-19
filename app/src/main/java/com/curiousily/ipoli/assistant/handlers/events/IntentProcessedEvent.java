@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.assistant.intents.events;
+package com.curiousily.ipoli.assistant.handlers.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -1,11 +1,9 @@
-package com.curiousily.ipoli.assistant.intents;
+package com.curiousily.ipoli.assistant.handlers;
 
 
 import android.content.Context;
 
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
-import com.curiousily.ipoli.assistant.data.StorageManager;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -19,7 +17,6 @@ public abstract class AbstractIntentHandler implements IntentHandler {
     public AbstractIntentHandler(Context context) {
         this.context = context;
     }
-
 
 
     protected void post(Object e) {
