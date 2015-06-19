@@ -24,11 +24,10 @@ import com.curiousily.ipoli.assistant.events.ReadyEvent;
 import com.curiousily.ipoli.assistant.events.ReadyForQueryEvent;
 import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
-import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
+import com.curiousily.ipoli.assistant.io.events.NewMessageEvent;
+import com.curiousily.ipoli.assistant.io.speech.events.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.auth.AuthListener;
 import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
-import com.curiousily.ipoli.auth.events.UserAuthenticatedEvent;
 import com.curiousily.ipoli.models.Message;
 import com.curiousily.ipoli.models.User;
 import com.curiousily.ipoli.ui.AlertDialogFragment;
@@ -227,11 +226,6 @@ public class MainActivity extends AppCompatActivity implements AuthListener {
         return (netInfo != null && netInfo.isConnected());
     }
 
-    @Subscribe
-    public void onUserAuthenticated(UserAuthenticatedEvent e) {
-
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -243,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements AuthListener {
     @Override
     public void onUserAuthenticated(User user) {
         initAssistant();
-
     }
 
     @Override

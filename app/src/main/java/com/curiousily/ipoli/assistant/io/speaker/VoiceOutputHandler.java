@@ -3,13 +3,12 @@ package com.curiousily.ipoli.assistant.io.speaker;
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.util.Log;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.OutputHandler;
-import com.curiousily.ipoli.assistant.io.speaker.event.SpeakerReadyEvent;
-import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceDoneEvent;
-import com.curiousily.ipoli.assistant.io.speaker.event.UtteranceStartEvent;
+import com.curiousily.ipoli.assistant.io.speaker.events.SpeakerReadyEvent;
+import com.curiousily.ipoli.assistant.io.speaker.events.UtteranceDoneEvent;
+import com.curiousily.ipoli.assistant.io.speaker.events.UtteranceStartEvent;
 
 import java.util.HashMap;
 import java.util.Locale;

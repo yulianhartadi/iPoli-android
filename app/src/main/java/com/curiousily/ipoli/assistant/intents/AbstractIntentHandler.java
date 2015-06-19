@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
-import com.curiousily.ipoli.data.StorageManager;
+import com.curiousily.ipoli.assistant.data.StorageManager;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -13,17 +13,14 @@ import com.curiousily.ipoli.data.StorageManager;
  */
 public abstract class AbstractIntentHandler implements IntentHandler {
 
-    protected final StorageManager storageManager;
+
     protected final Context context;
 
     public AbstractIntentHandler(Context context) {
         this.context = context;
-        storageManager = new StorageManager();
     }
 
-    protected String getUserId() {
-        return FirebaseUserAuthenticator.getUser().id;
-    }
+
 
     protected void post(Object e) {
         EventBus.get().post(e);

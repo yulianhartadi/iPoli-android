@@ -2,7 +2,7 @@ package com.curiousily.ipoli.assistant.io;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.OutputHandler;
-import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
+import com.curiousily.ipoli.assistant.io.events.NewMessageEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 /**

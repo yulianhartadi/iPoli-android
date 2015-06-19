@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.assistant.io.speech.event;
+package com.curiousily.ipoli.assistant.io.speech.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

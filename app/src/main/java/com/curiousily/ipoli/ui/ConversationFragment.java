@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
-import com.curiousily.ipoli.assistant.io.event.NewMessageEvent;
+import com.curiousily.ipoli.assistant.io.events.NewMessageEvent;
 import com.curiousily.ipoli.models.Message;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 import com.squareup.otto.Subscribe;

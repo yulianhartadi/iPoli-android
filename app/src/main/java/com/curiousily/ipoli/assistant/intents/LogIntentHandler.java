@@ -23,8 +23,8 @@ public class LogIntentHandler extends AbstractIntentHandler {
         Log.d("PoliVoice", "log " + task);
         HashMap<String, String> log = new HashMap<>();
         log.put("message", task);
-        log.put("user", getUserId());
-        storageManager.save("logs", log);
+//        log.put("user", getUserId());
+//        storageManager.save("logs", log);
         post(new IntentProcessedEvent(context.getString(R.string.log_recorded_response)));
     }
 

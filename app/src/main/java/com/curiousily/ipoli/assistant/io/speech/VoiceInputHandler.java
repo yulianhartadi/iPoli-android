@@ -10,10 +10,10 @@ import android.util.Log;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.assistant.InputHandler;
-import com.curiousily.ipoli.assistant.io.event.NewQueryEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.RecognizerReadyForSpeechEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.SpeechNoMatchEvent;
-import com.curiousily.ipoli.assistant.io.speech.event.VoiceRmsChangedEvent;
+import com.curiousily.ipoli.assistant.io.events.NewQueryEvent;
+import com.curiousily.ipoli.assistant.io.speech.events.RecognizerReadyForSpeechEvent;
+import com.curiousily.ipoli.assistant.io.speech.events.SpeechNoMatchEvent;
+import com.curiousily.ipoli.assistant.io.speech.events.VoiceRmsChangedEvent;
 import com.curiousily.ipoli.ui.events.ChangeInputEvent;
 
 import java.util.ArrayList;
