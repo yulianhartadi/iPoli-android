@@ -9,5 +9,5 @@
 market/
 art/
 *.iml
-*FirebaseConstants.java
+*APIConstants.java
 *AnalyticsConstants.java

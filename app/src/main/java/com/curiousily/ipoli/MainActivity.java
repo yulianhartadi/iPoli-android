@@ -26,10 +26,7 @@ import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.iPoli;
 import com.curiousily.ipoli.assistant.io.events.NewMessageEvent;
 import com.curiousily.ipoli.assistant.io.speech.events.VoiceRmsChangedEvent;
-import com.curiousily.ipoli.auth.AuthListener;
-import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
 import com.curiousily.ipoli.models.Message;
-import com.curiousily.ipoli.models.User;
 import com.curiousily.ipoli.ui.AlertDialogFragment;
 import com.curiousily.ipoli.ui.ConversationFragment;
 import com.curiousily.ipoli.ui.InputFragment;
@@ -46,7 +43,7 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class MainActivity extends AppCompatActivity implements AuthListener {
+public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -70,8 +67,7 @@ public class MainActivity extends AppCompatActivity implements AuthListener {
             showAlertDialog(R.string.no_internet_dialog_title, R.string.no_internet_dialog_message);
             return;
         }
-        FirebaseUserAuthenticator userAuthenticator = new FirebaseUserAuthenticator();
-        userAuthenticator.authenticateAnonymousUser(this);
+        initAssistant();
         ButterKnife.inject(this);
         initUI(savedInstanceState);
     }
@@ -232,15 +228,5 @@ public class MainActivity extends AppCompatActivity implements AuthListener {
         if (iPoli != null) {
             iPoli.shutdown();
         }
-    }
-
-    @Override
-    public void onUserAuthenticated(User user) {
-        initAssistant();
-    }
-
-    @Override
-    public void onUnableToAuthenticateUser() {
-        showAlertDialog(R.string.user_login_error_dialog_title, R.string.user_login_error_dialog_message);
     }
 }

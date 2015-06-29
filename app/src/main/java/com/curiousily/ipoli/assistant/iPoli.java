@@ -7,7 +7,6 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.assistant.data.StorageManager;
 import com.curiousily.ipoli.assistant.data.events.NewResponseEvent;
-import com.curiousily.ipoli.assistant.data.models.Query;
 import com.curiousily.ipoli.assistant.data.models.Response;
 import com.curiousily.ipoli.assistant.events.DidNotUnderstandEvent;
 import com.curiousily.ipoli.assistant.events.DoneRespondingEvent;
@@ -17,6 +16,7 @@ import com.curiousily.ipoli.assistant.events.StartRespondingEvent;
 import com.curiousily.ipoli.assistant.handlers.ChatIntentHandler;
 import com.curiousily.ipoli.assistant.handlers.IntentHandler;
 import com.curiousily.ipoli.assistant.handlers.events.IntentProcessedEvent;
+import com.curiousily.ipoli.assistant.handlers.intents.ChatIntent;
 import com.curiousily.ipoli.assistant.io.GuiOutputHandler;
 import com.curiousily.ipoli.assistant.io.events.NewQueryEvent;
 import com.curiousily.ipoli.assistant.io.speaker.VoiceOutputHandler;
@@ -26,7 +26,6 @@ import com.curiousily.ipoli.assistant.io.speaker.events.UtteranceStartEvent;
 import com.curiousily.ipoli.assistant.io.speech.VoiceInputHandler;
 import com.curiousily.ipoli.assistant.io.speech.events.RecognizerReadyForSpeechEvent;
 import com.curiousily.ipoli.assistant.io.speech.events.SpeechNoMatchEvent;
-import com.curiousily.ipoli.auth.FirebaseUserAuthenticator;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -104,22 +103,19 @@ public class iPoli {
     }
 
     private void processQuery(String query) {
-        storageManager.save("queries", Query.from(query, getUserId()));
+        storageManager.save(query);
     }
 
     @Subscribe
     public void onNewResponse(NewResponseEvent e) {
         Response r = e.getResponse();
+        ChatIntent intent = ChatIntent.from(r.intent);
         for (IntentHandler intentHandler : intentHandlers) {
-            if (intentHandler.canHandle(r.intent)) {
-                intentHandler.process(r.intent);
+            if (intentHandler.canHandle(intent)) {
+                intentHandler.process(intent);
                 return;
             }
         }
-    }
-
-    protected String getUserId() {
-        return FirebaseUserAuthenticator.getUser().id;
     }
 
     @Subscribe
