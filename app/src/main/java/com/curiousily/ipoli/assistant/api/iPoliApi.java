@@ -12,6 +12,6 @@ import retrofit.http.POST;
  * on 6/29/15.
  */
 public interface iPoliApi {
-    @POST("/inputs")
+    @POST("/inputs/")
     void createInput(@Body Input input, Callback<Response> cb);
 }
