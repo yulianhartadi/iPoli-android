@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recycler_view"
+<com.alamkanak.weekview.WeekView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/daily_schedule"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="120dp" />
+    app:columnGap="8dp"
+    app:dayBackgroundColor="#05000000"
+    app:eventTextColor="@android:color/white"
+    app:headerColumnBackground="#ffffffff"
+    app:headerColumnPadding="8dp"
+    app:headerColumnTextColor="#8f000000"
+    app:headerRowBackgroundColor="#ffefefef"
+    app:headerRowPadding="12dp"
+    app:hourHeight="60dp"
+    app:noOfVisibleDays="1"
+    app:textSize="12sp"
+    app:todayBackgroundColor="#1848adff" />
