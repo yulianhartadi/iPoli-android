@@ -44,6 +44,7 @@ public class DailyScheduleFragment extends Fragment {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
         List<Quest> quests = new ArrayList<>();
         quests.add(new Quest("Morning Routine", "Smile and brush", "9:00", 10, Quest.Context.Wellness));
+        quests.add(new Quest("Clear the fridge", "9:15", 30, Quest.Context.Home));
         quests.add(new Quest("Call John", "10:00", 15, Quest.Context.Personal));
         quests.add(new RecurrentQuest("Workout", "10:30", 60, Quest.Context.Activity));
         quests.add(new Quest("Meditate", "11:15", 10, Quest.Context.Wellness));
@@ -126,6 +127,11 @@ public class DailyScheduleFragment extends Fragment {
                     cardView.setCardBackgroundColor(getResources().getColor(R.color.md_green_500));
                     holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_green_700));
                     holder.icon.setIcon(MaterialDrawableBuilder.IconValue.HEART);
+                    break;
+                case Home:
+                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_pink_500));
+                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_pink_700));
+                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.HOME);
                     break;
                 case Work:
                     cardView.setCardBackgroundColor(getResources().getColor(R.color.md_teal_500));
