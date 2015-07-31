@@ -303,4 +303,10 @@
     <color name="md_dark_text_54">#8A000000</color>
     <color name="md_dark_text_26">#42000000</color>
     <color name="md_dark_text_12">#1F000000</color>
+
+    <color name="md_light_text_100">#FFFFFFFF</color>
+    <color name="md_light_text_87">#DEFFFFFF</color>
+    <color name="md_light_text_54">#8AFFFFFF</color>
+    <color name="md_light_text_26">#42FFFFFF</color>
+    <color name="md_light_text_12">#1FFFFFFF</color>
 </resources>

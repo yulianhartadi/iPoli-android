@@ -15,7 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.curiousily.ipoli.ui.AlertDialogFragment;
-import com.curiousily.ipoli.ui.ConversationFragment;
+import com.curiousily.ipoli.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.squareup.otto.Subscribe;
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addConversionFragment() {
-        ConversationFragment firstFragment = new ConversationFragment();
+        DailyScheduleFragment firstFragment = new DailyScheduleFragment();
         firstFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, firstFragment).commit();
