@@ -27,7 +27,7 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class MainActivity extends AppCompatActivity {
+public class DailyScheduleActivity extends AppCompatActivity {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;

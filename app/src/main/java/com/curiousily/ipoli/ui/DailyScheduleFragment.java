@@ -1,5 +1,6 @@
 package com.curiousily.ipoli.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.QuestDetailActivity;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.models.Quest;
 import com.curiousily.ipoli.models.RecurrentQuest;
@@ -82,6 +85,7 @@ public class DailyScheduleFragment extends Fragment {
             public final View recurrenceLayout;
             public final TextView recurrenceText;
             public final MaterialIconView icon;
+            public final Button startButton;
 
             public ViewHolder(View view) {
                 super(view);
@@ -93,7 +97,7 @@ public class DailyScheduleFragment extends Fragment {
                 duration = (TextView) view.findViewById(R.id.quest_duration);
                 recurrenceLayout = view.findViewById(R.id.quest_recurrence);
                 recurrenceText = (TextView) view.findViewById(R.id.quest_recurrence_text);
-
+                startButton = (Button) view.findViewById(R.id.quest_start);
             }
         }
 
@@ -112,6 +116,14 @@ public class DailyScheduleFragment extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             Quest quest = values.get(position);
             CardView cardView = (CardView) holder.itemView;
+
+            holder.startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
+                    startActivity(intent);
+                }
+            });
 
             if (quest instanceof RecurrentQuest) {
                 RecurrentQuest recurrentQuest = (RecurrentQuest) quest;
