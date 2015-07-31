@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.voice_button)
+    @InjectView(R.id.add_button)
     FloatingActionButton voiceButton;
 
     @InjectView(R.id.nav_view)
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.voice_button)
+    @OnClick(R.id.add_button)
     public void onVoiceButtonClick() {
         voiceButton.setImageResource(0);
         voiceButton.setEnabled(false);

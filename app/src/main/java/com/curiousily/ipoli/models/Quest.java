@@ -9,24 +9,25 @@ import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 public class Quest {
     public String name;
     public final int duration;
-    public final int backgroundColor;
-    public final int separatorColor;
     public String time;
     public MaterialDrawableBuilder.IconValue icon;
     public String snippet;
+    public Context context;
+
+    public enum Context {
+        Personal, Home, Work, Fun, Education, Wellness, Activity
+    }
 
 
-    public Quest(String name, String snippet, String time, int duration, int backgroundColor, int separatorColor, MaterialDrawableBuilder.IconValue icon) {
+    public Quest(String name, String snippet, String time, int duration, Context context) {
         this.name = name;
         this.snippet = snippet;
         this.time = time;
         this.duration = duration;
-        this.backgroundColor = backgroundColor;
-        this.separatorColor = separatorColor;
-        this.icon = icon;
+        this.context = context;
     }
 
-    public Quest(String name, String time, int duration, int backgroundColor, int separatorColor, MaterialDrawableBuilder.IconValue icon) {
-        this(name, "", time, duration, backgroundColor, separatorColor, icon);
+    public Quest(String name, String time, int duration, Context context) {
+        this(name, "", time, duration, context);
     }
 }

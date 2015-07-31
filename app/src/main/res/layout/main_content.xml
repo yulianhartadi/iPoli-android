@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </android.support.design.widget.AppBarLayout>
@@ -31,11 +30,10 @@
         android:layout_marginTop="?attr/actionBarSize" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/voice_button"
-        android:visibility="gone"
-        android:layout_width="86dp"
-        android:layout_height="86dp"
-        android:layout_gravity="bottom"
+        android:id="@+id/add_button"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:scaleType="centerInside"
         android:src="@drawable/ic_mic_white_48dp"
