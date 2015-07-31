@@ -48,7 +48,7 @@ public class DailyScheduleFragment extends Fragment {
         quests.add(new Quest("Call John", "10:00", 15, Quest.Context.Personal));
         quests.add(new RecurrentQuest("Workout", "10:30", 60, Quest.Context.Activity));
         quests.add(new Quest("Meditate", "11:15", 10, Quest.Context.Wellness));
-        quests.add(new Quest("Education Math", "Read Linear Algebra and solve 5 exercises", "12:45", 90, Quest.Context.Education));
+        quests.add(new Quest("Study Math", "Read Linear Algebra and solve 5 exercises", "12:45", 90, Quest.Context.Education));
         quests.add(new Quest("Write Bayesian Learning paper for conference", "16:00", 120, Quest.Context.Work));
         quests.add(new Quest("Watch Breaking Bad", "18:00", 45, Quest.Context.Fun));
         quests.add(new Quest("Have dinner wth friends", "19:00", 120, Quest.Context.Personal));

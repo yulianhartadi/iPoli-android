@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     @InjectView(R.id.add_button)
-    FloatingActionButton voiceButton;
+    FloatingActionButton addButton;
 
     @InjectView(R.id.nav_view)
     NavigationView navigationView;
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initUI(Bundle savedInstanceState) {
-        voiceButton.setEnabled(false);
         setupActionBar();
         setupDrawerContent();
         if (savedInstanceState != null) {
@@ -78,9 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.add_button)
-    public void onVoiceButtonClick() {
-        voiceButton.setImageResource(0);
-        voiceButton.setEnabled(false);
+    public void onAddButtonClick() {
     }
 
     private void addConversionFragment() {
