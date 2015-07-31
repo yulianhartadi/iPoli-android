@@ -203,7 +203,7 @@
                 android:layout_below="@id/quest_snippet"
                 android:layout_marginEnd="-8dp"
                 android:layout_marginRight="-8dp"
-                android:text="START"
+                android:text="DO IT"
                 android:textColor="@color/md_white" />
         </RelativeLayout>
     </LinearLayout>

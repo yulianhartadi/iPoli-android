@@ -1,11 +1,5 @@
 <resources>
     <string name="app_name">iPoli</string>
-    <string name="speak_hint">Listening…</string>
-    <string name="welcome_message">Hey, how can I help you?</string>
-    <string name="speech_not_recognized_error">Didn\'t get that, can you try again?</string>
     <string name="no_internet_dialog_title">Not connected</string>
     <string name="no_internet_dialog_message">iPoli needs the internet. Can you enable it, please?</string>
-    <string name="user_login_error_dialog_title">Care to try again?</string>
-    <string name="user_login_error_dialog_message">I might not be so smart after all. Ready for a reboot?</string>
-    <string name="log_recorded_response">Your log has been recorded</string>
 </resources>
