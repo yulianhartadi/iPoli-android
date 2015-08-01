@@ -6,8 +6,8 @@ iPoli is your personal life assistant. It helps you schedule your most important
 
 Daily schedule
 
-![Daily quests](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_1.png =250x)
-![Daily quests 2](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_2.png =250x)
+![Daily quests](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_1.png)
+![Daily quests 2](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_2.png)
 
 Quest details
 
