@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +45,12 @@ public class DailyScheduleFragment extends Fragment {
     private void setupRecyclerView() {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
         List<Quest> quests = new ArrayList<>();
-        quests.add(new Quest("Morning Routine", "Smile and brush", "9:00", 10, Quest.Context.Wellness));
+        quests.add(new Quest("Morning Routine", "9:00", 10, Quest.Context.Wellness));
         quests.add(new Quest("Clear the fridge", "9:15", 30, Quest.Context.Home));
         quests.add(new Quest("Call John", "10:00", 15, Quest.Context.Personal));
         quests.add(new RecurrentQuest("Workout", "10:30", 60, Quest.Context.Activity));
         quests.add(new Quest("Meditate", "11:15", 10, Quest.Context.Wellness));
-        quests.add(new Quest("Study Math", "Read Linear Algebra and solve 5 exercises", "12:45", 90, Quest.Context.Education));
+        quests.add(new Quest("Study Math", "12:45", 90, Quest.Context.Education));
         quests.add(new Quest("Write Bayesian Learning paper for conference", "16:00", 120, Quest.Context.Work));
         quests.add(new Quest("Watch Breaking Bad", "18:00", 45, Quest.Context.Fun));
         quests.add(new Quest("Have dinner wth friends", "19:00", 120, Quest.Context.Personal));
@@ -78,7 +77,6 @@ public class DailyScheduleFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
 
             public final TextView name;
-            public final TextView snippet;
             public final View separatorLine;
             public final TextView startTime;
             public final TextView duration;
@@ -91,7 +89,6 @@ public class DailyScheduleFragment extends Fragment {
                 super(view);
                 icon = (MaterialIconView) view.findViewById(R.id.quest_context_icon);
                 name = (TextView) view.findViewById(R.id.quest_name);
-                snippet = (TextView) view.findViewById(R.id.quest_snippet);
                 separatorLine = view.findViewById(R.id.separator_line);
                 startTime = (TextView) view.findViewById(R.id.quest_start_time);
                 duration = (TextView) view.findViewById(R.id.quest_duration);
@@ -174,12 +171,6 @@ public class DailyScheduleFragment extends Fragment {
             }
 
             holder.name.setText(quest.name);
-            if (TextUtils.isEmpty(quest.snippet)) {
-                holder.snippet.setVisibility(View.GONE);
-            } else {
-                holder.snippet.setVisibility(View.VISIBLE);
-                holder.snippet.setText(quest.snippet);
-            }
             holder.startTime.setText(quest.time);
             holder.duration.setText(quest.duration + "m");
         }
