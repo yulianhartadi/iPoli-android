@@ -32,7 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name"
+                android:text="Quest"
                 android:textColor="@color/md_light_text_54" />
 
             <TextView
@@ -239,6 +239,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/quest_details_sub_quests"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -297,6 +298,39 @@
                     android:text="Write 3 todos for today"
                     android:textColor="@color/md_dark_text_87" />
             </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/quest_details_notes"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/quest_details_sub_quests"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:orientation="horizontal">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="6dp"
+                android:scaleType="center"
+                app:materialIcon="book_open"
+                app:materialIconColor="@color/md_dark_text_54"
+                app:materialIconSize="24dp" />
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="48dp"
+                android:layout_marginStart="48dp"
+                android:gravity="bottom"
+                android:text="Use electric brush"
+                android:textColor="@color/md_dark_text_87" />
         </LinearLayout>
 
 
