@@ -4,33 +4,28 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
-    card_view:cardCornerRadius="4dp">
+    android:layout_marginBottom="2dip"
+    android:layout_marginTop="2dip"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/separator_line"
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:id="@+id/quest_name_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
 
             <net.steamcrafted.materialiconlib.MaterialIconView
                 android:id="@+id/quest_context_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="16dp"
+                android:layout_gravity="center_vertical"
                 android:scaleType="center"
                 app:materialIconColor="@color/md_white"
                 app:materialIconSize="24dp" />
@@ -40,15 +35,15 @@
                 style="@style/TextAppearance.AppCompat.Title.Inverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/quest_context_icon"
-                android:layout_marginBottom="12dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@id/quest_context_icon"
                 android:layout_toLeftOf="@+id/quest_epic_badge"
-                android:layout_toRightOf="@+id/quest_context_icon"
+                android:layout_toRightOf="@id/quest_context_icon"
                 android:layout_toStartOf="@+id/quest_epic_badge"
-                android:gravity="center_vertical" />
+                android:gravity="center_vertical"
+                android:textColor="@color/md_white" />
 
             <net.steamcrafted.materialiconlib.MaterialIconView
                 android:id="@id/quest_epic_badge"
@@ -56,12 +51,9 @@
                 android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignTop="@id/quest_context_icon"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:scaleType="center"
                 app:materialIcon="star_circle"
-                app:materialIconColor="@color/md_light_text_100"
+                app:materialIconColor="@color/md_white"
                 app:materialIconSize="24dp" />
 
             <LinearLayout
@@ -69,6 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/quest_name"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -76,8 +69,6 @@
                     style="@style/TextAppearance.AppCompat.Subhead.Inverse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginStart="12dp"
                     android:textColor="@color/md_light_text_87" />
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
@@ -109,50 +100,68 @@
                     app:materialIcon="timer"
                     app:materialIconColor="@color/md_light_text_54"
                     app:materialIconSize="18dp" />
-
-                <LinearLayout
-                    android:id="@+id/quest_recurrence"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="18dp"
-                    android:layout_marginStart="18dp"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="9dp"
-                        android:layout_height="9dp"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_recurrent_quest_complete" />
-
-                    <ImageView
-                        android:layout_width="9dp"
-                        android:layout_height="9dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginStart="2dp"
-                        android:src="@drawable/ic_recurrent_quest_complete" />
-
-                    <ImageView
-                        android:layout_width="9dp"
-                        android:layout_height="9dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="2dp"
-                        android:layout_marginStart="2dp"
-                        android:src="@drawable/ic_recurrent_quest_incomplete" />
-
-                    <TextView
-                        android:id="@+id/quest_recurrence_text"
-                        style="@style/TextAppearance.AppCompat.Subhead.Inverse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginStart="4dp"
-                        android:textColor="@color/md_light_text_87" />
-                </LinearLayout>
-
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/quest_recurrence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/quest_info"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="9dp"
+                    android:layout_height="9dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_recurrent_quest_complete" />
+
+                <ImageView
+                    android:layout_width="9dp"
+                    android:layout_height="9dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/ic_recurrent_quest_complete" />
+
+                <ImageView
+                    android:layout_width="9dp"
+                    android:layout_height="9dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginStart="2dp"
+                    android:src="@drawable/ic_recurrent_quest_incomplete" />
+
+                <TextView
+                    android:id="@+id/quest_recurrence_text"
+                    style="@style/TextAppearance.AppCompat.Subhead.Inverse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@color/md_light_text_87" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/quest_tags"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/quest_recurrence"
+                android:layout_marginTop="8dp"
+                android:text="Personal, Hungry, Smooth, Shopping"
+                android:textColor="@color/md_light_text_87" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/quest_actions_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_white"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/quest_done"
@@ -161,22 +170,19 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/quest_info"
-                android:layout_marginLeft="-12dp"
-                android:layout_marginStart="-12dp"
                 android:text="DONE"
-                android:textColor="@color/md_white" />
+                android:textColor="@color/md_dark_text_87" />
 
             <Button
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/quest_info"
                 android:layout_marginLeft="-8dp"
                 android:layout_marginStart="-8dp"
+                android:layout_toEndOf="@id/quest_done"
                 android:layout_toRightOf="@id/quest_done"
                 android:text="EDIT"
-                android:textColor="@color/md_white" />
+                android:textColor="@color/md_dark_text_87" />
 
             <Button
                 android:id="@+id/quest_start"
@@ -185,13 +191,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/quest_info"
                 android:layout_marginEnd="-8dp"
                 android:layout_marginRight="-8dp"
                 android:text="DO IT"
-                android:textColor="@color/md_white" />
+                android:textColor="@color/md_dark_text_87" />
         </RelativeLayout>
     </LinearLayout>
-
 
 </android.support.v7.widget.CardView>

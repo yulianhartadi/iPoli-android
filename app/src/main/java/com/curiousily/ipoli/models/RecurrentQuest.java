@@ -1,7 +1,5 @@
 package com.curiousily.ipoli.models;
 
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/31/15.

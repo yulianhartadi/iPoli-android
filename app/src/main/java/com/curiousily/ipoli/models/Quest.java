@@ -17,6 +17,7 @@ public class Quest {
     public String time;
     public MaterialDrawableBuilder.IconValue icon;
     public final List<String> journal = new ArrayList<>();
+    public final List<String> tags;
     public Context context;
 
     public enum Context {
@@ -48,16 +49,21 @@ public class Quest {
 
         }
 
-        public int getPrimaryColorDark() {
+        public int getSecondaryColor() {
             return primaryColorDark;
         }
 
     }
 
     public Quest(String name, String time, int duration, Context context) {
+        this(name, time, duration, context, new ArrayList<String>());
+    }
+
+    public Quest(String name, String time, int duration, Context context, List<String> tags) {
         this.name = name;
         this.time = time;
         this.duration = duration;
         this.context = context;
+        this.tags = tags;
     }
 }
