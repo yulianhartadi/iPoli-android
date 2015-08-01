@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:padding="24dp">
 
-
             <net.steamcrafted.materialiconlib.MaterialIconView
                 android:id="@+id/quest_context_icon"
                 android:layout_width="24dp"

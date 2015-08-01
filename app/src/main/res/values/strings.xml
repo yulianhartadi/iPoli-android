@@ -2,4 +2,8 @@
     <string name="app_name">iPoli</string>
     <string name="no_internet_dialog_title">Not connected</string>
     <string name="no_internet_dialog_message">iPoli needs the internet. Can you enable it, please?</string>
+    <string name="action_settings">Settings</string>
+    <string name="invite_welcome_text">Ready to have epic life?</string>
+    <string name="invite_description">iPoli is a private community of real life heroes doing epic quests! Request your invite to join in!</string>
+    <string name="get_invite">GIVE ME INVITE</string>
 </resources>
