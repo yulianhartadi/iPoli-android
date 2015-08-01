@@ -1,5 +1,7 @@
 package com.curiousily.ipoli.models;
 
+import com.curiousily.ipoli.R;
+
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.ArrayList;
@@ -14,11 +16,42 @@ public class Quest {
     public final int duration;
     public String time;
     public MaterialDrawableBuilder.IconValue icon;
-    public final List<String> notes = new ArrayList<>();
+    public final List<String> journal = new ArrayList<>();
     public Context context;
 
     public enum Context {
-        Personal, Home, Work, Fun, Education, Wellness, Activity
+
+        Personal(MaterialDrawableBuilder.IconValue.ACCOUNT, R.color.md_orange_500, R.color.md_orange_700),
+        Home(MaterialDrawableBuilder.IconValue.HOME, R.color.md_pink_500, R.color.md_pink_700),
+        Work(MaterialDrawableBuilder.IconValue.BRIEFCASE, R.color.md_teal_500, R.color.md_teal_700),
+        Fun(MaterialDrawableBuilder.IconValue.EMOTICON_HAPPY, R.color.md_purple_500, R.color.md_purple_700),
+        Education(MaterialDrawableBuilder.IconValue.SCHOOL, R.color.md_blue_500, R.color.md_blue_700),
+        Wellness(MaterialDrawableBuilder.IconValue.HEART, R.color.md_green_500, R.color.md_green_700),
+        Activity(MaterialDrawableBuilder.IconValue.RUN, R.color.md_red_500, R.color.md_red_700);
+
+        private final MaterialDrawableBuilder.IconValue icon;
+        private final int primaryColor;
+        private final int primaryColorDark;
+
+        Context(MaterialDrawableBuilder.IconValue icon, int primaryColor, int primaryColorDark) {
+            this.icon = icon;
+            this.primaryColor = primaryColor;
+            this.primaryColorDark = primaryColorDark;
+        }
+
+        public MaterialDrawableBuilder.IconValue getIcon() {
+            return icon;
+        }
+
+        public int getPrimaryColor() {
+            return primaryColor;
+
+        }
+
+        public int getPrimaryColorDark() {
+            return primaryColorDark;
+        }
+
     }
 
     public Quest(String name, String time, int duration, Context context) {

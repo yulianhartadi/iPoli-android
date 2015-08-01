@@ -19,7 +19,6 @@ import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.models.Quest;
 import com.curiousily.ipoli.models.RecurrentQuest;
 
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.util.ArrayList;
@@ -132,43 +131,9 @@ public class DailyScheduleFragment extends Fragment {
                 holder.recurrenceLayout.setVisibility(View.GONE);
             }
 
-            switch (quest.context) {
-                case Wellness:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_green_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_green_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.HEART);
-                    break;
-                case Home:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_pink_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_pink_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.HOME);
-                    break;
-                case Work:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_teal_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_teal_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.BRIEFCASE);
-                    break;
-                case Personal:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_orange_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_orange_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT);
-                    break;
-                case Fun:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_purple_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_purple_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.EMOTICON_HAPPY);
-                    break;
-                case Activity:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_red_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_red_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.RUN);
-                    break;
-                case Education:
-                    cardView.setCardBackgroundColor(getResources().getColor(R.color.md_blue_500));
-                    holder.separatorLine.setBackgroundColor(getResources().getColor(R.color.md_blue_700));
-                    holder.icon.setIcon(MaterialDrawableBuilder.IconValue.SCHOOL);
-                    break;
-            }
+            holder.icon.setIcon(quest.context.getIcon());
+            cardView.setCardBackgroundColor(getResources().getColor(quest.context.getPrimaryColor()));
+            holder.separatorLine.setBackgroundColor(getResources().getColor(quest.context.getPrimaryColorDark()));
 
             holder.name.setText(quest.name);
             holder.startTime.setText(quest.time);
