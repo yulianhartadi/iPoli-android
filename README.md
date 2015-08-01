@@ -8,4 +8,7 @@ Daily schedule
 
 ![Daily quests](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_1.png)
 ![Daily quests 2](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/daily_schedule_2.png)
+
+Quest details
+
 ![Quest execution](https://raw.githubusercontent.com/iPoli/iPoli-android/master/public/screenshots/quest_details.png)
