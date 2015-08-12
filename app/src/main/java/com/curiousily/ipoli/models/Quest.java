@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class Quest {
     public String name;
+    public String description;
     public final int duration;
     public String time;
     public MaterialDrawableBuilder.IconValue icon;
@@ -55,12 +56,13 @@ public class Quest {
 
     }
 
-    public Quest(String name, String time, int duration, Context context) {
-        this(name, time, duration, context, new ArrayList<String>());
+    public Quest(String name, String description, String time, int duration, Context context) {
+        this(name, description, time, duration, context, new ArrayList<String>());
     }
 
-    public Quest(String name, String time, int duration, Context context, List<String> tags) {
+    public Quest(String name, String description, String time, int duration, Context context, List<String> tags) {
         this.name = name;
+        this.description = description;
         this.time = time;
         this.duration = duration;
         this.context = context;

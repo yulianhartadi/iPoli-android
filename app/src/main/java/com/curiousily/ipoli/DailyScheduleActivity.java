@@ -47,7 +47,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_daily_schedule);
         ButterKnife.inject(this);
         initUI(savedInstanceState);
-        onAddButtonClick();
     }
 
     private void initUI(Bundle savedInstanceState) {

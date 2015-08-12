@@ -39,13 +39,15 @@ public class NotificationManager {
 
         final NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setContentTitle(quest.name)
-                .setContentText(TimerFormat.minutesToText(quest.duration))
-                .setContentInfo(quest.name)
+                .setContentText(quest.description)
+                .setContentInfo(TimerFormat.minutesToText(quest.duration))
                 .setSmallIcon(R.drawable.ic_event)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)
-                .addAction(R.drawable.ic_discuss, "Cancel", intent)
+                .addAction(R.drawable.ic_clear_white_24dp, "Cancel", intent)
                 .addAction(R.drawable.ic_done, "Done", intent)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
         final NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
@@ -55,7 +57,7 @@ public class NotificationManager {
 
             @Override
             public void onTick(long millisUntilFinished) {
-                builder.setContentText(TimerFormat.millisecondsToText(millisUntilFinished));
+                builder.setContentInfo(TimerFormat.millisecondsToText(millisUntilFinished));
                 notificationManagerCompat.notify(1, builder.build());
             }
 

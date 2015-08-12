@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.curiousily.ipoli.models.Quest;
-import com.curiousily.ipoli.ui.QuestRateDialog;
 import com.curiousily.ipoli.ui.QuestRunningDialog;
 
 import butterknife.ButterKnife;
@@ -62,6 +61,6 @@ public class QuestDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.quest_details_timer_icon)
     public void onTimerClick(View view) {
-        showQuestRunningDialog(new Quest("Morning Routine", "10:00", 9, Quest.Context.Wellness));
+        showQuestRunningDialog(new Quest("Morning Routine", "Start fresh day", "10:00", 9, Quest.Context.Wellness));
     }
 }
