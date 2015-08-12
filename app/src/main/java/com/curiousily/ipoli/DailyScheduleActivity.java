@@ -48,7 +48,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
         initUI(savedInstanceState);
     }
 
-
     private void initUI(Bundle savedInstanceState) {
         setupActionBar();
         setupDrawerContent();

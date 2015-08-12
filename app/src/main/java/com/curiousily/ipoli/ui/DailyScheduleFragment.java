@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.NotificationManager;
 import com.curiousily.ipoli.QuestDetailActivity;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.models.Quest;
@@ -58,6 +59,7 @@ public class DailyScheduleFragment extends Fragment {
         quests.add(new Quest("Watch Breaking Bad", "18:00", 45, Quest.Context.Fun, Arrays.asList("movie", "tv")));
         quests.add(new Quest("Have dinner wth friends", "19:00", 120, Quest.Context.Personal, Arrays.asList("dinner", "shopping", "cooking")));
         QuestViewAdapter adapter = new QuestViewAdapter(quests);
+        NotificationManager.from(getActivity()).startQuest(quests.get(5));
         view.setAdapter(adapter);
     }
 
