@@ -6,11 +6,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import com.curiousily.ipoli.R;
-import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.ui.DailyScheduleFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,7 @@ public class AddQuestActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_quest, menu);
+        getMenuInflater().inflate(R.menu.add_quest_info, menu);
         return true;
     }
 
