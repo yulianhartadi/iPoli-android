@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.curiousily.ipoli.R;
-import com.curiousily.ipoli.models.Quest;
+import com.curiousily.ipoli.quest.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

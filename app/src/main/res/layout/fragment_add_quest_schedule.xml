@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleType="center"
+            app:materialIcon="calendar_today"
+            app:materialIconColor="@color/md_dark_text_54"
+            app:materialIconSize="24dp" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:background="?attr/colorAccent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="Today"
+            android:textColor="@color/md_light_text_100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
+        android:orientation="horizontal">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleType="center"
+            app:materialIcon="timer"
+            app:materialIconColor="@color/md_dark_text_54"
+            app:materialIconSize="24dp" />
+
+        <Spinner
+            android:id="@+id/add_quest_duration"
+            style="@style/Widget.AppCompat.Spinner.DropDown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:prompt="@string/app_name" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
+        android:orientation="horizontal">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleType="center"
+            app:materialIcon="clock"
+            app:materialIconColor="@color/md_dark_text_54"
+            app:materialIconSize="24dp" />
+
+        <Button
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:background="?attr/colorAccent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="14:00"
+            android:textColor="@color/md_light_text_100" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
+        android:orientation="horizontal">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleType="center"
+            app:materialIcon="replay"
+            app:materialIconColor="@color/md_dark_text_54"
+            app:materialIconSize="24dp" />
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:max="12"
+            android:progress="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="24dp"
+        android:orientation="horizontal">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:scaleType="center"
+            app:materialIcon="repeat"
+            app:materialIconColor="@color/md_dark_text_54"
+            app:materialIconSize="24dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monday" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tuesday" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wednesday" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thursday" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Friday" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saturday" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sunday" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

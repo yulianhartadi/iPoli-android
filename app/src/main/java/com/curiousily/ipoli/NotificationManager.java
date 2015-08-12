@@ -9,7 +9,7 @@ import android.os.CountDownTimer;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
-import com.curiousily.ipoli.models.Quest;
+import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.utils.TimerFormat;
 
 import java.util.concurrent.TimeUnit;

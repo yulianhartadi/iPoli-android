@@ -1,5 +1,7 @@
 package com.curiousily.ipoli.models;
 
+import com.curiousily.ipoli.quest.Quest;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/31/15.

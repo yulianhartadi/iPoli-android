@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.models;
+package com.curiousily.ipoli.quest;
 
 import com.curiousily.ipoli.R;
 

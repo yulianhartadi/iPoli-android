@@ -27,7 +27,7 @@ public class InviteOnlyActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(R.color.md_blue_700));
         }
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
     }
 
     @OnClick(R.id.invite_button)

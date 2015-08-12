@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
@@ -11,173 +10,23 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:paddingBottom="16dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_collapseMode="pin"
+            android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="72dp"
-            app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Quest (e.g. Read book)" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="72dp"
-            android:paddingTop="8dp"
-            app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Description" />
-        </android.support.design.widget.TextInputLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="242dp">
-
-        <LinearLayout
-            android:id="@+id/add_quest_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="center"
-                app:materialIcon="calendar_check"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:orientation="vertical">
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="One time" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recurrent" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Main" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Epic" />
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/add_quest_due_date"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/add_quest_type"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:scaleType="center"
-                app:materialIcon="label"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <Spinner
-                android:id="@+id/add_quest_context"
-                style="@style/Widget.AppCompat.Spinner.DropDown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:prompt="@string/app_name" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/add_quest_tags"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/add_quest_due_date"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="6dp"
-                android:scaleType="center"
-                app:materialIcon="tag"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <EditText
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:gravity="bottom"
-                android:hint="Tags (e.g. personal, workout, improve)"
-                android:textColor="@color/md_dark_text_87" />
-        </LinearLayout>
-
-    </RelativeLayout>
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="?attr/actionBarSize" />
 
 </android.support.design.widget.CoordinatorLayout>

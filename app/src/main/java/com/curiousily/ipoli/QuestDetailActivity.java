@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.curiousily.ipoli.models.Quest;
-import com.curiousily.ipoli.ui.QuestRunningDialog;
+import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.ui.QuestRateDialog;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -23,7 +23,7 @@ public class QuestDetailActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quest_detail);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -52,11 +52,9 @@ public class QuestDetailActivity extends AppCompatActivity {
     }
 
     private void showQuestRunningDialog(Quest quest) {
-        DialogFragment newFragment = QuestRunningDialog.newInstance(quest);
-        newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
 
-//        DialogFragment newFragment = QuestRateDialog.newInstance(quest);
-//        newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
+        DialogFragment newFragment = QuestRateDialog.newInstance(quest);
+        newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 
     @OnClick(R.id.quest_details_timer_icon)

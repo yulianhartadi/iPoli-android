@@ -14,12 +14,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.squareup.otto.Subscribe;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 /**
@@ -28,16 +29,16 @@ import butterknife.OnClick;
  */
 public class DailyScheduleActivity extends AppCompatActivity {
 
-    @InjectView(R.id.drawer_layout)
+    @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
 
-    @InjectView(R.id.toolbar)
+    @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.add_button)
+    @Bind(R.id.add_button)
     FloatingActionButton addButton;
 
-    @InjectView(R.id.nav_view)
+    @Bind(R.id.nav_view)
     NavigationView navigationView;
 
 
@@ -45,8 +46,9 @@ public class DailyScheduleActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         initUI(savedInstanceState);
+        onAddButtonClick();
     }
 
     private void initUI(Bundle savedInstanceState) {

@@ -1,4 +1,4 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.quest;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,24 +8,25 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import com.curiousily.ipoli.models.Quest;
+import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.ui.DailyScheduleFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class AddQuestActivity extends AppCompatActivity {
 
-    @InjectView(R.id.add_quest_context)
-    Spinner spinner;
+//    @InjectView(R.id.add_quest_context)
+//    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_quest);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,7 +45,16 @@ public class AddQuestActivity extends AppCompatActivity {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
+//        spinner.setAdapter(dataAdapter);
+
+        addQuestScheduleFragment();
+    }
+
+    private void addQuestScheduleFragment() {
+        AddQuestScheduleFragment firstFragment = new AddQuestScheduleFragment();
+        firstFragment.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, firstFragment).commit();
     }
 
     @Override
