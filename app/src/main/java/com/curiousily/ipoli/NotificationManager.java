@@ -12,6 +12,8 @@ import android.support.v7.app.NotificationCompat;
 import com.curiousily.ipoli.models.Quest;
 import com.curiousily.ipoli.utils.TimerFormat;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/12/15.
@@ -49,7 +51,7 @@ public class NotificationManager {
         final NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(1, builder.build());
 
-        new CountDownTimer(600000, 1000) {
+        new CountDownTimer(TimeUnit.MINUTES.toMillis(quest.duration), 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -59,7 +61,7 @@ public class NotificationManager {
 
             @Override
             public void onFinish() {
-
+                notificationManagerCompat.cancel(1);
             }
         }.start();
     }

@@ -49,7 +49,7 @@ public class DailyScheduleFragment extends Fragment {
     private void setupRecyclerView() {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
         List<Quest> quests = new ArrayList<>();
-        quests.add(new Quest("Morning Routine", "9:00", 10, Quest.Context.Wellness, Arrays.asList("brushing", "happiness", "smile")));
+        quests.add(new Quest("Morning Routine", "9:00", 1, Quest.Context.Wellness, Arrays.asList("brushing", "happiness", "smile")));
         quests.add(new Quest("Clear the fridge", "9:15", 30, Quest.Context.Home, Arrays.asList("cleaning", "errand")));
         quests.add(new Quest("Call John", "10:00", 15, Quest.Context.Personal, Arrays.asList("phone", "work", "errand")));
         quests.add(new RecurrentQuest("Workout", "10:30", 60, Quest.Context.Activity));
@@ -59,7 +59,7 @@ public class DailyScheduleFragment extends Fragment {
         quests.add(new Quest("Watch Breaking Bad", "18:00", 45, Quest.Context.Fun, Arrays.asList("movie", "tv")));
         quests.add(new Quest("Have dinner wth friends", "19:00", 120, Quest.Context.Personal, Arrays.asList("dinner", "shopping", "cooking")));
         QuestViewAdapter adapter = new QuestViewAdapter(quests);
-        NotificationManager.from(getActivity()).startQuest(quests.get(5));
+        NotificationManager.from(getActivity()).startQuest(quests.get(0));
         view.setAdapter(adapter);
     }
 

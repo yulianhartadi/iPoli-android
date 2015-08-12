@@ -1,6 +1,7 @@
 package com.curiousily.ipoli;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class DailyScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_daily_schedule);
         ButterKnife.inject(this);
         initUI(savedInstanceState);
+        onAddButtonClick();
     }
 
     private void initUI(Bundle savedInstanceState) {
@@ -54,7 +56,7 @@ public class DailyScheduleActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             return;
         }
-        addConversionFragment();
+        addDailyScheduleFragment();
     }
 
     private void setupActionBar() {
@@ -68,9 +70,12 @@ public class DailyScheduleActivity extends AppCompatActivity {
 
     @OnClick(R.id.add_button)
     public void onAddButtonClick() {
+        Intent intent = new Intent(this, AddQuestActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
-    private void addConversionFragment() {
+    private void addDailyScheduleFragment() {
         DailyScheduleFragment firstFragment = new DailyScheduleFragment();
         firstFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()
