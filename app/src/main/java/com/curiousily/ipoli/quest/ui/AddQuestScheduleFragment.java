@@ -1,9 +1,10 @@
-package com.curiousily.ipoli.quest;
+package com.curiousily.ipoli.quest.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.ui.DatePickerFragment;
 import com.curiousily.ipoli.ui.TimePickerFragment;
 
@@ -77,13 +79,18 @@ public class AddQuestScheduleFragment extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         duration.setAdapter(dataAdapter);
 
+        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        final AddQuestActivity activity = (AddQuestActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setTitle(R.string.add_quest_title);
+
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_quest_schedule, menu);
-        menu.findItem(R.id.action_next).setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
     }
 }
