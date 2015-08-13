@@ -145,7 +145,7 @@
                 app:materialIconSize="24dp" />
 
             <SeekBar
-                android:id="@+id/seekBar1"
+                android:id="@+id/add_quest_times_per_day"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

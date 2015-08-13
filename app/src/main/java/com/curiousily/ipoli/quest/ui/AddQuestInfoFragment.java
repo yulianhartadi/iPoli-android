@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.curiousily.ipoli.R;
@@ -21,6 +24,7 @@ import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -34,6 +38,21 @@ public class AddQuestInfoFragment extends Fragment {
 
     @Bind(R.id.add_quest_context)
     Spinner spinner;
+
+    @Bind(R.id.add_quest_name)
+    EditText name;
+
+    @Bind(R.id.add_quest_description)
+    EditText description;
+
+    @Bind(R.id.add_quest_tags)
+    EditText tags;
+
+    @Bind(R.id.add_quest_type)
+    RadioGroup questType;
+
+    @Bind(R.id.add_quest_type_one_time)
+    RadioButton oneTimeQuest;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +95,7 @@ public class AddQuestInfoFragment extends Fragment {
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
+        oneTimeQuest.setChecked(true);
         return view;
     }
 
@@ -89,7 +109,14 @@ public class AddQuestInfoFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_next:
-                ((AddQuestActivity) getActivity()).onNextClick();
+                Quest q = new Quest();
+                q.name = name.getText().toString();
+                q.description = description.getText().toString();
+                q.context = Quest.Context.valueOf(spinner.getSelectedItem().toString());
+                RadioButton checkedType = (RadioButton) getView().findViewById(questType.getCheckedRadioButtonId());
+                q.type = checkedType.getText().toString().toLowerCase();
+                q.tags = Arrays.asList(tags.getText().toString().split(","));
+                ((AddQuestActivity) getActivity()).onNextClick(q);
                 return true;
         }
 

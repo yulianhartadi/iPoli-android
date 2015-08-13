@@ -8,14 +8,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
+import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.ui.DatePickerFragment;
 import com.curiousily.ipoli.ui.TimePickerFragment;
 
@@ -34,6 +37,9 @@ public class AddQuestScheduleFragment extends Fragment {
 
     @Bind(R.id.add_quest_duration)
     Spinner duration;
+
+    @Bind(R.id.add_quest_times_per_day)
+    SeekBar timesPerDay;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,5 +98,20 @@ public class AddQuestScheduleFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_quest_schedule, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_done:
+                AddQuestActivity activity = ((AddQuestActivity) getActivity());
+                Quest quest = activity.getQuest();
+                quest.duration = duration.getSelectedItemPosition();
+                quest.timesPerDay = timesPerDay.getProgress();
+                activity.onDoneClick();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

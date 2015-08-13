@@ -31,6 +31,7 @@
             app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
             <EditText
+                android:id="@+id/add_quest_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Quest (e.g. Read book)" />
@@ -48,6 +49,7 @@
             app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
             <EditText
+                android:id="@+id/add_quest_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Description" />
@@ -60,7 +62,7 @@
         android:layout_marginTop="242dp">
 
         <LinearLayout
-            android:id="@+id/add_quest_type"
+            android:id="@+id/add_quest_type_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -81,6 +83,7 @@
                 app:materialIconSize="24dp" />
 
             <RadioGroup
+                android:id="@+id/add_quest_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="48dp"
@@ -88,21 +91,25 @@
                 android:orientation="vertical">
 
                 <RadioButton
+                    android:id="@+id/add_quest_type_one_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="One time" />
 
                 <RadioButton
+                    android:id="@+id/add_quest_type_recurrent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Recurrent" />
 
                 <RadioButton
+                    android:id="@+id/add_quest_type_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Main" />
 
                 <RadioButton
+                    android:id="@+id/add_quest_type_epic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Epic" />
@@ -115,7 +122,7 @@
             android:layout_height="72dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/add_quest_type"
+            android:layout_below="@id/add_quest_type_layout"
             android:layout_marginEnd="16dp"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="16dp"
@@ -143,7 +150,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/add_quest_tags"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_alignParentLeft="true"
@@ -166,6 +172,7 @@
                 app:materialIconSize="24dp" />
 
             <EditText
+                android:id="@+id/add_quest_tags"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

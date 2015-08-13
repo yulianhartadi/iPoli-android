@@ -8,4 +8,8 @@ import com.curiousily.ipoli.quest.Quest;
  */
 public class CreateQuestEvent {
     public Quest quest;
+
+    public CreateQuestEvent(Quest quest) {
+        this.quest = quest;
+    }
 }

@@ -14,12 +14,18 @@ import java.util.List;
 public class Quest {
     public String name;
     public String description;
-    public final int duration;
+    public int duration;
     public String time;
     public MaterialDrawableBuilder.IconValue icon;
-    public final List<String> journal = new ArrayList<>();
-    public final List<String> tags;
+    public List<String> journal = new ArrayList<>();
+    public List<String> tags;
     public Context context;
+    public String type;
+    public int timesPerDay;
+
+    public Quest() {
+
+    }
 
     public enum Context {
 

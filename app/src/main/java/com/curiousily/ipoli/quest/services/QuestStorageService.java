@@ -28,12 +28,10 @@ public class QuestStorageService {
         apiClient.createQuest(e.quest, new Callback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
             }
 
             @Override
             public void failure(RetrofitError error) {
-
             }
         });
     }
