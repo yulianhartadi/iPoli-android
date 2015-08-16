@@ -59,6 +59,6 @@ public class QuestDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.quest_details_timer_icon)
     public void onTimerClick(View view) {
-        showQuestRunningDialog(new Quest("Morning Routine", "Start fresh day", "10:00", 9, Quest.Context.Wellness));
+        showQuestRunningDialog(new Quest("Morning Routine", "Start fresh day", "10:00", 9, Quest.Context.WELLNESS));
     }
 }

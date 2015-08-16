@@ -3,8 +3,12 @@ package com.curiousily.ipoli.quest.services;
 import com.curiousily.ipoli.app.APIClient;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
+import com.curiousily.ipoli.quest.events.DailyQuestsLoadedEvent;
+import com.curiousily.ipoli.quest.events.LoadDailyQuestsEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -32,6 +36,22 @@ public class QuestStorageService {
 
             @Override
             public void failure(RetrofitError error) {
+            }
+        });
+    }
+
+    @Subscribe
+    public void onLoadDailyQuests(LoadDailyQuestsEvent e) {
+        apiClient.getDailyQuests(new Callback<List<Quest>>() {
+
+            @Override
+            public void success(List<Quest> quests, Response response) {
+                bus.post(new DailyQuestsLoadedEvent(quests));
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
             }
         });
     }

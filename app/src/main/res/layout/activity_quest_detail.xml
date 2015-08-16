@@ -206,7 +206,7 @@
             android:background="@color/md_dark_text_12" />
 
         <LinearLayout
-            android:id="@+id/quest_tags"
+            android:id="@+id/quest_description"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_alignParentLeft="true"
@@ -244,7 +244,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/quest_tags"
+            android:layout_below="@id/quest_description"
             android:layout_marginLeft="24dp"
             android:layout_marginStart="24dp"
             android:orientation="horizontal">
