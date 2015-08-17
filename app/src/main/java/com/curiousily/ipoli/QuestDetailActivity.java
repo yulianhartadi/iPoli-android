@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.ui.QuestRateDialog;
+import com.curiousily.ipoli.ui.QuestDoneDialog;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,7 +53,7 @@ public class QuestDetailActivity extends AppCompatActivity {
 
     private void showQuestRunningDialog(Quest quest) {
 
-        DialogFragment newFragment = QuestRateDialog.newInstance(quest);
+        DialogFragment newFragment = QuestDoneDialog.newInstance(quest);
         newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 

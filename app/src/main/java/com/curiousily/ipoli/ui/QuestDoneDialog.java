@@ -15,10 +15,10 @@ import com.curiousily.ipoli.quest.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/2/15.
  */
-public class QuestRateDialog extends DialogFragment {
+public class QuestDoneDialog extends DialogFragment {
 
-    public static QuestRateDialog newInstance(Quest quest) {
-        QuestRateDialog frag = new QuestRateDialog();
+    public static QuestDoneDialog newInstance(Quest quest) {
+        QuestDoneDialog frag = new QuestDoneDialog();
         Bundle args = new Bundle();
         args.putString("name", quest.name);
         frag.setArguments(args);
@@ -31,7 +31,7 @@ public class QuestRateDialog extends DialogFragment {
         String name = getArguments().getString("name");
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_quest_rate, null);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("How much you enjoyed this quest?")
+                .setTitle("Great job! Did you liked it?")
                 .setCancelable(false)
                 .setView(view)
                 .create();

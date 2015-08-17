@@ -1,22 +1,31 @@
 package com.curiousily.ipoli.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.QuestDetailActivity;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.DailyQuestsLoadedEvent;
 import com.curiousily.ipoli.quest.events.LoadDailyQuestsEvent;
 import com.squareup.otto.Subscribe;
 
+import net.steamcrafted.materialiconlib.MaterialIconView;
+
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,27 +42,19 @@ public class DailyScheduleFragment extends Fragment {
         view = (RecyclerView) inflater.inflate(
                 R.layout.fragment_daily_schedule, container, false);
         post(new LoadDailyQuestsEvent());
-//        setupRecyclerView();
         return view;
     }
 
     @Subscribe
     public void setupRecyclerView(DailyQuestsLoadedEvent e) {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-//        List<Quest> quests = new ArrayList<>();
-//        quests.add(new Quest("Morning Routine", "Rise, smile and start a fresh new day", "9:00", 1, Quest.Context.WELLNESS, Arrays.asList("brushing", "happiness", "smile")));
-//        quests.add(new Quest("Clear the fridge", "", "9:15", 30, Quest.Context.HOME, Arrays.asList("cleaning", "errand")));
-//        quests.add(new Quest("Call John", "", "10:00", 15, Quest.Context.PERSONAL, Arrays.asList("phone", "work", "errand")));
-//        quests.add(new RecurrentQuest("Workout", "", "10:30", 60, Quest.Context.ACTIVITY));
-//        quests.add(new Quest("Meditate", "", "11:15", 10, Quest.Context.WELLNESS, Arrays.asList("zen", "mindfulness", "relax")));
-//        quests.add(new Quest("Study Math", "", "12:45", 90, Quest.Context.EDUCATION, Arrays.asList("book", "linear algebra")));
-//        quests.add(new Quest("Write Bayesian Learning paper for conference", "", "16:00", 120, Quest.Context.WORK, Arrays.asList("university", "paper", "writing")));
-//        quests.add(new Quest("Watch Breaking Bad", "", "18:00", 45, Quest.Context.FUN, Arrays.asList("movie", "tv")));
-//        quests.add(new Quest("Have dinner wth friends", "", "19:00", 120, Quest.Context.PERSONAL, Arrays.asList("dinner", "shopping", "cooking")));
+        view.addItemDecoration(new LineDividerItemDecorator(getActivity()));
         QuestViewAdapter adapter = new QuestViewAdapter(e.quests);
 //        NotificationManager.from(getActivity()).startQuest(quests.get(0));
         view.setAdapter(adapter);
+        QuestTouchCallback touchCallback = new QuestTouchCallback(adapter);
+        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
+        helper.attachToRecyclerView(view);
     }
 
     private void post(Object event) {
@@ -72,36 +73,143 @@ public class DailyScheduleFragment extends Fragment {
         EventBus.get().register(this);
     }
 
-    public class QuestViewAdapter
-            extends RecyclerView.Adapter<QuestViewAdapter.ViewHolder> {
-        private List<Quest> values;
+    public interface ItemTouchHelperViewHolder {
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        void onItemSelected();
 
-            public final TextView name;
-            //            public final TextView startTime;
-            public final TextView duration;
-//            public final View recurrenceLayout;
-//            public final TextView recurrenceText;
-            public final View icon;
-            //            public final Button startButton;
-            public final TextView description;
+        void onItemClear();
+    }
 
-            public ViewHolder(View view) {
-                super(view);
-                icon = view.findViewById(R.id.quest_context_indicator);
-                name = (TextView) view.findViewById(R.id.quest_name);
-//                startTime = (TextView) view.findViewById(R.id.quest_start_time);
-                duration = (TextView) view.findViewById(R.id.quest_duration);
-//                recurrenceLayout = view.findViewById(R.id.quest_recurrence);
-//                recurrenceText = (TextView) view.findViewById(R.id.quest_recurrence_text);
-//                startButton = (Button) view.findViewById(R.id.quest_start);
-                description = (TextView) view.findViewById(R.id.quest_description);
+    public class QuestTouchCallback extends ItemTouchHelper.Callback {
+
+        private final ItemTouchHelperAdapter adapter;
+
+        public QuestTouchCallback(ItemTouchHelperAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isItemViewSwipeEnabled() {
+            return true;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                final int swipeFlags = 0;
+                return makeMovementFlags(dragFlags, swipeFlags);
+            } else {
+                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+                return makeMovementFlags(dragFlags, swipeFlags);
             }
         }
 
-        public QuestViewAdapter(List<Quest> items) {
-            values = items;
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+            if (source.getItemViewType() != target.getItemViewType()) {
+                return false;
+            }
+
+            adapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+            adapter.onItemDismiss(viewHolder.getAdapterPosition());
+        }
+
+        @Override
+        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder,
+                                      int actionState) {
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                    ItemTouchHelperViewHolder itemViewHolder =
+                            (ItemTouchHelperViewHolder) viewHolder;
+                    itemViewHolder.onItemSelected();
+                }
+            }
+
+            super.onSelectedChanged(viewHolder, actionState);
+        }
+
+        @Override
+        public void clearView(RecyclerView recyclerView,
+                              RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                ItemTouchHelperViewHolder itemViewHolder =
+                        (ItemTouchHelperViewHolder) viewHolder;
+                itemViewHolder.onItemClear();
+            }
+        }
+    }
+
+    public class QuestViewAdapter
+            extends RecyclerView.Adapter<QuestViewAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+        private List<Quest> quests;
+
+        @Override
+        public void onItemMove(int fromPosition, int toPosition) {
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(quests, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(quests, i, i - 1);
+                }
+            }
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onItemDismiss(int position) {
+            onQuestDone(quests.get(position));
+            quests.remove(position);
+            notifyItemRemoved(position);
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+
+            public final TextView name;
+            public final TextView duration;
+            public final View iconBackground;
+            public final MaterialIconView startButton;
+            public final TextView description;
+            private final MaterialIconView icon;
+
+            public ViewHolder(View view) {
+                super(view);
+                iconBackground = view.findViewById(R.id.quest_context_indicator);
+                icon = (MaterialIconView) view.findViewById(R.id.quest_icon);
+                name = (TextView) view.findViewById(R.id.quest_name);
+                duration = (TextView) view.findViewById(R.id.quest_duration);
+                startButton = (MaterialIconView) view.findViewById(R.id.quest_start_button);
+                description = (TextView) view.findViewById(R.id.quest_description);
+            }
+
+            @Override
+            public void onItemSelected() {
+                itemView.setBackgroundResource(R.color.md_blue_a100);
+            }
+
+            @Override
+            public void onItemClear() {
+                itemView.setBackgroundColor(0);
+            }
+        }
+
+        public QuestViewAdapter(List<Quest> quests) {
+            this.quests = quests;
         }
 
         @Override
@@ -113,44 +221,31 @@ public class DailyScheduleFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            Quest quest = values.get(position);
-//            CardView cardView = (CardView) holder.itemView;
-//            cardView.setCardBackgroundColor(getResources().getColor(quest.context.getPrimaryColor()));
-//            holder.itemView.setBackgroundColor(getResources().getColor(quest.context.getPrimaryColor()));
-//            holder.startButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
-//                    startActivity(intent);
-//                    getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-//                }
-//            });
-//
-//            if (quest instanceof RecurrentQuest) {
-//                RecurrentQuest recurrentQuest = (RecurrentQuest) quest;
-//                holder.recurrenceLayout.setVisibility(View.VISIBLE);
-//                int remainingTimes = recurrentQuest.weeklyRecurrence.totalTimes - recurrentQuest.weeklyRecurrence.timesCompleted;
-//                holder.recurrenceText.setText(remainingTimes + " more this week");
-//            } else {
-//                holder.recurrenceLayout.setVisibility(View.GONE);
-//            }
-//
-            holder.icon.setBackgroundResource(quest.context.getPrimaryColor());
+            Quest quest = quests.get(position);
+            holder.startButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                }
+            });
+            holder.iconBackground.setBackgroundResource(quest.context.getPrimaryColor());
+            holder.icon.setIcon(quest.context.getIcon());
             holder.name.setText(quest.name);
-////            if (quest.tags.isEmpty()) {
-////                holder.tags.setVisibility(View.GONE);
-////            } else {
-////                holder.tags.setVisibility(View.VISIBLE);
-////            }
-////            holder.tags.setText(TextUtils.join(", ", quest.tags));
+            holder.startButton.setColorResource(R.color.md_grey_700);
             holder.description.setText(quest.description);
-//            holder.startTime.setText(quest.startTime);
             holder.duration.setText(quest.duration + " m");
         }
 
         @Override
         public int getItemCount() {
-            return values.size();
+            return quests.size();
         }
+    }
+
+    private void onQuestDone(Quest quest) {
+        DialogFragment newFragment = QuestDoneDialog.newInstance(quest);
+        newFragment.show(getFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 }
