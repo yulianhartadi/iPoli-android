@@ -36,7 +36,7 @@ public class QuestService extends IntentService {
     }
 
     private void finishQuest() {
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, UPDATE_PROGRESS_CODE,
+        PendingIntent pendingIntent = PendingIntent.getService(this, UPDATE_PROGRESS_CODE,
                 new Intent(this, getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pendingIntent);
@@ -52,13 +52,14 @@ public class QuestService extends IntentService {
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setContentTitle("Quest complete")
-                .setContentText("Ready for your break?")
+                .setContentText("Ready for a sweet break?")
                 .setSmallIcon(R.drawable.ic_play_arrow_white_48dp)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)
+                .setAutoCancel(true)
                 .setContentIntent(pendingNotificationIntent)
-                .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.FLAG_AUTO_CANCEL)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         notificationManagerCompat.notify(QUEST_DONE_NOTIFICATION_ID, builder.build());
     }
@@ -95,7 +96,7 @@ public class QuestService extends IntentService {
                 .addAction(R.drawable.ic_clear_white_24dp, "Cancel", pendingIntent)
                 .addAction(R.drawable.ic_done, "Done", pendingIntent)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
