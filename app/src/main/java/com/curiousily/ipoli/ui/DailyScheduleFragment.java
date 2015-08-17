@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -21,6 +20,7 @@ import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.DailyQuestsLoadedEvent;
 import com.curiousily.ipoli.quest.events.LoadDailyQuestsEvent;
+import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -50,9 +50,8 @@ public class DailyScheduleFragment extends Fragment {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
         view.addItemDecoration(new LineDividerItemDecorator(getActivity()));
         QuestViewAdapter adapter = new QuestViewAdapter(e.quests);
-//        NotificationManager.from(getActivity()).startQuest(quests.get(0));
         view.setAdapter(adapter);
-        QuestTouchCallback touchCallback = new QuestTouchCallback(adapter);
+        QuestItemTouchCallback touchCallback = new QuestItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(view);
     }
@@ -71,86 +70,6 @@ public class DailyScheduleFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.get().register(this);
-    }
-
-    public interface ItemTouchHelperViewHolder {
-
-        void onItemSelected();
-
-        void onItemClear();
-    }
-
-    public class QuestTouchCallback extends ItemTouchHelper.Callback {
-
-        private final ItemTouchHelperAdapter adapter;
-
-        public QuestTouchCallback(ItemTouchHelperAdapter adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        public boolean isLongPressDragEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isItemViewSwipeEnabled() {
-            return true;
-        }
-
-        @Override
-        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-                final int swipeFlags = 0;
-                return makeMovementFlags(dragFlags, swipeFlags);
-            } else {
-                final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-                return makeMovementFlags(dragFlags, swipeFlags);
-            }
-        }
-
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
-            if (source.getItemViewType() != target.getItemViewType()) {
-                return false;
-            }
-
-            adapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
-            return true;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-            adapter.onItemDismiss(viewHolder.getAdapterPosition());
-        }
-
-        @Override
-        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder,
-                                      int actionState) {
-            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-                if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                    ItemTouchHelperViewHolder itemViewHolder =
-                            (ItemTouchHelperViewHolder) viewHolder;
-                    itemViewHolder.onItemSelected();
-                }
-            }
-
-            super.onSelectedChanged(viewHolder, actionState);
-        }
-
-        @Override
-        public void clearView(RecyclerView recyclerView,
-                              RecyclerView.ViewHolder viewHolder) {
-            super.clearView(recyclerView, viewHolder);
-
-            if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                ItemTouchHelperViewHolder itemViewHolder =
-                        (ItemTouchHelperViewHolder) viewHolder;
-                itemViewHolder.onItemClear();
-            }
-        }
     }
 
     public class QuestViewAdapter
@@ -221,13 +140,18 @@ public class DailyScheduleFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            Quest quest = quests.get(position);
+            final Quest quest = quests.get(position);
             holder.startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                    post(new StartQuestEvent(quest));
+                    startQuestDetailsActivity();
+                }
+            });
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startQuestDetailsActivity();
                 }
             });
             holder.iconBackground.setBackgroundResource(quest.context.getPrimaryColor());
@@ -242,6 +166,12 @@ public class DailyScheduleFragment extends Fragment {
         public int getItemCount() {
             return quests.size();
         }
+    }
+
+    private void startQuestDetailsActivity() {
+        Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
     private void onQuestDone(Quest quest) {

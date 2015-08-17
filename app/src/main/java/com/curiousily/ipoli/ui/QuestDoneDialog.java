@@ -20,7 +20,6 @@ public class QuestDoneDialog extends DialogFragment {
     public static QuestDoneDialog newInstance(Quest quest) {
         QuestDoneDialog frag = new QuestDoneDialog();
         Bundle args = new Bundle();
-        args.putString("name", quest.name);
         frag.setArguments(args);
         return frag;
     }
@@ -28,7 +27,6 @@ public class QuestDoneDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String name = getArguments().getString("name");
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_quest_rate, null);
         return new AlertDialog.Builder(getActivity())
                 .setTitle("Great job! Did you liked it?")
