@@ -59,8 +59,7 @@ public class QuestService extends IntentService {
                 .setContentIntent(pendingNotificationIntent)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.FLAG_AUTO_CANCEL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOngoing(true);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         notificationManagerCompat.notify(QUEST_DONE_NOTIFICATION_ID, builder.build());
     }
 
