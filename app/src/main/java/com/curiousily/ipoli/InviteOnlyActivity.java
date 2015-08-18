@@ -20,13 +20,11 @@ public class InviteOnlyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_invite_only);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.md_blue_700));
+            window.setStatusBarColor(getColor(R.color.md_blue_700));
         }
-
         ButterKnife.bind(this);
     }
 

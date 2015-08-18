@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +50,7 @@ public class DailyScheduleFragment extends Fragment {
     @Subscribe
     public void setupRecyclerView(DailyQuestsLoadedEvent e) {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        view.addItemDecoration(new LineDividerItemDecorator(getActivity()));
+//        view.addItemDecoration(new LineDividerItemDecorator(getActivity()));
         QuestViewAdapter adapter = new QuestViewAdapter(e.quests);
         view.setAdapter(adapter);
         QuestItemTouchCallback touchCallback = new QuestItemTouchCallback(adapter);
@@ -101,9 +103,9 @@ public class DailyScheduleFragment extends Fragment {
 
             public final TextView name;
             public final TextView duration;
+            public final TextView tags;
             public final View iconBackground;
             public final MaterialIconView startButton;
-            public final TextView description;
             private final MaterialIconView icon;
 
             public ViewHolder(View view) {
@@ -113,7 +115,7 @@ public class DailyScheduleFragment extends Fragment {
                 name = (TextView) view.findViewById(R.id.quest_name);
                 duration = (TextView) view.findViewById(R.id.quest_duration);
                 startButton = (MaterialIconView) view.findViewById(R.id.quest_start_button);
-                description = (TextView) view.findViewById(R.id.quest_description);
+                tags = (TextView) view.findViewById(R.id.quest_tags);
             }
 
             @Override
@@ -154,12 +156,12 @@ public class DailyScheduleFragment extends Fragment {
                     startQuestDetailsActivity();
                 }
             });
-            holder.iconBackground.setBackgroundResource(quest.context.getPrimaryColor());
+            GradientDrawable drawable = (GradientDrawable) holder.iconBackground.getBackground();
+            drawable.setColor(getResources().getColor(quest.context.getPrimaryColor()));
             holder.icon.setIcon(quest.context.getIcon());
             holder.name.setText(quest.name);
-            holder.startButton.setColorResource(R.color.md_grey_700);
-            holder.description.setText(quest.description);
-            holder.duration.setText(quest.duration + " m");
+            holder.tags.setText(TextUtils.join(", ", quest.tags));
+            holder.duration.setText(quest.duration + "");
         }
 
         @Override
