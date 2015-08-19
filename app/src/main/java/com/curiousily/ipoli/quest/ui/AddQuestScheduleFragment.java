@@ -15,10 +15,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.ui.DatePickerFragment;
 import com.curiousily.ipoli.ui.TimePickerFragment;
 
@@ -33,13 +36,18 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/12/15.
  */
-public class AddQuestScheduleFragment extends Fragment {
+public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
 
     @Bind(R.id.add_quest_duration)
     Spinner duration;
 
     @Bind(R.id.add_quest_times_per_day)
     SeekBar timesPerDay;
+
+    @Bind(R.id.add_quest_times_per_day_label)
+    TextView timesPerDayLabel;
+
+    private Quest quest;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,11 +93,13 @@ public class AddQuestScheduleFragment extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         duration.setAdapter(dataAdapter);
 
-        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        final AddQuestActivity activity = (AddQuestActivity) getActivity();
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        AddQuestActivity activity = (AddQuestActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setTitle(R.string.add_quest_title);
+
+        timesPerDay.setOnSeekBarChangeListener(this);
 
         return view;
     }
@@ -104,14 +114,31 @@ public class AddQuestScheduleFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_done:
-                AddQuestActivity activity = ((AddQuestActivity) getActivity());
-                Quest quest = activity.getQuest();
                 quest.duration = duration.getSelectedItemPosition();
                 quest.timesPerDay = timesPerDay.getProgress();
-                activity.onDoneClick();
+                EventBus.get().post(new QuestBuiltEvent(quest));
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setQuest(Quest quest) {
+        this.quest = quest;
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
+        timesPerDayLabel.setText("x" + (value + 1) + " per day");
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }

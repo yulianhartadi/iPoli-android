@@ -49,16 +49,14 @@
             <Button
                 android:id="@+id/add_quest_due_date"
                 style="@style/Widget.AppCompat.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="156dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:background="?attr/colorAccent"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:text="Today"
-                android:textColor="@color/md_light_text_100" />
+                android:background="@color/md_white"
+                android:text="Due Today"
+                android:textColor="@color/md_dark_text_87" />
 
         </LinearLayout>
 
@@ -93,6 +91,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/add_quest_start_time_layout"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_marginEnd="16dp"
@@ -113,20 +112,19 @@
             <Button
                 android:id="@+id/add_quest_start_time"
                 style="@style/Widget.AppCompat.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="156dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:background="?attr/colorAccent"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:text="14:00"
-                android:textColor="@color/md_light_text_100" />
+                android:background="@color/md_white"
+                android:text="Starts now"
+                android:textColor="@color/md_dark_text_87" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/add_quest_times_per_day_layout"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_marginEnd="16dp"
@@ -144,19 +142,33 @@
                 app:materialIconColor="@color/md_dark_text_54"
                 app:materialIconSize="24dp" />
 
-            <SeekBar
-                android:id="@+id/add_quest_times_per_day"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:max="12"
-                android:progress="1" />
+                android:orientation="vertical">
+
+                <SeekBar
+                    android:id="@+id/add_quest_times_per_day"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="14"
+                    android:progress="1" />
+
+                <TextView
+                    android:id="@+id/add_quest_times_per_day_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="x1 per day" />
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/add_quest_repeat_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -231,5 +243,37 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="24dp"
+            android:orientation="horizontal">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:scaleType="center"
+                app:materialIcon="comment_text_outline"
+                app:materialIconColor="@color/md_dark_text_54"
+                app:materialIconSize="24dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="48dp"
+                android:layout_marginStart="48dp"
+                android:hint="Notes (e.g. Less is more)"
+                android:inputType="textMultiLine"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

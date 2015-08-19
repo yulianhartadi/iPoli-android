@@ -19,9 +19,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.events.BuildQuestEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +70,6 @@ public class AddQuestInfoFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             Window window = getActivity().getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -89,7 +90,7 @@ public class AddQuestInfoFragment extends Fragment {
 
         List<String> list = new ArrayList<>();
         for (Quest.Context context : Quest.Context.values()) {
-            list.add(context.toString());
+            list.add(context.toString().toLowerCase());
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, list);
@@ -112,11 +113,11 @@ public class AddQuestInfoFragment extends Fragment {
                 Quest q = new Quest();
                 q.name = name.getText().toString();
                 q.description = description.getText().toString();
-                q.context = Quest.Context.valueOf(spinner.getSelectedItem().toString());
+                q.context = Quest.Context.valueOf(spinner.getSelectedItem().toString().toUpperCase());
                 RadioButton checkedType = (RadioButton) getView().findViewById(questType.getCheckedRadioButtonId());
-                q.type = checkedType.getText().toString().toLowerCase();
+                q.type = Quest.QuestType.valueOf(checkedType.getText().toString().toUpperCase().replace(" ", "_"));
                 q.tags = Arrays.asList(tags.getText().toString().split(","));
-                ((AddQuestActivity) getActivity()).onNextClick(q);
+                EventBus.get().post(new BuildQuestEvent(q));
                 return true;
         }
 

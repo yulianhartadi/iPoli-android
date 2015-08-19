@@ -6,15 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.quest.events.BuildQuestEvent;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
+import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.quest.ui.AddQuestInfoFragment;
 import com.curiousily.ipoli.quest.ui.AddQuestScheduleFragment;
+import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
 
 public class AddQuestActivity extends AppCompatActivity {
-
-    private Quest quest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +42,17 @@ public class AddQuestActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.reverse_slide_in, R.anim.reverse_slide_out);
     }
 
-    public void onNextClick(Quest quest) {
-        this.quest = quest;
-        Fragment secondFragment = new AddQuestScheduleFragment();
+    @Subscribe
+    public void onBuildQuestEvent(BuildQuestEvent e) {
+        AddQuestScheduleFragment secondFragment = new AddQuestScheduleFragment();
+        secondFragment.setQuest(e.quest);
         secondFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, secondFragment).addToBackStack(null).commit();
     }
 
-    public Quest getQuest() {
-        return quest;
-    }
-
-    public void onDoneClick() {
-        post(new CreateQuestEvent(quest));
+    @Subscribe
+    public void onQuestBuiltEvent(QuestBuiltEvent e) {
+        post(new CreateQuestEvent(e.quest));
     }
 
     private void post(Object event) {

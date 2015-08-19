@@ -22,11 +22,15 @@ public class Quest {
     public List<String> journal = new ArrayList<>();
     public List<String> tags;
     public Context context;
-    public String type;
+    public QuestType type;
     public int timesPerDay;
 
     public Quest() {
 
+    }
+
+    public enum QuestType {
+        ONE_TIME, RECURRENT, HEROIC, EPIC, LEGENDARY
     }
 
     public enum Context {
@@ -36,8 +40,8 @@ public class Quest {
         WORK(MaterialDrawableBuilder.IconValue.BRIEFCASE, R.color.md_teal_500, R.color.md_teal_700),
         FUN(MaterialDrawableBuilder.IconValue.EMOTICON_HAPPY, R.color.md_purple_500, R.color.md_purple_700),
         EDUCATION(MaterialDrawableBuilder.IconValue.SCHOOL, R.color.md_blue_500, R.color.md_blue_700),
-        WELLNESS(MaterialDrawableBuilder.IconValue.HEART, R.color.md_green_500, R.color.md_green_700),
-        ACTIVITY(MaterialDrawableBuilder.IconValue.RUN, R.color.md_red_500, R.color.md_red_700);
+        WELLNESS(MaterialDrawableBuilder.IconValue.HEART, R.color.md_red_500, R.color.md_red_700),
+        ACTIVITY(MaterialDrawableBuilder.IconValue.RUN, R.color.md_green_500, R.color.md_green_700);
 
         private final MaterialDrawableBuilder.IconValue icon;
         private final int primaryColor;
