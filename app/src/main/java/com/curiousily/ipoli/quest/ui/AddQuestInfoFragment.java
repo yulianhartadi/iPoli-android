@@ -80,14 +80,6 @@ public class AddQuestInfoFragment extends Fragment {
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         activity.getSupportActionBar().setTitle(R.string.add_quest_title);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                activity.finish();
-//                activity.overrideExitAnimation();
-//            }
-//        });
-
         List<String> list = new ArrayList<>();
         for (Quest.Context context : Quest.Context.values()) {
             list.add(context.toString().toLowerCase());
