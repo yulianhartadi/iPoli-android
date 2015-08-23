@@ -54,9 +54,9 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:background="@color/md_white"
+                android:background="?attr/colorAccent"
                 android:text="Due Today"
-                android:textColor="@color/md_dark_text_87" />
+                android:textColor="@color/md_white" />
 
         </LinearLayout>
 
@@ -117,9 +117,9 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:background="@color/md_white"
+                android:background="?attr/colorAccent"
                 android:text="Starts now"
-                android:textColor="@color/md_dark_text_87" />
+                android:textColor="@color/md_white" />
 
         </LinearLayout>
 
@@ -195,16 +195,19 @@
                 android:orientation="vertical">
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_monday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Monday" />
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_tuesday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tuesday" />
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_wednesday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Wednesday" />
@@ -221,21 +224,25 @@
                 android:orientation="vertical">
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_thursday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thursday" />
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_friday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Friday" />
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_saturday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Saturday" />
 
                 <CheckBox
+                    android:id="@+id/add_quest_repeat_sunday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sunday" />
@@ -263,6 +270,7 @@
                 app:materialIconSize="24dp" />
 
             <EditText
+                android:id="@+id/add_quest_notes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

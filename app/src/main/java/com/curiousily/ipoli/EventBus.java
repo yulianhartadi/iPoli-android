@@ -19,6 +19,10 @@ public class EventBus {
         return instance;
     }
 
+    public static void post(Object event) {
+        get().post(event);
+    }
+
     public static class MainThreadBus extends Bus {
         private final Handler handler = new Handler(Looper.getMainLooper());
 

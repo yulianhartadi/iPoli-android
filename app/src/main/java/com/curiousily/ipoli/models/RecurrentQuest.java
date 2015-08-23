@@ -10,8 +10,8 @@ public class RecurrentQuest extends Quest {
 
     public final WeeklyRecurrence weeklyRecurrence;
 
-    public RecurrentQuest(String name, String description, String time, int duration, Context context) {
-        super(name, description, time, duration, context);
+    public RecurrentQuest(String name, String description, int duration, Context context) {
+        super(name, description, duration, context);
         this.weeklyRecurrence = new WeeklyRecurrence(2, 3);
     }
 

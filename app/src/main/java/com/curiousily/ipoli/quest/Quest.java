@@ -1,12 +1,15 @@
 package com.curiousily.ipoli.quest;
 
 import com.curiousily.ipoli.R;
-import com.google.gson.annotations.SerializedName;
+import com.curiousily.ipoli.utils.DateUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -16,17 +19,20 @@ public class Quest {
     public String name;
     public String description;
     public int duration;
-    @SerializedName("start_time")
-    public String startTime;
     public MaterialDrawableBuilder.IconValue icon;
-    public List<String> journal = new ArrayList<>();
     public List<String> tags;
     public Context context;
     public QuestType type;
     public int timesPerDay;
+    public String notes;
+    public Set<Repeat> repeats = new HashSet<>();
+    public Date due = DateUtils.getNow();
 
     public Quest() {
+    }
 
+    public enum Repeat {
+        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
     }
 
     public enum QuestType {
@@ -68,14 +74,13 @@ public class Quest {
 
     }
 
-    public Quest(String name, String description, String startTime, int duration, Context context) {
-        this(name, description, startTime, duration, context, new ArrayList<String>());
+    public Quest(String name, String description, int duration, Context context) {
+        this(name, description, duration, context, new ArrayList<String>());
     }
 
-    public Quest(String name, String description, String startTime, int duration, Context context, List<String> tags) {
+    public Quest(String name, String description, int duration, Context context, List<String> tags) {
         this.name = name;
         this.description = description;
-        this.startTime = startTime;
         this.duration = duration;
         this.context = context;
         this.tags = tags;

@@ -5,6 +5,7 @@ package com.curiousily.ipoli.utils;
  * on 8/12/15.
  */
 public class TimerFormat {
+
     public static String minutesToText(int minutes) {
         return String.format("less than %dm", minutes);
     }

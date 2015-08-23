@@ -6,4 +6,6 @@ package com.curiousily.ipoli;
  */
 public interface Constants {
     String ALERT_DIALOG_TAG = "alert_dialog";
+    String DEFAULT_DATE_FORMAT = "dd-MM-yyyy";
+    String DEFAULT_TIME_FORMAT = "HH:mm";
 }

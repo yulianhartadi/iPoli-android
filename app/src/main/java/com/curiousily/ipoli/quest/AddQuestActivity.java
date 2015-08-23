@@ -56,7 +56,7 @@ public class AddQuestActivity extends AppCompatActivity {
     }
 
     private void post(Object event) {
-        EventBus.get().post(event);
+        EventBus.post(event);
     }
 
     @Override
