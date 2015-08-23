@@ -1,5 +1,6 @@
 package com.curiousily.ipoli;
 
+import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -7,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.curiousily.ipoli.databinding.ActivityQuestDetailBinding;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.ui.QuestDoneDialog;
 
 import butterknife.ButterKnife;
@@ -22,14 +25,22 @@ public class QuestDetailActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quest_detail);
+        ActivityQuestDetailBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_quest_detail);
+        QuestViewModel quest = new QuestViewModel();
+        quest.name = "Welcome";
+        quest.startTime = "10:00";
+        quest.context = Quest.Context.PERSONAL.name();
+        quest.backgroundColor = getResources().getColor(Quest.Context.PERSONAL.getPrimaryColor());
+        quest.tags = "hello, new tag, welcome";
+        quest.notes = "use the force";
+        binding.setQuest(quest);
         ButterKnife.bind(this);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setNavigationBarColor(getResources().getColor(R.color.md_green_500));
+            getWindow().setNavigationBarColor(quest.backgroundColor);
         }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

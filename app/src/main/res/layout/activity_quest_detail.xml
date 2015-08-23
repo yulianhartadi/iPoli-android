@@ -1,349 +1,361 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/md_green_500"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <data>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_collapseMode="pin"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginStart="72dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Quest"
-                android:textColor="@color/md_light_text_54" />
-
-            <TextView
-                style="@style/TextAppearance.AppCompat.Headline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="Morning Routine" />
+        <variable
+            name="quest"
+            type="com.curiousily.ipoli.quest.viewmodel.QuestViewModel" />
+    </data>
 
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="72dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginStart="72dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Life quest"
-                android:textColor="@color/md_light_text_54" />
-
-            <TextView
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:text="Stay healthy and fit" />
-        </LinearLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="212dp"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
-            android:id="@+id/quest_details"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="4">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <net.steamcrafted.materialiconlib.MaterialIconView
-                    android:id="@+id/quest_details_timer_icon"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="center"
-                    app:materialIcon="timer"
-                    app:materialIconColor="@color/md_dark_text_54"
-                    app:materialIconSize="36dp" />
-
-                <TextView
-                    android:id="@+id/quest_details_timer_text"
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="10:00"
-                    android:textColor="@color/md_dark_text_87" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <net.steamcrafted.materialiconlib.MaterialIconView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="center"
-                    app:materialIcon="emoticon_happy"
-                    app:materialIconColor="@color/md_dark_text_54"
-                    app:materialIconSize="36dp" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Wellness"
-                    android:textColor="@color/md_dark_text_87" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <net.steamcrafted.materialiconlib.MaterialIconView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="center"
-                    app:materialIcon="repeat"
-                    app:materialIconColor="@color/md_dark_text_54"
-                    app:materialIconSize="36dp" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="33"
-                    android:textColor="@color/md_dark_text_87" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <net.steamcrafted.materialiconlib.MaterialIconView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:scaleType="center"
-                    app:materialIcon="share_variant"
-                    app:materialIconColor="@color/md_dark_text_54"
-                    app:materialIconSize="36dp" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Share"
-                    android:textColor="@color/md_dark_text_87" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@id/quest_details"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/md_dark_text_12" />
-
-        <LinearLayout
-            android:id="@+id/quest_description"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/quest_details"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="6dp"
-                android:scaleType="center"
-                app:materialIcon="tag"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <TextView
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:gravity="bottom"
-                android:text="Brushing, Grooming, Fun, Morning"
-                android:textColor="@color/md_dark_text_87" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/quest_details_sub_quests"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/quest_description"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
+            android:background="@{quest.backgroundColor}"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:id="@+id/quest_details_todo_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginTop="6dp"
-                android:scaleType="center"
-                app:materialIcon="check"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="42dp"
-                android:layout_marginStart="42dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="72dp"
+                android:layout_marginStart="72dp"
                 android:orientation="vertical">
 
-                <CheckBox
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Smile"
-                    android:textColor="@color/md_dark_text_87" />
+                    android:text="Quest"
+                    android:textColor="@color/md_light_text_54" />
 
-                <CheckBox
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Brush teeth"
-                    android:textColor="@color/md_dark_text_87" />
+                    android:paddingTop="8dp"
+                    android:text="@{quest.name}" />
 
-                <CheckBox
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Say 3 things you are grateful for"
-                    android:textColor="@color/md_dark_text_87" />
 
-                <CheckBox
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="72dp"
+                android:layout_marginLeft="72dp"
+                android:layout_marginStart="72dp"
+                android:orientation="vertical">
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Write 3 todos for today"
+                    android:text="Life quest"
+                    android:textColor="@color/md_light_text_54" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:text="Stay healthy and fit" />
+            </LinearLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="212dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/quest_details"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:id="@+id/quest_details_timer_icon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="center"
+                        app:materialIcon="timer"
+                        app:materialIconColor="@color/md_dark_text_54"
+                        app:materialIconSize="36dp" />
+
+                    <TextView
+                        android:id="@+id/quest_details_timer_text"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@{quest.startTime}"
+                        android:textColor="@color/md_dark_text_87" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="center"
+                        app:materialIcon="emoticon_happy"
+                        app:materialIconColor="@color/md_dark_text_54"
+                        app:materialIconSize="36dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@{quest.context}"
+                        android:textColor="@color/md_dark_text_87" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="center"
+                        app:materialIcon="repeat"
+                        app:materialIconColor="@color/md_dark_text_54"
+                        app:materialIconSize="36dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="33"
+                        android:textColor="@color/md_dark_text_87" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <net.steamcrafted.materialiconlib.MaterialIconView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="center"
+                        app:materialIcon="share_variant"
+                        app:materialIconColor="@color/md_dark_text_54"
+                        app:materialIconSize="36dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Share"
+                        android:textColor="@color/md_dark_text_87" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/quest_details"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/md_dark_text_12" />
+
+            <LinearLayout
+                android:id="@+id/quest_description"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/quest_details"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:orientation="horizontal">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="6dp"
+                    android:scaleType="center"
+                    app:materialIcon="tag"
+                    app:materialIconColor="@color/md_dark_text_54"
+                    app:materialIconSize="24dp" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="48dp"
+                    android:layout_marginStart="48dp"
+                    android:gravity="bottom"
+                    android:text="@{quest.tags}"
                     android:textColor="@color/md_dark_text_87" />
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/quest_details_notes"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/quest_details_sub_quests"
-            android:layout_marginLeft="24dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/quest_details_sub_quests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/quest_description"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:orientation="horizontal">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="6dp"
-                android:scaleType="center"
-                app:materialIcon="book_open"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    android:id="@+id/quest_details_todo_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="6dp"
+                    android:scaleType="center"
+                    app:materialIcon="check"
+                    app:materialIconColor="@color/md_dark_text_54"
+                    app:materialIconSize="24dp" />
 
-            <TextView
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:gravity="bottom"
-                android:text="Use electric brush"
-                android:textColor="@color/md_dark_text_87" />
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="42dp"
+                    android:layout_marginStart="42dp"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Smile"
+                        android:textColor="@color/md_dark_text_87" />
+
+                    <CheckBox
+                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Brush teeth"
+                        android:textColor="@color/md_dark_text_87" />
+
+                    <CheckBox
+                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Say 3 things you are grateful for"
+                        android:textColor="@color/md_dark_text_87" />
+
+                    <CheckBox
+                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Write 3 todos for today"
+                        android:textColor="@color/md_dark_text_87" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quest_details_notes"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/quest_details_sub_quests"
+                android:layout_marginLeft="24dp"
+                android:layout_marginStart="24dp"
+                android:orientation="horizontal">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="6dp"
+                    android:scaleType="center"
+                    app:materialIcon="book_open"
+                    app:materialIconColor="@color/md_dark_text_54"
+                    app:materialIconSize="24dp" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="48dp"
+                    android:layout_marginStart="48dp"
+                    android:gravity="bottom"
+                    android:text="@{quest.notes}"
+                    android:textColor="@color/md_dark_text_87" />
+            </LinearLayout>
 
 
-    </RelativeLayout>
+        </RelativeLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"
-        android:src="@drawable/ic_done_white_48dp"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end" />
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:clickable="true"
+            android:src="@drawable/ic_done_white_48dp"
+            app:layout_anchor="@id/appbar"
+            app:layout_anchorGravity="bottom|right|end" />
 
-</android.support.design.widget.CoordinatorLayout>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>
+
