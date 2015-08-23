@@ -26,28 +26,18 @@ public class AddQuestActivity extends AppCompatActivity {
     }
 
     private void addQuestScheduleFragment() {
-        Fragment firstFragment = new AddQuestInfoFragment();
-        firstFragment.setArguments(getIntent().getExtras());
+        Fragment questInfoFragment = new AddQuestInfoFragment();
+        questInfoFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, firstFragment).commit();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overrideExitAnimation();
-    }
-
-    public void overrideExitAnimation() {
-        overridePendingTransition(R.anim.reverse_slide_in, R.anim.reverse_slide_out);
+                .add(R.id.fragment_container, questInfoFragment).commit();
     }
 
     @Subscribe
     public void onBuildQuestEvent(BuildQuestEvent e) {
-        AddQuestScheduleFragment secondFragment = new AddQuestScheduleFragment();
-        secondFragment.setQuest(e.quest);
-        secondFragment.setArguments(getIntent().getExtras());
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, secondFragment).addToBackStack(null).commit();
+        AddQuestScheduleFragment questScheduleFragment = new AddQuestScheduleFragment();
+        questScheduleFragment.setQuest(e.quest);
+        questScheduleFragment.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, questScheduleFragment).addToBackStack(null).commit();
     }
 
     @Subscribe

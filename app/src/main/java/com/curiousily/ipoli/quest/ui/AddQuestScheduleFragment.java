@@ -111,7 +111,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
                 R.layout.fragment_add_quest_schedule, container, false);
         ButterKnife.bind(this, view);
 
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.duration_options));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -130,7 +129,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
 
     @Override
     public void onResume() {
-
         super.onResume();
         EventBus.get().register(this);
     }
@@ -139,7 +137,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     public void onPause() {
         EventBus.get().unregister(this);
         super.onPause();
-
     }
 
     @Override
