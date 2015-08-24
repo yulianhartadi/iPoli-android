@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="quest"
             type="com.curiousily.ipoli.quest.viewmodel.QuestViewModel" />
@@ -60,12 +62,13 @@
                 android:layout_height="72dp"
                 android:layout_marginLeft="72dp"
                 android:layout_marginStart="72dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="@{quest.description != null ? View.VISIBLE : View.GONE}">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Life quest"
+                    android:text="Description"
                     android:textColor="@color/md_light_text_54" />
 
                 <TextView
@@ -73,19 +76,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="Stay healthy and fit" />
+                    android:text="@{quest.description}" />
             </LinearLayout>
 
         </android.support.design.widget.AppBarLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="212dp"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/quest_details"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
                 android:layout_marginLeft="24dp"
@@ -136,7 +138,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:scaleType="center"
-                        app:materialIcon="emoticon_happy"
+                        app:materialIcon="@{quest.icon}"
                         app:materialIconColor="@color/md_dark_text_54"
                         app:materialIconSize="36dp" />
 
@@ -201,7 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="Share"
+                        android:text="SHARE"
                         android:textColor="@color/md_dark_text_87" />
 
                 </LinearLayout>
@@ -210,7 +212,6 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_below="@id/quest_details"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/md_dark_text_12" />
@@ -219,9 +220,6 @@
                 android:id="@+id/quest_description"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/quest_details"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
                 android:orientation="horizontal">
@@ -249,15 +247,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/quest_details_sub_quests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/quest_description"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{quest.subQuests != null ? View.VISIBLE : View.GONE}">
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
                     android:id="@+id/quest_details_todo_icon"
@@ -269,57 +264,24 @@
                     app:materialIconColor="@color/md_dark_text_54"
                     app:materialIconSize="24dp" />
 
-                <LinearLayout
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/quest_details_sub_quests"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="42dp"
                     android:layout_marginStart="42dp"
-                    android:orientation="vertical">
-
-                    <CheckBox
-                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Smile"
-                        android:textColor="@color/md_dark_text_87" />
-
-                    <CheckBox
-                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Brush teeth"
-                        android:textColor="@color/md_dark_text_87" />
-
-                    <CheckBox
-                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Say 3 things you are grateful for"
-                        android:textColor="@color/md_dark_text_87" />
-
-                    <CheckBox
-                        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Write 3 todos for today"
-                        android:textColor="@color/md_dark_text_87" />
-                </LinearLayout>
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/quest_details_notes"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/quest_details_sub_quests"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{quest.notes != null ? View.VISIBLE : View.GONE}">
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
                     android:layout_width="24dp"
@@ -344,7 +306,7 @@
             </LinearLayout>
 
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
         <android.support.design.widget.FloatingActionButton

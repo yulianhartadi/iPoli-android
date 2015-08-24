@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="subQuest"
+            type="com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel" />
+    </data>
+
+    <CheckBox
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:checked="@{subQuest.isComplete}"
+        android:text="@{subQuest.name}"
+        android:textColor="@color/md_dark_text_87" />
+</layout>
