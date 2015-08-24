@@ -1,10 +1,9 @@
-package com.curiousily.ipoli.ui;
+package com.curiousily.ipoli.schedule.ui;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,12 +16,16 @@ import android.widget.TextView;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
-import com.curiousily.ipoli.QuestDetailActivity;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.quest.events.DailyQuestsLoadedEvent;
-import com.curiousily.ipoli.quest.events.LoadDailyQuestsEvent;
+import com.curiousily.ipoli.quest.QuestDetailActivity;
+import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
+import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
+import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
+import com.curiousily.ipoli.utils.ui.ItemTouchCallback;
+import com.curiousily.ipoli.utils.ui.ItemTouchHelperAdapter;
+import com.curiousily.ipoli.utils.ui.ItemTouchHelperViewHolder;
 import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -50,10 +53,9 @@ public class DailyScheduleFragment extends Fragment {
     @Subscribe
     public void setupRecyclerView(DailyQuestsLoadedEvent e) {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
-//        view.addItemDecoration(new LineDividerItemDecorator(getActivity()));
         QuestViewAdapter adapter = new QuestViewAdapter(e.quests);
         view.setAdapter(adapter);
-        QuestItemTouchCallback touchCallback = new QuestItemTouchCallback(adapter);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(view);
     }
@@ -93,10 +95,16 @@ public class DailyScheduleFragment extends Fragment {
         }
 
         @Override
-        public void onItemDismiss(int position) {
-            onQuestDone(quests.get(position));
-            quests.remove(position);
-            notifyItemRemoved(position);
+        public void onItemDismiss(int position, int direction) {
+            if (direction == ItemTouchHelper.START) {
+                onRescheduleQuest(quests.get(position));
+                quests.remove(position);
+                notifyItemRemoved(position);
+            } else {
+                onQuestDone(quests.get(position));
+                quests.remove(position);
+                notifyItemRemoved(position);
+            }
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
@@ -170,6 +178,10 @@ public class DailyScheduleFragment extends Fragment {
         }
     }
 
+    private void onRescheduleQuest(Quest quest) {
+
+    }
+
     private void startQuestDetailsActivity() {
         Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
         startActivity(intent);
@@ -177,7 +189,13 @@ public class DailyScheduleFragment extends Fragment {
     }
 
     private void onQuestDone(Quest quest) {
-        DialogFragment newFragment = QuestDoneDialog.newInstance(quest);
+        QuestDoneDialog newFragment = QuestDoneDialog.newInstance();
+        newFragment.setQuest(quest);
         newFragment.show(getFragmentManager(), Constants.ALERT_DIALOG_TAG);
+    }
+
+    @Subscribe
+    public void onQuestRated(QuestRatedEvent e) {
+
     }
 }

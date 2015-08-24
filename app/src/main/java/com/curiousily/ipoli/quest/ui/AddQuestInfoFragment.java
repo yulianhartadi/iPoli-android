@@ -23,6 +23,7 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.Tag;
 import com.curiousily.ipoli.quest.events.BuildQuestEvent;
 
 import java.util.ArrayList;
@@ -108,7 +109,11 @@ public class AddQuestInfoFragment extends Fragment {
                 q.context = Quest.Context.valueOf(spinner.getSelectedItem().toString().toUpperCase());
                 RadioButton checkedType = (RadioButton) getView().findViewById(questType.getCheckedRadioButtonId());
                 q.type = Quest.QuestType.valueOf(checkedType.getText().toString().toUpperCase().replace(" ", "_"));
-                q.tags = Arrays.asList(tags.getText().toString().split(","));
+                for(String tagName: tags.getText().toString().split(",")) {
+                    Tag tag = new Tag();
+                    tag.name = tagName;
+                    q.tags.add(tag);
+                }
                 EventBus.get().post(new BuildQuestEvent(q));
                 return true;
         }

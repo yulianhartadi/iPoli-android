@@ -182,29 +182,29 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         Calendar due = Calendar.getInstance();
         due.setTime(e.date);
         Calendar time = Calendar.getInstance();
-        time.setTime(quest.due);
+        time.setTime(quest.dueDate);
 
         time.set(Calendar.YEAR, due.get(Calendar.YEAR));
         time.set(Calendar.MONTH, due.get(Calendar.MONTH));
         time.set(Calendar.DAY_OF_MONTH, due.get(Calendar.DAY_OF_MONTH));
 
-        quest.due = time.getTime();
+        quest.dueDate = time.getTime();
         SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT, Locale.getDefault());
-        dueDate.setText(format.format(quest.due));
+        dueDate.setText(format.format(quest.dueDate));
     }
 
     @Subscribe
     public void onStartTimeChanged(TimeSelectedEvent e) {
         Calendar due = Calendar.getInstance();
-        due.setTime(quest.due);
+        due.setTime(quest.dueDate);
         Calendar time = Calendar.getInstance();
         time.setTime(e.time);
 
         due.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
         due.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
 
-        quest.due = due.getTime();
+        quest.dueDate = due.getTime();
         SimpleDateFormat formatter = new SimpleDateFormat(Constants.DEFAULT_TIME_FORMAT, Locale.getDefault());
-        startTime.setText(formatter.format(quest.due));
+        startTime.setText(formatter.format(quest.dueDate));
     }
 }

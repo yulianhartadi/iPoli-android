@@ -82,6 +82,7 @@ public class App extends Application {
 
     private APIClient buildAPI() {
         return new RestAdapter.Builder()
+                .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setEndpoint(APIConstants.URL)
                 .build()
                 .create(APIClient.class);

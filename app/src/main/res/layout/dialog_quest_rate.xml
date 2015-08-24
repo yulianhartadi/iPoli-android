@@ -27,6 +27,7 @@
         android:hint="Journal (e.g. Read Moby-Dick)" />
 
     <Button
+        android:id="@+id/quest_rate_done"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

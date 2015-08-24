@@ -17,13 +17,16 @@ import java.util.Set;
  * on 7/30/15.
  */
 public class Quest {
+
+    public String id;
+
     public String name;
 
     public String description;
 
     public int duration;
 
-    public List<String> tags;
+    public List<Tag> tags = new ArrayList<>();
 
     public Context context;
 
@@ -31,11 +34,15 @@ public class Quest {
 
     @SerializedName("times_per_day")
     public int timesPerDay;
+
     public String notes;
 
     public Set<Repeat> repeats = new HashSet<>();
 
-    public Date due = DateUtils.getNow();
+    public Date dueDate = DateUtils.getNow();
+
+    public int rating;
+    public String log;
 
     public Quest() {
     }
@@ -76,14 +83,9 @@ public class Quest {
     }
 
     public Quest(String name, String description, int duration, Context context) {
-        this(name, description, duration, context, new ArrayList<String>());
-    }
-
-    public Quest(String name, String description, int duration, Context context, List<String> tags) {
         this.name = name;
         this.description = description;
         this.duration = duration;
         this.context = context;
-        this.tags = tags;
     }
 }

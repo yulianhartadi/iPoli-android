@@ -1,4 +1,4 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.schedule;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
-import com.curiousily.ipoli.ui.DailyScheduleFragment;
+import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.squareup.otto.Subscribe;
 

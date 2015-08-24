@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.ui;
+package com.curiousily.ipoli.utils.ui;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,11 +8,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/15.
  */
-public class QuestItemTouchCallback extends ItemTouchHelper.Callback {
+public class ItemTouchCallback extends ItemTouchHelper.Callback {
 
     private final ItemTouchHelperAdapter adapter;
 
-    public QuestItemTouchCallback(ItemTouchHelperAdapter adapter) {
+    public ItemTouchCallback(ItemTouchHelperAdapter adapter) {
         this.adapter = adapter;
     }
 
@@ -50,8 +50,8 @@ public class QuestItemTouchCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-        adapter.onItemDismiss(viewHolder.getAdapterPosition());
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        adapter.onItemDismiss(viewHolder.getAdapterPosition(), direction);
     }
 
     @Override

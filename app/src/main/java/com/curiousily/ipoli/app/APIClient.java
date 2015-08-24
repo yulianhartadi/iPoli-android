@@ -8,6 +8,7 @@ import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -19,4 +20,8 @@ public interface APIClient {
 
     @GET("/quests")
     void getDailyQuests(Callback<List<Quest>> cb);
+
+
+    @PUT("/quests")
+    void rateQuest(@Body Quest quest, Callback<Quest> cb);
 }

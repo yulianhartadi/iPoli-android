@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
-import com.curiousily.ipoli.DailyScheduleActivity;
+import com.curiousily.ipoli.schedule.DailyScheduleActivity;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.utils.TimerFormat;
 

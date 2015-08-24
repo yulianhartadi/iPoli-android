@@ -1,4 +1,4 @@
-package com.curiousily.ipoli;
+package com.curiousily.ipoli.quest;
 
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
@@ -14,12 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.curiousily.ipoli.Constants;
+import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.databinding.ActivityQuestDetailBinding;
 import com.curiousily.ipoli.databinding.RecyclerListItemSubQuestBinding;
-import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
-import com.curiousily.ipoli.ui.QuestDoneDialog;
+import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -101,15 +102,15 @@ public class QuestDetailActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.reverse_slide_in, R.anim.reverse_slide_out);
     }
 
-    private void showQuestRunningDialog(Quest quest) {
+    private void showQuestRunningDialog() {
 
-        DialogFragment newFragment = QuestDoneDialog.newInstance(quest);
+        DialogFragment newFragment = QuestDoneDialog.newInstance();
         newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 
     @OnClick(R.id.quest_details_timer_icon)
     public void onTimerClick(View view) {
-        showQuestRunningDialog(new Quest("Morning Routine", "Start fresh day", 9, Quest.Context.WELLNESS));
+        showQuestRunningDialog();
     }
 
     static class SubQuestAdapter extends RecyclerView.Adapter<SubQuestAdapter.ViewHolder> {
