@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
@@ -21,7 +22,7 @@ import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
-import com.google.gson.Gson;
+import com.curiousily.ipoli.utils.DataSharingUtils;
 import com.squareup.otto.Subscribe;
 
 import butterknife.Bind;
@@ -87,8 +88,7 @@ public class DailyScheduleActivity extends AppCompatActivity {
     @Subscribe
     public void onShowQuest(ShowQuestEvent e) {
         Intent intent = new Intent(this, QuestDetailActivity.class);
-        Gson gson = new Gson();
-        intent.putExtra("quest", gson.toJson(QuestViewModel.from(e.quest)));
+        DataSharingUtils.put(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.from(e.quest), intent);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }

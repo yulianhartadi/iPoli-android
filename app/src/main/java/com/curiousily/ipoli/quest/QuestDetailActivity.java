@@ -21,7 +21,7 @@ import com.curiousily.ipoli.databinding.RecyclerListItemSubQuestBinding;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
-import com.google.gson.Gson;
+import com.curiousily.ipoli.utils.DataSharingUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -48,8 +48,8 @@ public class QuestDetailActivity extends AppCompatActivity {
         ActivityQuestDetailBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_quest_detail);
         ButterKnife.bind(this);
 
-        Gson gson = new Gson();
-        QuestViewModel quest = gson.fromJson(getIntent().getStringExtra("quest"), QuestViewModel.class);
+        QuestViewModel quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.class, getIntent());
+
         binding.setQuest(quest);
 
         subQuests.setLayoutManager(new LinearLayoutManager(this));
