@@ -8,4 +8,5 @@ public interface Constants {
     String ALERT_DIALOG_TAG = "alert_dialog";
     String DEFAULT_DATE_FORMAT = "dd-MM-yyyy";
     String DEFAULT_TIME_FORMAT = "HH:mm";
+    String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 }

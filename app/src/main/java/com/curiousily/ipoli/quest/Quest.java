@@ -2,7 +2,6 @@ package com.curiousily.ipoli.quest;
 
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.utils.DateUtils;
-import com.google.gson.annotations.SerializedName;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -38,7 +37,9 @@ public class Quest {
 
     public Set<Repeat> repeats = new HashSet<>();
 
-    public Date dueDate = DateUtils.getNow();
+    public Date due = DateUtils.getNow();
+
+    public List<SubQuest> subQuests = new ArrayList<>();
 
     public int rating;
     public String log;

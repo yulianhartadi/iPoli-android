@@ -21,6 +21,7 @@ import com.curiousily.ipoli.databinding.RecyclerListItemSubQuestBinding;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
+import com.google.gson.Gson;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -33,7 +34,7 @@ import butterknife.OnClick;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 7/31/15.
+ * on 8/31/15.
  */
 public class QuestDetailActivity extends AppCompatActivity {
 
@@ -47,18 +48,8 @@ public class QuestDetailActivity extends AppCompatActivity {
         ActivityQuestDetailBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_quest_detail);
         ButterKnife.bind(this);
 
-        QuestViewModel quest = new QuestViewModel();
-        quest.name = "Welcome";
-        quest.description = "Welcome to the description";
-        quest.startTime = "10:00";
-        quest.context = Quest.Context.PERSONAL.name();
-        quest.backgroundColor = Quest.Context.PERSONAL.getPrimaryColor();
-        quest.icon = Quest.Context.PERSONAL.getIcon();
-        quest.tags = "hello, new tag, welcome";
-        quest.notes = "use the force";
-        quest.subQuests.add(new SubQuestViewModel("welcome", true));
-        quest.subQuests.add(new SubQuestViewModel("do", false));
-        quest.subQuests.add(new SubQuestViewModel("5 pushups", true));
+        Gson gson = new Gson();
+        QuestViewModel quest = gson.fromJson(getIntent().getStringExtra("quest"), QuestViewModel.class);
         binding.setQuest(quest);
 
         subQuests.setLayoutManager(new LinearLayoutManager(this));
@@ -71,7 +62,6 @@ public class QuestDetailActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(quest.backgroundColor));
         }
-
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

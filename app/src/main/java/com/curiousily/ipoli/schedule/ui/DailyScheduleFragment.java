@@ -1,6 +1,5 @@
 package com.curiousily.ipoli.schedule.ui;
 
-import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,10 +17,10 @@ import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.quest.QuestDetailActivity;
 import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
 import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
+import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.curiousily.ipoli.utils.ui.ItemTouchCallback;
 import com.curiousily.ipoli.utils.ui.ItemTouchHelperAdapter;
@@ -155,13 +154,14 @@ public class DailyScheduleFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     post(new StartQuestEvent(quest));
-                    startQuestDetailsActivity();
+                    post(new ShowQuestEvent(quest));
                 }
             });
             holder.itemView.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View v) {
-                    startQuestDetailsActivity();
+                    post(new ShowQuestEvent(quest));
                 }
             });
             GradientDrawable drawable = (GradientDrawable) holder.iconBackground.getBackground();
@@ -180,12 +180,6 @@ public class DailyScheduleFragment extends Fragment {
 
     private void onRescheduleQuest(Quest quest) {
 
-    }
-
-    private void startQuestDetailsActivity() {
-        Intent intent = new Intent(getActivity(), QuestDetailActivity.class);
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
     private void onQuestDone(Quest quest) {

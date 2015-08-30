@@ -120,7 +120,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="@{quest.startTime}"
+                        android:text="@{String.valueOf(quest.duration)}"
                         android:textColor="@color/md_dark_text_87" />
 
                 </LinearLayout>

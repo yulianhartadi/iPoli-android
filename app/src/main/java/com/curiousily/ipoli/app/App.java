@@ -9,6 +9,7 @@ import android.content.Intent;
 import com.curiousily.ipoli.APIConstants;
 import com.curiousily.ipoli.AnalyticsConstants;
 import com.curiousily.ipoli.BuildConfig;
+import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.events.TrackEvent;
 import com.curiousily.ipoli.quest.Quest;
@@ -20,11 +21,9 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.RestAdapter;
@@ -89,7 +88,7 @@ public class App extends Application {
     private APIClient buildAPI() {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .setDateFormat(Constants.DEFAULT_SERVER_DATETIME_FORMAT)
                 .create();
 
         return new RestAdapter.Builder()
