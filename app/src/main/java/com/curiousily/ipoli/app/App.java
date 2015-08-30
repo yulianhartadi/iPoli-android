@@ -27,7 +27,6 @@ import com.squareup.otto.Subscribe;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
