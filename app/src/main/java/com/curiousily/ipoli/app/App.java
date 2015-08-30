@@ -17,12 +17,19 @@ import com.curiousily.ipoli.quest.services.QuestStorageService;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.bind.DateTypeAdapter;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -81,9 +88,15 @@ public class App extends Application {
     }
 
     private APIClient buildAPI() {
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                .create();
+
         return new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setEndpoint(APIConstants.URL)
+                .setConverter(new GsonConverter(gson))
                 .build()
                 .create(APIClient.class);
     }

@@ -68,6 +68,7 @@ public class QuestStorageService {
 
             @Override
             public void failure(RetrofitError error) {
+
             }
         });
     }

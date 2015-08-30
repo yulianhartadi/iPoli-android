@@ -32,7 +32,6 @@ public class Quest {
 
     public QuestType type;
 
-    @SerializedName("times_per_day")
     public int timesPerDay;
 
     public String notes;
