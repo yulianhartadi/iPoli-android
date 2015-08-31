@@ -11,6 +11,7 @@ import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.quest.ui.AddQuestInfoFragment;
 import com.curiousily.ipoli.quest.ui.AddQuestScheduleFragment;
+import com.curiousily.ipoli.user.User;
 import com.squareup.otto.Subscribe;
 
 import butterknife.ButterKnife;
@@ -42,6 +43,7 @@ public class AddQuestActivity extends AppCompatActivity {
 
     @Subscribe
     public void onQuestBuiltEvent(QuestBuiltEvent e) {
+        e.quest.createdBy = User.getCurrent(this);
         post(new CreateQuestEvent(e.quest));
     }
 

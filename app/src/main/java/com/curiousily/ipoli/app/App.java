@@ -16,6 +16,7 @@ import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.quest.services.QuestStorageService;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
+import com.curiousily.ipoli.user.UserStorageService;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.FieldNamingPolicy;
@@ -52,7 +53,9 @@ public class App extends Application {
         tracker.enableAutoActivityTracking(true);
         Bus bus = EventBus.get();
         bus.register(this);
-        bus.register(new QuestStorageService(buildAPI(), bus));
+        APIClient client = buildAPI();
+        bus.register(new QuestStorageService(client, bus));
+        bus.register(new UserStorageService(client, bus, this));
     }
 
     @Subscribe

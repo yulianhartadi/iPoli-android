@@ -10,4 +10,5 @@ public interface Constants {
     String DEFAULT_TIME_FORMAT = "HH:mm";
     String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     String DATA_SHARING_KEY_QUEST = "quest";
+    String KEY_USER_ID = "key_user_id";
 }

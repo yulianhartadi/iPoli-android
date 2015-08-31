@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.quest;
 
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.user.User;
 import com.curiousily.ipoli.utils.DateUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -40,6 +41,8 @@ public class Quest {
     public Date due = DateUtils.getNow();
 
     public List<SubQuest> subQuests = new ArrayList<>();
+
+    public User createdBy;
 
     public int rating;
     public String log;

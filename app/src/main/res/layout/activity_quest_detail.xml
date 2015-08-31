@@ -149,7 +149,6 @@
                         android:layout_gravity="center_horizontal"
                         android:text="@{quest.context}"
                         android:textColor="@color/md_dark_text_87" />
-
                 </LinearLayout>
 
 

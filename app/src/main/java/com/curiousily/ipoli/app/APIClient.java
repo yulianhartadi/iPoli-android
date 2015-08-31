@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.app;
 
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.user.User;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ public interface APIClient {
     @Headers("Content-Type: application/json")
     @PUT("/quests")
     void rateQuest(@Body Quest quest, Callback<Quest> cb);
+
+    @Headers("Content-Type: application/json")
+    @POST("/users")
+    void createUser(@Body User user, Callback<User> cb);
 }

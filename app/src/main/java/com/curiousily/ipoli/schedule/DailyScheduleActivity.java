@@ -22,6 +22,8 @@ import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
 import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
+import com.curiousily.ipoli.user.events.LoadUserEvent;
+import com.curiousily.ipoli.user.events.UserLoadedEvent;
 import com.curiousily.ipoli.utils.DataSharingUtils;
 import com.squareup.otto.Subscribe;
 
@@ -59,6 +61,11 @@ public class DailyScheduleActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             return;
         }
+        post(new LoadUserEvent());
+    }
+
+    @Subscribe
+    public void onUserLoadedEvent(UserLoadedEvent e) {
         addDailyScheduleFragment();
     }
 
