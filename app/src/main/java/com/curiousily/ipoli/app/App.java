@@ -11,6 +11,7 @@ import com.curiousily.ipoli.AnalyticsConstants;
 import com.curiousily.ipoli.BuildConfig;
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
+import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.events.TrackEvent;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.services.QuestService;

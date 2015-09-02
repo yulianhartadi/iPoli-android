@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
 import com.curiousily.ipoli.Constants;
-import com.curiousily.ipoli.app.APIClient;
+import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.user.api.request.CreateUserRequest;
 import com.curiousily.ipoli.user.events.LoadUserEvent;
 import com.curiousily.ipoli.user.events.UserLoadedEvent;
