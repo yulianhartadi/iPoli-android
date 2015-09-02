@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,13 +109,11 @@ public class DailyScheduleFragment extends Fragment {
         public void onItemDismiss(int position, int direction) {
             if (direction == ItemTouchHelper.START) {
                 onRescheduleQuest(quests.get(position));
-                quests.remove(position);
-                notifyItemRemoved(position);
             } else {
                 onQuestDone(quests.get(position));
-                quests.remove(position);
-                notifyItemRemoved(position);
             }
+            quests.remove(position);
+            notifyItemRemoved(position);
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {

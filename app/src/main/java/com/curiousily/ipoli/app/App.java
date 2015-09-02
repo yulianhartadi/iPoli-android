@@ -68,7 +68,7 @@ public class App extends Application {
         intent.putExtra("duration", quest.duration);
         intent.putExtra("startTime", System.currentTimeMillis());
         scheduleUpdateAlarm(intent);
-        startQuestService(intent);
+        startService(intent);
     }
 
     private void scheduleUpdateAlarm(Intent intent) {
@@ -81,12 +81,6 @@ public class App extends Application {
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
                 TimeUnit.MINUTES.toMillis(1), pendingIntent);
-    }
-
-    private void startQuestService(Intent intent) {
-        Intent i = new Intent(this, QuestService.class);
-        i.putExtras(intent.getExtras());
-        startService(i);
     }
 
     private APIClient buildAPI() {
