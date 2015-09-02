@@ -6,9 +6,10 @@ package com.curiousily.ipoli;
  */
 public interface Constants {
     String ALERT_DIALOG_TAG = "alert_dialog";
-    String DEFAULT_DATE_FORMAT = "dd-MM-yyyy";
+    String DEFAULT_SERVER_DATE_FORMAT = "yyyy-MM-dd";
+    String DEFAULT_UI_DATE_FORMAT = "dd-MM-yyyy";
     String DEFAULT_TIME_FORMAT = "HH:mm";
-    String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     String DATA_SHARING_KEY_QUEST = "quest";
     String KEY_USER_ID = "key_user_id";
 }

@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.curiousily.ipoli.Constants;
@@ -46,7 +47,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
     @Bind(R.id.nav_view)
     NavigationView navigationView;
 
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +61,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             return;
         }
-        post(new LoadUserEvent());
-    }
-
-    @Subscribe
-    public void onUserLoadedEvent(UserLoadedEvent e) {
         addDailyScheduleFragment();
     }
 

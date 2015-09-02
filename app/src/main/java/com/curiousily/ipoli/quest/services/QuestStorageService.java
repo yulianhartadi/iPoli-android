@@ -1,8 +1,11 @@
 package com.curiousily.ipoli.quest.services;
 
+import android.util.Log;
+
 import com.curiousily.ipoli.app.APIClient;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
+import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
 import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
@@ -10,6 +13,8 @@ import com.curiousily.ipoli.user.User;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit.Callback;
@@ -44,16 +49,15 @@ public class QuestStorageService {
 
     @Subscribe
     public void onLoadDailyQuests(LoadDailyQuestsEvent e) {
-        client.getDailyQuests(new Callback<List<Quest>>() {
 
+        client.getDailySchedule(new APIClient.PathDate(e.scheduledFor), e.userId, new Callback<DailySchedule>() {
             @Override
-            public void success(List<Quest> quests, Response response) {
-                bus.post(new DailyQuestsLoadedEvent(quests));
+            public void success(DailySchedule dailySchedule, Response response) {
+                bus.post(new DailyQuestsLoadedEvent(dailySchedule.quests));
             }
 
             @Override
             public void failure(RetrofitError error) {
-                throw new RuntimeException(error);
             }
         });
     }

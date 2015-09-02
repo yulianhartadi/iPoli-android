@@ -189,7 +189,7 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         time.set(Calendar.DAY_OF_MONTH, due.get(Calendar.DAY_OF_MONTH));
 
         quest.due = time.getTime();
-        SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT, Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_UI_DATE_FORMAT, Locale.getDefault());
         dueDate.setText(format.format(quest.due));
     }
 

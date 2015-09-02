@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,9 @@ import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
 import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
+import com.curiousily.ipoli.user.User;
+import com.curiousily.ipoli.user.events.LoadUserEvent;
+import com.curiousily.ipoli.user.events.UserLoadedEvent;
 import com.curiousily.ipoli.utils.ui.ItemTouchCallback;
 import com.curiousily.ipoli.utils.ui.ItemTouchHelperAdapter;
 import com.curiousily.ipoli.utils.ui.ItemTouchHelperViewHolder;
@@ -29,7 +33,9 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,14 +49,20 @@ public class DailyScheduleFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = (RecyclerView) inflater.inflate(
+        this.view = (RecyclerView) inflater.inflate(
                 R.layout.fragment_daily_schedule, container, false);
-        post(new LoadDailyQuestsEvent());
         return view;
     }
 
     @Subscribe
-    public void setupRecyclerView(DailyQuestsLoadedEvent e) {
+    public void onUserLoadedEvent(UserLoadedEvent e) {
+        Calendar calendar = Calendar.getInstance();
+        Date scheduledFor = calendar.getTime();
+        post(new LoadDailyQuestsEvent(scheduledFor, User.getCurrent(getContext()).id));
+    }
+
+    @Subscribe
+    public void onDailyQuestsLoaded(DailyQuestsLoadedEvent e) {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
         QuestViewAdapter adapter = new QuestViewAdapter(e.quests);
         view.setAdapter(adapter);
@@ -73,6 +85,7 @@ public class DailyScheduleFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.get().register(this);
+        post(new LoadUserEvent());
     }
 
     public class QuestViewAdapter
