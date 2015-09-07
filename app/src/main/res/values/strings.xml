@@ -7,6 +7,8 @@
     <string name="invite_description">iPoli is a private community of real life heroes doing epic quests! Request your invite to join in!</string>
     <string name="get_invite">GIVE ME INVITE</string>
     <string name="add_quest_title">New Quest</string>
+    <string name="share_dialog_title">Share your quest…</string>
+    <string name="share_dialog_message">Getting done my quest \"%s\" using iPoli</string>
     <string-array name="duration_options">
         <item>1 minute</item>
         <item>2 minutes</item>

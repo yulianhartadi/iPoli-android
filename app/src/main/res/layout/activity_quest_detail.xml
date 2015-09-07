@@ -179,8 +179,8 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
+                    android:id="@+id/quest_details_share"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -251,7 +251,7 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
                 android:orientation="horizontal"
-                android:visibility="@{quest.subQuests != null ? View.VISIBLE : View.GONE}">
+                android:visibility="@{quest.subQuests.isEmpty() ? View.GONE : View.VISIBLE}">
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
                     android:id="@+id/quest_details_todo_icon"

@@ -1,5 +1,6 @@
 package com.curiousily.ipoli.quest;
 
+import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
@@ -41,6 +42,8 @@ public class QuestDetailActivity extends AppCompatActivity {
     @Bind(R.id.quest_details_sub_quests)
     RecyclerView subQuests;
 
+    private QuestViewModel quest;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +51,7 @@ public class QuestDetailActivity extends AppCompatActivity {
         ActivityQuestDetailBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_quest_detail);
         ButterKnife.bind(this);
 
-        QuestViewModel quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.class, getIntent());
+        quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.class, getIntent());
 
         binding.setQuest(quest);
 
@@ -101,6 +104,15 @@ public class QuestDetailActivity extends AppCompatActivity {
     @OnClick(R.id.quest_details_timer_icon)
     public void onTimerClick(View view) {
         showQuestRunningDialog();
+    }
+
+    @OnClick(R.id.quest_details_share)
+    public void onShareClick(View view) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.share_dialog_message), quest.name));
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_dialog_title)));
     }
 
     static class SubQuestAdapter extends RecyclerView.Adapter<SubQuestAdapter.ViewHolder> {

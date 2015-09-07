@@ -98,9 +98,9 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     public void onRequestRepeatClick(CheckBox checkBox) {
         Quest.Repeat repeatDay = CHECK_BOX_TO_REPEAT.get(checkBox.getId());
         if (checkBox.isChecked()) {
-            quest.repeats.add(repeatDay);
+            quest.recurrence.add(repeatDay);
         } else {
-            quest.repeats.remove(repeatDay);
+            quest.recurrence.remove(repeatDay);
         }
     }
 
@@ -111,8 +111,9 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
                 R.layout.fragment_add_quest_schedule, container, false);
         ButterKnife.bind(this, view);
 
+        String[] durationOptions = getResources().getStringArray(R.array.duration_options);
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.duration_options));
+                android.R.layout.simple_spinner_item, durationOptions);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         duration.setAdapter(dataAdapter);
 
@@ -149,7 +150,7 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_done:
-                quest.duration = duration.getSelectedItemPosition();
+                quest.duration = Constants.DURATION_TEXT_INDEX_TO_MINUTES[duration.getSelectedItemPosition()];
                 quest.timesPerDay = timesPerDay.getProgress();
                 quest.notes = notes.getText().toString();
                 EventBus.post(new QuestBuiltEvent(quest));

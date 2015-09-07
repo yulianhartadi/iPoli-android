@@ -33,6 +33,6 @@ public class InviteOnlyActivity extends AppCompatActivity {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", "support@curiousily.com", null));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "iPoli invitation request");
-        startActivity(Intent.createChooser(emailIntent, "Send email..."));
+        startActivity(Intent.createChooser(emailIntent, "Request your invite"));
     }
 }

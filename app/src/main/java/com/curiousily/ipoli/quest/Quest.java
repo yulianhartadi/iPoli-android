@@ -36,7 +36,7 @@ public class Quest {
 
     public String notes;
 
-    public Set<Repeat> repeats = new HashSet<>();
+    public Set<Repeat> recurrence = new HashSet<>();
 
     public Date due = DateUtils.getNow();
 
