@@ -1,6 +1,11 @@
 <resources>
 
-    <style name="Theme.iPoli" parent="Base.Theme.iPoli"></style>
+    <style name="Theme.iPoli" parent="Base.Theme.iPoli" />
+
+    <style name="MyActivityDialogTheme" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
 
     <style name="Theme.iPoli.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/md_red_a400</item>

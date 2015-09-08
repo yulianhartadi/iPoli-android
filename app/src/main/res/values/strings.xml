@@ -13,6 +13,7 @@
     <string name="dialog_postpone_title">Postpone for…</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="speak_hint">Listening...</string>
     <string-array name="duration_options">
         <item>1 minute</item>
         <item>2 minutes</item>
