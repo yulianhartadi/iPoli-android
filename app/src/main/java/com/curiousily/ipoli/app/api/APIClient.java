@@ -33,6 +33,10 @@ public interface APIClient {
     void getDailySchedule(@Path("date") PathDate scheduledFor, @Query("user_id") String userId, Callback<DailySchedule> cb);
 
     @Headers("Content-Type: application/json")
+    @PUT("/schedules/")
+    void updateSchedule(@Body DailySchedule schedule, Callback<DailySchedule> cb);
+
+    @Headers("Content-Type: application/json")
     @POST("/users")
     void createUser(@Body CreateUserRequest request, Callback<User> cb);
 }

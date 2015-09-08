@@ -5,10 +5,11 @@ import com.curiousily.ipoli.app.api.parameters.PathDate;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.schedule.DailySchedule;
-import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
-import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
-import com.curiousily.ipoli.schedule.ui.events.QuestPostponedEvent;
-import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
+import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
+import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
+import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
+import com.curiousily.ipoli.schedule.events.QuestRatedEvent;
+import com.curiousily.ipoli.schedule.events.UpdateDailyScheduleEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -34,21 +35,6 @@ public class QuestStorageService {
         client.createQuest(e.quest, new Callback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-            }
-        });
-    }
-
-    @Subscribe
-    public void onLoadDailyQuests(LoadDailyQuestsEvent e) {
-
-        client.getDailySchedule(new PathDate(e.scheduledFor), e.userId, new Callback<DailySchedule>() {
-            @Override
-            public void success(DailySchedule dailySchedule, Response response) {
-                bus.post(new DailyQuestsLoadedEvent(dailySchedule.quests));
             }
 
             @Override

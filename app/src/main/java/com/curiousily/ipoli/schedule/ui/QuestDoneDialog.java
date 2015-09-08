@@ -13,7 +13,7 @@ import android.widget.RatingBar;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
+import com.curiousily.ipoli.schedule.events.QuestRatedEvent;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

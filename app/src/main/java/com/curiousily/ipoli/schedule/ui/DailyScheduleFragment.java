@@ -2,7 +2,6 @@ package com.curiousily.ipoli.schedule.ui;
 
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,8 +16,10 @@ import android.widget.TextView;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
-import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
+import com.curiousily.ipoli.schedule.DailySchedule;
+import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
+import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
+import com.curiousily.ipoli.schedule.events.UpdateDailyScheduleEvent;
 import com.curiousily.ipoli.schedule.ui.events.FinishQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.PostponeQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
@@ -33,11 +34,9 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -59,30 +58,17 @@ public class DailyScheduleFragment extends Fragment {
     public void onUserLoadedEvent(UserLoadedEvent e) {
         Calendar calendar = Calendar.getInstance();
         Date scheduledFor = calendar.getTime();
-        post(new LoadDailyQuestsEvent(scheduledFor, User.getCurrent(getContext()).id));
+        post(new LoadDailyScheduleEvent(scheduledFor, User.getCurrent(getContext()).id));
     }
 
     @Subscribe
-    public void onDailyQuestsLoaded(DailyQuestsLoadedEvent e) {
-        List<Quest> scheduledQuests = getScheduledQuests(e);
+    public void onDailyScheduleLoaded(DailyScheduleLoadedEvent e) {
         view.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        QuestViewAdapter adapter = new QuestViewAdapter(scheduledQuests);
+        DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(e.schedule);
         view.setAdapter(adapter);
         ItemTouchCallback touchCallback = new ItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(view);
-    }
-
-    @NonNull
-    private List<Quest> getScheduledQuests(DailyQuestsLoadedEvent e) {
-        List<Quest> quests = e.quests;
-        List<Quest> scheduledQuests = new ArrayList<>();
-        for (Quest q : quests) {
-            if (q.status == Quest.Status.SCHEDULED) {
-                scheduledQuests.add(q);
-            }
-        }
-        return scheduledQuests;
     }
 
     private void post(Object event) {
@@ -102,33 +88,34 @@ public class DailyScheduleFragment extends Fragment {
         post(new LoadUserEvent());
     }
 
-    public class QuestViewAdapter
-            extends RecyclerView.Adapter<QuestViewAdapter.ViewHolder> implements ItemTouchHelperAdapter {
-        private List<Quest> quests;
+    public class DailyScheduleViewAdapter
+            extends RecyclerView.Adapter<DailyScheduleViewAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+        private DailySchedule schedule;
 
         @Override
         public void onItemMove(int fromPosition, int toPosition) {
             if (fromPosition < toPosition) {
                 for (int i = fromPosition; i < toPosition; i++) {
-                    Collections.swap(quests, i, i + 1);
+                    Collections.swap(schedule.quests, i, i + 1);
                 }
             } else {
                 for (int i = fromPosition; i > toPosition; i--) {
-                    Collections.swap(quests, i, i - 1);
+                    Collections.swap(schedule.quests, i, i - 1);
                 }
             }
+            post(new UpdateDailyScheduleEvent(schedule));
             notifyItemMoved(fromPosition, toPosition);
         }
 
         @Override
         public void onItemDismiss(int position, int direction) {
-            Quest quest = quests.get(position);
+            Quest quest = schedule.quests.get(position);
             if (direction == ItemTouchHelper.START) {
                 post(new PostponeQuestEvent(quest));
             } else {
                 post(new FinishQuestEvent(quest));
             }
-            quests.remove(position);
+            schedule.quests.remove(quest);
             notifyItemRemoved(position);
         }
 
@@ -162,8 +149,8 @@ public class DailyScheduleFragment extends Fragment {
             }
         }
 
-        public QuestViewAdapter(List<Quest> quests) {
-            this.quests = quests;
+        public DailyScheduleViewAdapter(DailySchedule schedule) {
+            this.schedule = schedule;
         }
 
         @Override
@@ -175,7 +162,12 @@ public class DailyScheduleFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            final Quest quest = quests.get(position);
+            final Quest quest = schedule.quests.get(position);
+            if (quest.status == Quest.Status.SCHEDULED) {
+                holder.itemView.setVisibility(View.VISIBLE);
+            } else {
+                holder.itemView.setVisibility(View.GONE);
+            }
             holder.startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -200,7 +192,7 @@ public class DailyScheduleFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return quests.size();
+            return schedule.quests.size();
         }
     }
 }

@@ -64,6 +64,9 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     @Bind(R.id.add_quest_start_time)
     Button startTime;
 
+    @Bind(R.id.add_quest_repeat_layout)
+    View repeatLayout;
+
     private Quest quest;
 
     private static final SparseArray<Quest.Repeat> CHECK_BOX_TO_REPEAT = new SparseArray<Quest.Repeat>() {{
@@ -116,6 +119,7 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
                 android.R.layout.simple_spinner_item, durationOptions);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         duration.setAdapter(dataAdapter);
+        duration.setSelection(durationOptions.length / 2);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         AddQuestActivity activity = (AddQuestActivity) getActivity();
@@ -124,6 +128,10 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         activity.getSupportActionBar().setTitle(R.string.add_quest_title);
 
         timesPerDay.setOnSeekBarChangeListener(this);
+
+        if (quest.type != Quest.QuestType.RECURRENT) {
+            repeatLayout.setVisibility(View.GONE);
+        }
 
         return view;
     }

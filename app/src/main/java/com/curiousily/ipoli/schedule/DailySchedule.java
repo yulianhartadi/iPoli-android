@@ -10,5 +10,6 @@ import java.util.List;
  * on 9/2/15.
  */
 public class DailySchedule {
+    public String id;
     public List<Quest> quests = new ArrayList<>();
 }

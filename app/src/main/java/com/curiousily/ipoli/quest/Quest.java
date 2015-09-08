@@ -52,7 +52,7 @@ public class Quest {
     }
 
     public enum Status {
-        SCHEDULED, RUNNING, DONE, CANCELED
+        WAITING, SCHEDULED, RUNNING, DONE, CANCELED
     }
 
     public enum Repeat {

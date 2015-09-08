@@ -1,15 +1,15 @@
-package com.curiousily.ipoli.schedule.ui.events;
+package com.curiousily.ipoli.schedule.events;
 
 import com.curiousily.ipoli.quest.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 8/24/15.
+ * on 9/8/15.
  */
-public class QuestRatedEvent {
+public class QuestPostponedEvent {
     public final Quest quest;
 
-    public QuestRatedEvent(Quest quest) {
+    public QuestPostponedEvent(Quest quest) {
         this.quest = quest;
     }
 }

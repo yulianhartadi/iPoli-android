@@ -16,6 +16,7 @@ import com.curiousily.ipoli.app.events.TrackEvent;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.quest.services.QuestStorageService;
+import com.curiousily.ipoli.schedule.services.DailyScheduleStorageService;
 import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.curiousily.ipoli.user.UserStorageService;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -56,6 +57,7 @@ public class App extends Application {
         bus.register(this);
         APIClient client = buildAPI();
         bus.register(new QuestStorageService(client, bus));
+        bus.register(new DailyScheduleStorageService(client, bus));
         bus.register(new UserStorageService(client, bus, this));
     }
 

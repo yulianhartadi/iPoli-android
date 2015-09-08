@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RadioGroup;
 
+import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.schedule.ui.events.QuestPostponedEvent;
+import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
 
 import java.util.Calendar;
 
@@ -69,7 +70,7 @@ public class PostponeQuestDialog extends DialogFragment implements DialogInterfa
                         break;
 
                     case R.id.postpone_quest_week:
-                        c.add(Calendar.DATE, 7);
+                        c.add(Calendar.DATE, Constants.DAYS_IN_A_WEEK);
                         break;
 
                     case R.id.postpone_quest_month:
