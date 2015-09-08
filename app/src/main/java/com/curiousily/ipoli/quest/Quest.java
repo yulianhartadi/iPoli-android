@@ -46,8 +46,13 @@ public class Quest {
 
     public int rating;
     public String log;
+    public Status status;
 
     public Quest() {
+    }
+
+    public enum Status {
+        SCHEDULED, RUNNING, DONE, CANCELED
     }
 
     public enum Repeat {

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/postpone_quest_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:checkedButton="@+id/postpone_quest_tomorrow"
+    android:orientation="vertical"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:paddingTop="24dp">
+
+    <RadioButton
+        android:id="@id/postpone_quest_tomorrow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Tomorrow" />
+
+    <RadioButton
+        android:id="@+id/postpone_quest_week"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="One week" />
+
+    <RadioButton
+        android:id="@+id/postpone_quest_month"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="One month" />
+
+    <RadioButton
+        android:id="@+id/postpone_quest_cancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Never" />
+
+
+</RadioGroup>

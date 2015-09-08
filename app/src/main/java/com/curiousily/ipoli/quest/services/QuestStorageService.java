@@ -7,6 +7,7 @@ import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyQuestsLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyQuestsEvent;
+import com.curiousily.ipoli.schedule.ui.events.QuestPostponedEvent;
 import com.curiousily.ipoli.schedule.ui.events.QuestRatedEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -59,7 +60,22 @@ public class QuestStorageService {
     @Subscribe
     public void onQuestRated(QuestRatedEvent e) {
 
-        client.rateQuest(e.quest, new Callback<Quest>() {
+        client.updateQuest(e.quest, new Callback<Quest>() {
+            @Override
+            public void success(Quest quest, Response response) {
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+    @Subscribe
+    public void onQuestPostponed(QuestPostponedEvent e) {
+        client.updateQuest(e.quest, new Callback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
 

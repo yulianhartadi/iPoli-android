@@ -85,7 +85,7 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     @OnClick(R.id.add_quest_due_date)
     public void onDueDateClick(Button button) {
         DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+        newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
     @OnClick(R.id.add_quest_start_time)

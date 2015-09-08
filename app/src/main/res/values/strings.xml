@@ -9,6 +9,10 @@
     <string name="add_quest_title">New Quest</string>
     <string name="share_dialog_title">Share your quest…</string>
     <string name="share_dialog_message">Getting done my quest \"%s\" using iPoli</string>
+    <string name="quest_done_title">Great job! Did you liked it?</string>
+    <string name="dialog_postpone_title">Postpone for…</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string-array name="duration_options">
         <item>1 minute</item>
         <item>2 minutes</item>

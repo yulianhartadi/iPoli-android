@@ -43,7 +43,7 @@ public class QuestDoneDialog extends DialogFragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_quest_rate, null);
         ButterKnife.bind(this, view);
         return new AlertDialog.Builder(getActivity())
-                .setTitle("Great job! Did you liked it?")
+                .setTitle(R.string.quest_done_title)
                 .setCancelable(false)
                 .setView(view)
                 .create();

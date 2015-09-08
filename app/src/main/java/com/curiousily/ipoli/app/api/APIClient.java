@@ -25,12 +25,12 @@ public interface APIClient {
     @POST("/quests")
     void createQuest(@Body Quest quest, Callback<Quest> cb);
 
-    @GET("/schedules/{date}")
-    void getDailySchedule(@Path("date") PathDate scheduledFor, @Query("user_id") String userId, Callback<DailySchedule> cb);
-
     @Headers("Content-Type: application/json")
     @PUT("/quests")
-    void rateQuest(@Body Quest quest, Callback<Quest> cb);
+    void updateQuest(@Body Quest quest, Callback<Quest> cb);
+
+    @GET("/schedules/{date}")
+    void getDailySchedule(@Path("date") PathDate scheduledFor, @Query("user_id") String userId, Callback<DailySchedule> cb);
 
     @Headers("Content-Type: application/json")
     @POST("/users")
