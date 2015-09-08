@@ -45,6 +45,7 @@ public class AddQuestActivity extends AppCompatActivity {
     public void onQuestBuiltEvent(QuestBuiltEvent e) {
         e.quest.createdBy = User.getCurrent(this);
         post(new CreateQuestEvent(e.quest));
+        finish();
     }
 
     private void post(Object event) {
