@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.schedule.services;
 
 import com.curiousily.ipoli.app.api.APIClient;
+import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.app.api.parameters.PathDate;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
@@ -30,28 +31,19 @@ public class DailyScheduleStorageService {
     @Subscribe
     public void onLoadDailySchedule(LoadDailyScheduleEvent e) {
 
-        client.getDailySchedule(new PathDate(e.scheduledFor), e.userId, new Callback<DailySchedule>() {
+        client.getDailySchedule(new PathDate(e.scheduledFor), e.userId, new AsyncAPICallback<DailySchedule>() {
             @Override
             public void success(DailySchedule dailySchedule, Response response) {
                 bus.post(new DailyScheduleLoadedEvent(dailySchedule));
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
             }
         });
     }
 
     @Subscribe
     public void onUpdateDailySchedule(UpdateDailyScheduleEvent e) {
-        client.updateSchedule(e.schedule, new Callback<DailySchedule>() {
+        client.updateSchedule(e.schedule, new AsyncAPICallback<DailySchedule>() {
             @Override
             public void success(DailySchedule schedule, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
 
             }
         });

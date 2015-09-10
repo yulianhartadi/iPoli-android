@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
@@ -23,13 +24,13 @@ import com.curiousily.ipoli.schedule.events.UpdateDailyScheduleEvent;
 import com.curiousily.ipoli.schedule.ui.events.FinishQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.PostponeQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
-import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.curiousily.ipoli.user.User;
 import com.curiousily.ipoli.user.events.LoadUserEvent;
 import com.curiousily.ipoli.user.events.UserLoadedEvent;
 import com.curiousily.ipoli.utils.ui.ItemTouchCallback;
 import com.curiousily.ipoli.utils.ui.ItemTouchHelperAdapter;
 import com.curiousily.ipoli.utils.ui.ItemTouchHelperViewHolder;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -38,20 +39,34 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
 public class DailyScheduleFragment extends Fragment {
 
-    private RecyclerView view;
+    @Bind(R.id.schedule_list)
+    RecyclerView scheduleList;
+
+    @Bind(R.id.schedule_loader)
+    ProgressWheel loader;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.view = (RecyclerView) inflater.inflate(
+        View view = inflater.inflate(
                 R.layout.fragment_daily_schedule, container, false);
+        ButterKnife.bind(this, view);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Subscribe
@@ -63,12 +78,14 @@ public class DailyScheduleFragment extends Fragment {
 
     @Subscribe
     public void onDailyScheduleLoaded(DailyScheduleLoadedEvent e) {
-        view.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        scheduleList.setLayoutManager(new LinearLayoutManager(scheduleList.getContext()));
         DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(e.schedule);
-        view.setAdapter(adapter);
+        scheduleList.setAdapter(adapter);
         ItemTouchCallback touchCallback = new ItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(view);
+        helper.attachToRecyclerView(scheduleList);
+        loader.setVisibility(View.GONE);
+        scheduleList.setVisibility(View.VISIBLE);
     }
 
     private void post(Object event) {
@@ -85,6 +102,8 @@ public class DailyScheduleFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.get().register(this);
+        loader.setVisibility(View.VISIBLE);
+        scheduleList.setVisibility(View.GONE);
         post(new LoadUserEvent());
     }
 
@@ -187,7 +206,7 @@ public class DailyScheduleFragment extends Fragment {
             holder.icon.setIcon(quest.context.getIcon());
             holder.name.setText(quest.name);
             holder.tags.setText(TextUtils.join(", ", quest.tags));
-            holder.duration.setText(quest.duration + "");
+            holder.duration.setText(String.format("%d", quest.duration));
         }
 
         @Override

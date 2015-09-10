@@ -27,7 +27,6 @@ import com.curiousily.ipoli.quest.Tag;
 import com.curiousily.ipoli.quest.events.BuildQuestEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -94,6 +93,12 @@ public class AddQuestInfoFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_quest_info, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -109,12 +114,12 @@ public class AddQuestInfoFragment extends Fragment {
                 q.context = Quest.Context.valueOf(spinner.getSelectedItem().toString().toUpperCase());
                 RadioButton checkedType = (RadioButton) getView().findViewById(questType.getCheckedRadioButtonId());
                 q.type = Quest.QuestType.valueOf(checkedType.getText().toString().toUpperCase().replace(" ", "_"));
-                for(String tagName: tags.getText().toString().split(",")) {
+                for (String tagName : tags.getText().toString().split(",")) {
                     Tag tag = new Tag();
                     tag.name = tagName;
                     q.tags.add(tag);
                 }
-                EventBus.get().post(new BuildQuestEvent(q));
+                EventBus.post(new BuildQuestEvent(q));
                 return true;
         }
 

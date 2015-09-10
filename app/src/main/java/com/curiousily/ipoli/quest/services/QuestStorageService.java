@@ -1,20 +1,14 @@
 package com.curiousily.ipoli.quest.services;
 
 import com.curiousily.ipoli.app.api.APIClient;
-import com.curiousily.ipoli.app.api.parameters.PathDate;
+import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
-import com.curiousily.ipoli.schedule.DailySchedule;
-import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
-import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
 import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
 import com.curiousily.ipoli.schedule.events.QuestRatedEvent;
-import com.curiousily.ipoli.schedule.events.UpdateDailyScheduleEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
@@ -32,28 +26,20 @@ public class QuestStorageService {
 
     @Subscribe
     public void onCreateQuest(CreateQuestEvent e) {
-        client.createQuest(e.quest, new Callback<Quest>() {
+        client.createQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-            }
         });
     }
 
     @Subscribe
     public void onQuestRated(QuestRatedEvent e) {
 
-        client.updateQuest(e.quest, new Callback<Quest>() {
+        client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
 
             }
         });
@@ -61,14 +47,9 @@ public class QuestStorageService {
 
     @Subscribe
     public void onQuestPostponed(QuestPostponedEvent e) {
-        client.updateQuest(e.quest, new Callback<Quest>() {
+        client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
 
             }
         });

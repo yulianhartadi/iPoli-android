@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.ui.events;
+package com.curiousily.ipoli.quest.events;
 
 import com.curiousily.ipoli.quest.Quest;
 

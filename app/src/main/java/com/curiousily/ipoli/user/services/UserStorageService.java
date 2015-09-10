@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.app.api.APIClient;
+import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.user.User;
 import com.curiousily.ipoli.user.api.request.CreateUserRequest;
 import com.curiousily.ipoli.user.events.LoadUserEvent;
@@ -37,7 +38,7 @@ public class UserStorageService {
     }
 
     private void saveUser(CreateUserRequest request) {
-        client.createUser(request, new Callback<User>() {
+        client.createUser(request, new AsyncAPICallback<User>() {
             @Override
             public void success(User user, Response response) {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -45,11 +46,6 @@ public class UserStorageService {
                 editor.putString(Constants.KEY_USER_ID, user.id);
                 editor.apply();
                 postUserLoadedEvent(user.id);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
             }
         });
     }

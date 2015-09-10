@@ -1,21 +1,18 @@
 package com.curiousily.ipoli.schedule;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.curiousily.ipoli.Constants;
-import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.app.BaseActivity;
+import com.curiousily.ipoli.app.api.events.APIErrorEvent;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.QuestDetailActivity;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
@@ -25,7 +22,6 @@ import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
 import com.curiousily.ipoli.schedule.ui.events.FinishQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.PostponeQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
-import com.curiousily.ipoli.ui.events.AlertDialogClickEvent;
 import com.curiousily.ipoli.utils.DataSharingUtils;
 import com.squareup.otto.Subscribe;
 
@@ -37,7 +33,7 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class DailyScheduleActivity extends AppCompatActivity {
+public class DailyScheduleActivity extends BaseActivity {
 
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -96,18 +92,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.get().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.get().unregister(this);
-    }
-
     private void setupDrawerContent() {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -131,11 +115,6 @@ public class DailyScheduleActivity extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onAlertDialogClick(AlertDialogClickEvent e) {
-        finish();
-    }
-
-    @Subscribe
     public void onPostponeQuest(PostponeQuestEvent e) {
         PostponeQuestDialog newFragment = PostponeQuestDialog.newInstance();
         newFragment.setQuest(e.quest);
@@ -149,10 +128,10 @@ public class DailyScheduleActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return (netInfo != null && netInfo.isConnected());
+
+    @Subscribe
+    public void onAPIError(APIErrorEvent e) {
+        showAlertDialog(R.string.error_server_unreachable_title, e.error.getLocalizedMessage());
     }
 
 }

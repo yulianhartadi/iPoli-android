@@ -12,12 +12,13 @@ import com.curiousily.ipoli.BuildConfig;
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.api.APIClient;
+import com.curiousily.ipoli.app.api.APIErrorHandler;
 import com.curiousily.ipoli.app.events.TrackEvent;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.quest.services.QuestStorageService;
 import com.curiousily.ipoli.schedule.services.DailyScheduleStorageService;
-import com.curiousily.ipoli.ui.events.StartQuestEvent;
 import com.curiousily.ipoli.user.services.UserStorageService;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -95,6 +96,7 @@ public class App extends Application {
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setEndpoint(APIConstants.URL)
                 .setConverter(new GsonConverter(gson))
+                .setErrorHandler(new APIErrorHandler(this))
                 .build()
                 .create(APIClient.class);
     }
@@ -103,4 +105,6 @@ public class App extends Application {
     public void onTrackEvent(TrackEvent e) {
         tracker.send(e.getEvent());
     }
+
+
 }
