@@ -81,13 +81,13 @@ public class DailyScheduleActivity extends BaseActivity {
         DailyScheduleFragment firstFragment = new DailyScheduleFragment();
         firstFragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, firstFragment).commit();
+                .replace(R.id.add_quest_fragment_container, firstFragment).commit();
     }
 
     @Subscribe
     public void onShowQuest(ShowQuestEvent e) {
         Intent intent = new Intent(this, QuestDetailActivity.class);
-        DataSharingUtils.put(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.from(e.quest), intent);
+        DataSharingUtils.put(Constants.DATA_SHARING_KEY_QUEST, e.quest, intent);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }

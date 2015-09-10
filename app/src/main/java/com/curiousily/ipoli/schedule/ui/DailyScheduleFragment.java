@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
-import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
@@ -160,7 +159,6 @@ public class DailyScheduleFragment extends Fragment {
             public final TextView duration;
             public final TextView tags;
             public final View iconBackground;
-            public final MaterialIconView startButton;
             private final MaterialIconView icon;
 
             public ViewHolder(View view) {
@@ -169,7 +167,6 @@ public class DailyScheduleFragment extends Fragment {
                 icon = (MaterialIconView) view.findViewById(R.id.quest_icon);
                 name = (TextView) view.findViewById(R.id.quest_name);
                 duration = (TextView) view.findViewById(R.id.quest_duration);
-                startButton = (MaterialIconView) view.findViewById(R.id.quest_start_button);
                 tags = (TextView) view.findViewById(R.id.quest_tags);
             }
 
@@ -203,13 +200,6 @@ public class DailyScheduleFragment extends Fragment {
             } else {
                 holder.itemView.setVisibility(View.GONE);
             }
-            holder.startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    post(new StartQuestEvent(quest));
-                    post(new ShowQuestEvent(quest));
-                }
-            });
             holder.itemView.setOnClickListener(new View.OnClickListener() {
 
                 @Override

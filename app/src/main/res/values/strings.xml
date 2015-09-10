@@ -30,4 +30,5 @@
         <item>2 hours</item>
     </string-array>
     <string name="choose_quest_duration">Choose quest duration</string>
+    <string name="toast_quest_saved">Your awesome quest is saved</string>
 </resources>

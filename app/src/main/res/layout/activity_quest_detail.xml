@@ -105,14 +105,14 @@
 
                     <net.steamcrafted.materialiconlib.MaterialIconView
                         android:id="@+id/quest_details_timer_icon"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:scaleType="center"
                         app:materialIcon="timer"
                         app:materialIconColor="@color/md_dark_text_54"
-                        app:materialIconSize="36dp" />
+                        app:materialIconSize="32dp" />
 
                     <TextView
                         android:id="@+id/quest_details_timer_text"
@@ -133,14 +133,14 @@
                     android:orientation="vertical">
 
                     <net.steamcrafted.materialiconlib.MaterialIconView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:scaleType="center"
                         app:materialIcon="@{quest.icon}"
                         app:materialIconColor="@color/md_dark_text_54"
-                        app:materialIconSize="36dp" />
+                        app:materialIconSize="32dp" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Body1"
@@ -160,14 +160,14 @@
                     android:orientation="vertical">
 
                     <net.steamcrafted.materialiconlib.MaterialIconView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:scaleType="center"
                         app:materialIcon="repeat"
                         app:materialIconColor="@color/md_dark_text_54"
-                        app:materialIconSize="36dp" />
+                        app:materialIconSize="32dp" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Body1"
@@ -188,14 +188,14 @@
                     android:orientation="vertical">
 
                     <net.steamcrafted.materialiconlib.MaterialIconView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:scaleType="center"
                         app:materialIcon="share_variant"
                         app:materialIconColor="@color/md_dark_text_54"
-                        app:materialIconSize="36dp" />
+                        app:materialIconSize="32dp" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Body1"
@@ -309,11 +309,12 @@
 
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/quest_details_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
-            android:src="@drawable/ic_done_white_48dp"
+            android:src="@drawable/ic_play_arrow_white_48dp"
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="bottom|right|end" />
 

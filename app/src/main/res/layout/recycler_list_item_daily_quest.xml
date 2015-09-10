@@ -40,15 +40,15 @@
         android:id="@+id/quest_info_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/quest_context_indicator"
-        android:layout_toLeftOf="@+id/quest_start_button"
         android:layout_toRightOf="@id/quest_context_indicator"
-        android:layout_toStartOf="@+id/quest_start_button"
         android:orientation="vertical"
         android:paddingBottom="16dp"
         android:paddingTop="16dp">
@@ -103,22 +103,5 @@
                 android:layout_marginStart="4dp"
                 android:textColor="@color/md_dark_text_54" />
         </LinearLayout>
-
     </LinearLayout>
-
-    <net.steamcrafted.materialiconlib.MaterialIconView
-        android:id="@id/quest_start_button"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:scaleType="fitXY"
-        app:materialIcon="play_circle_outline"
-        app:materialIconColor="@color/md_grey_700"
-        app:materialIconSize="28dp" />
-
-
 </RelativeLayout>

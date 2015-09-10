@@ -16,9 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.curiousily.ipoli.Constants;
+import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.databinding.ActivityQuestDetailBinding;
 import com.curiousily.ipoli.databinding.RecyclerListItemSubQuestBinding;
+import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
@@ -42,7 +44,7 @@ public class QuestDetailActivity extends AppCompatActivity {
     @Bind(R.id.quest_details_sub_quests)
     RecyclerView subQuests;
 
-    private QuestViewModel quest;
+    private Quest quest;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,19 +53,20 @@ public class QuestDetailActivity extends AppCompatActivity {
         ActivityQuestDetailBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_quest_detail);
         ButterKnife.bind(this);
 
-        quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, QuestViewModel.class, getIntent());
+        quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, Quest.class, getIntent());
 
-        binding.setQuest(quest);
+        QuestViewModel questViewModel = QuestViewModel.from(quest);
+        binding.setQuest(questViewModel);
 
         subQuests.setLayoutManager(new LinearLayoutManager(this));
-        subQuests.setAdapter(new SubQuestAdapter(quest.subQuests));
+        subQuests.setAdapter(new SubQuestAdapter(questViewModel.subQuests));
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setNavigationBarColor(getResources().getColor(quest.backgroundColor));
+            getWindow().setNavigationBarColor(getResources().getColor(questViewModel.backgroundColor));
         }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -113,6 +116,11 @@ public class QuestDetailActivity extends AppCompatActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.share_dialog_message), quest.name));
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.share_dialog_title)));
+    }
+
+    @OnClick(R.id.quest_details_start)
+    public void onStartClick(View view) {
+        EventBus.post(new StartQuestEvent(quest));
     }
 
     static class SubQuestAdapter extends RecyclerView.Adapter<SubQuestAdapter.ViewHolder> {
