@@ -20,11 +20,7 @@ public class APIErrorHandler implements ErrorHandler {
 
     @Override
     public Throwable handleError(RetrofitError cause) {
-        switch (cause.getKind()) {
-            case NETWORK:
-                return new Exception(context.getString(R.string.error_server_unreachable_message));
-            default:
-                return new Exception(context.getString(R.string.error_server_response));
-        }
+        int errorRes = cause.getKind() == RetrofitError.Kind.NETWORK ? R.string.error_server_unreachable_message : R.string.error_server_response;
+        return new Exception(context.getString(errorRes));
     }
 }
