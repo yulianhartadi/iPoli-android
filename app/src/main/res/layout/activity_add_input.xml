@@ -52,19 +52,19 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@+id/input_ok"
-            android:layout_toStartOf="@id/input_ok"
+            android:layout_toLeftOf="@+id/input_save"
+            android:layout_toStartOf="@id/input_save"
             android:text="@string/cancel"
             android:textColor="?attr/colorAccent" />
 
         <Button
-            android:id="@id/input_ok"
+            android:id="@id/input_save"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:text="@string/ok"
+            android:text="@string/save"
             android:textColor="?attr/colorAccent" />
     </RelativeLayout>
 

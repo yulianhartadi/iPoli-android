@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.app.api;
 
 import com.curiousily.ipoli.app.api.parameters.PathDate;
+import com.curiousily.ipoli.input.Input;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.user.User;
@@ -39,4 +40,8 @@ public interface APIClient {
     @Headers("Content-Type: application/json")
     @POST("/users")
     void createUser(@Body CreateUserRequest request, Callback<User> cb);
+
+    @Headers("Content-Type: application/json")
+    @POST("/inputs")
+    void createInput(@Body Input input, Callback<Input> cb);
 }

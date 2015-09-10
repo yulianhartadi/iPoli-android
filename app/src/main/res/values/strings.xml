@@ -14,6 +14,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="speak_hint">Listening...</string>
+    <string name="save">Save</string>
     <string-array name="duration_options">
         <item>1 minute</item>
         <item>2 minutes</item>
