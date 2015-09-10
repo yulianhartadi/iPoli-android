@@ -41,21 +41,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="72dp"
         android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_toEndOf="@id/quest_context_indicator"
-        android:layout_toRightOf="@id/quest_context_indicator"
+        android:layout_marginStart="72dp"
         android:orientation="vertical"
         android:paddingBottom="16dp"
         android:paddingTop="16dp">
 
         <TextView
             android:id="@+id/quest_name"
-            style="@style/TextAppearance.AppCompat.Body2"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/md_dark_text_87" />
