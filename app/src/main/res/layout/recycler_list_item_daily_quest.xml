@@ -19,8 +19,8 @@
 
     <RelativeLayout
         android:id="@+id/quest_context_indicator"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
@@ -28,12 +28,12 @@
 
         <net.steamcrafted.materialiconlib.MaterialIconView
             android:id="@+id/quest_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:scaleType="fitXY"
             app:materialIconColor="@color/md_white"
-            app:materialIconSize="24dp" />
+            app:materialIconSize="26dp" />
     </RelativeLayout>
 
     <LinearLayout
@@ -60,48 +60,24 @@
             android:layout_height="wrap_content"
             android:textColor="@color/md_dark_text_87" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/quest_description"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:scaleType="center"
-                app:materialIcon="timer"
-                app:materialIconColor="@color/md_grey_400"
-                app:materialIconSize="16dp" />
-
-            <TextView
-                android:id="@+id/quest_duration"
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginStart="4dp"
-                android:textColor="@color/md_dark_text_54" />
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:scaleType="center"
-                app:materialIcon="tag"
-                app:materialIconColor="@color/md_grey_400"
-                app:materialIconSize="16dp" />
-
-            <TextView
-                android:id="@+id/quest_tags"
-                style="@style/TextAppearance.AppCompat.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginStart="4dp"
-                android:textColor="@color/md_dark_text_54" />
-        </LinearLayout>
+            android:textColor="@color/md_dark_text_54" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/quest_duration"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/md_dark_text_54" />
 </RelativeLayout>

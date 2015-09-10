@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,7 +166,7 @@ public class DailyScheduleFragment extends Fragment {
                 icon = (MaterialIconView) view.findViewById(R.id.quest_icon);
                 name = (TextView) view.findViewById(R.id.quest_name);
                 duration = (TextView) view.findViewById(R.id.quest_duration);
-                tags = (TextView) view.findViewById(R.id.quest_tags);
+                tags = (TextView) view.findViewById(R.id.quest_description);
             }
 
             @Override
@@ -211,8 +210,9 @@ public class DailyScheduleFragment extends Fragment {
             drawable.setColor(getResources().getColor(quest.context.getPrimaryColor()));
             holder.icon.setIcon(quest.context.getIcon());
             holder.name.setText(quest.name);
-            holder.tags.setText(TextUtils.join(", ", quest.tags));
-            holder.duration.setText(String.format("%d", quest.duration));
+//            holder.tags.setText(TextUtils.join(", ", quest.tags));
+            holder.tags.setText(quest.description);
+            holder.duration.setText(String.format("%d min", quest.duration));
         }
 
         @Override
