@@ -86,7 +86,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:prompt="@string/app_name" />
+                android:prompt="@string/choose_quest_duration"
+                android:spinnerMode="dialog" />
 
         </LinearLayout>
 
@@ -155,7 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="14"
-                    android:progress="1" />
+                    android:progress="0" />
 
                 <TextView
                     android:id="@+id/add_quest_times_per_day_label"

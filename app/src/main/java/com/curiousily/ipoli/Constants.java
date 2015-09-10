@@ -13,7 +13,7 @@ public interface Constants {
     String DATA_SHARING_KEY_QUEST = "quest";
     String KEY_USER_ID = "key_user_id";
 
-    int[] DURATION_TEXT_INDEX_TO_MINUTES = new int[]{1, 2, 3, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120};
+    int[] DURATION_TEXT_INDEX_TO_MINUTES = new int[]{5, 10, 15, 20, 25, 30, 45, 60, 90, 120};
 
     int DAYS_IN_A_WEEK = 7;
 }

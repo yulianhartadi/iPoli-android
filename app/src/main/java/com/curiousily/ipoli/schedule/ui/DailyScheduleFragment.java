@@ -54,6 +54,9 @@ public class DailyScheduleFragment extends Fragment {
     @Bind(R.id.schedule_loader)
     ProgressWheel loader;
 
+    @Bind(R.id.schedule_empty_layout)
+    View emptySchedule;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,14 +81,27 @@ public class DailyScheduleFragment extends Fragment {
 
     @Subscribe
     public void onDailyScheduleLoaded(DailyScheduleLoadedEvent e) {
-        scheduleList.setLayoutManager(new LinearLayoutManager(scheduleList.getContext()));
-        DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(e.schedule);
+        loader.setVisibility(View.GONE);
+        DailySchedule schedule = e.schedule;
+        if (schedule.quests.isEmpty()) {
+            displayEmptySchedule();
+        } else {
+            displaySchedule(schedule);
+        }
+    }
+
+    private void displayEmptySchedule() {
+        emptySchedule.setVisibility(View.VISIBLE);
+    }
+
+    private void displaySchedule(DailySchedule schedule) {
+        scheduleList.setVisibility(View.VISIBLE);
+        scheduleList.setLayoutManager(new LinearLayoutManager(getContext()));
+        DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(schedule);
         scheduleList.setAdapter(adapter);
         ItemTouchCallback touchCallback = new ItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(scheduleList);
-        loader.setVisibility(View.GONE);
-        scheduleList.setVisibility(View.VISIBLE);
     }
 
     private void post(Object event) {

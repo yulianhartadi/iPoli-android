@@ -133,5 +133,4 @@ public class DailyScheduleActivity extends BaseActivity {
     public void onAPIError(APIErrorEvent e) {
         showAlertDialog(R.string.error_server_unreachable_title, e.error.getLocalizedMessage());
     }
-
 }
