@@ -1,5 +1,6 @@
 package com.curiousily.ipoli.quest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
@@ -7,25 +8,27 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.app.BaseActivity;
 import com.curiousily.ipoli.databinding.ActivityQuestDetailBinding;
-import com.curiousily.ipoli.databinding.RecyclerListItemSubQuestBinding;
+import com.curiousily.ipoli.databinding.ListItemSubQuestBinding;
 import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
-import com.curiousily.ipoli.ui.dialogs.PromptDialogFragment;
+import com.curiousily.ipoli.ui.dialogs.InputDialogFragment;
+import com.curiousily.ipoli.ui.events.UserInputEvent;
 import com.curiousily.ipoli.utils.DataSharingUtils;
+import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -40,13 +43,13 @@ import butterknife.OnClick;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/31/15.
  */
-public class QuestDetailActivity extends AppCompatActivity {
+public class QuestDetailActivity extends BaseActivity {
 
     @Bind(R.id.quest_details_sub_quests)
-    RecyclerView subQuests;
-
+    ListView subQuests;
 
     private Quest quest;
+    private SubQuestAdapter subQuestAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,9 +63,8 @@ public class QuestDetailActivity extends AppCompatActivity {
         QuestViewModel questViewModel = QuestViewModel.from(quest);
         binding.setQuest(questViewModel);
 
-        subQuests.setLayoutManager(new LinearLayoutManager(this));
-        subQuests.setHasFixedSize(true);
-        subQuests.setAdapter(new SubQuestAdapter(questViewModel.subQuests));
+        subQuestAdapter = new SubQuestAdapter(this, questViewModel.subQuests);
+        subQuests.setAdapter(subQuestAdapter);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,7 +106,7 @@ public class QuestDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.quest_details_add_sub_quest)
     public void onAddSubQuestClick(View view) {
-        DialogFragment newFragment = PromptDialogFragment.newInstance(R.string.new_sub_quest);
+        DialogFragment newFragment = InputDialogFragment.newInstance(R.string.new_sub_quest);
         newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }
 
@@ -132,42 +134,32 @@ public class QuestDetailActivity extends AppCompatActivity {
         EventBus.post(new StartQuestEvent(quest));
     }
 
-    static class SubQuestAdapter extends RecyclerView.Adapter<SubQuestAdapter.ViewHolder> {
+    @Subscribe
+    public void onUserInput(UserInputEvent e) {
+        quest.subQuests.add(new SubQuest(e.input));
+        subQuestAdapter.add(new SubQuestViewModel(e.input, false));
+        subQuestAdapter.notifyDataSetChanged();
+    }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            private final RecyclerListItemSubQuestBinding binding;
+    static class SubQuestAdapter extends ArrayAdapter<SubQuestViewModel> {
 
-            ViewHolder(final RecyclerListItemSubQuestBinding binding) {
-                super(binding.getRoot());
-                this.binding = binding;
+        public SubQuestAdapter(Context context, List<SubQuestViewModel> subQuests) {
+            super(context, R.layout.list_item_sub_quest, subQuests);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ListItemSubQuestBinding binding;
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+                binding = ListItemSubQuestBinding.inflate(inflater, parent, false);
+                convertView = binding.getRoot();
+                convertView.setTag(binding);
+            } else {
+                binding = (ListItemSubQuestBinding) convertView.getTag();
             }
-        }
-
-        private final List<SubQuestViewModel> subQuests;
-        private LayoutInflater layoutInflater;
-
-        public SubQuestAdapter(List<SubQuestViewModel> subQuests) {
-            this.subQuests = subQuests;
-        }
-
-        @Override
-        public int getItemCount() {
-            return subQuests.size();
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder viewHolder, final int i) {
-            viewHolder.binding.setSubQuest(subQuests.get(i));
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            if (layoutInflater == null) {
-                layoutInflater = LayoutInflater.from(viewGroup.getContext());
-            }
-            RecyclerListItemSubQuestBinding binding =
-                    DataBindingUtil.inflate(layoutInflater, R.layout.recycler_list_item_sub_quest, viewGroup, false);
-            return new ViewHolder(binding);
+            binding.setSubQuest(getItem(position));
+            return convertView;
         }
     }
 }

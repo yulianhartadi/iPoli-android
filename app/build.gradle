@@ -41,5 +41,4 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'net.steamcrafted:materialiconlib:1.0.4'
     compile 'com.pnikosis:materialish-progress:1.5'
-    compile 'org.solovyev.android.views:linear-layout-manager:0.5@aar'
 }
