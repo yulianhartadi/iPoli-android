@@ -1,8 +1,12 @@
 package com.curiousily.ipoli.schedule;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -10,12 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.curiousily.ipoli.Constants;
+import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.app.BaseActivity;
 import com.curiousily.ipoli.app.api.events.APIErrorEvent;
 import com.curiousily.ipoli.quest.AddQuestActivity;
+import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.QuestDetailActivity;
-import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
+import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.schedule.ui.PostponeQuestDialog;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
@@ -50,6 +56,48 @@ public class DailyScheduleActivity extends BaseActivity {
         setContentView(R.layout.activity_daily_schedule);
         ButterKnife.bind(this);
         initUI(savedInstanceState);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        parseIntent();
+    }
+
+    private void parseIntent() {
+        switch (getIntent().getAction()) {
+            case Constants.ACTION_QUEST_DONE:
+            case Constants.ACTION_QUEST_DONE_EARLY:
+                cancelUpdates();
+                cancelNotification();
+                Quest quest = new Quest();
+                quest.id = getIntent().getStringExtra("id");
+                EventBus.post(new FinishQuestEvent(quest));
+                break;
+            case Constants.ACTION_QUEST_CANCELED:
+                cancelUpdates();
+                cancelNotification();
+                break;
+
+        }
+    }
+
+    private void cancelNotification() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.cancel(Constants.QUEST_RUNNING_NOTIFICATION_ID);
+    }
+
+    private void cancelUpdates() {
+        PendingIntent pendingIntent = PendingIntent.getService(this, Constants.QUEST_RUNNING_REQUEST_CODE,
+                new Intent(this, QuestService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pendingIntent);
     }
 
     private void initUI(Bundle savedInstanceState) {

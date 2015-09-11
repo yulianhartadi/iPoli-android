@@ -66,6 +66,7 @@ public class App extends Application {
     public void onStartQuest(StartQuestEvent e) {
         Intent intent = new Intent(this, QuestService.class);
         Quest quest = e.quest;
+        intent.putExtra("id", quest.id);
         intent.putExtra("name", quest.name);
         intent.putExtra("description", quest.description);
         intent.putExtra("duration", quest.duration);
@@ -75,7 +76,7 @@ public class App extends Application {
     }
 
     private void scheduleUpdateAlarm(Intent intent) {
-        PendingIntent pendingIntent = PendingIntent.getService(this, QuestService.UPDATE_PROGRESS_CODE,
+        PendingIntent pendingIntent = PendingIntent.getService(this, Constants.QUEST_RUNNING_REQUEST_CODE,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         startAlarmManager(pendingIntent);
     }

@@ -14,12 +14,9 @@
         android:theme="@style/Theme.iPoli">
 
         <activity
-            android:name=".InviteOnlyActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".schedule.DailyScheduleActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +24,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".InviteOnlyActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".quest.QuestDetailActivity"
             android:parentActivityName=".schedule.DailyScheduleActivity"

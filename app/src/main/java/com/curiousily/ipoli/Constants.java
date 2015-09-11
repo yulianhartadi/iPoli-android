@@ -16,4 +16,12 @@ public interface Constants {
     int[] DURATION_TEXT_INDEX_TO_MINUTES = new int[]{5, 10, 15, 20, 25, 30, 45, 60, 90, 120};
 
     int DAYS_IN_A_WEEK = 7;
+
+    String ACTION_QUEST_DONE_EARLY = "com.curiousily.ipoli.action.QUEST_DONE_EARLY";
+    String ACTION_QUEST_DONE = "com.curiousily.ipoli.action.QUEST_DONE";
+    String ACTION_QUEST_CANCELED = "com.curiousily.ipoli.action.QUEST_CANCELED";
+
+    int QUEST_RUNNING_REQUEST_CODE = 5001;
+    int QUEST_RUNNING_NOTIFICATION_ID = 101;
+    int QUEST_DONE_NOTIFICATION_ID = 102;
 }

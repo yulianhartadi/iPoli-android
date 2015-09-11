@@ -10,8 +10,9 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
-import com.curiousily.ipoli.schedule.DailyScheduleActivity;
+import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.schedule.DailyScheduleActivity;
 import com.curiousily.ipoli.utils.TimerFormat;
 
 import java.util.concurrent.TimeUnit;
@@ -22,10 +23,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class QuestService extends IntentService {
 
-    public static final int UPDATE_PROGRESS_CODE = 5001;
-    public static final int QUEST_RUNNING_NOTIFICATION_ID = 101;
-    public static final int QUEST_DONE_NOTIFICATION_ID = 102;
-
     public QuestService() {
         super("iPoli-QuestService");
     }
@@ -35,18 +32,19 @@ public class QuestService extends IntentService {
         updateProgress(intent);
     }
 
-    private void finishQuest() {
-        PendingIntent pendingIntent = PendingIntent.getService(this, UPDATE_PROGRESS_CODE,
-                new Intent(this, getClass()), PendingIntent.FLAG_UPDATE_CURRENT);
+    private void finishQuest(Intent updateIntent) {
+        PendingIntent pendingIntent = PendingIntent.getService(this, Constants.QUEST_RUNNING_REQUEST_CODE,
+                updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pendingIntent);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.cancel(QUEST_RUNNING_NOTIFICATION_ID);
+        notificationManagerCompat.cancel(Constants.QUEST_RUNNING_NOTIFICATION_ID);
 
-        Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
+        Intent questDoneIntent = new Intent(this, DailyScheduleActivity.class);
+        questDoneIntent.setAction(Constants.ACTION_QUEST_DONE);
 
-        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, questDoneIntent, 0);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
@@ -61,7 +59,7 @@ public class QuestService extends IntentService {
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        notificationManagerCompat.notify(QUEST_DONE_NOTIFICATION_ID, builder.build());
+        notificationManagerCompat.notify(Constants.QUEST_DONE_NOTIFICATION_ID, builder.build());
     }
 
     private void updateProgress(Intent intent) {
@@ -76,13 +74,15 @@ public class QuestService extends IntentService {
         int minutesRemaining = duration - elapsedMinutes;
 
         if (minutesRemaining <= 0) {
-            finishQuest();
+            finishQuest(intent);
             return;
         }
 
         Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notificationIntent.setAction(Constants.ACTION_QUEST_DONE_EARLY);
+        PendingIntent doneIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        notificationIntent.setAction(Constants.ACTION_QUEST_CANCELED);
+        PendingIntent cancelIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
@@ -93,13 +93,13 @@ public class QuestService extends IntentService {
                 .setSmallIcon(R.drawable.ic_play_arrow_white_48dp)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)
-                .addAction(R.drawable.ic_clear_white_24dp, "Cancel", pendingIntent)
-                .addAction(R.drawable.ic_done, "Done", pendingIntent)
+                .addAction(R.drawable.ic_clear_white_24dp, "Cancel", cancelIntent)
+                .addAction(R.drawable.ic_done, "Done", doneIntent)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(QUEST_RUNNING_NOTIFICATION_ID, builder.build());
+        notificationManagerCompat.notify(Constants.QUEST_RUNNING_NOTIFICATION_ID, builder.build());
     }
 }
