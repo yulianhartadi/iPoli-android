@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.services.events.QuestUpdatedEvent;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
@@ -72,9 +73,7 @@ public class DailyScheduleFragment extends Fragment {
 
     @Subscribe
     public void onUserLoadedEvent(UserLoadedEvent e) {
-        Calendar calendar = Calendar.getInstance();
-        Date scheduledFor = calendar.getTime();
-        post(new LoadDailyScheduleEvent(scheduledFor, User.getCurrent(getContext()).id));
+        loadSchedule();
     }
 
     @Subscribe
@@ -120,6 +119,19 @@ public class DailyScheduleFragment extends Fragment {
         loader.setVisibility(View.VISIBLE);
         scheduleList.setVisibility(View.GONE);
         post(new LoadUserEvent());
+    }
+
+    @Subscribe
+    public void onQuestUpdated(QuestUpdatedEvent e) {
+        loadSchedule();
+    }
+
+    private void loadSchedule() {
+        loader.setVisibility(View.VISIBLE);
+        scheduleList.setVisibility(View.GONE);
+        Calendar calendar = Calendar.getInstance();
+        Date scheduledFor = calendar.getTime();
+        post(new LoadDailyScheduleEvent(scheduledFor, User.getCurrent(getContext()).id));
     }
 
     public class DailyScheduleViewAdapter

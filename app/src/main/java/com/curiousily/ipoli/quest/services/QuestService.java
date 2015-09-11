@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.R;
@@ -79,10 +80,11 @@ public class QuestService extends IntentService {
         }
 
         Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
+        notificationIntent.putExtra("id", intent.getStringExtra("id"));
         notificationIntent.setAction(Constants.ACTION_QUEST_DONE);
-        PendingIntent doneIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent doneIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationIntent.setAction(Constants.ACTION_QUEST_CANCELED);
-        PendingIntent cancelIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent cancelIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 

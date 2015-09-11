@@ -141,11 +141,12 @@ public class QuestDetailActivity extends BaseActivity {
         if (isRunning) {
             Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
             notificationIntent.setAction(Constants.ACTION_QUEST_DONE);
+            notificationIntent.putExtra("id", quest.id);
             startActivity(notificationIntent);
             finish();
         } else {
             quest.status = Quest.Status.RUNNING;
-            Snackbar.make(findViewById(R.id.quest_details_content), "Quest started", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(R.id.quest_details_content), R.string.quest_started, Snackbar.LENGTH_LONG).show();
             EventBus.post(new UpdateQuestEvent(quest));
             EventBus.post(new StartQuestEvent(quest));
         }

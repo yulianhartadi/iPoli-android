@@ -42,9 +42,9 @@ public class QuestDoneDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_quest_rate, null);
         ButterKnife.bind(this, view);
+        setCancelable(false);
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.quest_done_title)
-                .setCancelable(false)
                 .setView(view)
                 .create();
     }

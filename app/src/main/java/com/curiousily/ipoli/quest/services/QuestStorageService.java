@@ -1,10 +1,12 @@
 package com.curiousily.ipoli.quest.services;
 
+import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.quest.services.events.QuestSavedEvent;
+import com.curiousily.ipoli.quest.services.events.QuestUpdatedEvent;
 import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
 import com.curiousily.ipoli.schedule.events.QuestRatedEvent;
@@ -42,7 +44,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
+                EventBus.post(new QuestUpdatedEvent());
             }
         });
     }
@@ -53,7 +55,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
+                EventBus.post(new QuestUpdatedEvent());
             }
         });
     }
@@ -63,7 +65,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-
+                EventBus.post(new QuestUpdatedEvent());
             }
         });
     }

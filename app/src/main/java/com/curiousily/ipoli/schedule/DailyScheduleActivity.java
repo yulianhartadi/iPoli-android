@@ -22,6 +22,7 @@ import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.QuestDetailActivity;
 import com.curiousily.ipoli.quest.services.QuestService;
+import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.schedule.ui.PostponeQuestDialog;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
@@ -62,26 +63,24 @@ public class DailyScheduleActivity extends BaseActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         parseIntent();
     }
 
     private void parseIntent() {
+        Quest quest = new Quest();
         switch (getIntent().getAction()) {
             case Constants.ACTION_QUEST_DONE:
                 cancelUpdates();
                 cancelNotification();
-                Quest quest = new Quest();
                 quest.id = getIntent().getStringExtra("id");
                 EventBus.post(new FinishQuestEvent(quest));
                 break;
             case Constants.ACTION_QUEST_CANCELED:
                 cancelUpdates();
                 cancelNotification();
+                quest.id = getIntent().getStringExtra("id");
+                quest.status = Quest.Status.SCHEDULED;
+                EventBus.post(new UpdateQuestEvent(quest));
                 break;
 
         }
