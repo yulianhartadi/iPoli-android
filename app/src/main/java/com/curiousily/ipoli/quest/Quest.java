@@ -70,8 +70,8 @@ public class Quest {
         WORK(MaterialDrawableBuilder.IconValue.BRIEFCASE, R.color.md_teal_500),
         FUN(MaterialDrawableBuilder.IconValue.EMOTICON_HAPPY, R.color.md_purple_500),
         EDUCATION(MaterialDrawableBuilder.IconValue.SCHOOL, R.color.md_blue_500),
-        WELLNESS(MaterialDrawableBuilder.IconValue.HEART, R.color.md_red_500),
-        ACTIVITY(MaterialDrawableBuilder.IconValue.RUN, R.color.md_green_500);
+        WELLNESS(MaterialDrawableBuilder.IconValue.INVERT_COLORS, R.color.md_green_500),
+        ACTIVITY(MaterialDrawableBuilder.IconValue.RUN, R.color.md_red_500);
 
         private final MaterialDrawableBuilder.IconValue icon;
         private final int primaryColor;

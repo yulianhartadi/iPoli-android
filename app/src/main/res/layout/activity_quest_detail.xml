@@ -176,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="4dp"
-                        android:text="33"
+                        android:text="42"
                         android:textColor="@color/md_dark_text_87" />
 
                 </LinearLayout>
