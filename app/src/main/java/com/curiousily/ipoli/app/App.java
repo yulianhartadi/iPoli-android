@@ -5,7 +5,6 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.curiousily.ipoli.APIConstants;
 import com.curiousily.ipoli.AnalyticsConstants;
@@ -14,7 +13,7 @@ import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.APIErrorHandler;
-import com.curiousily.ipoli.app.events.TrackEvent;
+import com.curiousily.ipoli.app.services.AnalyticsService;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.services.QuestService;
@@ -61,7 +60,9 @@ public class App extends Application {
         bus.register(new QuestStorageService(client, bus));
         bus.register(new DailyScheduleStorageService(client, bus));
         bus.register(new UserStorageService(client, bus, this));
+        bus.register(new AnalyticsService(tracker));
     }
+
 
     @Subscribe
     public void onStartQuest(StartQuestEvent e) {
@@ -101,11 +102,6 @@ public class App extends Application {
                 .setErrorHandler(new APIErrorHandler(this))
                 .build()
                 .create(APIClient.class);
-    }
-
-    @Subscribe
-    public void onTrackEvent(TrackEvent e) {
-        tracker.send(e.getEvent());
     }
 
 

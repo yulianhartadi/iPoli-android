@@ -7,11 +7,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
 import com.curiousily.ipoli.schedule.DailyScheduleActivity;
+import com.curiousily.ipoli.ui.events.UserUsedInviteEvent;
 
 import java.util.Random;
 
@@ -20,12 +22,14 @@ import butterknife.OnClick;
 
 public class InviteOnlyActivity extends AppCompatActivity {
 
+    private SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_only);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean("is_invited", false)) {
             startMainActivity();
             return;
@@ -59,10 +63,19 @@ public class InviteOnlyActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.invite_button)
-    public void onInviteTapped(Button button) {
+    public void onInviteClick(Button button) {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", "support@curiousily.com", null));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "iPoli invitation request");
         startActivity(Intent.createChooser(emailIntent, "Request your invite"));
+    }
+
+    @OnClick(R.id.invite_logo_image)
+    public void onLogoClick(View view) {
+        EventBus.post(new UserUsedInviteEvent());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("is_invited", true);
+        editor.apply();
+        startMainActivity();
     }
 }
