@@ -9,7 +9,7 @@ public interface Constants {
     String DEFAULT_SERVER_DATE_FORMAT = "yyyy-MM-dd";
     String DEFAULT_UI_DATE_FORMAT = "dd-MM-yyyy";
     String DEFAULT_TIME_FORMAT = "HH:mm";
-    String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    String DEFAULT_SERVER_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     String DATA_SHARING_KEY_QUEST = "quest";
     String KEY_USER_ID = "key_user_id";
 
@@ -17,7 +17,6 @@ public interface Constants {
 
     int DAYS_IN_A_WEEK = 7;
 
-    String ACTION_QUEST_DONE_EARLY = "com.curiousily.ipoli.action.QUEST_DONE_EARLY";
     String ACTION_QUEST_DONE = "com.curiousily.ipoli.action.QUEST_DONE";
     String ACTION_QUEST_CANCELED = "com.curiousily.ipoli.action.QUEST_CANCELED";
 

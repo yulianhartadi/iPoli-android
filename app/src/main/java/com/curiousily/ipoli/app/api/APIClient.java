@@ -24,7 +24,7 @@ public interface APIClient {
 
     @Headers("Content-Type: application/json")
     @POST("/quests")
-    void createQuest(@Body Quest quest, Callback<Quest> cb);
+    void createQuest(@Body Quest quest, Callback<Object> cb);
 
     @Headers("Content-Type: application/json")
     @PUT("/quests")

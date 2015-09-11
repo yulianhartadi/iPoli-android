@@ -73,7 +73,6 @@ public class DailyScheduleActivity extends BaseActivity {
     private void parseIntent() {
         switch (getIntent().getAction()) {
             case Constants.ACTION_QUEST_DONE:
-            case Constants.ACTION_QUEST_DONE_EARLY:
                 cancelUpdates();
                 cancelNotification();
                 Quest quest = new Quest();

@@ -194,7 +194,7 @@ public class DailyScheduleFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             final Quest quest = schedule.quests.get(position);
-            if (quest.status == Quest.Status.SCHEDULED) {
+            if (quest.status == Quest.Status.SCHEDULED || quest.status == Quest.Status.RUNNING) {
                 holder.itemView.setVisibility(View.VISIBLE);
             } else {
                 holder.itemView.setVisibility(View.GONE);
@@ -210,7 +210,6 @@ public class DailyScheduleFragment extends Fragment {
             drawable.setColor(getResources().getColor(quest.context.getPrimaryColor()));
             holder.icon.setIcon(quest.context.getIcon());
             holder.name.setText(quest.name);
-//            holder.tags.setText(TextUtils.join(", ", quest.tags));
             holder.tags.setText(quest.description);
             holder.duration.setText(String.format("%d min", quest.duration));
         }

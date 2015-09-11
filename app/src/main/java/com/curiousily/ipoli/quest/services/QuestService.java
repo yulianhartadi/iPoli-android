@@ -79,7 +79,7 @@ public class QuestService extends IntentService {
         }
 
         Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
-        notificationIntent.setAction(Constants.ACTION_QUEST_DONE_EARLY);
+        notificationIntent.setAction(Constants.ACTION_QUEST_DONE);
         PendingIntent doneIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
         notificationIntent.setAction(Constants.ACTION_QUEST_CANCELED);
         PendingIntent cancelIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);

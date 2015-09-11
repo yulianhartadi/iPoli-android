@@ -5,6 +5,7 @@ import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.quest.services.events.QuestSavedEvent;
+import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
 import com.curiousily.ipoli.schedule.events.QuestRatedEvent;
 import com.squareup.otto.Bus;
@@ -27,12 +28,22 @@ public class QuestStorageService {
 
     @Subscribe
     public void onCreateQuest(CreateQuestEvent e) {
-        client.createQuest(e.quest, new AsyncAPICallback<Quest>() {
+        client.createQuest(e.quest, new AsyncAPICallback<Object>() {
             @Override
-            public void success(Quest quest, Response response) {
-                bus.post(new QuestSavedEvent(quest));
+            public void success(Object jsonResponse, Response response) {
+                bus.post(new QuestSavedEvent());
             }
 
+        });
+    }
+
+    @Subscribe
+    public void onUpdateQuest(UpdateQuestEvent e) {
+        client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
+            @Override
+            public void success(Quest quest, Response response) {
+
+            }
         });
     }
 

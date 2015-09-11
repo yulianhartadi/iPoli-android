@@ -24,8 +24,10 @@ import com.curiousily.ipoli.app.BaseActivity;
 import com.curiousily.ipoli.databinding.ActivityQuestDetailBinding;
 import com.curiousily.ipoli.databinding.ListItemSubQuestBinding;
 import com.curiousily.ipoli.quest.events.StartQuestEvent;
+import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
+import com.curiousily.ipoli.schedule.DailyScheduleActivity;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
 import com.curiousily.ipoli.ui.dialogs.InputDialogFragment;
 import com.curiousily.ipoli.ui.events.UserInputEvent;
@@ -52,6 +54,7 @@ public class QuestDetailActivity extends BaseActivity {
 
     private Quest quest;
     private SubQuestAdapter subQuestAdapter;
+    private QuestViewModel questViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class QuestDetailActivity extends BaseActivity {
 
         quest = DataSharingUtils.get(Constants.DATA_SHARING_KEY_QUEST, Quest.class, getIntent());
 
-        QuestViewModel questViewModel = QuestViewModel.from(quest);
+        questViewModel = QuestViewModel.from(quest);
         binding.setQuest(questViewModel);
 
         subQuestAdapter = new SubQuestAdapter(this, questViewModel.subQuests);
@@ -133,9 +136,19 @@ public class QuestDetailActivity extends BaseActivity {
 
     @OnClick(R.id.quest_details_start)
     public void onStartClick(FloatingActionButton button) {
-        button.setImageResource(R.drawable.ic_done_white_48dp);
-        Snackbar.make(findViewById(R.id.quest_details_content), "Quest started", Snackbar.LENGTH_LONG).show();
-        EventBus.post(new StartQuestEvent(quest));
+        boolean isRunning = questViewModel.isRunning.get();
+        questViewModel.isRunning.set(!isRunning);
+        if (isRunning) {
+            Intent notificationIntent = new Intent(this, DailyScheduleActivity.class);
+            notificationIntent.setAction(Constants.ACTION_QUEST_DONE);
+            startActivity(notificationIntent);
+            finish();
+        } else {
+            quest.status = Quest.Status.RUNNING;
+            Snackbar.make(findViewById(R.id.quest_details_content), "Quest started", Snackbar.LENGTH_LONG).show();
+            EventBus.post(new UpdateQuestEvent(quest));
+            EventBus.post(new StartQuestEvent(quest));
+        }
     }
 
     @Subscribe
