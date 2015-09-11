@@ -62,8 +62,7 @@
                 android:layout_height="72dp"
                 android:layout_marginLeft="72dp"
                 android:layout_marginStart="72dp"
-                android:orientation="vertical"
-                android:visibility="@{quest.description != null ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -120,6 +119,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
                         android:text="@{String.valueOf(quest.duration)}"
                         android:textColor="@color/md_dark_text_87" />
 
@@ -175,6 +175,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
                         android:text="33"
                         android:textColor="@color/md_dark_text_87" />
 
@@ -203,6 +204,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
                         android:text="SHARE"
                         android:textColor="@color/md_dark_text_87" />
 
