@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -109,7 +110,6 @@ public class DailyScheduleActivity extends BaseActivity {
 
     private void initUI(Bundle savedInstanceState) {
         setupActionBar();
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         setupDrawerContent();
         if (savedInstanceState != null) {
             return;
@@ -119,11 +119,11 @@ public class DailyScheduleActivity extends BaseActivity {
 
     private void setupActionBar() {
         setSupportActionBar(toolbar);
-//        ActionBar ab = getSupportActionBar();
-//        if (ab != null) {
-//            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-//            ab.setDisplayHomeAsUpEnabled(true);
-//        }
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @OnClick(R.id.add_button)
