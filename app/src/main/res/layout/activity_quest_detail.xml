@@ -244,6 +244,7 @@
                     android:layout_marginLeft="48dp"
                     android:layout_marginStart="48dp"
                     android:gravity="bottom"
+                    android:inputType="textCapSentences"
                     android:text="@{quest.tags}"
                     android:textColor="@color/md_dark_text_87" />
             </LinearLayout>

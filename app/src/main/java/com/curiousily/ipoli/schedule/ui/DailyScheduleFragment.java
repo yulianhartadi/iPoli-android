@@ -93,6 +93,7 @@ public class DailyScheduleFragment extends Fragment {
     }
 
     private void displaySchedule(DailySchedule schedule) {
+        emptySchedule.setVisibility(View.GONE);
         scheduleList.setVisibility(View.VISIBLE);
         scheduleList.setLayoutManager(new LinearLayoutManager(getContext()));
         DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(schedule);
