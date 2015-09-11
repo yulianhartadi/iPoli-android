@@ -34,6 +34,7 @@ import com.squareup.otto.Subscribe;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -55,6 +56,7 @@ public class DailyScheduleFragment extends Fragment {
 
     @Bind(R.id.schedule_empty_layout)
     View emptySchedule;
+    private ArrayList<Quest> invisibleQuests;
 
     @Nullable
     @Override
@@ -95,11 +97,22 @@ public class DailyScheduleFragment extends Fragment {
         emptySchedule.setVisibility(View.GONE);
         scheduleList.setVisibility(View.VISIBLE);
         scheduleList.setLayoutManager(new LinearLayoutManager(getContext()));
+        fillInvisibleQuests(schedule);
+        schedule.quests.removeAll(invisibleQuests);
         DailyScheduleViewAdapter adapter = new DailyScheduleViewAdapter(schedule);
         scheduleList.setAdapter(adapter);
         ItemTouchCallback touchCallback = new ItemTouchCallback(adapter);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(scheduleList);
+    }
+
+    private void fillInvisibleQuests(DailySchedule schedule) {
+        invisibleQuests = new ArrayList<>();
+        for (Quest quest : schedule.quests) {
+            if (quest.status != Quest.Status.RUNNING && quest.status != Quest.Status.SCHEDULED) {
+                invisibleQuests.add(quest);
+            }
+        }
     }
 
     private void post(Object event) {
@@ -149,7 +162,9 @@ public class DailyScheduleFragment extends Fragment {
                     Collections.swap(schedule.quests, i, i - 1);
                 }
             }
+            schedule.quests.addAll(invisibleQuests);
             post(new UpdateDailyScheduleEvent(schedule));
+            schedule.quests.removeAll(invisibleQuests);
             notifyItemMoved(fromPosition, toPosition);
         }
 
@@ -161,6 +176,7 @@ public class DailyScheduleFragment extends Fragment {
             } else {
                 post(new FinishQuestEvent(quest));
             }
+            invisibleQuests.add(quest);
             schedule.quests.remove(quest);
             notifyItemRemoved(position);
         }

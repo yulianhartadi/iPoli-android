@@ -53,7 +53,9 @@ public class QuestDoneDialog extends DialogFragment {
     public void onDoneClick() {
         quest.rating = (int) rating.getRating();
         quest.log = journal.getText().toString();
+        quest.status = Quest.Status.DONE;
         EventBus.post(new QuestRatedEvent(quest));
+        dismiss();
     }
 
 

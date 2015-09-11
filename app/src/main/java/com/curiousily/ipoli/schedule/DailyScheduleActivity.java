@@ -63,6 +63,11 @@ public class DailyScheduleActivity extends BaseActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         parseIntent();
     }
 

@@ -23,7 +23,7 @@ public class InviteOnlyActivity extends AppCompatActivity {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getColor(R.color.md_blue_700));
+            window.setStatusBarColor(getResources().getColor(R.color.md_blue_700));
         }
         ButterKnife.bind(this);
     }
