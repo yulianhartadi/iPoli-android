@@ -24,6 +24,7 @@ import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.quest.viewmodel.SubQuestViewModel;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
+import com.curiousily.ipoli.ui.dialogs.PromptDialogFragment;
 import com.curiousily.ipoli.utils.DataSharingUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -44,6 +45,7 @@ public class QuestDetailActivity extends AppCompatActivity {
     @Bind(R.id.quest_details_sub_quests)
     RecyclerView subQuests;
 
+
     private Quest quest;
 
     @Override
@@ -59,6 +61,7 @@ public class QuestDetailActivity extends AppCompatActivity {
         binding.setQuest(questViewModel);
 
         subQuests.setLayoutManager(new LinearLayoutManager(this));
+        subQuests.setHasFixedSize(true);
         subQuests.setAdapter(new SubQuestAdapter(questViewModel.subQuests));
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -98,8 +101,14 @@ public class QuestDetailActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.reverse_slide_in, R.anim.reverse_slide_out);
     }
 
-    private void showQuestRunningDialog() {
 
+    @OnClick(R.id.quest_details_add_sub_quest)
+    public void onAddSubQuestClick(View view) {
+        DialogFragment newFragment = PromptDialogFragment.newInstance(R.string.new_sub_quest);
+        newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
+    }
+
+    private void showQuestRunningDialog() {
         DialogFragment newFragment = QuestDoneDialog.newInstance();
         newFragment.show(getSupportFragmentManager(), Constants.ALERT_DIALOG_TAG);
     }

@@ -34,7 +34,12 @@
                 android:id="@+id/add_quest_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Quest (e.g. Read book)" />
+                android:hint="Quest (e.g. Read book)"
+                android:inputType="textCapSentences"
+                android:singleLine="true">
+
+                <requestFocus />
+            </EditText>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -152,7 +157,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
-                android:prompt="@string/app_name" />
+                android:spinnerMode="dialog"
+                android:prompt="@string/prompt_choose_quest_context" />
         </LinearLayout>
 
         <LinearLayout

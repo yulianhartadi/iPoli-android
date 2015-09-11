@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.ui;
+package com.curiousily.ipoli.ui.dialogs;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

@@ -39,7 +39,8 @@
         <activity
             android:name=".quest.AddQuestActivity"
             android:parentActivityName=".schedule.DailyScheduleActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".schedule.DailyScheduleActivity" />
@@ -51,8 +52,8 @@
 
         <activity
             android:name=".input.NewInputActivity"
-            android:screenOrientation="portrait"
             android:label="New note"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.AlertDialog" />
 
         <!-- Widgets !-->

@@ -16,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,14 +26,13 @@ import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
-import com.curiousily.ipoli.ui.DatePickerFragment;
-import com.curiousily.ipoli.ui.TimePickerFragment;
+import com.curiousily.ipoli.ui.dialogs.DatePickerFragment;
+import com.curiousily.ipoli.ui.dialogs.TimePickerFragment;
 import com.curiousily.ipoli.ui.events.DateSelectedEvent;
 import com.curiousily.ipoli.ui.events.TimeSelectedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 

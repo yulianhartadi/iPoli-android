@@ -29,6 +29,8 @@
         <item>1 hour and 30 minutes</item>
         <item>2 hours</item>
     </string-array>
-    <string name="choose_quest_duration">Choose quest duration</string>
+    <string name="prompt_choose_quest_duration">Quest duration</string>
+    <string name="prompt_choose_quest_context">Quest context</string>
     <string name="toast_quest_saved">Your awesome quest is saved</string>
+    <string name="new_sub_quest">New Sub Quest</string>
 </resources>

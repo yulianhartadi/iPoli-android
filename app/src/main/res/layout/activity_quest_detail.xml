@@ -147,6 +147,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
                         android:text="@{quest.context}"
                         android:textColor="@color/md_dark_text_87" />
                 </LinearLayout>
@@ -250,8 +251,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:layout_marginStart="24dp"
-                android:orientation="horizontal"
-                android:visibility="@{quest.subQuests.isEmpty() ? View.GONE : View.VISIBLE}">
+                android:orientation="horizontal">
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
                     android:id="@+id/quest_details_todo_icon"
@@ -263,14 +263,28 @@
                     app:materialIconColor="@color/md_dark_text_54"
                     app:materialIconSize="24dp" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/quest_details_sub_quests"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="42dp"
                     android:layout_marginStart="42dp"
-                    android:paddingBottom="8dp"
-                    android:paddingTop="8dp" />
+                    android:orientation="vertical">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/quest_details_sub_quests"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/quest_details_add_sub_quest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:hint="Add Sub Quest"
+                        android:textColor="@color/md_dark_text_87" />
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <LinearLayout
