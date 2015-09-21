@@ -13,6 +13,7 @@ import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.APIErrorHandler;
+import com.curiousily.ipoli.app.jobs.RemindPlanDayJob;
 import com.curiousily.ipoli.app.services.AnalyticsService;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.StartQuestEvent;
@@ -20,6 +21,7 @@ import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.quest.services.QuestStorageService;
 import com.curiousily.ipoli.schedule.services.DailyScheduleStorageService;
 import com.curiousily.ipoli.user.services.UserStorageService;
+import com.curiousily.ipoli.utils.Time;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.google.gson.FieldNamingPolicy;
@@ -46,6 +48,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         initAnalytics();
+        initPlanDayReminder();
     }
 
     private void initAnalytics() {
@@ -63,6 +66,10 @@ public class App extends Application {
         bus.register(new AnalyticsService(tracker));
     }
 
+    private void initPlanDayReminder() {
+        Time time = Time.of(Constants.DEFAULT_PLAN_DAY_TIME);
+        new RemindPlanDayJob(this, time).schedule();
+    }
 
     @Subscribe
     public void onStartQuest(StartQuestEvent e) {
@@ -103,6 +110,5 @@ public class App extends Application {
                 .build()
                 .create(APIClient.class);
     }
-
 
 }
