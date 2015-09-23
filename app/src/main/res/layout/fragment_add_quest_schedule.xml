@@ -85,41 +85,9 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="48dp"
                 android:layout_marginStart="48dp"
+                android:entries="@array/duration_options"
                 android:prompt="@string/prompt_choose_quest_duration"
                 android:spinnerMode="dialog" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/add_quest_start_time_layout"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:scaleType="center"
-                app:materialIcon="clock"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <Button
-                android:id="@+id/add_quest_start_time"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="156dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:background="?attr/colorAccent"
-                android:text="Starts now"
-                android:textColor="@color/md_white" />
 
         </LinearLayout>
 
@@ -168,9 +136,9 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/add_quest_repeat_layout"
+            android:id="@+id/add_quest_repeat_schedule_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
             android:layout_marginEnd="16dp"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="16dp"
@@ -187,31 +155,76 @@
                 app:materialIconSize="24dp" />
 
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="48dp"
+                android:layout_marginStart="48dp"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <Spinner
+                    android:id="@+id/add_quest_schedule_interval"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:entries="@array/schedule_intervals" />
+
+                <Spinner
+                    android:id="@+id/add_quest_schedule_frequency"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:entries="@array/schedule_frequencies" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_quest_preferred_days_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="24dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
+                android:layout_marginLeft="72dp"
+                android:layout_marginStart="72dp"
                 android:orientation="vertical">
 
                 <CheckBox
                     android:id="@+id/add_quest_repeat_monday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Monday" />
 
                 <CheckBox
                     android:id="@+id/add_quest_repeat_tuesday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Tuesday" />
 
                 <CheckBox
                     android:id="@+id/add_quest_repeat_wednesday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Wednesday" />
 
+                <CheckBox
+                    android:id="@+id/add_quest_repeat_thursday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Thursday" />
 
             </LinearLayout>
 
@@ -224,21 +237,17 @@
                 android:orientation="vertical">
 
                 <CheckBox
-                    android:id="@+id/add_quest_repeat_thursday"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thursday" />
-
-                <CheckBox
                     android:id="@+id/add_quest_repeat_friday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Friday" />
 
                 <CheckBox
                     android:id="@+id/add_quest_repeat_saturday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Saturday" />
 
                 <CheckBox

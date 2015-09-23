@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -27,9 +26,7 @@ import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.ui.dialogs.DatePickerFragment;
-import com.curiousily.ipoli.ui.dialogs.TimePickerFragment;
 import com.curiousily.ipoli.ui.events.DateSelectedEvent;
-import com.curiousily.ipoli.ui.events.TimeSelectedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -61,12 +58,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     @Bind(R.id.add_quest_due_date)
     Button dueDate;
 
-    @Bind(R.id.add_quest_start_time)
-    Button startTime;
-
-    @Bind(R.id.add_quest_repeat_layout)
-    View repeatLayout;
-
     private Quest quest;
 
     private static final SparseArray<Quest.Repeat> CHECK_BOX_TO_REPEAT = new SparseArray<Quest.Repeat>() {{
@@ -91,12 +82,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
-    @OnClick(R.id.add_quest_start_time)
-    public void onStartTimeClick(Button button) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
-    }
-
     @OnClick({R.id.add_quest_repeat_monday, R.id.add_quest_repeat_tuesday, R.id.add_quest_repeat_wednesday, R.id.add_quest_repeat_thursday, R.id.add_quest_repeat_friday, R.id.add_quest_repeat_saturday, R.id.add_quest_repeat_sunday})
     public void onRequestRepeatClick(CheckBox checkBox) {
         Quest.Repeat repeatDay = CHECK_BOX_TO_REPEAT.get(checkBox.getId());
@@ -115,10 +100,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         ButterKnife.bind(this, view);
 
         String[] durationOptions = getResources().getStringArray(R.array.duration_options);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item, durationOptions);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        duration.setAdapter(dataAdapter);
         duration.setSelection(durationOptions.length / 2);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
@@ -130,7 +111,8 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         timesPerDay.setOnSeekBarChangeListener(this);
 
         if (quest.type != Quest.QuestType.RECURRENT) {
-            repeatLayout.setVisibility(View.GONE);
+            view.findViewById(R.id.add_quest_preferred_days_layout).setVisibility(View.GONE);
+            view.findViewById(R.id.add_quest_repeat_schedule_layout).setVisibility(View.GONE);
         }
 
         return view;
@@ -200,20 +182,5 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         quest.due = time.getTime();
         SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_UI_DATE_FORMAT, Locale.getDefault());
         dueDate.setText(format.format(quest.due));
-    }
-
-    @Subscribe
-    public void onStartTimeChanged(TimeSelectedEvent e) {
-        Calendar due = Calendar.getInstance();
-        due.setTime(quest.due);
-        Calendar time = Calendar.getInstance();
-        time.setTime(e.time);
-
-        due.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
-        due.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
-
-        quest.due = due.getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat(Constants.DEFAULT_TIME_FORMAT, Locale.getDefault());
-        startTime.setText(formatter.format(quest.due));
     }
 }
