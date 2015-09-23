@@ -8,9 +8,7 @@ import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,11 +30,7 @@ public class Quest {
 
     public QuestType type;
 
-    public int timesPerDay;
-
     public String notes;
-
-    public Set<Repeat> recurrence = new HashSet<>();
 
     public Date due = DateUtils.getNow();
 
@@ -47,6 +41,7 @@ public class Quest {
     public int rating;
     public String log;
     public Status status;
+    public Recurrence recurrence;
 
     public Quest() {
     }
@@ -55,7 +50,7 @@ public class Quest {
         WAITING, SCHEDULED, RUNNING, DONE, CANCELED
     }
 
-    public enum Repeat {
+    public enum WeekDay {
         MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
     }
 
@@ -69,7 +64,7 @@ public class Quest {
         HOME(MaterialDrawableBuilder.IconValue.HOME, R.color.md_pink_500),
         WORK(MaterialDrawableBuilder.IconValue.BRIEFCASE, R.color.md_teal_500),
         FUN(MaterialDrawableBuilder.IconValue.EMOTICON_HAPPY, R.color.md_purple_500),
-        EDUCATION(MaterialDrawableBuilder.IconValue.SCHOOL, R.color.md_blue_500),
+        LEARNING(MaterialDrawableBuilder.IconValue.SCHOOL, R.color.md_blue_500),
         WELLNESS(MaterialDrawableBuilder.IconValue.INVERT_COLORS, R.color.md_green_500),
         ACTIVITY(MaterialDrawableBuilder.IconValue.RUN, R.color.md_red_500);
 

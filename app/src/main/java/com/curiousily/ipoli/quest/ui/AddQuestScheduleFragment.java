@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.quest.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.AddQuestActivity;
 import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.Recurrence;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.ui.dialogs.DatePickerFragment;
 import com.curiousily.ipoli.ui.events.DateSelectedEvent;
@@ -58,16 +60,31 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     @Bind(R.id.add_quest_due_date)
     Button dueDate;
 
+    @Bind(R.id.add_quest_recurrence_interval)
+    Spinner recurrenceInterval;
+
+    @Bind(R.id.add_quest_recurrence_frequency)
+    Spinner recurrenceFrequency;
+
+    @Bind(R.id.add_quest_included_days_layout)
+    ViewGroup includedDaysLayout;
+
     private Quest quest;
 
-    private static final SparseArray<Quest.Repeat> CHECK_BOX_TO_REPEAT = new SparseArray<Quest.Repeat>() {{
-        put(R.id.add_quest_repeat_monday, Quest.Repeat.MONDAY);
-        put(R.id.add_quest_repeat_tuesday, Quest.Repeat.TUESDAY);
-        put(R.id.add_quest_repeat_wednesday, Quest.Repeat.WEDNESDAY);
-        put(R.id.add_quest_repeat_thursday, Quest.Repeat.THURSDAY);
-        put(R.id.add_quest_repeat_friday, Quest.Repeat.FRIDAY);
-        put(R.id.add_quest_repeat_saturday, Quest.Repeat.SATURDAY);
-        put(R.id.add_quest_repeat_sunday, Quest.Repeat.SUNDAY);
+    private static final SparseArray<Quest.WeekDay> CHECK_BOX_TO_WEEK_DAY = new SparseArray<Quest.WeekDay>() {{
+        put(R.id.add_quest_repeat_monday, Quest.WeekDay.MONDAY);
+        put(R.id.add_quest_repeat_tuesday, Quest.WeekDay.TUESDAY);
+        put(R.id.add_quest_repeat_wednesday, Quest.WeekDay.WEDNESDAY);
+        put(R.id.add_quest_repeat_thursday, Quest.WeekDay.THURSDAY);
+        put(R.id.add_quest_repeat_friday, Quest.WeekDay.FRIDAY);
+        put(R.id.add_quest_repeat_saturday, Quest.WeekDay.SATURDAY);
+        put(R.id.add_quest_repeat_sunday, Quest.WeekDay.SUNDAY);
+    }};
+
+    private static final SparseArray<Recurrence.Frequency> SPINNER_TO_FREQUENCY = new SparseArray<Recurrence.Frequency>() {{
+        put(0, Recurrence.Frequency.WEEKLY);
+        put(1, Recurrence.Frequency.MONTHLY);
+        put(2, Recurrence.Frequency.YEARLY);
     }};
 
     @Override
@@ -80,16 +97,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     public void onDueDateClick(Button button) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
-    }
-
-    @OnClick({R.id.add_quest_repeat_monday, R.id.add_quest_repeat_tuesday, R.id.add_quest_repeat_wednesday, R.id.add_quest_repeat_thursday, R.id.add_quest_repeat_friday, R.id.add_quest_repeat_saturday, R.id.add_quest_repeat_sunday})
-    public void onRequestRepeatClick(CheckBox checkBox) {
-        Quest.Repeat repeatDay = CHECK_BOX_TO_REPEAT.get(checkBox.getId());
-        if (checkBox.isChecked()) {
-            quest.recurrence.add(repeatDay);
-        } else {
-            quest.recurrence.remove(repeatDay);
-        }
     }
 
     @Nullable
@@ -111,8 +118,8 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         timesPerDay.setOnSeekBarChangeListener(this);
 
         if (quest.type != Quest.QuestType.RECURRENT) {
-            view.findViewById(R.id.add_quest_preferred_days_layout).setVisibility(View.GONE);
-            view.findViewById(R.id.add_quest_repeat_schedule_layout).setVisibility(View.GONE);
+            view.findViewById(R.id.add_quest_recurrence_layout).setVisibility(View.GONE);
+            includedDaysLayout.setVisibility(View.GONE);
         }
 
         return view;
@@ -141,13 +148,43 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         switch (item.getItemId()) {
             case R.id.action_done:
                 quest.duration = Constants.DURATION_TEXT_INDEX_TO_MINUTES[duration.getSelectedItemPosition()];
-                quest.timesPerDay = timesPerDay.getProgress();
+                quest.recurrence = createRecurrence();
                 quest.notes = notes.getText().toString();
                 EventBus.post(new QuestBuiltEvent(quest));
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    private Recurrence createRecurrence() {
+        Recurrence recurrence = new Recurrence();
+        recurrence.interval = recurrenceInterval.getSelectedItemPosition() + 1;
+        recurrence.frequency = SPINNER_TO_FREQUENCY.get(recurrenceFrequency.getSelectedItemPosition());
+        recurrence.timesPerDay = timesPerDay.getProgress() + 1;
+        addIncludedDays(includedDaysLayout, recurrence);
+        return recurrence;
+    }
+
+    private void addIncludedDays(ViewGroup root, Recurrence recurrence) {
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View child = root.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                addIncludedDays((ViewGroup) child, recurrence);
+            } else if (isCheckedCheckBox(child)) {
+                addIncludedDayIfChecked(recurrence, child);
+            }
+        }
+    }
+
+    private void addIncludedDayIfChecked(Recurrence recurrence, View child) {
+        Quest.WeekDay weekDay = CHECK_BOX_TO_WEEK_DAY.get(child.getId());
+        recurrence.includedDays.add(weekDay.name());
+    }
+
+    private boolean isCheckedCheckBox(View child) {
+        return child instanceof CheckBox && ((CheckBox) child).isChecked();
     }
 
     public void setQuest(Quest quest) {
@@ -172,6 +209,7 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     public void onDueDateChanged(DateSelectedEvent e) {
         Calendar due = Calendar.getInstance();
         due.setTime(e.date);
+
         Calendar time = Calendar.getInstance();
         time.setTime(quest.due);
 
