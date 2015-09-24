@@ -126,6 +126,12 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         EventBus.get().register(this);
