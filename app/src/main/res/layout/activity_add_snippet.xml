@@ -1,64 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_white"
     android:minHeight="120dp"
-    android:minWidth="300dp">
+    android:minWidth="300dp"
+    android:orientation="vertical">
 
     <EditText
-        android:id="@+id/input_query"
-        android:layout_width="wrap_content"
+        android:id="@+id/snippet_input_text"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
-        android:layout_toLeftOf="@+id/input_mic_button"
-        android:layout_toStartOf="@id/input_mic_button"
-        android:hint="@string/speak_hint" />
+        android:hint="@string/snippet_hint" />
 
-    <net.steamcrafted.materialiconlib.MaterialIconView
-        android:id="@id/input_mic_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+    <TextView
+        android:id="@+id/snippet_input_voice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
-        android:layout_marginTop="38dp"
-        android:scaleType="center"
-        app:materialIcon="microphone"
-        app:materialIconColor="@color/md_blue_500"
-        app:materialIconSize="36dp" />
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="20dp"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:layout_below="@id/input_query"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="24dp">
 
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:id="@+id/snippet_mic_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:scaleType="center"
+            app:materialIcon="microphone"
+            app:materialIconColor="@color/md_blue_500"
+            app:materialIconSize="36dp" />
+
         <Button
-            android:id="@+id/input_cancel"
+            android:id="@+id/snippet_cancel"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_toLeftOf="@+id/input_save"
-            android:layout_toStartOf="@id/input_save"
+            android:layout_toLeftOf="@+id/snippet_save"
+            android:layout_toStartOf="@id/snippet_save"
             android:text="@string/cancel"
             android:textColor="?attr/colorAccent" />
 
         <Button
-            android:id="@id/input_save"
+            android:id="@id/snippet_save"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,4 +73,4 @@
             android:textColor="?attr/colorAccent" />
     </RelativeLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -1,4 +1,4 @@
-package com.curiousily.ipoli.input;
+package com.curiousily.ipoli.snippet;
 
 import com.curiousily.ipoli.user.User;
 
@@ -6,7 +6,7 @@ import com.curiousily.ipoli.user.User;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/10/15.
  */
-public class Input {
+public class Snippet {
 
     public String text;
 

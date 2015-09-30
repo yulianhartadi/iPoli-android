@@ -1,9 +1,9 @@
-package com.curiousily.ipoli.input.services;
+package com.curiousily.ipoli.snippet.services;
 
 import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.AsyncAPICallback;
-import com.curiousily.ipoli.input.Input;
-import com.curiousily.ipoli.input.events.CreateInputEvent;
+import com.curiousily.ipoli.snippet.Snippet;
+import com.curiousily.ipoli.snippet.events.CreateSnippetEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -13,20 +13,20 @@ import retrofit.client.Response;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/10/15.
  */
-public class InputStorageService {
+public class SnippetStorageService {
     private final APIClient client;
     private final Bus bus;
 
-    public InputStorageService(APIClient client, Bus bus) {
+    public SnippetStorageService(APIClient client, Bus bus) {
         this.client = client;
         this.bus = bus;
     }
 
     @Subscribe
-    public void onCreateInput(CreateInputEvent e) {
-        client.createInput(e.input, new AsyncAPICallback<Input>() {
+    public void onCreateInput(CreateSnippetEvent e) {
+        client.createSnippet(e.snippet, new AsyncAPICallback<Snippet>() {
             @Override
-            public void success(Input input, Response response) {
+            public void success(Snippet snippet, Response response) {
             }
         });
     }

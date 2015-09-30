@@ -15,6 +15,7 @@ import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.APIErrorHandler;
 import com.curiousily.ipoli.app.jobs.RemindPlanDayJob;
 import com.curiousily.ipoli.app.services.AnalyticsService;
+import com.curiousily.ipoli.app.services.SpeechRecognizerService;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.services.QuestService;
@@ -64,6 +65,7 @@ public class App extends Application {
         bus.register(new DailyScheduleStorageService(client, bus));
         bus.register(new UserStorageService(client, bus, this));
         bus.register(new AnalyticsService(tracker));
+        bus.register(new SpeechRecognizerService(this));
     }
 
     private void initPlanDayReminder() {

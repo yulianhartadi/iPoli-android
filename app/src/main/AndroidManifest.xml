@@ -55,8 +55,8 @@
             android:exported="false" />
 
         <activity
-            android:name=".input.NewInputActivity"
-            android:label="New note"
+            android:name=".snippet.NewSnippetActivity"
+            android:label="@string/new_snippet_label"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.AlertDialog" />
 
@@ -71,7 +71,7 @@
         <!-- Widgets !-->
 
         <receiver
-            android:name=".input.widget.InputWidgetProvider"
+            android:name=".snippet.widget.SnippetWidgetProvider"
             android:icon="@mipmap/ic_launcher"
             android:label="1 Quick Note">
             <intent-filter>

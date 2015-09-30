@@ -11,6 +11,7 @@
     <string name="dialog_postpone_title">Postpone for…</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="snippet_hint">e.g. Find new book to read</string>
     <string name="speak_hint">Listening…</string>
     <string name="save">Save</string>
     <string name="error_server_response">Server went nuts. Care to try again?</string>
@@ -22,4 +23,5 @@
     <string name="toast_quest_saved">Your awesome quest is saved</string>
     <string name="new_sub_quest">New Sub Quest</string>
     <string name="quest_started">Quest started</string>
+    <string name="new_snippet_label">New snippet</string>
 </resources>
