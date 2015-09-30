@@ -11,10 +11,13 @@
         android:layout_height="match_parent"
         app:eventTextColor="@color/md_white"
         app:eventTextSize="16sp"
+        app:headerRowBackgroundColor="@color/md_blue_700"
+        app:headerRowPadding="26dp"
         app:hourHeight="140dp"
         app:noOfVisibleDays="1"
         app:nowLineColor="?attr/colorAccent"
         app:nowLineThickness="1dp"
         app:showHalfHours="true"
-        app:todayBackgroundColor="@color/md_white" />
+        app:todayBackgroundColor="@color/md_white"
+        app:todayHeaderTextColor="@color/md_white" />
 </LinearLayout>
