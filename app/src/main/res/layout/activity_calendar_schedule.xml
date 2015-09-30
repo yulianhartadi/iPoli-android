@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.curiousily.ipoli.schedule.ui.dayview.DayView
+        android:id="@+id/day_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:eventTextColor="@color/md_white"
+        app:eventTextSize="16sp"
+        app:hourHeight="140dp"
+        app:noOfVisibleDays="1"
+        app:nowLineColor="?attr/colorAccent"
+        app:nowLineThickness="1dp"
+        app:showHalfHours="true"
+        app:todayBackgroundColor="@color/md_white" />
+</LinearLayout>
