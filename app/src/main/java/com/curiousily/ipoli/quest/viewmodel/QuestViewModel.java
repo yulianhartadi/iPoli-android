@@ -9,6 +9,7 @@ import com.curiousily.ipoli.quest.SubQuest;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 public class QuestViewModel {
     public String name;
     public String description;
-    public String startTime;
+    public Calendar startTime;
     public String context;
     public int duration;
     public int backgroundColor;
@@ -27,6 +28,7 @@ public class QuestViewModel {
     public ObservableBoolean isRunning;
     public MaterialDrawableBuilder.IconValue icon;
     public List<SubQuestViewModel> subQuests = new ArrayList<>();
+    public Calendar endTime;
 
     public static QuestViewModel from(Quest quest) {
         QuestViewModel model = new QuestViewModel();

@@ -6,8 +6,9 @@ import android.util.Log;
 
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.app.BaseActivity;
+import com.curiousily.ipoli.quest.Quest;
+import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.dayview.DayView;
-import com.curiousily.ipoli.schedule.ui.dayview.DayViewEvent;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,7 +40,7 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
         });
         dayView.setOnEventClickListener(new DayView.EventClickListener() {
             @Override
-            public void onEventClick(DayViewEvent event, RectF eventRect) {
+            public void onEventClick(QuestViewModel event, RectF eventRect) {
                 Log.d("iPoli", "Event selected");
             }
         });
@@ -53,12 +54,19 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
     }
 
     @Override
-    public List<DayViewEvent> onMonthChange(int newYear, int newMonth) {
-        List<DayViewEvent> events = new ArrayList<>();
-        DayViewEvent e = new DayViewEvent(1, "Read a book with Vihar", 2015, 9, 30, 10, 0, 2015, 9, 30, 10, 45);
-        e.setColor(getResources().getColor(R.color.md_blue_500));
-        if (e.getStartTime().get(Calendar.MONTH) == newMonth && e.getStartTime().get(Calendar.YEAR) == newYear) {
-            events.add(e);
+    public List<QuestViewModel> onMonthChange(int newYear, int newMonth) {
+        List<QuestViewModel> events = new ArrayList<>();
+//        DayViewEvent e = new DayViewEvent(1, "Read a book with Vihar", 2015, 9, 30, 10, 0, 2015, 9, 30, 10, 45);
+//        e.setColor(getResources().getColor(R.color.md_blue_500));
+        QuestViewModel q = new QuestViewModel();
+        q.backgroundColor = Quest.Context.ACTIVITY.getPrimaryColor();
+        q.name = "Test quest";
+        q.startTime = Calendar.getInstance();
+        Calendar endTime = Calendar.getInstance();
+        endTime.add(Calendar.MINUTE, 45);
+        q.endTime = endTime;
+        if (q.startTime.get(Calendar.MONTH) == newMonth && q.startTime.get(Calendar.YEAR) == newYear) {
+            events.add(q);
         }
         return events;
     }

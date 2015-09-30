@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.schedule.ui.dayview;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,7 +10,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.Layout;
@@ -27,7 +27,9 @@ import android.widget.OverScroller;
 import android.widget.Scroller;
 
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 
+import java.lang.reflect.TypeVariable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -367,10 +369,10 @@ public class DayView extends View {
         drawTimeColumnAndAxes(canvas);
 
         // Hide everything in the first cell (top left corner).
-        canvas.drawRect(0, 0, mTimeTextWidth + mHeaderColumnPadding * 2, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
+//        canvas.drawRect(0, 0, mTimeTextWidth + mHeaderColumnPadding * 2, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
 
         // Hide anything that is in the bottom margin of the header row.
-        canvas.drawRect(mHeaderColumnWidth, mHeaderTextHeight + mHeaderRowPadding * 2, getWidth(), mHeaderRowPadding * 2 + mHeaderTextHeight + mHeaderMarginBottom + mTimeTextHeight / 2 - mHourSeparatorHeight / 2, mHeaderColumnBackgroundPaint);
+//        canvas.drawRect(mHeaderColumnWidth, mHeaderTextHeight + mHeaderRowPadding * 2, getWidth(), mHeaderRowPadding * 2 + mHeaderTextHeight + mHeaderMarginBottom + mTimeTextHeight / 2 - mHourSeparatorHeight / 2, mHeaderColumnBackgroundPaint);
     }
 
     private void drawTimeColumnAndAxes(Canvas canvas) {
@@ -527,7 +529,7 @@ public class DayView extends View {
         }
 
         // Draw the header background.
-        canvas.drawRect(0, 0, getWidth(), mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
+//        canvas.drawRect(0, 0, getWidth(), mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
 
         // Draw the header row texts.
         startPixel = startFromPixel;
@@ -541,7 +543,7 @@ public class DayView extends View {
             String dayLabel = getDateTimeInterpreter().interpretDate(day);
             if (dayLabel == null)
                 throw new IllegalStateException("A DateTimeInterpreter must not return null date");
-            canvas.drawText(dayLabel, startPixel + mWidthPerDay / 2, mHeaderTextHeight + mHeaderRowPadding, sameDay ? mTodayHeaderTextPaint : mHeaderTextPaint);
+//            canvas.drawText(dayLabel, startPixel + mWidthPerDay / 2, mHeaderTextHeight + mHeaderRowPadding, sameDay ? mTodayHeaderTextPaint : mHeaderTextPaint);
             // Draw the current time line
             float start = (startPixel < mHeaderColumnWidth ? mHeaderColumnWidth : startPixel);
             if (displayCurrentTimeLine && isSameDay(today(), day)) {
@@ -598,7 +600,7 @@ public class DayView extends View {
 
         if (mEventRects != null && mEventRects.size() > 0) {
             for (int i = 0; i < mEventRects.size(); i++) {
-                if (isSameDay(mEventRects.get(i).event.getStartTime(), date)) {
+                if (isSameDay(mEventRects.get(i).event.startTime, date)) {
 
                     // Calculate top.
                     float top = mHourHeight * 24 * mEventRects.get(i).top / 1440 + mCurrentOrigin.y + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2 + mEventMarginVertical;
@@ -620,6 +622,9 @@ public class DayView extends View {
                         right -= mOverlappingEventGap;
                     if (left < mHeaderColumnWidth) left = mHeaderColumnWidth;
 
+                    Resources r = getResources();
+                    float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
+                    right -= px;
 
 //                    // Draw the event and the event name on top of it.
                     RectF eventRectF = new RectF(left, top, right, bottom);
@@ -631,9 +636,9 @@ public class DayView extends View {
                             left < right
                             ) {
                         mEventRects.get(i).rectF = eventRectF;
-                        mEventBackgroundPaint.setColor(mEventRects.get(i).event.getColor() == 0 ? mDefaultEventColor : mEventRects.get(i).event.getColor());
+                        mEventBackgroundPaint.setColor(mEventRects.get(i).event.backgroundColor == 0 ? mDefaultEventColor : getResources().getColor(mEventRects.get(i).event.backgroundColor));
                         canvas.drawRect(mEventRects.get(i).rectF, mEventBackgroundPaint);
-                        drawText(mEventRects.get(i).event.getName(), mEventRects.get(i).rectF, canvas, originalTop, originalLeft);
+                        drawText(mEventRects.get(i).event.name, mEventRects.get(i).rectF, canvas, originalTop, originalLeft);
                     } else
                         mEventRects.get(i).rectF = null;
                 }
@@ -687,8 +692,8 @@ public class DayView extends View {
      * instance will be stored in "event".
      */
     private class EventRect {
-        public DayViewEvent event;
-        public DayViewEvent originalEvent;
+        public QuestViewModel event;
+        public QuestViewModel originalEvent;
         public RectF rectF;
         public float left;
         public float width;
@@ -707,7 +712,7 @@ public class DayView extends View {
          * @param originalEvent The original event that was passed by the user.
          * @param rectF         The rectangle.
          */
-        public EventRect(DayViewEvent event, DayViewEvent originalEvent, RectF rectF) {
+        public EventRect(QuestViewModel event, QuestViewModel originalEvent, RectF rectF) {
             this.event = event;
             this.rectF = rectF;
             this.originalEvent = originalEvent;
@@ -745,9 +750,9 @@ public class DayView extends View {
         int[] lastFetchedMonth = mFetchedMonths.clone();
         if (mFetchedMonths[0] < 1 || mFetchedMonths[0] != previousMonth || mRefreshEvents) {
             if (!containsValue(lastFetchedMonth, previousMonth) && !isInEditMode()) {
-                List<DayViewEvent> events = mMonthChangeListener.onMonthChange((previousMonth == 12) ? day.get(Calendar.YEAR) - 1 : day.get(Calendar.YEAR), previousMonth);
+                List<QuestViewModel> events = mMonthChangeListener.onMonthChange((previousMonth == 12) ? day.get(Calendar.YEAR) - 1 : day.get(Calendar.YEAR), previousMonth);
                 sortEvents(events);
-                for (DayViewEvent event : events) {
+                for (QuestViewModel event : events) {
                     cacheEvent(event);
                 }
             }
@@ -757,9 +762,9 @@ public class DayView extends View {
         // Get events of this month.
         if (mFetchedMonths[1] < 1 || mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 || mRefreshEvents) {
             if (!containsValue(lastFetchedMonth, day.get(Calendar.MONTH) + 1) && !isInEditMode()) {
-                List<DayViewEvent> events = mMonthChangeListener.onMonthChange(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1);
+                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1);
                 sortEvents(events);
-                for (DayViewEvent event : events) {
+                for (QuestViewModel event : events) {
                     cacheEvent(event);
                 }
             }
@@ -769,9 +774,9 @@ public class DayView extends View {
         // Get events of next month.
         if (mFetchedMonths[2] < 1 || mFetchedMonths[2] != nextMonth || mRefreshEvents) {
             if (!containsValue(lastFetchedMonth, nextMonth) && !isInEditMode()) {
-                List<DayViewEvent> events = mMonthChangeListener.onMonthChange(nextMonth == 1 ? day.get(Calendar.YEAR) + 1 : day.get(Calendar.YEAR), nextMonth);
+                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(nextMonth == 1 ? day.get(Calendar.YEAR) + 1 : day.get(Calendar.YEAR), nextMonth);
                 sortEvents(events);
-                for (DayViewEvent event : events) {
+                for (QuestViewModel event : events) {
                     cacheEvent(event);
                 }
             }
@@ -792,7 +797,7 @@ public class DayView extends View {
         while (dayCounter.getTimeInMillis() <= maxDay.getTimeInMillis()) {
             ArrayList<EventRect> eventRects = new ArrayList<EventRect>();
             for (EventRect eventRect : tempEvents) {
-                if (isSameDay(eventRect.event.getStartTime(), dayCounter))
+                if (isSameDay(eventRect.event.startTime, dayCounter))
                     eventRects.add(eventRect);
             }
 
@@ -804,41 +809,47 @@ public class DayView extends View {
     /**
      * Cache the event for smooth scrolling functionality.
      *
-     * @param event The event to cache.
+     * @param quest The event to cache.
      */
-    private void cacheEvent(DayViewEvent event) {
-        if (!isSameDay(event.getStartTime(), event.getEndTime())) {
-            Calendar endTime = (Calendar) event.getStartTime().clone();
+    private void cacheEvent(QuestViewModel quest) {
+        if (!isSameDay(quest.startTime, quest.endTime)) {
+            Calendar endTime = (Calendar) quest.startTime.clone();
             endTime.set(Calendar.HOUR_OF_DAY, 23);
             endTime.set(Calendar.MINUTE, 59);
-            Calendar startTime = (Calendar) event.getEndTime().clone();
+            Calendar startTime = (Calendar) quest.endTime.clone();
             startTime.set(Calendar.HOUR_OF_DAY, 0);
             startTime.set(Calendar.MINUTE, 0);
-            DayViewEvent event1 = new DayViewEvent(event.getId(), event.getName(), event.getStartTime(), endTime);
-            event1.setColor(event.getColor());
-            DayViewEvent event2 = new DayViewEvent(event.getId(), event.getName(), startTime, event.getEndTime());
-            event2.setColor(event.getColor());
-            mEventRects.add(new EventRect(event1, event, null));
-            mEventRects.add(new EventRect(event2, event, null));
+            QuestViewModel event1 = new QuestViewModel();
+            event1.name = quest.name;
+            event1.startTime = quest.startTime;
+            event1.endTime = endTime;
+            event1.backgroundColor = quest.backgroundColor;
+            QuestViewModel event2 = new QuestViewModel();
+            event2.name = quest.name;
+            event2.startTime = startTime;
+            event2.endTime = quest.endTime;
+            event2.backgroundColor = quest.backgroundColor;
+            mEventRects.add(new EventRect(event1, quest, null));
+            mEventRects.add(new EventRect(event2, quest, null));
         } else
-            mEventRects.add(new EventRect(event, event, null));
+            mEventRects.add(new EventRect(quest, quest, null));
     }
 
     /**
      * Sorts the events in ascending order.
      *
-     * @param events The events to be sorted.
+     * @param quests The events to be sorted.
      */
-    private void sortEvents(List<DayViewEvent> events) {
-        Collections.sort(events, new Comparator<DayViewEvent>() {
+    private void sortEvents(List<QuestViewModel> quests) {
+        Collections.sort(quests, new Comparator<QuestViewModel>() {
             @Override
-            public int compare(DayViewEvent event1, DayViewEvent event2) {
-                long start1 = event1.getStartTime().getTimeInMillis();
-                long start2 = event2.getStartTime().getTimeInMillis();
+            public int compare(QuestViewModel event1, QuestViewModel event2) {
+                long start1 = event1.startTime.getTimeInMillis();
+                long start2 = event2.startTime.getTimeInMillis();
                 int comparator = start1 > start2 ? 1 : (start1 < start2 ? -1 : 0);
                 if (comparator == 0) {
-                    long end1 = event1.getEndTime().getTimeInMillis();
-                    long end2 = event2.getEndTime().getTimeInMillis();
+                    long end1 = event1.endTime.getTimeInMillis();
+                    long end2 = event2.endTime.getTimeInMillis();
                     comparator = end1 > end2 ? 1 : (end1 < end2 ? -1 : 0);
                 }
                 return comparator;
@@ -923,8 +934,8 @@ public class DayView extends View {
                     EventRect eventRect = column.get(i);
                     eventRect.width = 1f / columns.size();
                     eventRect.left = j / columns.size();
-                    eventRect.top = eventRect.event.getStartTime().get(Calendar.HOUR_OF_DAY) * 60 + eventRect.event.getStartTime().get(Calendar.MINUTE);
-                    eventRect.bottom = eventRect.event.getEndTime().get(Calendar.HOUR_OF_DAY) * 60 + eventRect.event.getEndTime().get(Calendar.MINUTE);
+                    eventRect.top = eventRect.event.startTime.get(Calendar.HOUR_OF_DAY) * 60 + eventRect.event.startTime.get(Calendar.MINUTE);
+                    eventRect.bottom = eventRect.event.endTime.get(Calendar.HOUR_OF_DAY) * 60 + eventRect.event.endTime.get(Calendar.MINUTE);
                     mEventRects.add(eventRect);
                 }
                 j++;
@@ -940,11 +951,11 @@ public class DayView extends View {
      * @param event2 The second event.
      * @return true if the events overlap.
      */
-    private boolean isEventsCollide(DayViewEvent event1, DayViewEvent event2) {
-        long start1 = event1.getStartTime().getTimeInMillis();
-        long end1 = event1.getEndTime().getTimeInMillis();
-        long start2 = event2.getStartTime().getTimeInMillis();
-        long end2 = event2.getEndTime().getTimeInMillis();
+    private boolean isEventsCollide(QuestViewModel event1, QuestViewModel event2) {
+        long start1 = event1.startTime.getTimeInMillis();
+        long end1 = event1.endTime.getTimeInMillis();
+        long start2 = event2.startTime.getTimeInMillis();
+        long end2 = event2.endTime.getTimeInMillis();
         return !((start1 >= end2) || (end1 <= start2));
     }
 
@@ -985,7 +996,7 @@ public class DayView extends View {
 
         List<EventRect> newEvents = new ArrayList<EventRect>();
         for (EventRect eventRect : mEventRects) {
-            boolean isFarMonth = eventRect.event.getStartTime().getTimeInMillis() > nextMonth.getTimeInMillis() || eventRect.event.getEndTime().getTimeInMillis() < prevMonth.getTimeInMillis();
+            boolean isFarMonth = eventRect.event.startTime.getTimeInMillis() > nextMonth.getTimeInMillis() || eventRect.event.endTime.getTimeInMillis() < prevMonth.getTimeInMillis();
             if (!isFarMonth) newEvents.add(eventRect);
         }
         mEventRects.clear();
@@ -1543,15 +1554,15 @@ public class DayView extends View {
     /////////////////////////////////////////////////////////////////
 
     public interface EventClickListener {
-        public void onEventClick(DayViewEvent event, RectF eventRect);
+        public void onEventClick(QuestViewModel event, RectF eventRect);
     }
 
     public interface MonthChangeListener {
-        public List<DayViewEvent> onMonthChange(int newYear, int newMonth);
+        public List<QuestViewModel> onMonthChange(int newYear, int newMonth);
     }
 
     public interface EventLongPressListener {
-        public void onEventLongPress(DayViewEvent event, RectF eventRect);
+        public void onEventLongPress(QuestViewModel event, RectF eventRect);
     }
 
     public interface EmptyViewClickListener {
