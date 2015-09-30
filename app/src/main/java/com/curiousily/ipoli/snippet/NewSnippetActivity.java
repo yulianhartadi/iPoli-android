@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
@@ -13,6 +14,7 @@ import com.curiousily.ipoli.app.services.events.PartialInputEvent;
 import com.curiousily.ipoli.app.services.events.ReadyForSpeechInputEvent;
 import com.curiousily.ipoli.app.services.events.RequestSpeechInputEvent;
 import com.curiousily.ipoli.snippet.events.CreateSnippetEvent;
+import com.curiousily.ipoli.snippet.services.events.SnippetCreatedEvent;
 import com.curiousily.ipoli.user.User;
 import com.squareup.otto.Subscribe;
 
@@ -71,5 +73,16 @@ public class NewSnippetActivity extends BaseActivity {
         snippet.text = textInput.getText().toString();
         snippet.createdBy = User.getCurrent(this);
         EventBus.post(new CreateSnippetEvent(snippet));
+    }
+
+    @OnClick(R.id.snippet_cancel)
+    public void onCancel(View view) {
+        finish();
+    }
+
+    @Subscribe
+    public void onSnippetCreated(SnippetCreatedEvent e) {
+        Toast.makeText(this, R.string.toast_snippet_created, Toast.LENGTH_LONG).show();
+        finish();
     }
 }

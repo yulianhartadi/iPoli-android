@@ -1,11 +1,10 @@
 package com.curiousily.ipoli.quest.services;
 
-import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
-import com.curiousily.ipoli.quest.services.events.QuestSavedEvent;
+import com.curiousily.ipoli.quest.services.events.QuestCreatedEvent;
 import com.curiousily.ipoli.quest.services.events.QuestUpdatedEvent;
 import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.schedule.events.QuestPostponedEvent;
@@ -33,7 +32,7 @@ public class QuestStorageService {
         client.createQuest(e.quest, new AsyncAPICallback<Object>() {
             @Override
             public void success(Object jsonResponse, Response response) {
-                bus.post(new QuestSavedEvent());
+                bus.post(new QuestCreatedEvent());
             }
 
         });
@@ -44,7 +43,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-                EventBus.post(new QuestUpdatedEvent());
+                bus.post(new QuestUpdatedEvent());
             }
         });
     }
@@ -55,7 +54,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-                EventBus.post(new QuestUpdatedEvent());
+                bus.post(new QuestUpdatedEvent());
             }
         });
     }
@@ -65,7 +64,7 @@ public class QuestStorageService {
         client.updateQuest(e.quest, new AsyncAPICallback<Quest>() {
             @Override
             public void success(Quest quest, Response response) {
-                EventBus.post(new QuestUpdatedEvent());
+                bus.post(new QuestUpdatedEvent());
             }
         });
     }

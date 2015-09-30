@@ -11,7 +11,7 @@ import com.curiousily.ipoli.app.BaseActivity;
 import com.curiousily.ipoli.quest.events.BuildQuestEvent;
 import com.curiousily.ipoli.quest.events.CreateQuestEvent;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
-import com.curiousily.ipoli.quest.services.events.QuestSavedEvent;
+import com.curiousily.ipoli.quest.services.events.QuestCreatedEvent;
 import com.curiousily.ipoli.quest.ui.AddQuestInfoFragment;
 import com.curiousily.ipoli.quest.ui.AddQuestScheduleFragment;
 import com.curiousily.ipoli.user.User;
@@ -61,7 +61,7 @@ public class AddQuestActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
+    public void onQuestSaved(QuestCreatedEvent e) {
         Toast.makeText(this, R.string.toast_quest_saved, Toast.LENGTH_LONG).show();
         finish();
     }

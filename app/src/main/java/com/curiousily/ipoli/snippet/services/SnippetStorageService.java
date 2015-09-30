@@ -4,6 +4,7 @@ import com.curiousily.ipoli.app.api.APIClient;
 import com.curiousily.ipoli.app.api.AsyncAPICallback;
 import com.curiousily.ipoli.snippet.Snippet;
 import com.curiousily.ipoli.snippet.events.CreateSnippetEvent;
+import com.curiousily.ipoli.snippet.services.events.SnippetCreatedEvent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -27,6 +28,7 @@ public class SnippetStorageService {
         client.createSnippet(e.snippet, new AsyncAPICallback<Snippet>() {
             @Override
             public void success(Snippet snippet, Response response) {
+                bus.post(new SnippetCreatedEvent());
             }
         });
     }

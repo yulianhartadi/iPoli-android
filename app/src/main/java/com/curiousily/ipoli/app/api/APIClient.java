@@ -42,6 +42,6 @@ public interface APIClient {
     void createUser(@Body CreateUserRequest request, Callback<User> cb);
 
     @Headers("Content-Type: application/json")
-    @POST("/inputs")
+    @POST("/snippets")
     void createSnippet(@Body Snippet snippet, Callback<Snippet> cb);
 }

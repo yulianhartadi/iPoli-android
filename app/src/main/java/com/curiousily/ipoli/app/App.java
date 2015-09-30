@@ -21,6 +21,7 @@ import com.curiousily.ipoli.quest.events.StartQuestEvent;
 import com.curiousily.ipoli.quest.services.QuestService;
 import com.curiousily.ipoli.quest.services.QuestStorageService;
 import com.curiousily.ipoli.schedule.services.DailyScheduleStorageService;
+import com.curiousily.ipoli.snippet.services.SnippetStorageService;
 import com.curiousily.ipoli.user.services.UserStorageService;
 import com.curiousily.ipoli.utils.Time;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -66,6 +67,7 @@ public class App extends Application {
         bus.register(new UserStorageService(client, bus, this));
         bus.register(new AnalyticsService(tracker));
         bus.register(new SpeechRecognizerService(this));
+        bus.register(new SnippetStorageService(client, bus));
     }
 
     private void initPlanDayReminder() {

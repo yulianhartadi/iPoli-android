@@ -24,4 +24,5 @@
     <string name="new_sub_quest">New Sub Quest</string>
     <string name="quest_started">Quest started</string>
     <string name="new_snippet_label">New snippet</string>
+    <string name="toast_snippet_created">Snippet saved</string>
 </resources>
