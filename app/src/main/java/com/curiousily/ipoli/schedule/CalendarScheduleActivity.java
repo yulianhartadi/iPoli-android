@@ -1,6 +1,7 @@
 package com.curiousily.ipoli.schedule;
 
 import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -56,11 +57,9 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
     @Override
     public List<QuestViewModel> onMonthChange(int newYear, int newMonth) {
         List<QuestViewModel> events = new ArrayList<>();
-//        DayViewEvent e = new DayViewEvent(1, "Read a book with Vihar", 2015, 9, 30, 10, 0, 2015, 9, 30, 10, 45);
-//        e.setColor(getResources().getColor(R.color.md_blue_500));
         QuestViewModel q = new QuestViewModel();
         q.backgroundColor = Quest.Context.ACTIVITY.getPrimaryColor();
-        q.name = "Test quest";
+        q.name = "Do a HIT workout";
         q.startTime = Calendar.getInstance();
         Calendar endTime = Calendar.getInstance();
         endTime.add(Calendar.MINUTE, 45);

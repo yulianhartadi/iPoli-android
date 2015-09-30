@@ -17,6 +17,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -305,7 +306,8 @@ public class DayView extends View {
         mHeaderTextPaint.setTextAlign(Paint.Align.CENTER);
         mHeaderTextPaint.setTextSize(mTextSize);
         mHeaderTextPaint.getTextBounds(exampleTime, 0, exampleTime.length(), rect);
-        mHeaderTextHeight = rect.height();
+//        mHeaderTextHeight = rect.height();
+        mHeaderTextHeight = 0;
         mHeaderTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         // Prepare header background paint.
@@ -493,6 +495,7 @@ public class DayView extends View {
             mLastVisibleDay.add(Calendar.DATE, dayNumber - 2);
             boolean sameDay = isSameDay(day, mToday);
 
+
             // Get more events if necessary. We want to store the events 3 months beforehand. Get
             // events only when it is the first iteration of the loop.
             if (mEventRects == null || mRefreshEvents || (dayNumber == leftDaysWithGaps + 1 && mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 && day.get(Calendar.DAY_OF_MONTH) == 15)) {
@@ -502,8 +505,8 @@ public class DayView extends View {
 
             // Draw background color for each day.
             float start = (startPixel < mHeaderColumnWidth ? mHeaderColumnWidth : startPixel);
-            if (mWidthPerDay + startPixel - start > 0)
-                canvas.drawRect(start, mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom, startPixel + mWidthPerDay, getHeight(), sameDay ? mTodayBackgroundPaint : mDayBackgroundPaint);
+//            if (mWidthPerDay + startPixel - start > 0)
+//                canvas.drawRect(start, mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom, startPixel + mWidthPerDay, getHeight(), sameDay ? mTodayBackgroundPaint : mDayBackgroundPaint);
 
             // Prepare the separator lines for hours.
             int i = 0;
