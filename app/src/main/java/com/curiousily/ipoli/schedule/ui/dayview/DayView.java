@@ -44,7 +44,6 @@ import java.util.List;
 public class DayView extends View {
     private final Context mContext;
     private Calendar mToday;
-    private Calendar mStartDate;
     private Paint mTimeTextPaint;
     private float mTimeTextWidth;
     private float mTimeTextHeight;
@@ -62,8 +61,6 @@ public class DayView extends View {
     private TextPaint mEventTextPaint;
     private Paint mHeaderColumnBackgroundPaint;
     private Scroller mStickyScroller;
-    private int mFetchedMonths[] = new int[3];
-//    private boolean mRefreshEvents = false;
     private float mDistanceY = 0;
     private float mDistanceX = 0;
     private Direction mCurrentFlingDirection = Direction.NONE;
@@ -100,7 +97,6 @@ public class DayView extends View {
     // Listeners.
     private EventClickListener mEventClickListener;
     private EventLongPressListener mEventLongPressListener;
-    private MonthChangeListener mMonthChangeListener;
     private EmptyViewClickListener mEmptyViewClickListener;
     private EmptyViewLongPressListener mEmptyViewLongPressListener;
     private DateTimeInterpreter mDateTimeInterpreter;
@@ -294,10 +290,6 @@ public class DayView extends View {
         mHourSeparatorPaint.setStrokeWidth(mHourSeparatorHeight);
         mHourSeparatorPaint.setColor(mHourSeparatorColor);
 
-        // Prepare today background color paint.
-
-        // Prepare today header text color paint.
-
         // Prepare event background color.
         mEventBackgroundPaint = new Paint();
         mEventBackgroundPaint.setColor(Color.rgb(174, 208, 238));
@@ -311,7 +303,6 @@ public class DayView extends View {
         mEventTextPaint.setStyle(Paint.Style.FILL);
         mEventTextPaint.setColor(mEventTextColor);
         mEventTextPaint.setTextSize(mEventTextSize);
-        mStartDate = (Calendar) mToday.clone();
 
         // Prepare currentTimeLine
         // Prepare the "now" line color paint
@@ -455,18 +446,8 @@ public class DayView extends View {
             mLastVisibleDay.add(Calendar.DATE, dayNumber - 2);
             boolean sameDay = isSameDay(day, mToday);
 
-
-            // Get more events if necessary. We want to store the events 3 months beforehand. Get
-            // events only when it is the first iteration of the loop.
-//            if (mEventRects == null || mRefreshEvents || (dayNumber == leftDaysWithGaps + 1 && mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 && day.get(Calendar.DAY_OF_MONTH) == 15)) {
-//                getMoreEvents(day);
-//                mRefreshEvents = false;
-//            }
-
             // Draw background color for each day.
             float start = (startPixel < mHeaderColumnWidth ? mHeaderColumnWidth : startPixel);
-//            if (mWidthPerDay + startPixel - start > 0)
-//                canvas.drawRect(start, mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom, startPixel + mWidthPerDay, getHeight(), sameDay ? mTodayBackgroundPaint : mDayBackgroundPaint);
 
             // Prepare the separator lines for hours.
             int i = 0;
@@ -491,16 +472,12 @@ public class DayView extends View {
             startPixel += mWidthPerDay + mColumnGap;
         }
 
-        // Draw the header background.
-//        canvas.drawRect(0, 0, getWidth(), mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
-
         // Draw the header row texts.
         startPixel = startFromPixel;
         for (int dayNumber = leftDaysWithGaps + 1; dayNumber <= leftDaysWithGaps + mNumberOfVisibleDays + 1; dayNumber++) {
             // Check if the day is today.
             day = (Calendar) mToday.clone();
             day.add(Calendar.DATE, dayNumber - 1);
-            boolean sameDay = isSameDay(day, mToday);
 
             // Draw the day labels.
             String dayLabel = getDateTimeInterpreter().interpretDate(day);
@@ -692,93 +669,6 @@ public class DayView extends View {
         }
     }
 
-
-    /**
-     * Gets more events of one/more month(s) if necessary. This method is called when the user is
-     * scrolling the week view. The week view stores the events of three months: the visible month,
-     * the previous month, the next month.
-     *
-     * @param day The day where the user is currently is.
-     */
-//    private void getMoreEvents(Calendar day) {
-//
-//        // Delete all events if its not current month +- 1.
-//        deleteFarMonths(day);
-//
-//        // Get more events if the month is changed.
-//        if (mEventRects == null)
-//            mEventRects = new ArrayList<EventRect>();
-//        if (mMonthChangeListener == null && !isInEditMode())
-//            throw new IllegalStateException("You must provide a MonthChangeListener");
-//
-//        // If a refresh was requested then reset some variables.
-//        if (mRefreshEvents) {
-//            mEventRects.clear();
-//            mFetchedMonths = new int[3];
-//        }
-//
-//        // Get events of previous month.
-//        int previousMonth = (day.get(Calendar.MONTH) == 0 ? 12 : day.get(Calendar.MONTH));
-//        int nextMonth = (day.get(Calendar.MONTH) + 2 == 13 ? 1 : day.get(Calendar.MONTH) + 2);
-//        int[] lastFetchedMonth = mFetchedMonths.clone();
-//        if (mFetchedMonths[0] < 1 || mFetchedMonths[0] != previousMonth || mRefreshEvents) {
-//            if (!containsValue(lastFetchedMonth, previousMonth) && !isInEditMode()) {
-//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange((previousMonth == 12) ? day.get(Calendar.YEAR) - 1 : day.get(Calendar.YEAR), previousMonth);
-//                sortEvents(events);
-//                for (QuestViewModel event : events) {
-//                    cacheEvent(event);
-//                }
-//            }
-//            mFetchedMonths[0] = previousMonth;
-//        }
-//
-//        // Get events of this month.
-//        if (mFetchedMonths[1] < 1 || mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 || mRefreshEvents) {
-//            if (!containsValue(lastFetchedMonth, day.get(Calendar.MONTH) + 1) && !isInEditMode()) {
-//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1);
-//                sortEvents(events);
-//                for (QuestViewModel event : events) {
-//                    cacheEvent(event);
-//                }
-//            }
-//            mFetchedMonths[1] = day.get(Calendar.MONTH) + 1;
-//        }
-//
-//        // Get events of next month.
-//        if (mFetchedMonths[2] < 1 || mFetchedMonths[2] != nextMonth || mRefreshEvents) {
-//            if (!containsValue(lastFetchedMonth, nextMonth) && !isInEditMode()) {
-//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(nextMonth == 1 ? day.get(Calendar.YEAR) + 1 : day.get(Calendar.YEAR), nextMonth);
-//                sortEvents(events);
-//                for (QuestViewModel event : events) {
-//                    cacheEvent(event);
-//                }
-//            }
-//            mFetchedMonths[2] = nextMonth;
-//        }
-//
-//        // Prepare to calculate positions of each events.
-//        ArrayList<EventRect> tempEvents = new ArrayList<EventRect>(mEventRects);
-//        mEventRects = new ArrayList<EventRect>();
-//        Calendar dayCounter = (Calendar) day.clone();
-//        dayCounter.add(Calendar.MONTH, -1);
-//        dayCounter.set(Calendar.DAY_OF_MONTH, 1);
-//        Calendar maxDay = (Calendar) day.clone();
-//        maxDay.add(Calendar.MONTH, 1);
-//        maxDay.set(Calendar.DAY_OF_MONTH, maxDay.getActualMaximum(Calendar.DAY_OF_MONTH));
-//
-//        // Iterate through each day to calculate the position of the events.
-//        while (dayCounter.getTimeInMillis() <= maxDay.getTimeInMillis()) {
-//            ArrayList<EventRect> eventRects = new ArrayList<EventRect>();
-//            for (EventRect eventRect : tempEvents) {
-//                if (isSameDay(eventRect.event.startTime, dayCounter))
-//                    eventRects.add(eventRect);
-//            }
-//
-//            computePositionOfEvents(eventRects);
-//            dayCounter.add(Calendar.DATE, 1);
-//        }
-//    }
-
     /**
      * Cache the event for smooth scrolling functionality.
      *
@@ -912,50 +802,6 @@ public class DayView extends View {
         return !((start1 >= end2) || (end1 <= start2));
     }
 
-
-    /**
-     * Checks if time1 occurs after (or at the same time) time2.
-     *
-     * @param time1 The time to check.
-     * @param time2 The time to check against.
-     * @return true if time1 and time2 are equal or if time1 is after time2. Otherwise false.
-     */
-    private boolean isTimeAfterOrEquals(Calendar time1, Calendar time2) {
-        return !(time1 == null || time2 == null) && time1.getTimeInMillis() >= time2.getTimeInMillis();
-    }
-
-    /**
-     * Deletes the events of the months that are too far away from the current month.
-     *
-     * @param currentDay The current day.
-     */
-    private void deleteFarMonths(Calendar currentDay) {
-
-        if (mEventRects == null) return;
-
-        Calendar nextMonth = (Calendar) currentDay.clone();
-        nextMonth.add(Calendar.MONTH, 1);
-        nextMonth.set(Calendar.DAY_OF_MONTH, nextMonth.getActualMaximum(Calendar.DAY_OF_MONTH));
-        nextMonth.set(Calendar.HOUR_OF_DAY, 12);
-        nextMonth.set(Calendar.MINUTE, 59);
-        nextMonth.set(Calendar.SECOND, 59);
-
-        Calendar prevMonth = (Calendar) currentDay.clone();
-        prevMonth.add(Calendar.MONTH, -1);
-        prevMonth.set(Calendar.DAY_OF_MONTH, 1);
-        prevMonth.set(Calendar.HOUR_OF_DAY, 0);
-        prevMonth.set(Calendar.MINUTE, 0);
-        prevMonth.set(Calendar.SECOND, 0);
-
-        List<EventRect> newEvents = new ArrayList<EventRect>();
-        for (EventRect eventRect : mEventRects) {
-            boolean isFarMonth = eventRect.event.startTime.getTimeInMillis() > nextMonth.getTimeInMillis() || eventRect.event.endTime.getTimeInMillis() < prevMonth.getTimeInMillis();
-            if (!isFarMonth) newEvents.add(eventRect);
-        }
-        mEventRects.clear();
-        mEventRects.addAll(newEvents);
-    }
-
     @Override
     public void invalidate() {
         super.invalidate();
@@ -974,14 +820,6 @@ public class DayView extends View {
 
     public EventClickListener getEventClickListener() {
         return mEventClickListener;
-    }
-
-    public MonthChangeListener getMonthChangeListener() {
-        return mMonthChangeListener;
-    }
-
-    public void setMonthChangeListener(MonthChangeListener monthChangeListener) {
-        this.mMonthChangeListener = monthChangeListener;
     }
 
     public EventLongPressListener getEventLongPressListener() {
@@ -1437,10 +1275,6 @@ public class DayView extends View {
 
     public interface EventClickListener {
         public void onEventClick(QuestViewModel event, RectF eventRect);
-    }
-
-    public interface MonthChangeListener {
-        public List<QuestViewModel> onMonthChange(int newYear, int newMonth);
     }
 
     public interface EventLongPressListener {
