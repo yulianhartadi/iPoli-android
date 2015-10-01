@@ -38,8 +38,6 @@
         android:background="@color/md_white"
         app:eventTextColor="@color/md_white"
         app:eventTextSize="16sp"
-        app:headerRowBackgroundColor="@color/md_blue_700"
-
         app:hourHeight="140dp"
         app:noOfVisibleDays="1"
         app:nowLineColor="?attr/colorAccent"

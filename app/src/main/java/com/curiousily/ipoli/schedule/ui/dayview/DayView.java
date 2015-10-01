@@ -17,7 +17,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -31,7 +30,6 @@ import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.dayview.loaders.DailyEventsLoader;
 
-import java.lang.reflect.TypeVariable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,27 +42,20 @@ import java.util.List;
  * on 9/30/15.
  */
 public class DayView extends View {
-    @Deprecated
-    public static final int LENGTH_SHORT = 1;
-    @Deprecated
-    public static final int LENGTH_LONG = 2;
     private final Context mContext;
     private Calendar mToday;
     private Calendar mStartDate;
     private Paint mTimeTextPaint;
     private float mTimeTextWidth;
     private float mTimeTextHeight;
-    private Paint mHeaderTextPaint;
-    private float mHeaderTextHeight;
     private GestureDetectorCompat mGestureDetector;
     private OverScroller mScroller;
     private PointF mCurrentOrigin = new PointF(0f, 0f);
     private Direction mCurrentScrollDirection = Direction.NONE;
-    private Paint mHeaderBackgroundPaint;
+
     private float mWidthPerDay;
     private Paint mDayBackgroundPaint;
     private Paint mHourSeparatorPaint;
-    private float mHeaderMarginBottom;
     private Paint mTodayBackgroundPaint;
     private Paint mTodayHeaderTextPaint;
     private Paint mEventBackgroundPaint;
@@ -87,9 +78,7 @@ public class DayView extends View {
     private int mHeaderColumnPadding = 10;
     private int mHeaderColumnTextColor = Color.BLACK;
     private int mNumberOfVisibleDays = 3;
-//    private int mHeaderRowPadding = 10;
-    private int mHeaderRowPadding = 0;
-    private int mHeaderRowBackgroundColor = Color.WHITE;
+
     private int mDayBackgroundColor = Color.rgb(245, 245, 245);
     private int mHourSeparatorColor = Color.rgb(230, 230, 230);
     private int mTodayBackgroundColor = Color.rgb(239, 247, 254);
@@ -102,8 +91,7 @@ public class DayView extends View {
     private int mDefaultEventColor;
     private boolean mIsFirstDraw = true;
     private boolean mAreDimensionsInvalid = true;
-    @Deprecated
-    private int mDayNameLength = LENGTH_LONG;
+
     private int mOverlappingEventGap = 0;
     private int mEventMarginVertical = 0;
     private float mXScrollingSpeed = 1f;
@@ -162,7 +150,7 @@ public class DayView extends View {
             if (mCurrentFlingDirection == Direction.HORIZONTAL) {
                 mScroller.fling((int) mCurrentOrigin.x, 0, (int) (velocityX * mXScrollingSpeed), 0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
             } else if (mCurrentFlingDirection == Direction.VERTICAL) {
-                mScroller.fling(0, (int) mCurrentOrigin.y, 0, (int) velocityY, 0, 0, (int) -(mHourHeight * 24 + mHeaderTextHeight + mHeaderRowPadding * 2 - getHeight()), 0);
+                mScroller.fling(0, (int) mCurrentOrigin.y, 0, (int) velocityY, 0, 0, (int) -(mHourHeight * 24 - getHeight()), 0);
             }
 
             ViewCompat.postInvalidateOnAnimation(DayView.this);
@@ -186,7 +174,7 @@ public class DayView extends View {
             }
 
             // If the tap was on in an empty space, then trigger the callback.
-            if (mEmptyViewClickListener != null && e.getX() > mHeaderColumnWidth && e.getY() > (mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)) {
+            if (mEmptyViewClickListener != null && e.getX() > mHeaderColumnWidth) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
                 if (selectedTime != null) {
                     playSoundEffect(SoundEffectConstants.CLICK);
@@ -214,7 +202,7 @@ public class DayView extends View {
             }
 
             // If the tap was on in an empty space, then trigger the callback.
-            if (mEmptyViewLongPressListener != null && e.getX() > mHeaderColumnWidth && e.getY() > (mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)) {
+            if (mEmptyViewLongPressListener != null && e.getX() > mHeaderColumnWidth ) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
                 if (selectedTime != null) {
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -253,8 +241,6 @@ public class DayView extends View {
             mColumnGap = a.getDimensionPixelSize(R.styleable.DayView_columnGap, mColumnGap);
             mHeaderColumnTextColor = a.getColor(R.styleable.DayView_headerColumnTextColor, mHeaderColumnTextColor);
             mNumberOfVisibleDays = a.getInteger(R.styleable.DayView_noOfVisibleDays, mNumberOfVisibleDays);
-            mHeaderRowPadding = a.getDimensionPixelSize(R.styleable.DayView_headerRowPadding, mHeaderRowPadding);
-            mHeaderRowBackgroundColor = a.getColor(R.styleable.DayView_headerRowBackgroundColor, mHeaderRowBackgroundColor);
             mDayBackgroundColor = a.getColor(R.styleable.DayView_dayBackgroundColor, mDayBackgroundColor);
             mHourSeparatorColor = a.getColor(R.styleable.DayView_hourSeparatorColor, mHourSeparatorColor);
             mTodayBackgroundColor = a.getColor(R.styleable.DayView_todayBackgroundColor, mTodayBackgroundColor);
@@ -264,7 +250,6 @@ public class DayView extends View {
             mEventTextColor = a.getColor(R.styleable.DayView_eventTextColor, mEventTextColor);
             mEventPadding = a.getDimensionPixelSize(R.styleable.DayView_hourSeparatorHeight, mEventPadding);
             mHeaderColumnBackgroundColor = a.getColor(R.styleable.DayView_headerColumnBackground, mHeaderColumnBackgroundColor);
-            mDayNameLength = a.getInteger(R.styleable.DayView_dayNameLength, mDayNameLength);
             mOverlappingEventGap = a.getDimensionPixelSize(R.styleable.DayView_overlappingEventGap, mOverlappingEventGap);
             mEventMarginVertical = a.getDimensionPixelSize(R.styleable.DayView_eventMarginVertical, mEventMarginVertical);
             mXScrollingSpeed = a.getFloat(R.styleable.DayView_xScrollingSpeed, mXScrollingSpeed);
@@ -297,24 +282,8 @@ public class DayView extends View {
         final String exampleTime = showHalfHours ? "00:00 PM" : "00 PM";
         mTimeTextPaint.getTextBounds(exampleTime, 0, exampleTime.length(), rect);
         mTimeTextWidth = mTimeTextPaint.measureText(exampleTime);
-//        mTimeTextHeight = rect.height();
-        mTimeTextHeight = 0;
-//        mHeaderMarginBottom = mTimeTextHeight / 2;
-        mHeaderMarginBottom = 0;
-
-        // Measure settings for header row.
-        mHeaderTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mHeaderTextPaint.setColor(mHeaderColumnTextColor);
-        mHeaderTextPaint.setTextAlign(Paint.Align.CENTER);
-        mHeaderTextPaint.setTextSize(mTextSize);
-        mHeaderTextPaint.getTextBounds(exampleTime, 0, exampleTime.length(), rect);
-//        mHeaderTextHeight = rect.height();
-        mHeaderTextHeight = 0;
-        mHeaderTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
-
-        // Prepare header background paint.
-        mHeaderBackgroundPaint = new Paint();
-        mHeaderBackgroundPaint.setColor(mHeaderRowBackgroundColor);
+        mTimeTextHeight = rect.height();
+//        mTimeTextHeight = 0;
 
         // Prepare day background color paint.
         mDayBackgroundPaint = new Paint();
@@ -383,8 +352,8 @@ public class DayView extends View {
         // Do not let the view go above/below the limit due to scrolling. Set the max and min limit of the scroll.
         if (mCurrentScrollDirection == Direction.VERTICAL) {
             if (mCurrentOrigin.y - mDistanceY > 0) mCurrentOrigin.y = 0;
-            else if (mCurrentOrigin.y - mDistanceY < -(mHourHeight * 24 + mHeaderTextHeight + mHeaderRowPadding * 2 - getHeight()))
-                mCurrentOrigin.y = -(mHourHeight * 24 + mHeaderTextHeight + mHeaderRowPadding * 2 - getHeight());
+            else if (mCurrentOrigin.y - mDistanceY < -(mHourHeight * 24 - getHeight()))
+                mCurrentOrigin.y = -(mHourHeight * 24 - getHeight());
             else mCurrentOrigin.y -= mDistanceY;
         }
 
@@ -413,7 +382,7 @@ public class DayView extends View {
             }
 
             // Calculate the top of the rectangle where the time text will go
-            float top = mHeaderTextHeight + mHeaderRowPadding * 2 + mCurrentOrigin.y + timeSpacing * i + mHeaderMarginBottom;
+            float top = mCurrentOrigin.y + timeSpacing * i;
 
             // Get the time to be displayed, as a String.
             String time = getDateTimeInterpreter().interpretTime(hour, minutes);
@@ -468,8 +437,7 @@ public class DayView extends View {
         day.add(Calendar.HOUR, 6);
 
         // Prepare to iterate for each hour to draw the hour lines.
-        int lineCount = (int) ((getHeight() - mHeaderTextHeight - mHeaderRowPadding * 2 -
-                mHeaderMarginBottom) / mHourHeight) + 1;
+        int lineCount = (getHeight() / mHourHeight) + 1;
         lineCount = (lineCount) * (mNumberOfVisibleDays + 1);
         float[] hourLines = new float[lineCount * 4];
 
@@ -517,8 +485,8 @@ public class DayView extends View {
             // Prepare the separator lines for hours.
             int i = 0;
             for (int hourNumber = 0; hourNumber < 24; hourNumber++) {
-                float top = mHeaderTextHeight + mHeaderRowPadding * 2 + mCurrentOrigin.y + mHourHeight * hourNumber + mTimeTextHeight / 2 + mHeaderMarginBottom;
-                if (top > mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom - mHourSeparatorHeight && top < getHeight() && startPixel + mWidthPerDay - start > 0) {
+                float top = mCurrentOrigin.y + mHourHeight * hourNumber + mTimeTextHeight / 2 ;
+                if (top > mTimeTextHeight / 2 - mHourSeparatorHeight && top < getHeight() && startPixel + mWidthPerDay - start > 0) {
                     hourLines[i * 4] = start;
                     hourLines[i * 4 + 1] = top;
                     hourLines[i * 4 + 2] = startPixel + mWidthPerDay;
@@ -556,7 +524,7 @@ public class DayView extends View {
             // Draw the current time line
             float start = (startPixel < mHeaderColumnWidth ? mHeaderColumnWidth : startPixel);
             if (displayCurrentTimeLine && isSameDay(today(), day)) {
-                float startY = mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom + mCurrentOrigin.y;
+                float startY = mTimeTextHeight / 2 + mCurrentOrigin.y;
                 Calendar now = Calendar.getInstance();
                 float beforeNow = (now.get(Calendar.HOUR_OF_DAY) + now.get(Calendar.MINUTE) / 60.0f) * mHourHeight;
                 canvas.drawLine(start, startY + beforeNow, startPixel + mWidthPerDay, startY + beforeNow, mCurrentTimeLinePaint);
@@ -595,8 +563,7 @@ public class DayView extends View {
                     && x > start && x < startPixel + mWidthPerDay) {
                 Calendar day = (Calendar) mToday.clone();
                 day.add(Calendar.DATE, dayNumber - 1);
-                float pixelsFromZero = y - mCurrentOrigin.y - mHeaderTextHeight
-                        - mHeaderRowPadding * 2 - mTimeTextHeight / 2 - mHeaderMarginBottom;
+                float pixelsFromZero = y - mCurrentOrigin.y - mTimeTextHeight / 2;
                 int hour = (int) (pixelsFromZero / mHourHeight);
                 int minute = (int) (60 * (pixelsFromZero - hour * mHourHeight) / mHourHeight);
                 day.add(Calendar.HOUR, hour);
@@ -622,14 +589,14 @@ public class DayView extends View {
                 if (isSameDay(mEventRects.get(i).event.startTime, date)) {
 
                     // Calculate top.
-                    float top = mHourHeight * 24 * mEventRects.get(i).top / 1440 + mCurrentOrigin.y + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2 + mEventMarginVertical;
+                    float top = mHourHeight * 24 * mEventRects.get(i).top / 1440 + mCurrentOrigin.y + mTimeTextHeight / 2 + mEventMarginVertical;
                     float originalTop = top;
-                    if (top < mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2)
-                        top = mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2;
+                    if (top < mTimeTextHeight / 2)
+                        top = mTimeTextHeight / 2;
 
                     // Calculate bottom.
                     float bottom = mEventRects.get(i).bottom;
-                    bottom = mHourHeight * 24 * bottom / 1440 + mCurrentOrigin.y + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2 - mEventMarginVertical;
+                    bottom = mHourHeight * 24 * bottom / 1440 + mCurrentOrigin.y + mTimeTextHeight / 2 - mEventMarginVertical;
 
                     // Calculate left and right.
                     float left = startFromPixel + mEventRects.get(i).left * mWidthPerDay;
@@ -647,10 +614,10 @@ public class DayView extends View {
 
 //                    // Draw the event and the event name on top of it.
                     RectF eventRectF = new RectF(left, top, right, bottom);
-                    if (bottom > mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight / 2 && left < right &&
+                    if (bottom >  mTimeTextHeight / 2 && left < right &&
                             eventRectF.right > mHeaderColumnWidth &&
                             eventRectF.left < getWidth() &&
-                            eventRectF.bottom > mHeaderTextHeight + mHeaderRowPadding * 2 + mTimeTextHeight / 2 + mHeaderMarginBottom &&
+                            eventRectF.bottom > mTimeTextHeight / 2 &&
                             eventRectF.top < getHeight() &&
                             left < right
                             ) {
@@ -726,8 +693,8 @@ public class DayView extends View {
          * "originalEvent". But the event that corresponds to rectangle the rectangle instance will
          * be stored in "event".
          *
-         * @param event         Represents the event which this instance of rectangle represents.
-         * @param rectF         The rectangle.
+         * @param event Represents the event which this instance of rectangle represents.
+         * @param rectF The rectangle.
          */
         public EventRect(QuestViewModel event, RectF rectF) {
             this.event = event;
@@ -828,27 +795,7 @@ public class DayView extends View {
      * @param quest The event to cache.
      */
     private void cacheEvent(QuestViewModel quest) {
-//        if (!isSameDay(quest.startTime, quest.endTime)) {
-//            Calendar endTime = (Calendar) quest.startTime.clone();
-//            endTime.set(Calendar.HOUR_OF_DAY, 23);
-//            endTime.set(Calendar.MINUTE, 59);
-//            Calendar startTime = (Calendar) quest.endTime.clone();
-//            startTime.set(Calendar.HOUR_OF_DAY, 0);
-//            startTime.set(Calendar.MINUTE, 0);
-//            QuestViewModel event1 = new QuestViewModel();
-//            event1.name = quest.name;
-//            event1.startTime = quest.startTime;
-//            event1.endTime = endTime;
-//            event1.backgroundColor = quest.backgroundColor;
-//            QuestViewModel event2 = new QuestViewModel();
-//            event2.name = quest.name;
-//            event2.startTime = startTime;
-//            event2.endTime = quest.endTime;
-//            event2.backgroundColor = quest.backgroundColor;
-//            mEventRects.add(new EventRect(event1, quest, null));
-//            mEventRects.add(new EventRect(event2, quest, null));
-//        } else
-            mEventRects.add(new EventRect(quest, null));
+        mEventRects.add(new EventRect(quest, null));
     }
 
     /**
@@ -1090,7 +1037,7 @@ public class DayView extends View {
                 @Override
                 public String interpretDate(Calendar date) {
                     SimpleDateFormat sdf;
-                    sdf = mDayNameLength == LENGTH_SHORT ? new SimpleDateFormat("EEEEE") : new SimpleDateFormat("EEE");
+                    sdf = new SimpleDateFormat("EEE");
                     try {
                         String dayName = sdf.format(date.getTime()).toUpperCase();
                         return String.format("%s %d/%02d", dayName, date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
@@ -1202,7 +1149,6 @@ public class DayView extends View {
     public void setTextSize(int textSize) {
         mTextSize = textSize;
         mTodayHeaderTextPaint.setTextSize(mTextSize);
-        mHeaderTextPaint.setTextSize(mTextSize);
         mTimeTextPaint.setTextSize(mTextSize);
         invalidate();
     }
@@ -1225,23 +1171,6 @@ public class DayView extends View {
         invalidate();
     }
 
-    public int getHeaderRowPadding() {
-        return mHeaderRowPadding;
-    }
-
-    public void setHeaderRowPadding(int headerRowPadding) {
-        mHeaderRowPadding = headerRowPadding;
-        invalidate();
-    }
-
-    public int getHeaderRowBackgroundColor() {
-        return mHeaderRowBackgroundColor;
-    }
-
-    public void setHeaderRowBackgroundColor(int headerRowBackgroundColor) {
-        mHeaderRowBackgroundColor = headerRowBackgroundColor;
-        invalidate();
-    }
 
     public int getDayBackgroundColor() {
         return mDayBackgroundColor;
@@ -1332,35 +1261,6 @@ public class DayView extends View {
     public void setDefaultEventColor(int defaultEventColor) {
         mDefaultEventColor = defaultEventColor;
         invalidate();
-    }
-
-    /**
-     * <b>Note:</b> Use {@link #setDateTimeInterpreter(DateTimeInterpreter)} and
-     * {@link #getDateTimeInterpreter()} instead.
-     *
-     * @return Either long or short day name is being used.
-     */
-    @Deprecated
-    public int getDayNameLength() {
-        return mDayNameLength;
-    }
-
-    /**
-     * Set the length of the day name displayed in the header row. Example of short day names is
-     * 'M' for 'Monday' and example of long day names is 'Mon' for 'Monday'.
-     * <p>
-     * <b>Note:</b> Use {@link #setDateTimeInterpreter(DateTimeInterpreter)} instead.
-     * </p>
-     *
-     * @param length Supported values are {@link com.alamkanak.DayView.DayView#LENGTH_SHORT} and
-     *               {@link com.alamkanak.DayView.DayView#LENGTH_LONG}.
-     */
-    @Deprecated
-    public void setDayNameLength(int length) {
-        if (length != LENGTH_LONG && length != LENGTH_SHORT) {
-            throw new IllegalArgumentException("length parameter must be either LENGTH_LONG or LENGTH_SHORT");
-        }
-        this.mDayNameLength = length;
     }
 
     public int getOverlappingEventGap() {
@@ -1550,8 +1450,8 @@ public class DayView extends View {
         else if (hour > 0)
             verticalOffset = (int) (mHourHeight * hour);
 
-        if (verticalOffset > mHourHeight * 24 - getHeight() + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom)
-            verticalOffset = (int) (mHourHeight * 24 - getHeight() + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom);
+        if (verticalOffset > mHourHeight * 24 - getHeight())
+            verticalOffset = (int) (mHourHeight * 24 - getHeight());
 
         mCurrentOrigin.y = -verticalOffset;
         invalidate();
