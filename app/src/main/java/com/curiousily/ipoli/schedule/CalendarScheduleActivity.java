@@ -1,9 +1,10 @@
 package com.curiousily.ipoli.schedule;
 
 import android.graphics.RectF;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.app.BaseActivity;
@@ -27,16 +28,41 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
     @Bind(R.id.day_view)
     DayView dayView;
 
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    private TextView toolbarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_schedule);
         ButterKnife.bind(this);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+
+        toolbarTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
+
         dayView.setMonthChangeListener(this);
         dayView.setScrollListener(new DayView.ScrollListener() {
             @Override
             public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
                 Log.d("iPoli", "Day changed " + newFirstVisibleDay.toString());
+                Calendar tomorrow = dayView.today();
+                tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+                Calendar yesterday = dayView.today();
+                yesterday.add(Calendar.DAY_OF_YEAR, -1);
+                if (dayView.isSameDay(newFirstVisibleDay, dayView.today())) {
+                    toolbarTitle.setText("TODAY");
+                } else if (dayView.isSameDay(newFirstVisibleDay, tomorrow)) {
+                    toolbarTitle.setText("TOMORROW");
+                } else if (dayView.isSameDay(newFirstVisibleDay, yesterday)) {
+                    toolbarTitle.setText("YESTERDAY");
+                } else {
+                    toolbarTitle.setText(dayView.getDateTimeInterpreter().interpretDate(newFirstVisibleDay));
+                }
+
             }
         });
         dayView.setOnEventClickListener(new DayView.EventClickListener() {

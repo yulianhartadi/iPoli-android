@@ -86,7 +86,8 @@ public class DayView extends View {
     private int mHeaderColumnPadding = 10;
     private int mHeaderColumnTextColor = Color.BLACK;
     private int mNumberOfVisibleDays = 3;
-    private int mHeaderRowPadding = 10;
+//    private int mHeaderRowPadding = 10;
+    private int mHeaderRowPadding = 0;
     private int mHeaderRowBackgroundColor = Color.WHITE;
     private int mDayBackgroundColor = Color.rgb(245, 245, 245);
     private int mHourSeparatorColor = Color.rgb(230, 230, 230);
@@ -297,8 +298,10 @@ public class DayView extends View {
         final String exampleTime = showHalfHours ? "00:00 PM" : "00 PM";
         mTimeTextPaint.getTextBounds(exampleTime, 0, exampleTime.length(), rect);
         mTimeTextWidth = mTimeTextPaint.measureText(exampleTime);
-        mTimeTextHeight = rect.height();
-        mHeaderMarginBottom = mTimeTextHeight / 2;
+//        mTimeTextHeight = rect.height();
+        mTimeTextHeight = 0;
+//        mHeaderMarginBottom = mTimeTextHeight / 2;
+        mHeaderMarginBottom = 0;
 
         // Measure settings for header row.
         mHeaderTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -387,7 +390,7 @@ public class DayView extends View {
         }
 
         // Draw the background color for the header column.
-        canvas.drawRect(0, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderColumnWidth, getHeight(), mHeaderColumnBackgroundPaint);
+//        canvas.drawRect(0, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderColumnWidth, getHeight(), mHeaderColumnBackgroundPaint);
 
         int numPeriodsInDay = showHalfHours ? 48 : 24;
         for (int i = 0; i < numPeriodsInDay; i++) {
@@ -455,9 +458,14 @@ public class DayView extends View {
 
         // Consider scroll offset.
         if (mCurrentScrollDirection == Direction.HORIZONTAL) mCurrentOrigin.x -= mDistanceX;
-        int leftDaysWithGaps = (int) -(Math.ceil(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
+        int leftDaysWithGaps = (int) -(Math.round(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
         float startFromPixel = mCurrentOrigin.x + (mWidthPerDay + mColumnGap) * leftDaysWithGaps +
                 mHeaderColumnWidth;
+
+//        int leftDaysWithGaps = -(Math.round(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
+//        float startFromPixel = mCurrentOrigin.x + (mWidthPerDay + mColumnGap) * (leftDaysWithGaps-1) +
+//                mHeaderColumnWidth;
+
         float startPixel = startFromPixel;
 
         // Prepare to iterate for each day.
@@ -1617,11 +1625,11 @@ public class DayView extends View {
      * @param dayTwo The second day.
      * @return Whether the times are on the same day.
      */
-    private boolean isSameDay(Calendar dayOne, Calendar dayTwo) {
+    public boolean isSameDay(Calendar dayOne, Calendar dayTwo) {
         return dayOne.get(Calendar.YEAR) == dayTwo.get(Calendar.YEAR) && dayOne.get(Calendar.DAY_OF_YEAR) == dayTwo.get(Calendar.DAY_OF_YEAR);
     }
 
-    private Calendar today() {
+    public Calendar today() {
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
