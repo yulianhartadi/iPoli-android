@@ -63,7 +63,7 @@ public class DayView extends View {
     private Paint mHeaderColumnBackgroundPaint;
     private Scroller mStickyScroller;
     private int mFetchedMonths[] = new int[3];
-    private boolean mRefreshEvents = false;
+//    private boolean mRefreshEvents = false;
     private float mDistanceY = 0;
     private float mDistanceX = 0;
     private Direction mCurrentFlingDirection = Direction.NONE;
@@ -208,6 +208,11 @@ public class DayView extends View {
         }
     };
     private DailyEventsLoader dailyEventsLoader;
+
+    public void setEvents(List<QuestViewModel> events) {
+        loadQuests(events);
+        notifyDatasetChanged();
+    }
 
     private enum Direction {
         NONE, HORIZONTAL, VERTICAL
@@ -516,8 +521,12 @@ public class DayView extends View {
     }
 
     private void loadDailyEvents() {
-        mEventRects = new ArrayList<>();
         List<QuestViewModel> quests = dailyEventsLoader.loadEventsFor(mFirstVisibleDay);
+        loadQuests(quests);
+    }
+
+    private void loadQuests(List<QuestViewModel> quests) {
+        mEventRects = new ArrayList<>();
         sortEvents(quests);
         for (QuestViewModel event : quests) {
             cacheEvent(event);
@@ -691,84 +700,84 @@ public class DayView extends View {
      *
      * @param day The day where the user is currently is.
      */
-    private void getMoreEvents(Calendar day) {
-
-        // Delete all events if its not current month +- 1.
-        deleteFarMonths(day);
-
-        // Get more events if the month is changed.
-        if (mEventRects == null)
-            mEventRects = new ArrayList<EventRect>();
-        if (mMonthChangeListener == null && !isInEditMode())
-            throw new IllegalStateException("You must provide a MonthChangeListener");
-
-        // If a refresh was requested then reset some variables.
-        if (mRefreshEvents) {
-            mEventRects.clear();
-            mFetchedMonths = new int[3];
-        }
-
-        // Get events of previous month.
-        int previousMonth = (day.get(Calendar.MONTH) == 0 ? 12 : day.get(Calendar.MONTH));
-        int nextMonth = (day.get(Calendar.MONTH) + 2 == 13 ? 1 : day.get(Calendar.MONTH) + 2);
-        int[] lastFetchedMonth = mFetchedMonths.clone();
-        if (mFetchedMonths[0] < 1 || mFetchedMonths[0] != previousMonth || mRefreshEvents) {
-            if (!containsValue(lastFetchedMonth, previousMonth) && !isInEditMode()) {
-                List<QuestViewModel> events = mMonthChangeListener.onMonthChange((previousMonth == 12) ? day.get(Calendar.YEAR) - 1 : day.get(Calendar.YEAR), previousMonth);
-                sortEvents(events);
-                for (QuestViewModel event : events) {
-                    cacheEvent(event);
-                }
-            }
-            mFetchedMonths[0] = previousMonth;
-        }
-
-        // Get events of this month.
-        if (mFetchedMonths[1] < 1 || mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 || mRefreshEvents) {
-            if (!containsValue(lastFetchedMonth, day.get(Calendar.MONTH) + 1) && !isInEditMode()) {
-                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1);
-                sortEvents(events);
-                for (QuestViewModel event : events) {
-                    cacheEvent(event);
-                }
-            }
-            mFetchedMonths[1] = day.get(Calendar.MONTH) + 1;
-        }
-
-        // Get events of next month.
-        if (mFetchedMonths[2] < 1 || mFetchedMonths[2] != nextMonth || mRefreshEvents) {
-            if (!containsValue(lastFetchedMonth, nextMonth) && !isInEditMode()) {
-                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(nextMonth == 1 ? day.get(Calendar.YEAR) + 1 : day.get(Calendar.YEAR), nextMonth);
-                sortEvents(events);
-                for (QuestViewModel event : events) {
-                    cacheEvent(event);
-                }
-            }
-            mFetchedMonths[2] = nextMonth;
-        }
-
-        // Prepare to calculate positions of each events.
-        ArrayList<EventRect> tempEvents = new ArrayList<EventRect>(mEventRects);
-        mEventRects = new ArrayList<EventRect>();
-        Calendar dayCounter = (Calendar) day.clone();
-        dayCounter.add(Calendar.MONTH, -1);
-        dayCounter.set(Calendar.DAY_OF_MONTH, 1);
-        Calendar maxDay = (Calendar) day.clone();
-        maxDay.add(Calendar.MONTH, 1);
-        maxDay.set(Calendar.DAY_OF_MONTH, maxDay.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-        // Iterate through each day to calculate the position of the events.
-        while (dayCounter.getTimeInMillis() <= maxDay.getTimeInMillis()) {
-            ArrayList<EventRect> eventRects = new ArrayList<EventRect>();
-            for (EventRect eventRect : tempEvents) {
-                if (isSameDay(eventRect.event.startTime, dayCounter))
-                    eventRects.add(eventRect);
-            }
-
-            computePositionOfEvents(eventRects);
-            dayCounter.add(Calendar.DATE, 1);
-        }
-    }
+//    private void getMoreEvents(Calendar day) {
+//
+//        // Delete all events if its not current month +- 1.
+//        deleteFarMonths(day);
+//
+//        // Get more events if the month is changed.
+//        if (mEventRects == null)
+//            mEventRects = new ArrayList<EventRect>();
+//        if (mMonthChangeListener == null && !isInEditMode())
+//            throw new IllegalStateException("You must provide a MonthChangeListener");
+//
+//        // If a refresh was requested then reset some variables.
+//        if (mRefreshEvents) {
+//            mEventRects.clear();
+//            mFetchedMonths = new int[3];
+//        }
+//
+//        // Get events of previous month.
+//        int previousMonth = (day.get(Calendar.MONTH) == 0 ? 12 : day.get(Calendar.MONTH));
+//        int nextMonth = (day.get(Calendar.MONTH) + 2 == 13 ? 1 : day.get(Calendar.MONTH) + 2);
+//        int[] lastFetchedMonth = mFetchedMonths.clone();
+//        if (mFetchedMonths[0] < 1 || mFetchedMonths[0] != previousMonth || mRefreshEvents) {
+//            if (!containsValue(lastFetchedMonth, previousMonth) && !isInEditMode()) {
+//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange((previousMonth == 12) ? day.get(Calendar.YEAR) - 1 : day.get(Calendar.YEAR), previousMonth);
+//                sortEvents(events);
+//                for (QuestViewModel event : events) {
+//                    cacheEvent(event);
+//                }
+//            }
+//            mFetchedMonths[0] = previousMonth;
+//        }
+//
+//        // Get events of this month.
+//        if (mFetchedMonths[1] < 1 || mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 || mRefreshEvents) {
+//            if (!containsValue(lastFetchedMonth, day.get(Calendar.MONTH) + 1) && !isInEditMode()) {
+//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(day.get(Calendar.YEAR), day.get(Calendar.MONTH) + 1);
+//                sortEvents(events);
+//                for (QuestViewModel event : events) {
+//                    cacheEvent(event);
+//                }
+//            }
+//            mFetchedMonths[1] = day.get(Calendar.MONTH) + 1;
+//        }
+//
+//        // Get events of next month.
+//        if (mFetchedMonths[2] < 1 || mFetchedMonths[2] != nextMonth || mRefreshEvents) {
+//            if (!containsValue(lastFetchedMonth, nextMonth) && !isInEditMode()) {
+//                List<QuestViewModel> events = mMonthChangeListener.onMonthChange(nextMonth == 1 ? day.get(Calendar.YEAR) + 1 : day.get(Calendar.YEAR), nextMonth);
+//                sortEvents(events);
+//                for (QuestViewModel event : events) {
+//                    cacheEvent(event);
+//                }
+//            }
+//            mFetchedMonths[2] = nextMonth;
+//        }
+//
+//        // Prepare to calculate positions of each events.
+//        ArrayList<EventRect> tempEvents = new ArrayList<EventRect>(mEventRects);
+//        mEventRects = new ArrayList<EventRect>();
+//        Calendar dayCounter = (Calendar) day.clone();
+//        dayCounter.add(Calendar.MONTH, -1);
+//        dayCounter.set(Calendar.DAY_OF_MONTH, 1);
+//        Calendar maxDay = (Calendar) day.clone();
+//        maxDay.add(Calendar.MONTH, 1);
+//        maxDay.set(Calendar.DAY_OF_MONTH, maxDay.getActualMaximum(Calendar.DAY_OF_MONTH));
+//
+//        // Iterate through each day to calculate the position of the events.
+//        while (dayCounter.getTimeInMillis() <= maxDay.getTimeInMillis()) {
+//            ArrayList<EventRect> eventRects = new ArrayList<EventRect>();
+//            for (EventRect eventRect : tempEvents) {
+//                if (isSameDay(eventRect.event.startTime, dayCounter))
+//                    eventRects.add(eventRect);
+//            }
+//
+//            computePositionOfEvents(eventRects);
+//            dayCounter.add(Calendar.DATE, 1);
+//        }
+//    }
 
     /**
      * Cache the event for smooth scrolling functionality.
@@ -1361,7 +1370,7 @@ public class DayView extends View {
             return;
         }
 
-        mRefreshEvents = true;
+//        mRefreshEvents = true;
 
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
@@ -1382,7 +1391,7 @@ public class DayView extends View {
      * Refreshes the view and loads the events again.
      */
     public void notifyDatasetChanged() {
-        mRefreshEvents = true;
+//        mRefreshEvents = true;
         invalidate();
     }
 
