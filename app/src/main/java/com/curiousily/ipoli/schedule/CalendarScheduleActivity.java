@@ -60,22 +60,6 @@ public class CalendarScheduleActivity extends BaseActivity implements DailyEvent
 
     }
 
-//    @Override
-//    public List<QuestViewModel> onMonthChange(int newYear, int newMonth) {
-////        List<QuestViewModel> events = new ArrayList<>();
-////        QuestViewModel q = new QuestViewModel();
-////        q.backgroundColor = Quest.Context.ACTIVITY.getPrimaryColor();
-////        q.name = "Do a HIT workout";
-////        q.startTime = Calendar.getInstance();
-////        Calendar endTime = Calendar.getInstance();
-////        endTime.add(Calendar.MINUTE, 45);
-////        q.endTime = endTime;
-////        if (q.startTime.get(Calendar.MONTH) == newMonth && q.startTime.get(Calendar.YEAR) == newYear) {
-////            events.add(q);
-////        }
-////        return events;
-//    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -137,7 +121,6 @@ public class CalendarScheduleActivity extends BaseActivity implements DailyEvent
     @Subscribe
     public void onDailyScheduleLoaded(DailyScheduleLoadedEvent e) {
         List<QuestViewModel> events = new ArrayList<>();
-//        if (dayView.isSameDay(day, dayView.today())) {
         Log.d("iPoli", "Loading daily events");
         for(Quest q : e.schedule.quests) {
             QuestViewModel m = QuestViewModel.from(q);
@@ -148,17 +131,6 @@ public class CalendarScheduleActivity extends BaseActivity implements DailyEvent
             events.add(m);
         }
         dayView.setEvents(events);
-
-//            QuestViewModel q = new QuestViewModel();
-//            q.backgroundColor = Quest.Context.ACTIVITY.getPrimaryColor();
-//            q.name = "Do a HIT workout";
-//            q.startTime = Calendar.getInstance();
-//            Calendar endTime = Calendar.getInstance();
-//            endTime.add(Calendar.MINUTE, 45);
-//            q.endTime = endTime;
-//            events.add(q);
-//        }
-//        return events;
     }
 
     @Override
