@@ -56,8 +56,6 @@ public class DayView extends View {
     private float mWidthPerDay;
     private Paint mDayBackgroundPaint;
     private Paint mHourSeparatorPaint;
-    private Paint mTodayBackgroundPaint;
-    private Paint mTodayHeaderTextPaint;
     private Paint mEventBackgroundPaint;
     private float mHeaderColumnWidth;
     private List<EventRect> mEventRects;
@@ -81,9 +79,7 @@ public class DayView extends View {
 
     private int mDayBackgroundColor = Color.rgb(245, 245, 245);
     private int mHourSeparatorColor = Color.rgb(230, 230, 230);
-    private int mTodayBackgroundColor = Color.rgb(239, 247, 254);
     private int mHourSeparatorHeight = 2;
-    private int mTodayHeaderTextColor = Color.rgb(39, 137, 228);
     private int mEventTextSize = 12;
     private int mEventTextColor = Color.BLACK;
     private int mEventPadding = 8;
@@ -243,9 +239,7 @@ public class DayView extends View {
             mNumberOfVisibleDays = a.getInteger(R.styleable.DayView_noOfVisibleDays, mNumberOfVisibleDays);
             mDayBackgroundColor = a.getColor(R.styleable.DayView_dayBackgroundColor, mDayBackgroundColor);
             mHourSeparatorColor = a.getColor(R.styleable.DayView_hourSeparatorColor, mHourSeparatorColor);
-            mTodayBackgroundColor = a.getColor(R.styleable.DayView_todayBackgroundColor, mTodayBackgroundColor);
             mHourSeparatorHeight = a.getDimensionPixelSize(R.styleable.DayView_hourSeparatorHeight, mHourSeparatorHeight);
-            mTodayHeaderTextColor = a.getColor(R.styleable.DayView_todayHeaderTextColor, mTodayHeaderTextColor);
             mEventTextSize = a.getDimensionPixelSize(R.styleable.DayView_eventTextSize, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, mEventTextSize, context.getResources().getDisplayMetrics()));
             mEventTextColor = a.getColor(R.styleable.DayView_eventTextColor, mEventTextColor);
             mEventPadding = a.getDimensionPixelSize(R.styleable.DayView_hourSeparatorHeight, mEventPadding);
@@ -296,15 +290,8 @@ public class DayView extends View {
         mHourSeparatorPaint.setColor(mHourSeparatorColor);
 
         // Prepare today background color paint.
-        mTodayBackgroundPaint = new Paint();
-        mTodayBackgroundPaint.setColor(mTodayBackgroundColor);
 
         // Prepare today header text color paint.
-        mTodayHeaderTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTodayHeaderTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTodayHeaderTextPaint.setTextSize(mTextSize);
-        mTodayHeaderTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
-        mTodayHeaderTextPaint.setColor(mTodayHeaderTextColor);
 
         // Prepare event background color.
         mEventBackgroundPaint = new Paint();
@@ -340,12 +327,6 @@ public class DayView extends View {
 
         // Draw the time column and all the axes/separators.
         drawTimeColumnAndAxes(canvas);
-
-        // Hide everything in the first cell (top left corner).
-//        canvas.drawRect(0, 0, mTimeTextWidth + mHeaderColumnPadding * 2, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderBackgroundPaint);
-
-        // Hide anything that is in the bottom margin of the header row.
-//        canvas.drawRect(mHeaderColumnWidth, mHeaderTextHeight + mHeaderRowPadding * 2, getWidth(), mHeaderRowPadding * 2 + mHeaderTextHeight + mHeaderMarginBottom + mTimeTextHeight / 2 - mHourSeparatorHeight / 2, mHeaderColumnBackgroundPaint);
     }
 
     private void drawTimeColumnAndAxes(Canvas canvas) {
@@ -1148,7 +1129,6 @@ public class DayView extends View {
 
     public void setTextSize(int textSize) {
         mTextSize = textSize;
-        mTodayHeaderTextPaint.setTextSize(mTextSize);
         mTimeTextPaint.setTextSize(mTextSize);
         invalidate();
     }
@@ -1187,33 +1167,6 @@ public class DayView extends View {
 
     public void setHourSeparatorColor(int hourSeparatorColor) {
         mHourSeparatorColor = hourSeparatorColor;
-        invalidate();
-    }
-
-    public int getTodayBackgroundColor() {
-        return mTodayBackgroundColor;
-    }
-
-    public void setTodayBackgroundColor(int todayBackgroundColor) {
-        mTodayBackgroundColor = todayBackgroundColor;
-        invalidate();
-    }
-
-    public int getHourSeparatorHeight() {
-        return mHourSeparatorHeight;
-    }
-
-    public void setHourSeparatorHeight(int hourSeparatorHeight) {
-        mHourSeparatorHeight = hourSeparatorHeight;
-        invalidate();
-    }
-
-    public int getTodayHeaderTextColor() {
-        return mTodayHeaderTextColor;
-    }
-
-    public void setTodayHeaderTextColor(int todayHeaderTextColor) {
-        mTodayHeaderTextColor = todayHeaderTextColor;
         invalidate();
     }
 
