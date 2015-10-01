@@ -458,13 +458,9 @@ public class DayView extends View {
 
         // Consider scroll offset.
         if (mCurrentScrollDirection == Direction.HORIZONTAL) mCurrentOrigin.x -= mDistanceX;
-        int leftDaysWithGaps = (int) -(Math.round(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
+        int leftDaysWithGaps = -(Math.round(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
         float startFromPixel = mCurrentOrigin.x + (mWidthPerDay + mColumnGap) * leftDaysWithGaps +
                 mHeaderColumnWidth;
-
-//        int leftDaysWithGaps = -(Math.round(mCurrentOrigin.x / (mWidthPerDay + mColumnGap)));
-//        float startFromPixel = mCurrentOrigin.x + (mWidthPerDay + mColumnGap) * (leftDaysWithGaps-1) +
-//                mHeaderColumnWidth;
 
         float startPixel = startFromPixel;
 
