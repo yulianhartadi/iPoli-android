@@ -278,7 +278,6 @@ public class DayView extends View {
         mTimeTextPaint.getTextBounds(exampleTime, 0, exampleTime.length(), rect);
         mTimeTextWidth = mTimeTextPaint.measureText(exampleTime);
         mTimeTextHeight = rect.height();
-//        mTimeTextHeight = 0;
 
         // Prepare day background color paint.
         mDayBackgroundPaint = new Paint();
@@ -333,9 +332,6 @@ public class DayView extends View {
                 mCurrentOrigin.y = -(mHourHeight * 24 - getHeight());
             else mCurrentOrigin.y -= mDistanceY;
         }
-
-        // Draw the background color for the header column.
-//        canvas.drawRect(0, mHeaderTextHeight + mHeaderRowPadding * 2, mHeaderColumnWidth, getHeight(), mHeaderColumnBackgroundPaint);
 
         int numPeriodsInDay = showHalfHours ? 48 : 24;
         for (int i = 0; i < numPeriodsInDay; i++) {
@@ -741,7 +737,7 @@ public class DayView extends View {
      */
     private void expandEventsToMaxWidth(List<EventRect> collisionGroup) {
         // Expand the events to maximum possible width.
-        List<List<EventRect>> columns = new ArrayList<List<EventRect>>();
+        List<List<EventRect>> columns = new ArrayList<>();
         columns.add(new ArrayList<EventRect>());
         for (EventRect eventRect : collisionGroup) {
             boolean isPlaced = false;
@@ -1208,8 +1204,6 @@ public class DayView extends View {
             return;
         }
 
-//        mRefreshEvents = true;
-
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
@@ -1221,7 +1215,6 @@ public class DayView extends View {
         int dateDifference = (int) ((dateInMillis - todayInMillis) / (1000 * 60 * 60 * 24));
 
         mCurrentOrigin.x = -dateDifference * (mWidthPerDay + mColumnGap);
-        // mStickyScroller.startScroll((int) mCurrentOrigin.x, 0, (int) (-dateDifference*(mWidthPerDay + mColumnGap)-mCurrentOrigin.x), 0);
         invalidate();
     }
 
@@ -1229,7 +1222,6 @@ public class DayView extends View {
      * Refreshes the view and loads the events again.
      */
     public void notifyDatasetChanged() {
-//        mRefreshEvents = true;
         invalidate();
     }
 
@@ -1274,19 +1266,19 @@ public class DayView extends View {
     /////////////////////////////////////////////////////////////////
 
     public interface EventClickListener {
-        public void onEventClick(QuestViewModel event, RectF eventRect);
+        void onEventClick(QuestViewModel event, RectF eventRect);
     }
 
     public interface EventLongPressListener {
-        public void onEventLongPress(QuestViewModel event, RectF eventRect);
+        void onEventLongPress(QuestViewModel event, RectF eventRect);
     }
 
     public interface EmptyViewClickListener {
-        public void onEmptyViewClicked(Calendar time);
+        void onEmptyViewClicked(Calendar time);
     }
 
     public interface EmptyViewLongPressListener {
-        public void onEmptyViewLongPress(Calendar time);
+        void onEmptyViewLongPress(Calendar time);
     }
 
     public interface ScrollListener {
@@ -1299,28 +1291,6 @@ public class DayView extends View {
          * @param oldFirstVisibleDay The old first visible day (is null on the first call).
          */
         public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay);
-    }
-
-
-    /////////////////////////////////////////////////////////////////
-    //
-    //      Helper methods.
-    //
-    /////////////////////////////////////////////////////////////////
-
-    /**
-     * Checks if an integer array contains a particular value.
-     *
-     * @param list  The haystack.
-     * @param value The needle.
-     * @return True if the array contains the value. Otherwise returns false.
-     */
-    private boolean containsValue(int[] list, int value) {
-        for (int i = 0; i < list.length; i++) {
-            if (list[i] == value)
-                return true;
-        }
-        return false;
     }
 
     /**
