@@ -29,6 +29,7 @@ import android.widget.Scroller;
 
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
+import com.curiousily.ipoli.schedule.ui.dayview.loaders.DailyEventsLoader;
 
 import java.lang.reflect.TypeVariable;
 import java.text.SimpleDateFormat;
@@ -177,7 +178,7 @@ public class DayView extends View {
                 Collections.reverse(reversedEventRects);
                 for (EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
-                        mEventClickListener.onEventClick(event.originalEvent, event.rectF);
+                        mEventClickListener.onEventClick(event.event, event.rectF);
                         playSoundEffect(SoundEffectConstants.CLICK);
                         return super.onSingleTapConfirmed(e);
                     }
@@ -205,7 +206,7 @@ public class DayView extends View {
                 Collections.reverse(reversedEventRects);
                 for (EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
-                        mEventLongPressListener.onEventLongPress(event.originalEvent, event.rectF);
+                        mEventLongPressListener.onEventLongPress(event.event, event.rectF);
                         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                         return;
                     }
@@ -222,6 +223,7 @@ public class DayView extends View {
             }
         }
     };
+    private DailyEventsLoader dailyEventsLoader;
 
     private enum Direction {
         NONE, HORIZONTAL, VERTICAL
@@ -279,10 +281,7 @@ public class DayView extends View {
 
     private void init() {
         // Get the date today.
-        mToday = Calendar.getInstance();
-        mToday.set(Calendar.HOUR_OF_DAY, 0);
-        mToday.set(Calendar.MINUTE, 0);
-        mToday.set(Calendar.SECOND, 0);
+        mToday = today();
 
         // Scrolling initialization.
         mGestureDetector = new GestureDetectorCompat(mContext, mGestureListener);
@@ -487,6 +486,9 @@ public class DayView extends View {
         mFirstVisibleDay.add(Calendar.DATE, leftDaysWithGaps);
         if (!mFirstVisibleDay.equals(oldFirstVisibleDay) && mScrollListener != null) {
             mScrollListener.onFirstVisibleDayChanged(mFirstVisibleDay, oldFirstVisibleDay);
+
+            loadDailyEvents();
+
         }
         for (int dayNumber = leftDaysWithGaps + 1;
              dayNumber <= leftDaysWithGaps + mNumberOfVisibleDays + 1;
@@ -502,10 +504,10 @@ public class DayView extends View {
 
             // Get more events if necessary. We want to store the events 3 months beforehand. Get
             // events only when it is the first iteration of the loop.
-            if (mEventRects == null || mRefreshEvents || (dayNumber == leftDaysWithGaps + 1 && mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 && day.get(Calendar.DAY_OF_MONTH) == 15)) {
-                getMoreEvents(day);
-                mRefreshEvents = false;
-            }
+//            if (mEventRects == null || mRefreshEvents || (dayNumber == leftDaysWithGaps + 1 && mFetchedMonths[1] != day.get(Calendar.MONTH) + 1 && day.get(Calendar.DAY_OF_MONTH) == 15)) {
+//                getMoreEvents(day);
+//                mRefreshEvents = false;
+//            }
 
             // Draw background color for each day.
             float start = (startPixel < mHeaderColumnWidth ? mHeaderColumnWidth : startPixel);
@@ -562,6 +564,16 @@ public class DayView extends View {
             startPixel += mWidthPerDay + mColumnGap;
         }
 
+    }
+
+    private void loadDailyEvents() {
+        mEventRects = new ArrayList<>();
+        List<QuestViewModel> quests = dailyEventsLoader.loadEventsFor(mFirstVisibleDay);
+        sortEvents(quests);
+        for (QuestViewModel event : quests) {
+            cacheEvent(event);
+        }
+        computePositionOfEvents(mEventRects);
     }
 
     /**
@@ -700,7 +712,6 @@ public class DayView extends View {
      */
     private class EventRect {
         public QuestViewModel event;
-        public QuestViewModel originalEvent;
         public RectF rectF;
         public float left;
         public float width;
@@ -716,13 +727,11 @@ public class DayView extends View {
          * be stored in "event".
          *
          * @param event         Represents the event which this instance of rectangle represents.
-         * @param originalEvent The original event that was passed by the user.
          * @param rectF         The rectangle.
          */
-        public EventRect(QuestViewModel event, QuestViewModel originalEvent, RectF rectF) {
+        public EventRect(QuestViewModel event, RectF rectF) {
             this.event = event;
             this.rectF = rectF;
-            this.originalEvent = originalEvent;
         }
     }
 
@@ -819,27 +828,27 @@ public class DayView extends View {
      * @param quest The event to cache.
      */
     private void cacheEvent(QuestViewModel quest) {
-        if (!isSameDay(quest.startTime, quest.endTime)) {
-            Calendar endTime = (Calendar) quest.startTime.clone();
-            endTime.set(Calendar.HOUR_OF_DAY, 23);
-            endTime.set(Calendar.MINUTE, 59);
-            Calendar startTime = (Calendar) quest.endTime.clone();
-            startTime.set(Calendar.HOUR_OF_DAY, 0);
-            startTime.set(Calendar.MINUTE, 0);
-            QuestViewModel event1 = new QuestViewModel();
-            event1.name = quest.name;
-            event1.startTime = quest.startTime;
-            event1.endTime = endTime;
-            event1.backgroundColor = quest.backgroundColor;
-            QuestViewModel event2 = new QuestViewModel();
-            event2.name = quest.name;
-            event2.startTime = startTime;
-            event2.endTime = quest.endTime;
-            event2.backgroundColor = quest.backgroundColor;
-            mEventRects.add(new EventRect(event1, quest, null));
-            mEventRects.add(new EventRect(event2, quest, null));
-        } else
-            mEventRects.add(new EventRect(quest, quest, null));
+//        if (!isSameDay(quest.startTime, quest.endTime)) {
+//            Calendar endTime = (Calendar) quest.startTime.clone();
+//            endTime.set(Calendar.HOUR_OF_DAY, 23);
+//            endTime.set(Calendar.MINUTE, 59);
+//            Calendar startTime = (Calendar) quest.endTime.clone();
+//            startTime.set(Calendar.HOUR_OF_DAY, 0);
+//            startTime.set(Calendar.MINUTE, 0);
+//            QuestViewModel event1 = new QuestViewModel();
+//            event1.name = quest.name;
+//            event1.startTime = quest.startTime;
+//            event1.endTime = endTime;
+//            event1.backgroundColor = quest.backgroundColor;
+//            QuestViewModel event2 = new QuestViewModel();
+//            event2.name = quest.name;
+//            event2.startTime = startTime;
+//            event2.endTime = quest.endTime;
+//            event2.backgroundColor = quest.backgroundColor;
+//            mEventRects.add(new EventRect(event1, quest, null));
+//            mEventRects.add(new EventRect(event2, quest, null));
+//        } else
+            mEventRects.add(new EventRect(quest, null));
     }
 
     /**
@@ -1180,6 +1189,10 @@ public class DayView extends View {
     public void setFirstDayOfWeek(int firstDayOfWeek) {
         mFirstDayOfWeek = firstDayOfWeek;
         invalidate();
+    }
+
+    public void setDailyEventsLoader(DailyEventsLoader loader) {
+        this.dailyEventsLoader = loader;
     }
 
     public int getTextSize() {

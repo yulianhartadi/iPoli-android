@@ -11,6 +11,7 @@ import com.curiousily.ipoli.app.BaseActivity;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.dayview.DayView;
+import com.curiousily.ipoli.schedule.ui.dayview.loaders.DailyEventsLoader;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,7 +24,7 @@ import butterknife.ButterKnife;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/30/15.
  */
-public class CalendarScheduleActivity extends BaseActivity implements DayView.MonthChangeListener {
+public class CalendarScheduleActivity extends BaseActivity implements DayView.MonthChangeListener, DailyEventsLoader {
 
     @Bind(R.id.day_view)
     DayView dayView;
@@ -77,6 +78,7 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
                 Log.d("iPoli", time.get(Calendar.HOUR_OF_DAY) + "");
             }
         });
+        dayView.setDailyEventsLoader(this);
         dayView.goToHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
     }
 
@@ -91,6 +93,23 @@ public class CalendarScheduleActivity extends BaseActivity implements DayView.Mo
         endTime.add(Calendar.MINUTE, 45);
         q.endTime = endTime;
         if (q.startTime.get(Calendar.MONTH) == newMonth && q.startTime.get(Calendar.YEAR) == newYear) {
+            events.add(q);
+        }
+        return events;
+    }
+
+    @Override
+    public List<QuestViewModel> loadEventsFor(Calendar day) {
+        List<QuestViewModel> events = new ArrayList<>();
+        if (dayView.isSameDay(day, dayView.today())) {
+            Log.d("iPoli", "Loading daily events");
+            QuestViewModel q = new QuestViewModel();
+            q.backgroundColor = Quest.Context.ACTIVITY.getPrimaryColor();
+            q.name = "Do a HIT workout";
+            q.startTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            endTime.add(Calendar.MINUTE, 45);
+            q.endTime = endTime;
             events.add(q);
         }
         return events;
