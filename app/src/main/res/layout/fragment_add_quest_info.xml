@@ -107,24 +107,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Recurrent" />
-
-                <!--<RadioButton-->
-                    <!--android:id="@+id/add_quest_type_heroic"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Heroic" />-->
-
-                <!--<RadioButton-->
-                    <!--android:id="@+id/add_quest_type_epic"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Epic" />-->
-
-                <!--<RadioButton-->
-                    <!--android:id="@+id/add_quest_type_legendary"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Legendary" />-->
             </RadioGroup>
         </LinearLayout>
 

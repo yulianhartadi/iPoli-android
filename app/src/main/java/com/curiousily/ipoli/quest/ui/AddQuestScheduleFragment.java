@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,7 +27,9 @@ import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.Recurrence;
 import com.curiousily.ipoli.quest.events.QuestBuiltEvent;
 import com.curiousily.ipoli.ui.dialogs.DatePickerFragment;
+import com.curiousily.ipoli.ui.dialogs.TimePickerFragment;
 import com.curiousily.ipoli.ui.events.DateSelectedEvent;
+import com.curiousily.ipoli.ui.events.TimeSelectedEvent;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -54,8 +55,8 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
     @Bind(R.id.add_quest_times_per_day_label)
     TextView timesPerDayLabel;
 
-    @Bind(R.id.add_quest_notes)
-    EditText notes;
+    @Bind(R.id.add_quest_start_time)
+    Button startTime;
 
     @Bind(R.id.add_quest_due_date)
     Button dueDate;
@@ -93,6 +94,12 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         setHasOptionsMenu(true);
     }
 
+    @OnClick(R.id.add_quest_start_time)
+    public void onStartTimeClick(Button button) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+    }
+
     @OnClick(R.id.add_quest_due_date)
     public void onDueDateClick(Button button) {
         DialogFragment newFragment = new DatePickerFragment();
@@ -120,6 +127,13 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         if (quest.type != Quest.QuestType.RECURRENT) {
             view.findViewById(R.id.add_quest_recurrence_layout).setVisibility(View.GONE);
             includedDaysLayout.setVisibility(View.GONE);
+        }
+
+        if (quest.type == Quest.QuestType.RECURRENT) {
+            view.findViewById(R.id.add_quest_due_layout).setVisibility(View.GONE);
+            Calendar maxDueDate = Calendar.getInstance();
+            maxDueDate.set(Calendar.YEAR, 9999);
+            quest.due = maxDueDate.getTime();
         }
 
         return view;
@@ -155,7 +169,6 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
             case R.id.action_done:
                 quest.duration = Constants.DURATION_TEXT_INDEX_TO_MINUTES[duration.getSelectedItemPosition()];
                 quest.recurrence = createRecurrence();
-                quest.notes = notes.getText().toString();
                 EventBus.post(new QuestBuiltEvent(quest));
                 return true;
         }
@@ -226,5 +239,20 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
         quest.due = time.getTime();
         SimpleDateFormat format = new SimpleDateFormat(Constants.DEFAULT_UI_DATE_FORMAT, Locale.getDefault());
         dueDate.setText(format.format(quest.due));
+    }
+
+    @Subscribe
+    public void onStartTimeChanged(TimeSelectedEvent e) {
+        Calendar due = Calendar.getInstance();
+        due.setTime(quest.due);
+        Calendar time = Calendar.getInstance();
+        time.setTime(e.time);
+
+        due.set(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+        due.set(Calendar.MINUTE, time.get(Calendar.MINUTE));
+
+        quest.due = due.getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat(Constants.DEFAULT_TIME_FORMAT, Locale.getDefault());
+        startTime.setText(formatter.format(quest.due));
     }
 }

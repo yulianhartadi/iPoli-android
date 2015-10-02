@@ -27,6 +27,7 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/add_quest_due_layout"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_marginEnd="16dp"
@@ -55,6 +56,39 @@
                 android:layout_marginStart="48dp"
                 android:background="?attr/colorAccent"
                 android:text="Due Today"
+                android:textColor="@color/md_white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_quest_start_time_layout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="24dp"
+            android:orientation="horizontal">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:scaleType="center"
+                app:materialIcon="clock"
+                app:materialIconColor="@color/md_dark_text_54"
+                app:materialIconSize="24dp" />
+
+            <Button
+                android:id="@+id/add_quest_start_time"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="48dp"
+                android:layout_marginStart="48dp"
+                android:background="?attr/colorAccent"
+                android:text="Starts now"
                 android:textColor="@color/md_white" />
 
         </LinearLayout>
@@ -258,37 +292,6 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="24dp"
-            android:orientation="horizontal">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:scaleType="center"
-                app:materialIcon="comment_text_outline"
-                app:materialIconColor="@color/md_dark_text_54"
-                app:materialIconSize="24dp" />
-
-            <EditText
-                android:id="@+id/add_quest_notes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
-                android:hint="Notes (e.g. Less is more)"
-                android:inputType="textMultiLine|textCapSentences"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp" />
         </LinearLayout>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
