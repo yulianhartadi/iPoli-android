@@ -47,7 +47,7 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
     ProgressWheel loader;
 
     @Bind(R.id.schedule_empty_layout)
-    View emptySchedule;
+    View newUserView;
 
     @Nullable
     @Override
@@ -66,7 +66,11 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
 
     @Subscribe
     public void onUserLoadedEvent(UserLoadedEvent e) {
-        Log.d("iPoli", "User loaded");
+        if (e.isNewUser) {
+            loader.setVisibility(View.GONE);
+            showNewUserView();
+            return;
+        }
         dayView.setScrollListener(new DayView.ScrollListener() {
             @Override
             public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
@@ -84,13 +88,11 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
                 } else {
                     post(new ChangeToolbarTitleEvent(dayView.getDateTimeInterpreter().interpretDate(newFirstVisibleDay)));
                 }
-
             }
         });
         dayView.setOnEventClickListener(new DayView.EventClickListener() {
             @Override
             public void onEventClick(Quest quest, RectF eventRect) {
-                Log.d("iPoli", "Event selected");
                 post(new ShowQuestEvent(quest));
             }
         });
@@ -102,35 +104,28 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
         });
         dayView.setDailyEventsLoader(this);
         dayView.goToHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
-        loadSchedule();
+        loadScheduleAsync();
     }
 
     @Subscribe
     public void onDailyScheduleLoaded(DailyScheduleLoadedEvent e) {
         loader.setVisibility(View.GONE);
-        DailySchedule schedule = e.schedule;
-        if (schedule.quests.isEmpty()) {
-            displayEmptySchedule();
-        } else {
-            displaySchedule(schedule);
-        }
+        showSchedule(e.schedule);
     }
 
-    public void displaySchedule(DailySchedule e) {
-        emptySchedule.setVisibility(View.GONE);
+    public void showSchedule(DailySchedule e) {
         dayView.setVisibility(View.VISIBLE);
         dayView.setEvents(e.quests);
     }
 
     @Override
     public List<Quest> loadEventsFor(Calendar day) {
-        Log.d("iPoli", "Loading events");
-        loadSchedule(day);
+        loadScheduleAsync(day);
         return new ArrayList<>();
     }
 
-    private void displayEmptySchedule() {
-        emptySchedule.setVisibility(View.VISIBLE);
+    private void showNewUserView() {
+        newUserView.setVisibility(View.VISIBLE);
     }
 
     private void post(Object event) {
@@ -149,23 +144,23 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
         EventBus.get().register(this);
         loader.setVisibility(View.VISIBLE);
         dayView.setVisibility(View.GONE);
+        newUserView.setVisibility(View.GONE);
         post(new LoadUserEvent());
     }
 
     @Subscribe
     public void onQuestUpdated(QuestUpdatedEvent e) {
-        loadSchedule();
+        loadScheduleAsync();
     }
 
-    private void loadSchedule() {
-        loadSchedule(Calendar.getInstance());
+    private void loadScheduleAsync() {
+        loadScheduleAsync(Calendar.getInstance());
     }
 
-    private void loadSchedule(Calendar day) {
+    private void loadScheduleAsync(Calendar day) {
         loader.setVisibility(View.VISIBLE);
         dayView.setVisibility(View.GONE);
         Date scheduledFor = day.getTime();
-        Log.d("iPoli", "Loading daily quests");
         post(new LoadDailyScheduleEvent(scheduledFor, User.getCurrent(getContext()).id));
     }
 }
