@@ -2,7 +2,7 @@
     <string name="app_name">iPoli</string>
     <string name="action_settings">Settings</string>
     <string name="invite_welcome_text">Ready to have epic life?</string>
-    <string name="invite_description">iPoli is a private community of real life heroes doing epic quests! Request your invite to join in!</string>
+    <string name="invite_description">iPoli is private community of real life heroes doing epic quests! Request your invite to join them!</string>
     <string name="get_invite">GIVE ME INVITE</string>
     <string name="add_quest_title">New Quest</string>
     <string name="share_dialog_title">Share your quest…</string>
