@@ -95,12 +95,12 @@ public class DayView extends View {
     private boolean showHalfHours = false;
 
     // Listeners.
-    private EventClickListener mEventClickListener;
+    private QuestClickListener mQuestClickListener;
     private EventLongPressListener mEventLongPressListener;
-    private EmptyViewClickListener mEmptyViewClickListener;
+    private EmptyCellClickListener mEmptyCellClickListener;
     private EmptyViewLongPressListener mEmptyViewLongPressListener;
     private DateTimeInterpreter mDateTimeInterpreter;
-    private ScrollListener mScrollListener;
+    private DayChangeListener mDayChangeListener;
 
     // CurrentTime color
     private int mNowLineColor = Color.rgb(102, 102, 102);
@@ -153,12 +153,12 @@ public class DayView extends View {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             // If the tap was on an event then trigger the callback.
-            if (mEventRects != null && mEventClickListener != null) {
+            if (mEventRects != null && mQuestClickListener != null) {
                 List<EventRect> reversedEventRects = mEventRects;
                 Collections.reverse(reversedEventRects);
                 for (EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
-                        mEventClickListener.onEventClick(event.quest, event.rectF);
+                        mQuestClickListener.onQuestClick(event.quest, event.rectF);
                         playSoundEffect(SoundEffectConstants.CLICK);
                         return super.onSingleTapConfirmed(e);
                     }
@@ -166,11 +166,11 @@ public class DayView extends View {
             }
 
             // If the tap was on in an empty space, then trigger the callback.
-            if (mEmptyViewClickListener != null && e.getX() > mHeaderColumnWidth) {
+            if (mEmptyCellClickListener != null && e.getX() > mHeaderColumnWidth) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
                 if (selectedTime != null) {
                     playSoundEffect(SoundEffectConstants.CLICK);
-                    mEmptyViewClickListener.onEmptyViewClicked(selectedTime);
+                    mEmptyCellClickListener.onEmptyCellClick(selectedTime);
                 }
             }
 
@@ -425,8 +425,8 @@ public class DayView extends View {
         Calendar oldFirstVisibleDay = mFirstVisibleDay;
         mFirstVisibleDay = (Calendar) mToday.clone();
         mFirstVisibleDay.add(Calendar.DATE, leftDaysWithGaps);
-        if (!mFirstVisibleDay.equals(oldFirstVisibleDay) && mScrollListener != null) {
-            mScrollListener.onFirstVisibleDayChanged(mFirstVisibleDay, oldFirstVisibleDay);
+        if (!mFirstVisibleDay.equals(oldFirstVisibleDay) && mDayChangeListener != null) {
+            mDayChangeListener.onDayChanged(mFirstVisibleDay, oldFirstVisibleDay);
 
             loadDailyEvents();
 
@@ -817,12 +817,12 @@ public class DayView extends View {
     //
     /////////////////////////////////////////////////////////////////
 
-    public void setOnEventClickListener(EventClickListener listener) {
-        this.mEventClickListener = listener;
+    public void setOnQuestClickListener(QuestClickListener listener) {
+        this.mQuestClickListener = listener;
     }
 
-    public EventClickListener getEventClickListener() {
-        return mEventClickListener;
+    public QuestClickListener getEventClickListener() {
+        return mQuestClickListener;
     }
 
     public EventLongPressListener getEventLongPressListener() {
@@ -833,12 +833,12 @@ public class DayView extends View {
         this.mEventLongPressListener = eventLongPressListener;
     }
 
-    public void setEmptyViewClickListener(EmptyViewClickListener emptyViewClickListener) {
-        this.mEmptyViewClickListener = emptyViewClickListener;
+    public void setEmptyCellClickListener(EmptyCellClickListener emptyCellClickListener) {
+        this.mEmptyCellClickListener = emptyCellClickListener;
     }
 
-    public EmptyViewClickListener getEmptyViewClickListener() {
-        return mEmptyViewClickListener;
+    public EmptyCellClickListener getEmptyViewClickListener() {
+        return mEmptyCellClickListener;
     }
 
     public void setEmptyViewLongPressListener(EmptyViewLongPressListener emptyViewLongPressListener) {
@@ -849,12 +849,12 @@ public class DayView extends View {
         return mEmptyViewLongPressListener;
     }
 
-    public void setScrollListener(ScrollListener scrolledListener) {
-        this.mScrollListener = scrolledListener;
+    public void setDayChangeListener(DayChangeListener scrolledListener) {
+        this.mDayChangeListener = scrolledListener;
     }
 
-    public ScrollListener getScrollListener() {
-        return mScrollListener;
+    public DayChangeListener getScrollListener() {
+        return mDayChangeListener;
     }
 
     /**
@@ -1272,23 +1272,23 @@ public class DayView extends View {
     //
     /////////////////////////////////////////////////////////////////
 
-    public interface EventClickListener {
-        void onEventClick(Quest event, RectF eventRect);
+    public interface QuestClickListener {
+        void onQuestClick(Quest event, RectF eventRect);
     }
 
     public interface EventLongPressListener {
         void onEventLongPress(Quest event, RectF eventRect);
     }
 
-    public interface EmptyViewClickListener {
-        void onEmptyViewClicked(Calendar time);
+    public interface EmptyCellClickListener {
+        void onEmptyCellClick(Calendar time);
     }
 
     public interface EmptyViewLongPressListener {
         void onEmptyViewLongPress(Calendar time);
     }
 
-    public interface ScrollListener {
+    public interface DayChangeListener {
         /**
          * Called when the first visible day has changed.
          * <p/>
@@ -1297,7 +1297,7 @@ public class DayView extends View {
          * @param newFirstVisibleDay The new first visible day
          * @param oldFirstVisibleDay The old first visible day (is null on the first call).
          */
-        public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay);
+        public void onDayChanged(Calendar newDay, Calendar oldDay);
     }
 
     /**

@@ -38,7 +38,7 @@ import butterknife.ButterKnife;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/12/15.
  */
-public class DailyScheduleFragment extends Fragment implements DailyEventsLoader {
+public class DailyScheduleFragment extends Fragment implements DailyEventsLoader, DayView.DayChangeListener {
 
     @Bind(R.id.day_view)
     DayView dayView;
@@ -71,34 +71,16 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
             showNewUserView();
             return;
         }
-        dayView.setScrollListener(new DayView.ScrollListener() {
+        dayView.setDayChangeListener(this);
+        dayView.setOnQuestClickListener(new DayView.QuestClickListener() {
             @Override
-            public void onFirstVisibleDayChanged(Calendar newFirstVisibleDay, Calendar oldFirstVisibleDay) {
-                Log.d("iPoli", "Day changed " + newFirstVisibleDay.toString());
-                Calendar tomorrow = dayView.today();
-                tomorrow.add(Calendar.DAY_OF_YEAR, 1);
-                Calendar yesterday = dayView.today();
-                yesterday.add(Calendar.DAY_OF_YEAR, -1);
-                if (dayView.isSameDay(newFirstVisibleDay, dayView.today())) {
-                    post(new ChangeToolbarTitleEvent("TODAY"));
-                } else if (dayView.isSameDay(newFirstVisibleDay, tomorrow)) {
-                    post(new ChangeToolbarTitleEvent("TOMORROW"));
-                } else if (dayView.isSameDay(newFirstVisibleDay, yesterday)) {
-                    post(new ChangeToolbarTitleEvent("YESTERDAY"));
-                } else {
-                    post(new ChangeToolbarTitleEvent(dayView.getDateTimeInterpreter().interpretDate(newFirstVisibleDay)));
-                }
-            }
-        });
-        dayView.setOnEventClickListener(new DayView.EventClickListener() {
-            @Override
-            public void onEventClick(Quest quest, RectF eventRect) {
+            public void onQuestClick(Quest quest, RectF eventRect) {
                 post(new ShowQuestEvent(quest));
             }
         });
-        dayView.setEmptyViewClickListener(new DayView.EmptyViewClickListener() {
+        dayView.setEmptyCellClickListener(new DayView.EmptyCellClickListener() {
             @Override
-            public void onEmptyViewClicked(Calendar time) {
+            public void onEmptyCellClick(Calendar time) {
                 Log.d("iPoli", time.get(Calendar.HOUR_OF_DAY) + "");
             }
         });
@@ -162,5 +144,23 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
         dayView.setVisibility(View.GONE);
         Date scheduledFor = day.getTime();
         post(new LoadDailyScheduleEvent(scheduledFor, User.getCurrent(getContext()).id));
+    }
+
+    @Override
+    public void onDayChanged(Calendar newDay, Calendar oldDay) {
+        Log.d("iPoli", "Day changed " + newDay.toString());
+        Calendar tomorrow = dayView.today();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+        Calendar yesterday = dayView.today();
+        yesterday.add(Calendar.DAY_OF_YEAR, -1);
+        if (dayView.isSameDay(newDay, dayView.today())) {
+            post(new ChangeToolbarTitleEvent("TODAY"));
+        } else if (dayView.isSameDay(newDay, tomorrow)) {
+            post(new ChangeToolbarTitleEvent("TOMORROW"));
+        } else if (dayView.isSameDay(newDay, yesterday)) {
+            post(new ChangeToolbarTitleEvent("YESTERDAY"));
+        } else {
+            post(new ChangeToolbarTitleEvent(dayView.getDateTimeInterpreter().interpretDate(newDay)));
+        }
     }
 }
