@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.curiousily.ipoli.Constants;
 import com.curiousily.ipoli.EventBus;
@@ -27,6 +28,7 @@ import com.curiousily.ipoli.quest.services.events.UpdateQuestEvent;
 import com.curiousily.ipoli.schedule.ui.DailyScheduleFragment;
 import com.curiousily.ipoli.schedule.ui.PostponeQuestDialog;
 import com.curiousily.ipoli.schedule.ui.QuestDoneDialog;
+import com.curiousily.ipoli.schedule.ui.events.ChangeToolbarTitleEvent;
 import com.curiousily.ipoli.schedule.ui.events.FinishQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.PostponeQuestEvent;
 import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
@@ -48,6 +50,9 @@ public class DailyScheduleActivity extends BaseActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    @Bind(R.id.toolbar_title)
+    TextView toolbarTitle;
 
     @Bind(R.id.nav_view)
     NavigationView navigationView;
@@ -121,6 +126,7 @@ public class DailyScheduleActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
+            ab.setTitle("");
             ab.setHomeAsUpIndicator(R.drawable.ic_menu);
             ab.setDisplayHomeAsUpEnabled(true);
         }
@@ -188,5 +194,10 @@ public class DailyScheduleActivity extends BaseActivity {
     @Subscribe
     public void onAPIError(APIErrorEvent e) {
         showAlertDialog(R.string.error_server_unreachable_title, e.error.getLocalizedMessage());
+    }
+
+    @Subscribe
+    public void onChangeToolbarTitle(ChangeToolbarTitleEvent e) {
+        toolbarTitle.setText(e.text);
     }
 }

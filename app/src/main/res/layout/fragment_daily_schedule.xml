@@ -5,12 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/schedule_list"
+    <com.curiousily.ipoli.schedule.ui.dayview.DayView
+        android:id="@+id/day_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/md_white"
         android:paddingBottom="8dp"
-        android:paddingTop="8dp" />
+        android:paddingTop="8dp"
+        app:eventTextColor="@color/md_white"
+        app:eventTextSize="16sp"
+        app:hourHeight="140dp"
+        app:noOfVisibleDays="1"
+        app:nowLineColor="?attr/colorAccent"
+        app:nowLineThickness="1dp"
+        app:showHalfHours="true" />
 
 
     <com.pnikosis.materialishprogress.ProgressWheel

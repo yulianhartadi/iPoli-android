@@ -8,8 +8,10 @@ import com.curiousily.ipoli.user.User;
  */
 public class UserLoadedEvent {
     public final User user;
+    public final boolean isNewUser;
 
-    public UserLoadedEvent(User user) {
+    public UserLoadedEvent(User user, boolean isNewUser) {
         this.user = user;
+        this.isNewUser = isNewUser;
     }
 }

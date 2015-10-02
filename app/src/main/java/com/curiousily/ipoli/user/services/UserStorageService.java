@@ -17,8 +17,6 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient.Info;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
@@ -45,7 +43,7 @@ public class UserStorageService {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString(Constants.KEY_USER_ID, user.id);
                 editor.apply();
-                postUserLoadedEvent(user.id);
+                postUserLoadedEvent(user.id, true);
             }
         });
     }
@@ -55,7 +53,7 @@ public class UserStorageService {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         if (preferences.contains(Constants.KEY_USER_ID)) {
             String userId = preferences.getString(Constants.KEY_USER_ID, "");
-            postUserLoadedEvent(userId);
+            postUserLoadedEvent(userId, false);
         } else {
             GetAdvertisingIdTask task = new GetAdvertisingIdTask(context, new AdvertisingIdListener() {
                 @Override
@@ -72,9 +70,9 @@ public class UserStorageService {
         }
     }
 
-    private void postUserLoadedEvent(String userId) {
+    private void postUserLoadedEvent(String userId, boolean isNew) {
         User user = new User(userId);
-        bus.post(new UserLoadedEvent(user));
+        bus.post(new UserLoadedEvent(user, isNew));
     }
 
     public interface AdvertisingIdListener {
