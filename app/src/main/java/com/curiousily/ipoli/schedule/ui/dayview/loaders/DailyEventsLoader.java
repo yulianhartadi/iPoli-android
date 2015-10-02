@@ -1,5 +1,6 @@
 package com.curiousily.ipoli.schedule.ui.dayview.loaders;
 
+import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 
 import java.util.Calendar;
@@ -10,5 +11,5 @@ import java.util.List;
  * on 10/1/15.
  */
 public interface DailyEventsLoader {
-    List<QuestViewModel> loadEventsFor(Calendar day);
+    List<Quest> loadEventsFor(Calendar day);
 }

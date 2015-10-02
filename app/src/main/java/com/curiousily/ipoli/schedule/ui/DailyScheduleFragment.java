@@ -13,13 +13,13 @@ import com.curiousily.ipoli.EventBus;
 import com.curiousily.ipoli.R;
 import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.services.events.QuestUpdatedEvent;
-import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.DailySchedule;
 import com.curiousily.ipoli.schedule.events.DailyScheduleLoadedEvent;
 import com.curiousily.ipoli.schedule.events.LoadDailyScheduleEvent;
 import com.curiousily.ipoli.schedule.ui.dayview.DayView;
 import com.curiousily.ipoli.schedule.ui.dayview.loaders.DailyEventsLoader;
 import com.curiousily.ipoli.schedule.ui.events.ChangeToolbarTitleEvent;
+import com.curiousily.ipoli.schedule.ui.events.ShowQuestEvent;
 import com.curiousily.ipoli.user.User;
 import com.curiousily.ipoli.user.events.LoadUserEvent;
 import com.curiousily.ipoli.user.events.UserLoadedEvent;
@@ -89,8 +89,9 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
         });
         dayView.setOnEventClickListener(new DayView.EventClickListener() {
             @Override
-            public void onEventClick(QuestViewModel event, RectF eventRect) {
+            public void onEventClick(Quest quest, RectF eventRect) {
                 Log.d("iPoli", "Event selected");
+                post(new ShowQuestEvent(quest));
             }
         });
         dayView.setEmptyViewClickListener(new DayView.EmptyViewClickListener() {
@@ -118,21 +119,11 @@ public class DailyScheduleFragment extends Fragment implements DailyEventsLoader
     public void displaySchedule(DailySchedule e) {
         emptySchedule.setVisibility(View.GONE);
         dayView.setVisibility(View.VISIBLE);
-        List<QuestViewModel> events = new ArrayList<>();
-        Log.d("iPoli", "Loading daily events");
-        for (Quest q : e.quests) {
-            QuestViewModel m = QuestViewModel.from(q);
-            m.startTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
-            endTime.add(Calendar.MINUTE, 45);
-            m.endTime = endTime;
-            events.add(m);
-        }
-        dayView.setEvents(events);
+        dayView.setEvents(e.quests);
     }
 
     @Override
-    public List<QuestViewModel> loadEventsFor(Calendar day) {
+    public List<Quest> loadEventsFor(Calendar day) {
         Log.d("iPoli", "Loading events");
         loadSchedule(day);
         return new ArrayList<>();

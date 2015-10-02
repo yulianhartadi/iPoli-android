@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.Layout;
@@ -27,6 +26,7 @@ import android.widget.OverScroller;
 import android.widget.Scroller;
 
 import com.curiousily.ipoli.R;
+import com.curiousily.ipoli.quest.Quest;
 import com.curiousily.ipoli.quest.viewmodel.QuestViewModel;
 import com.curiousily.ipoli.schedule.ui.dayview.loaders.DailyEventsLoader;
 
@@ -158,7 +158,7 @@ public class DayView extends View {
                 Collections.reverse(reversedEventRects);
                 for (EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
-                        mEventClickListener.onEventClick(event.event, event.rectF);
+                        mEventClickListener.onEventClick(event.quest, event.rectF);
                         playSoundEffect(SoundEffectConstants.CLICK);
                         return super.onSingleTapConfirmed(e);
                     }
@@ -186,7 +186,7 @@ public class DayView extends View {
                 Collections.reverse(reversedEventRects);
                 for (EventRect event : reversedEventRects) {
                     if (event.rectF != null && e.getX() > event.rectF.left && e.getX() < event.rectF.right && e.getY() > event.rectF.top && e.getY() < event.rectF.bottom) {
-                        mEventLongPressListener.onEventLongPress(event.event, event.rectF);
+                        mEventLongPressListener.onEventLongPress(event.quest, event.rectF);
                         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                         return;
                     }
@@ -194,7 +194,7 @@ public class DayView extends View {
             }
 
             // If the tap was on in an empty space, then trigger the callback.
-            if (mEmptyViewLongPressListener != null && e.getX() > mHeaderColumnWidth ) {
+            if (mEmptyViewLongPressListener != null && e.getX() > mHeaderColumnWidth) {
                 Calendar selectedTime = getTimeFromPoint(e.getX(), e.getY());
                 if (selectedTime != null) {
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
@@ -205,7 +205,7 @@ public class DayView extends View {
     };
     private DailyEventsLoader dailyEventsLoader;
 
-    public void setEvents(List<QuestViewModel> events) {
+    public void setEvents(List<Quest> events) {
         loadQuests(events);
         notifyDatasetChanged();
     }
@@ -448,7 +448,7 @@ public class DayView extends View {
             // Prepare the separator lines for hours.
             int i = 0;
             for (int hourNumber = 0; hourNumber < 24; hourNumber++) {
-                float top = mCurrentOrigin.y + mHourHeight * hourNumber + mTimeTextHeight / 2 ;
+                float top = mCurrentOrigin.y + mHourHeight * hourNumber + mTimeTextHeight / 2;
                 if (top > mTimeTextHeight / 2 - mHourSeparatorHeight && top < getHeight() && startPixel + mWidthPerDay - start > 0) {
                     hourLines[i * 4] = start;
                     hourLines[i * 4 + 1] = top;
@@ -494,15 +494,29 @@ public class DayView extends View {
     }
 
     private void loadDailyEvents() {
-        List<QuestViewModel> quests = dailyEventsLoader.loadEventsFor(mFirstVisibleDay);
+        List<Quest> quests = dailyEventsLoader.loadEventsFor(mFirstVisibleDay);
         loadQuests(quests);
     }
 
-    private void loadQuests(List<QuestViewModel> quests) {
+    private void loadQuests(List<Quest> quests) {
         mEventRects = new ArrayList<>();
-        sortEvents(quests);
-        for (QuestViewModel event : quests) {
-            cacheEvent(event);
+
+        List<QuestViewModel> events = new ArrayList<>();
+        for (Quest q : quests) {
+            QuestViewModel m = QuestViewModel.from(q);
+            m.startTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            endTime.add(Calendar.MINUTE, 45);
+            m.endTime = endTime;
+            events.add(m);
+        }
+
+        sortEvents(events);
+
+        for (int i = 0; i < events.size(); i++) {
+            Quest quest = quests.get(i);
+            QuestViewModel questViewModel = events.get(i);
+            mEventRects.add(new EventRect(questViewModel, quest, null));
         }
         computePositionOfEvents(mEventRects);
     }
@@ -577,7 +591,7 @@ public class DayView extends View {
 
 //                    // Draw the event and the event name on top of it.
                     RectF eventRectF = new RectF(left, top, right, bottom);
-                    if (bottom >  mTimeTextHeight / 2 && left < right &&
+                    if (bottom > mTimeTextHeight / 2 && left < right &&
                             eventRectF.right > mHeaderColumnWidth &&
                             eventRectF.left < getWidth() &&
                             eventRectF.bottom > mTimeTextHeight / 2 &&
@@ -642,6 +656,7 @@ public class DayView extends View {
      */
     private class EventRect {
         public QuestViewModel event;
+        public Quest quest;
         public RectF rectF;
         public float left;
         public float width;
@@ -659,19 +674,11 @@ public class DayView extends View {
          * @param event Represents the event which this instance of rectangle represents.
          * @param rectF The rectangle.
          */
-        public EventRect(QuestViewModel event, RectF rectF) {
+        public EventRect(QuestViewModel event, Quest quest, RectF rectF) {
             this.event = event;
+            this.quest = quest;
             this.rectF = rectF;
         }
-    }
-
-    /**
-     * Cache the event for smooth scrolling functionality.
-     *
-     * @param quest The event to cache.
-     */
-    private void cacheEvent(QuestViewModel quest) {
-        mEventRects.add(new EventRect(quest, null));
     }
 
     /**
@@ -1266,11 +1273,11 @@ public class DayView extends View {
     /////////////////////////////////////////////////////////////////
 
     public interface EventClickListener {
-        void onEventClick(QuestViewModel event, RectF eventRect);
+        void onEventClick(Quest event, RectF eventRect);
     }
 
     public interface EventLongPressListener {
-        void onEventLongPress(QuestViewModel event, RectF eventRect);
+        void onEventLongPress(Quest event, RectF eventRect);
     }
 
     public interface EmptyViewClickListener {
