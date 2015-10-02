@@ -14,12 +14,11 @@
         android:paddingTop="8dp"
         app:eventTextColor="@color/md_white"
         app:eventTextSize="16sp"
-        app:hourHeight="140dp"
+        app:hourHeight="120dp"
         app:noOfVisibleDays="1"
         app:nowLineColor="?attr/colorAccent"
         app:nowLineThickness="1dp"
         app:showHalfHours="true" />
-
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/schedule_loader"

@@ -875,18 +875,7 @@ public class DayView extends View {
 
                 @Override
                 public String interpretTime(int hour, int minutes) {
-                    String amPm;
-                    if (hour >= 0 && hour < 12) amPm = "AM";
-                    else amPm = "PM";
-                    if (hour == 0) hour = 12;
-                    if (hour > 12) hour -= 12;
-                    if (showHalfHours) {
-                        // This will display times like this: 2:30 AM
-                        return String.format("%2d:%02d %s", hour, minutes, amPm);
-                    } else {
-                        // This will display times like this: 2 AM
-                        return String.format("%2d %s", hour, amPm);
-                    }
+                    return String.format("%02d:%02d", hour, minutes);
                 }
             };
         }
