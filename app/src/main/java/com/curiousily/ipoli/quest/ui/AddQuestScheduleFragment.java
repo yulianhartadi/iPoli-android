@@ -171,6 +171,9 @@ public class AddQuestScheduleFragment extends Fragment implements SeekBar.OnSeek
                 quest.recurrence = createRecurrence();
                 EventBus.post(new QuestBuiltEvent(quest));
                 return true;
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
