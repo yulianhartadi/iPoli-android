@@ -505,13 +505,9 @@ public class DayView extends View {
         for (Quest q : quests) {
             events.add(QuestViewModel.from(q));
         }
-
         sortEvents(events);
-
-        for (int i = 0; i < events.size(); i++) {
-            Quest quest = quests.get(i);
-            QuestViewModel questViewModel = events.get(i);
-            mEventRects.add(new EventRect(questViewModel, quest, null));
+        for (QuestViewModel q : events) {
+            mEventRects.add(new EventRect(q, q.quest, null));
         }
         computePositionOfEvents(mEventRects);
     }

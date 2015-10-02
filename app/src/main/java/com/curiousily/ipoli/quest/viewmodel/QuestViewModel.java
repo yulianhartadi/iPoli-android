@@ -30,6 +30,8 @@ public class QuestViewModel {
     public List<SubQuestViewModel> subQuests = new ArrayList<>();
     public Calendar endTime;
 
+    public Quest quest;
+
     public static QuestViewModel from(Quest quest) {
         QuestViewModel model = new QuestViewModel();
         model.name = quest.name;
@@ -48,7 +50,7 @@ public class QuestViewModel {
         model.startTime.setTime(quest.due);
         model.endTime = (Calendar) model.startTime.clone();
         model.endTime.add(Calendar.MINUTE, quest.duration);
-
+        model.quest = quest;
         return model;
     }
 }
