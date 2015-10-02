@@ -43,6 +43,12 @@ public class QuestViewModel {
         for (SubQuest subQuest : quest.subQuests) {
             model.subQuests.add(new SubQuestViewModel(subQuest.name, false));
         }
+
+        model.startTime = Calendar.getInstance();
+        model.startTime.setTime(quest.due);
+        model.endTime = (Calendar) model.startTime.clone();
+        model.endTime.add(Calendar.MINUTE, quest.duration);
+
         return model;
     }
 }

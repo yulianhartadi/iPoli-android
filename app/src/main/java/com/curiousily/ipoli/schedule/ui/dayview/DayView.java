@@ -503,12 +503,7 @@ public class DayView extends View {
 
         List<QuestViewModel> events = new ArrayList<>();
         for (Quest q : quests) {
-            QuestViewModel m = QuestViewModel.from(q);
-            m.startTime = Calendar.getInstance();
-            Calendar endTime = Calendar.getInstance();
-            endTime.add(Calendar.MINUTE, 45);
-            m.endTime = endTime;
-            events.add(m);
+            events.add(QuestViewModel.from(q));
         }
 
         sortEvents(events);
@@ -1289,15 +1284,7 @@ public class DayView extends View {
     }
 
     public interface DayChangeListener {
-        /**
-         * Called when the first visible day has changed.
-         * <p/>
-         * (this will also be called during the first draw of the DayView)
-         *
-         * @param newFirstVisibleDay The new first visible day
-         * @param oldFirstVisibleDay The old first visible day (is null on the first call).
-         */
-        public void onDayChanged(Calendar newDay, Calendar oldDay);
+        void onDayChanged(Calendar newDay, Calendar oldDay);
     }
 
     /**
