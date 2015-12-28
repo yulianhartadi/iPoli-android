@@ -1,26 +1,20 @@
 <resources>
 
-    <style name="Theme.iPoli" parent="Base.Theme.iPoli" />
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
-    <style name="MyActivityDialogTheme" parent="Base.Theme.AppCompat.Light.Dialog">
-        <item name="android:windowNoTitle">true</item>
+    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.iPoli.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/md_red_a400</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Base.Theme.iPoli" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/md_blue_500</item>
-        <item name="colorPrimaryDark">@color/md_blue_700</item>
-        <item name="colorAccent">@color/md_red_a400</item>
-        <item name="android:windowBackground">@color/window_background</item>
-        <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
-    </style>
-
-    <style name="TextAppearance.iPoli.EditText" parent="TextAppearance.AppCompat">
-        <item name="colorAccent">@color/md_white</item>
-    </style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
