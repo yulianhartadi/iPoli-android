@@ -2,7 +2,6 @@ package io.ipoli.assistant.services;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.squareup.otto.Subscribe;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -16,16 +15,6 @@ public class AnalyticsService {
     public AnalyticsService(Tracker tracker) {
 
         this.tracker = tracker;
-    }
-
-    @Subscribe
-    public void onCreateQuest(CreateQuestEvent e) {
-        trackUIEvent("quest", "create");
-    }
-
-    @Subscribe
-    public void onUpdateQuest(UpdateQuestEvent e) {
-        trackUIEvent("quest", "update", e.quest.id);
     }
 
     private void track(HitBuilders.EventBuilder builder) {

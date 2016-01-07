@@ -6,6 +6,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Bus;
 
+import io.ipoli.assistant.AnalyticsConstants;
 import io.ipoli.assistant.BuildConfig;
 import io.ipoli.assistant.EventBus;
 import io.ipoli.assistant.services.AnalyticsService;
