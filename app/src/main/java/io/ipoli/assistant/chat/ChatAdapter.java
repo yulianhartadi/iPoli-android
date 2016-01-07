@@ -25,6 +25,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> messages;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View view;
 
@@ -52,6 +53,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     .inflate(R.layout.user_message_item, parent, false);
         }
         return new ViewHolder(v);
+    }
+
+
+    public void addMessage(Message message) {
+        messages.add(message);
+        notifyDataSetChanged();
     }
 
     @Override

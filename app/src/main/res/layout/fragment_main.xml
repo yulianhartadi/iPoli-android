@@ -23,11 +23,11 @@
         android:layout_alignParentBottom="true"
         android:background="@color/md_white"
         android:orientation="horizontal"
-        android:weightSum="1"
-        android:paddingStart="16dp"
-        android:paddingEnd="0dp"
         android:paddingBottom="8dp"
-        android:paddingTop="8dp">
+        android:paddingEnd="0dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:weightSum="1">
 
         <EditText
             android:id="@+id/command_text"
