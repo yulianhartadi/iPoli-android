@@ -1,8 +1,7 @@
-package io.ipoli.android;
+package io.ipoli.android.chat;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -12,16 +11,23 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.android.chat.ChatAdapter;
-import io.ipoli.android.chat.Message;
+import io.ipoli.android.BaseFragment;
+import io.ipoli.android.R;
+import io.ipoli.android.assistant.events.AssistantReplyEvent;
+import io.ipoli.android.services.CommandParserService;
 
-public class MainActivityFragment extends Fragment {
+public class ChatFragment extends BaseFragment {
 
     @Bind(R.id.conversation)
     RecyclerView chatView;
@@ -31,10 +37,17 @@ public class MainActivityFragment extends Fragment {
 
     private ChatAdapter chatAdapter;
 
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    CommandParserService commandParserService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        appComponent().inject(this);
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
 
@@ -83,5 +96,26 @@ public class MainActivityFragment extends Fragment {
         inputManager.hideSoftInputFromWindow(
                 commandText.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
+
+        commandParserService.parse(command);
+    }
+
+    @Subscribe
+    public void onAssistantReply(AssistantReplyEvent e) {
+        Message m = new Message(e.message, Message.MessageType.ASSISTANT, R.drawable.avatar_01);
+        chatAdapter.addMessage(m);
+        chatView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
     }
 }

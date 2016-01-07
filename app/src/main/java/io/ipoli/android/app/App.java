@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.AppComponent;
 import io.ipoli.android.DaggerAppComponent;
+import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.modules.AppModule;
 import io.ipoli.android.services.AnalyticsService;
 
@@ -22,6 +23,8 @@ public class App extends Application {
     Bus eventBus;
     @Inject
     AnalyticsService analyticsService;
+    @Inject
+    Assistant assistant;
 
     @Override
     public void onCreate() {
@@ -34,6 +37,7 @@ public class App extends Application {
     private void initAnalytics() {
         eventBus.register(this);
         eventBus.register(analyticsService);
+        eventBus.register(assistant);
     }
 
 

@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.chat;
 
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
@@ -9,8 +9,9 @@ import android.widget.ProgressBar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.ipoli.android.R;
 
-public class MainActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
 
     @Bind(R.id.experience_bar)
     ProgressBar experienceBar;

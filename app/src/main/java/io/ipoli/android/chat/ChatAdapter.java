@@ -26,7 +26,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> messages;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
-
     public ChatAdapter(List<Message> messages) {
         this.messages = messages;
         avatarCache = new HashMap<>();
