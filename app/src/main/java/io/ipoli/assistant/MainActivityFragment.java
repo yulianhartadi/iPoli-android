@@ -1,15 +1,19 @@
 package io.ipoli.assistant;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +58,7 @@ public class MainActivityFragment extends Fragment {
         chatAdapter = new ChatAdapter(messageList);
         chatView.setAdapter(chatAdapter);
         chatView.scrollToPosition(chatAdapter.getItemCount() - 1);
+
         return view;
     }
 
@@ -66,6 +71,9 @@ public class MainActivityFragment extends Fragment {
     @OnClick(R.id.send_command)
     public void onSendCommand(View v) {
         String command = commandText.getText().toString();
+        if (TextUtils.isEmpty(command)) {
+            return;
+        }
         Message m = new Message(command, Message.MessageType.USER, R.drawable.avatar_02);
         chatAdapter.addMessage(m);
         chatView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);

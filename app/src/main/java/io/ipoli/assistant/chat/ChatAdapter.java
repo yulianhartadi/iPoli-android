@@ -68,7 +68,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         Message m = messages.get(position);
         TextView tv = (TextView) holder.view.findViewById(R.id.info_text);
         tv.setText(m.text);
-
         ImageView avatar = (ImageView) holder.view.findViewById(R.id.avatar);
         avatar.setImageDrawable(getRoundedBitmapDrawable(holder.view.getResources(), m));
     }
