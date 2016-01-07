@@ -1,29 +1,29 @@
-package io.ipoli.assistant;
+package io.ipoli.assistant.modules;
 
 import android.os.Handler;
 import android.os.Looper;
 
 import com.squareup.otto.Bus;
 
+import javax.inject.Singleton;
+
+import dagger.Module;
+import dagger.Provides;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class EventBus {
-    private static final Bus instance = new MainThreadBus();
+@Module
+public class BusModule {
 
-    private EventBus() {
+    @Provides
+    @Singleton
+    public Bus provideBus() {
+        return new MainThreadBus();
     }
 
-    public static Bus get() {
-        return instance;
-    }
-
-    public static void post(Object event) {
-        get().post(event);
-    }
-
-    public static class MainThreadBus extends Bus {
+    private class MainThreadBus extends Bus {
         private final Handler handler = new Handler(Looper.getMainLooper());
 
         @Override

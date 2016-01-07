@@ -2,13 +2,13 @@ package io.ipoli.assistant.app;
 
 import android.app.Application;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
 import com.squareup.otto.Bus;
 
-import io.ipoli.assistant.AnalyticsConstants;
-import io.ipoli.assistant.BuildConfig;
-import io.ipoli.assistant.EventBus;
+import javax.inject.Inject;
+
+import io.ipoli.assistant.AppComponent;
+import io.ipoli.assistant.DaggerAppComponent;
+import io.ipoli.assistant.modules.AppModule;
 import io.ipoli.assistant.services.AnalyticsService;
 
 /**
@@ -17,23 +17,34 @@ import io.ipoli.assistant.services.AnalyticsService;
  */
 public class App extends Application {
 
-    public static GoogleAnalytics analytics;
-    public static Tracker tracker;
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    AnalyticsService analyticsService;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        getAppComponent().inject(this);
         initAnalytics();
     }
 
     private void initAnalytics() {
-        analytics = GoogleAnalytics.getInstance(this);
-        analytics.setDryRun(BuildConfig.DEBUG);
-        tracker = analytics.newTracker(AnalyticsConstants.TRACKING_CODE);
-        tracker.enableExceptionReporting(true);
-        tracker.enableAutoActivityTracking(true);
-        Bus bus = EventBus.get();
-        bus.register(this);
-        bus.register(new AnalyticsService(tracker));
+        eventBus.register(this);
+        eventBus.register(analyticsService);
+    }
+
+
+    private static AppComponent appComponent;
+
+    public AppComponent getAppComponent() {
+        if (appComponent == null) {
+            appComponent = DaggerAppComponent.builder()
+                    .appModule(new AppModule(this))
+                    .build();
+        }
+
+        return appComponent;
     }
 }
