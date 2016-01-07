@@ -1,5 +1,6 @@
 package io.ipoli.assistant.chat;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -44,14 +45,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
         Message.MessageType mt = Message.MessageType.values()[viewType];
-        View v;
-        if (mt == Message.MessageType.ASSISTANT) {
-            v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.assistant_message_item, parent, false);
-        } else {
-            v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.user_message_item, parent, false);
-        }
+        int layout = mt == Message.MessageType.ASSISTANT ?
+                R.layout.assistant_message_item : R.layout.user_message_item;
+        View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         return new ViewHolder(v);
     }
 
@@ -74,16 +70,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         tv.setText(m.text);
 
         ImageView avatar = (ImageView) holder.view.findViewById(R.id.avatar);
-        RoundedBitmapDrawable dr;
+        avatar.setImageDrawable(getRoundedBitmapDrawable(holder.view.getResources(), m));
+    }
+
+    private RoundedBitmapDrawable getRoundedBitmapDrawable(Resources resources, Message m) {
         if (avatarCache.containsKey(m.avatarRes)) {
-            dr = avatarCache.get(m.avatarRes);
-        } else {
-            Bitmap src = BitmapFactory.decodeResource(holder.view.getResources(), m.avatarRes);
-            dr = RoundedBitmapDrawableFactory.create(holder.view.getResources(), src);
-            dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
-            avatarCache.put(m.avatarRes, dr);
+            return avatarCache.get(m.avatarRes);
         }
-        avatar.setImageDrawable(dr);
+        Bitmap src = BitmapFactory.decodeResource(resources, m.avatarRes);
+        RoundedBitmapDrawable rbd = RoundedBitmapDrawableFactory.create(resources, src);
+        rbd.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+        avatarCache.put(m.avatarRes, rbd);
+        return rbd;
     }
 
     @Override
