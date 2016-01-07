@@ -1,12 +1,19 @@
 package io.ipoli.assistant.chat;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.assistant.R;
 
@@ -16,6 +23,7 @@ import io.ipoli.assistant.R;
  */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> messages;
+    private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View view;
@@ -28,6 +36,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
     public ChatAdapter(List<Message> messages) {
         this.messages = messages;
+        avatarCache = new HashMap<>();
     }
 
     @Override
@@ -56,6 +65,18 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         Message m = messages.get(position);
         TextView tv = (TextView) holder.view.findViewById(R.id.info_text);
         tv.setText(m.text);
+
+        ImageView avatar = (ImageView) holder.view.findViewById(R.id.avatar);
+        RoundedBitmapDrawable dr;
+        if (avatarCache.containsKey(m.avatarRes)) {
+            dr = avatarCache.get(m.avatarRes);
+        } else {
+            Bitmap src = BitmapFactory.decodeResource(holder.view.getResources(), m.avatarRes);
+            dr = RoundedBitmapDrawableFactory.create(holder.view.getResources(), src);
+            dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+            avatarCache.put(m.avatarRes, dr);
+        }
+        avatar.setImageDrawable(dr);
     }
 
     @Override
