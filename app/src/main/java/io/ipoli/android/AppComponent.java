@@ -1,15 +1,14 @@
-package io.ipoli.assistant;
+package io.ipoli.android;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.ipoli.assistant.app.App;
-import io.ipoli.assistant.modules.AnalyticsModule;
-import io.ipoli.assistant.modules.AppModule;
-import io.ipoli.assistant.modules.BusModule;
-import io.ipoli.assistant.modules.CommandParserModule;
-import io.ipoli.assistant.modules.PersistenceModule;
-import io.ipoli.assistant.services.CommandParserService;
+import io.ipoli.android.app.App;
+import io.ipoli.android.modules.AnalyticsModule;
+import io.ipoli.android.modules.AppModule;
+import io.ipoli.android.modules.BusModule;
+import io.ipoli.android.modules.CommandParserModule;
+import io.ipoli.android.modules.PersistenceModule;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

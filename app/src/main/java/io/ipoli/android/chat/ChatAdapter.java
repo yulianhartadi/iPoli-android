@@ -1,4 +1,4 @@
-package io.ipoli.assistant.chat;
+package io.ipoli.android.chat;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.ipoli.assistant.R;
+import io.ipoli.android.R;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,15 +26,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     private List<Message> messages;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public View view;
-
-        public ViewHolder(View v) {
-            super(v);
-            view = v;
-        }
-    }
 
     public ChatAdapter(List<Message> messages) {
         this.messages = messages;
@@ -51,7 +42,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         return new ViewHolder(v);
     }
 
-
     public void addMessage(Message message) {
         messages.add(message);
         notifyDataSetChanged();
@@ -66,10 +56,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Message m = messages.get(position);
-        TextView tv = (TextView) holder.view.findViewById(R.id.info_text);
+        TextView tv = (TextView) holder.itemView.findViewById(R.id.info_text);
         tv.setText(m.text);
-        ImageView avatar = (ImageView) holder.view.findViewById(R.id.avatar);
-        avatar.setImageDrawable(getRoundedBitmapDrawable(holder.view.getResources(), m));
+        ImageView avatar = (ImageView) holder.itemView.findViewById(R.id.avatar);
+        avatar.setImageDrawable(getRoundedBitmapDrawable(holder.itemView.getResources(), m));
     }
 
     private RoundedBitmapDrawable getRoundedBitmapDrawable(Resources resources, Message m) {
@@ -86,5 +76,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View v) {
+            super(v);
+        }
     }
 }

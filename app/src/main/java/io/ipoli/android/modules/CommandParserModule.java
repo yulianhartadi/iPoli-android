@@ -1,14 +1,13 @@
-package io.ipoli.assistant.modules;
+package io.ipoli.android.modules;
 
 import com.squareup.otto.Bus;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.assistant.services.CommandParserService;
-import io.ipoli.assistant.services.LocalCommandParserService;
+import io.ipoli.android.services.CommandParserService;
+import io.ipoli.android.services.LocalCommandParserService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

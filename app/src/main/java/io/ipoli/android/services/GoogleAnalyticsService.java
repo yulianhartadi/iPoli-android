@@ -1,4 +1,4 @@
-package io.ipoli.assistant.services;
+package io.ipoli.android.services;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;

@@ -1,4 +1,4 @@
-package io.ipoli.assistant.modules;
+package io.ipoli.android.modules;
 
 import android.content.Context;
 
@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.assistant.app.App;
+import io.ipoli.android.app.App;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -1,6 +1,5 @@
-package io.ipoli.assistant;
+package io.ipoli.android;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,10 +9,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +18,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.assistant.chat.ChatAdapter;
-import io.ipoli.assistant.chat.Message;
+import io.ipoli.android.chat.ChatAdapter;
+import io.ipoli.android.chat.Message;
 
 public class MainActivityFragment extends Fragment {
 

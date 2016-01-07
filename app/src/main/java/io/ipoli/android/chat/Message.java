@@ -1,4 +1,4 @@
-package io.ipoli.assistant.chat;
+package io.ipoli.android.chat;
 
 import java.util.Date;
 

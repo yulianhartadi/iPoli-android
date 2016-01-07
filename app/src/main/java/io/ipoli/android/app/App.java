@@ -1,4 +1,4 @@
-package io.ipoli.assistant.app;
+package io.ipoli.android.app;
 
 import android.app.Application;
 
@@ -6,10 +6,10 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
-import io.ipoli.assistant.AppComponent;
-import io.ipoli.assistant.DaggerAppComponent;
-import io.ipoli.assistant.modules.AppModule;
-import io.ipoli.assistant.services.AnalyticsService;
+import io.ipoli.android.AppComponent;
+import io.ipoli.android.DaggerAppComponent;
+import io.ipoli.android.modules.AppModule;
+import io.ipoli.android.services.AnalyticsService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,9 +17,9 @@ import io.ipoli.assistant.services.AnalyticsService;
  */
 public class App extends Application {
 
+    private static AppComponent appComponent;
     @Inject
     Bus eventBus;
-
     @Inject
     AnalyticsService analyticsService;
 
@@ -28,6 +28,7 @@ public class App extends Application {
         super.onCreate();
         getAppComponent().inject(this);
         initAnalytics();
+
     }
 
     private void initAnalytics() {
@@ -35,8 +36,6 @@ public class App extends Application {
         eventBus.register(analyticsService);
     }
 
-
-    private static AppComponent appComponent;
 
     public AppComponent getAppComponent() {
         if (appComponent == null) {

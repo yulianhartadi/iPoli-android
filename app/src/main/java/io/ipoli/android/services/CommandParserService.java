@@ -1,4 +1,4 @@
-package io.ipoli.assistant.services;
+package io.ipoli.android.services;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

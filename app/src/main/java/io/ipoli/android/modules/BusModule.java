@@ -1,4 +1,4 @@
-package io.ipoli.assistant.modules;
+package io.ipoli.android.modules;
 
 import android.os.Handler;
 import android.os.Looper;

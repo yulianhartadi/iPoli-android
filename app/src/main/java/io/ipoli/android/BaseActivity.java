@@ -1,8 +1,8 @@
-package io.ipoli.assistant;
+package io.ipoli.android;
 
 import android.support.v7.app.AppCompatActivity;
 
-import io.ipoli.assistant.app.App;
+import io.ipoli.android.app.App;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
