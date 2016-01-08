@@ -68,7 +68,6 @@ public class ChatFragment extends BaseFragment {
         chatAdapter = new ChatAdapter(messageList);
         chatView.setAdapter(chatAdapter);
         chatView.scrollToPosition(chatAdapter.getItemCount() - 1);
-
         return view;
     }
 
@@ -89,15 +88,17 @@ public class ChatFragment extends BaseFragment {
         chatView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
         commandText.setText("");
         commandText.clearFocus();
+        hideKeyboard();
+        commandParserService.parse(command);
+    }
 
+    private void hideKeyboard() {
         InputMethodManager inputManager =
                 (InputMethodManager) getContext().
                         getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(
                 commandText.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
-
-        commandParserService.parse(command);
     }
 
     @Subscribe

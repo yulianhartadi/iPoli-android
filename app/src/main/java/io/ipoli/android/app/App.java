@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.AppComponent;
 import io.ipoli.android.DaggerAppComponent;
-import io.ipoli.android.assistant.Assistant;
+import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.modules.AppModule;
 import io.ipoli.android.services.AnalyticsService;
 
@@ -19,27 +19,27 @@ import io.ipoli.android.services.AnalyticsService;
 public class App extends Application {
 
     private static AppComponent appComponent;
+
     @Inject
     Bus eventBus;
+
     @Inject
     AnalyticsService analyticsService;
+
     @Inject
-    Assistant assistant;
+    AssistantService assistantService;
 
     @Override
     public void onCreate() {
         super.onCreate();
         getAppComponent().inject(this);
-        initAnalytics();
-
+        registerServices();
     }
 
-    private void initAnalytics() {
-        eventBus.register(this);
+    private void registerServices() {
         eventBus.register(analyticsService);
-        eventBus.register(assistant);
+        eventBus.register(assistantService);
     }
-
 
     public AppComponent getAppComponent() {
         if (appComponent == null) {
