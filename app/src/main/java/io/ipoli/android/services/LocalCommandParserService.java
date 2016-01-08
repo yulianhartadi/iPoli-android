@@ -4,8 +4,12 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.assistant.events.ReviewTodayEvent;
+import io.ipoli.android.assistant.events.ShowQuestsEvent;
+import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 
 /**
@@ -14,9 +18,23 @@ import io.ipoli.android.quest.events.NewQuestEvent;
  */
 public class LocalCommandParserService implements CommandParserService {
 
-    public static String ADD_QUEST_COMMAND = "add quest";
-    public static String RENAME_COMMAND = "rename";
-    public static String PLAN_TODAY_COMMAND = "plan today";
+    public enum Command {
+        ADD_QUEST, SHOW_QUESTS, PLAN_TODAY, REVIEW_TODAY, RENAME, HELP, UNKNOWN;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase().replace("_", " ");
+        }
+
+        public static Command fromText(String text) {
+            for (Command cmd : values()) {
+                if (text.startsWith(cmd.toString())) {
+                    return cmd;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
 
     private final Bus bus;
 
@@ -29,12 +47,28 @@ public class LocalCommandParserService implements CommandParserService {
         String c = command.trim();
         String lc = c.toLowerCase();
         Log.d("CommandParser", lc);
-        if (lc.startsWith(ADD_QUEST_COMMAND)) {
-            bus.post(new NewQuestEvent(c.substring(parameterStartIndex(lc, ADD_QUEST_COMMAND))));
-        } else if (lc.startsWith(RENAME_COMMAND)) {
-            bus.post(new RenameAssistantEvent(c.substring(parameterStartIndex(lc, RENAME_COMMAND))));
-        } else if (lc.startsWith(PLAN_TODAY_COMMAND)) {
-            bus.post(new PlanTodayEvent());
+        Command cmd = Command.fromText(lc);
+        switch (cmd) {
+            case ADD_QUEST:
+                bus.post(new NewQuestEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                break;
+            case SHOW_QUESTS:
+                bus.post(new ShowQuestsEvent());
+                break;
+            case RENAME:
+                bus.post(new RenameAssistantEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                break;
+            case PLAN_TODAY:
+                bus.post(new PlanTodayEvent());
+                break;
+            case REVIEW_TODAY:
+                bus.post(new ReviewTodayEvent());
+                break;
+            case HELP:
+                bus.post(new HelpEvent());
+                break;
+            default:
+                bus.post(new UnknownCommandEvent());
         }
     }
 

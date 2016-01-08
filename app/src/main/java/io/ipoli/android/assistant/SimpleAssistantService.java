@@ -4,11 +4,16 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
+import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.assistant.events.ReviewTodayEvent;
+import io.ipoli.android.assistant.events.ShowQuestsEvent;
+import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestPersistenceService;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.services.LocalCommandParserService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,6 +37,11 @@ public class SimpleAssistantService implements AssistantService {
     }
 
     @Subscribe
+    public void onShowQuests(ShowQuestsEvent e) {
+        eventBus.post(new AssistantReplyEvent("Sure!"));
+    }
+
+    @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
         eventBus.post(new AssistantReplyEvent("Hi! My name is " + e.name));
     }
@@ -39,5 +49,25 @@ public class SimpleAssistantService implements AssistantService {
     @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
         eventBus.post(new AssistantReplyEvent("Sure!"));
+    }
+
+    @Subscribe
+    public void onReviewToday(ReviewTodayEvent e) {
+        eventBus.post(new AssistantReplyEvent("Sure!"));
+    }
+
+    @Subscribe
+    public void onHelp(HelpEvent e) {
+        LocalCommandParserService.Command[] commands = LocalCommandParserService.Command.values();
+        String helpText = "";
+        for (LocalCommandParserService.Command cmd : commands) {
+            helpText += cmd.toString() + " \n";
+        }
+        eventBus.post(new AssistantReplyEvent(helpText));
+    }
+
+    @Subscribe
+    public void onUnknownCommand(UnknownCommandEvent e) {
+
     }
 }
