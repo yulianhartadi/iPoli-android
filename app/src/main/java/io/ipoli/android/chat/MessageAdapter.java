@@ -22,18 +22,18 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/28/15.
  */
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
+public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
     private List<Message> messages;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
-    public ChatAdapter(List<Message> messages) {
+    public MessageAdapter(List<Message> messages) {
         this.messages = messages;
         avatarCache = new HashMap<>();
     }
 
     @Override
-    public ChatAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public MessageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                        int viewType) {
         Message.MessageType mt = Message.MessageType.values()[viewType];
         int layout = mt == Message.MessageType.ASSISTANT ?
                 R.layout.assistant_message_item : R.layout.user_message_item;

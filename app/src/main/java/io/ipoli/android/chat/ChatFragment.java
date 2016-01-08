@@ -35,7 +35,7 @@ public class ChatFragment extends BaseFragment {
     @Bind(R.id.command_text)
     EditText commandText;
 
-    private ChatAdapter chatAdapter;
+    private MessageAdapter messageAdapter;
 
     @Inject
     Bus eventBus;
@@ -48,7 +48,7 @@ public class ChatFragment extends BaseFragment {
                              Bundle savedInstanceState) {
 
         appComponent().inject(this);
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
         ButterKnife.bind(this, view);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -65,16 +65,10 @@ public class ChatFragment extends BaseFragment {
         messageList.add(new Message("Add quest feed Vihar", Message.MessageType.USER, R.drawable.avatar_02));
         messageList.add(new Message("Add quest feed Vihar", Message.MessageType.USER, R.drawable.avatar_02));
         messageList.add(new Message("Add quest feed Vihar every day morning afternoon and evening with 1 granuli cups and 2 konservi from tuna and chicken", Message.MessageType.USER, R.drawable.avatar_02));
-        chatAdapter = new ChatAdapter(messageList);
-        chatView.setAdapter(chatAdapter);
-        chatView.scrollToPosition(chatAdapter.getItemCount() - 1);
+        messageAdapter = new MessageAdapter(messageList);
+        chatView.setAdapter(messageAdapter);
+        chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     @OnClick(R.id.send_command)
@@ -84,8 +78,8 @@ public class ChatFragment extends BaseFragment {
             return;
         }
         Message m = new Message(command, Message.MessageType.USER, R.drawable.avatar_02);
-        chatAdapter.addMessage(m);
-        chatView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+        messageAdapter.addMessage(m);
+        chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
         commandText.clearFocus();
         hideKeyboard();
@@ -104,8 +98,8 @@ public class ChatFragment extends BaseFragment {
     @Subscribe
     public void onAssistantReply(AssistantReplyEvent e) {
         Message m = new Message(e.message, Message.MessageType.ASSISTANT, R.drawable.avatar_01);
-        chatAdapter.addMessage(m);
-        chatView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+        messageAdapter.addMessage(m);
+        chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
     }
 
     @Override

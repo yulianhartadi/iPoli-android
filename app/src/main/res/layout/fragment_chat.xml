@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".chat.ChatFragment"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_chat">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/conversation"

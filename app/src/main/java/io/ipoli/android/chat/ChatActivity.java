@@ -1,6 +1,7 @@
 package io.ipoli.android.chat;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.animation.LinearInterpolator;
@@ -15,7 +16,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.quest.QuestListActivity;
 
 public class ChatActivity extends BaseActivity {
 
@@ -32,7 +35,7 @@ public class ChatActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
@@ -45,6 +48,13 @@ public class ChatActivity extends BaseActivity {
     @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
         toolbar.setTitle(e.name);
+    }
+
+
+    @Subscribe
+    public void onPlanToday(PlanTodayEvent e) {
+        Intent intent = new Intent(this, QuestListActivity.class);
+        startActivity(intent);
     }
 
     @Override
