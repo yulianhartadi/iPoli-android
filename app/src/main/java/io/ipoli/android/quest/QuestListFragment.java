@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +30,9 @@ public class QuestListFragment extends BaseFragment {
     @Bind(R.id.quest_list)
     RecyclerView questList;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,12 +45,7 @@ public class QuestListFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        List<Quest> quests = new ArrayList<>();
-        quests.add(new Quest("Eat faster"));
-        quests.add(new Quest("Buy socks"));
-        quests.add(new Quest("Buy socks and shirts"));
-        quests.add(new Quest("Workout"));
-        quests.add(new Quest("Feed Vihar with granuli and grass"));
+        List<Quest> quests = questPersistenceService.findAll();
         QuestAdapter questAdapter = new QuestAdapter(quests);
         questList.setAdapter(questAdapter);
 

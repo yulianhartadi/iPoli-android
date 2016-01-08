@@ -2,6 +2,8 @@ package io.ipoli.android.quest;
 
 import android.content.Context;
 
+import java.util.List;
+
 import io.realm.Realm;
 
 /**
@@ -22,5 +24,10 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         Quest realmQuest = realm.copyToRealm(quest);
         realm.commitTransaction();
         return realmQuest;
+    }
+
+    @Override
+    public List<Quest> findAll() {
+        return realm.where(Quest.class).findAll();
     }
 }
