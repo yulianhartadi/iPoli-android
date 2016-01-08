@@ -82,7 +82,7 @@ public class ChatFragment extends BaseFragment {
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
         commandText.clearFocus();
-        hideKeyboard();
+//        hideKeyboard();
         commandParserService.parse(command);
     }
 

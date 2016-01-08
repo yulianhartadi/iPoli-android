@@ -3,12 +3,17 @@ package io.ipoli.android.quest;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -33,6 +38,8 @@ public class QuestListFragment extends BaseFragment {
     @Inject
     QuestPersistenceService questPersistenceService;
 
+    private QuestAdapter questAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,11 +52,34 @@ public class QuestListFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        List<Quest> quests = questPersistenceService.findAll();
-        QuestAdapter questAdapter = new QuestAdapter(quests);
+        List<Quest> quests = questPersistenceService.findAllUncompleted();
+        questAdapter = new QuestAdapter(quests);
         questList.setAdapter(questAdapter);
 
+
+        setHasOptionsMenu(true);
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.quest_list_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_quests:
+                List<Quest> plannedQuest = questAdapter.getQuests();
+                Log.d("QPlanned", plannedQuest.size() + "");
+                for (Quest q : plannedQuest) {
+                    questPersistenceService.update(q, q.getStatus(), new Date());
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

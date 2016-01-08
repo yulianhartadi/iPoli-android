@@ -2,6 +2,7 @@ package io.ipoli.android.quest;
 
 import android.content.Context;
 
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -27,7 +28,16 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
-    public List<Quest> findAll() {
-        return realm.where(Quest.class).findAll();
+    public List<Quest> findAllUncompleted() {
+        return realm.copyFromRealm(realm.where(Quest.class).notEqualTo("status", Quest.Status.COMPLETED.name()).findAll());
+    }
+
+    @Override
+    public void update(Quest quest, String status, Date due) {
+        realm.beginTransaction();
+        Quest q = realm.copyToRealmOrUpdate(quest);
+        q.setStatus(status);
+        q.setDue(due);
+        realm.commitTransaction();
     }
 }

@@ -1,28 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:minHeight="72dp"
-    android:paddingStart="0dp"
-    android:paddingEnd="16dp">
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:weightSum="1">
 
-    <CheckBox
-        android:id="@+id/quest_check"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="72dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"/>
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/quest_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/quest_name"
-        android:layout_centerVertical="true"
         style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/quest_created_at"
+        style="@style/TextAppearance.AppCompat.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/md_dark_text_87"
-        android:layout_marginStart="72dp"/>
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp" />
 
-</RelativeLayout>
+</LinearLayout>

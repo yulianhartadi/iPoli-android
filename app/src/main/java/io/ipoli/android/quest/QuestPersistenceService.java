@@ -1,5 +1,6 @@
 package io.ipoli.android.quest;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,5 +10,7 @@ import java.util.List;
 public interface QuestPersistenceService {
     Quest save(Quest quest);
 
-    List<Quest> findAll();
+    List<Quest> findAllUncompleted();
+
+    void update(Quest quest, String status, Date due);
 }
