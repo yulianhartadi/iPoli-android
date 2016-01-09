@@ -4,14 +4,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,8 +19,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.ui.ItemTouchCallback;
 
-public class PlanDayActivity extends BaseActivity {
+public class QuestListActivity extends BaseActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -38,20 +38,16 @@ public class PlanDayActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private PlanQuestAdapter planQuestAdapter;
+    private QuestAdapter questAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_plan_day);
-
+        setContentView(R.layout.activity_quest_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         userLevel.setVisibility(View.GONE);
-
         appComponent().inject(this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -59,8 +55,13 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
-        planQuestAdapter = new PlanQuestAdapter(quests);
-        questList.setAdapter(planQuestAdapter);
+        questAdapter = new QuestAdapter(quests, eventBus);
+        questList.setAdapter(questAdapter);
+
+        int swipeFlags = ItemTouchHelper.END;
+        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags);
+        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
+        helper.attachToRecyclerView(questList);
     }
 
     @Override
@@ -69,22 +70,8 @@ public class PlanDayActivity extends BaseActivity {
             case android.R.id.home:
                 finish();
                 return true;
-
-            case R.id.save_quests:
-                List<Quest> plannedQuest = planQuestAdapter.getQuests();
-                for (Quest q : plannedQuest) {
-                    questPersistenceService.update(q, q.getStatus(), new Date());
-                }
-                finish();
-                return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.quest_list_menu, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -98,4 +85,5 @@ public class PlanDayActivity extends BaseActivity {
         eventBus.unregister(this);
         super.onPause();
     }
+
 }

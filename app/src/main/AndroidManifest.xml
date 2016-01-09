@@ -16,16 +16,29 @@
             android:name=".chat.ChatActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".quest.PlanDayActivity"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.ipoli.android.chat.ChatActivity" />
+        </activity>
+        <activity
+            android:name=".quest.QuestListActivity"
+            android:label="@string/title_activity_quest_list"
+            android:parentActivityName=".chat.ChatActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.ipoli.android.chat.ChatActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
