@@ -8,6 +8,8 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.assistant.persistence.RealmAssistantPersistenceService;
+import io.ipoli.android.chat.persistence.MessagePersistenceService;
+import io.ipoli.android.chat.persistence.RealmMessagePersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
@@ -28,5 +30,11 @@ public class PersistenceModule {
     @Singleton
     public AssistantPersistenceService provideAssistantPersistenceService(Context context) {
         return new RealmAssistantPersistenceService(context);
+    }
+
+    @Provides
+    @Singleton
+    public MessagePersistenceService provideMessagePersistenceService(Context context) {
+        return new RealmMessagePersistenceService(context);
     }
 }

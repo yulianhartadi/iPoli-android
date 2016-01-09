@@ -49,26 +49,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
         Message m = messages.get(position);
-        return m.type.ordinal();
+        return Message.MessageType.valueOf(m.getType()).ordinal();
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Message m = messages.get(position);
         TextView tv = (TextView) holder.itemView.findViewById(R.id.info_text);
-        tv.setText(m.text);
+        tv.setText(m.getText());
         ImageView avatar = (ImageView) holder.itemView.findViewById(R.id.avatar);
         avatar.setImageDrawable(getRoundedBitmapDrawable(holder.itemView.getResources(), m));
     }
 
     private RoundedBitmapDrawable getRoundedBitmapDrawable(Resources resources, Message m) {
-        if (avatarCache.containsKey(m.avatarRes)) {
-            return avatarCache.get(m.avatarRes);
+        if (avatarCache.containsKey(m.getAvatarRes())) {
+            return avatarCache.get(m.getAvatarRes());
         }
-        Bitmap src = BitmapFactory.decodeResource(resources, m.avatarRes);
+        Bitmap src = BitmapFactory.decodeResource(resources, m.getAvatarRes());
         RoundedBitmapDrawable rbd = RoundedBitmapDrawableFactory.create(resources, src);
         rbd.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
-        avatarCache.put(m.avatarRes, rbd);
+        avatarCache.put(m.getAvatarRes(), rbd);
         return rbd;
     }
 

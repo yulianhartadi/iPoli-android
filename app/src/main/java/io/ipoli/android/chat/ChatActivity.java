@@ -21,6 +21,7 @@ import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
+import io.ipoli.android.chat.persistence.MessagePersistenceService;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
 
@@ -37,6 +38,7 @@ public class ChatActivity extends BaseActivity {
 
     @Inject
     AssistantPersistenceService assistantPersistenceService;
+
 
     private Assistant assistant;
 

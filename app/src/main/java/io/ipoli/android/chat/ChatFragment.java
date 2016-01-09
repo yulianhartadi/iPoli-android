@@ -12,18 +12,16 @@ import android.widget.EditText;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.R;
-import io.ipoli.android.assistant.events.AssistantReplyEvent;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.services.CommandParserService;
+import io.ipoli.android.assistant.events.AssistantReplyEvent;
+import io.ipoli.android.chat.persistence.MessagePersistenceService;
 
 public class ChatFragment extends BaseFragment {
 
@@ -41,6 +39,9 @@ public class ChatFragment extends BaseFragment {
     @Inject
     CommandParserService commandParserService;
 
+    @Inject
+    MessagePersistenceService messagePersistenceService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,16 +55,7 @@ public class ChatFragment extends BaseFragment {
         layoutManager.setStackFromEnd(true);
 
         chatView.setLayoutManager(layoutManager);
-
-        List<Message> messageList = new ArrayList<>();
-        messageList.add(new Message("Hello, it's me!", Message.MessageType.ASSISTANT, R.drawable.avatar_01));
-        messageList.add(new Message("Who are you?", Message.MessageType.USER, R.drawable.avatar_02));
-        messageList.add(new Message("I am your personal assistant", Message.MessageType.ASSISTANT, R.drawable.avatar_01));
-        messageList.add(new Message("Great! Add quest buy toilet paper", Message.MessageType.USER, R.drawable.avatar_02));
-        messageList.add(new Message("Add quest feed Vihar", Message.MessageType.USER, R.drawable.avatar_02));
-        messageList.add(new Message("Add quest feed Vihar", Message.MessageType.USER, R.drawable.avatar_02));
-        messageList.add(new Message("Add quest feed Vihar every day morning afternoon and evening with 1 granuli cups and 2 konservi from tuna and chicken", Message.MessageType.USER, R.drawable.avatar_02));
-        messageAdapter = new MessageAdapter(messageList);
+        messageAdapter = new MessageAdapter(messagePersistenceService.findAll());
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
         return view;
@@ -75,19 +67,23 @@ public class ChatFragment extends BaseFragment {
         if (TextUtils.isEmpty(command)) {
             return;
         }
-        Message m = new Message(command, Message.MessageType.USER, R.drawable.avatar_02);
-        messageAdapter.addMessage(m);
+        Message m = new Message(command, Message.MessageType.USER.name(), R.drawable.avatar_02);
+        addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
         commandParserService.parse(command);
     }
 
-
     @Subscribe
     public void onAssistantReply(AssistantReplyEvent e) {
-        Message m = new Message(e.message, Message.MessageType.ASSISTANT, R.drawable.avatar_01);
-        messageAdapter.addMessage(m);
+        Message m = new Message(e.message, Message.MessageType.ASSISTANT.name(), R.drawable.avatar_01);
+        addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+    }
+
+    private void addMessage(Message message) {
+        messageAdapter.addMessage(message);
+        messagePersistenceService.save(message);
     }
 
     @Override
