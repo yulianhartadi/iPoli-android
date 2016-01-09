@@ -1,9 +1,8 @@
-package io.ipoli.android;
+package io.ipoli.android.app;
 
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.ipoli.android.app.App;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.chat.ChatFragment;
 import io.ipoli.android.modules.AnalyticsModule;

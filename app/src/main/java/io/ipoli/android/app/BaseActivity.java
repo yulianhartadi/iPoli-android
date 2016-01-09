@@ -1,8 +1,6 @@
-package io.ipoli.android;
+package io.ipoli.android.app;
 
 import android.support.v7.app.AppCompatActivity;
-
-import io.ipoli.android.app.App;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

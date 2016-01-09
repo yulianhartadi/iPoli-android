@@ -6,11 +6,13 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
-import io.ipoli.android.AppComponent;
-import io.ipoli.android.DaggerAppComponent;
+import io.ipoli.android.Constants;
+import io.ipoli.android.app.jobs.RemindPlanDayJob;
+import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.modules.AppModule;
 import io.ipoli.android.services.AnalyticsService;
+import io.ipoli.android.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -34,11 +36,23 @@ public class App extends Application {
         super.onCreate();
         getAppComponent().inject(this);
         registerServices();
+        initPlanDayReminder();
+        initReviewDayReminder();
     }
 
     private void registerServices() {
         eventBus.register(analyticsService);
         eventBus.register(assistantService);
+    }
+
+    private void initPlanDayReminder() {
+        Time time = Time.of(Constants.DEFAULT_PLAN_DAY_TIME);
+        new RemindPlanDayJob(this, time).schedule();
+    }
+
+    private void initReviewDayReminder() {
+        Time time = Time.of(Constants.DEFAULT_REVIEW_DAY_TIME);
+        new RemindReviewDayJob(this, time).schedule();
     }
 
     public AppComponent getAppComponent() {

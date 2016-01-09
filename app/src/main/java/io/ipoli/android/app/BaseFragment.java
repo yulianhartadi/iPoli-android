@@ -1,9 +1,8 @@
-package io.ipoli.android;
+package io.ipoli.android.app;
 
 import android.support.v4.app.Fragment;
 
 import butterknife.ButterKnife;
-import io.ipoli.android.app.App;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

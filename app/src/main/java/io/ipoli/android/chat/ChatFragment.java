@@ -20,7 +20,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.android.BaseFragment;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.services.CommandParserService;

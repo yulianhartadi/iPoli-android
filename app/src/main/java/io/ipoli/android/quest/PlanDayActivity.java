@@ -18,7 +18,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.BaseActivity;
+import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
 
 public class PlanDayActivity extends BaseActivity {

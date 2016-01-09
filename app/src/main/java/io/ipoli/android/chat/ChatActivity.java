@@ -14,11 +14,13 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.BaseActivity;
+import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.quest.PlanDayActivity;
+import io.ipoli.android.quest.QuestListActivity;
 
 public class ChatActivity extends BaseActivity {
 
@@ -53,7 +55,16 @@ public class ChatActivity extends BaseActivity {
 
     @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
-        Intent intent = new Intent(this, PlanDayActivity.class);
+        startActivity(PlanDayActivity.class);
+    }
+
+    @Subscribe
+    public void onShowQuests(ShowQuestsEvent e) {
+        startActivity(QuestListActivity.class);
+    }
+
+    private void startActivity(Class<?> clazz) {
+        Intent intent = new Intent(this, clazz);
         startActivity(intent);
     }
 
