@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -12,7 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.events.QuestRemovedEvent;
+import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
+import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.ui.ItemTouchHelperViewHolder;
 
@@ -42,12 +44,34 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         final Quest q = quests.get(position);
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
         tv.setText(q.getName());
+
+        final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Quest.Status status = Quest.Status.valueOf(q.getStatus());
+                if(status == Quest.Status.PLANNED) {
+                    startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
+                    q.setStatus(Quest.Status.STARTED.name());
+                } else if(status == Quest.Status.STARTED){
+                    startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
+                    q.setStatus(Quest.Status.PLANNED.name());
+                }
+                eventBus.post(new QuestUpdatedEvent(q));
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return quests.size();
     }
+
+    public void addQuest(int position, Quest quest) {
+        quests.add(position, quest);
+        notifyDataSetChanged();
+    }
+
 
     public List<Quest> getQuests() {
         return quests;
@@ -72,7 +96,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         Quest q = quests.get(position);
         quests.remove(position);
         notifyItemRemoved(position);
-        eventBus.post(new QuestRemovedEvent(q, position));
+        eventBus.post(new QuestCompleteRequestEvent(q, position));
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {

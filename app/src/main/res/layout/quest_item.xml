@@ -16,16 +16,16 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_gravity="center_vertical"
-        android:layout_toStartOf="@+id/quest_play" />
+        android:layout_toStartOf="@+id/quest_start" />
 
-    <ImageView
-        android:id="@id/quest_play"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <ImageButton
+        android:id="@id/quest_start"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@null"
-        android:scaleType="center"
-        android:src="@drawable/ic_play_arrow_white_24dp" />
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_play_circle_outline_accent_24dp" />
 
 </RelativeLayout>

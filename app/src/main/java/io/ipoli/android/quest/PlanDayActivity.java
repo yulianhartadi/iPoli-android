@@ -38,7 +38,7 @@ public class PlanDayActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private PlanQuestAdapter planQuestAdapter;
+    private PlanDayQuestAdapter planDayQuestAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +59,8 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
-        planQuestAdapter = new PlanQuestAdapter(quests);
-        questList.setAdapter(planQuestAdapter);
+        planDayQuestAdapter = new PlanDayQuestAdapter(quests);
+        questList.setAdapter(planDayQuestAdapter);
     }
 
     @Override
@@ -71,9 +71,10 @@ public class PlanDayActivity extends BaseActivity {
                 return true;
 
             case R.id.save_quests:
-                List<Quest> plannedQuest = planQuestAdapter.getQuests();
+                List<Quest> plannedQuest = planDayQuestAdapter.getQuests();
                 for (Quest q : plannedQuest) {
-                    questPersistenceService.update(q, q.getStatus(), new Date());
+                    q.setDue(new Date());
+                    questPersistenceService.save(q);
                 }
                 finish();
                 return true;

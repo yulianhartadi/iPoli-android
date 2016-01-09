@@ -18,19 +18,19 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/8/16.
  */
-public class PlanQuestAdapter extends RecyclerView.Adapter<PlanQuestAdapter.ViewHolder> {
+public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapter.ViewHolder> {
 
     private final PrettyTime prettyTime;
     private List<Quest> quests;
 
-    public PlanQuestAdapter(List<Quest> quests) {
+    public PlanDayQuestAdapter(List<Quest> quests) {
         this.quests = quests;
         prettyTime = new PrettyTime();
     }
 
     @Override
-    public PlanQuestAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                          int viewType) {
+    public PlanDayQuestAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                             int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.plan_quest_item, parent, false);
         return new ViewHolder(v);
     }

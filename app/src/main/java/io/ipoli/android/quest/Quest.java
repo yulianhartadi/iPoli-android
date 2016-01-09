@@ -25,13 +25,15 @@ public class Quest extends RealmObject {
     @Required
     private String status;
 
+    private int order;
+
     private Date due;
 
     public Quest() {
     }
 
     public enum Status {
-        UNPLANNED, PLANNED, STARTED, COMPLETED
+        UNPLANNED, PLANNED, STARTED, status, COMPLETED
     }
 
     public Quest(String name) {
@@ -39,6 +41,7 @@ public class Quest extends RealmObject {
         this.status = Status.UNPLANNED.name();
         this.name = name;
         this.createdAt = new Date();
+        this.order = 0;
     }
 
     public String getName() {
@@ -79,5 +82,13 @@ public class Quest extends RealmObject {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

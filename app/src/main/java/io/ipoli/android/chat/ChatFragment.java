@@ -1,6 +1,5 @@
 package io.ipoli.android.chat;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +7,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.squareup.otto.Bus;
@@ -81,19 +79,9 @@ public class ChatFragment extends BaseFragment {
         messageAdapter.addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
-        commandText.clearFocus();
-//        hideKeyboard();
         commandParserService.parse(command);
     }
 
-    private void hideKeyboard() {
-        InputMethodManager inputManager =
-                (InputMethodManager) getContext().
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(
-                commandText.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-    }
 
     @Subscribe
     public void onAssistantReply(AssistantReplyEvent e) {
