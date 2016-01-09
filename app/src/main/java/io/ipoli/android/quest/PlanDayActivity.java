@@ -3,13 +3,11 @@ package io.ipoli.android.quest;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
@@ -20,14 +18,16 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.BaseFragment;
+import io.ipoli.android.BaseActivity;
 import io.ipoli.android.R;
 
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/8/16.
- */
-public class QuestListFragment extends BaseFragment {
+public class PlanDayActivity extends BaseActivity {
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Bind(R.id.user_level)
+    TextView userLevel;
 
     @Inject
     Bus eventBus;
@@ -41,45 +41,50 @@ public class QuestListFragment extends BaseFragment {
     private QuestAdapter questAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_plan_day);
+
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        userLevel.setVisibility(View.GONE);
 
         appComponent().inject(this);
-        View view = inflater.inflate(R.layout.fragment_quest_list, container, false);
-        ButterKnife.bind(this, view);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
         questAdapter = new QuestAdapter(quests);
         questList.setAdapter(questAdapter);
-
-
-        setHasOptionsMenu(true);
-
-        return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.quest_list_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+
             case R.id.save_quests:
                 List<Quest> plannedQuest = questAdapter.getQuests();
-                Log.d("QPlanned", plannedQuest.size() + "");
                 for (Quest q : plannedQuest) {
                     questPersistenceService.update(q, q.getStatus(), new Date());
                 }
-                break;
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.quest_list_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

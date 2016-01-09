@@ -18,7 +18,7 @@ import io.ipoli.android.BaseActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
-import io.ipoli.android.quest.QuestListActivity;
+import io.ipoli.android.quest.PlanDayActivity;
 
 public class ChatActivity extends BaseActivity {
 
@@ -53,7 +53,7 @@ public class ChatActivity extends BaseActivity {
 
     @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
-        Intent intent = new Intent(this, QuestListActivity.class);
+        Intent intent = new Intent(this, PlanDayActivity.class);
         startActivity(intent);
     }
 

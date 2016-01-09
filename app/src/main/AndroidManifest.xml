@@ -20,7 +20,7 @@
 
         </activity>
         <activity
-            android:name=".quest.QuestListActivity"
+            android:name=".quest.PlanDayActivity"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

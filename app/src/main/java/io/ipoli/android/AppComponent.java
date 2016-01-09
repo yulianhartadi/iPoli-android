@@ -12,7 +12,7 @@ import io.ipoli.android.modules.AssistantModule;
 import io.ipoli.android.modules.BusModule;
 import io.ipoli.android.modules.CommandParserModule;
 import io.ipoli.android.modules.PersistenceModule;
-import io.ipoli.android.quest.QuestListFragment;
+import io.ipoli.android.quest.PlanDayActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,6 +36,6 @@ public interface AppComponent {
 
     void inject(ChatFragment fragment);
 
-    void inject(QuestListFragment fragment);
+    void inject(PlanDayActivity fragment);
 }
 
