@@ -8,4 +8,5 @@ import io.ipoli.android.assistant.Assistant;
  */
 public interface AssistantPersistenceService {
     Assistant save(Assistant assistant);
+    Assistant find();
 }

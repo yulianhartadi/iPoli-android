@@ -24,4 +24,13 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
         realm.commitTransaction();
         return realmAssistant;
     }
+
+    @Override
+    public Assistant find() {
+        Assistant assistant = realm.where(Assistant.class).findFirst();
+        if(assistant == null) {
+            return new Assistant("iPoli");
+        }
+        return realm.copyFromRealm(assistant);
+    }
 }

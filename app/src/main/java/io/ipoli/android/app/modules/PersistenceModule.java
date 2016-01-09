@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
+import io.ipoli.android.assistant.persistence.RealmAssistantPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
@@ -20,5 +22,11 @@ public class PersistenceModule {
     @Singleton
     public QuestPersistenceService provideQuestPersistenceService(Context context) {
         return new RealmQuestPersistenceService(context);
+    }
+
+    @Provides
+    @Singleton
+    public AssistantPersistenceService provideAssistantPersistenceService(Context context) {
+        return new RealmAssistantPersistenceService(context);
     }
 }

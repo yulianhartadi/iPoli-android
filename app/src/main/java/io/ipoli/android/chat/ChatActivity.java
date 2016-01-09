@@ -14,11 +14,13 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
+import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
 
@@ -33,12 +35,21 @@ public class ChatActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
+    AssistantPersistenceService assistantPersistenceService;
+
+    private Assistant assistant;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+
+        assistant = assistantPersistenceService.find();
+        toolbar.setTitle(assistant.getName());
+
         setSupportActionBar(toolbar);
 
         ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", experienceBar.getProgress(), experienceBar.getMax());
@@ -50,6 +61,8 @@ public class ChatActivity extends BaseActivity {
     @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
         toolbar.setTitle(e.name);
+        assistant.setName(e.name);
+        assistantPersistenceService.save(assistant);
     }
 
 
