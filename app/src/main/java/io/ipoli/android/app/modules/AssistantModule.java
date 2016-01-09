@@ -1,4 +1,4 @@
-package io.ipoli.android.modules;
+package io.ipoli.android.app.modules;
 
 import com.squareup.otto.Bus;
 
@@ -8,7 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.assistant.SimpleAssistantService;
-import io.ipoli.android.quest.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -1,6 +1,8 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.persistence;
 
 import java.util.List;
+
+import io.ipoli.android.quest.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

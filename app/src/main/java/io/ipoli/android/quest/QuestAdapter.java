@@ -15,8 +15,8 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
-import io.ipoli.android.ui.ItemTouchHelperAdapter;
-import io.ipoli.android.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
+import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

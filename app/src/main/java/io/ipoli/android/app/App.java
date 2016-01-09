@@ -10,9 +10,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.jobs.RemindPlanDayJob;
 import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.assistant.AssistantService;
-import io.ipoli.android.modules.AppModule;
-import io.ipoli.android.services.AnalyticsService;
-import io.ipoli.android.utils.Time;
+import io.ipoli.android.app.modules.AppModule;
+import io.ipoli.android.app.services.AnalyticsService;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

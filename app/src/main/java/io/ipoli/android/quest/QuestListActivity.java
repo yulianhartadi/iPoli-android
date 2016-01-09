@@ -25,7 +25,8 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
-import io.ipoli.android.ui.ItemTouchCallback;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.app.ui.ItemTouchCallback;
 
 public class QuestListActivity extends BaseActivity {
 

@@ -1,4 +1,4 @@
-package io.ipoli.android.modules;
+package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
@@ -11,8 +11,8 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.AnalyticsConstants;
 import io.ipoli.android.BuildConfig;
-import io.ipoli.android.services.AnalyticsService;
-import io.ipoli.android.services.GoogleAnalyticsService;
+import io.ipoli.android.app.services.AnalyticsService;
+import io.ipoli.android.app.services.GoogleAnalyticsService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -7,7 +7,7 @@ import android.content.Intent;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.jobs.RemindPlanDayJob;
 import io.ipoli.android.app.jobs.RemindReviewDayJob;
-import io.ipoli.android.utils.Time;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

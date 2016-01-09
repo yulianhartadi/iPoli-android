@@ -1,4 +1,4 @@
-package io.ipoli.android.services;
+package io.ipoli.android.app.services;
 
 import android.util.Log;
 

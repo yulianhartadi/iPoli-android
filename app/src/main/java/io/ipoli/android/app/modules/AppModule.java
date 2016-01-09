@@ -1,4 +1,4 @@
-package io.ipoli.android.modules;
+package io.ipoli.android.app.modules;
 
 import android.content.Context;
 

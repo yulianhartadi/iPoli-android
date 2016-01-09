@@ -1,12 +1,12 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.persistence;
 
 import android.content.Context;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import io.ipoli.android.utils.DateUtils;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.DateUtils;
 import io.realm.Realm;
 import io.realm.Sort;
 

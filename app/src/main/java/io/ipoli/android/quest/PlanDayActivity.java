@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class PlanDayActivity extends BaseActivity {
 

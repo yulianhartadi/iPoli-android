@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import io.ipoli.android.app.services.ReminderIntentService;
-import io.ipoli.android.utils.Time;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

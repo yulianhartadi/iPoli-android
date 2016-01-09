@@ -11,9 +11,9 @@ import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.services.LocalCommandParserService;
+import io.ipoli.android.app.services.LocalCommandParserService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

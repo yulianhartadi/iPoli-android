@@ -2,7 +2,7 @@ package io.ipoli.android.app.jobs;
 
 import java.util.Calendar;
 
-import io.ipoli.android.utils.Time;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

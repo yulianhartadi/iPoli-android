@@ -1,4 +1,4 @@
-package io.ipoli.android.modules;
+package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
@@ -6,8 +6,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.quest.QuestPersistenceService;
-import io.ipoli.android.quest.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

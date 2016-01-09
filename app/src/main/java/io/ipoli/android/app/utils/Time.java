@@ -1,4 +1,4 @@
-package io.ipoli.android.utils;
+package io.ipoli.android.app.utils;
 
 public class Time {
     private final String time;

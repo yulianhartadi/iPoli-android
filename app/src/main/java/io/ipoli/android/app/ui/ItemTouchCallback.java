@@ -1,4 +1,4 @@
-package io.ipoli.android.ui;
+package io.ipoli.android.app.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;

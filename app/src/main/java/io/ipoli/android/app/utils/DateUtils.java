@@ -1,4 +1,4 @@
-package io.ipoli.android.utils;
+package io.ipoli.android.app.utils;
 
 import java.util.Calendar;
 import java.util.Date;
