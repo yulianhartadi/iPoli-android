@@ -18,8 +18,8 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class PlanDayActivity extends BaseActivity {
@@ -60,8 +60,18 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
+        resetDueDate(quests);
         planDayQuestAdapter = new PlanDayQuestAdapter(quests);
         questList.setAdapter(planDayQuestAdapter);
+    }
+
+    private void resetDueDate(List<Quest> quests) {
+        for(Quest q : quests) {
+            if(q.getDue() != null) {
+                q.setDue(null);
+                questPersistenceService.save(q);
+            }
+        }
     }
 
     @Override

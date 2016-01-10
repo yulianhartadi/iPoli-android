@@ -3,14 +3,13 @@ package io.ipoli.android.app;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.ipoli.android.chat.ChatActivity;
-import io.ipoli.android.chat.ChatFragment;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CommandParserModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
 
@@ -33,8 +32,6 @@ public interface AppComponent {
     void inject(ChatActivity activity);
 
     void inject(App app);
-
-    void inject(ChatFragment fragment);
 
     void inject(PlanDayActivity fragment);
 
