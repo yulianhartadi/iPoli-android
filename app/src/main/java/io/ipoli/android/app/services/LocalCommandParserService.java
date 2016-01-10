@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
@@ -19,7 +20,23 @@ import io.ipoli.android.quest.events.NewQuestEvent;
 public class LocalCommandParserService implements CommandParserService {
 
     public enum Command {
-        ADD_QUEST, SHOW_QUESTS, PLAN_TODAY, REVIEW_TODAY, RENAME, HELP, UNKNOWN;
+        ADD_QUEST(R.string.desc_cmd_add_quest),
+        SHOW_QUESTS(R.string.desc_cmd_show_quests),
+        PLAN_TODAY(R.string.desc_cmd_plan_today),
+        REVIEW_TODAY(R.string.desc_cmd_review_today),
+        RENAME(R.string.desc_cmd_rename),
+        HELP(R.string.desc_cmd_help),
+        UNKNOWN(0);
+
+        private int helpText;
+
+        Command(int helpText) {
+            this.helpText = helpText;
+        }
+
+        public int getHelpText() {
+            return helpText;
+        }
 
         @Override
         public String toString() {

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         Message m = messages.get(position);
         TextView tv = (TextView) holder.itemView.findViewById(R.id.info_text);
-        tv.setText(m.getText());
+        tv.setText(Html.fromHtml(m.getText()));
         ImageView avatar = (ImageView) holder.itemView.findViewById(R.id.avatar);
         avatar.setImageDrawable(getRoundedBitmapDrawable(holder.itemView.getResources(), m));
     }

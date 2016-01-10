@@ -7,6 +7,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -43,46 +44,50 @@ public class SimpleAssistantService implements AssistantService {
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = new Quest(e.name);
         questPersistenceService.save(quest);
-        eventBus.post(new AssistantReplyEvent("Your quest has been added!"));
+        eventBus.post(new AssistantReplyEvent(context.getString(R.string.new_quest_reply)));
     }
 
     @Subscribe
     public void onShowQuests(ShowQuestsEvent e) {
-        eventBus.post(new AssistantReplyEvent("Sure!"));
+        eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
     }
 
     @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
-        eventBus.post(new AssistantReplyEvent("Hi! My name is " + e.name));
+        eventBus.post(new AssistantReplyEvent(String.format(context.getString(R.string.new_name_reply), e.name)));
     }
 
     @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
-        eventBus.post(new AssistantReplyEvent("Sure!"));
+        eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
     }
 
     @Subscribe
     public void onReviewToday(ReviewTodayEvent e) {
         List<Quest> quests = questPersistenceService.findAllForToday();
         List<String> questStatuses = new ArrayList<>();
-        String txt = "Today you have: \n\n";
+        String txt = "Today you have: <br/><br/>";
         for (Quest q : quests) {
             Quest.Status s = Quest.Status.valueOf(q.getStatus());
             String qs = (s == Quest.Status.COMPLETED) ? "[x]" : "[ ]";
             qs += " " + q.getName();
             questStatuses.add(qs);
         }
-        txt += TextUtils.join("\n", questStatuses);
+        txt += TextUtils.join("<br/>", questStatuses);
         eventBus.post(new AssistantReplyEvent(txt));
     }
 
     @Subscribe
     public void onHelp(HelpEvent e) {
-        LocalCommandParserService.Command[] commands = LocalCommandParserService.Command.values();
-        String helpText = "";
+        List<LocalCommandParserService.Command> commands = new ArrayList<>(Arrays.asList(LocalCommandParserService.Command.values()));
+        commands.remove(LocalCommandParserService.Command.UNKNOWN);
+
+        String helpText = "Command me with these:<br/><br/>";
+        List<String> commandTexts = new ArrayList<>();
         for (LocalCommandParserService.Command cmd : commands) {
-            helpText += cmd.toString() + " \n";
+            commandTexts.add("* <b>" + cmd.toString() + "</b>" + " - " + context.getString(cmd.getHelpText()));
         }
+        helpText += TextUtils.join("<br/>", commandTexts);
         eventBus.post(new AssistantReplyEvent(helpText));
     }
 
