@@ -15,8 +15,11 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
+import io.ipoli.android.quest.events.StartQuestEvent;
+import io.ipoli.android.quest.events.StopQuestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -53,9 +56,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
                 if (status == Quest.Status.PLANNED) {
                     startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
                     q.setStatus(Quest.Status.STARTED.name());
+                    eventBus.post(new StartQuestEvent(q));
                 } else if (status == Quest.Status.STARTED) {
                     startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
                     q.setStatus(Quest.Status.PLANNED.name());
+                    eventBus.post(new StopQuestEvent(q));
                 }
                 eventBus.post(new QuestUpdatedEvent(q));
             }
@@ -88,6 +93,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
                 Collections.swap(quests, i, i - 1);
             }
         }
+        eventBus.post(new ChangeQuestOrderEvent(quests.get(toPosition)));
         notifyItemMoved(fromPosition, toPosition);
     }
 

@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class PlanDayActivity extends BaseActivity {
@@ -82,11 +83,12 @@ public class PlanDayActivity extends BaseActivity {
                 return true;
 
             case R.id.save_quests:
-                List<Quest> plannedQuest = planDayQuestAdapter.getQuests();
-                for (Quest q : plannedQuest) {
+                List<Quest> plannedQuests = planDayQuestAdapter.getQuests();
+                for (Quest q : plannedQuests) {
                     q.setDue(new Date());
                     questPersistenceService.save(q);
                 }
+                eventBus.post(new QuestsPlannedEvent(plannedQuests));
                 finish();
                 return true;
         }

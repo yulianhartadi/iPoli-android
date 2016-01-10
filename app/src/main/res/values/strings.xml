@@ -13,5 +13,8 @@
     <string name="new_name_reply">Hello! It\'s me … %s!</string>
     <string name="new_quest_reply">Your quest has been added!</string>
     <string name="ok_reply">Sure!</string>
+    <string name="quest_started">Quest started</string>
+    <string name="quest_stopped">Quest paused</string>
+    <string name="undo">UNDO</string>
 
 </resources>

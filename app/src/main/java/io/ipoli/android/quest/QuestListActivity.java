@@ -27,8 +27,10 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
+import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
+import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class QuestListActivity extends BaseActivity {
@@ -126,6 +128,7 @@ public class QuestListActivity extends BaseActivity {
                 questPersistenceService.save(q);
                 int currentXP = experienceBar.getProgress();
                 int newXp = currentXP + 10;
+                eventBus.post(new CompleteQuestEvent(q));
 
                 ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", currentXP, newXp);
                 progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
@@ -135,11 +138,12 @@ public class QuestListActivity extends BaseActivity {
 
         });
 
-        snackbar.setAction("UNDO", new View.OnClickListener() {
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 questAdapter.addQuest(e.position, e.quest);
                 snackbar.setCallback(null);
+                eventBus.post(new UndoCompleteQuestEvent(e.quest));
             }
         });
 
@@ -152,9 +156,9 @@ public class QuestListActivity extends BaseActivity {
         Quest.Status status = Quest.Status.valueOf(e.quest.getStatus());
         String m = "";
         if (status == Quest.Status.STARTED) {
-            m = "Quest started";
+            m = getString(R.string.quest_started);
         } else if (status == Quest.Status.PLANNED) {
-            m = "Quest paused";
+            m = getString(R.string.quest_stopped);
         }
 
         if (!TextUtils.isEmpty(m)) {

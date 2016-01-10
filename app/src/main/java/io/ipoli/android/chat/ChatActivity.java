@@ -88,13 +88,9 @@ public class ChatActivity extends BaseActivity {
         layoutManager.setStackFromEnd(true);
 
         chatView.setLayoutManager(layoutManager);
-        messageAdapter = new MessageAdapter(messagePersistenceService.findAll());
+        messageAdapter = new MessageAdapter(messagePersistenceService.findAll(), eventBus);
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
-
-        if (getIntent().getAction().equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
-            eventBus.post(new ReviewTodayEvent());
-        }
     }
 
     @Subscribe
@@ -108,6 +104,9 @@ public class ChatActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
+        if (getIntent().getAction().equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
+            eventBus.post(new ReviewTodayEvent());
+        }
     }
 
     @Override

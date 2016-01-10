@@ -13,11 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.R;
+import io.ipoli.android.chat.events.NewMessageEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -25,10 +28,12 @@ import io.ipoli.android.R;
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
     private List<Message> messages;
+    private final Bus eventBus;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
-    public MessageAdapter(List<Message> messages) {
+    public MessageAdapter(List<Message> messages, Bus eventBus) {
         this.messages = messages;
+        this.eventBus = eventBus;
         avatarCache = new HashMap<>();
     }
 
@@ -45,6 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void addMessage(Message message) {
         messages.add(message);
         notifyDataSetChanged();
+        eventBus.post(new NewMessageEvent(message));
     }
 
     @Override
