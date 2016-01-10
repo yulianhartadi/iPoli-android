@@ -46,7 +46,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
-    public List<Quest> findAllForToday() {
+    public List<Quest> findAllPlannedForToday() {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
 
@@ -57,6 +57,20 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
                 .equalTo("status", Quest.Status.PLANNED.name())
+                .findAllSorted("order", Sort.ASCENDING));
+    }
+
+    @Override
+    public List<Quest> findAllForToday() {
+        Calendar yesterday = DateUtils.getTodayAtMidnight();
+        yesterday.add(Calendar.SECOND, -1);
+
+        Calendar tomorrow = DateUtils.getTodayAtMidnight();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .greaterThan("due", yesterday.getTime())
+                .lessThan("due", tomorrow.getTime())
                 .findAllSorted("order", Sort.ASCENDING));
     }
 

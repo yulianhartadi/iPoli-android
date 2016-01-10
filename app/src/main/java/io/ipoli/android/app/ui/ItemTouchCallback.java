@@ -1,7 +1,9 @@
 package io.ipoli.android.app.ui;
 
+import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,18 +50,40 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
             return false;
         }
 
-        adapter.onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+        adapter.onItemMoved(source.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        adapter.onItemDismiss(viewHolder.getAdapterPosition(), direction);
+        adapter.onItemDismissed(viewHolder.getAdapterPosition(), direction);
+    }
+
+    @Override
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        if (!isCurrentlyActive && actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                ItemTouchHelperViewHolder itemViewHolder =
+                        (ItemTouchHelperViewHolder) viewHolder;
+                itemViewHolder.onItemSwipeStopped();
+            }
+        }
+
+        if (isCurrentlyActive && actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                ItemTouchHelperViewHolder itemViewHolder =
+                        (ItemTouchHelperViewHolder) viewHolder;
+                itemViewHolder.onItemSwipeStart();
+            }
+        }
+
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder,
                                   int actionState) {
+        Log.d("Selected Changed", actionState + "");
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if (viewHolder instanceof ItemTouchHelperViewHolder) {
                 ItemTouchHelperViewHolder itemViewHolder =
@@ -67,6 +91,7 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
                 itemViewHolder.onItemSelected();
             }
         }
+
 
         super.onSelectedChanged(viewHolder, actionState);
     }

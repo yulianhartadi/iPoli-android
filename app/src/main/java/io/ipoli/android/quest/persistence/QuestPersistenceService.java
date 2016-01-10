@@ -15,5 +15,7 @@ public interface QuestPersistenceService {
 
     List<Quest> findAllUncompleted();
 
+    List<Quest> findAllPlannedForToday();
+
     List<Quest> findAllForToday();
 }

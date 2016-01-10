@@ -1,8 +1,14 @@
 package io.ipoli.android.assistant;
 
+import android.text.TextUtils;
+
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.ipoli.android.app.services.LocalCommandParserService;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
@@ -11,9 +17,8 @@ import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.app.services.LocalCommandParserService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -53,7 +58,17 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onReviewToday(ReviewTodayEvent e) {
-        eventBus.post(new AssistantReplyEvent("Sure!"));
+        List<Quest> quests = questPersistenceService.findAllForToday();
+        List<String> questStatuses = new ArrayList<>();
+        String txt = "Today you have: \n\n";
+        for (Quest q : quests) {
+            Quest.Status s = Quest.Status.valueOf(q.getStatus());
+            String qs = (s == Quest.Status.COMPLETED) ? "[x]" : "[ ]";
+            qs += " " + q.getName();
+            questStatuses.add(qs);
+        }
+        txt += TextUtils.join("\n", questStatuses);
+        eventBus.post(new AssistantReplyEvent(txt));
     }
 
     @Subscribe

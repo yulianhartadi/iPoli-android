@@ -64,7 +64,7 @@ public class QuestListActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        List<Quest> quests = questPersistenceService.findAllForToday();
+        List<Quest> quests = questPersistenceService.findAllPlannedForToday();
         questAdapter = new QuestAdapter(quests, eventBus);
         questList.setAdapter(questAdapter);
 

@@ -6,7 +6,7 @@ package io.ipoli.android.app.ui;
  */
 public interface ItemTouchHelperAdapter {
 
-    void onItemMove(int fromPosition, int toPosition);
+    void onItemMoved(int fromPosition, int toPosition);
 
-    void onItemDismiss(int position, int direction);
+    void onItemDismissed(int position, int direction);
 }

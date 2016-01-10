@@ -9,4 +9,8 @@ public interface ItemTouchHelperViewHolder {
     void onItemSelected();
 
     void onItemClear();
+
+    void onItemSwipeStart();
+
+    void onItemSwipeStopped();
 }

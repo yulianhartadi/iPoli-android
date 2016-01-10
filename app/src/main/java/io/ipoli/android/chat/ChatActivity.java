@@ -23,10 +23,12 @@ import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.services.CommandParserService;
+import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
@@ -89,6 +91,10 @@ public class ChatActivity extends BaseActivity {
         messageAdapter = new MessageAdapter(messagePersistenceService.findAll());
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
+
+        if (getIntent().getAction().equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
+            eventBus.post(new ReviewTodayEvent());
+        }
     }
 
     @Subscribe
@@ -97,7 +103,6 @@ public class ChatActivity extends BaseActivity {
         assistant.setName(e.name);
         assistantPersistenceService.save(assistant);
     }
-
 
     @Override
     protected void onResume() {

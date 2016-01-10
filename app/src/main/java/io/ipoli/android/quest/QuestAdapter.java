@@ -13,10 +13,10 @@ import java.util.Collections;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
-import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
+import io.ipoli.android.quest.events.QuestUpdatedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -50,16 +50,17 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
             @Override
             public void onClick(View view) {
                 Quest.Status status = Quest.Status.valueOf(q.getStatus());
-                if(status == Quest.Status.PLANNED) {
+                if (status == Quest.Status.PLANNED) {
                     startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
                     q.setStatus(Quest.Status.STARTED.name());
-                } else if(status == Quest.Status.STARTED){
+                } else if (status == Quest.Status.STARTED) {
                     startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
                     q.setStatus(Quest.Status.PLANNED.name());
                 }
                 eventBus.post(new QuestUpdatedEvent(q));
             }
         });
+        holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
     }
 
     @Override
@@ -72,13 +73,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-
     public List<Quest> getQuests() {
         return quests;
     }
 
     @Override
-    public void onItemMove(int fromPosition, int toPosition) {
+    public void onItemMoved(int fromPosition, int toPosition) {
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
                 Collections.swap(quests, i, i + 1);
@@ -92,7 +92,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     }
 
     @Override
-    public void onItemDismiss(int position, int direction) {
+    public void onItemDismissed(int position, int direction) {
         Quest q = quests.get(position);
         quests.remove(position);
         notifyItemRemoved(position);
@@ -113,6 +113,16 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         @Override
         public void onItemClear() {
             itemView.setBackgroundColor(0);
+        }
+
+        @Override
+        public void onItemSwipeStart() {
+            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onItemSwipeStopped() {
+            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
         }
     }
 }
