@@ -1,5 +1,6 @@
 package io.ipoli.android.quest;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +10,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -21,12 +24,12 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.app.ui.ItemTouchCallback;
 
 public class QuestListActivity extends BaseActivity {
 
@@ -36,7 +39,7 @@ public class QuestListActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.user_level)
+    @Bind(R.id.player_level)
     TextView userLevel;
 
     @Inject
@@ -44,6 +47,9 @@ public class QuestListActivity extends BaseActivity {
 
     @Bind(R.id.quest_list)
     RecyclerView questList;
+
+    @Bind(R.id.experience_bar)
+    ProgressBar experienceBar;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -57,7 +63,6 @@ public class QuestListActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        userLevel.setVisibility(View.GONE);
         appComponent().inject(this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -108,7 +113,7 @@ public class QuestListActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestRemoved(final QuestCompleteRequestEvent e) {
+    public void onQuestCompleteRequest(final QuestCompleteRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer, "+10 XP", Snackbar.LENGTH_LONG);
 
@@ -119,7 +124,13 @@ public class QuestListActivity extends BaseActivity {
                 Quest q = e.quest;
                 q.setStatus(Quest.Status.COMPLETED.name());
                 questPersistenceService.save(q);
+                int currentXP = experienceBar.getProgress();
+                int newXp = currentXP + 10;
 
+                ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", currentXP, newXp);
+                progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+                progressAnimator.setInterpolator(new DecelerateInterpolator());
+                progressAnimator.start();
             }
 
         });
@@ -140,13 +151,13 @@ public class QuestListActivity extends BaseActivity {
         questPersistenceService.save(e.quest);
         Quest.Status status = Quest.Status.valueOf(e.quest.getStatus());
         String m = "";
-        if(status == Quest.Status.STARTED) {
+        if (status == Quest.Status.STARTED) {
             m = "Quest started";
-        } else if(status == Quest.Status.PLANNED) {
+        } else if (status == Quest.Status.PLANNED) {
             m = "Quest paused";
         }
 
-        if(!TextUtils.isEmpty(m)) {
+        if (!TextUtils.isEmpty(m)) {
             Snackbar.make(rootContainer, m, Snackbar.LENGTH_SHORT).show();
         }
 

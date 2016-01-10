@@ -27,7 +27,7 @@ public class PlanDayActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.user_level)
+    @Bind(R.id.player_level)
     TextView userLevel;
 
     @Inject
