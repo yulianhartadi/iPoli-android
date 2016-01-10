@@ -1,5 +1,6 @@
 package io.ipoli.android.assistant;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
@@ -7,7 +8,9 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import io.ipoli.android.R;
 import io.ipoli.android.app.services.LocalCommandParserService;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
@@ -28,10 +31,12 @@ public class SimpleAssistantService implements AssistantService {
 
     private final QuestPersistenceService questPersistenceService;
     private final Bus eventBus;
+    private final Context context;
 
-    public SimpleAssistantService(QuestPersistenceService questPersistenceService, Bus eventBus) {
+    public SimpleAssistantService(QuestPersistenceService questPersistenceService, Bus eventBus, Context context) {
         this.questPersistenceService = questPersistenceService;
         this.eventBus = eventBus;
+        this.context = context;
     }
 
     @Subscribe
@@ -83,6 +88,9 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onUnknownCommand(UnknownCommandEvent e) {
-
+        String[] excuses = context.getResources().getStringArray(R.array.excuses);
+        Random r = new Random();
+        String excuse = excuses[r.nextInt(excuses.length)];
+        eventBus.post(new AssistantReplyEvent(excuse));
     }
 }

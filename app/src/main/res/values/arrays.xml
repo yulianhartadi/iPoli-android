@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="excuses">
+        <item>My fortune teller advised me against doing that!</item>
+        <item>Can\'t do right now. I am writing a love letter to Siri!</item>
+        <item>Sorry I promised to help Ashley clean the toilet at the same time. She doesn\'t like doing it alone; she gets nervous that she will fall in! Some kind of toilet phobia(a weird name I can\'t remember for some reason…).</item>
+        <item>I need to spend some serious time worrying about a good excuse as to why I don\'t want to do anything right now!</item>
+        <item>People are blaming me for World War III, and I am trying to be a peacemaker right now!</item>
+        <item>Unfortunately there is a disturbance in the force, and it is not with me right now. I never do anything without the force, Skywalker strongly advises against it.</item>
+        <item>Can\'t do! My hamster needs a good washing! He was playing with the pigs in the mud today. Stupid hamster!</item>
+        <item>Won\'t be able to! Obama is coming over tonight for some tea and crumpets. At least that is what his text stated. And like they say, never ditch the President, he likes his tea time!</item>
+        <item>I am teaching my parrot to sing Adele\'s hit song "Hello". Why? Because it is a catchy song! Sheesh, no need to judge me!</item>
+        <item>Sorry, but I can\'t do anything right now. I am allowing my food to digest. You can never play it too safe!</item>
+        <item>Not right now! My socks are matching! This is an natural disaster, an emergency!</item>
+        <item>I am sorry, but I have to edit some hubs, respond to comments, and make sure my Hubscore and author score are satisfactory! Before I do anything, this is an absolute must!</item>
+        <item>I\'m busy right now! I am visiting my eyebrow specialist.</item>
+    </string-array>
+</resources>

@@ -1,5 +1,7 @@
 package io.ipoli.android.app.modules;
 
+import android.content.Context;
+
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -19,8 +21,8 @@ public class AssistantModule {
 
     @Provides
     @Singleton
-    public AssistantService provideAssistant(QuestPersistenceService questPersistenceService, Bus eventBus) {
-        return new SimpleAssistantService(questPersistenceService, eventBus);
+    public AssistantService provideAssistant(QuestPersistenceService questPersistenceService, Bus eventBus, Context context) {
+        return new SimpleAssistantService(questPersistenceService, eventBus, context);
     }
 
 }
