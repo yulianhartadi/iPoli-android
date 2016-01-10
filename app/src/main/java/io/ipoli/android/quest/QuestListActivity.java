@@ -27,6 +27,9 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
+import io.ipoli.android.player.LevelExperienceGenerator;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
@@ -56,7 +59,12 @@ public class QuestListActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     private QuestAdapter questAdapter;
+    private Player player;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +87,9 @@ public class QuestListActivity extends BaseActivity {
         ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags);
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
+
+        player = playerPersistenceService.find();
+        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
     }
 
     @Override
@@ -129,6 +140,9 @@ public class QuestListActivity extends BaseActivity {
                 int currentXP = experienceBar.getProgress();
                 int newXp = currentXP + 10;
                 eventBus.post(new CompleteQuestEvent(q));
+
+                player.setExperience(newXp);
+                playerPersistenceService.save(player);
 
                 ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", currentXP, newXp);
                 progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));

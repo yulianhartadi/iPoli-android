@@ -10,6 +10,8 @@ import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.assistant.persistence.RealmAssistantPersistenceService;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
 import io.ipoli.android.chat.persistence.RealmMessagePersistenceService;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
@@ -36,5 +38,11 @@ public class PersistenceModule {
     @Singleton
     public MessagePersistenceService provideMessagePersistenceService(Context context) {
         return new RealmMessagePersistenceService(context);
+    }
+
+    @Provides
+    @Singleton
+    public PlayerPersistenceService providePlayerPersistenceService(Context context) {
+        return new RealmPlayerPersistenceService(context);
     }
 }

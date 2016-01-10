@@ -32,6 +32,9 @@ import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
+import io.ipoli.android.player.LevelExperienceGenerator;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
 
@@ -66,6 +69,10 @@ public class ChatActivity extends BaseActivity {
     @Inject
     MessagePersistenceService messagePersistenceService;
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+    private Player player;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +85,10 @@ public class ChatActivity extends BaseActivity {
 
         setSupportActionBar(toolbar);
 
-        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", experienceBar.getProgress(), experienceBar.getMax());
-        progressAnimator.setDuration(android.R.integer.config_shortAnimTime);
+        player = playerPersistenceService.find();
+        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", 0, player.getExperience());
+        progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
         progressAnimator.setInterpolator(new LinearInterpolator());
         progressAnimator.start();
 

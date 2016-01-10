@@ -29,6 +29,7 @@ public class AnalyticsModule {
         Tracker tracker = analytics.newTracker(AnalyticsConstants.TRACKING_CODE);
         tracker.enableExceptionReporting(true);
         tracker.enableAutoActivityTracking(true);
+        tracker.enableAdvertisingIdCollection(true);
         return new GoogleAnalyticsService(tracker);
     }
 }
