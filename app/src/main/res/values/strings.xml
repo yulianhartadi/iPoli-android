@@ -5,6 +5,7 @@
     <string name="title_activity_plan_day">Plan your day</string>
 
     <string name="desc_cmd_add_quest">create new task (e.g. add quest call John)</string>
+    <string name="desc_cmd_add_today_quest">create new task for today</string>
     <string name="desc_cmd_show_quests">your quests for today</string>
     <string name="desc_cmd_plan_today">choose what quests to do today</string>
     <string name="desc_cmd_review_today">review what have you conquered today</string>
@@ -12,6 +13,7 @@
     <string name="desc_cmd_help">this command</string>
     <string name="new_name_reply">Hello! It\'s me … %s!</string>
     <string name="new_quest_reply">Your quest has been added!</string>
+    <string name="new_today_quest_reply">Your quest for today has been added!</string>
     <string name="ok_reply">Sure!</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest paused</string>

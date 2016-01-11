@@ -37,9 +37,14 @@ public class Quest extends RealmObject {
     }
 
     public Quest(String name) {
+        this(name, Status.UNPLANNED.name(), null);
+    }
+
+    public Quest(String name, String status, Date due) {
         this.id = UUID.randomUUID().toString();
-        this.status = Status.UNPLANNED.name();
         this.name = name;
+        this.status = status;
+        this.due = due;
         this.createdAt = new Date();
         this.order = 0;
     }

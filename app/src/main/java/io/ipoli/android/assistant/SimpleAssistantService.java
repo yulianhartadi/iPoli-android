@@ -8,6 +8,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -15,6 +16,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.services.LocalCommandParserService;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
+import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
@@ -45,6 +47,13 @@ public class SimpleAssistantService implements AssistantService {
         Quest quest = new Quest(e.name);
         questPersistenceService.save(quest);
         eventBus.post(new AssistantReplyEvent(context.getString(R.string.new_quest_reply)));
+    }
+
+    @Subscribe
+    public void onNewTodayQuest(NewTodayQuestEvent e) {
+        Quest quest = new Quest(e.name, Quest.Status.PLANNED.name(), new Date());
+        questPersistenceService.save(quest);
+        eventBus.post(new AssistantReplyEvent(context.getString(R.string.new_today_quest_reply)));
     }
 
     @Subscribe

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.assistant.events.HelpEvent;
+import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
@@ -51,6 +52,11 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         track(createEventBuilder("quest", "create").set("name", e.name));
+    }
+
+    @Subscribe
+    public void onTodayNewQuest(NewTodayQuestEvent e) {
+        track(createEventBuilder("quest", "create-today").set("name", e.name));
     }
 
     @Subscribe

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -117,13 +118,20 @@ public class PlayerBarLayout extends AppBarLayout {
     }
 
     private void animateLevelUp() {
-        ValueAnimator forwardAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", playerLevel.getTextSize(), playerLevel.getTextSize() * 1.5f);
-        forwardAnimation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
-        forwardAnimation.setInterpolator(new DecelerateInterpolator());
 
-        ValueAnimator reverseAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", playerLevel.getTextSize(), playerLevel.getTextSize() / 1.5f);
+        float originalTextSize = playerLevel.getTextSize();
+
+        float scaledDensity = getResources().getDisplayMetrics().scaledDensity;
+        float originalTextSizeSP = originalTextSize / scaledDensity;
+
+        ValueAnimator forwardAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", originalTextSizeSP, originalTextSizeSP * 1.5f);
+        forwardAnimation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+        forwardAnimation.setInterpolator(new AccelerateInterpolator());
+
+        ValueAnimator reverseAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", originalTextSizeSP * 1.5f, originalTextSizeSP);
         reverseAnimation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
         reverseAnimation.setInterpolator(new DecelerateInterpolator());
+        reverseAnimation.setStartDelay(getResources().getInteger(android.R.integer.config_longAnimTime));
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playSequentially(forwardAnimation, reverseAnimation);
@@ -161,8 +169,8 @@ public class PlayerBarLayout extends AppBarLayout {
             experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
             experienceBar.setProgress(newXP);
             playerLevel.setText(getContext().getString(R.string.player_level, player.getLevel()));
-            animateLevelUp();
             eventBus.post(new PlayerLevelUpEvent(player.getLevel()));
+            animateLevelUp();
         } else {
             animateExperienceProgress(currentXP, newXP, 0);
         }

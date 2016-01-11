@@ -6,6 +6,7 @@ import com.squareup.otto.Bus;
 
 import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.HelpEvent;
+import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
@@ -21,6 +22,7 @@ public class LocalCommandParserService implements CommandParserService {
 
     public enum Command {
         ADD_QUEST(R.string.desc_cmd_add_quest),
+        ADD_TODAY_QUEST(R.string.desc_cmd_add_today_quest),
         SHOW_QUESTS(R.string.desc_cmd_show_quests),
         PLAN_TODAY(R.string.desc_cmd_plan_today),
         REVIEW_TODAY(R.string.desc_cmd_review_today),
@@ -68,6 +70,9 @@ public class LocalCommandParserService implements CommandParserService {
         switch (cmd) {
             case ADD_QUEST:
                 bus.post(new NewQuestEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                break;
+            case ADD_TODAY_QUEST:
+                bus.post(new NewTodayQuestEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
                 break;
             case SHOW_QUESTS:
                 bus.post(new ShowQuestsEvent());
