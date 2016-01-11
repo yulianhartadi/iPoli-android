@@ -15,6 +15,7 @@ import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.chat.events.NewMessageEvent;
+import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -35,6 +36,11 @@ public class GoogleAnalyticsService implements AnalyticsService {
 
     public GoogleAnalyticsService(Tracker tracker) {
         this.tracker = tracker;
+    }
+
+    @Subscribe
+    public void onPlayerLevelUp(PlayerLevelUpEvent e) {
+        track(createEventBuilder("player", "level-up").set("level", e.level + ""));
     }
 
     @Subscribe

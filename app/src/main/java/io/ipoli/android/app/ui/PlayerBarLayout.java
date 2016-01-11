@@ -30,7 +30,7 @@ import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.events.OnPlayerLevelUpEvent;
+import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 
@@ -162,7 +162,7 @@ public class PlayerBarLayout extends AppBarLayout {
             experienceBar.setProgress(newXP);
             playerLevel.setText(getContext().getString(R.string.player_level, player.getLevel()));
             animateLevelUp();
-            eventBus.post(new OnPlayerLevelUpEvent(player.getLevel()));
+            eventBus.post(new PlayerLevelUpEvent(player.getLevel()));
         } else {
             animateExperienceProgress(currentXP, newXP, 0);
         }
