@@ -1,0 +1,180 @@
+package io.ipoli.android.app.ui;
+
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.support.design.widget.AppBarLayout;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
+import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.assistant.Assistant;
+import io.ipoli.android.assistant.events.RenameAssistantEvent;
+import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
+import io.ipoli.android.player.LevelExperienceGenerator;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.OnPlayerLevelUpEvent;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.events.CompleteQuestEvent;
+
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 1/11/16.
+ */
+public class PlayerBarLayout extends AppBarLayout {
+
+    public static final int INITIAL_EXPERIENCE_ANIMATION_DELAY = 500;
+
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    AssistantPersistenceService assistantPersistenceService;
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Bind(R.id.experience_bar)
+    ProgressBar experienceBar;
+
+    @Bind(R.id.player_level)
+    TextView playerLevel;
+
+    private Player player;
+    private Assistant assistant;
+
+    public PlayerBarLayout(Context context) {
+        super(context);
+        if (!isInEditMode()) {
+            init(context, null);
+        }
+    }
+
+    public PlayerBarLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        if (!isInEditMode()) {
+            init(context, attrs);
+        }
+    }
+
+    private void init(Context context, AttributeSet attrs) {
+        App.getAppComponent(context).inject(this);
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.player_bar, this, true);
+        ButterKnife.bind(this, view);
+
+        assistant = assistantPersistenceService.find();
+
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.PlayerBarLayout,
+                0, 0);
+
+        String title;
+        boolean showLevel;
+        try {
+            showLevel = a.getBoolean(R.styleable.PlayerBarLayout_player_bar_show_level, true);
+            title = a.getString(R.styleable.PlayerBarLayout_player_bar_title);
+        } finally {
+            a.recycle();
+        }
+
+
+        if (TextUtils.isEmpty(title)) {
+            title = assistant.getName();
+        }
+
+        if (!showLevel) {
+            playerLevel.setVisibility(View.GONE);
+        }
+
+        toolbar.setTitle(title);
+
+        player = playerPersistenceService.find();
+        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
+        playerLevel.setText(context.getString(R.string.player_level, player.getLevel()));
+        animateExperienceProgress(0, player.getExperience(), INITIAL_EXPERIENCE_ANIMATION_DELAY);
+    }
+
+    private void animateLevelUp() {
+        ValueAnimator forwardAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", playerLevel.getTextSize(), playerLevel.getTextSize() * 1.5f);
+        forwardAnimation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+        forwardAnimation.setInterpolator(new DecelerateInterpolator());
+
+        ValueAnimator reverseAnimation = ObjectAnimator.ofFloat(playerLevel, "textSize", playerLevel.getTextSize(), playerLevel.getTextSize() / 1.5f);
+        reverseAnimation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+        reverseAnimation.setInterpolator(new DecelerateInterpolator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(forwardAnimation, reverseAnimation);
+        animatorSet.start();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        eventBus.register(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        eventBus.unregister(this);
+        super.onDetachedFromWindow();
+    }
+
+    @Subscribe
+    public void onRenameAssistant(RenameAssistantEvent e) {
+        toolbar.setTitle(e.name);
+        assistant.setName(e.name);
+        assistantPersistenceService.save(assistant);
+    }
+
+    @Subscribe
+    public void onCompleteQuest(CompleteQuestEvent e) {
+        int currentXP = experienceBar.getProgress();
+        int newXP = currentXP + Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
+        int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
+        if (newXP >= maxXPForCurrentLevel) {
+            player.setLevel(player.getLevel() + 1);
+            newXP = newXP - maxXPForCurrentLevel;
+            // Every level starts from 0 experience (or the leftover from the previous one)
+            experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
+            experienceBar.setProgress(newXP);
+            playerLevel.setText(getContext().getString(R.string.player_level, player.getLevel()));
+            animateLevelUp();
+            eventBus.post(new OnPlayerLevelUpEvent(player.getLevel()));
+        } else {
+            animateExperienceProgress(currentXP, newXP, 0);
+        }
+        player.setExperience(newXP);
+        playerPersistenceService.save(player);
+    }
+
+    private void animateExperienceProgress(int currentXP, int newXP, long startDelay) {
+        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", currentXP, newXP);
+        progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+        progressAnimator.setStartDelay(startDelay);
+        progressAnimator.setInterpolator(new DecelerateInterpolator());
+        progressAnimator.start();
+    }
+}

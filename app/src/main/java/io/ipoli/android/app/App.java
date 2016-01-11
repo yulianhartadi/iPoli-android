@@ -1,6 +1,7 @@
 package io.ipoli.android.app;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.squareup.otto.Bus;
 
@@ -34,7 +35,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        getAppComponent().inject(this);
+        getAppComponent(this).inject(this);
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
@@ -55,10 +56,10 @@ public class App extends Application {
         new RemindReviewDayJob(this, time).schedule();
     }
 
-    public AppComponent getAppComponent() {
+    public static AppComponent getAppComponent(Context context) {
         if (appComponent == null) {
             appComponent = DaggerAppComponent.builder()
-                    .appModule(new AppModule(this))
+                    .appModule(new AppModule(context))
                     .build();
         }
 

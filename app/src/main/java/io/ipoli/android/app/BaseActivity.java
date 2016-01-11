@@ -8,6 +8,6 @@ import android.support.v7.app.AppCompatActivity;
  */
 public class BaseActivity extends AppCompatActivity {
     protected AppComponent appComponent() {
-        return ((App) getApplication()).getAppComponent();
+        return App.getAppComponent(this);
     }
 }

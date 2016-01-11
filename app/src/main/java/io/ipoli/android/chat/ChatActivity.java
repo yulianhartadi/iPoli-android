@@ -1,6 +1,5 @@
 package io.ipoli.android.chat;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -27,12 +25,10 @@ import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
-import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
-import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.PlanDayActivity;
@@ -80,17 +76,7 @@ public class ChatActivity extends BaseActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
 
-        assistant = assistantPersistenceService.find();
-        toolbar.setTitle(assistant.getName());
-
         setSupportActionBar(toolbar);
-
-        player = playerPersistenceService.find();
-        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
-        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(experienceBar, "progress", 0, player.getExperience());
-        progressAnimator.setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        progressAnimator.setInterpolator(new LinearInterpolator());
-        progressAnimator.start();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -100,13 +86,6 @@ public class ChatActivity extends BaseActivity {
         messageAdapter = new MessageAdapter(messagePersistenceService.findAll(), eventBus);
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
-    }
-
-    @Subscribe
-    public void onRenameAssistant(RenameAssistantEvent e) {
-        toolbar.setTitle(e.name);
-        assistant.setName(e.name);
-        assistantPersistenceService.save(assistant);
     }
 
     @Override

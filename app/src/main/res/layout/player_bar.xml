@@ -22,7 +22,6 @@
             android:layout_gravity="end"
             android:paddingEnd="16dp"
             android:paddingStart="0dp"
-            android:text="level 1"
             android:textAllCaps="true" />
     </android.support.v7.widget.Toolbar>
 
@@ -31,7 +30,5 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:max="100"
-        android:progress="5"
         android:progressDrawable="@drawable/experience_progress_bar" />
 </android.support.design.widget.AppBarLayout>

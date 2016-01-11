@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/quest_list_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".quest.QuestListActivity"
-    android:id="@+id/quest_list_container">
+    tools:context=".quest.QuestListActivity">
 
-    <include layout="@layout/app_bar" />
+    <io.ipoli.android.app.ui.PlayerBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:player_bar_title="@string/title_activity_quest_list" />
 
     <RelativeLayout
         android:layout_width="match_parent"

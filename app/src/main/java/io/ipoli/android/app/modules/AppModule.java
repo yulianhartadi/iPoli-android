@@ -6,7 +6,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.App;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -15,15 +14,15 @@ import io.ipoli.android.app.App;
 @Module
 public class AppModule {
 
-    private final App app;
+    private final Context context;
 
-    public AppModule(App app) {
-        this.app = app;
+    public AppModule(Context context) {
+        this.context = context;
     }
 
     @Provides
     @Singleton
     public Context provideContext() {
-        return app;
+        return context;
     }
 }

@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -29,7 +28,7 @@ public class PlanDayActivity extends BaseActivity {
     Toolbar toolbar;
 
     @Bind(R.id.player_level)
-    TextView userLevel;
+    TextView playerLevel;
 
     @Inject
     Bus eventBus;
@@ -51,8 +50,6 @@ public class PlanDayActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        userLevel.setVisibility(View.GONE);
 
         appComponent().inject(this);
 

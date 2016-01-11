@@ -16,5 +16,7 @@
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest paused</string>
     <string name="undo">UNDO</string>
+    <string name="player_level">Level %d</string>
+    <string name="increase_experience">+%d XP</string>
 
 </resources>
