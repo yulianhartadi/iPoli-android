@@ -20,5 +20,6 @@
     <string name="undo">UNDO</string>
     <string name="player_level">Level %d</string>
     <string name="increase_experience">+%d XP</string>
+    <string name="quest_removed">Quest removed</string>
 
 </resources>

@@ -20,11 +20,13 @@ import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
+import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,6 +59,16 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onTodayNewQuest(NewTodayQuestEvent e) {
         track(createEventBuilder("quest", "create-today").set("name", e.name));
+    }
+
+    @Subscribe
+    public void onDeleteQuest(DeleteQuestEvent e) {
+        track(createEventBuilder("quest", "delete").set("name", e.quest.getName()));
+    }
+
+    @Subscribe
+    public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
+        track(createEventBuilder("quest", "undo-delete").set("name", e.quest.getName()));
     }
 
     @Subscribe

@@ -18,4 +18,6 @@ public interface QuestPersistenceService {
     List<Quest> findAllPlannedForToday();
 
     List<Quest> findAllForToday();
+
+    void delete(Quest quest);
 }

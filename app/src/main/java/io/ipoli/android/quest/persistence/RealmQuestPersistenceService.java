@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.Calendar;
 import java.util.List;
 
-import io.ipoli.android.quest.Quest;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.Quest;
 import io.realm.Realm;
 import io.realm.Sort;
 
@@ -72,6 +72,14 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
                 .findAllSorted("order", Sort.ASCENDING));
+    }
+
+    @Override
+    public void delete(Quest quest) {
+        realm.beginTransaction();
+        Quest realmQuest = realm.where(Quest.class).equalTo("id", quest.getId()).findFirst();
+        realmQuest.removeFromRealm();
+        realm.commitTransaction();
     }
 
 }

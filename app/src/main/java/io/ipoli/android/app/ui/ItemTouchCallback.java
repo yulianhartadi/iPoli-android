@@ -14,6 +14,7 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     private final ItemTouchHelperAdapter adapter;
     private final int swipeFlags;
     private final int dragFlags;
+    private boolean isLongPressDragEnabled;
 
     public ItemTouchCallback(ItemTouchHelperAdapter adapter) {
         this(adapter, ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.UP | ItemTouchHelper.DOWN);
@@ -27,11 +28,16 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
         this.adapter = adapter;
         this.swipeFlags = swipeFlags;
         this.dragFlags = dragFlags;
+        this.isLongPressDragEnabled = true;
+    }
+
+    public void setLongPressDragEnabled(boolean longPressDragEnabled) {
+        isLongPressDragEnabled = longPressDragEnabled;
     }
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return true;
+        return isLongPressDragEnabled;
     }
 
     @Override
