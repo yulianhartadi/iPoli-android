@@ -17,4 +17,13 @@ public class DateUtils {
     public static Date getNow() {
         return Calendar.getInstance().getTime();
     }
+
+    public static boolean isSameDay(Date d1, Date d2) {
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(d1);
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(d2);
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+                c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    }
 }

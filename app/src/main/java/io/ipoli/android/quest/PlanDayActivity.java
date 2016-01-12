@@ -25,8 +25,9 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
+import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -70,7 +71,7 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
-        resetDueDate(quests);
+        resetDueDateForIncompleteQuests(quests);
         planDayQuestAdapter = new PlanDayQuestAdapter(quests, eventBus);
         questList.setAdapter(planDayQuestAdapter);
 
@@ -81,9 +82,9 @@ public class PlanDayActivity extends BaseActivity {
         helper.attachToRecyclerView(questList);
     }
 
-    private void resetDueDate(List<Quest> quests) {
-        for(Quest q : quests) {
-            if(q.getDue() != null) {
+    private void resetDueDateForIncompleteQuests(List<Quest> quests) {
+        for (Quest q : quests) {
+            if (q.getDue() != null && !DateUtils.isSameDay(q.getDue(), new Date())) {
                 q.setDue(null);
                 questPersistenceService.save(q);
             }

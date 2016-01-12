@@ -69,7 +69,6 @@ public class LocalCommandParserService implements CommandParserService {
                 Pattern pattern = Pattern.compile(cmd.pattern);
                 Matcher m = pattern.matcher(normalized);
                 if (m.find()) {
-                    Log.d("Group", m.groupCount() + "");
                     if (m.groupCount() > 1) {
                         cmd.parameterText = m.group(2);
                     }
