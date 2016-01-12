@@ -11,6 +11,13 @@
     <string name="desc_cmd_review_today">review what have you conquered today</string>
     <string name="desc_cmd_rename">give me a new name</string>
     <string name="desc_cmd_help">this command</string>
+    <string name="short_cmd_add_quest">aq</string>
+    <string name="short_cmd_add_today_quest">atq</string>
+    <string name="short_cmd_show_quests">sq</string>
+    <string name="short_cmd_plan_today">pt</string>
+    <string name="short_cmd_review_today">rt</string>
+    <string name="short_cmd_rename">re</string>
+    <string name="short_cmd_help">h</string>
     <string name="new_name_reply">Hello! It\'s me … %s!</string>
     <string name="new_quest_reply">Your quest has been added!</string>
     <string name="new_today_quest_reply">Your quest for today has been added!</string>

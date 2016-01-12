@@ -4,6 +4,9 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import io.ipoli.android.R;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
@@ -21,23 +24,37 @@ import io.ipoli.android.quest.events.NewQuestEvent;
 public class LocalCommandParserService implements CommandParserService {
 
     public enum Command {
-        ADD_QUEST(R.string.desc_cmd_add_quest),
-        ADD_TODAY_QUEST(R.string.desc_cmd_add_today_quest),
-        SHOW_QUESTS(R.string.desc_cmd_show_quests),
-        PLAN_TODAY(R.string.desc_cmd_plan_today),
-        REVIEW_TODAY(R.string.desc_cmd_review_today),
-        RENAME(R.string.desc_cmd_rename),
-        HELP(R.string.desc_cmd_help),
-        UNKNOWN(0);
+        ADD_QUEST("(add quest|aq) (\\w[\\s|\\w]*)", R.string.short_cmd_add_quest, R.string.desc_cmd_add_quest),
+        ADD_TODAY_QUEST("(add today quest|atq) (\\w[\\s|\\w]*)", R.string.short_cmd_add_today_quest, R.string.desc_cmd_add_today_quest),
+        SHOW_QUESTS("(show quests|sq)", R.string.short_cmd_show_quests, R.string.desc_cmd_show_quests),
+        PLAN_TODAY("(plan today|pt)", R.string.short_cmd_plan_today, R.string.desc_cmd_plan_today),
+        REVIEW_TODAY("(review today|rt)", R.string.short_cmd_review_today, R.string.desc_cmd_review_today),
+        RENAME("(rename|re) (\\w+)", R.string.short_cmd_rename, R.string.desc_cmd_rename),
+        HELP("(help|h)", R.string.short_cmd_help, R.string.desc_cmd_help),
+        UNKNOWN("", 0, 0);
 
-        private int helpText;
+        private final String pattern;
+        private final int shortCommandText;
+        private final int helpText;
+        private String parameterText;
 
-        Command(int helpText) {
+        Command(String pattern, int shortCommandText, int helpText) {
+            this.pattern = pattern;
+            this.shortCommandText = shortCommandText;
             this.helpText = helpText;
+            this.parameterText = "";
         }
 
         public int getHelpText() {
             return helpText;
+        }
+
+        public String getParameterText() {
+            return parameterText;
+        }
+
+        public int getShortCommandText() {
+            return shortCommandText;
         }
 
         @Override
@@ -45,9 +62,17 @@ public class LocalCommandParserService implements CommandParserService {
             return this.name().toLowerCase().replace("_", " ");
         }
 
-        public static Command fromText(String text) {
+        public static Command parseText(String text) {
+
+            String normalized = text.trim().replaceAll("\\s+", " ");
             for (Command cmd : values()) {
-                if (text.startsWith(cmd.toString())) {
+                Pattern pattern = Pattern.compile(cmd.pattern);
+                Matcher m = pattern.matcher(normalized);
+                if (m.find()) {
+                    Log.d("Group", m.groupCount() + "");
+                    if (m.groupCount() > 1) {
+                        cmd.parameterText = m.group(2);
+                    }
                     return cmd;
                 }
             }
@@ -63,22 +88,21 @@ public class LocalCommandParserService implements CommandParserService {
 
     @Override
     public void parse(String command) {
-        String c = command.trim();
-        String lc = c.toLowerCase();
-        Log.d("CommandParser", lc);
-        Command cmd = Command.fromText(lc);
+        Log.d("CommandParser", command);
+
+        Command cmd = Command.parseText(command);
         switch (cmd) {
             case ADD_QUEST:
-                bus.post(new NewQuestEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                bus.post(new NewQuestEvent(cmd.getParameterText()));
                 break;
             case ADD_TODAY_QUEST:
-                bus.post(new NewTodayQuestEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                bus.post(new NewTodayQuestEvent(cmd.getParameterText()));
                 break;
             case SHOW_QUESTS:
                 bus.post(new ShowQuestsEvent());
                 break;
             case RENAME:
-                bus.post(new RenameAssistantEvent(c.substring(parameterStartIndex(lc, cmd.toString()))));
+                bus.post(new RenameAssistantEvent(cmd.getParameterText()));
                 break;
             case PLAN_TODAY:
                 bus.post(new PlanTodayEvent());
@@ -94,8 +118,5 @@ public class LocalCommandParserService implements CommandParserService {
         }
     }
 
-    private int parameterStartIndex(String text, String command) {
-        int startIndex = text.indexOf(command);
-        return startIndex + command.length() + 1;
-    }
+
 }

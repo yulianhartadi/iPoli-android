@@ -94,7 +94,9 @@ public class SimpleAssistantService implements AssistantService {
         String helpText = "Command me with these:<br/><br/>";
         List<String> commandTexts = new ArrayList<>();
         for (LocalCommandParserService.Command cmd : commands) {
-            commandTexts.add("* <b>" + cmd.toString() + "</b>" + " - " + context.getString(cmd.getHelpText()));
+            commandTexts.add("* <b>" + cmd.toString()
+                    + " (" + context.getString(cmd.getShortCommandText()) + ")" + "</b>"
+                    + " - " + context.getString(cmd.getHelpText()));
         }
         helpText += TextUtils.join("<br/>", commandTexts);
         eventBus.post(new AssistantReplyEvent(helpText));
