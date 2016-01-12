@@ -56,7 +56,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .equalTo("status", Quest.Status.PLANNED.name())
+                .equalTo("status", Quest.Status.PLANNED.name()).or().equalTo("status", Quest.Status.STARTED.name())
                 .findAllSorted("order", Sort.ASCENDING));
     }
 

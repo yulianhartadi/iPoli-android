@@ -48,7 +48,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
         tv.setText(q.getName());
 
+
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
+        if (Quest.Status.valueOf(q.getStatus()) == Quest.Status.STARTED) {
+            startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
+        }
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

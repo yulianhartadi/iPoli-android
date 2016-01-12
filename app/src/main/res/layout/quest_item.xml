@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/quest_name"
-        style="@style/TextAppearance.AppCompat.Subhead"
+        style="@style/TextAppearance.AppCompat.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -30,8 +30,8 @@
 
     <ImageButton
         android:id="@id/quest_start"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@null"
