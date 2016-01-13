@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -23,6 +24,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.services.CommandParserService;
 import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.assistant.Assistant;
+import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
@@ -36,6 +38,7 @@ import io.ipoli.android.quest.QuestListActivity;
 
 public class ChatActivity extends BaseActivity {
 
+    public static final int PICK_PLAYER_AVATAR = 101;
     @Bind(R.id.experience_bar)
     ProgressBar experienceBar;
 
@@ -86,6 +89,10 @@ public class ChatActivity extends BaseActivity {
         messageAdapter = new MessageAdapter(messagePersistenceService.findAll(), eventBus);
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
+
+        Intent i = new Intent(this, PickAvatarActivity.class);
+        i.putExtra("title", "Pick your avatar");
+        startActivityForResult(i, PICK_PLAYER_AVATAR);
     }
 
     @Override
@@ -101,6 +108,17 @@ public class ChatActivity extends BaseActivity {
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_PLAYER_AVATAR) {
+            int avatarRes = data.getIntExtra("avatarRes", 0);
+            if(avatarRes > 0) {
+                Log.d("Avatar", "Received " + avatarRes);
+            }
+        }
     }
 
     @OnClick(R.id.send_command)

@@ -10,6 +10,7 @@ import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CommandParserModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.ui.PlayerBarLayout;
+import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
@@ -39,5 +40,7 @@ public interface AppComponent {
     void inject(QuestListActivity questListActivity);
 
     void inject(PlayerBarLayout playerBarLayout);
+
+    void inject(PickAvatarActivity pickAvatarActivity);
 }
 

@@ -33,7 +33,7 @@ public class Quest extends RealmObject {
     }
 
     public enum Status {
-        UNPLANNED, PLANNED, STARTED, status, COMPLETED
+        UNPLANNED, PLANNED, STARTED, COMPLETED
     }
 
     public Quest(String name) {

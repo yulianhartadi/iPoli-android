@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.services.LocalCommandParserService;
+import io.ipoli.android.app.services.Command;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
@@ -88,12 +88,12 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onHelp(HelpEvent e) {
-        List<LocalCommandParserService.Command> commands = new ArrayList<>(Arrays.asList(LocalCommandParserService.Command.values()));
-        commands.remove(LocalCommandParserService.Command.UNKNOWN);
+        List<Command> commands = new ArrayList<>(Arrays.asList(Command.values()));
+        commands.remove(Command.UNKNOWN);
 
         String helpText = "Command me with these:<br/><br/>";
         List<String> commandTexts = new ArrayList<>();
-        for (LocalCommandParserService.Command cmd : commands) {
+        for (Command cmd : commands) {
             commandTexts.add("* <b>" + cmd.toString()
                     + " (" + context.getString(cmd.getShortCommandText()) + ")" + "</b>"
                     + " - " + context.getString(cmd.getHelpText()));

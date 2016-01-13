@@ -30,7 +30,6 @@
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
@@ -41,11 +40,20 @@
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
+        </activity>
 
+        <activity
+            android:name=".assistant.PickAvatarActivity"
+            android:label="@string/title_activity_pick_avatar"
+            android:parentActivityName=".chat.ChatActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityDialogTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.ipoli.android.chat.ChatActivity" />
         </activity>
 
         <service android:name=".app.services.ReminderIntentService" />
@@ -56,7 +64,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- Analytics !-->
+        <!-- Analytics ! -->
 
         <service
             android:name="com.google.android.gms.analytics.AnalyticsService"
@@ -76,6 +84,8 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+
     </application>
 
 </manifest>

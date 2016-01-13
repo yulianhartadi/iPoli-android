@@ -28,5 +28,6 @@
     <string name="player_level">Level %d</string>
     <string name="increase_experience">+%d XP</string>
     <string name="quest_removed">Quest removed</string>
+    <string name="title_activity_pick_avatar">PickAvatarActivity</string>
 
 </resources>
