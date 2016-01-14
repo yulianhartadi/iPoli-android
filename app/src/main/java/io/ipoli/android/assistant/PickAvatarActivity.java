@@ -39,10 +39,9 @@ public class PickAvatarActivity extends BaseActivity {
 
         avatarList.setLayoutManager(new GridLayoutManager(this, 2));
         List<String> avatars = new ArrayList<>();
-        avatars.add("avatar_01");
-        avatars.add("avatar_02");
-        avatars.add("avatar_01");
-        avatars.add("avatar_02");
+        for(int i = 10; i >= 1; i--) {
+            avatars.add(String.format("avatar_%02d", i));
+        }
         avatarList.setAdapter(new AvatarAdapter(this, avatars, eventBus));
     }
 
