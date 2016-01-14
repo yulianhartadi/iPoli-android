@@ -2,6 +2,8 @@ package io.ipoli.android.assistant.persistence;
 
 import android.content.Context;
 
+import io.ipoli.android.Constants;
+import io.ipoli.android.R;
 import io.ipoli.android.assistant.Assistant;
 import io.realm.Realm;
 
@@ -11,9 +13,11 @@ import io.realm.Realm;
  */
 public class RealmAssistantPersistenceService implements AssistantPersistenceService {
 
+    private final Context context;
     private Realm realm;
 
     public RealmAssistantPersistenceService(Context context) {
+        this.context = context;
         realm = Realm.getInstance(context);
     }
 
@@ -29,7 +33,7 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
     public Assistant find() {
         Assistant assistant = realm.where(Assistant.class).findFirst();
         if (assistant == null) {
-            return new Assistant("iPoli", "avatar_01", Assistant.State.TUTORIAL_START);
+            return new Assistant(context.getString(R.string.default_assistant_name), Constants.DEFAULT_ASSISTANT_AVATAR, Assistant.State.TUTORIAL_START);
         }
         return realm.copyFromRealm(assistant);
     }

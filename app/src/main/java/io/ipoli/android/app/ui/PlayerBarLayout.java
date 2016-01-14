@@ -153,8 +153,6 @@ public class PlayerBarLayout extends AppBarLayout {
     @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
         toolbar.setTitle(e.name);
-        assistant.setName(e.name);
-        assistantPersistenceService.save(assistant);
     }
 
     @Subscribe

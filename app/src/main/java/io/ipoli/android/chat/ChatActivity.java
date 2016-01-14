@@ -76,6 +76,7 @@ public class ChatActivity extends BaseActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
 
+        toolbar.setTitle(assistantService.getAssistant().getName());
         setSupportActionBar(toolbar);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -88,7 +89,6 @@ public class ChatActivity extends BaseActivity {
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
         resumeAfterOnCreate = true;
-
     }
 
     @Override

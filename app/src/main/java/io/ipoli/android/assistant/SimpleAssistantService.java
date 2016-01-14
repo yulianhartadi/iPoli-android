@@ -92,12 +92,18 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onRenameAssistant(RenameAssistantEvent e) {
+        assistant.setName(e.name);
+        assistant = assistantPersistenceService.save(assistant);
         reply(String.format(context.getString(R.string.new_name_reply), e.name));
     }
 
     @Subscribe
     public void onReviewToday(ReviewTodayEvent e) {
         List<Quest> quests = questPersistenceService.findAllForToday();
+        if (quests.isEmpty()) {
+            reply("Are you lazy today? You have done nothing! Add quest for today with <b>atq</b>.");
+            return;
+        }
         List<String> questStatuses = new ArrayList<>();
         String txt = "Your day in review: <br/><br/>";
         for (Quest q : quests) {
@@ -158,8 +164,6 @@ public class SimpleAssistantService implements AssistantService {
 
     @Override
     public void onPlayerMessage(String text) {
-        Log.d("text", text);
-        Log.d("State", assistant.getState());
         switch (Assistant.State.valueOf(assistant.getState())) {
             case TUTORIAL_START:
                 reply("It's nice to meet you! :)");
@@ -284,6 +288,7 @@ public class SimpleAssistantService implements AssistantService {
     }
 
     private void changeState(Assistant.State newState) {
+        Log.d("NewAssistantState", newState.name());
         assistant.setState(newState.name());
         assistant = assistantPersistenceService.save(assistant);
         onStateChanged(newState);
@@ -291,6 +296,7 @@ public class SimpleAssistantService implements AssistantService {
 
     @Override
     public void start() {
+        Log.d("StateStart", assistant.getState());
         switch (Assistant.State.valueOf(assistant.getState())) {
             case TUTORIAL_START:
                 reply("Hello! I am iPoli, your personal sidekick!");

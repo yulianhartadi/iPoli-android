@@ -32,5 +32,6 @@
     <string name="pick_player_avatar_title">Pick your new avatar</string>
     <string name="empty_quests_for_today_reply"><![CDATA[You don\'t have any. Add one with <b>atq</b> :)]]></string>
     <string name="empty_uncomplete_quests_reply"><![CDATA[You don\'t have any. Add one with <b>aq</b> :)]]></string>
+    <string name="default_assistant_name">iPoli</string>
 
 </resources>

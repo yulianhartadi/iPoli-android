@@ -30,7 +30,7 @@ public class RealmPlayerPersistenceService implements PlayerPersistenceService {
     public Player find() {
         Player player = realm.where(Player.class).findFirst();
         if (player == null) {
-            return new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, "avatar_02");
+            return new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
         }
         return realm.copyFromRealm(player);
     }
