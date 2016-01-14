@@ -20,14 +20,22 @@ public class Assistant extends RealmObject {
 
     private String avatar;
 
+    private String state;
+
+    public enum State {
+        TUTORIAL_START, TUTORIAL_RENAME, TUTORIAL_CHANGE_ASSISTANT_AVATAR, TUTORIAL_CHANGE_PLAYER_AVATAR,
+        TUTORIAL_ADD_QUEST, TUTORIAL_PLAN_TODAY, TUTORIAL_SHOW_QUESTS, TUTORIAL_ADD_TODAY_QUEST,
+        TUTORIAL_REVIEW_TODAY, TUTORIAL_HELP, NORMAL;
+    }
     public Assistant() {
 
     }
 
-    public Assistant(String name, String avatar) {
+    public Assistant(String name, String avatar, State state) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.avatar = avatar;
+        this.state = state.name();
     }
 
     public String getName() {
@@ -52,5 +60,13 @@ public class Assistant extends RealmObject {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

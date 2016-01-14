@@ -20,14 +20,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.services.CommandParserService;
 import io.ipoli.android.app.services.ReminderIntentService;
-import io.ipoli.android.assistant.Assistant;
+import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
-import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.chat.events.AvatarChangedEvent;
 import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
@@ -57,17 +55,15 @@ public class ChatActivity extends BaseActivity {
     private MessageAdapter messageAdapter;
 
     @Inject
-    CommandParserService commandParserService;
-
-    @Inject
     MessagePersistenceService messagePersistenceService;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
-    AssistantPersistenceService assistantPersistenceService;
+    AssistantService assistantService;
 
+    private boolean resumeAfterOnCreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +80,10 @@ public class ChatActivity extends BaseActivity {
 
         chatView.setLayoutManager(layoutManager);
         Player p = playerPersistenceService.find();
-        Assistant a = assistantPersistenceService.find();
-
-        messageAdapter = new MessageAdapter(this, messagePersistenceService.findAll(), eventBus, p.getAvatar(), a.getAvatar());
+        messageAdapter = new MessageAdapter(this, messagePersistenceService.findAll(), eventBus, p.getAvatar(), assistantService.getAssistant().getAvatar());
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
+        resumeAfterOnCreate = true;
     }
 
     @Override
@@ -97,6 +92,10 @@ public class ChatActivity extends BaseActivity {
         eventBus.register(this);
         if (getIntent().getAction().equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
             eventBus.post(new ReviewTodayEvent());
+        }
+        if (resumeAfterOnCreate) {
+            resumeAfterOnCreate = false;
+            assistantService.start();
         }
     }
 
@@ -109,16 +108,14 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_AVATAR || requestCode == PICK_ASSISTANT_AVATAR) {
+        if (data != null && (requestCode == PICK_PLAYER_AVATAR || requestCode == PICK_ASSISTANT_AVATAR)) {
             String avatar = data.getStringExtra("avatar");
             if (!TextUtils.isEmpty(avatar)) {
                 Message.MessageAuthor author = requestCode == PICK_ASSISTANT_AVATAR ?
                         Message.MessageAuthor.ASSISTANT : Message.MessageAuthor.PLAYER;
                 messageAdapter.changeAvatar(avatar, author);
                 if (requestCode == PICK_ASSISTANT_AVATAR) {
-                    Assistant assistant = assistantPersistenceService.find();
-                    assistant.setAvatar(avatar);
-                    assistantPersistenceService.save(assistant);
+                    assistantService.changeAvatar(avatar);
                 } else {
                     Player player = playerPersistenceService.find();
                     player.setAvatar(avatar);
@@ -139,7 +136,7 @@ public class ChatActivity extends BaseActivity {
         addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
-        commandParserService.parse(command);
+        assistantService.onPlayerMessage(command);
     }
 
     @Subscribe

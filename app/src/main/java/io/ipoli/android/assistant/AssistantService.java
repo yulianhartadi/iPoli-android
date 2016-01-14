@@ -5,4 +5,11 @@ package io.ipoli.android.assistant;
  * on 1/7/16.
  */
 public interface AssistantService {
+
+    Assistant getAssistant();
+    void changeAvatar(String newAvatar);
+
+    void onPlayerMessage(String text);
+
+    void start();
 }

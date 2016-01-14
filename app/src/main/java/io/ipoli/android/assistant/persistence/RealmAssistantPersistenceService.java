@@ -20,7 +20,7 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
     @Override
     public Assistant save(Assistant assistant) {
         realm.beginTransaction();
-        Assistant realmAssistant = realm.copyToRealmOrUpdate(assistant);
+        Assistant realmAssistant = realm.copyFromRealm(realm.copyToRealmOrUpdate(assistant));
         realm.commitTransaction();
         return realmAssistant;
     }
@@ -28,8 +28,8 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
     @Override
     public Assistant find() {
         Assistant assistant = realm.where(Assistant.class).findFirst();
-        if(assistant == null) {
-            return new Assistant("iPoli", "avatar_01");
+        if (assistant == null) {
+            return new Assistant("iPoli", "avatar_01", Assistant.State.TUTORIAL_START);
         }
         return realm.copyFromRealm(assistant);
     }

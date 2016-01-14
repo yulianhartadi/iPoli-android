@@ -21,7 +21,7 @@ public class RealmPlayerPersistenceService implements PlayerPersistenceService {
     @Override
     public Player save(Player player) {
         realm.beginTransaction();
-        Player realmPlayer = realm.copyToRealmOrUpdate(player);
+        Player realmPlayer = realm.copyFromRealm(realm.copyToRealmOrUpdate(player));
         realm.commitTransaction();
         return realmPlayer;
     }
