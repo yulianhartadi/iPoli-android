@@ -51,7 +51,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                                         int viewType) {
         Message.MessageAuthor mt = Message.MessageAuthor.values()[viewType];
         int layout = mt == Message.MessageAuthor.ASSISTANT ?
-                R.layout.assistant_message_item : R.layout.user_message_item;
+                R.layout.assistant_message_item : R.layout.player_message_item;
         View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         return new ViewHolder(v);
     }
