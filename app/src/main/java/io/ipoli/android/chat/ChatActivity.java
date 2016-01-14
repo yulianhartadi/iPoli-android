@@ -6,7 +6,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -30,6 +29,8 @@ import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
+import io.ipoli.android.chat.events.AvatarChangedEvent;
+import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -39,6 +40,8 @@ import io.ipoli.android.quest.QuestListActivity;
 public class ChatActivity extends BaseActivity {
 
     public static final int PICK_PLAYER_AVATAR = 101;
+    public static final int PICK_ASSISTANT_AVATAR = 102;
+
     @Bind(R.id.experience_bar)
     ProgressBar experienceBar;
 
@@ -47,12 +50,6 @@ public class ChatActivity extends BaseActivity {
 
     @Inject
     Bus eventBus;
-
-    @Inject
-    AssistantPersistenceService assistantPersistenceService;
-
-
-    private Assistant assistant;
 
     @Bind(R.id.conversation)
     RecyclerView chatView;
@@ -70,7 +67,10 @@ public class ChatActivity extends BaseActivity {
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
-    private Player player;
+
+    @Inject
+    AssistantPersistenceService assistantPersistenceService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,13 +86,12 @@ public class ChatActivity extends BaseActivity {
         layoutManager.setStackFromEnd(true);
 
         chatView.setLayoutManager(layoutManager);
-        messageAdapter = new MessageAdapter(messagePersistenceService.findAll(), eventBus);
+        Player p = playerPersistenceService.find();
+        Assistant a = assistantPersistenceService.find();
+
+        messageAdapter = new MessageAdapter(this, messagePersistenceService.findAll(), eventBus, p.getAvatar(), a.getAvatar());
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
-
-        Intent i = new Intent(this, PickAvatarActivity.class);
-        i.putExtra("title", "Pick your avatar");
-        startActivityForResult(i, PICK_PLAYER_AVATAR);
     }
 
     @Override
@@ -113,10 +112,22 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_PLAYER_AVATAR) {
-            int avatarRes = data.getIntExtra("avatarRes", 0);
-            if(avatarRes > 0) {
-                Log.d("Avatar", "Received " + avatarRes);
+        if (requestCode == PICK_PLAYER_AVATAR || requestCode == PICK_ASSISTANT_AVATAR) {
+            String avatar = data.getStringExtra("avatar");
+            if (!TextUtils.isEmpty(avatar)) {
+                Message.MessageAuthor author = requestCode == PICK_ASSISTANT_AVATAR ?
+                        Message.MessageAuthor.ASSISTANT : Message.MessageAuthor.PLAYER;
+                messageAdapter.changeAvatar(avatar, author);
+                if (requestCode == PICK_ASSISTANT_AVATAR) {
+                    Assistant assistant = assistantPersistenceService.find();
+                    assistant.setAvatar(avatar);
+                    assistantPersistenceService.save(assistant);
+                } else {
+                    Player player = playerPersistenceService.find();
+                    player.setAvatar(avatar);
+                    playerPersistenceService.save(player);
+                }
+                eventBus.post(new AvatarChangedEvent(author, avatar));
             }
         }
     }
@@ -127,13 +138,12 @@ public class ChatActivity extends BaseActivity {
         if (TextUtils.isEmpty(command)) {
             return;
         }
-        Message m = new Message(command, Message.MessageType.USER.name(), R.drawable.avatar_02);
+        Message m = new Message(command, Message.MessageAuthor.PLAYER.name());
         addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
         commandParserService.parse(command);
     }
-
 
     @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
@@ -152,9 +162,21 @@ public class ChatActivity extends BaseActivity {
 
     @Subscribe
     public void onAssistantReply(AssistantReplyEvent e) {
-        Message m = new Message(e.message, Message.MessageType.ASSISTANT.name(), R.drawable.avatar_01);
+        Message m = new Message(e.message, Message.MessageAuthor.ASSISTANT.name());
         addMessage(m);
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+    }
+
+    @Subscribe
+    public void onRequestAvatarChange(RequestAvatarChangeEvent e) {
+        Message.MessageAuthor author = e.messageAuthor;
+        Intent i = new Intent(this, PickAvatarActivity.class);
+        String title = author == Message.MessageAuthor.ASSISTANT ?
+                getString(R.string.pick_assistant_avatar_title) : getString(R.string.pick_player_avatar_title);
+        int requestCode = author == Message.MessageAuthor.ASSISTANT ?
+                PICK_ASSISTANT_AVATAR : PICK_PLAYER_AVATAR;
+        i.putExtra("title", title);
+        startActivityForResult(i, requestCode);
     }
 
     private void addMessage(Message message) {

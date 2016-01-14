@@ -11,4 +11,7 @@ public interface Constants {
     int REMIND_REVIEW_DAY_NOTIFICATION_ID = 202;
 
     int COMPLETE_QUEST_DEFAULT_EXPERIENCE = 10;
+
+    int DEFAULT_PLAYER_LEVEL = 1;
+    int DEFAULT_PLAYER_EXPERIENCE = 0;
 }

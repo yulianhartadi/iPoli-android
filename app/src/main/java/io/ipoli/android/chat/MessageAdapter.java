@@ -1,5 +1,6 @@
 package io.ipoli.android.chat;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.events.NewMessageEvent;
 
 /**
@@ -27,11 +30,17 @@ import io.ipoli.android.chat.events.NewMessageEvent;
  * on 12/28/15.
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+    private final Context context;
     private List<Message> messages;
     private final Bus eventBus;
+    private int assistantAvatarRes;
+    private int playerAvatarRes;
     private Map<Integer, RoundedBitmapDrawable> avatarCache;
 
-    public MessageAdapter(List<Message> messages, Bus eventBus) {
+    public MessageAdapter(Context context, List<Message> messages, Bus eventBus, String playerAvatarRes, String assistantAvatarRes) {
+        this.context = context;
+        this.assistantAvatarRes = ResourceUtils.extractDrawableResource(context, assistantAvatarRes);
+        this.playerAvatarRes = ResourceUtils.extractDrawableResource(context, playerAvatarRes);
         this.messages = messages;
         this.eventBus = eventBus;
         avatarCache = new HashMap<>();
@@ -40,8 +49,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public MessageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                         int viewType) {
-        Message.MessageType mt = Message.MessageType.values()[viewType];
-        int layout = mt == Message.MessageType.ASSISTANT ?
+        Message.MessageAuthor mt = Message.MessageAuthor.values()[viewType];
+        int layout = mt == Message.MessageAuthor.ASSISTANT ?
                 R.layout.assistant_message_item : R.layout.user_message_item;
         View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         return new ViewHolder(v);
@@ -56,32 +65,56 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public int getItemViewType(int position) {
         Message m = messages.get(position);
-        return Message.MessageType.valueOf(m.getType()).ordinal();
+        return Message.MessageAuthor.valueOf(m.getAuthor()).ordinal();
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Message m = messages.get(position);
+        final Message m = messages.get(position);
         TextView tv = (TextView) holder.itemView.findViewById(R.id.info_text);
         tv.setText(Html.fromHtml(m.getText()));
         ImageView avatar = (ImageView) holder.itemView.findViewById(R.id.avatar);
         avatar.setImageDrawable(getRoundedBitmapDrawable(holder.itemView.getResources(), m));
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventBus.post(new RequestAvatarChangeEvent(Message.MessageAuthor.valueOf(m.getAuthor())));
+            }
+        });
     }
 
     private RoundedBitmapDrawable getRoundedBitmapDrawable(Resources resources, Message m) {
-        if (avatarCache.containsKey(m.getAvatarRes())) {
-            return avatarCache.get(m.getAvatarRes());
+        Message.MessageAuthor mAuthor = Message.MessageAuthor.valueOf(m.getAuthor());
+        int avatarRes = mAuthor == Message.MessageAuthor.ASSISTANT ?
+                assistantAvatarRes : playerAvatarRes;
+        if (avatarCache.containsKey(avatarRes)) {
+            return avatarCache.get(avatarRes);
         }
-        Bitmap src = BitmapFactory.decodeResource(resources, m.getAvatarRes());
+        Bitmap src = BitmapFactory.decodeResource(resources, avatarRes);
         RoundedBitmapDrawable rbd = RoundedBitmapDrawableFactory.create(resources, src);
         rbd.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
-        avatarCache.put(m.getAvatarRes(), rbd);
+        avatarCache.put(avatarRes, rbd);
         return rbd;
     }
 
     @Override
     public int getItemCount() {
         return messages.size();
+    }
+
+    public void changeAvatar(String avatar, Message.MessageAuthor author) {
+        clearAvatarCache();
+        int avatarRes = ResourceUtils.extractDrawableResource(context, avatar);
+        if (author == Message.MessageAuthor.ASSISTANT) {
+            assistantAvatarRes = avatarRes;
+        } else {
+            playerAvatarRes = avatarRes;
+        }
+        notifyDataSetChanged();
+    }
+
+    private void clearAvatarCache() {
+        avatarCache.clear();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

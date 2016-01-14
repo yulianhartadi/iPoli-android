@@ -18,13 +18,16 @@ public class Assistant extends RealmObject {
     @Required
     private String name;
 
+    private String avatar;
+
     public Assistant() {
 
     }
 
-    public Assistant(String name) {
+    public Assistant(String name, String avatar) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
+        this.avatar = avatar;
     }
 
     public String getName() {
@@ -41,5 +44,13 @@ public class Assistant extends RealmObject {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

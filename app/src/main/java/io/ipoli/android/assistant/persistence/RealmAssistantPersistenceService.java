@@ -29,7 +29,7 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
     public Assistant find() {
         Assistant assistant = realm.where(Assistant.class).findFirst();
         if(assistant == null) {
-            return new Assistant("iPoli");
+            return new Assistant("iPoli", "avatar_01");
         }
         return realm.copyFromRealm(assistant);
     }

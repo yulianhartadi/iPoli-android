@@ -3,7 +3,7 @@
     <string name="title_activity_chat">1Poli</string>
     <string name="title_activity_quest_list">Today</string>
     <string name="title_activity_plan_day">Plan your day</string>
-
+    <string name="title_activity_pick_avatar">Pick avatar</string>
     <string name="desc_cmd_add_quest">create new task (e.g. add quest call John)</string>
     <string name="desc_cmd_add_today_quest">create new task for today</string>
     <string name="desc_cmd_show_quests">your quests for today</string>
@@ -24,10 +24,11 @@
     <string name="ok_reply">Sure!</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest paused</string>
+    <string name="quest_removed">Quest removed</string>
     <string name="undo">UNDO</string>
     <string name="player_level">Level %d</string>
     <string name="increase_experience">+%d XP</string>
-    <string name="quest_removed">Quest removed</string>
-    <string name="title_activity_pick_avatar">PickAvatarActivity</string>
+    <string name="pick_assistant_avatar_title">Pick my new avatar</string>
+    <string name="pick_player_avatar_title">Pick your new avatar</string>
 
 </resources>

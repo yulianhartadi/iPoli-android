@@ -1,5 +1,6 @@
 package io.ipoli.android.assistant;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.widget.ImageView;
 
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.assistant.events.OnAvatarSelectedEvent;
+import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.assistant.events.AvatarSelectedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,8 +24,11 @@ public class AvatarAdapter extends RecyclerView.Adapter {
     private final List<Integer> avatars;
     private final Bus eventBus;
 
-    public AvatarAdapter(List<Integer> avatars, Bus eventBus) {
-        this.avatars = avatars;
+    public AvatarAdapter(Context context, List<String> avatars, Bus eventBus) {
+        this.avatars = new ArrayList<>();
+        for (String a : avatars) {
+            this.avatars.add(ResourceUtils.extractDrawableResource(context, a));
+        }
         this.eventBus = eventBus;
     }
 
@@ -41,7 +47,7 @@ public class AvatarAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new OnAvatarSelectedEvent(avatarRes));
+                eventBus.post(new AvatarSelectedEvent(avatarRes));
             }
         });
     }

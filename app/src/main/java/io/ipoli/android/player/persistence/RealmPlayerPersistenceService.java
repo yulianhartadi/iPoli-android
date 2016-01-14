@@ -2,6 +2,7 @@ package io.ipoli.android.player.persistence;
 
 import android.content.Context;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.player.Player;
 import io.realm.Realm;
 
@@ -29,7 +30,7 @@ public class RealmPlayerPersistenceService implements PlayerPersistenceService {
     public Player find() {
         Player player = realm.where(Player.class).findFirst();
         if (player == null) {
-            return new Player(0, 1);
+            return new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, "avatar_02");
         }
         return realm.copyFromRealm(player);
     }

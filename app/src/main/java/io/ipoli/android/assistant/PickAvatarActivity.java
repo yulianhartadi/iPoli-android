@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -18,7 +17,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.assistant.events.OnAvatarSelectedEvent;
+import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.assistant.events.AvatarSelectedEvent;
 
 public class PickAvatarActivity extends BaseActivity {
 
@@ -38,18 +38,12 @@ public class PickAvatarActivity extends BaseActivity {
         setTitle(getIntent().getStringExtra("title"));
 
         avatarList.setLayoutManager(new GridLayoutManager(this, 2));
-        List<Integer> avatars = new ArrayList<>();
-        avatars.add(R.drawable.avatar_01);
-        avatars.add(R.drawable.avatar_02);
-        avatars.add(R.drawable.avatar_01);
-        avatars.add(R.drawable.avatar_02);
-        avatars.add(R.drawable.avatar_01);
-        avatars.add(R.drawable.avatar_02);
-        avatars.add(R.drawable.avatar_01);
-        avatars.add(R.drawable.avatar_02);
-        avatars.add(R.drawable.avatar_01);
-        avatars.add(R.drawable.avatar_02);
-        avatarList.setAdapter(new AvatarAdapter(avatars, eventBus));
+        List<String> avatars = new ArrayList<>();
+        avatars.add("avatar_01");
+        avatars.add("avatar_02");
+        avatars.add("avatar_01");
+        avatars.add("avatar_02");
+        avatarList.setAdapter(new AvatarAdapter(this, avatars, eventBus));
     }
 
     @Override
@@ -65,10 +59,9 @@ public class PickAvatarActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onAvatarSelected(OnAvatarSelectedEvent e) {
-        Log.d("Avatar", "selected");
+    public void onAvatarSelected(AvatarSelectedEvent e) {
         Intent data = new Intent();
-        data.putExtra("avatarRes", e.avatarRes);
+        data.putExtra("avatar", ResourceUtils.extractDrawableName(this, e.avatarRes));
         setResult(0, data);
         finish();
     }

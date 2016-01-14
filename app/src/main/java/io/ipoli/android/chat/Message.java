@@ -20,20 +20,17 @@ public class Message extends RealmObject {
     private String text;
 
     @Required
-    private String type;
+    private String author;
 
     @Required
     private Date createdAt;
 
-    private int avatarRes;
-
     public Message() {}
 
-    public Message(String text, String type, int avatarRes) {
+    public Message(String text, String author) {
         this.id = UUID.randomUUID().toString();
         this.text = text;
-        this.type = type;
-        this.avatarRes = avatarRes;
+        this.author = author;
         this.createdAt = new Date();
     }
 
@@ -53,12 +50,12 @@ public class Message extends RealmObject {
         this.text = text;
     }
 
-    public String getType() {
-        return type;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public Date getCreatedAt() {
@@ -69,14 +66,6 @@ public class Message extends RealmObject {
         this.createdAt = createdAt;
     }
 
-    public int getAvatarRes() {
-        return avatarRes;
-    }
-
-    public void setAvatarRes(int avatarRes) {
-        this.avatarRes = avatarRes;
-    }
-
-    public enum MessageType {ASSISTANT, USER}
+    public enum MessageAuthor {ASSISTANT, PLAYER}
 }
 
