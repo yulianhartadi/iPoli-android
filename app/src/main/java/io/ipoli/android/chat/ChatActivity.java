@@ -6,9 +6,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -18,6 +21,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.services.ReminderIntentService;
@@ -84,6 +88,7 @@ public class ChatActivity extends BaseActivity {
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
         resumeAfterOnCreate = true;
+
     }
 
     @Override
@@ -137,6 +142,17 @@ public class ChatActivity extends BaseActivity {
         chatView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
         commandText.setText("");
         assistantService.onPlayerMessage(command);
+    }
+
+    @OnEditorAction(R.id.command_text)
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            onSendCommand(v);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Subscribe

@@ -13,12 +13,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.services.Command;
 import io.ipoli.android.app.services.CommandParserService;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
+import io.ipoli.android.assistant.events.NewFeedbackEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
@@ -97,7 +99,7 @@ public class SimpleAssistantService implements AssistantService {
     public void onReviewToday(ReviewTodayEvent e) {
         List<Quest> quests = questPersistenceService.findAllForToday();
         List<String> questStatuses = new ArrayList<>();
-        String txt = "Today you have: <br/><br/>";
+        String txt = "Your day in review: <br/><br/>";
         for (Quest q : quests) {
             Quest.Status s = Quest.Status.valueOf(q.getStatus());
             String qs = (s == Quest.Status.COMPLETED) ? "[x]" : "[ ]";
@@ -106,6 +108,17 @@ public class SimpleAssistantService implements AssistantService {
         }
         txt += TextUtils.join("<br/>", questStatuses);
         reply(txt);
+        tryAskingForFeedback();
+    }
+
+    private void tryAskingForFeedback() {
+        if (assistant.getStateType() == Assistant.State.NORMAL) {
+            Random r = new Random();
+            int n = r.nextInt(100);
+            if (n < Constants.ASK_FOR_FEEDBACK_PROBABILITY) {
+                changeState(Assistant.State.FEEDBACK);
+            }
+        }
     }
 
     @Subscribe
@@ -185,7 +198,43 @@ public class SimpleAssistantService implements AssistantService {
                 }
                 break;
             case TUTORIAL_ADD_TODAY_QUEST:
-
+                isValidCommand = commandParserService.parse(text, Command.ADD_TODAY_QUEST);
+                if (isValidCommand) {
+                    changeState(Assistant.State.TUTORIAL_SHOW_QUESTS);
+                } else {
+                    reply("You have to add a quest for today to continue");
+                }
+                break;
+            case TUTORIAL_SHOW_QUESTS:
+                isValidCommand = commandParserService.parse(text, Command.SHOW_QUESTS);
+                if (isValidCommand) {
+                    reply("Every completed quest gives you XP with which you can level up!");
+                    changeState(Assistant.State.TUTORIAL_REVIEW_TODAY);
+                } else {
+                    reply("You have to show your quests for today to continue");
+                }
+                break;
+            case TUTORIAL_REVIEW_TODAY:
+                isValidCommand = commandParserService.parse(text, Command.REVIEW_TODAY);
+                if (isValidCommand) {
+                    changeState(Assistant.State.TUTORIAL_HELP);
+                } else {
+                    reply("You have to review your day to continue");
+                }
+                break;
+            case TUTORIAL_HELP:
+                isValidCommand = commandParserService.parse(text, Command.HELP);
+                if (isValidCommand) {
+                    reply("Congrats! You are now epic hero! Level up your life with me!");
+                    changeState(Assistant.State.NORMAL);
+                } else {
+                    reply("You have to ask for help to continue ;)");
+                }
+                break;
+            case FEEDBACK:
+                reply("Thank you!");
+                eventBus.post(new NewFeedbackEvent(text));
+                changeState(Assistant.State.NORMAL);
                 break;
             case NORMAL:
                 commandParserService.parse(text);
@@ -209,14 +258,27 @@ public class SimpleAssistantService implements AssistantService {
                 reply("Tap on your avatar to change it. Say when you are ready!");
                 break;
             case TUTORIAL_ADD_QUEST:
-                reply("Time to add your first quest! Type <b>add quest</b> (e.g. add quest Workout)");
+                reply("Time to add your first quest! Type <b>add quest</b> (e.g. add quest Workout).");
                 break;
             case TUTORIAL_PLAN_TODAY:
-                reply("Plan you day by typing <b>plan today</b>");
-                reply("Select which quests you want to do today and tap the save button");
+                reply("Plan you day by typing <b>plan today</b>.");
+                reply("Select which quests you want to do today and tap the save button.");
                 break;
             case TUTORIAL_ADD_TODAY_QUEST:
-
+                reply("You can also quickly add quest for today by typing <b>add today quest</b> (e.g. add today quest Buy Milk).");
+                break;
+            case TUTORIAL_SHOW_QUESTS:
+                reply("View your daily quests by typing <b>show quests</b>.");
+                reply("You can start, stop and complete quests (by swiping) ;)");
+                break;
+            case TUTORIAL_REVIEW_TODAY:
+                reply("Type <b>review today</b> to review your day!");
+                break;
+            case TUTORIAL_HELP:
+                reply("All commands have a short version. Type <b>help</b> to review them!");
+                break;
+            case FEEDBACK:
+                reply("Please, tell me what do you think of me (feedback)? :)");
                 break;
         }
     }
@@ -231,15 +293,13 @@ public class SimpleAssistantService implements AssistantService {
     public void start() {
         switch (Assistant.State.valueOf(assistant.getState())) {
             case TUTORIAL_START:
-                onTutorialStart();
+                reply("Hello! I am iPoli, your personal sidekick!");
+                reply("Use me to manage your tasks, habits and goals by completing quests, earn experience points and literally level up your life!");
+                reply("So, what is your name?");
                 break;
             default:
                 reply("Nice to see you again! I am ready to continue!");
         }
     }
 
-    private void onTutorialStart() {
-        reply("Hello! I am iPoli. I am your personal sidekick!");
-        reply("What is your name?");
-    }
 }

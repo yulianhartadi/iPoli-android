@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.assistant.events.HelpEvent;
+import io.ipoli.android.assistant.events.NewFeedbackEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
@@ -59,6 +60,11 @@ public class GoogleAnalyticsService implements AnalyticsService {
         track(createEventBuilder("avatar", "change")
                 .set("message-author", e.messageAuthor.name())
                 .set("avatar", e.avatar));
+    }
+
+    @Subscribe
+    public void onNewFeedback(NewFeedbackEvent e) {
+        track(createEventBuilder("feedback", "create").set("text", e.text));
     }
 
     @Subscribe

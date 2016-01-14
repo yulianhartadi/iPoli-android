@@ -3,6 +3,7 @@ package io.ipoli.android.assistant;
 import java.util.UUID;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -25,8 +26,16 @@ public class Assistant extends RealmObject {
     public enum State {
         TUTORIAL_START, TUTORIAL_RENAME, TUTORIAL_CHANGE_ASSISTANT_AVATAR, TUTORIAL_CHANGE_PLAYER_AVATAR,
         TUTORIAL_ADD_QUEST, TUTORIAL_PLAN_TODAY, TUTORIAL_SHOW_QUESTS, TUTORIAL_ADD_TODAY_QUEST,
-        TUTORIAL_REVIEW_TODAY, TUTORIAL_HELP, NORMAL;
+        TUTORIAL_REVIEW_TODAY, TUTORIAL_HELP, NORMAL, FEEDBACK;
     }
+
+    @Ignore
+    private State stateType;
+
+    public State getStateType() {
+        return State.valueOf(state);
+    }
+
     public Assistant() {
 
     }
