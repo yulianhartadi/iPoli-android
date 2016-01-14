@@ -30,5 +30,7 @@
     <string name="increase_experience">+%d XP</string>
     <string name="pick_assistant_avatar_title">Pick my new avatar</string>
     <string name="pick_player_avatar_title">Pick your new avatar</string>
+    <string name="empty_quests_for_today_reply"><![CDATA[You don\'t have any. Add one with <b>atq</b> :)]]></string>
+    <string name="empty_uncomplete_quests_reply"><![CDATA[You don\'t have any. Add one with <b>aq</b> :)]]></string>
 
 </resources>

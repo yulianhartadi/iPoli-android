@@ -15,6 +15,7 @@ import java.util.Random;
 import io.ipoli.android.R;
 import io.ipoli.android.app.services.Command;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
+import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
@@ -22,7 +23,9 @@ import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
+import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -57,8 +60,23 @@ public class SimpleAssistantService implements AssistantService {
     }
 
     @Subscribe
+    public void onPlanToday(PlanTodayEvent e) {
+        if(questPersistenceService.countAllUncompleted() > 0) {
+            eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
+            eventBus.post(new AssistantStartActivityEvent(PlanDayActivity.class));
+        } else {
+            eventBus.post(new AssistantReplyEvent(context.getString(R.string.empty_uncomplete_quests_reply)));
+        }
+    }
+
+    @Subscribe
     public void onShowQuests(ShowQuestsEvent e) {
-        eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
+        if(questPersistenceService.countAllPlannedForToday() > 0) {
+            eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
+            eventBus.post(new AssistantStartActivityEvent(QuestListActivity.class));
+        } else {
+            eventBus.post(new AssistantReplyEvent(context.getString(R.string.empty_quests_for_today_reply)));
+        }
     }
 
     @Subscribe
@@ -66,10 +84,6 @@ public class SimpleAssistantService implements AssistantService {
         eventBus.post(new AssistantReplyEvent(String.format(context.getString(R.string.new_name_reply), e.name)));
     }
 
-    @Subscribe
-    public void onPlanToday(PlanTodayEvent e) {
-        eventBus.post(new AssistantReplyEvent(context.getString(R.string.ok_reply)));
-    }
 
     @Subscribe
     public void onReviewToday(ReviewTodayEvent e) {

@@ -75,6 +75,28 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
+    public long countAllUncompleted() {
+        return realm.where(Quest.class)
+                .notEqualTo("status", Quest.Status.COMPLETED.name())
+                .count();
+    }
+
+    @Override
+    public long countAllPlannedForToday() {
+        Calendar yesterday = DateUtils.getTodayAtMidnight();
+        yesterday.add(Calendar.SECOND, -1);
+
+        Calendar tomorrow = DateUtils.getTodayAtMidnight();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+        return realm.where(Quest.class)
+                .greaterThan("due", yesterday.getTime())
+                .lessThan("due", tomorrow.getTime())
+                .equalTo("status", Quest.Status.PLANNED.name()).or().equalTo("status", Quest.Status.STARTED.name())
+                .count();
+    }
+
+    @Override
     public void delete(Quest quest) {
         realm.beginTransaction();
         Quest realmQuest = realm.where(Quest.class)

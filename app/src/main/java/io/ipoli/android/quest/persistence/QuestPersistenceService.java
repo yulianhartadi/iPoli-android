@@ -19,5 +19,9 @@ public interface QuestPersistenceService {
 
     List<Quest> findAllForToday();
 
+    long countAllUncompleted();
+
+    long countAllPlannedForToday();
+
     void delete(Quest quest);
 }

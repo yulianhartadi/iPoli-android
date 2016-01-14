@@ -25,17 +25,14 @@ import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
-import io.ipoli.android.assistant.events.PlanTodayEvent;
+import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
-import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.chat.events.AvatarChangedEvent;
 import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.PlanDayActivity;
-import io.ipoli.android.quest.QuestListActivity;
 
 public class ChatActivity extends BaseActivity {
 
@@ -146,13 +143,8 @@ public class ChatActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onPlanToday(PlanTodayEvent e) {
-        startActivity(PlanDayActivity.class);
-    }
-
-    @Subscribe
-    public void onShowQuests(ShowQuestsEvent e) {
-        startActivity(QuestListActivity.class);
+    public void onAssistantStartActivity(AssistantStartActivityEvent e) {
+        startActivity(e.clazz);
     }
 
     private void startActivity(Class<?> clazz) {
