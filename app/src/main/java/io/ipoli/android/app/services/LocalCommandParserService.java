@@ -4,6 +4,9 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
@@ -26,10 +29,24 @@ public class LocalCommandParserService implements CommandParserService {
     }
 
     @Override
-    public void parse(String command) {
+    public boolean parse(String command) {
+        return parse(command, Command.values());
+    }
+
+    @Override
+    public boolean parse(String command, Command validCommand) {
+        return parse(command, new Command[] {validCommand});
+    }
+
+    @Override
+    public boolean parse(String command, Command[] validCommands) {
         Log.d("CommandParser", command);
 
         Command cmd = Command.parseText(command);
+        List<Command> vc = Arrays.asList(validCommands);
+        if (!vc.contains(cmd)) {
+            return false;
+        }
         switch (cmd) {
             case ADD_QUEST:
                 bus.post(new NewQuestEvent(cmd.getParameterText()));
@@ -55,6 +72,7 @@ public class LocalCommandParserService implements CommandParserService {
             default:
                 bus.post(new UnknownCommandEvent());
         }
+        return true;
     }
 
 

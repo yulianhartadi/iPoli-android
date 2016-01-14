@@ -153,18 +153,39 @@ public class SimpleAssistantService implements AssistantService {
                 changeState(Assistant.State.TUTORIAL_RENAME);
                 break;
             case TUTORIAL_RENAME:
-                if (text.startsWith("rename ")) {
-                    commandParserService.parse(text);
+                boolean isValidCommand = commandParserService.parse(text, Command.RENAME);
+                if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_CHANGE_ASSISTANT_AVATAR);
                 } else {
                     reply("You have to rename me to continue");
                 }
                 break;
             case TUTORIAL_CHANGE_ASSISTANT_AVATAR:
+                reply("Wow! I look so cool!");
                 changeState(Assistant.State.TUTORIAL_CHANGE_PLAYER_AVATAR);
                 break;
             case TUTORIAL_CHANGE_PLAYER_AVATAR:
+                reply("You look cute! ;)");
                 changeState(Assistant.State.TUTORIAL_ADD_QUEST);
+                break;
+            case TUTORIAL_ADD_QUEST:
+                isValidCommand = commandParserService.parse(text, Command.ADD_QUEST);
+                if (isValidCommand) {
+                    changeState(Assistant.State.TUTORIAL_PLAN_TODAY);
+                } else {
+                    reply("You have to add a quest to continue");
+                }
+                break;
+            case TUTORIAL_PLAN_TODAY:
+                isValidCommand = commandParserService.parse(text, Command.PLAN_TODAY);
+                if (isValidCommand) {
+                    changeState(Assistant.State.TUTORIAL_ADD_TODAY_QUEST);
+                } else {
+                    reply("You have to plan your day to continue");
+                }
+                break;
+            case TUTORIAL_ADD_TODAY_QUEST:
+
                 break;
             case NORMAL:
                 commandParserService.parse(text);
@@ -179,13 +200,23 @@ public class SimpleAssistantService implements AssistantService {
     private void onStateChanged(Assistant.State newState) {
         switch (newState) {
             case TUTORIAL_RENAME:
-                reply("You can give me with the command rename (e.g. rename Katniss)");
+                reply("You can give me new name by typing <b>rename</b> (e.g. rename Katniss)");
                 break;
             case TUTORIAL_CHANGE_ASSISTANT_AVATAR:
                 reply("Tap on my avatar to change it. Say when you are ready!");
                 break;
             case TUTORIAL_CHANGE_PLAYER_AVATAR:
                 reply("Tap on your avatar to change it. Say when you are ready!");
+                break;
+            case TUTORIAL_ADD_QUEST:
+                reply("Time to add your first quest! Type <b>add quest</b> (e.g. add quest Workout)");
+                break;
+            case TUTORIAL_PLAN_TODAY:
+                reply("Plan you day by typing <b>plan today</b>");
+                reply("Select which quests you want to do today and tap the save button");
+                break;
+            case TUTORIAL_ADD_TODAY_QUEST:
+
                 break;
         }
     }
