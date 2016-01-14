@@ -9,6 +9,7 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
 import io.ipoli.android.assistant.events.NewFeedbackEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
@@ -42,6 +43,11 @@ public class GoogleAnalyticsService implements AnalyticsService {
 
     public GoogleAnalyticsService(Tracker tracker) {
         this.tracker = tracker;
+    }
+
+    @Subscribe
+    public void onPlayerRequestedInvite(PlayerRequestedInviteEvent e) {
+        track(createEventBuilder("invite", "create"));
     }
 
     @Subscribe

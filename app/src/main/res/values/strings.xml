@@ -33,5 +33,7 @@
     <string name="empty_quests_for_today_reply"><![CDATA[You don\'t have any. Add one with <b>atq</b> :)]]></string>
     <string name="empty_uncomplete_quests_reply"><![CDATA[You don\'t have any. Add one with <b>aq</b> :)]]></string>
     <string name="default_assistant_name">iPoli</string>
-
+    <string name="invite_welcome_text">Ready to have epic life?</string>
+    <string name="invite_description">iPoli is private community of real life heroes doing epic quests! Request your invite to join them!</string>
+    <string name="get_invite">GIVE ME INVITE</string>
 </resources>

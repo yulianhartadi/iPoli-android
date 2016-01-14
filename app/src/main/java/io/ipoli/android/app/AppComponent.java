@@ -3,6 +3,7 @@ package io.ipoli.android.app;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.ipoli.android.InviteOnlyActivity;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.AssistantModule;
@@ -42,5 +43,7 @@ public interface AppComponent {
     void inject(PlayerBarLayout playerBarLayout);
 
     void inject(PickAvatarActivity pickAvatarActivity);
+
+    void inject(InviteOnlyActivity inviteOnlyActivity);
 }
 

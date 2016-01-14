@@ -18,4 +18,5 @@ public interface Constants {
 
     String DEFAULT_ASSISTANT_AVATAR = "avatar_06";
     String DEFAULT_PLAYER_AVATAR = "avatar_07";
+    int INVITE_PLAYER_PROBABILITY = 50;
 }
