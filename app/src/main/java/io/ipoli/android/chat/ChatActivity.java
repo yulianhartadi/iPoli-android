@@ -97,12 +97,12 @@ public class ChatActivity extends BaseActivity {
         eventBus.register(this);
         Intent i = getIntent();
         String action = i.getAction();
-        if (!TextUtils.isEmpty(action) && action.equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
-            eventBus.post(new ReviewTodayEvent());
-        }
         if (resumeAfterOnCreate) {
             resumeAfterOnCreate = false;
             assistantService.start();
+        }
+        if (!TextUtils.isEmpty(action) && action.equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
+            eventBus.post(new ReviewTodayEvent());
         }
     }
 
