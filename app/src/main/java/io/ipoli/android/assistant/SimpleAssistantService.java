@@ -1,8 +1,8 @@
 package io.ipoli.android.assistant;
 
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -101,7 +101,7 @@ public class SimpleAssistantService implements AssistantService {
     public void onReviewToday(ReviewTodayEvent e) {
         List<Quest> quests = questPersistenceService.findAllForToday();
         if (quests.isEmpty()) {
-            reply("Are you lazy today? You have done nothing! Add quest for today with <b>atq</b>.");
+            reply(R.string.empty_review_day_reply);
             return;
         }
         List<String> questStatuses = new ArrayList<>();
@@ -166,7 +166,7 @@ public class SimpleAssistantService implements AssistantService {
     public void onPlayerMessage(String text) {
         switch (Assistant.State.valueOf(assistant.getState())) {
             case TUTORIAL_START:
-                reply("It's nice to meet you! :)");
+                reply(R.string.tutorial_start_reply);
                 changeState(Assistant.State.TUTORIAL_RENAME);
                 break;
             case TUTORIAL_RENAME:
@@ -174,15 +174,15 @@ public class SimpleAssistantService implements AssistantService {
                 if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_CHANGE_ASSISTANT_AVATAR);
                 } else {
-                    reply("You have to rename me to continue");
+                    reply(R.string.tutorial_rename_invalid_command);
                 }
                 break;
             case TUTORIAL_CHANGE_ASSISTANT_AVATAR:
-                reply("Wow! I look so cool!");
+                reply(R.string.tutorial_change_assistant_reply);
                 changeState(Assistant.State.TUTORIAL_CHANGE_PLAYER_AVATAR);
                 break;
             case TUTORIAL_CHANGE_PLAYER_AVATAR:
-                reply("You look cute! ;)");
+                reply(R.string.tutorial_change_player_reply);
                 changeState(Assistant.State.TUTORIAL_ADD_QUEST);
                 break;
             case TUTORIAL_ADD_QUEST:
@@ -190,7 +190,7 @@ public class SimpleAssistantService implements AssistantService {
                 if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_PLAN_TODAY);
                 } else {
-                    reply("You have to add a quest to continue");
+                    reply(R.string.tutorial_add_quest_invalid_command);
                 }
                 break;
             case TUTORIAL_PLAN_TODAY:
@@ -198,7 +198,7 @@ public class SimpleAssistantService implements AssistantService {
                 if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_ADD_TODAY_QUEST);
                 } else {
-                    reply("You have to plan your day to continue");
+                    reply(R.string.tutorial_plan_today_invalid_command);
                 }
                 break;
             case TUTORIAL_ADD_TODAY_QUEST:
@@ -206,16 +206,16 @@ public class SimpleAssistantService implements AssistantService {
                 if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_SHOW_QUESTS);
                 } else {
-                    reply("You have to add a quest for today to continue");
+                    reply(R.string.tutorial_add_today_quest_invalid_command);
                 }
                 break;
             case TUTORIAL_SHOW_QUESTS:
                 isValidCommand = commandParserService.parse(text, Command.SHOW_QUESTS);
                 if (isValidCommand) {
-                    reply("Every completed quest gives you XP with which you can level up!");
+                    reply(R.string.tutorial_show_quests_reply);
                     changeState(Assistant.State.TUTORIAL_REVIEW_TODAY);
                 } else {
-                    reply("You have to show your quests for today to continue");
+                    reply(R.string.tutorial_show_quests_invalid_command);
                 }
                 break;
             case TUTORIAL_REVIEW_TODAY:
@@ -223,20 +223,20 @@ public class SimpleAssistantService implements AssistantService {
                 if (isValidCommand) {
                     changeState(Assistant.State.TUTORIAL_HELP);
                 } else {
-                    reply("You have to review your day to continue");
+                    reply(R.string.tutorial_review_today_invalid_command);
                 }
                 break;
             case TUTORIAL_HELP:
                 isValidCommand = commandParserService.parse(text, Command.HELP);
                 if (isValidCommand) {
-                    reply("Congrats! You are now epic hero! Level up your life with me!");
+                    reply(R.string.tutorial_help_reply);
                     changeState(Assistant.State.NORMAL);
                 } else {
-                    reply("You have to ask for help to continue ;)");
+                    reply(R.string.tutorial_help_invalid_command);
                 }
                 break;
             case FEEDBACK:
-                reply("Thank you!");
+                reply(R.string.tutorial_feedback_reply);
                 eventBus.post(new NewFeedbackEvent(text));
                 changeState(Assistant.State.NORMAL);
                 break;
@@ -250,45 +250,48 @@ public class SimpleAssistantService implements AssistantService {
         eventBus.post(new AssistantReplyEvent(message));
     }
 
+    private void reply(@StringRes int stringResource) {
+        eventBus.post(new AssistantReplyEvent(context.getString(stringResource)));
+    }
+
     private void onStateChanged(Assistant.State newState) {
         switch (newState) {
             case TUTORIAL_RENAME:
-                reply("You can give me new name by typing <b>rename</b> (e.g. rename Katniss)");
+                reply(R.string.tutorial_rename_info);
                 break;
             case TUTORIAL_CHANGE_ASSISTANT_AVATAR:
-                reply("Tap on my avatar to change it. Say when you are ready!");
+                reply(R.string.tutorial_change_assistant_info);
                 break;
             case TUTORIAL_CHANGE_PLAYER_AVATAR:
-                reply("Tap on your avatar to change it. Say when you are ready!");
+                reply(R.string.tutorial_change_player_info);
                 break;
             case TUTORIAL_ADD_QUEST:
-                reply("Time to add your first quest! Type <b>add quest</b> (e.g. add quest Workout).");
+                reply(R.string.tutorial_add_quest_info);
                 break;
             case TUTORIAL_PLAN_TODAY:
-                reply("Plan you day by typing <b>plan today</b>.");
-                reply("Select which quests you want to do today and tap the save button.");
+                reply(R.string.tutorial_plan_today_1_info);
+                reply(R.string.tutorial_plan_today_2_info);
                 break;
             case TUTORIAL_ADD_TODAY_QUEST:
-                reply("You can also quickly add quest for today by typing <b>add today quest</b> (e.g. add today quest Buy Milk).");
+                reply(R.string.tutorial_add_today_quest_info);
                 break;
             case TUTORIAL_SHOW_QUESTS:
-                reply("View your daily quests by typing <b>show quests</b>.");
-                reply("You can start, stop and complete quests (by swiping) ;)");
+                reply(R.string.tutorial_show_quests_1_info);
+                reply(R.string.tutorial_show_quests_2_info);
                 break;
             case TUTORIAL_REVIEW_TODAY:
-                reply("Type <b>review today</b> to review your day!");
+                reply(R.string.tutorial_review_today_info);
                 break;
             case TUTORIAL_HELP:
-                reply("All commands have a short version. Type <b>help</b> to review them!");
+                reply(R.string.tutorial_help_info);
                 break;
             case FEEDBACK:
-                reply("Please, tell me what do you think of me (feedback)? :)");
+                reply(R.string.tutorial_feedback_info);
                 break;
         }
     }
 
     private void changeState(Assistant.State newState) {
-        Log.d("NewAssistantState", newState.name());
         assistant.setState(newState.name());
         assistant = assistantPersistenceService.save(assistant);
         onStateChanged(newState);
@@ -296,15 +299,14 @@ public class SimpleAssistantService implements AssistantService {
 
     @Override
     public void start() {
-        Log.d("StateStart", assistant.getState());
         switch (Assistant.State.valueOf(assistant.getState())) {
             case TUTORIAL_START:
-                reply("Hello! I am iPoli, your personal sidekick!");
-                reply("Use me to manage your tasks, habits and goals by completing quests, earn experience points and literally level up your life!");
-                reply("So, what is your name?");
+                reply(R.string.tutorial_start_1_info);
+                reply(R.string.tutorial_start_2_info);
+                reply(R.string.tutorial_start_3_info);
                 break;
             default:
-                reply("Nice to see you again! I am ready to continue!");
+                reply(R.string.welcome_back);
         }
     }
 
