@@ -1,34 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DayView">
-        <attr name="firstDayOfWeek" format="enum">
-            <enum name="sunday" value="1"/>
-            <enum name="monday" value="2"/>
-            <enum name="tuesday" value="3"/>
-            <enum name="wednesday" value="4"/>
-            <enum name="thursday" value="5"/>
-            <enum name="friday" value="6"/>
-            <enum name="saturday" value="7"/>
-        </attr>
-        <attr name="hourHeight" format="dimension"/>
-        <attr name="textSize" format="dimension"/>
-        <attr name="eventTextSize" format="dimension"/>
-        <attr name="headerColumnPadding" format="dimension"/>
-        <attr name="columnGap" format="dimension"/>
-        <attr name="headerColumnTextColor" format="color"/>
-        <attr name="noOfVisibleDays" format="integer"/>
-        <attr name="dayBackgroundColor" format="color"/>
-        <attr name="hourSeparatorColor" format="color"/>
-        <attr name="hourSeparatorHeight" format="dimension"/>
-        <attr name="eventTextColor" format="color"/>
-        <attr name="eventPadding" format="dimension"/>
-        <attr name="headerColumnBackground" format="color"/>
-        <attr name="overlappingEventGap" format="dimension"/>
-        <attr name="eventMarginVertical" format="dimension"/>
-        <attr name="xScrollingSpeed" format="float"/>
-        <attr name="showHalfHours" format="boolean" />
-        <attr name="nowLineColor" format="color"/>
-        <attr name="nowLineThickness" format="dimension"/>
-        <attr name="displayCurrentTimeLine" format="boolean"/>
+    <declare-styleable name="PlayerBarLayout">
+        <attr name="player_bar_show_level" format="boolean" />
+        <attr name="player_bar_title" format="string" />
     </declare-styleable>
 </resources>

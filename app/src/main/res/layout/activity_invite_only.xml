@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.curiousily.ipoli.InviteOnlyActivity">
+    tools:context=".InviteOnlyActivity">
 
     <ImageView
         android:id="@+id/invite_logo_image"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/invite_welcome_text"
-        android:textColor="@color/md_light_text_87" />
+        android:textColor="@color/md_light_text_100" />
 
     <TextView
         android:id="@+id/invite_description"
@@ -39,7 +39,7 @@
         android:clickable="true"
         android:gravity="center"
         android:text="@string/invite_description"
-        android:textColor="@color/md_light_text_87"
+        android:textColor="@color/md_light_text_100"
         android:textColorLink="?attr/colorAccent" />
 
     <Button
@@ -52,5 +52,5 @@
         android:background="?attr/colorAccent"
         android:padding="8dp"
         android:text="@string/get_invite"
-        android:textColor="@color/md_light_text_87" />
+        android:textColor="@color/md_light_text_100" />
 </RelativeLayout>
