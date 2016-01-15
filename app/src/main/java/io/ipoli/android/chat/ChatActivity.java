@@ -92,24 +92,24 @@ public class ChatActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         eventBus.register(this);
         Intent i = getIntent();
         String action = i.getAction();
         if (resumeAfterOnCreate) {
             resumeAfterOnCreate = false;
             assistantService.start();
-        }
-        if (!TextUtils.isEmpty(action) && action.equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
-            eventBus.post(new ReviewTodayEvent());
+            if (!TextUtils.isEmpty(action) && action.equals(ReminderIntentService.ACTION_REMIND_REVIEW_DAY)) {
+                eventBus.post(new ReviewTodayEvent());
+            }
         }
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         eventBus.unregister(this);
-        super.onPause();
+        super.onStop();
     }
 
     @Override
