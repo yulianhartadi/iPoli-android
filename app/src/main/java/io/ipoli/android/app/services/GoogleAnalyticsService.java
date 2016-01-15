@@ -38,7 +38,15 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
  */
 public class GoogleAnalyticsService implements AnalyticsService {
 
+    public static final int LEVEL_DIMENSION_INDEX = 1;
+    public static final int MESSAGE_AUTHOR_DIMENSION_INDEX = 2;
+    public static final int AVATAR_DIMENSION_INDEX = 3;
+    private static final int TEXT_DIMENSION_INDEX = 4;
+    public static final int NAME_DIMENSION_INDEX = 5;
+    public static final int QUESTS_DIMENSION_INDEX = 6;
+
     public static final String CATEGORY_UI = "UI";
+
     private final Tracker tracker;
 
     public GoogleAnalyticsService(Tracker tracker) {
@@ -52,50 +60,57 @@ public class GoogleAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPlayerLevelUp(PlayerLevelUpEvent e) {
-        track(createEventBuilder("player", "level-up").set("level", e.level + ""));
+        track(createEventBuilder("player", "level-up")
+                .setCustomDimension(LEVEL_DIMENSION_INDEX, e.level + ""));
     }
 
     @Subscribe
     public void onRequestAvatarChange(RequestAvatarChangeEvent e) {
         track(createEventBuilder("avatar", "request-change")
-                .set("message-author", e.messageAuthor.name()));
+                .setCustomDimension(MESSAGE_AUTHOR_DIMENSION_INDEX, e.messageAuthor.name()));
     }
 
     @Subscribe
     public void onAvatarChanged(AvatarChangedEvent e) {
         track(createEventBuilder("avatar", "change")
-                .set("message-author", e.messageAuthor.name())
-                .set("avatar", e.avatar));
+                .setCustomDimension(MESSAGE_AUTHOR_DIMENSION_INDEX, e.messageAuthor.name())
+                .setCustomDimension(AVATAR_DIMENSION_INDEX, e.avatar));
     }
 
     @Subscribe
     public void onNewFeedback(NewFeedbackEvent e) {
-        track(createEventBuilder("feedback", "create").set("text", e.text));
+        track(createEventBuilder("feedback", "create")
+                .setCustomDimension(TEXT_DIMENSION_INDEX, e.text));
     }
 
     @Subscribe
     public void onNewMessage(NewMessageEvent e) {
-        track(createEventBuilder("message", "create").set("text", e.message.getText()));
+        track(createEventBuilder("message", "create")
+                .setCustomDimension(TEXT_DIMENSION_INDEX, e.message.getText()));
     }
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        track(createEventBuilder("quest", "create").set("name", e.name));
+        track(createEventBuilder("quest", "create")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
     }
 
     @Subscribe
     public void onTodayNewQuest(NewTodayQuestEvent e) {
-        track(createEventBuilder("quest", "create-today").set("name", e.name));
+        track(createEventBuilder("quest", "create-today")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
     }
 
     @Subscribe
     public void onDeleteQuest(DeleteQuestEvent e) {
-        track(createEventBuilder("quest", "delete").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "delete")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
     public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
-        track(createEventBuilder("quest", "undo-delete").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "undo-delete")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
@@ -105,7 +120,8 @@ public class GoogleAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onChangeQuestOrder(ChangeQuestOrderEvent e) {
-        track(createEventBuilder("quest", "change-order").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "change-order")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
@@ -129,7 +145,8 @@ public class GoogleAnalyticsService implements AnalyticsService {
         for (Quest q : e.quests) {
             questNames.add(q.getName());
         }
-        track(createEventBuilder("quest", "planned").set("quests", TextUtils.join("\n", questNames)));
+        track(createEventBuilder("quest", "planned")
+                .setCustomDimension(QUESTS_DIMENSION_INDEX, TextUtils.join("\n", questNames)));
     }
 
     @Subscribe
@@ -139,22 +156,26 @@ public class GoogleAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onStartQuest(StartQuestEvent e) {
-        track(createEventBuilder("quest", "start").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "start")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
     public void onStopQuest(StopQuestEvent e) {
-        track(createEventBuilder("quest", "stop").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "stop")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
     public void onCompleteQuest(CompleteQuestEvent e) {
-        track(createEventBuilder("quest", "complete").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "complete")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
     public void onUndoCompleteQuest(UndoCompleteQuestEvent e) {
-        track(createEventBuilder("quest", "undo-complete").set("name", e.quest.getName()));
+        track(createEventBuilder("quest", "undo-complete")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     private void track(HitBuilders.EventBuilder builder) {
