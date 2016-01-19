@@ -57,7 +57,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
                 .equalTo("status", Quest.Status.PLANNED.name()).or().equalTo("status", Quest.Status.STARTED.name())
-                .findAllSorted("order", Sort.ASCENDING));
+                .findAllSorted("order", Sort.ASCENDING, "startTime", Sort.ASCENDING));
     }
 
     @Override

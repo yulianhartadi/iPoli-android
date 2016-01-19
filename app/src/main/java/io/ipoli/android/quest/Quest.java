@@ -29,7 +29,26 @@ public class Quest extends RealmObject {
 
     private Date due;
 
+    private int duration;
+    private Date startTime;
+
     public Quest() {
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getStartTime() {
+        return startTime;
     }
 
     public enum Status {

@@ -59,6 +59,8 @@ public class SimpleAssistantService implements AssistantService {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = new Quest(e.name);
+        quest.setDuration(e.duration);
+        quest.setStartTime(e.startTime);
         questPersistenceService.save(quest);
         reply(context.getString(R.string.new_quest_reply));
     }
@@ -66,6 +68,8 @@ public class SimpleAssistantService implements AssistantService {
     @Subscribe
     public void onNewTodayQuest(NewTodayQuestEvent e) {
         Quest quest = new Quest(e.name, Quest.Status.PLANNED.name(), new Date());
+        quest.setDuration(e.duration);
+        quest.setStartTime(e.startTime);
         questPersistenceService.save(quest);
         reply(context.getString(R.string.new_today_quest_reply));
     }

@@ -1,10 +1,13 @@
 package io.ipoli.android.app.services;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.ipoli.android.assistant.events.HelpEvent;
@@ -49,12 +52,14 @@ public class LocalCommandParserService implements CommandParserService {
         }
         switch (cmd) {
             case ADD_QUEST:
-                String name = cmd.getParameters().get("name").toString();
-                bus.post(new NewQuestEvent(name));
+                HashMap<String, Object> params = cmd.getParameters();
+                String name = params.get("name").toString();
+                bus.post(new NewQuestEvent(name, getStartTime(params), getDuration(params)));
                 break;
             case ADD_TODAY_QUEST:
-                name = cmd.getParameters().get("name").toString();
-                bus.post(new NewTodayQuestEvent(name));
+                params = cmd.getParameters();
+                name = params.get("name").toString();
+                bus.post(new NewTodayQuestEvent(name, getStartTime(params), getDuration(params)));
                 break;
             case SHOW_QUESTS:
                 bus.post(new ShowQuestsEvent());
@@ -76,6 +81,15 @@ public class LocalCommandParserService implements CommandParserService {
                 bus.post(new UnknownCommandEvent());
         }
         return true;
+    }
+
+    private int getDuration(HashMap<String, Object> params) {
+        return params.containsKey("duration") ? (int) params.get("duration") : -1;
+    }
+
+    @Nullable
+    private Date getStartTime(HashMap<String, Object> params) {
+        return params.containsKey("startTime") ? (Date) params.get("startTime") : null;
     }
 
 
