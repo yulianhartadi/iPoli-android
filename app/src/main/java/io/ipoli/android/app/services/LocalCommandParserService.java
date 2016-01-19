@@ -35,7 +35,7 @@ public class LocalCommandParserService implements CommandParserService {
 
     @Override
     public boolean parse(String command, Command validCommand) {
-        return parse(command, new Command[] {validCommand});
+        return parse(command, new Command[]{validCommand});
     }
 
     @Override
@@ -49,16 +49,19 @@ public class LocalCommandParserService implements CommandParserService {
         }
         switch (cmd) {
             case ADD_QUEST:
-                bus.post(new NewQuestEvent(cmd.getParameterText()));
+                String name = cmd.getParameters().get("name").toString();
+                bus.post(new NewQuestEvent(name));
                 break;
             case ADD_TODAY_QUEST:
-                bus.post(new NewTodayQuestEvent(cmd.getParameterText()));
+                name = cmd.getParameters().get("name").toString();
+                bus.post(new NewTodayQuestEvent(name));
                 break;
             case SHOW_QUESTS:
                 bus.post(new ShowQuestsEvent());
                 break;
             case RENAME:
-                bus.post(new RenameAssistantEvent(cmd.getParameterText()));
+                name = cmd.getParameters().get("name").toString();
+                bus.post(new RenameAssistantEvent(name));
                 break;
             case PLAN_TODAY:
                 bus.post(new PlanTodayEvent());

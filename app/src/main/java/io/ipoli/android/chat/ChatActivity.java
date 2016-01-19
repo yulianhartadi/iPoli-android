@@ -88,6 +88,7 @@ public class ChatActivity extends BaseActivity {
         messageAdapter = new MessageAdapter(this, messagePersistenceService.findAll(), eventBus, p.getAvatar(), assistantService.getAssistant().getAvatar());
         chatView.setAdapter(messageAdapter);
         chatView.scrollToPosition(messageAdapter.getItemCount() - 1);
+
         resumeAfterOnCreate = true;
     }
 
