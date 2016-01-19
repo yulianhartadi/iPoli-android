@@ -21,6 +21,7 @@ public class ReminderIntentService extends IntentService {
 
     public static final String ACTION_REMIND_PLAN_DAY = "io.ipoli.android.action.REMIND_PLAN_DAY";
     public static final String ACTION_REMIND_REVIEW_DAY = "io.ipoli.android.action.REMIND_REVIEW_DAY";
+    public static final String ACTION_REMIND_START_QUEST = "io.ipoli.android.action.REMIND_START_QUEST";
 
     public ReminderIntentService() {
         super("iPoli-ReminderIntentService");
@@ -74,6 +75,29 @@ public class ReminderIntentService extends IntentService {
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(Constants.REMIND_REVIEW_DAY_NOTIFICATION_ID, builder.build());
+        } else if (action.equals(ACTION_REMIND_START_QUEST)) {
+
+            Intent remindStartQuestIntent = new Intent(this, ChatActivity.class);
+            remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
+            String name = intent.getStringExtra("name");
+
+            PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, remindStartQuestIntent, PendingIntent.FLAG_ONE_SHOT);
+
+            Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
+
+            NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                    .setContentTitle(name)
+                    .setContentText("Ready to start?")
+                    .setSmallIcon(R.drawable.ic_tag_faces_white_48dp)
+                    .setLargeIcon(largeIcon)
+                    .setOnlyAlertOnce(true)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingNotificationIntent)
+                    .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
         }
 
     }
