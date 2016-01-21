@@ -42,11 +42,11 @@ public class QuestTimerIntentService extends IntentService {
         if(action.equals(ACTION_SHOW_QUEST_TIMER)) {
             String questId = intent.getStringExtra("id");
             Quest q = questPersistenceService.findById(questId);
-            showQuestStartedNotification(q);
+            showQuestTimerNotification(q);
         }
     }
 
-    private void showQuestStartedNotification(Quest q) {
+    private void showQuestTimerNotification(Quest q) {
         String name = q.getName();
         int duration = q.getDuration();
 
@@ -93,6 +93,7 @@ public class QuestTimerIntentService extends IntentService {
                 .setContentInfo(elapsedMinutes + " m")
                 .setSmallIcon(R.drawable.ic_tag_faces_white_48dp)
                 .setLargeIcon(largeIcon)
+                .setWhen(q.getStartTime().getTime())
                 .setOnlyAlertOnce(true)
                 .addAction(R.drawable.ic_clear_24dp, "Cancel", cancelPI)
                 .addAction(R.drawable.ic_done_24dp, "Done", donePI)
@@ -101,7 +102,7 @@ public class QuestTimerIntentService extends IntentService {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(Constants.QUEST_STARTED_NOTIFICATION_ID, builder.build());
+        notificationManagerCompat.notify(Constants.QUEST_TIMER_NOTIFICATION_ID, builder.build());
     }
 
 }

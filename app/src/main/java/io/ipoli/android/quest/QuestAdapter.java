@@ -1,6 +1,7 @@
 package io.ipoli.android.quest;
 
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,28 +49,57 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
         tv.setText(q.getName());
 
-
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
         if (Quest.Status.valueOf(q.getStatus()) == Quest.Status.STARTED) {
             startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
+        } else if (Quest.Status.valueOf(q.getStatus()) == Quest.Status.PLANNED) {
+            startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
         }
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Quest.Status status = Quest.Status.valueOf(q.getStatus());
                 if (status == Quest.Status.PLANNED) {
-                    startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
-                    q.setStatus(Quest.Status.STARTED.name());
-                    eventBus.post(new StartQuestEvent(q));
+                    updateQuestStatus(q, Quest.Status.STARTED);
                 } else if (status == Quest.Status.STARTED) {
-                    startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
-                    q.setStatus(Quest.Status.PLANNED.name());
-                    eventBus.post(new StopQuestEvent(q));
+                    updateQuestStatus(q, Quest.Status.PLANNED);
                 }
-                eventBus.post(new QuestUpdatedEvent(q));
+                notifyItemChanged(holder.getAdapterPosition());
             }
         });
         holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
+    }
+
+    public void updateQuestStatus(Quest quest, Quest.Status status) {
+        int questIndex = getQuestIndex(quest);
+        if (questIndex < 0) {
+            return;
+        }
+        Quest q = quests.get(questIndex);
+        Quest.Status oldStatus = Quest.Status.valueOf(q.getStatus());
+        q.setStatus(status.name());
+        if (status == Quest.Status.COMPLETED) {
+            onItemDismissed(questIndex, ItemTouchHelper.RIGHT);
+            return;
+        }
+        if (status == Quest.Status.PLANNED && oldStatus == Quest.Status.STARTED) {
+            eventBus.post(new StopQuestEvent(q));
+            notifyItemChanged(questIndex);
+        } else if (status == Quest.Status.STARTED && oldStatus == Quest.Status.PLANNED) {
+            eventBus.post(new StartQuestEvent(q));
+            notifyItemChanged(questIndex);
+        }
+        eventBus.post(new QuestUpdatedEvent(q));
+    }
+
+    private int getQuestIndex(Quest quest) {
+        for (int i = 0; i < quests.size(); i++) {
+            Quest q = quests.get(i);
+            if (q.getId().equals(quest.getId())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

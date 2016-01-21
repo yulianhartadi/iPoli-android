@@ -1,7 +1,9 @@
 package io.ipoli.android.quest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -89,6 +91,22 @@ public class QuestListActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        if (getIntent() == null || TextUtils.isEmpty(getIntent().getAction())) {
+            return;
+        }
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action.equals(ACTION_QUEST_DONE) || action.equals(ACTION_QUEST_CANCELED)) {
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
+            String questId = intent.getStringExtra("id");
+            Quest q = questPersistenceService.findById(questId);
+
+            Quest.Status newStatus = action.equals(ACTION_QUEST_DONE) ? Quest.Status.COMPLETED : Quest.Status.PLANNED;
+            questAdapter.updateQuestStatus(q, newStatus);
+        }
     }
 
     @Override
@@ -140,7 +158,7 @@ public class QuestListActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestStatusChanged(QuestUpdatedEvent e) {
+    public void onQuestUpdated(QuestUpdatedEvent e) {
         questPersistenceService.save(e.quest);
         Quest.Status status = Quest.Status.valueOf(e.quest.getStatus());
         String m = "";
