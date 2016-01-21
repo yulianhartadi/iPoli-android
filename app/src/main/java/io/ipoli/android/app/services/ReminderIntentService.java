@@ -109,15 +109,8 @@ public class ReminderIntentService extends IntentService {
 
             Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
-            Intent startQuestIntent = new Intent(this, UpdateQuestIntentService.class);
-            startQuestIntent.setAction(UpdateQuestIntentService.ACTION_START_QUEST);
-            startQuestIntent.putExtra("id", q.getId());
-            PendingIntent startQuestPI = PendingIntent.getService(this, 0, startQuestIntent, PendingIntent.FLAG_ONE_SHOT);
-
-            Intent snoozeQuestIntent = new Intent(this, UpdateQuestIntentService.class);
-            startQuestIntent.setAction(UpdateQuestIntentService.ACTION_SNOOZE_QUEST);
-            startQuestIntent.putExtra("id", q.getId());
-            PendingIntent snoozeQuestPI = PendingIntent.getService(this, 0, snoozeQuestIntent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent startQuestPI = getActionPendingIntent(q.getId(), UpdateQuestIntentService.ACTION_START_QUEST);
+            PendingIntent snoozeQuestPI = getActionPendingIntent(q.getId(), UpdateQuestIntentService.ACTION_SNOOZE_QUEST);
 
             NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                     .setContentTitle(name)
@@ -138,5 +131,12 @@ public class ReminderIntentService extends IntentService {
             notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
         }
 
+    }
+
+    private PendingIntent getActionPendingIntent(String questId, String action) {
+        Intent intent = new Intent(this, UpdateQuestIntentService.class);
+        intent.setAction(action);
+        intent.putExtra("id", questId);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 }

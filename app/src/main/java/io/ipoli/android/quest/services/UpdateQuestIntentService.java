@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -51,17 +52,33 @@ public class UpdateQuestIntentService extends IntentService {
         App.getAppComponent(this).inject(this);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
+
         if (action.equals(ACTION_START_QUEST)) {
-            String questId = intent.getStringExtra("id");
-            Quest q = questPersistenceService.findById(questId);
+            Quest q = getQuest(intent);
             q.setStatus(Quest.Status.STARTED.name());
             q.setStartTime(new Date());
             questPersistenceService.save(q);
-            scheduleUpdateQuestTimer(questId);
-            eventBus.post(new ScheduleNextQuestReminderEvent());
+            scheduleUpdateQuestTimer(q.getId());
+            scheduleNextQuestReminder();
         } else if (action.equals(ACTION_SNOOZE_QUEST)) {
-
+            Quest q = getQuest(intent);
+            Date startTime = q.getStartTime();
+            Calendar c = Calendar.getInstance();
+            c.setTime(startTime);
+            c.add(Calendar.MINUTE, Constants.DEFAULT_SNOOZE_TIME_MINUTES);
+            q.setStartTime(c.getTime());
+            questPersistenceService.save(q);
+            scheduleNextQuestReminder();
         }
+    }
+
+    private void scheduleNextQuestReminder() {
+        eventBus.post(new ScheduleNextQuestReminderEvent());
+    }
+
+    private Quest getQuest(Intent intent) {
+        String questId = intent.getStringExtra("id");
+        return questPersistenceService.findById(questId);
     }
 
     private void scheduleUpdateQuestTimer(String questId) {

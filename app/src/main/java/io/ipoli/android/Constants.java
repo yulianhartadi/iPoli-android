@@ -18,6 +18,7 @@ public interface Constants {
     int COMPLETE_QUEST_DEFAULT_EXPERIENCE = 10;
     int DEFAULT_PLAYER_LEVEL = 1;
     int DEFAULT_PLAYER_EXPERIENCE = 0;
+    int DEFAULT_SNOOZE_TIME_MINUTES = 10;
 
     String DEFAULT_ASSISTANT_AVATAR = "avatar_06";
     String DEFAULT_PLAYER_AVATAR = "avatar_07";
