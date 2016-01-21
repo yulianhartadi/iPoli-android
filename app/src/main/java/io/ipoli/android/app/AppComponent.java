@@ -10,11 +10,13 @@ import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CommandParserModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
+import io.ipoli.android.quest.services.UpdateQuestIntentService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -45,5 +47,9 @@ public interface AppComponent {
     void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
+
+    void inject(UpdateQuestIntentService updateQuestIntentService);
+
+    void inject(ReminderIntentService reminderIntentService);
 }
 

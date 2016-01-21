@@ -8,10 +8,19 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+import javax.inject.Inject;
+
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.PlanDayActivity;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.services.UpdateQuestIntentService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,13 +32,16 @@ public class ReminderIntentService extends IntentService {
     public static final String ACTION_REMIND_REVIEW_DAY = "io.ipoli.android.action.REMIND_REVIEW_DAY";
     public static final String ACTION_REMIND_START_QUEST = "io.ipoli.android.action.REMIND_START_QUEST";
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     public ReminderIntentService() {
         super("iPoli-ReminderIntentService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
+        App.getAppComponent(this).inject(this);
         String action = intent.getAction();
         if (action.equals(ACTION_REMIND_PLAN_DAY)) {
 
@@ -79,19 +91,38 @@ public class ReminderIntentService extends IntentService {
 
             Intent remindStartQuestIntent = new Intent(this, ChatActivity.class);
             remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
-            String name = intent.getStringExtra("name");
+            String questId = intent.getStringExtra("id");
+            Quest q = questPersistenceService.findById(questId);
+            if (q == null) {
+                return;
+            }
+            String name = q.getName();
 
             PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, remindStartQuestIntent, PendingIntent.FLAG_ONE_SHOT);
 
             Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
+            Intent startQuestIntent = new Intent(this, UpdateQuestIntentService.class);
+            startQuestIntent.setAction(UpdateQuestIntentService.ACTION_START_QUEST);
+            startQuestIntent.putExtra("id", q.getId());
+            PendingIntent startQuestPI = PendingIntent.getService(this, 0, startQuestIntent, PendingIntent.FLAG_ONE_SHOT);
+
+            Intent snoozeQuestIntent = new Intent(this, UpdateQuestIntentService.class);
+            startQuestIntent.setAction(UpdateQuestIntentService.ACTION_SNOOZE_QUEST);
+            startQuestIntent.putExtra("id", q.getId());
+            PendingIntent snoozeQuestPI = PendingIntent.getService(this, 0, snoozeQuestIntent, PendingIntent.FLAG_ONE_SHOT);
+
             NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                     .setContentTitle(name)
                     .setContentText("Ready to start?")
+                    .setShowWhen(false)
+                    .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(q.getStartTime()))
                     .setSmallIcon(R.drawable.ic_tag_faces_white_48dp)
                     .setLargeIcon(largeIcon)
                     .setOnlyAlertOnce(true)
                     .setAutoCancel(true)
+                    .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
+                    .addAction(R.drawable.ic_snooze_black_24dp, "SNOOZE", snoozeQuestPI)
                     .setContentIntent(pendingNotificationIntent)
                     .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)

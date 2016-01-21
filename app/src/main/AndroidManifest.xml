@@ -66,6 +66,8 @@
 
         <service android:name=".app.services.ReminderIntentService" />
 
+        <service android:name=".quest.services.UpdateQuestIntentService" />
+
         <receiver android:name=".app.receivers.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

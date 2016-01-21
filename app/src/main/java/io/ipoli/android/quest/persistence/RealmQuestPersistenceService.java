@@ -3,11 +3,13 @@ package io.ipoli.android.quest.persistence;
 import android.content.Context;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 
 /**
@@ -104,6 +106,24 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .findFirst();
         realmQuest.removeFromRealm();
         realm.commitTransaction();
+    }
+
+    @Override
+    public Quest findQuestStartingAfter(Date date) {
+        RealmResults<Quest> quests = realm.where(Quest.class)
+                .greaterThanOrEqualTo("startTime", date)
+                .equalTo("status", Quest.Status.PLANNED.name())
+                .findAllSorted("startTime", Sort.ASCENDING);
+        if (quests.isEmpty()) {
+            return null;
+        }
+        return realm.copyFromRealm(quests.first());
+    }
+
+    @Override
+    public Quest findById(String id) {
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .equalTo("id", id).findFirst());
     }
 
 }

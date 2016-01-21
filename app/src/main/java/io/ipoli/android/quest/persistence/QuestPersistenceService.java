@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.persistence;
 
+import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.quest.Quest;
@@ -24,4 +25,8 @@ public interface QuestPersistenceService {
     long countAllPlannedForToday();
 
     void delete(Quest quest);
+
+    Quest findQuestStartingAfter(Date date);
+
+    Quest findById(String id);
 }
