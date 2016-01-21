@@ -1,5 +1,7 @@
 package io.ipoli.android.quest;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -31,6 +33,8 @@ import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.services.QuestTimerIntentService;
+import io.ipoli.android.quest.services.UpdateQuestIntentService;
 
 public class QuestListActivity extends BaseActivity {
 
@@ -164,13 +168,29 @@ public class QuestListActivity extends BaseActivity {
         String m = "";
         if (status == Quest.Status.STARTED) {
             m = getString(R.string.quest_started);
+            Intent intent = new Intent(this, UpdateQuestIntentService.class);
+            intent.setAction(UpdateQuestIntentService.ACTION_START_QUEST);
+            intent.putExtra("id", e.quest.getId());
+            startService(intent);
         } else if (status == Quest.Status.PLANNED) {
             m = getString(R.string.quest_stopped);
+            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarm.cancel(getUpdateTimerPendingIntent(e.quest));
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
         }
 
         if (!TextUtils.isEmpty(m)) {
             Snackbar.make(rootContainer, m, Snackbar.LENGTH_SHORT).show();
         }
 
+    }
+
+    private PendingIntent getUpdateTimerPendingIntent(Quest quest) {
+        Intent intent = new Intent(this, QuestTimerIntentService.class);
+        intent.setAction(QuestTimerIntentService.ACTION_SHOW_QUEST_TIMER);
+        intent.putExtra("id", quest.getId());
+        return PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }
