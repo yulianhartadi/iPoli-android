@@ -2,6 +2,8 @@ package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
@@ -21,8 +23,8 @@ import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    public QuestPersistenceService provideQuestPersistenceService(Context context) {
-        return new RealmQuestPersistenceService(context);
+    public QuestPersistenceService provideQuestPersistenceService(Context context, Bus eventBus) {
+        return new RealmQuestPersistenceService(context, eventBus);
     }
 
     @Provides

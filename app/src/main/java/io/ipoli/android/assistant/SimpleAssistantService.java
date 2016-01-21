@@ -1,6 +1,9 @@
 package io.ipoli.android.assistant;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
@@ -17,6 +20,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.services.Command;
 import io.ipoli.android.app.services.CommandParserService;
+import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
@@ -32,7 +36,11 @@ import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -72,6 +80,40 @@ public class SimpleAssistantService implements AssistantService {
         quest.setStartTime(e.startTime);
         questPersistenceService.save(quest);
         reply(context.getString(R.string.new_today_quest_reply));
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        scheduleNextQuestReminder();
+    }
+
+    @Subscribe
+    public void onQuestsSaved(QuestsSavedEvent e) {
+        scheduleNextQuestReminder();
+    }
+
+    @Subscribe
+    public void onQuestDeleted(QuestDeletedEvent e) {
+        scheduleNextQuestReminder();
+    }
+
+    @Subscribe
+    public void onScheduleNextQuestReminder(ScheduleNextQuestReminderEvent e) {
+        scheduleNextQuestReminder();
+    }
+
+    private void scheduleNextQuestReminder() {
+        Quest q = questPersistenceService.findQuestStartingAfter(new Date());
+        if (q == null) {
+            return;
+        }
+        Intent intent = new Intent(context, ReminderIntentService.class);
+        intent.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
+        intent.putExtra("id", q.getId());
+        PendingIntent pendingIntent = PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.setExact(AlarmManager.RTC_WAKEUP, q.getStartTime().getTime(), pendingIntent);
     }
 
     @Subscribe
