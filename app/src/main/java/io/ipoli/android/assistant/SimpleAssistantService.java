@@ -113,6 +113,7 @@ public class SimpleAssistantService implements AssistantService {
         PendingIntent pendingIntent = PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pendingIntent);
         alarm.setExact(AlarmManager.RTC_WAKEUP, q.getStartTime().getTime(), pendingIntent);
     }
 

@@ -81,9 +81,9 @@ public class QuestTimerIntentService extends IntentService {
             long minutes = duration - hours * 60;
 
             if (hours > 0) {
-                description = String.format("Duration: %02d:%02d", hours, minutes);
+                description = String.format("For %d hour(s) and %02d minutes", hours, minutes);
             } else {
-                description = String.format("Duration: %02d minutes", minutes);
+                description = String.format("For %d minutes", minutes);
             }
         }
 

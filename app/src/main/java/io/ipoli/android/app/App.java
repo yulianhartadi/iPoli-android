@@ -5,9 +5,6 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -17,7 +14,6 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.assistant.AssistantService;
-import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -48,13 +44,6 @@ public class App extends Application {
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
-        Quest q = new Quest("Tadaaa", Quest.Status.PLANNED.name(), new Date());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.SECOND, 15);
-        q.setStartTime(calendar.getTime());
-        q.setDuration(130);
-        questPersistenceService.save(q);
         eventBus.post(new ScheduleNextQuestReminderEvent());
     }
 
