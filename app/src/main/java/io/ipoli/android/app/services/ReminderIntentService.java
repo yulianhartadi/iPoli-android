@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -41,6 +43,11 @@ public class ReminderIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (intent == null || TextUtils.isEmpty(intent.getAction())) {
+            Log.d("iPoli", getClass().getSimpleName() + " was started without intent or action");
+            return;
+        }
+
         App.getAppComponent(this).inject(this);
         String action = intent.getAction();
         if (action.equals(ACTION_REMIND_PLAN_DAY)) {
@@ -121,8 +128,8 @@ public class ReminderIntentService extends IntentService {
                     .setLargeIcon(largeIcon)
                     .setOnlyAlertOnce(true)
                     .setAutoCancel(true)
-                    .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
                     .addAction(R.drawable.ic_snooze_black_24dp, "SNOOZE", snoozeQuestPI)
+                    .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
                     .setContentIntent(pendingNotificationIntent)
                     .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)

@@ -32,6 +32,9 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class QuestListActivity extends BaseActivity {
 
+    public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
+    public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
+
     @Bind(R.id.quest_list_container)
     LinearLayout rootContainer;
 

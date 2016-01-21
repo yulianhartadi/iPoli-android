@@ -58,6 +58,7 @@ public class App extends Application {
         calendar.setTime(new Date());
         calendar.add(Calendar.SECOND, 15);
         q.setStartTime(calendar.getTime());
+        q.setDuration(130);
         questPersistenceService.save(q);
         scheduleNextQuestReminder();
     }

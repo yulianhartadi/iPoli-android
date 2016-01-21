@@ -1,12 +1,17 @@
 package io.ipoli.android.quest.services;
 
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,11 +42,12 @@ public class UpdateQuestIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String action = intent.getAction();
-        if (TextUtils.isEmpty(action)) {
-            Log.d("iPoli", getClass().getSimpleName() + " was started without action");
+        if (intent == null || TextUtils.isEmpty(intent.getAction())) {
+            Log.d("iPoli", getClass().getSimpleName() + " was started without intent or action");
             return;
         }
+
+        String action = intent.getAction();
         App.getAppComponent(this).inject(this);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
@@ -49,15 +55,25 @@ public class UpdateQuestIntentService extends IntentService {
             String questId = intent.getStringExtra("id");
             Quest q = questPersistenceService.findById(questId);
             q.setStatus(Quest.Status.STARTED.name());
+            q.setStartTime(new Date());
             questPersistenceService.save(q);
-            showQuestStartedNotification(q);
+            scheduleUpdateQuestTimer(questId);
             eventBus.post(new ScheduleNextQuestReminderEvent());
         } else if (action.equals(ACTION_SNOOZE_QUEST)) {
 
         }
     }
 
-    private void showQuestStartedNotification(Quest q) {
-
+    private void scheduleUpdateQuestTimer(String questId) {
+        Intent intent = new Intent(this, QuestTimerIntentService.class);
+        intent.setAction(QuestTimerIntentService.ACTION_SHOW_QUEST_TIMER);
+        intent.putExtra("id", questId);
+        PendingIntent pendingIntent = PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
+                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, TimeUnit.MINUTES.toMillis(1),
+                TimeUnit.MINUTES.toMillis(1), pendingIntent);
+        startService(intent);
     }
+
 }

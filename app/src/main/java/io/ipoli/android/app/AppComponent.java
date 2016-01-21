@@ -16,6 +16,7 @@ import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
+import io.ipoli.android.quest.services.QuestTimerIntentService;
 import io.ipoli.android.quest.services.UpdateQuestIntentService;
 
 /**
@@ -51,5 +52,7 @@ public interface AppComponent {
     void inject(UpdateQuestIntentService updateQuestIntentService);
 
     void inject(ReminderIntentService reminderIntentService);
+
+    void inject(QuestTimerIntentService questTimerIntentService);
 }
 
