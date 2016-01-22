@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.ipoli.android" >
+    package="io.ipoli.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,15 +11,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.iPoli">
         <activity
             android:name=".InviteOnlyActivity"
             android:label="@string/title_activity_chat"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,15 +25,12 @@
             android:name=".chat.ChatActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".quest.PlanDayActivity"
             android:label="@string/title_activity_plan_day"
             android:parentActivityName=".chat.ChatActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
@@ -44,8 +39,7 @@
             android:name=".quest.QuestListActivity"
             android:label="@string/title_activity_quest_list"
             android:parentActivityName=".chat.ChatActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
@@ -55,17 +49,25 @@
             android:label="@string/title_activity_pick_avatar"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ActivityDialogTheme" >
+            android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
+        </activity>
+
+        <activity
+            android:name=".quest.QuestCompleteActivity"
+            android:label="@string/title_quest_complete"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity">
+
         </activity>
 
         <service android:name=".app.services.ReminderIntentService" />
         <service android:name=".quest.services.UpdateQuestIntentService" />
         <service android:name=".quest.services.QuestTimerIntentService" />
 
-        <receiver android:name=".app.receivers.BootCompleteReceiver" >
+        <receiver android:name=".app.receivers.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -80,7 +82,7 @@
 
         <receiver
             android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>

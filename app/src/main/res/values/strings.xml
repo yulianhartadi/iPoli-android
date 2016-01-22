@@ -66,4 +66,11 @@
     <string name="tutorial_start_2_info">Use me to manage your tasks, habits and goals by completing quests, earn experience points and literally level up your life!</string>
     <string name="tutorial_start_3_info">So, what is your name?</string>
     <string name="welcome_back">Nice to see you again! I am ready to continue!</string>
+    <string name="title_quest_complete">Well done!</string>
+    <string name="quest_complete_difficulty_question">How difficult was it?</string>
+    <string name="quest_complete_done_log">What did you do?</string>
+    <string name="done">DONE</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
 </resources>

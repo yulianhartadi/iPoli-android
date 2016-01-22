@@ -14,6 +14,7 @@ import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
+import io.ipoli.android.quest.QuestCompleteActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.services.QuestTimerIntentService;
@@ -39,7 +40,7 @@ public interface AppComponent {
 
     void inject(App app);
 
-    void inject(PlanDayActivity fragment);
+    void inject(PlanDayActivity planDayActivity);
 
     void inject(QuestListActivity questListActivity);
 
@@ -54,5 +55,7 @@ public interface AppComponent {
     void inject(ReminderIntentService reminderIntentService);
 
     void inject(QuestTimerIntentService questTimerIntentService);
+
+    void inject(QuestCompleteActivity questCompleteActivity);
 }
 
