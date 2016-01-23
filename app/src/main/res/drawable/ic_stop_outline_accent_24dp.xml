@@ -11,5 +11,5 @@
 M32,4C16.6,4,4,16.6,4,32s12.6,28,28,28 s28-12.6,28-28S47.4,4,32,4z" />
     <path
         android:fillColor="#FFFF1744"
-        android:pathData="M25,19l18,13L25,45V19z" />
+        android:pathData="M 21 21 H 43 V 43 H 21 V 21 Z" />
 </vector>

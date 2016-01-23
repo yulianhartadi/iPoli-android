@@ -11,7 +11,6 @@ import android.widget.RadioGroup;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 
@@ -45,8 +44,18 @@ public class QuestCompleteActivity extends BaseActivity {
         Difficulty difficulty = getDifficulty();
         data.putExtra(DIFFICULTY_EXTRA_KEY, difficulty);
         data.putExtra(LOG_EXTRA_KEY, log.getText().toString());
-        setResult(Constants.SUCCESS_RESULT_CODE, data);
+        setResult(RESULT_OK, data);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent data = new Intent();
+        data.putExtras(getIntent());
+        data.putExtra(DIFFICULTY_EXTRA_KEY, Difficulty.UNKNOWN);
+        data.putExtra(LOG_EXTRA_KEY, "");
+        setResult(RESULT_CANCELED, data);
+        super.onBackPressed();
     }
 
     private Difficulty getDifficulty() {

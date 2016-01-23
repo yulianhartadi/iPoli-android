@@ -8,8 +8,6 @@ public interface Constants {
     String DEFAULT_PLAN_DAY_TIME = "9:00";
     String DEFAULT_REVIEW_DAY_TIME = "22:00";
 
-    int SUCCESS_RESULT_CODE = 0;
-
     int COMPLETE_QUEST_RESULT_REQUEST_CODE = 10;
     int REMIND_PLAN_DAY_NOTIFICATION_ID = 101;
 

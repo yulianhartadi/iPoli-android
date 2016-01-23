@@ -23,7 +23,7 @@
     <string name="new_today_quest_reply">Your quest for today has been added!</string>
     <string name="ok_reply">Sure!</string>
     <string name="quest_started">Quest started</string>
-    <string name="quest_stopped">Quest paused</string>
+    <string name="quest_stopped">Quest stopped</string>
     <string name="quest_removed">Quest removed</string>
     <string name="undo">UNDO</string>
     <string name="player_level">Level %d</string>

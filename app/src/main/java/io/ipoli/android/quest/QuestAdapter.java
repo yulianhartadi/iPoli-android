@@ -51,7 +51,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
         if (Status.valueOf(q.getStatus()) == Status.STARTED) {
-            startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
+            startBtn.setImageResource(R.drawable.ic_stop_outline_accent_24dp);
         } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
             startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
         }
@@ -86,10 +86,22 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
             eventBus.post(new StopQuestEvent(q));
             notifyItemChanged(questIndex);
         } else if (status == Status.STARTED && oldStatus == Status.PLANNED) {
+            stopOtherRunningQuests(q);
             eventBus.post(new StartQuestEvent(q));
             notifyItemChanged(questIndex);
         }
         eventBus.post(new QuestUpdatedEvent(q));
+    }
+
+    private void stopOtherRunningQuests(Quest q) {
+        for (int i = 0; i < quests.size(); i++) {
+            Quest cq = quests.get(i);
+            if (cq != q && Status.valueOf(cq.getStatus()) == Status.STARTED) {
+                cq.setStatus(Status.PLANNED.name());
+                eventBus.post(new StopQuestEvent(cq));
+                notifyItemChanged(i);
+            }
+        }
     }
 
     private int getQuestIndex(Quest quest) {

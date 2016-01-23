@@ -16,10 +16,7 @@
             android:name=".InviteOnlyActivity"
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".chat.ChatActivity"
@@ -40,6 +37,10 @@
             android:label="@string/title_activity_quest_list"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

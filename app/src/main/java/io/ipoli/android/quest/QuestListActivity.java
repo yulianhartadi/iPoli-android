@@ -105,8 +105,7 @@ public class QuestListActivity extends BaseActivity {
         String action = intent.getAction();
         if (action.equals(ACTION_QUEST_DONE) || action.equals(ACTION_QUEST_CANCELED)) {
 
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-            notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
+            dismissTimerNotification();
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
 
@@ -134,7 +133,7 @@ public class QuestListActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleteRequest(final QuestCompleteRequestEvent e) {
-
+        stopQuestTimer(e.quest);
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         i.putExtra(POSITION_EXTRA_KEY, e.position);
@@ -144,7 +143,7 @@ public class QuestListActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Constants.SUCCESS_RESULT_CODE && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
+        if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED) && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
             final int position = data.getIntExtra(POSITION_EXTRA_KEY, -1);
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
@@ -197,12 +196,25 @@ public class QuestListActivity extends BaseActivity {
             startService(intent);
             showSnackBar(R.string.quest_started);
         } else if (status == Status.PLANNED) {
-            AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarm.cancel(getUpdateTimerPendingIntent(e.quest));
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-            notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
+            Quest q = e.quest;
+            stopQuestTimer(q);
             showSnackBar(R.string.quest_stopped);
         }
+    }
+
+    private void stopQuestTimer(Quest q) {
+        cancelUpdateTimerIntent(q);
+        dismissTimerNotification();
+    }
+
+    private void cancelUpdateTimerIntent(Quest quest) {
+        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarm.cancel(getUpdateTimerPendingIntent(quest));
+    }
+
+    private void dismissTimerNotification() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
     }
 
     private void showSnackBar(@StringRes int textRes) {
