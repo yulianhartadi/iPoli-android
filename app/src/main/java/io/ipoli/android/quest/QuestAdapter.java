@@ -50,19 +50,19 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         tv.setText(q.getName());
 
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
-        if (Quest.Status.valueOf(q.getStatus()) == Quest.Status.STARTED) {
+        if (Status.valueOf(q.getStatus()) == Status.STARTED) {
             startBtn.setImageResource(R.drawable.ic_pause_circle_outline_accent_24dp);
-        } else if (Quest.Status.valueOf(q.getStatus()) == Quest.Status.PLANNED) {
+        } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
             startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
         }
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Quest.Status status = Quest.Status.valueOf(q.getStatus());
-                if (status == Quest.Status.PLANNED) {
-                    updateQuestStatus(q, Quest.Status.STARTED);
-                } else if (status == Quest.Status.STARTED) {
-                    updateQuestStatus(q, Quest.Status.PLANNED);
+                Status status = Status.valueOf(q.getStatus());
+                if (status == Status.PLANNED) {
+                    updateQuestStatus(q, Status.STARTED);
+                } else if (status == Status.STARTED) {
+                    updateQuestStatus(q, Status.PLANNED);
                 }
                 notifyItemChanged(holder.getAdapterPosition());
             }
@@ -70,22 +70,22 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
     }
 
-    public void updateQuestStatus(Quest quest, Quest.Status status) {
+    public void updateQuestStatus(Quest quest, Status status) {
         int questIndex = getQuestIndex(quest);
         if (questIndex < 0) {
             return;
         }
         Quest q = quests.get(questIndex);
-        Quest.Status oldStatus = Quest.Status.valueOf(q.getStatus());
+        Status oldStatus = Status.valueOf(q.getStatus());
         q.setStatus(status.name());
-        if (status == Quest.Status.COMPLETED) {
+        if (status == Status.COMPLETED) {
             onItemDismissed(questIndex, ItemTouchHelper.RIGHT);
             return;
         }
-        if (status == Quest.Status.PLANNED && oldStatus == Quest.Status.STARTED) {
+        if (status == Status.PLANNED && oldStatus == Status.STARTED) {
             eventBus.post(new StopQuestEvent(q));
             notifyItemChanged(questIndex);
-        } else if (status == Quest.Status.STARTED && oldStatus == Quest.Status.PLANNED) {
+        } else if (status == Status.STARTED && oldStatus == Status.PLANNED) {
             eventBus.post(new StartQuestEvent(q));
             notifyItemChanged(questIndex);
         }
@@ -107,9 +107,9 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         return quests.size();
     }
 
-    public void addQuest(int position, Quest quest) {
+    public void putQuest(int position, Quest quest) {
         quests.add(position, quest);
-        notifyDataSetChanged();
+        notifyItemInserted(position);
     }
 
     public List<Quest> getQuests() {
@@ -137,6 +137,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         quests.remove(position);
         notifyItemRemoved(position);
         eventBus.post(new QuestCompleteRequestEvent(q, position));
+    }
+
+    public void addQuest(Quest quest) {
+        quests.add(quest);
+        notifyItemInserted(quests.size() - 1);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {

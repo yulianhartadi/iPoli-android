@@ -98,7 +98,7 @@ public class ReminderIntentService extends IntentService {
 
             Intent remindStartQuestIntent = new Intent(this, ChatActivity.class);
             remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
-            String questId = intent.getStringExtra("id");
+            String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
             if (q == null) {
                 return;
@@ -136,7 +136,7 @@ public class ReminderIntentService extends IntentService {
     private PendingIntent getActionPendingIntent(String questId, String action) {
         Intent intent = new Intent(this, UpdateQuestIntentService.class);
         intent.setAction(action);
-        intent.putExtra("id", questId);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 }

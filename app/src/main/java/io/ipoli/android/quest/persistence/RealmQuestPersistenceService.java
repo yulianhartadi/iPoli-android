@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -52,7 +53,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public List<Quest> findAllUncompleted() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .notEqualTo("status", Quest.Status.COMPLETED.name())
+                .notEqualTo("status", Status.COMPLETED.name())
                 .findAllSorted("createdAt", Sort.DESCENDING));
     }
 
@@ -67,7 +68,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .equalTo("status", Quest.Status.PLANNED.name()).or().equalTo("status", Quest.Status.STARTED.name())
+                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
                 .findAllSorted("order", Sort.ASCENDING, "startTime", Sort.ASCENDING));
     }
 
@@ -88,7 +89,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public long countAllUncompleted() {
         return realm.where(Quest.class)
-                .notEqualTo("status", Quest.Status.COMPLETED.name())
+                .notEqualTo("status", Status.COMPLETED.name())
                 .count();
     }
 
@@ -103,7 +104,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .equalTo("status", Quest.Status.PLANNED.name()).or().equalTo("status", Quest.Status.STARTED.name())
+                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
                 .count();
     }
 
@@ -122,7 +123,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     public Quest findQuestStartingAfter(Date date) {
         RealmResults<Quest> quests = realm.where(Quest.class)
                 .greaterThanOrEqualTo("startTime", date)
-                .equalTo("status", Quest.Status.PLANNED.name())
+                .equalTo("status", Status.PLANNED.name())
                 .findAllSorted("startTime", Sort.ASCENDING);
         if (quests.isEmpty()) {
             return null;

@@ -41,7 +41,7 @@ public class QuestTimerIntentService extends IntentService {
         String action = intent.getAction();
         App.getAppComponent(this).inject(this);
         if (action.equals(ACTION_SHOW_QUEST_TIMER)) {
-            String questId = intent.getStringExtra("id");
+            String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
             showQuestTimerNotification(q, intent);
         }
@@ -101,7 +101,7 @@ public class QuestTimerIntentService extends IntentService {
 
     private PendingIntent getPendingIntent(Quest q, String action) {
         Intent doneIntent = new Intent(this, QuestListActivity.class);
-        doneIntent.putExtra("id", q.getId());
+        doneIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         doneIntent.setAction(action);
         return PendingIntent.getActivity(this, 0, doneIntent, PendingIntent.FLAG_ONE_SHOT);
     }

@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -55,7 +56,7 @@ public class UpdateQuestIntentService extends IntentService {
 
         if (action.equals(ACTION_START_QUEST)) {
             Quest q = getQuest(intent);
-            q.setStatus(Quest.Status.STARTED.name());
+            q.setStatus(Status.STARTED.name());
             q.setStartTime(new Date());
             questPersistenceService.save(q);
             scheduleUpdateQuestTimer(q.getId());
@@ -77,14 +78,14 @@ public class UpdateQuestIntentService extends IntentService {
     }
 
     private Quest getQuest(Intent intent) {
-        String questId = intent.getStringExtra("id");
+        String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         return questPersistenceService.findById(questId);
     }
 
     private void scheduleUpdateQuestTimer(String questId) {
         Intent intent = new Intent(this, QuestTimerIntentService.class);
         intent.setAction(QuestTimerIntentService.ACTION_SHOW_QUEST_TIMER);
-        intent.putExtra("id", questId);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         PendingIntent pendingIntent = PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);

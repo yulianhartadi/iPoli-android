@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:orientation="vertical">
 
     <LinearLayout
@@ -28,23 +27,26 @@
             android:orientation="horizontal">
 
             <RadioButton
+                android:id="@+id/quest_complete_difficulty_easy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/easy" />
 
             <RadioButton
+                android:id="@+id/quest_complete_difficulty_medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/medium" />
 
             <RadioButton
+                android:id="@+id/quest_complete_difficulty_hard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/hard" />
         </RadioGroup>
 
         <EditText
+            android:id="@+id/quest_complete_log"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -62,6 +64,7 @@
         android:layout_marginTop="8dp">
 
         <Button
+            android:id="@+id/quest_complete_done"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

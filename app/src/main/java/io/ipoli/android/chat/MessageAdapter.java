@@ -22,8 +22,8 @@ import java.util.Map;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.events.NewMessageEvent;
+import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -31,6 +31,8 @@ public class Quest extends RealmObject {
 
     private int duration;
     private Date startTime;
+    private String log;
+    private String difficulty;
 
     public Quest() {
     }
@@ -51,8 +53,20 @@ public class Quest extends RealmObject {
         return startTime;
     }
 
-    public enum Status {
-        UNPLANNED, PLANNED, STARTED, COMPLETED
+    public void setLog(String log) {
+        this.log = log;
+    }
+
+    public String getLog() {
+        return log;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
     }
 
     public Quest(String name) {

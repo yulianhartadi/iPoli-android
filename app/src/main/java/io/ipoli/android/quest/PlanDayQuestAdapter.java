@@ -58,14 +58,14 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
-                    q.setStatus(Quest.Status.PLANNED.name());
+                    q.setStatus(Status.PLANNED.name());
                 } else {
-                    q.setStatus(Quest.Status.UNPLANNED.name());
+                    q.setStatus(Status.UNPLANNED.name());
                 }
             }
         });
 
-        if (Quest.Status.valueOf(q.getStatus()) != Quest.Status.UNPLANNED) {
+        if (Status.valueOf(q.getStatus()) != Status.UNPLANNED) {
             cb.setChecked(true);
         }
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);

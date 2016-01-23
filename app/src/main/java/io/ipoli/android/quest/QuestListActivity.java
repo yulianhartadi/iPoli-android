@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,6 +41,7 @@ public class QuestListActivity extends BaseActivity {
 
     public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
+    public static final String POSITION_EXTRA_KEY = "quest_position";
 
     @Bind(R.id.quest_list_container)
     LinearLayout rootContainer;
@@ -105,10 +107,10 @@ public class QuestListActivity extends BaseActivity {
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
-            String questId = intent.getStringExtra("id");
+            String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
 
-            Quest.Status newStatus = action.equals(ACTION_QUEST_DONE) ? Quest.Status.COMPLETED : Quest.Status.PLANNED;
+            Status newStatus = action.equals(ACTION_QUEST_DONE) ? Status.COMPLETED : Status.PLANNED;
             questAdapter.updateQuestStatus(q, newStatus);
         }
     }
@@ -132,64 +134,85 @@ public class QuestListActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleteRequest(final QuestCompleteRequestEvent e) {
-        final Snackbar snackbar = Snackbar
-                .make(rootContainer,
-                        String.format(getString(R.string.increase_experience), Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE),
-                        Snackbar.LENGTH_LONG);
 
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                Quest q = e.quest;
-                q.setStatus(Quest.Status.COMPLETED.name());
-                questPersistenceService.save(q);
-                eventBus.post(new CompleteQuestEvent(q));
-            }
+        Intent i = new Intent(this, QuestCompleteActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        i.putExtra(POSITION_EXTRA_KEY, e.position);
+        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+    }
 
-        });
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Constants.SUCCESS_RESULT_CODE && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
+            final int position = data.getIntExtra(POSITION_EXTRA_KEY, -1);
+            final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+            final Quest q = questPersistenceService.findById(id);
+            final Difficulty d = (Difficulty) data.getSerializableExtra(QuestCompleteActivity.DIFFICULTY_EXTRA_KEY);
+            final String log = data.getStringExtra(QuestCompleteActivity.LOG_EXTRA_KEY);
 
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                questAdapter.addQuest(e.position, e.quest);
-                snackbar.setCallback(null);
-                eventBus.post(new UndoCompleteQuestEvent(e.quest));
-            }
-        });
+            final Snackbar snackbar = Snackbar
+                    .make(rootContainer,
+                            getString(R.string.increase_experience, Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE),
+                            Snackbar.LENGTH_LONG);
 
-        snackbar.show();
+            snackbar.setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    super.onDismissed(snackbar, event);
+                    q.setStatus(Status.COMPLETED.name());
+                    q.setLog(log);
+                    q.setDifficulty(d.name());
+                    questPersistenceService.save(q);
+                    eventBus.post(new CompleteQuestEvent(q));
+                }
+
+            });
+
+            snackbar.setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (position >= 0) {
+                        questAdapter.putQuest(position, q);
+                    } else {
+                        questAdapter.addQuest(q);
+                    }
+                    snackbar.setCallback(null);
+                    eventBus.post(new UndoCompleteQuestEvent(q));
+                }
+            });
+
+            snackbar.show();
+        }
     }
 
     @Subscribe
     public void onQuestUpdated(QuestUpdatedEvent e) {
         questPersistenceService.save(e.quest);
-        Quest.Status status = Quest.Status.valueOf(e.quest.getStatus());
-        String m = "";
-        if (status == Quest.Status.STARTED) {
-            m = getString(R.string.quest_started);
+        Status status = Status.valueOf(e.quest.getStatus());
+        if (status == Status.STARTED) {
             Intent intent = new Intent(this, UpdateQuestIntentService.class);
             intent.setAction(UpdateQuestIntentService.ACTION_START_QUEST);
-            intent.putExtra("id", e.quest.getId());
+            intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
             startService(intent);
-        } else if (status == Quest.Status.PLANNED) {
-            m = getString(R.string.quest_stopped);
+            showSnackBar(R.string.quest_started);
+        } else if (status == Status.PLANNED) {
             AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarm.cancel(getUpdateTimerPendingIntent(e.quest));
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
+            showSnackBar(R.string.quest_stopped);
         }
+    }
 
-        if (!TextUtils.isEmpty(m)) {
-            Snackbar.make(rootContainer, m, Snackbar.LENGTH_SHORT).show();
-        }
-
+    private void showSnackBar(@StringRes int textRes) {
+        Snackbar.make(rootContainer, getString(textRes), Snackbar.LENGTH_SHORT).show();
     }
 
     private PendingIntent getUpdateTimerPendingIntent(Quest quest) {
         Intent intent = new Intent(this, QuestTimerIntentService.class);
         intent.setAction(QuestTimerIntentService.ACTION_SHOW_QUEST_TIMER);
-        intent.putExtra("id", quest.getId());
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         return PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }

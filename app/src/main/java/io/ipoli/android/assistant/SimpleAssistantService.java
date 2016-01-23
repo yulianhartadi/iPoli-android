@@ -35,6 +35,7 @@ import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestListActivity;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -75,7 +76,7 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onNewTodayQuest(NewTodayQuestEvent e) {
-        Quest quest = new Quest(e.name, Quest.Status.PLANNED.name(), new Date());
+        Quest quest = new Quest(e.name, Status.PLANNED.name(), new Date());
         quest.setDuration(e.duration);
         quest.setStartTime(e.startTime);
         questPersistenceService.save(quest);
@@ -109,7 +110,7 @@ public class SimpleAssistantService implements AssistantService {
         }
         Intent intent = new Intent(context, ReminderIntentService.class);
         intent.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
-        intent.putExtra("id", q.getId());
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         PendingIntent pendingIntent = PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -154,8 +155,8 @@ public class SimpleAssistantService implements AssistantService {
         List<String> questStatuses = new ArrayList<>();
         String txt = "Your day in review: <br/><br/>";
         for (Quest q : quests) {
-            Quest.Status s = Quest.Status.valueOf(q.getStatus());
-            String qs = (s == Quest.Status.COMPLETED) ? "[x]" : "[ ]";
+            Status s = Status.valueOf(q.getStatus());
+            String qs = (s == Status.COMPLETED) ? "[x]" : "[ ]";
             qs += " " + q.getName();
             questStatuses.add(qs);
         }
