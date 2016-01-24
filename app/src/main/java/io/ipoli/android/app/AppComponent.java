@@ -14,11 +14,14 @@ import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
+import io.ipoli.android.quest.EditQuestActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestCompleteActivity;
 import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.services.QuestTimerIntentService;
 import io.ipoli.android.quest.services.UpdateQuestIntentService;
+import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,5 +60,11 @@ public interface AppComponent {
     void inject(QuestTimerIntentService questTimerIntentService);
 
     void inject(QuestCompleteActivity questCompleteActivity);
+
+    void inject(EditQuestActivity editQuestActivity);
+
+    void inject(DatePickerFragment datePickerFragment);
+
+    void inject(TimePickerFragment timePickerFragment);
 }
 
