@@ -43,6 +43,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
+
         </activity>
         <activity
             android:name=".assistant.PickAvatarActivity"

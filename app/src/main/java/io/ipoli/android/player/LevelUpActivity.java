@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.Random;
 
@@ -62,12 +65,26 @@ public class LevelUpActivity extends BaseActivity {
             Random rand = new Random();
             rewardIdx = rand.nextInt(Reward.REWARDS.length);
         }
-        Reward r = Reward.REWARDS[rewardIdx];
-        Glide.with(this).load(r.getUrl()).override(width, height).fitCenter()
-                .into(reward);
-        if (!TextUtils.isEmpty(r.getSource())) {
-            attribution.setText(getString(R.string.attribution, r.getSource()));
-        }
+        final Reward r = Reward.REWARDS[rewardIdx];
+
+        Glide.with(this).load(r.getUrl()).override(width, height)
+                .fitCenter().listener(new RequestListener<String, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                attribution.setText(R.string.reward_no_internet);
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                if (!TextUtils.isEmpty(r.getSource())) {
+                    attribution.setText(getString(R.string.attribution, r.getSource()));
+                } else {
+                    attribution.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        }).into(reward);
     }
 
     private int dp2Px(int dps) {

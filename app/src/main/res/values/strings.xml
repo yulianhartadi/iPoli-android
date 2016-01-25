@@ -76,4 +76,5 @@
     <string name="title_activity_level_up">Level Up!</string>
     <string name="level_up_reward">You are now level %d! Your reward is:</string>
     <string name="attribution">Source: %s</string>
+    <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
 </resources>
