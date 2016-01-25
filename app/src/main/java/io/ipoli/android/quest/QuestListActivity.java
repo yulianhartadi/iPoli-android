@@ -30,6 +30,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
@@ -227,5 +228,12 @@ public class QuestListActivity extends BaseActivity {
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         return PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
                 intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    @Subscribe
+    public void onEditQuestRequest(EditQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
+        startActivity(i);
     }
 }

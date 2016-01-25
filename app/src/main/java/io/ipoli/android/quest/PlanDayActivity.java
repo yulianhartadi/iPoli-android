@@ -1,5 +1,6 @@
 package io.ipoli.android.quest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,11 +23,13 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -84,7 +87,7 @@ public class PlanDayActivity extends BaseActivity {
 
     private void resetDueDateForIncompleteQuests(List<Quest> quests) {
         for (Quest q : quests) {
-            if (q.getDue() != null && !DateUtils.isSameDay(q.getDue(), new Date())) {
+            if (q.getDue() != null && DateUtils.isBeforeToday(q.getDue())) {
                 q.setDue(null);
                 questPersistenceService.save(q);
             }
@@ -155,5 +158,12 @@ public class PlanDayActivity extends BaseActivity {
         });
 
         snackbar.show();
+    }
+
+    @Subscribe
+    public void onEditQuestRequest(EditQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
+        startActivity(i);
     }
 }

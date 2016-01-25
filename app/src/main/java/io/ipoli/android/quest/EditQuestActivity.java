@@ -1,8 +1,12 @@
 package io.ipoli.android.quest;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -10,12 +14,15 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.events.DateSelectedEvent;
@@ -25,18 +32,29 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
+    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy");
+    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH.mm");
+
+    @Bind(R.id.edit_quest_container)
+    CoordinatorLayout rootContainer;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
     @Bind(R.id.quest_name)
-    EditText name;
+    EditText nameText;
+
+    @Bind(R.id.duration_hours)
+    EditText durationHours;
+
+    @Bind(R.id.duration_mins)
+    EditText durationMins;
 
     @Bind(R.id.quest_due_date)
-    Button dueDate;
+    Button dueDateBtn;
 
     @Bind(R.id.quest_start_time)
-    Button startTime;
+    Button startTimeBtn;
 
     @Inject
     Bus eventBus;
@@ -44,7 +62,7 @@ public class EditQuestActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private PlanDayQuestAdapter planDayQuestAdapter;
+    private Quest quest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +74,26 @@ public class EditQuestActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         appComponent().inject(this);
 
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        initUI(questId);
+    }
 
+    private void initUI(String questId) {
+        quest = questPersistenceService.findById(questId);
+        nameText.setText(quest.getName());
+
+        int duration = quest.getDuration();
+        long hours = 0;
+        long mins = 0;
+        if (duration > 0) {
+            hours = TimeUnit.MINUTES.toHours(quest.getDuration());
+            mins = duration - hours * 60;
+        }
+        durationHours.setText(String.format("%02d", hours));
+        durationMins.setText(String.format("%02d", mins));
+
+        setStartTimeText(quest.getStartTime());
+        setDueDateText(quest.getDue());
     }
 
     @Override
@@ -83,15 +120,49 @@ public class EditQuestActivity extends BaseActivity {
         f.show(this.getSupportFragmentManager(), "timePicker");
     }
 
+    @OnClick(R.id.save_quest)
+    public void onSaveQuest(FloatingActionButton button){
+        String name = nameText.getText().toString().trim();
+        int hours = Integer.parseInt(durationHours.getText().toString());
+        int mins = Integer.parseInt(durationMins.getText().toString());
+        int duration = hours * 60 + mins;
+
+        quest.setName(name);
+        quest.setDuration(duration);
+        if(quest.getDue() != null) {
+            quest.setStatus(Status.PLANNED.name());
+        }
+        quest = questPersistenceService.save(quest);
+        Snackbar.make(rootContainer, "Quest is saved", Snackbar.LENGTH_SHORT).show();
+    }
+
     @Subscribe
     public void onDueDateSelected(DateSelectedEvent e) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yy");
-        dueDate.setText("Due " + dateFormat.format(e.date));
+        setDueDateText(e.date);
+        quest.setDue(e.date);
     }
 
     @Subscribe
     public void onStartTimeSelected(TimeSelectedEvent e) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH.mm");
-        startTime.setText("Starts " + dateFormat.format(e.time));
+        setStartTimeText(e.time);
+        quest.setStartTime(e.time);
+    }
+
+    private void setDueDateText(Date date) {
+        String text = "";
+        if (date == null) {
+            text = "Due date";
+        } else {
+            text = DateUtils.isToday(date.getTime()) ? "today" : dueDateFormat.format(date);
+        }
+        dueDateBtn.setText(text);
+    }
+
+    private void setStartTimeText(Date time) {
+        if (time == null) {
+            startTimeBtn.setText("Start time");
+        } else {
+            startTimeBtn.setText(startTimeFormat.format(time));
+        }
     }
 }

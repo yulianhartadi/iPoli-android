@@ -17,6 +17,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
@@ -46,6 +47,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventBus.post(new EditQuestRequestEvent(q.getId()));
+            }
+        });
+
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
         tv.setText(q.getName());
 

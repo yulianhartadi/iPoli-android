@@ -26,4 +26,8 @@ public class DateUtils {
         return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
                 c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
     }
+
+    public static boolean isBeforeToday(Date d) {
+        return d.compareTo(new Date()) < 0 ? true : false;
+    }
 }
