@@ -2,8 +2,10 @@ package io.ipoli.android.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,6 +19,8 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.assistant.AssistantService;
+import io.ipoli.android.player.LevelUpActivity;
+import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
@@ -50,12 +54,20 @@ public class App extends Application {
         initPlanDayReminder();
         initReviewDayReminder();
         eventBus.post(new ScheduleNextQuestReminderEvent());
-
     }
 
     private void registerServices() {
         eventBus.register(analyticsService);
         eventBus.register(assistantService);
+        eventBus.register(this);
+    }
+
+    @Subscribe
+    public void onPlayerLevelUp(PlayerLevelUpEvent e) {
+        Intent i = new Intent(this, LevelUpActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra(LevelUpActivity.LEVEL_EXTRA_KEY, e.newLevel);
+        startActivity(i);
     }
 
     private void initPlanDayReminder() {

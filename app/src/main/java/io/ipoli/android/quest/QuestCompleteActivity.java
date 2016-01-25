@@ -22,6 +22,7 @@ public class QuestCompleteActivity extends BaseActivity {
 
     public static final String DIFFICULTY_EXTRA_KEY = "difficulty";
     public static final String LOG_EXTRA_KEY = "log";
+
     @Bind(R.id.quest_complete_log)
     EditText log;
 

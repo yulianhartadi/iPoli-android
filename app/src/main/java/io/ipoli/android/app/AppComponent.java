@@ -10,10 +10,12 @@ import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CommandParserModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.modules.PlayerModule;
 import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.chat.ChatActivity;
+import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.QuestCompleteActivity;
 import io.ipoli.android.quest.QuestListActivity;
@@ -32,7 +34,8 @@ import io.ipoli.android.quest.services.UpdateQuestIntentService;
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 CommandParserModule.class,
-                AssistantModule.class
+                AssistantModule.class,
+                PlayerModule.class
         }
 )
 public interface AppComponent {
@@ -57,5 +60,7 @@ public interface AppComponent {
     void inject(QuestTimerIntentService questTimerIntentService);
 
     void inject(QuestCompleteActivity questCompleteActivity);
+
+    void inject(LevelUpActivity levelUpActivity);
 }
 

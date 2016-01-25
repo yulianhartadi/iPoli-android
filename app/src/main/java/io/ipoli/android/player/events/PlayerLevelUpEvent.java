@@ -5,9 +5,13 @@ package io.ipoli.android.player.events;
  * on 1/11/16.
  */
 public class PlayerLevelUpEvent {
-    public final int level;
+    public final int newLevel;
+    public final int newLevelXP;
+    public final int maxXPForLevel;
 
-    public PlayerLevelUpEvent(int level) {
-        this.level = level;
+    public PlayerLevelUpEvent(int newLevel, int newLevelXP, int maxXPForLevel) {
+        this.newLevel = newLevel;
+        this.newLevelXP = newLevelXP;
+        this.maxXPForLevel = maxXPForLevel;
     }
 }

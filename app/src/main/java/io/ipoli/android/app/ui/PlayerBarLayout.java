@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.assistant.Assistant;
@@ -31,9 +30,9 @@ import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.events.CompleteQuestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -62,7 +61,6 @@ public class PlayerBarLayout extends AppBarLayout {
     TextView playerLevel;
 
     private Player player;
-    private Assistant assistant;
 
     public PlayerBarLayout(Context context) {
         super(context);
@@ -84,7 +82,7 @@ public class PlayerBarLayout extends AppBarLayout {
         View view = layoutInflater.inflate(R.layout.player_bar, this, true);
         ButterKnife.bind(this, view);
 
-        assistant = assistantPersistenceService.find();
+        Assistant assistant = assistantPersistenceService.find();
 
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
@@ -156,24 +154,16 @@ public class PlayerBarLayout extends AppBarLayout {
     }
 
     @Subscribe
-    public void onCompleteQuest(CompleteQuestEvent e) {
-        int currentXP = experienceBar.getProgress();
-        int newXP = currentXP + Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
-        int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
-        if (newXP >= maxXPForCurrentLevel) {
-            player.setLevel(player.getLevel() + 1);
-            newXP = newXP - maxXPForCurrentLevel;
-            // Every level starts from 0 experience (or the leftover from the previous one)
-            experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
-            experienceBar.setProgress(newXP);
-            playerLevel.setText(getContext().getString(R.string.player_level, player.getLevel()));
-            eventBus.post(new PlayerLevelUpEvent(player.getLevel()));
-            animateLevelUp();
-        } else {
-            animateExperienceProgress(currentXP, newXP, 0);
-        }
-        player.setExperience(newXP);
-        playerPersistenceService.save(player);
+    public void onPlayerLevelUp(PlayerLevelUpEvent e) {
+        experienceBar.setMax(e.maxXPForLevel);
+        experienceBar.setProgress(e.newLevelXP);
+        playerLevel.setText(getContext().getString(R.string.player_level, player.getLevel()));
+        animateLevelUp();
+    }
+
+    @Subscribe
+    public void onPlayerXPIncreased(PlayerXPIncreasedEvent e) {
+        animateExperienceProgress(e.currentXP, e.newXP, 0);
     }
 
     private void animateExperienceProgress(int currentXP, int newXP, long startDelay) {

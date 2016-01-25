@@ -61,7 +61,7 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPlayerLevelUp(PlayerLevelUpEvent e) {
         track(createEventBuilder("player", "level-up")
-                .setCustomDimension(LEVEL_DIMENSION_INDEX, e.level + ""));
+                .setCustomDimension(LEVEL_DIMENSION_INDEX, e.newLevel + ""));
     }
 
     @Subscribe
