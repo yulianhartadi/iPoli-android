@@ -132,6 +132,19 @@ public class PlanDayActivity extends BaseActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
+            final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
+            final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+            final Quest q = questPersistenceService.findById(id);
+            planDayQuestAdapter.updateQuest(position, q);
+
+        }
+    }
+
     @Subscribe
     public void onQuestDeleteRequest(final QuestDeleteRequestEvent e) {
         final Snackbar snackbar = Snackbar
@@ -164,6 +177,7 @@ public class PlanDayActivity extends BaseActivity {
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
-        startActivity(i);
+        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
+        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 }

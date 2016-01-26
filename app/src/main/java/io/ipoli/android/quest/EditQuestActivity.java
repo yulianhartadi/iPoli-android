@@ -1,9 +1,9 @@
 package io.ipoli.android.quest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
@@ -133,7 +133,11 @@ public class EditQuestActivity extends BaseActivity {
             quest.setStatus(Status.PLANNED.name());
         }
         quest = questPersistenceService.save(quest);
-        Snackbar.make(rootContainer, "Quest is saved", Snackbar.LENGTH_SHORT).show();
+
+        Intent data = new Intent();
+        data.putExtras(getIntent());
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Subscribe

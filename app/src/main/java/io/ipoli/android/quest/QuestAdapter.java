@@ -45,13 +45,13 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Quest q = quests.get(position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventBus.post(new EditQuestRequestEvent(q.getId()));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), position));
             }
         });
 
@@ -133,6 +133,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         notifyItemInserted(position);
     }
 
+    public void updateQuest(int position, Quest quest) {
+        quests.set(position, quest);
+        notifyItemChanged(position);
+    }
+
     public List<Quest> getQuests() {
         return quests;
     }
@@ -163,6 +168,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     public void addQuest(Quest quest) {
         quests.add(quest);
         notifyItemInserted(quests.size() - 1);
+    }
+
+    public void removeQuest(int position) {
+        quests.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {

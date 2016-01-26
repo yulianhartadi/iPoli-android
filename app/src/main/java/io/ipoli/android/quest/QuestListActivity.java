@@ -29,6 +29,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
@@ -42,7 +43,6 @@ public class QuestListActivity extends BaseActivity {
 
     public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
-    public static final String POSITION_EXTRA_KEY = "quest_position";
 
     @Bind(R.id.quest_list_container)
     LinearLayout rootContainer;
@@ -137,7 +137,7 @@ public class QuestListActivity extends BaseActivity {
         stopQuestTimer(e.quest);
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        i.putExtra(POSITION_EXTRA_KEY, e.position);
+        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
 
@@ -145,7 +145,7 @@ public class QuestListActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED) && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
-            final int position = data.getIntExtra(POSITION_EXTRA_KEY, -1);
+            final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
             final Difficulty d = (Difficulty) data.getSerializableExtra(QuestCompleteActivity.DIFFICULTY_EXTRA_KEY);
@@ -183,6 +183,15 @@ public class QuestListActivity extends BaseActivity {
             });
 
             snackbar.show();
+        } else if(resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
+            final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
+            final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+            final Quest q = questPersistenceService.findById(id);
+            if(DateUtils.isToday(q.getDue())) {
+                questAdapter.updateQuest(position, q);
+            } else {
+                questAdapter.removeQuest(position);
+            }
         }
     }
 
@@ -234,6 +243,7 @@ public class QuestListActivity extends BaseActivity {
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
-        startActivity(i);
+        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
+        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 }
