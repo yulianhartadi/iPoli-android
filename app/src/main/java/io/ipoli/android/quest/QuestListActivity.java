@@ -154,7 +154,7 @@ public class QuestListActivity extends BaseActivity {
             final Snackbar snackbar = Snackbar
                     .make(rootContainer,
                             getString(R.string.quest_complete),
-                            Snackbar.LENGTH_LONG);
+                            Snackbar.LENGTH_SHORT);
 
             snackbar.setCallback(new Snackbar.Callback() {
                 @Override
@@ -183,11 +183,11 @@ public class QuestListActivity extends BaseActivity {
             });
 
             snackbar.show();
-        } else if(resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
+        } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
             final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
-            if(DateUtils.isToday(q.getDue())) {
+            if (DateUtils.isToday(q.getDue())) {
                 questAdapter.updateQuest(position, q);
             } else {
                 questAdapter.removeQuest(position);

@@ -79,7 +79,6 @@ public class QuestTimerIntentService extends IntentService {
             }
         }
 
-
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(Constants.QUEST_TIMER_NOTIFICATION_ID, builder.build());
     }
@@ -100,10 +99,11 @@ public class QuestTimerIntentService extends IntentService {
     }
 
     private PendingIntent getPendingIntent(Quest q, String action) {
-        Intent doneIntent = new Intent(this, QuestListActivity.class);
-        doneIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
-        doneIntent.setAction(action);
-        return PendingIntent.getActivity(this, 0, doneIntent, PendingIntent.FLAG_ONE_SHOT);
+        Intent intent = new Intent(this, QuestListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
+        intent.setAction(action);
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
 }

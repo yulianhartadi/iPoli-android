@@ -53,6 +53,7 @@ public class ReminderIntentService extends IntentService {
         if (action.equals(ACTION_REMIND_PLAN_DAY)) {
 
             Intent planDayIntent = new Intent(this, PlanDayActivity.class);
+            planDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             planDayIntent.setAction(ACTION_REMIND_PLAN_DAY);
 
             PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, planDayIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -75,6 +76,7 @@ public class ReminderIntentService extends IntentService {
         } else if (action.equals(ACTION_REMIND_REVIEW_DAY)) {
 
             Intent reviewDayIntent = new Intent(this, ChatActivity.class);
+            reviewDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             reviewDayIntent.setAction(ACTION_REMIND_REVIEW_DAY);
 
             PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, reviewDayIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -95,7 +97,6 @@ public class ReminderIntentService extends IntentService {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(Constants.REMIND_REVIEW_DAY_NOTIFICATION_ID, builder.build());
         } else if (action.equals(ACTION_REMIND_START_QUEST)) {
-
             Intent remindStartQuestIntent = new Intent(this, ChatActivity.class);
             remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
@@ -135,6 +136,7 @@ public class ReminderIntentService extends IntentService {
 
     private PendingIntent getActionPendingIntent(String questId, String action) {
         Intent intent = new Intent(this, UpdateQuestIntentService.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);

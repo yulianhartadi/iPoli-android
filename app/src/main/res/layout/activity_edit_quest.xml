@@ -31,7 +31,7 @@
                 android:id="@+id/quest_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Name (e.g. Read book)"
+                android:hint="@string/edit_quest_name_hint"
                 android:inputType="textCapSentences"
                 android:singleLine="true">
 
@@ -72,13 +72,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="4"
-                android:text="How long will it take? " />
+                android:text="@string/edit_quest_duration_hint" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginStart="32dp"
                 android:layout_weight="3">
 
 
@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="4"
-                android:text="When should it start? " />
+                android:text="@string/edit_quest_start_time_hint" />
 
             <Button
                 android:id="@+id/quest_start_time"
@@ -147,9 +147,10 @@
                 android:layout_marginStart="32dp"
                 android:layout_weight="3"
                 android:background="?attr/colorAccent"
-                android:drawableLeft="@drawable/ic_alarm_white_24dp"
-                android:paddingLeft="8dp"
-                android:text="Starts now"
+                android:drawableStart="@drawable/ic_alarm_white_24dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp"
+                android:text="@string/start_time_default"
                 android:textColor="@color/md_white" />
         </LinearLayout>
 
@@ -168,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="4"
-                android:text="When will you do it? " />
+                android:text="@string/edit_quest_due_date_hint" />
 
             <Button
                 android:id="@+id/quest_due_date"
@@ -179,9 +180,10 @@
                 android:layout_marginStart="32dp"
                 android:layout_weight="3"
                 android:background="?attr/colorAccent"
-                android:drawableLeft="@drawable/ic_today_white_24dp"
-                android:paddingLeft="8dp"
-                android:text="Due Today"
+                android:drawableStart="@drawable/ic_today_white_24dp"
+                android:paddingEnd="0dp"
+                android:paddingStart="8dp"
+                android:text="@string/due_date_default"
                 android:textColor="@color/md_white" />
         </LinearLayout>
     </LinearLayout>

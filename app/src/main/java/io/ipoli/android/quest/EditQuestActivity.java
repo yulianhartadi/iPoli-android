@@ -6,7 +6,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +15,7 @@ import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -26,6 +26,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -33,8 +34,8 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
-    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy");
-    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH:mm");
+    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
+    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
@@ -91,8 +92,8 @@ public class EditQuestActivity extends BaseActivity {
             hours = TimeUnit.MINUTES.toHours(quest.getDuration());
             mins = duration - hours * 60;
         }
-        durationHours.setText(String.format("%02d", hours));
-        durationMins.setText(String.format("%02d", mins));
+        durationHours.setText(getString(R.string.hours, hours));
+        durationMins.setText(getString(R.string.minutes, mins));
 
         setStartTimeText(quest.getStartTime());
         setDueDateText(quest.getDue());
@@ -102,7 +103,7 @@ public class EditQuestActivity extends BaseActivity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     int hours = Integer.parseInt(durationHours.getText().toString());
-                    durationHours.setText(String.format("%02d", hours));
+                    durationHours.setText(getString(R.string.hours, hours));
                 }
             }
         });
@@ -110,9 +111,9 @@ public class EditQuestActivity extends BaseActivity {
         durationMins.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus) {
-                    int mins = Integer.parseInt(durationMins.getText().toString());
-                    durationMins.setText(String.format("%02d", mins));
+                if (!hasFocus) {
+                    int minutes = Integer.parseInt(durationMins.getText().toString());
+                    durationMins.setText(getString(R.string.minutes, minutes));
                 }
             }
         });
@@ -143,7 +144,7 @@ public class EditQuestActivity extends BaseActivity {
     }
 
     @OnClick(R.id.save_quest)
-    public void onSaveQuest(FloatingActionButton button){
+    public void onSaveQuest(FloatingActionButton button) {
         String name = nameText.getText().toString().trim();
         int hours = Integer.parseInt(durationHours.getText().toString());
         int mins = Integer.parseInt(durationMins.getText().toString());
@@ -151,7 +152,7 @@ public class EditQuestActivity extends BaseActivity {
 
         quest.setName(name);
         quest.setDuration(duration);
-        if(quest.getDue() != null) {
+        if (quest.getDue() != null) {
             quest.setStatus(Status.PLANNED.name());
         }
         quest = questPersistenceService.save(quest);
@@ -177,16 +178,16 @@ public class EditQuestActivity extends BaseActivity {
     private void setDueDateText(Date date) {
         String text = "";
         if (date == null) {
-            text = "Due date";
+            text = getString(R.string.due_date_default);
         } else {
-            text = DateUtils.isToday(date.getTime()) ? "today" : dueDateFormat.format(date);
+            text = DateUtils.isToday(date) ? getString(R.string.today) : dueDateFormat.format(date);
         }
         dueDateBtn.setText(text);
     }
 
     private void setStartTimeText(Date time) {
         if (time == null) {
-            startTimeBtn.setText("Start time");
+            startTimeBtn.setText(R.string.start_time_default);
         } else {
             startTimeBtn.setText(startTimeFormat.format(time));
         }
