@@ -26,6 +26,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".quest.PlanDayActivity"
             android:label="@string/title_activity_plan_day"
@@ -67,6 +68,13 @@
             android:label="@string/title_activity_level_up"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity"/>
+
+        <activity
+            android:name=".quest.EditQuestActivity"
+            android:label="@string/title_activity_edit_quest"
+            android:screenOrientation="portrait">
+        </activity>
+
 
         <service android:name=".app.services.ReminderIntentService" />
         <service android:name=".quest.services.UpdateQuestIntentService" />

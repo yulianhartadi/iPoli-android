@@ -17,6 +17,8 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
 
 /**
@@ -43,13 +45,12 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Quest q = quests.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CheckBox cb = (CheckBox) holder.itemView.findViewById(R.id.quest_check);
-                cb.setChecked(!cb.isChecked());
+                eventBus.post(new EditQuestRequestEvent(q.getId(), position));
             }
         });
 
@@ -65,7 +66,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
             }
         });
 
-        if (Status.valueOf(q.getStatus()) != Status.UNPLANNED) {
+        if (DateUtils.isToday(q.getDue())) {
             cb.setChecked(true);
         }
         TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
@@ -103,6 +104,11 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     public void addQuest(int position, Quest quest) {
         quests.add(position, quest);
         notifyDataSetChanged();
+    }
+
+    public void updateQuest(int position, Quest quest) {
+        quests.set(position, quest);
+        notifyItemChanged(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
