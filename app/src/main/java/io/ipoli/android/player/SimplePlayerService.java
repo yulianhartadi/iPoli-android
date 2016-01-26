@@ -60,8 +60,7 @@ public class SimplePlayerService implements PlayerService {
             multiplier = 3;
         }
 
-        int[] baseXPs = {5, 10, 15};
-        int baseXP = baseXPs[new Random().nextInt(baseXPs.length)];
+        int baseXP = Constants.BASE_XP_OUTCOMES[new Random().nextInt(Constants.BASE_XP_OUTCOMES.length)];
         return baseXP * multiplier;
     }
 

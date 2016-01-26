@@ -29,4 +29,6 @@ public interface Constants {
     int QUEST_UPDATE_TIMER_REQUEST_CODE = 1002;
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
+
+    int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
 }
