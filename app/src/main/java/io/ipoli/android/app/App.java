@@ -7,9 +7,6 @@ import android.content.Intent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -20,9 +17,8 @@ import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.player.LevelUpActivity;
+import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
-import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -46,6 +42,9 @@ public class App extends Application {
     @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
+    PlayerService playerService;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -59,6 +58,7 @@ public class App extends Application {
     private void registerServices() {
         eventBus.register(analyticsService);
         eventBus.register(assistantService);
+        eventBus.register(playerService);
         eventBus.register(this);
     }
 
