@@ -33,7 +33,7 @@
     </style>
 
     <style name="TextAppearance.iPoli.EditText" parent="TextAppearance.AppCompat">
-        <item name="colorAccent">@color/md_white</item>
+        <item name="colorAccent">@color/md_light_text_87</item>
     </style>
 
 </resources>

@@ -24,8 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginRight="16dp"
             android:layout_marginStart="72dp"
             app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
@@ -33,7 +31,7 @@
                 android:id="@+id/quest_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Quest (e.g. Read book)"
+                android:hint="Name (e.g. Read book)"
                 android:inputType="textCapSentences"
                 android:singleLine="true">
 
@@ -50,20 +48,20 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:src="@drawable/ic_done_white_24dp"
-        app:layout_anchor="@id/appbar"
+        app:layout_anchor="@id/edit_quest_container"
         app:layout_anchorGravity="bottom|right|end" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="160dp"
         android:orientation="vertical">
 
 
         <LinearLayout
             android:id="@+id/quest_duration_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="72dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
@@ -71,15 +69,17 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="4"
                 android:text="How long will it take? " />
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3">
 
 
                 <EditText
@@ -133,19 +133,19 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="4"
                 android:text="When should it start? " />
 
             <Button
                 android:id="@+id/quest_start_time"
                 style="@style/Widget.AppCompat.Button"
-                android:layout_width="156dp"
-                android:layout_weight="2"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
+                android:layout_weight="3"
                 android:background="?attr/colorAccent"
                 android:drawableLeft="@drawable/ic_alarm_white_24dp"
                 android:paddingLeft="8dp"
@@ -161,24 +161,23 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:weightSum="5">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="3"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="4"
                 android:text="When will you do it? " />
 
             <Button
                 android:id="@+id/quest_due_date"
                 style="@style/Widget.AppCompat.Button"
-                android:layout_width="156dp"
-                android:layout_weight="2"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
+                android:layout_weight="3"
                 android:background="?attr/colorAccent"
                 android:drawableLeft="@drawable/ic_today_white_24dp"
                 android:paddingLeft="8dp"

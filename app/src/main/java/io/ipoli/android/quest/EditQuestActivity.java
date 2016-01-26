@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -33,7 +34,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
     SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy");
-    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH.mm");
+    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH:mm");
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
@@ -81,6 +82,7 @@ public class EditQuestActivity extends BaseActivity {
     private void initUI(String questId) {
         quest = questPersistenceService.findById(questId);
         nameText.setText(quest.getName());
+        nameText.setSelection(nameText.getText().length());
 
         int duration = quest.getDuration();
         long hours = 0;
@@ -94,6 +96,26 @@ public class EditQuestActivity extends BaseActivity {
 
         setStartTimeText(quest.getStartTime());
         setDueDateText(quest.getDue());
+
+        durationHours.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    int hours = Integer.parseInt(durationHours.getText().toString());
+                    durationHours.setText(String.format("%02d", hours));
+                }
+            }
+        });
+
+        durationMins.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    int mins = Integer.parseInt(durationMins.getText().toString());
+                    durationMins.setText(String.format("%02d", mins));
+                }
+            }
+        });
     }
 
     @Override
