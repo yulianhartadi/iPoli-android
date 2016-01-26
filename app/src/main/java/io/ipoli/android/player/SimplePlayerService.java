@@ -3,10 +3,14 @@ package io.ipoli.android.player;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.Random;
+
 import io.ipoli.android.Constants;
-import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
+import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.Difficulty;
+import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 
 /**
@@ -27,7 +31,8 @@ public class SimplePlayerService implements PlayerService {
     public void onQuestComplete(CompleteQuestEvent e) {
         Player player = playerPersistenceService.find();
         int currentXP = player.getExperience();
-        int newXP = currentXP + Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
+        int earnedXP = getExperienceForQuest(e.quest);
+        int newXP = currentXP + earnedXP;
         int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
         if (newXP >= maxXPForCurrentLevel) {
             int newLevel = player.getLevel() + 1;
@@ -36,11 +41,28 @@ public class SimplePlayerService implements PlayerService {
             newXP = newXP - maxXPForCurrentLevel;
             updatePlayerXP(player, newXP);
             int maxXPForNewLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
-            eventBus.post(new PlayerLevelUpEvent(newLevel, newXP, maxXPForNewLevel));
+            eventBus.post(new PlayerLevelUpEvent(newLevel, newXP, maxXPForNewLevel, earnedXP));
         } else {
             updatePlayerXP(player, newXP);
-            eventBus.post(new PlayerXPIncreasedEvent(currentXP, newXP));
+            eventBus.post(new PlayerXPIncreasedEvent(currentXP, newXP, earnedXP));
         }
+    }
+
+    private int getExperienceForQuest(Quest quest) {
+        Difficulty qDiff = Quest.getDifficulty(quest);
+        if (qDiff == Difficulty.UNKNOWN) {
+            return Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
+        }
+        int multiplier = 1;
+        if (qDiff == Difficulty.MEDIUM) {
+            multiplier = 2;
+        } else if (qDiff == Difficulty.HARD) {
+            multiplier = 3;
+        }
+
+        int[] baseXPs = {5, 10, 15};
+        int baseXP = baseXPs[new Random().nextInt(baseXPs.length)];
+        return baseXP * multiplier;
     }
 
     private void updatePlayerXP(Player player, int newXP) {

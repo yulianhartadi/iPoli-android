@@ -6,10 +6,12 @@ package io.ipoli.android.player.events;
  */
 public class PlayerXPIncreasedEvent {
     public final int newXP;
+    public final int earnedXP;
     public int currentXP;
 
-    public PlayerXPIncreasedEvent(int currentXP, int newXP) {
+    public PlayerXPIncreasedEvent(int currentXP, int newXP, int earnedXP) {
         this.currentXP = currentXP;
         this.newXP = newXP;
+        this.earnedXP = earnedXP;
     }
 }

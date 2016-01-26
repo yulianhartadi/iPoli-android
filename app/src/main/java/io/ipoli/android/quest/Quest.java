@@ -129,4 +129,12 @@ public class Quest extends RealmObject {
     public void setOrder(int order) {
         this.order = order;
     }
+
+    public static Difficulty getDifficulty(Quest quest) {
+        try {
+            return Difficulty.valueOf(quest.getDifficulty());
+        } catch (Exception e) {
+            return Difficulty.UNKNOWN;
+        }
+    }
 }

@@ -152,7 +152,7 @@ public class QuestListActivity extends BaseActivity {
 
             final Snackbar snackbar = Snackbar
                     .make(rootContainer,
-                            getString(R.string.increase_experience, Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE),
+                            getString(R.string.quest_complete),
                             Snackbar.LENGTH_LONG);
 
             snackbar.setCallback(new Snackbar.Callback() {
