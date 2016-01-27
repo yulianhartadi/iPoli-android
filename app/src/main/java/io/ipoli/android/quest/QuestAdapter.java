@@ -2,21 +2,19 @@ package io.ipoli.android.quest;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
-import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
-import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
@@ -27,7 +25,7 @@ import io.ipoli.android.quest.events.StopQuestEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> {
 
     private final Context context;
 
@@ -51,35 +49,48 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        TextView nameView = (TextView) holder.itemView.findViewById(R.id.quest_name);
+        nameView.setText(q.getName());
+
+        final Button startBtn = (Button) holder.itemView.findViewById(R.id.quest_start);
+        if (Status.valueOf(q.getStatus()) == Status.STARTED) {
+            startBtn.setText(context.getString(R.string.stop));
+        } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
+            startBtn.setText(context.getString(R.string.start));
+
+        }
+        startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                Status status = Status.valueOf(q.getStatus());
+                if (status == Status.PLANNED) {
+                    updateQuestStatus(q, Status.STARTED);
+                } else if (status == Status.STARTED) {
+                    updateQuestStatus(q, Status.PLANNED);
+                }
+                notifyItemChanged(holder.getAdapterPosition());
+            }
+        });
+
+        holder.itemView.findViewById(R.id.quest_edit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
             }
         });
 
-        TextView nameView = (TextView) holder.itemView.findViewById(R.id.quest_name);
-        nameView.setText(q.getName());
-
-//        final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
-//        if (Status.valueOf(q.getStatus()) == Status.STARTED) {
-//            startBtn.setImageResource(R.drawable.ic_stop_accent_40dp);
-//        } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
-//            startBtn.setImageResource(R.drawable.ic_play_circle_filled_accent_40dp);
-//        }
-//        startBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Status status = Status.valueOf(q.getStatus());
-//                if (status == Status.PLANNED) {
-//                    updateQuestStatus(q, Status.STARTED);
-//                } else if (status == Status.STARTED) {
-//                    updateQuestStatus(q, Status.PLANNED);
-//                }
-//                notifyItemChanged(holder.getAdapterPosition());
-//            }
-//        });
-//        holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
+        CheckBox doneBox = (CheckBox) holder.itemView.findViewById(R.id.quest_done);
+        doneBox.setChecked(false);
+        doneBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    int position = holder.getAdapterPosition();
+                    removeQuest(position);
+                    eventBus.post(new QuestCompleteRequestEvent(q, position));
+                }
+            }
+        });
     }
 
     public void updateQuestStatus(Quest quest, Status status) {
@@ -91,7 +102,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         Status oldStatus = Status.valueOf(q.getStatus());
         q.setStatus(status.name());
         if (status == Status.COMPLETED) {
-            onItemDismissed(questIndex, ItemTouchHelper.RIGHT);
+            removeQuest(questIndex);
+            eventBus.post(new QuestCompleteRequestEvent(q, questIndex));
             return;
         }
         if (status == Status.PLANNED && oldStatus == Status.STARTED) {
@@ -146,29 +158,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         return quests;
     }
 
-    @Override
-    public void onItemMoved(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(quests, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(quests, i, i - 1);
-            }
-        }
-        eventBus.post(new ChangeQuestOrderEvent(quests.get(toPosition)));
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
-    @Override
-    public void onItemDismissed(int position, int direction) {
-        Quest q = quests.get(position);
-        quests.remove(position);
-        notifyItemRemoved(position);
-        eventBus.post(new QuestCompleteRequestEvent(q, position));
-    }
-
     public void addQuest(Quest quest) {
         quests.add(quest);
         notifyItemInserted(quests.size() - 1);
@@ -179,30 +168,10 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         notifyItemRemoved(position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(View v) {
             super(v);
-        }
-
-        @Override
-        public void onItemSelected() {
-            itemView.setBackgroundResource(R.color.md_blue_100);
-        }
-
-        @Override
-        public void onItemClear() {
-            itemView.setBackgroundColor(0);
-        }
-
-        @Override
-        public void onItemSwipeStart() {
-//            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onItemSwipeStopped() {
-//            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
         }
     }
 }

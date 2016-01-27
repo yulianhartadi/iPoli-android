@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -77,12 +75,6 @@ public class QuestListActivity extends BaseActivity {
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
         questAdapter = new QuestAdapter(this, quests, eventBus);
         questList.setAdapter(questAdapter);
-//        questList.addItemDecoration(new DividerItemDecoration(this));
-
-        int swipeFlags = ItemTouchHelper.END;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags);
-        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(questList);
     }
 
     @Override
@@ -119,18 +111,7 @@ public class QuestListActivity extends BaseActivity {
     @Override
     public void onPause() {
         eventBus.unregister(this);
-        saveQuestsOrder();
         super.onPause();
-    }
-
-    private void saveQuestsOrder() {
-        List<Quest> quests = questAdapter.getQuests();
-        int order = 0;
-        for (Quest q : quests) {
-            q.setOrder(order);
-            order++;
-        }
-        questPersistenceService.saveAll(quests);
     }
 
     @Subscribe

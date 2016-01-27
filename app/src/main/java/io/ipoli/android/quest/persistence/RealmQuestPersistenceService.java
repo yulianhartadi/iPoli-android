@@ -69,7 +69,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
                 .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
-                .findAllSorted("order", Sort.ASCENDING, "startTime", Sort.ASCENDING));
+                .findAllSorted("startTime", Sort.ASCENDING));
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .findAllSorted("order", Sort.ASCENDING));
+                .findAll());
     }
 
     @Override

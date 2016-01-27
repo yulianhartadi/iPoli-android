@@ -87,4 +87,7 @@
     <string name="edit_quest_name_hint">Name (e.g. Read a book)</string>
     <string name="hours">%02d</string>
     <string name="minutes">%02d</string>
+    <string name="start">Start</string>
+    <string name="edit">Edit</string>
+    <string name="stop">Stop</string>
 </resources>
