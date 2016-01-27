@@ -45,12 +45,12 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), position));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
             }
         });
 
@@ -119,7 +119,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundResource(R.color.md_blue_100);
+            itemView.setBackgroundResource(R.color.md_grey_100);
         }
 
         @Override
