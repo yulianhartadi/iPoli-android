@@ -1,12 +1,12 @@
 package io.ipoli.android.quest;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
@@ -29,10 +29,12 @@ import io.ipoli.android.quest.events.StopQuestEvent;
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
+    private final Context context;
     private List<Quest> quests;
     private final Bus eventBus;
 
-    public QuestAdapter(List<Quest> quests, Bus eventBus) {
+    public QuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
+        this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
     }
@@ -45,24 +47,21 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), position));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
             }
         });
 
-        TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
-        tv.setText(q.getName());
-
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
         if (Status.valueOf(q.getStatus()) == Status.STARTED) {
-            startBtn.setImageResource(R.drawable.ic_stop_outline_accent_24dp);
+            startBtn.setImageResource(R.drawable.ic_stop_accent_40dp);
         } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
-            startBtn.setImageResource(R.drawable.ic_play_circle_outline_accent_24dp);
+            startBtn.setImageResource(R.drawable.ic_play_circle_filled_accent_40dp);
         }
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +108,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
                 cq.setStatus(Status.PLANNED.name());
                 eventBus.post(new StopQuestEvent(cq));
                 notifyItemChanged(i);
+                eventBus.post(new QuestUpdatedEvent(cq));
             }
         }
     }

@@ -3,7 +3,6 @@ package io.ipoli.android.app.ui;
 import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -89,7 +88,6 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder,
                                   int actionState) {
-        Log.d("Selected Changed", actionState + "");
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if (viewHolder instanceof ItemTouchHelperViewHolder) {
                 ItemTouchHelperViewHolder itemViewHolder =
