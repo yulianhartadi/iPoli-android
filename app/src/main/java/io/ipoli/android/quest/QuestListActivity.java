@@ -75,7 +75,7 @@ public class QuestListActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-        questAdapter = new QuestAdapter(quests, eventBus);
+        questAdapter = new QuestAdapter(this, quests, eventBus);
         questList.setAdapter(questAdapter);
 
         int swipeFlags = ItemTouchHelper.END;

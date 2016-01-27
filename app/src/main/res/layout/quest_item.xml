@@ -19,20 +19,29 @@
         android:src="@drawable/ic_done_accent_48dp"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/quest_name"
-        style="@style/TextAppearance.AppCompat.Medium"
+    <com.wefika.flowlayout.FlowLayout
+        android:id="@+id/flow_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_gravity="center_vertical"
         android:layout_toEndOf="@id/quest_done_tick"
-        android:layout_toStartOf="@+id/quest_start" />
+        android:layout_toStartOf="@+id/quest_start"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@id/quest_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"/>
+
+    </com.wefika.flowlayout.FlowLayout>
 
     <ImageButton
         android:id="@id/quest_start"
         android:layout_width="40dp"
         android:layout_height="40dp"
+
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@null"

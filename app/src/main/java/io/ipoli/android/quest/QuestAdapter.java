@@ -1,14 +1,19 @@
 package io.ipoli.android.quest;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
+import com.wefika.flowlayout.FlowLayout;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,10 +34,12 @@ import io.ipoli.android.quest.events.StopQuestEvent;
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
+    private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
 
-    public QuestAdapter(List<Quest> quests, Bus eventBus) {
+    public QuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
+        this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
     }
@@ -55,8 +62,47 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
             }
         });
 
-        TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
-        tv.setText(q.getName());
+        FlowLayout flowLayout = (FlowLayout) holder.itemView.findViewById(R.id.flow_layout);
+
+        TextView nameView = (TextView) flowLayout.findViewById(R.id.quest_name);
+        nameView.setText(q.getName());
+
+        View durationView = LayoutInflater.from(context).inflate(R.layout.template_quest_property, null);
+        durationView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_blue_500));
+        ImageView durationImage = (ImageView) durationView.findViewById(R.id.quest_property_image);
+        durationImage.setImageResource(R.drawable.ic_alarm_white_24dp);
+        TextView durationText = (TextView) durationView.findViewById(R.id.quest_property_text);
+        durationText.setText(" 30 minutes ");
+
+        View startTimeView = LayoutInflater.from(context).inflate(R.layout.template_quest_property, null);
+        startTimeView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_green_500));
+        ImageView startTimeImage = (ImageView) startTimeView.findViewById(R.id.quest_property_image);
+        startTimeImage.setImageResource(R.drawable.ic_alarm_white_24dp);
+        TextView startTimeText = (TextView) startTimeView.findViewById(R.id.quest_property_text);
+        startTimeText.setText(" 12:30 ");
+
+        TextView prepositionTextFor = (TextView) LayoutInflater.from(context).inflate(R.layout.template_quest_preposition_text, null);
+        prepositionTextFor.setText(" for ");
+
+        TextView prepositionTextAt = (TextView) LayoutInflater.from(context).inflate(R.layout.template_quest_preposition_text, null);
+        prepositionTextAt.setText(" at ");
+
+
+
+        FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_VERTICAL;
+
+        durationView.setLayoutParams(params);
+        startTimeView.setLayoutParams(params);
+        prepositionTextAt.setLayoutParams(params);
+        prepositionTextFor.setLayoutParams(params);
+
+        flowLayout.addView(prepositionTextFor);
+        flowLayout.addView(durationView);
+        flowLayout.addView(prepositionTextAt);
+        flowLayout.addView(startTimeView);
+
+
 
         final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
         if (Status.valueOf(q.getStatus()) == Status.STARTED) {

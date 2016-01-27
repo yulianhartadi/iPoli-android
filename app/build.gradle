@@ -53,6 +53,7 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
     apt 'com.google.dagger:dagger-compiler:2.0.2'
+    compile "com.wefika:flowlayout:0.4.1"
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
