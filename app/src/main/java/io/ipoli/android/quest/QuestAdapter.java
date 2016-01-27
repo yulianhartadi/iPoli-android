@@ -13,7 +13,11 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
@@ -49,17 +53,15 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
 
-        TextView nameView = (TextView) holder.itemView.findViewById(R.id.quest_name);
-        nameView.setText(q.getName());
+        holder.name.setText(q.getName());
 
-        final Button startBtn = (Button) holder.itemView.findViewById(R.id.quest_start);
         if (Status.valueOf(q.getStatus()) == Status.STARTED) {
-            startBtn.setText(context.getString(R.string.stop));
+            holder.start.setText(context.getString(R.string.stop));
         } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
-            startBtn.setText(context.getString(R.string.start));
-
+            holder.start.setText(context.getString(R.string.start));
         }
-        startBtn.setOnClickListener(new View.OnClickListener() {
+
+        holder.start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Status status = Status.valueOf(q.getStatus());
@@ -72,16 +74,15 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
             }
         });
 
-        holder.itemView.findViewById(R.id.quest_edit).setOnClickListener(new View.OnClickListener() {
+        holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
             }
         });
 
-        CheckBox doneBox = (CheckBox) holder.itemView.findViewById(R.id.quest_done);
-        doneBox.setChecked(false);
-        doneBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.done.setChecked(false);
+        holder.done.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
@@ -91,6 +92,33 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
                 }
             }
         });
+
+        if (q.getStartTime() == null) {
+            holder.startTime.setVisibility(View.GONE);
+        } else {
+            holder.startTime.setVisibility(View.VISIBLE);
+            holder.startTime.setText(Constants.DEFAULT_TIME_FORMAT.format(q.getStartTime()));
+        }
+
+        if (q.getDuration() <= 0) {
+            holder.duration.setVisibility(View.GONE);
+        } else {
+            holder.duration.setVisibility(View.VISIBLE);
+            int duration = q.getDuration();
+            long hours = 0;
+            long mins = 0;
+            if (duration > 0) {
+                hours = TimeUnit.MINUTES.toHours(duration);
+                mins = duration - hours * 60;
+            }
+            if (hours > 0 && mins == 0) {
+                holder.duration.setText(context.getString(R.string.quest_item_hours_duration, hours));
+            } else if (hours > 0) {
+                holder.duration.setText(context.getString(R.string.quest_item_full_duration, hours, mins));
+            } else {
+                holder.duration.setText(context.getString(R.string.quest_item_minutes_duration, mins));
+            }
+        }
     }
 
     public void updateQuestStatus(Quest quest, Status status) {
@@ -170,8 +198,27 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        @Bind(R.id.quest_name)
+        public TextView name;
+
+        @Bind(R.id.quest_start_time)
+        public TextView startTime;
+
+        @Bind(R.id.quest_duration)
+        public TextView duration;
+
+        @Bind(R.id.quest_done)
+        public CheckBox done;
+
+        @Bind(R.id.quest_edit)
+        public Button edit;
+
+        @Bind(R.id.quest_start)
+        public Button start;
+
         public ViewHolder(View v) {
             super(v);
+            ButterKnife.bind(this, v);
         }
     }
 }

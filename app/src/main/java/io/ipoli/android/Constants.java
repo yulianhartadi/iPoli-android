@@ -1,5 +1,8 @@
 package io.ipoli.android;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/15/15.
@@ -35,4 +38,5 @@ public interface Constants {
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
 
 
+    SimpleDateFormat DEFAULT_TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.getDefault());
 }

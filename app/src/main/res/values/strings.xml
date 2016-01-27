@@ -90,4 +90,7 @@
     <string name="start">Start</string>
     <string name="edit">Edit</string>
     <string name="stop">Stop</string>
+    <string name="quest_item_full_duration">%1$d h %2$d m</string>
+    <string name="quest_item_minutes_duration">%d min</string>
+    <string name="quest_item_hours_duration">%d h</string>
 </resources>

@@ -36,7 +36,6 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
     SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
-    SimpleDateFormat startTimeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
@@ -90,7 +89,7 @@ public class EditQuestActivity extends BaseActivity {
         long hours = 0;
         long mins = 0;
         if (duration > 0) {
-            hours = TimeUnit.MINUTES.toHours(quest.getDuration());
+            hours = TimeUnit.MINUTES.toHours(duration);
             mins = duration - hours * 60;
         }
         durationHours.setText(getString(R.string.hours, hours));
@@ -200,7 +199,7 @@ public class EditQuestActivity extends BaseActivity {
         if (time == null) {
             startTimeBtn.setText(R.string.start_time_default);
         } else {
-            startTimeBtn.setText(startTimeFormat.format(time));
+            startTimeBtn.setText(Constants.DEFAULT_TIME_FORMAT.format(time));
         }
     }
 }

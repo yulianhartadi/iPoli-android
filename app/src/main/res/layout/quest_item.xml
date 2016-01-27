@@ -42,10 +42,10 @@
             android:layout_below="@id/quest_name"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_alarm_white_24dp"
+            android:drawableStart="@drawable/ic_alarm_black_24dp"
+            android:gravity="center_vertical"
             android:paddingEnd="0dp"
-            android:paddingStart="5dp"
-            android:text="12:30" />
+            android:paddingStart="5dp" />
 
         <TextView
             android:id="@+id/quest_duration"
@@ -56,8 +56,8 @@
             android:layout_marginTop="16dp"
             android:layout_toEndOf="@id/quest_start_time"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_timer_white_24dp"
-            android:text="30min" />
+            android:drawableStart="@drawable/ic_timer_black_24dp"
+            android:gravity="center_vertical" />
 
         <LinearLayout
             android:layout_width="wrap_content"
