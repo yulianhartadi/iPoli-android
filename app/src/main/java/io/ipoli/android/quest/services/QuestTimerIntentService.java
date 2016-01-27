@@ -88,7 +88,7 @@ public class QuestTimerIntentService extends IntentService {
         return (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setContentTitle(q.getName())
                 .setContentInfo(elapsedMinutes + " m")
-                .setSmallIcon(R.drawable.ic_tag_faces_white_48dp)
+                .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
                 .setWhen(q.getStartTime().getTime())
                 .setOnlyAlertOnce(true)
