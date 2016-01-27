@@ -28,7 +28,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -78,7 +77,7 @@ public class QuestListActivity extends BaseActivity {
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
         questAdapter = new QuestAdapter(this, quests, eventBus);
         questList.setAdapter(questAdapter);
-        questList.addItemDecoration(new DividerItemDecoration(this));
+//        questList.addItemDecoration(new DividerItemDecoration(this));
 
         int swipeFlags = ItemTouchHelper.END;
         ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags);

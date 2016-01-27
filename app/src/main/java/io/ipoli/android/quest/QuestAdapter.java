@@ -6,7 +6,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -62,25 +61,25 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         TextView nameView = (TextView) holder.itemView.findViewById(R.id.quest_name);
         nameView.setText(q.getName());
 
-        final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
-        if (Status.valueOf(q.getStatus()) == Status.STARTED) {
-            startBtn.setImageResource(R.drawable.ic_stop_accent_40dp);
-        } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
-            startBtn.setImageResource(R.drawable.ic_play_circle_filled_accent_40dp);
-        }
-        startBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Status status = Status.valueOf(q.getStatus());
-                if (status == Status.PLANNED) {
-                    updateQuestStatus(q, Status.STARTED);
-                } else if (status == Status.STARTED) {
-                    updateQuestStatus(q, Status.PLANNED);
-                }
-                notifyItemChanged(holder.getAdapterPosition());
-            }
-        });
-        holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
+//        final ImageButton startBtn = (ImageButton) holder.itemView.findViewById(R.id.quest_start);
+//        if (Status.valueOf(q.getStatus()) == Status.STARTED) {
+//            startBtn.setImageResource(R.drawable.ic_stop_accent_40dp);
+//        } else if (Status.valueOf(q.getStatus()) == Status.PLANNED) {
+//            startBtn.setImageResource(R.drawable.ic_play_circle_filled_accent_40dp);
+//        }
+//        startBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Status status = Status.valueOf(q.getStatus());
+//                if (status == Status.PLANNED) {
+//                    updateQuestStatus(q, Status.STARTED);
+//                } else if (status == Status.STARTED) {
+//                    updateQuestStatus(q, Status.PLANNED);
+//                }
+//                notifyItemChanged(holder.getAdapterPosition());
+//            }
+//        });
+//        holder.itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
     }
 
     public void updateQuestStatus(Quest quest, Status status) {
@@ -198,12 +197,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
         @Override
         public void onItemSwipeStart() {
-            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.VISIBLE);
+//            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onItemSwipeStopped() {
-            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
+//            itemView.findViewById(R.id.quest_done_tick).setVisibility(View.GONE);
         }
     }
 }
