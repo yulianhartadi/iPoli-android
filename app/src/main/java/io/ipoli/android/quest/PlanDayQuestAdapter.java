@@ -12,6 +12,7 @@ import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.R;
@@ -50,7 +51,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition(), q.getDue()));
             }
         });
 
@@ -60,8 +61,10 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
                     q.setStatus(Status.PLANNED.name());
+                    q.setDue(new Date());
                 } else {
                     q.setStatus(Status.UNPLANNED.name());
+                    q.setDue(null);
                 }
             }
         });

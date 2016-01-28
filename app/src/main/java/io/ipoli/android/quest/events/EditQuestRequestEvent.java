@@ -1,11 +1,15 @@
 package io.ipoli.android.quest.events;
 
-public class EditQuestRequestEvent {
-    public String questId;
-    public int position;
+import java.util.Date;
 
-    public EditQuestRequestEvent(String questId, int position) {
+public class EditQuestRequestEvent {
+    public final String questId;
+    public final int position;
+    public final Date due;
+
+    public EditQuestRequestEvent(String questId, int position, Date due) {
         this.questId = questId;
         this.position = position;
+        this.due = due;
     }
 }

@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +26,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
@@ -74,7 +72,6 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
-        resetDueDateForIncompleteQuests(quests);
         planDayQuestAdapter = new PlanDayQuestAdapter(quests, eventBus);
         questList.setAdapter(planDayQuestAdapter);
 
@@ -85,14 +82,6 @@ public class PlanDayActivity extends BaseActivity {
         helper.attachToRecyclerView(questList);
     }
 
-    private void resetDueDateForIncompleteQuests(List<Quest> quests) {
-        for (Quest q : quests) {
-            if (q.getDue() != null && DateUtils.isBeforeToday(q.getDue())) {
-                q.setDue(null);
-                questPersistenceService.save(q);
-            }
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -102,12 +91,9 @@ public class PlanDayActivity extends BaseActivity {
                 return true;
 
             case R.id.save_quests:
-                List<Quest> plannedQuests = planDayQuestAdapter.getQuests();
-                for (Quest q : plannedQuests) {
-                    q.setDue(new Date());
-                    questPersistenceService.save(q);
-                }
-                eventBus.post(new QuestsPlannedEvent(plannedQuests));
+                List<Quest> quests = planDayQuestAdapter.getQuests();
+                questPersistenceService.saveAll(quests);
+                eventBus.post(new QuestsPlannedEvent(quests));
                 finish();
                 return true;
         }
@@ -178,6 +164,9 @@ public class PlanDayActivity extends BaseActivity {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
         i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
+        if (e.due != null) {
+            i.putExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, e.due.getTime());
+        }
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 }

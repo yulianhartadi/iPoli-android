@@ -35,6 +35,7 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
+    public static final String DUE_DATE_MILLIS_EXTRA_KEY = "quest_due";
     SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
 
     @Bind(R.id.edit_quest_container)
@@ -96,7 +97,9 @@ public class EditQuestActivity extends BaseActivity {
         durationMins.setText(getString(R.string.minutes, mins));
 
         setStartTimeText(quest.getStartTime());
-        setDueDateText(quest.getDue());
+        long dueDateMillis = getIntent().getLongExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, 0);
+        Date due = dueDateMillis > 0 ? new Date(dueDateMillis) : quest.getDue();
+        setDueDateText(due);
 
         durationHours.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

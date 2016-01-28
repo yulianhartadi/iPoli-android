@@ -7,6 +7,8 @@ import android.content.Intent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -14,11 +16,14 @@ import io.ipoli.android.app.jobs.RemindPlanDayJob;
 import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.services.AnalyticsService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -49,6 +54,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         getAppComponent(this).inject(this);
+        resetDueDateForIncompleteQuests();
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
@@ -103,6 +109,17 @@ public class App extends Application {
 //            q.setDuration(90);
 //            questPersistenceService.save(q);
 //        }
+    }
+
+    private void resetDueDateForIncompleteQuests() {
+        List<Quest> quests = questPersistenceService.findAllUncompleted();
+        for (Quest q : quests) {
+            if (q.getDue() != null && DateUtils.isBeforeToday(q.getDue())) {
+                q.setStatus(Status.UNPLANNED.name());
+                q.setDue(null);
+                questPersistenceService.save(q);
+            }
+        }
     }
 
     private void registerServices() {

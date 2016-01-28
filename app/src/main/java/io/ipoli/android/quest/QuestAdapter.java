@@ -77,7 +77,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition()));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition(), q.getDue()));
             }
         });
 

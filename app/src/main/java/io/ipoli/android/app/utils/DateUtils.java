@@ -19,7 +19,7 @@ public class DateUtils {
     }
 
     public static boolean isSameDay(Date d1, Date d2) {
-        if(d1 == null || d2 == null) {
+        if (d1 == null || d2 == null) {
             return false;
         }
 
@@ -36,6 +36,16 @@ public class DateUtils {
     }
 
     public static boolean isBeforeToday(Date d) {
-        return d.compareTo(new Date()) < 0 ? true : false;
+        if (d == null) {
+            return false;
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        Calendar today = Calendar.getInstance();
+        if (c.get(Calendar.YEAR) < today.get(Calendar.YEAR)) {
+            return true;
+        }
+        return c.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR);
     }
 }

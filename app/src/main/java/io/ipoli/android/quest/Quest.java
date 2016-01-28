@@ -126,4 +126,8 @@ public class Quest extends RealmObject {
             return Difficulty.UNKNOWN;
         }
     }
+
+    public static Status getStatus(Quest quest) {
+        return Status.valueOf(quest.getStatus());
+    }
 }
