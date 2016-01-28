@@ -93,4 +93,6 @@
     <string name="quest_item_full_duration">%1$d h %2$d m</string>
     <string name="quest_item_minutes_duration">%d min</string>
     <string name="quest_item_hours_duration">%d h</string>
+    <string name="quest_timer_hours_and_minutes">For %1$d hour(s) and %2$02d minutes</string>
+    <string name="quest_timer_minutes">For %d minutes</string>
 </resources>

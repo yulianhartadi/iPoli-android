@@ -131,7 +131,6 @@ public class ReminderIntentService extends IntentService {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
         }
-
     }
 
     private PendingIntent getActionPendingIntent(String questId, String action) {

@@ -57,18 +57,18 @@ public class QuestTimerIntentService extends IntentService {
 
         NotificationCompat.Builder builder = getNotificationBuilder(q, elapsedMinutes);
         builder.setContentText("Are you focused?");
+        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q, QuestListActivity.ACTION_QUEST_CANCELED));
+        builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q, QuestListActivity.ACTION_QUEST_DONE));
         if (duration > 0) {
-
             long hours = TimeUnit.MINUTES.toHours(duration);
             int minutesRemaining = duration - elapsedMinutes;
             if (minutesRemaining > 0) {
                 long minutes = duration - hours * 60;
                 builder.setContentText(hours > 0 ?
-                        String.format("For %d hour(s) and %02d minutes", hours, minutes) :
-                        String.format("For %d minutes", minutes));
-                builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q, QuestListActivity.ACTION_QUEST_CANCELED));
-                builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q, QuestListActivity.ACTION_QUEST_DONE));
+                        getString(R.string.quest_timer_hours_and_minutes, hours, minutes) :
+                        getString(R.string.quest_timer_minutes, minutes));
             } else {
+                builder.mActions.clear();
                 builder.setOnlyAlertOnce(false);
                 builder.setContentIntent(getPendingIntent(q, QuestListActivity.ACTION_QUEST_DONE));
                 builder.setContentText("Quest done! Ready for a break?");
@@ -93,7 +93,7 @@ public class QuestTimerIntentService extends IntentService {
                 .setWhen(q.getStartTime().getTime())
                 .setOnlyAlertOnce(true)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
     }
