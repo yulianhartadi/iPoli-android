@@ -105,4 +105,15 @@
     <string name="tutorial_show_quest_2">Run for 30 min at 8:30</string>
     <string name="tutorial_show_quest_3">Meditate for 15 min at 19:30</string>
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
+    <string-array name="example_quests">
+        <item>Buy eggs</item>
+        <item>Call Lilly at 1pm</item>
+        <item>Meet John next Sunday</item>
+        <item>Read a book for 30 min</item>
+        <item>Visit the doctor in 3 days</item>
+        <item>Change car oil after 3 months</item>
+        <item>Workout at 6:30 for 30 min tomorrow</item>
+        <item>Pay rent at 12:00 on 21st next month</item>
+        <item>Math exam tomorrow at 9:30 for 1h and 30m</item>
+    </string-array>
 </resources>

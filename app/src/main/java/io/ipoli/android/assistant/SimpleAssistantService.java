@@ -185,17 +185,7 @@ public class SimpleAssistantService implements AssistantService {
 
     @Subscribe
     public void onShowExamples(ShowExamplesEvent e) {
-        String[] exampleQuests = {
-                "Buy eggs",
-                "Call Lilly at 1pm",
-                "Meet John next Sunday",
-                "Read a book for 30 min",
-                "Visit the doctor in 3 days",
-                "Change car oil after 3 months",
-                "Workout at 6:30 for 30 min tomorrow",
-                "Pay rent at 12:00 on 21st next month",
-                "Math exam tomorrow at 9:30 for 1h and 30m",
-        };
+        String[] exampleQuests = context.getResources().getStringArray(R.array.example_quests);
         String helpText = "Examples for <b>add quest</b> command:<br/><br/>";
         for (String q : exampleQuests) {
             helpText += "* " + q + "<br/>";
