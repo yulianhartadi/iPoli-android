@@ -94,14 +94,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         });
 
         if (q.getStartTime() == null) {
-            holder.startTime.setVisibility(View.GONE);
+            holder.startTime.setVisibility(View.INVISIBLE);
         } else {
             holder.startTime.setVisibility(View.VISIBLE);
             holder.startTime.setText(StartTimeFormatter.format(q.getStartTime()));
         }
 
         if (q.getDuration() <= 0) {
-            holder.duration.setVisibility(View.GONE);
+            holder.duration.setVisibility(View.INVISIBLE);
         } else {
             holder.duration.setVisibility(View.VISIBLE);
             holder.duration.setText(DurationFormatter.format(context, q.getDuration()));
