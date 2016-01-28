@@ -82,6 +82,8 @@ public enum Command {
                         cmd.parameters.put("name", txt);
                     } else if (cmd == ADD_QUEST || cmd == ADD_TODAY_QUEST) {
 
+                        // Parse duration
+
                         Pattern dp = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
                         Matcher dm = dp.matcher(txt);
                         if (dm.find()) {
@@ -101,6 +103,8 @@ public enum Command {
                             txt = txt.trim().replaceAll("\\s+", " ");
                         }
 
+                        // Parse start time
+
                         Pattern stp = Pattern.compile(START_TIME_PATTERN, Pattern.CASE_INSENSITIVE);
                         Matcher stm = stp.matcher(txt);
 
@@ -112,6 +116,8 @@ public enum Command {
                                 txt = txt.replace(stm.group(), " ");
                             }
                         }
+
+                        // Parse due date
 
                         Pattern[] dueDatePatterns = {
                                 Pattern.compile(DUE_TODAY_TOMORROW_PATTERN, Pattern.CASE_INSENSITIVE),

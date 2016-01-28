@@ -70,13 +70,17 @@ public class SimpleAssistantService implements AssistantService {
         Quest quest = new Quest(e.name);
         quest.setDuration(e.duration);
         quest.setStartTime(e.startTime);
+        if(e.dueDate != null) {
+            quest.setStatus(Status.PLANNED.name());
+            quest.setDue(e.dueDate);
+        }
         questPersistenceService.save(quest);
         reply(context.getString(R.string.new_quest_reply));
     }
 
     @Subscribe
     public void onNewTodayQuest(NewTodayQuestEvent e) {
-        Quest quest = new Quest(e.name, Status.PLANNED.name(), new Date());
+        Quest quest = new Quest(e.name, Status.PLANNED.name(), e.dueDate);
         quest.setDuration(e.duration);
         quest.setStartTime(e.startTime);
         questPersistenceService.save(quest);

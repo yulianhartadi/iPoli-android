@@ -54,12 +54,12 @@ public class LocalCommandParserService implements CommandParserService {
             case ADD_QUEST:
                 HashMap<String, Object> params = cmd.getParameters();
                 String name = params.get("name").toString();
-                bus.post(new NewQuestEvent(name, getStartTime(params), getDuration(params)));
+                bus.post(new NewQuestEvent(name, getStartTime(params), getDuration(params), getDueDate(params, null)));
                 break;
             case ADD_TODAY_QUEST:
                 params = cmd.getParameters();
                 name = params.get("name").toString();
-                bus.post(new NewTodayQuestEvent(name, getStartTime(params), getDuration(params)));
+                bus.post(new NewTodayQuestEvent(name, getStartTime(params), getDuration(params), getDueDate(params, new Date())));
                 break;
             case SHOW_QUESTS:
                 bus.post(new ShowQuestsEvent());
@@ -81,6 +81,10 @@ public class LocalCommandParserService implements CommandParserService {
                 bus.post(new UnknownCommandEvent());
         }
         return true;
+    }
+
+    private Date getDueDate(HashMap<String, Object> params, Date defaultDate) {
+        return params.containsKey("due") ? (Date) params.get("due") : defaultDate;
     }
 
     private int getDuration(HashMap<String, Object> params) {

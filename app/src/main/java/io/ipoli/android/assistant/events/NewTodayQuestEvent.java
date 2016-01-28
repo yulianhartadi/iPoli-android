@@ -10,10 +10,12 @@ public class NewTodayQuestEvent {
     public final String name;
     public final Date startTime;
     public final Integer duration;
+    public final Date dueDate;
 
-    public NewTodayQuestEvent(String name, Date startTime, Integer duration) {
+    public NewTodayQuestEvent(String name, Date startTime, Integer duration, Date dueDate) {
         this.name = name;
         this.startTime = startTime;
         this.duration = duration;
+        this.dueDate = dueDate;
     }
 }
