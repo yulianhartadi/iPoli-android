@@ -133,7 +133,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         @Override
         public void onItemSwipeStart() {
             itemView.findViewById(R.id.quest_delete).setVisibility(View.VISIBLE);
-            itemView.findViewById(R.id.quest_created_at).setVisibility(View.GONE);
+            itemView.findViewById(R.id.quest_created_at).setVisibility(View.INVISIBLE);
         }
 
         @Override

@@ -2,15 +2,14 @@ package io.ipoli.android.quest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -22,9 +21,11 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -36,7 +37,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 public class PlanDayActivity extends BaseActivity {
 
     @Bind(R.id.plan_day_container)
-    LinearLayout rootContainer;
+    CoordinatorLayout rootContainer;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -74,6 +75,7 @@ public class PlanDayActivity extends BaseActivity {
         List<Quest> quests = questPersistenceService.findAllUncompleted();
         planDayQuestAdapter = new PlanDayQuestAdapter(quests, eventBus);
         questList.setAdapter(planDayQuestAdapter);
+        questList.addItemDecoration(new DividerItemDecoration(this));
 
         int swipeFlags = ItemTouchHelper.START;
         ItemTouchCallback touchCallback = new ItemTouchCallback(planDayQuestAdapter, swipeFlags);
@@ -89,21 +91,8 @@ public class PlanDayActivity extends BaseActivity {
             case android.R.id.home:
                 finish();
                 return true;
-
-            case R.id.save_quests:
-                List<Quest> quests = planDayQuestAdapter.getQuests();
-                questPersistenceService.saveAll(quests);
-                eventBus.post(new QuestsPlannedEvent(quests));
-                finish();
-                return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.quest_list_menu, menu);
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -127,8 +116,15 @@ public class PlanDayActivity extends BaseActivity {
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
             planDayQuestAdapter.updateQuest(position, q);
-
         }
+    }
+
+    @OnClick(R.id.save_plan)
+    public void onSavePlan(View v) {
+        List<Quest> quests = planDayQuestAdapter.getQuests();
+        questPersistenceService.saveAll(quests);
+        eventBus.post(new QuestsPlannedEvent(quests));
+        finish();
     }
 
     @Subscribe

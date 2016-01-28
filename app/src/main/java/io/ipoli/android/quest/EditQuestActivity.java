@@ -36,7 +36,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class EditQuestActivity extends BaseActivity {
     public static final String DUE_DATE_MILLIS_EXTRA_KEY = "quest_due";
-    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
+    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd MMM yy", Locale.getDefault());
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
