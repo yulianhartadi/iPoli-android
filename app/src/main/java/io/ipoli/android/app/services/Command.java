@@ -2,6 +2,7 @@ package io.ipoli.android.app.services;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,12 @@ public enum Command {
 
     private static final String DURATION_PATTERN = " for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?";
     private static final String START_TIME_PATTERN = " at (\\d{1,2}[:|\\.]?(\\d{2})?\\s?(am|pm)?)";
+    private static final String DUE_TODAY_TOMORROW_PATTERN = "today|tomorrow";
+    private static final String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
+    private static final String DUE_AFTER_IN_PATTERN = "(after|in)\\s\\w+\\s(day|week|month|year)s?";
+    private static final String DUE_FROM_NOW_PATTERN = "\\w+\\s(day|week|month|year)s?\\sfrom\\snow";
+    private static final String DUE_THIS_NEXT_PATTERN = "(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)";
+    private static final String DUE_THIS_MONTH_PATTERN = "on\\s?(\\d{1,2})\\s?(st|th)$";
 
     private final String pattern;
     private final int shortCommandText;
@@ -59,6 +66,8 @@ public enum Command {
     }
 
     public static Command parseText(String text) {
+
+        clearParameters(Command.values());
 
         PrettyTimeParser parser = new PrettyTimeParser();
 
@@ -101,7 +110,39 @@ public enum Command {
                                 Date startTime = dates.get(0);
                                 cmd.parameters.put("startTime", startTime);
                                 txt = txt.replace(stm.group(), " ");
-                                txt = txt.trim().replaceAll("\\s+", " ");
+                            }
+                        }
+
+                        Pattern[] dueDatePatterns = {
+                                Pattern.compile(DUE_TODAY_TOMORROW_PATTERN, Pattern.CASE_INSENSITIVE),
+                                Pattern.compile(DUE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE),
+                                Pattern.compile(DUE_THIS_NEXT_PATTERN, Pattern.CASE_INSENSITIVE),
+                                Pattern.compile(DUE_AFTER_IN_PATTERN, Pattern.CASE_INSENSITIVE),
+                                Pattern.compile(DUE_FROM_NOW_PATTERN, Pattern.CASE_INSENSITIVE),
+                                Pattern.compile(DUE_THIS_MONTH_PATTERN, Pattern.CASE_INSENSITIVE)
+                        };
+
+                        for (Pattern p : dueDatePatterns) {
+                            Matcher matcher = p.matcher(txt);
+                            if (matcher.find()) {
+                                if (p.pattern().equals(DUE_THIS_MONTH_PATTERN)) {
+                                    int day = Integer.parseInt(matcher.group(1));
+                                    Calendar c = Calendar.getInstance();
+                                    int maxDaysInMoth = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+                                    if (day > maxDaysInMoth) {
+                                        return UNKNOWN;
+                                    }
+                                    c.set(Calendar.DAY_OF_MONTH, day);
+                                    cmd.parameters.put("due", c.getTime());
+                                } else {
+                                    List<Date> dueResult = parser.parse(matcher.group());
+                                    if (dueResult.size() != 1) {
+                                        return UNKNOWN;
+                                    }
+                                    cmd.parameters.put("due", dueResult.get(0));
+                                }
+                                txt = txt.replace(matcher.group(), " ");
+                                break;
                             }
                         }
 
@@ -113,5 +154,11 @@ public enum Command {
         }
 
         return UNKNOWN;
+    }
+
+    private static void clearParameters(Command[] commands) {
+        for (Command c : commands) {
+            c.parameters.clear();
+        }
     }
 }
