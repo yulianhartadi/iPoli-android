@@ -4,13 +4,13 @@ import io.ipoli.android.quest.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/11/16.
+ * on 1/9/16.
  */
-public class QuestDeleteRequestEvent {
+public class CompleteQuestRequestEvent {
     public final Quest quest;
     public final int position;
 
-    public QuestDeleteRequestEvent(Quest quest, int position) {
+    public CompleteQuestRequestEvent(Quest quest, int position) {
         this.quest = quest;
         this.position = position;
     }

@@ -29,7 +29,7 @@ import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -127,7 +127,7 @@ public class PlanDayActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestDeleteRequest(final QuestDeleteRequestEvent e) {
+    public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,

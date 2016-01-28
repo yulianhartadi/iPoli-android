@@ -16,19 +16,25 @@ import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
+import io.ipoli.android.assistant.events.ShowExamplesEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.chat.events.AvatarChangedEvent;
 import io.ipoli.android.chat.events.NewMessageEvent;
 import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.events.ChangeQuestOrderEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
+import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 
@@ -102,6 +108,31 @@ public class GoogleAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
+    public void onEditQuestRequest(EditQuestRequestEvent e) {
+        track(createEventBuilder("quest", "edit-request")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
+    }
+
+    @Subscribe
+    public void onQuestUpdated(QuestUpdatedEvent e) {
+        track(createEventBuilder("quest", "edit")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    }
+
+
+    @Subscribe
+    public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
+        track(createEventBuilder("quest", "complete-request")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    }
+
+    @Subscribe
+    public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
+        track(createEventBuilder("quest", "delete-request")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    }
+
+    @Subscribe
     public void onDeleteQuest(DeleteQuestEvent e) {
         track(createEventBuilder("quest", "delete")
                 .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
@@ -114,14 +145,23 @@ public class GoogleAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
+    public void onTimeSelected(TimeSelectedEvent e) {
+        trackUIEvent("quest", "time-selected");
+    }
+
+    @Subscribe
+    public void onDateSelected(DateSelectedEvent e) {
+        trackUIEvent("quest", "date-selected");
+    }
+
+    @Subscribe
     public void onPlanToday(PlanTodayEvent e) {
         trackUIEvent("chat", "plan-day");
     }
 
     @Subscribe
-    public void onChangeQuestOrder(ChangeQuestOrderEvent e) {
-        track(createEventBuilder("quest", "change-order")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    public void onShowExamples(ShowExamplesEvent e) {
+        trackUIEvent("chat", "show-examples");
     }
 
     @Subscribe

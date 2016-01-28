@@ -30,7 +30,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -115,7 +115,7 @@ public class QuestListActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestCompleteRequest(final QuestCompleteRequestEvent e) {
+    public void onQuestCompleteRequest(final CompleteQuestRequestEvent e) {
         stopQuestTimer(e.quest);
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());

@@ -26,7 +26,7 @@ import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
@@ -63,7 +63,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition(), q.getDue()));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), q.getName(), holder.getAdapterPosition(), q.getDue()));
             }
         });
 
@@ -148,7 +148,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         Quest q = quests.get(position);
         quests.remove(position);
         notifyItemRemoved(position);
-        eventBus.post(new QuestDeleteRequestEvent(q, position));
+        eventBus.post(new DeleteQuestRequestEvent(q, position));
     }
 
     public void addQuest(int position, Quest quest) {

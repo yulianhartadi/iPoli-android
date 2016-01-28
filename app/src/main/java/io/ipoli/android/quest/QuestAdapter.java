@@ -18,7 +18,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
@@ -77,7 +77,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         holder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), holder.getAdapterPosition(), q.getDue()));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), q.getName(), holder.getAdapterPosition(), q.getDue()));
             }
         });
 
@@ -88,7 +88,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
                 if (isChecked) {
                     int position = holder.getAdapterPosition();
                     removeQuest(position);
-                    eventBus.post(new QuestCompleteRequestEvent(q, position));
+                    eventBus.post(new CompleteQuestRequestEvent(q, position));
                 }
             }
         });
@@ -118,7 +118,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         q.setStatus(status.name());
         if (status == Status.COMPLETED) {
             removeQuest(questIndex);
-            eventBus.post(new QuestCompleteRequestEvent(q, questIndex));
+            eventBus.post(new CompleteQuestRequestEvent(q, questIndex));
             return;
         }
         if (status == Status.PLANNED && oldStatus == Status.STARTED) {
