@@ -1,38 +1,50 @@
 package io.ipoli.android.quest;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestDeleteRequestEvent;
+import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/8/16.
  */
 public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+    private SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd MMM", Locale.getDefault());
 
     private final PrettyTime prettyTime;
+    private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
 
-    public PlanDayQuestAdapter(List<Quest> quests, Bus eventBus) {
+    public PlanDayQuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
+        this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
         prettyTime = new PrettyTime();
@@ -55,8 +67,28 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
             }
         });
 
-        CheckBox cb = (CheckBox) holder.itemView.findViewById(R.id.quest_check);
-        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.name.setText(q.getName());
+        holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
+        holder.delete.findViewById(R.id.quest_delete).setVisibility(View.GONE);
+        holder.createdAt.setVisibility(View.VISIBLE);
+
+        setCheck(holder.check, q);
+        setDueDate(holder.dueDate, q);
+        setStartTime(holder.startTime, q);
+        setDuration(holder.duration, q);
+
+    }
+
+    private void setCheck(CheckBox check, final Quest q) {
+        check.setOnCheckedChangeListener(null);
+
+        if (DateUtils.isToday(q.getDue())) {
+            check.setChecked(true);
+        } else {
+            check.setChecked(false);
+        }
+
+        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
@@ -68,18 +100,33 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
                 }
             }
         });
+    }
 
-        if (DateUtils.isToday(q.getDue())) {
-            cb.setChecked(true);
+    private void setDueDate(TextView due, Quest q) {
+        if(q.getDue() == null) {
+            due.setVisibility(View.GONE);
+        } else {
+            due.setText(DueDateFormatter.formatWithoutYear(q.getDue()));
+            due.setVisibility(View.VISIBLE);
         }
-        TextView tv = (TextView) holder.itemView.findViewById(R.id.quest_name);
-        tv.setText(q.getName());
+    }
 
-        TextView createdTV = (TextView) holder.itemView.findViewById(R.id.quest_created_at);
-        createdTV.setText(prettyTime.format(q.getCreatedAt()));
+    private void setStartTime(TextView startTime, Quest q) {
+        if(q.getStartTime() == null) {
+            startTime.setVisibility(View.GONE);
+        } else {
+            startTime.setText(StartTimeFormatter.format(q.getStartTime()));
+            startTime.setVisibility(View.VISIBLE);
+        }
+    }
 
-        holder.itemView.findViewById(R.id.quest_delete).setVisibility(View.GONE);
-        createdTV.setVisibility(View.VISIBLE);
+    private void setDuration(TextView duration, Quest q) {
+        if(q.getDuration() <= 0) {
+            duration.setVisibility(View.GONE);
+        } else {
+            duration.setText(DurationFormatter.format(context, q.getDuration()));
+            duration.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -115,9 +162,30 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+        @Bind(R.id.quest_check)
+        CheckBox check;
+
+        @Bind(R.id.quest_name)
+        TextView name;
+
+        @Bind(R.id.quest_created_at)
+        TextView createdAt;
+
+        @Bind(R.id.quest_due_date)
+        TextView dueDate;
+
+        @Bind(R.id.quest_start_time)
+        TextView startTime;
+
+        @Bind(R.id.quest_duration)
+        TextView duration;
+
+        @Bind(R.id.quest_delete)
+        ImageView delete;
 
         public ViewHolder(View v) {
             super(v);
+            ButterKnife.bind(this, v);
         }
 
         @Override

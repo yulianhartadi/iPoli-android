@@ -73,7 +73,7 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = questPersistenceService.findAllUncompleted();
-        planDayQuestAdapter = new PlanDayQuestAdapter(quests, eventBus);
+        planDayQuestAdapter = new PlanDayQuestAdapter(this, quests, eventBus);
         questList.setAdapter(planDayQuestAdapter);
         questList.addItemDecoration(new DividerItemDecoration(this));
 

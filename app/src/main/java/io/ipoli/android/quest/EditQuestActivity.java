@@ -14,9 +14,7 @@ import android.widget.EditText;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -33,10 +31,11 @@ import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
+import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 public class EditQuestActivity extends BaseActivity {
     public static final String DUE_DATE_MILLIS_EXTRA_KEY = "quest_due";
-    SimpleDateFormat dueDateFormat = new SimpleDateFormat("dd MMM yy", Locale.getDefault());
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
@@ -97,8 +96,10 @@ public class EditQuestActivity extends BaseActivity {
         durationMins.setText(getString(R.string.minutes, mins));
 
         setStartTimeText(quest.getStartTime());
+
         long dueDateMillis = getIntent().getLongExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, 0);
         Date due = dueDateMillis > 0 ? new Date(dueDateMillis) : quest.getDue();
+        quest.setDue(due);
         setDueDateText(due);
 
         durationHours.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -193,7 +194,7 @@ public class EditQuestActivity extends BaseActivity {
         if (date == null) {
             text = getString(R.string.due_date_default);
         } else {
-            text = DateUtils.isToday(date) ? getString(R.string.today) : dueDateFormat.format(date);
+            text = DateUtils.isToday(date) ? getString(R.string.today) : DueDateFormatter.format(date);
         }
         dueDateBtn.setText(text);
     }
@@ -202,7 +203,7 @@ public class EditQuestActivity extends BaseActivity {
         if (time == null) {
             startTimeBtn.setText(R.string.start_time_default);
         } else {
-            startTimeBtn.setText(Constants.DEFAULT_TIME_FORMAT.format(time));
+            startTimeBtn.setText(StartTimeFormatter.format(time));
         }
     }
 }

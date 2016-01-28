@@ -13,17 +13,17 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompleteRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -97,27 +97,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
             holder.startTime.setVisibility(View.GONE);
         } else {
             holder.startTime.setVisibility(View.VISIBLE);
-            holder.startTime.setText(Constants.DEFAULT_TIME_FORMAT.format(q.getStartTime()));
+            holder.startTime.setText(StartTimeFormatter.format(q.getStartTime()));
         }
 
         if (q.getDuration() <= 0) {
             holder.duration.setVisibility(View.GONE);
         } else {
             holder.duration.setVisibility(View.VISIBLE);
-            int duration = q.getDuration();
-            long hours = 0;
-            long mins = 0;
-            if (duration > 0) {
-                hours = TimeUnit.MINUTES.toHours(duration);
-                mins = duration - hours * 60;
-            }
-            if (hours > 0 && mins == 0) {
-                holder.duration.setText(context.getString(R.string.quest_item_hours_duration, hours));
-            } else if (hours > 0) {
-                holder.duration.setText(context.getString(R.string.quest_item_full_duration, hours, mins));
-            } else {
-                holder.duration.setText(context.getString(R.string.quest_item_minutes_duration, mins));
-            }
+            holder.duration.setText(DurationFormatter.format(context, q.getDuration()));
         }
     }
 

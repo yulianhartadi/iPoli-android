@@ -55,29 +55,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="4dp"
+                android:layout_marginEnd="8dp"
                 android:drawableStart="@drawable/ic_calendar_black_24dp"
-                android:gravity="center_vertical"
-                android:text="12 Jan" />
+                android:gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/quest_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:drawablePadding="4dp"
                 android:drawableStart="@drawable/ic_alarm_black_24dp"
-                android:gravity="center_vertical"
-                android:text="12:30" />
+                android:gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/quest_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:drawablePadding="4dp"
                 android:drawableStart="@drawable/ic_timer_black_24dp"
-                android:gravity="center_vertical"
-                android:text="11 h 30 m" />
+                android:gravity="center_vertical" />
 
         </LinearLayout>
     </RelativeLayout>

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/edit_quest_container"
     android:layout_width="match_parent"
+    android:background="@color/md_white"
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
