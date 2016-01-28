@@ -170,7 +170,9 @@ public class QuestListActivity extends BaseActivity {
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
             if (DateUtils.isToday(q.getDue())) {
-                questAdapter.updateQuest(position, q);
+                List<Quest> quests = questPersistenceService.findAllPlannedForToday();
+                questAdapter = new QuestAdapter(this, quests, eventBus);
+                questList.setAdapter(questAdapter);
             } else {
                 questAdapter.removeQuest(position);
             }

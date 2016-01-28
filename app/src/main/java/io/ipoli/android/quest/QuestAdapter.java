@@ -177,11 +177,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         notifyItemInserted(position);
     }
 
-    public void updateQuest(int position, Quest quest) {
-        quests.set(position, quest);
-        notifyItemChanged(position);
-    }
-
     public List<Quest> getQuests() {
         return quests;
     }
