@@ -59,56 +59,6 @@ public class App extends Application {
         initPlanDayReminder();
         initReviewDayReminder();
         eventBus.post(new ScheduleNextQuestReminderEvent());
-
-//        if (questPersistenceService.findAllPlannedForToday().isEmpty()) {
-//            Quest q = new Quest("Read a book", Status.PLANNED.name(), new Date());
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//
-//            q = new Quest("Workout", Status.PLANNED.name(), new Date());
-//            calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//
-//            q = new Quest("Call grandma & grandpa", Status.PLANNED.name(), new Date());
-//            calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//
-//            q = new Quest("Work on iPoli", Status.PLANNED.name(), new Date());
-//            calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//
-//            q = new Quest("Go for a walk", Status.PLANNED.name(), new Date());
-//            calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//
-//            q = new Quest("Watch ML lectures", Status.PLANNED.name(), new Date());
-//            calendar = Calendar.getInstance();
-//            calendar.setTime(new Date());
-//            calendar.add(Calendar.HOUR, 5);
-//            q.setStartTime(calendar.getTime());
-//            q.setDuration(90);
-//            questPersistenceService.save(q);
-//        }
     }
 
     private void resetDueDateForIncompleteQuests() {

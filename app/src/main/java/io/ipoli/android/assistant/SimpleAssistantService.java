@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
@@ -12,6 +13,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +23,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.services.Command;
 import io.ipoli.android.app.services.CommandParserService;
 import io.ipoli.android.app.services.ReminderIntentService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.assistant.events.AssistantReplyEvent;
 import io.ipoli.android.assistant.events.AssistantStartActivityEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
@@ -29,6 +32,7 @@ import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
+import io.ipoli.android.assistant.events.ShowExamplesEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
@@ -70,7 +74,7 @@ public class SimpleAssistantService implements AssistantService {
         Quest quest = new Quest(e.name);
         quest.setDuration(e.duration);
         quest.setStartTime(e.startTime);
-        if(e.dueDate != null) {
+        if (e.dueDate != null) {
             quest.setStatus(Status.PLANNED.name());
             quest.setDue(e.dueDate);
         }
@@ -180,18 +184,36 @@ public class SimpleAssistantService implements AssistantService {
     }
 
     @Subscribe
+    public void onShowExamples(ShowExamplesEvent e) {
+        String[] exampleQuests = {
+                "Buy eggs",
+                "Call Lilly at 1pm",
+                "Meet John next Sunday",
+                "Read a book for 30 min",
+                "Visit the doctor in 3 days",
+                "Change car oil after 3 months",
+                "Workout at 6:30 for 30 min tomorrow",
+                "Pay rent at 12:00 on 21st next month",
+                "Math exam tomorrow at 9:30 for 1h and 30m",
+        };
+        String helpText = "Examples for <b>add quest</b> command:<br/><br/>";
+        for (String q : exampleQuests) {
+            helpText += "* " + q + "<br/>";
+        }
+        reply(helpText);
+    }
+
+    @Subscribe
     public void onHelp(HelpEvent e) {
         List<Command> commands = new ArrayList<>(Arrays.asList(Command.values()));
         commands.remove(Command.UNKNOWN);
 
         String helpText = "Command me with these:<br/><br/>";
-        List<String> commandTexts = new ArrayList<>();
         for (Command cmd : commands) {
-            commandTexts.add("* <b>" + cmd.toString()
+            helpText += "* <b>" + cmd.toString()
                     + " (" + context.getString(cmd.getShortCommandText()) + ")" + "</b>"
-                    + " - " + context.getString(cmd.getHelpText()));
+                    + " - " + context.getString(cmd.getHelpText()) + "<br/>";
         }
-        helpText += TextUtils.join("<br/>", commandTexts);
         reply(helpText);
     }
 
@@ -201,6 +223,7 @@ public class SimpleAssistantService implements AssistantService {
         Random r = new Random();
         String excuse = excuses[r.nextInt(excuses.length)];
         reply(excuse);
+        reply(R.string.excuse_help_reminder);
     }
 
     @Override
@@ -240,6 +263,7 @@ public class SimpleAssistantService implements AssistantService {
             case TUTORIAL_ADD_QUEST:
                 isValidCommand = commandParserService.parse(text, Command.ADD_QUEST);
                 if (isValidCommand) {
+                    addPlanTodayTutorialQuests();
                     changeState(Assistant.State.TUTORIAL_PLAN_TODAY);
                 } else {
                     reply(R.string.tutorial_add_quest_invalid_command);
@@ -256,6 +280,8 @@ public class SimpleAssistantService implements AssistantService {
             case TUTORIAL_ADD_TODAY_QUEST:
                 isValidCommand = commandParserService.parse(text, Command.ADD_TODAY_QUEST);
                 if (isValidCommand) {
+                    deletePlanTodayTutorialQuests();
+                    addShowQuestsTutorialQuests();
                     changeState(Assistant.State.TUTORIAL_SHOW_QUESTS);
                 } else {
                     reply(R.string.tutorial_add_today_quest_invalid_command);
@@ -273,9 +299,18 @@ public class SimpleAssistantService implements AssistantService {
             case TUTORIAL_REVIEW_TODAY:
                 isValidCommand = commandParserService.parse(text, Command.REVIEW_TODAY);
                 if (isValidCommand) {
-                    changeState(Assistant.State.TUTORIAL_HELP);
+                    deleteShowQuestsTutorialQuests();
+                    changeState(Assistant.State.TUTORIAL_SHOW_EXAMPLES);
                 } else {
                     reply(R.string.tutorial_review_today_invalid_command);
+                }
+                break;
+            case TUTORIAL_SHOW_EXAMPLES:
+                isValidCommand = commandParserService.parse(text, Command.SHOW_EXAMPLES);
+                if (isValidCommand) {
+                    changeState(Assistant.State.TUTORIAL_HELP);
+                } else {
+                    reply(R.string.tutorial_show_examples_invalid_command);
                 }
                 break;
             case TUTORIAL_HELP:
@@ -296,6 +331,70 @@ public class SimpleAssistantService implements AssistantService {
                 commandParserService.parse(text);
                 break;
         }
+    }
+
+    private void deleteShowQuestsTutorialQuests() {
+        questPersistenceService.deleteByNames(
+                context.getString(R.string.tutorial_show_quest_1),
+                context.getString(R.string.tutorial_show_quest_2),
+                context.getString(R.string.tutorial_show_quest_3)
+        );
+    }
+
+    private void deletePlanTodayTutorialQuests() {
+        questPersistenceService.deleteByNames(
+                context.getString(R.string.tutorial_planned_quest_1),
+                context.getString(R.string.tutorial_planned_quest_2),
+                context.getString(R.string.tutorial_planned_quest_3)
+        );
+    }
+
+    private void addPlanTodayTutorialQuests() {
+        List<Quest> planQuests = new ArrayList<>();
+        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_1)));
+        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_2)));
+        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_3)));
+        questPersistenceService.saveAll(planQuests);
+    }
+
+    private void addShowQuestsTutorialQuests() {
+        List<Quest> showQuests = new ArrayList<>();
+        showQuests.add(createFirstTutorialShowQuest());
+        showQuests.add(createSecondTutorialShowQuest());
+        showQuests.add(createThirdTutorialShowQuest());
+        questPersistenceService.saveAll(showQuests);
+    }
+
+    @NonNull
+    private Quest createFirstTutorialShowQuest() {
+        Quest q = new Quest(context.getString(R.string.tutorial_show_quest_1), Status.PLANNED.name(), new Date());
+        Calendar st = DateUtils.getTodayAtMidnight();
+        st.set(Calendar.HOUR_OF_DAY, 12);
+        q.setStartTime(st.getTime());
+        return q;
+    }
+
+    @NonNull
+    private Quest createSecondTutorialShowQuest() {
+        Quest q = new Quest(context.getString(R.string.tutorial_show_quest_2), Status.PLANNED.name(), new Date());
+        q.setDuration(30);
+
+        Calendar st = DateUtils.getTodayAtMidnight();
+        st.set(Calendar.HOUR_OF_DAY, 8);
+        st.set(Calendar.MINUTE, 30);
+        q.setStartTime(st.getTime());
+        return q;
+    }
+
+    @NonNull
+    private Quest createThirdTutorialShowQuest() {
+        Quest q = new Quest(context.getString(R.string.tutorial_show_quest_3), Status.PLANNED.name(), new Date());
+        q.setDuration(15);
+        Calendar st = DateUtils.getTodayAtMidnight();
+        st.set(Calendar.HOUR_OF_DAY, 19);
+        st.set(Calendar.MINUTE, 30);
+        q.setStartTime(st.getTime());
+        return q;
     }
 
     private void reply(String message) {
@@ -329,10 +428,12 @@ public class SimpleAssistantService implements AssistantService {
                 break;
             case TUTORIAL_SHOW_QUESTS:
                 reply(R.string.tutorial_show_quests_1_info);
-                reply(R.string.tutorial_show_quests_2_info);
                 break;
             case TUTORIAL_REVIEW_TODAY:
                 reply(R.string.tutorial_review_today_info);
+                break;
+            case TUTORIAL_SHOW_EXAMPLES:
+                reply(R.string.tutorial_show_examples_info);
                 break;
             case TUTORIAL_HELP:
                 reply(R.string.tutorial_help_info);

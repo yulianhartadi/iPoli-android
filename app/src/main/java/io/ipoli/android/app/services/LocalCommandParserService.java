@@ -15,6 +15,7 @@ import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
+import io.ipoli.android.assistant.events.ShowExamplesEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -73,6 +74,9 @@ public class LocalCommandParserService implements CommandParserService {
                 break;
             case REVIEW_TODAY:
                 bus.post(new ReviewTodayEvent());
+                break;
+            case SHOW_EXAMPLES:
+                bus.post(new ShowExamplesEvent());
                 break;
             case HELP:
                 bus.post(new HelpEvent());

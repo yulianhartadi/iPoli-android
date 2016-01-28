@@ -120,6 +120,20 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
+    public void deleteByNames(String... names) {
+        realm.beginTransaction();
+        for (String name : names) {
+            Quest realmQuest = realm.where(Quest.class)
+                    .equalTo("name", name)
+                    .findFirst();
+            if (realmQuest != null) {
+                realmQuest.removeFromRealm();
+            }
+        }
+        realm.commitTransaction();
+    }
+
+    @Override
     public Quest findQuestStartingAfter(Date date) {
         RealmResults<Quest> quests = realm.where(Quest.class)
                 .greaterThanOrEqualTo("startTime", date)

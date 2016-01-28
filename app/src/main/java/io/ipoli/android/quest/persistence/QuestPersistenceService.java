@@ -26,6 +26,8 @@ public interface QuestPersistenceService {
 
     void delete(Quest quest);
 
+    void deleteByNames(String... names);
+
     Quest findQuestStartingAfter(Date date);
 
     Quest findById(String id);

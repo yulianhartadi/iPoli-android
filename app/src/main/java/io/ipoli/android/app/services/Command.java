@@ -24,6 +24,7 @@ public enum Command {
     PLAN_TODAY("^(plan today|pt)$", R.string.short_cmd_plan_today, R.string.desc_cmd_plan_today),
     REVIEW_TODAY("^(review today|rt)$", R.string.short_cmd_review_today, R.string.desc_cmd_review_today),
     RENAME("^(rename|re) (\\w+)$", R.string.short_cmd_rename, R.string.desc_cmd_rename),
+    SHOW_EXAMPLES("^(show examples|se)$", R.string.short_cmd_show_examples, R.string.desc_cmd_show_examples),
     HELP("^(help|h)$", R.string.short_cmd_help, R.string.desc_cmd_help),
     UNKNOWN("", 0, 0);
 
@@ -152,7 +153,11 @@ public enum Command {
                             }
                         }
 
-                        cmd.parameters.put("name", txt.trim());
+                        String name = txt.trim();
+                        if (name.isEmpty()) {
+                            return UNKNOWN;
+                        }
+                        cmd.parameters.put("name", name);
                     }
                 }
                 return cmd;

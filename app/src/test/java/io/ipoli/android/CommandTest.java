@@ -20,6 +20,12 @@ import static org.junit.Assert.assertTrue;
 public class CommandTest {
 
     @Test
+    public void addQuestWithEmptyName() {
+        Command cmd = Command.parseText("add quest today");
+        assertTrue(cmd == Command.UNKNOWN);
+    }
+
+    @Test
     public void addQuest() {
         Command cmd = Command.parseText("add quest read book");
         assertTrue(cmd == Command.ADD_QUEST);

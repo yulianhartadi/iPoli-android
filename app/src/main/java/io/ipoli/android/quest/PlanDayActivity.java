@@ -131,7 +131,7 @@ public class PlanDayActivity extends BaseActivity {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,
-                        Snackbar.LENGTH_LONG);
+                        Snackbar.LENGTH_SHORT);
 
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
