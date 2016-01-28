@@ -156,11 +156,6 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         notifyDataSetChanged();
     }
 
-    public void updateQuest(int position, Quest quest) {
-        quests.set(position, quest);
-        notifyItemChanged(position);
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         @Bind(R.id.quest_check)
         CheckBox check;

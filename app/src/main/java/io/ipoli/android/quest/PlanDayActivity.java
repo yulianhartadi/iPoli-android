@@ -112,10 +112,9 @@ public class PlanDayActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
-            final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-            final Quest q = questPersistenceService.findById(id);
-            planDayQuestAdapter.updateQuest(position, q);
+            List<Quest> quests = questPersistenceService.findAllUncompleted();
+            planDayQuestAdapter = new PlanDayQuestAdapter(this, quests, eventBus);
+            questList.setAdapter(planDayQuestAdapter);
         }
     }
 
@@ -159,7 +158,6 @@ public class PlanDayActivity extends BaseActivity {
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
-        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
         if (e.due != null) {
             i.putExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, e.due.getTime());
         }

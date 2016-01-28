@@ -18,7 +18,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 
 
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     @Inject
     Bus eventBus;
@@ -34,7 +34,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        return new DatePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, year, month, day);
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, year, month, day);
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        return dialog;
     }
 
 

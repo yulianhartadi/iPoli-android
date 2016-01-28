@@ -54,7 +54,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     public List<Quest> findAllUncompleted() {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .notEqualTo("status", Status.COMPLETED.name())
-                .findAllSorted("createdAt", Sort.DESCENDING));
+                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
 
     @Override
