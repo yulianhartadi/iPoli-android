@@ -1,12 +1,10 @@
 package io.ipoli.android.quest;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,13 +27,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.services.QuestTimerIntentService;
-import io.ipoli.android.quest.services.UpdateQuestIntentService;
 
 public class QuestListActivity extends BaseActivity {
 
@@ -99,7 +96,6 @@ public class QuestListActivity extends BaseActivity {
         String action = intent.getAction();
         if (action.equals(ACTION_QUEST_DONE) || action.equals(ACTION_QUEST_CANCELED)) {
 
-            dismissTimerNotification();
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
 
@@ -116,7 +112,6 @@ public class QuestListActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleteRequest(final CompleteQuestRequestEvent e) {
-        stopQuestTimer(e.quest);
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
@@ -182,33 +177,6 @@ public class QuestListActivity extends BaseActivity {
     @Subscribe
     public void onQuestUpdated(QuestUpdatedEvent e) {
         questPersistenceService.save(e.quest);
-        Status status = Status.valueOf(e.quest.getStatus());
-        if (status == Status.STARTED) {
-            Intent intent = new Intent(this, UpdateQuestIntentService.class);
-            intent.setAction(UpdateQuestIntentService.ACTION_START_QUEST);
-            intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-            startService(intent);
-            showSnackBar(R.string.quest_started);
-        } else if (status == Status.PLANNED) {
-            Quest q = e.quest;
-            stopQuestTimer(q);
-            showSnackBar(R.string.quest_stopped);
-        }
-    }
-
-    private void stopQuestTimer(Quest q) {
-        cancelUpdateTimerIntent(q);
-        dismissTimerNotification();
-    }
-
-    private void cancelUpdateTimerIntent(Quest quest) {
-        AlarmManager alarm = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarm.cancel(getUpdateTimerPendingIntent(quest));
-    }
-
-    private void dismissTimerNotification() {
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID);
     }
 
     private void showSnackBar(@StringRes int textRes) {

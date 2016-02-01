@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -133,21 +134,26 @@ public class PlanDayActivity extends BaseActivity {
                         R.string.quest_removed,
                         Snackbar.LENGTH_SHORT);
 
+        final Quest quest = e.quest;
+
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.delete(e.quest);
-                eventBus.post(new DeleteQuestEvent(e.quest));
+                if(quest == null) {
+                    Log.d("Null Here", "Here");
+                }
+                questPersistenceService.delete(quest);
+                eventBus.post(new DeleteQuestEvent(quest));
             }
         });
 
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                planDayQuestAdapter.addQuest(e.position, e.quest);
+                planDayQuestAdapter.addQuest(e.position, quest);
                 snackbar.setCallback(null);
-                eventBus.post(new UndoDeleteQuestEvent(e.quest));
+                eventBus.post(new UndoDeleteQuestEvent(quest));
             }
         });
 

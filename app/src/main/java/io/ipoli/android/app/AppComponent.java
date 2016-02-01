@@ -18,10 +18,13 @@ import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.EditQuestActivity;
 import io.ipoli.android.quest.PlanDayActivity;
+import io.ipoli.android.quest.QuestActivity;
 import io.ipoli.android.quest.QuestCompleteActivity;
 import io.ipoli.android.quest.QuestListActivity;
+import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
+import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.services.QuestTimerIntentService;
-import io.ipoli.android.quest.services.UpdateQuestIntentService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
@@ -56,8 +59,6 @@ public interface AppComponent {
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
 
-    void inject(UpdateQuestIntentService updateQuestIntentService);
-
     void inject(ReminderIntentService reminderIntentService);
 
     void inject(QuestTimerIntentService questTimerIntentService);
@@ -71,5 +72,13 @@ public interface AppComponent {
     void inject(DatePickerFragment datePickerFragment);
 
     void inject(TimePickerFragment timePickerFragment);
+
+    void inject(QuestActivity questActivity);
+
+    void inject(ScheduleQuestReminderReceiver scheduleQuestReminderReceiver);
+
+    void inject(StartQuestReceiver startQuestReceiver);
+
+    void inject(SnoozeQuestReceiver snoozeQuestReceiver);
 }
 

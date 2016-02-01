@@ -23,7 +23,8 @@ import io.ipoli.android.quest.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.services.UpdateQuestIntentService;
+import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
+import io.ipoli.android.quest.receivers.StartQuestReceiver;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -111,8 +112,8 @@ public class ReminderIntentService extends IntentService {
 
             Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
-            PendingIntent startQuestPI = getActionPendingIntent(q.getId(), UpdateQuestIntentService.ACTION_START_QUEST);
-            PendingIntent snoozeQuestPI = getActionPendingIntent(q.getId(), UpdateQuestIntentService.ACTION_SNOOZE_QUEST);
+            PendingIntent startQuestPI = getActionPendingIntent(q.getId(), StartQuestReceiver.ACTION_START_QUEST);
+            PendingIntent snoozeQuestPI = getActionPendingIntent(q.getId(), SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
 
             NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                     .setContentTitle(name)
@@ -135,9 +136,7 @@ public class ReminderIntentService extends IntentService {
     }
 
     private PendingIntent getActionPendingIntent(String questId, String action) {
-        Intent intent = new Intent(this, UpdateQuestIntentService.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(action);
+        Intent intent = new Intent(action);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }

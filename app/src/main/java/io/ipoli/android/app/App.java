@@ -24,8 +24,8 @@ import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.Status;
-import io.ipoli.android.quest.events.ScheduleNextQuestReminderEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -58,7 +58,7 @@ public class App extends Application {
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
-        eventBus.post(new ScheduleNextQuestReminderEvent());
+        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
     }
 
     private void resetDueDateForIncompleteQuests() {

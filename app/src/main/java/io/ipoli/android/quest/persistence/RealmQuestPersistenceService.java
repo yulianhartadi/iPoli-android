@@ -110,10 +110,17 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
 
     @Override
     public void delete(Quest quest) {
+        if (quest == null) {
+            return;
+        }
         realm.beginTransaction();
         Quest realmQuest = realm.where(Quest.class)
                 .equalTo("id", quest.getId())
                 .findFirst();
+        if (realmQuest == null) {
+            realm.cancelTransaction();
+            return;
+        }
         realmQuest.removeFromRealm();
         realm.commitTransaction();
         eventBus.post(new QuestDeletedEvent());

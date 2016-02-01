@@ -17,10 +17,6 @@
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity
@@ -36,6 +32,20 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
+        </activity>
+
+        <activity
+            android:name=".quest.QuestActivity"
+            android:parentActivityName=".quest.QuestListActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.ipoli.android.quest.QuestActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -77,12 +87,31 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".app.services.ReminderIntentService" />
-        <service android:name=".quest.services.UpdateQuestIntentService" />
         <service android:name=".quest.services.QuestTimerIntentService" />
 
         <receiver android:name=".app.receivers.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".quest.receivers.ScheduleQuestReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".quest.receivers.StartQuestReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.START_QUEST" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".quest.receivers.SnoozeQuestReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.SNOOZE_QUEST" />
             </intent-filter>
         </receiver>
 
