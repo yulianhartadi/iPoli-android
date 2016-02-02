@@ -42,6 +42,7 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
                 i, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pendingIntent);
-        alarm.setExact(AlarmManager.RTC_WAKEUP, q.getStartTime().getTime(), pendingIntent);
+
+        alarm.setExact(AlarmManager.RTC_WAKEUP, Quest.getStartDateTime(q).getTime(), pendingIntent);
     }
 }

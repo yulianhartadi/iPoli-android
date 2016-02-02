@@ -142,10 +142,22 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
 
     @Override
     public Quest findQuestStartingAfter(Date date) {
+        Calendar yesterday = DateUtils.getTodayAtMidnight();
+        yesterday.add(Calendar.SECOND, -1);
+        Calendar startTime = Calendar.getInstance();
+        startTime.setTimeInMillis(0);
+
+        Calendar dateCalendar = Calendar.getInstance();
+        dateCalendar.setTime(date);
+
+        startTime.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
+        startTime.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
+
         RealmResults<Quest> quests = realm.where(Quest.class)
-                .greaterThanOrEqualTo("startTime", date)
+                .greaterThan("due", yesterday.getTime())
+                .greaterThanOrEqualTo("startTime", startTime.getTime())
                 .equalTo("status", Status.PLANNED.name())
-                .findAllSorted("startTime", Sort.ASCENDING);
+                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING);
         if (quests.isEmpty()) {
             return null;
         }

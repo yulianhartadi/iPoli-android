@@ -1,5 +1,6 @@
 package io.ipoli.android.quest;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,6 +31,7 @@ public class Quest extends RealmObject {
 
     private int duration;
     private Date startTime;
+    private Date actualStartDateTime;
     private String log;
     private String difficulty;
 
@@ -130,5 +132,24 @@ public class Quest extends RealmObject {
 
     public static Status getStatus(Quest quest) {
         return Status.valueOf(quest.getStatus());
+    }
+
+    public static Date getStartDateTime(Quest quest) {
+        Calendar startTime = Calendar.getInstance();
+        startTime.setTime(quest.getStartTime());
+
+        Calendar startDateTime = Calendar.getInstance();
+        startDateTime.setTime(quest.getDue());
+        startDateTime.set(Calendar.HOUR_OF_DAY, startTime.get(Calendar.HOUR_OF_DAY));
+        startDateTime.set(Calendar.MINUTE, startTime.get(Calendar.MINUTE));
+        return startDateTime.getTime();
+    }
+
+    public Date getActualStartDateTime() {
+        return actualStartDateTime;
+    }
+
+    public void setActualStartDateTime(Date actualStartDateTime) {
+        this.actualStartDateTime = actualStartDateTime;
     }
 }

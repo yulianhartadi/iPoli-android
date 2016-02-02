@@ -22,9 +22,10 @@ import io.ipoli.android.quest.QuestActivity;
 import io.ipoli.android.quest.QuestCompleteActivity;
 import io.ipoli.android.quest.QuestListActivity;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestReceiver;
-import io.ipoli.android.quest.services.QuestTimerIntentService;
+import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
@@ -61,8 +62,6 @@ public interface AppComponent {
 
     void inject(ReminderIntentService reminderIntentService);
 
-    void inject(QuestTimerIntentService questTimerIntentService);
-
     void inject(QuestCompleteActivity questCompleteActivity);
 
     void inject(LevelUpActivity levelUpActivity);
@@ -80,5 +79,9 @@ public interface AppComponent {
     void inject(StartQuestReceiver startQuestReceiver);
 
     void inject(SnoozeQuestReceiver snoozeQuestReceiver);
+
+    void inject(ShowDoneQuestNotificationReceiver showDoneQuestNotificationReceiver);
+
+    void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 }
 

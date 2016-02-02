@@ -138,6 +138,6 @@ public class ReminderIntentService extends IntentService {
     private PendingIntent getActionPendingIntent(String questId, String action) {
         Intent intent = new Intent(action);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 }

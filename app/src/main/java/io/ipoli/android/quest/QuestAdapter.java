@@ -1,6 +1,7 @@
 package io.ipoli.android.quest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
@@ -51,7 +53,16 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final Quest q = quests.get(position);
+        final Quest q = quests.get(holder.getAdapterPosition());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, QuestActivity.class);
+                i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
+                context.startActivity(i);
+            }
+        });
 
         holder.name.setText(q.getName());
 

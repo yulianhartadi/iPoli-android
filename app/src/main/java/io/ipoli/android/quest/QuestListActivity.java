@@ -1,6 +1,5 @@
 package io.ipoli.android.quest;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
@@ -8,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -32,12 +30,8 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.services.QuestTimerIntentService;
 
 public class QuestListActivity extends BaseActivity {
-
-    public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
-    public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
 
     @Bind(R.id.quest_list_container)
     LinearLayout rootContainer;
@@ -68,10 +62,6 @@ public class QuestListActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
-
-        List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-        questAdapter = new QuestAdapter(this, quests, eventBus);
-        questList.setAdapter(questAdapter);
     }
 
     @Override
@@ -88,20 +78,9 @@ public class QuestListActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        if (getIntent() == null || TextUtils.isEmpty(getIntent().getAction())) {
-            return;
-        }
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        if (action.equals(ACTION_QUEST_DONE) || action.equals(ACTION_QUEST_CANCELED)) {
-
-            String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-            Quest q = questPersistenceService.findById(questId);
-
-            Status newStatus = action.equals(ACTION_QUEST_DONE) ? Status.COMPLETED : Status.PLANNED;
-            questAdapter.updateQuestStatus(q, newStatus);
-        }
+        List<Quest> quests = questPersistenceService.findAllPlannedForToday();
+        questAdapter = new QuestAdapter(this, quests, eventBus);
+        questList.setAdapter(questAdapter);
     }
 
     @Override
@@ -181,14 +160,6 @@ public class QuestListActivity extends BaseActivity {
 
     private void showSnackBar(@StringRes int textRes) {
         Snackbar.make(rootContainer, getString(textRes), Snackbar.LENGTH_SHORT).show();
-    }
-
-    private PendingIntent getUpdateTimerPendingIntent(Quest quest) {
-        Intent intent = new Intent(this, QuestTimerIntentService.class);
-        intent.setAction(QuestTimerIntentService.ACTION_SHOW_QUEST_TIMER);
-        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
-        return PendingIntent.getService(this, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
-                intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     @Subscribe

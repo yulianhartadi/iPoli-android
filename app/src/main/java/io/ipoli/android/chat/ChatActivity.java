@@ -35,6 +35,7 @@ import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.chat.persistence.MessagePersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class ChatActivity extends BaseActivity {
 
@@ -68,6 +69,9 @@ public class ChatActivity extends BaseActivity {
     AssistantService assistantService;
 
     private boolean resumeAfterOnCreate;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
