@@ -33,7 +33,7 @@ public class RealmAssistantPersistenceService implements AssistantPersistenceSer
     public Assistant find() {
         Assistant assistant = realm.where(Assistant.class).findFirst();
         if (assistant == null) {
-            return new Assistant(context.getString(R.string.default_assistant_name), Constants.DEFAULT_ASSISTANT_AVATAR, Assistant.State.TUTORIAL_START);
+            return new Assistant(context.getString(R.string.default_assistant_name), Constants.DEFAULT_ASSISTANT_AVATAR, Assistant.State.NORMAL);
         }
         return realm.copyFromRealm(assistant);
     }

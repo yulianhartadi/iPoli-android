@@ -54,7 +54,7 @@ public class ShowDoneQuestNotificationReceiver extends BroadcastReceiver {
                 .setWhen(q.getActualStartDateTime().getTime())
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_SOUND)
+                .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);

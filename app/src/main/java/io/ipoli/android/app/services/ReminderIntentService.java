@@ -127,7 +127,7 @@ public class ReminderIntentService extends IntentService {
                     .addAction(R.drawable.ic_snooze_black_24dp, "SNOOZE", snoozeQuestPI)
                     .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
                     .setContentIntent(pendingNotificationIntent)
-                    .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
+                    .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);

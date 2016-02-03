@@ -14,7 +14,10 @@ import android.widget.LinearLayout;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -23,6 +26,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -58,8 +62,11 @@ public class QuestListActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         appComponent().inject(this);
 
+        toolbar.setTitle(new SimpleDateFormat("'Today' EEE, d MMM ''yy", Locale.getDefault()).format(new Date()));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        questList.addItemDecoration(new DividerItemDecoration(this));
         questList.setLayoutManager(layoutManager);
     }
 
@@ -78,7 +85,7 @@ public class QuestListActivity extends BaseActivity {
         super.onResume();
         eventBus.register(this);
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-        questAdapter = new QuestAdapter(this, quests, eventBus);
+        questAdapter = new QuestAdapter(this, quests);
         questList.setAdapter(questAdapter);
     }
 
@@ -144,7 +151,7 @@ public class QuestListActivity extends BaseActivity {
             final Quest q = questPersistenceService.findById(id);
             if (DateUtils.isToday(q.getDue())) {
                 List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-                questAdapter = new QuestAdapter(this, quests, eventBus);
+                questAdapter = new QuestAdapter(this, quests);
                 questList.setAdapter(questAdapter);
             } else {
                 questAdapter.removeQuest(position);
