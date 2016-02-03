@@ -26,7 +26,6 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -160,13 +159,5 @@ public class QuestListActivity extends BaseActivity {
 
     private void showSnackBar(@StringRes int textRes) {
         Snackbar.make(rootContainer, getString(textRes), Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Subscribe
-    public void onEditQuestRequest(EditQuestRequestEvent e) {
-        Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
-        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
-        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 }

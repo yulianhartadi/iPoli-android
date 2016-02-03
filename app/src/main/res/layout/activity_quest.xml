@@ -35,7 +35,7 @@
             android:progressDrawable="@drawable/timer_progress"
             android:secondaryProgress="100" />
 
-        <TextView
+        <Chronometer
             android:id="@+id/quest_details_time"
             style="@style/TextAppearance.AppCompat.Display4"
             android:layout_width="wrap_content"
@@ -43,8 +43,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif-thin"
             android:textColor="@color/md_light_text_87"
-            android:textSize="80sp"
-            android:textStyle="normal" />
+            android:textSize="72sp" />
 
     </RelativeLayout>
 

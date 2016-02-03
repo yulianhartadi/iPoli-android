@@ -43,7 +43,6 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
         showQuestTimerNotification(q);
     }
 
-
     private void showQuestTimerNotification(Quest q) {
         int duration = q.getDuration();
 
@@ -54,8 +53,9 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = getNotificationBuilder(q, elapsedMinutes);
         builder.setContentText("Are you focused?");
-        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q, QuestActivity.ACTION_QUEST_CANCELED));
-        builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q, QuestActivity.ACTION_QUEST_DONE));
+        builder.setContentIntent(getContentIntent(q.getId()));
+        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
+        builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_DONE));
         if (duration > 0) {
             long hours = TimeUnit.MINUTES.toHours(duration);
             int minutesRemaining = duration - elapsedMinutes;
@@ -86,10 +86,17 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
                 .setOngoing(true);
     }
 
-    private PendingIntent getPendingIntent(Quest q, String action) {
+    private PendingIntent getContentIntent(String questId) {
         Intent intent = new Intent(context, QuestActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    private PendingIntent getPendingIntent(String questId, String action) {
+        Intent intent = new Intent(context, QuestActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.setAction(action);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
