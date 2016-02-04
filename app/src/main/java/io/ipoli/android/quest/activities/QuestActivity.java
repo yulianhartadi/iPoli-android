@@ -2,6 +2,7 @@ package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.commands.StartQuestCommand;
@@ -43,6 +45,9 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
+
+    @Bind(R.id.quest_details_content)
+    CoordinatorLayout rootContainer;
 
     @Bind(R.id.quest_details_progress)
     ProgressBar timerProgress;
@@ -81,7 +86,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         setContentView(R.layout.activity_quest);
         ButterKnife.bind(this);
         appComponent().inject(this);
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.md_blue_800));
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         quest = questPersistenceService.findById(questId);
@@ -103,10 +107,17 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     }
 
     private void initUI() {
+        setBackgroundColors(Quest.getContext(quest));
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;
         name.setText(quest.getName());
+    }
+
+    private void setBackgroundColors(QuestContext ctx) {
+        rootContainer.setBackgroundColor(ContextCompat.getColor(this, ctx.resDarkerColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
     }
 
     private void resetTimerUI() {

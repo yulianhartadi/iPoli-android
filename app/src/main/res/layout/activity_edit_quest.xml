@@ -71,12 +71,13 @@
                 android:id="@+id/quest_context_wellness"
                 style="@style/QuestContextIndicator" />
 
-            <ImageView
-                android:id="@+id/quest_context_learning"
-                style="@style/QuestContextIndicator"/>
 
             <ImageView
                 android:id="@+id/quest_context_work"
+                style="@style/QuestContextIndicator"/>
+
+            <ImageView
+                android:id="@+id/quest_context_learning"
                 style="@style/QuestContextIndicator"/>
 
 
