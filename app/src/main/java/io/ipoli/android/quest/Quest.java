@@ -29,6 +29,9 @@ public class Quest extends RealmObject {
     @Required
     private String status;
 
+    @Required
+    private String context;
+
     private Date due;
 
     private int duration;
@@ -125,6 +128,14 @@ public class Quest extends RealmObject {
         this.status = status;
     }
 
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
     public static Difficulty getDifficulty(Quest quest) {
         try {
             return Difficulty.valueOf(quest.getDifficulty());
@@ -135,6 +146,14 @@ public class Quest extends RealmObject {
 
     public static Status getStatus(Quest quest) {
         return Status.valueOf(quest.getStatus());
+    }
+
+    public static QuestContext getContext(Quest quest) {
+        return QuestContext.valueOf(quest.getContext());
+    }
+
+    public static void setContext(Quest quest, QuestContext context) {
+        quest.setContext(context.name());
     }
 
     public static Date getStartDateTime(Quest quest) {

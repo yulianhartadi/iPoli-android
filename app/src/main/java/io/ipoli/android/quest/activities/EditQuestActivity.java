@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -59,6 +60,9 @@ public class EditQuestActivity extends BaseActivity {
 
     @Bind(R.id.quest_start_time)
     Button startTimeBtn;
+
+    @Bind(R.id.quest_context_container)
+    LinearLayout contextContainer;
 
     @Inject
     Bus eventBus;
@@ -123,6 +127,10 @@ public class EditQuestActivity extends BaseActivity {
                 }
             }
         });
+
+
+//        GradientDrawable drawable = (GradientDrawable) personalContext.getBackground();
+//        drawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     @Override

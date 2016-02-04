@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/edit_quest_container"
     android:layout_width="match_parent"
-    android:background="@color/md_white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/md_white">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -149,8 +149,8 @@
                 android:layout_weight="3"
                 android:background="?attr/colorAccent"
                 android:drawableStart="@drawable/ic_alarm_white_24dp"
-                android:paddingStart="8dp"
                 android:paddingEnd="0dp"
+                android:paddingStart="8dp"
                 android:text="@string/start_time_default"
                 android:textColor="@color/md_white" />
         </LinearLayout>
@@ -186,6 +186,57 @@
                 android:paddingStart="8dp"
                 android:text="@string/due_date_default"
                 android:textColor="@color/md_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:id="@+id/quest_context_container">
+
+            <View
+                android:id="@+id/quest_context_personal"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_context_indicator" />
+
+            <View
+                android:id="@+id/quest_context_work"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_context_indicator" />
+
+            <View
+                android:id="@+id/quest_context_wellness"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_context_indicator" />
+
+            <View
+                android:id="@+id/quest_context_fun"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_context_indicator" />
+
+            <View
+                android:id="@+id/quest_context_learning"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_context_indicator" />
+
+            <View
+                android:id="@+id/quest_context_chores"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/ic_context_indicator" />
         </LinearLayout>
     </LinearLayout>
 

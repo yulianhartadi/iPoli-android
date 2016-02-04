@@ -19,9 +19,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.chat.ChatActivity;
-import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.activities.QuestListActivity;
+import io.ipoli.android.quest.activities.PlanDayActivity;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestReceiver;
@@ -99,7 +99,7 @@ public class ReminderIntentService extends IntentService {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(Constants.REMIND_REVIEW_DAY_NOTIFICATION_ID, builder.build());
         } else if (action.equals(ACTION_REMIND_START_QUEST)) {
-            Intent remindStartQuestIntent = new Intent(this, QuestListActivity.class);
+            Intent remindStartQuestIntent = new Intent(this, QuestActivity.class);
             remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
