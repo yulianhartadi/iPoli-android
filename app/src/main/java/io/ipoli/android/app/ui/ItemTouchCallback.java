@@ -96,7 +96,6 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
             }
         }
 
-
         super.onSelectedChanged(viewHolder, actionState);
     }
 

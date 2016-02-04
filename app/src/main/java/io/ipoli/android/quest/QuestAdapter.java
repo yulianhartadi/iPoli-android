@@ -8,12 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
+import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
@@ -21,15 +27,17 @@ import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> {
+public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
     private final Context context;
 
     private List<Quest> quests;
+    private Bus eventBus;
 
-    public QuestAdapter(Context context, List<Quest> quests) {
+    public QuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -93,7 +101,26 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         notifyItemRemoved(position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onItemMoved(int fromPosition, int toPosition) {
+
+    }
+
+    @Override
+    public void onItemDismissed(int position, int direction) {
+        Quest q = quests.get(position);
+        quests.remove(position);
+        notifyItemRemoved(position);
+        eventBus.post(new CompleteQuestRequestEvent(q));
+    }
+
+    public void updateQuests(List<Quest> newQuests) {
+        quests.clear();
+        quests.addAll(newQuests);
+        notifyDataSetChanged();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
         @Bind(R.id.quest_name)
         public TextView name;
@@ -107,6 +134,28 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
+        }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundResource(R.color.md_blue_100);
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
+        }
+
+        @Override
+        public void onItemSwipeStart() {
+            itemView.findViewById(R.id.quest_complete_check).setVisibility(View.VISIBLE);
+            itemView.findViewById(R.id.quest_start_time).setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onItemSwipeStopped() {
+            itemView.findViewById(R.id.quest_complete_check).setVisibility(View.GONE);
+            itemView.findViewById(R.id.quest_start_time).setVisibility(View.VISIBLE);
         }
     }
 }

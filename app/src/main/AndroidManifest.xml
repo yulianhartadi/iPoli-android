@@ -27,7 +27,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".quest.PlanDayActivity"
+            android:name=".quest.activities.PlanDayActivity"
             android:label="@string/title_activity_plan_day"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait">
@@ -37,23 +37,22 @@
         </activity>
 
         <activity
-            android:name=".quest.QuestActivity"
-            android:parentActivityName=".quest.QuestListActivity"
+            android:name=".quest.activities.QuestActivity"
+            android:parentActivityName=".quest.activities.QuestListActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.quest.QuestActivity" />
+                android:value=".quest.activities.QuestActivity" />
         </activity>
 
         <activity
-            android:name=".quest.QuestListActivity"
+            android:name=".quest.activities.QuestListActivity"
             android:label="@string/title_activity_quest_list"
             android:parentActivityName=".chat.ChatActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.chat.ChatActivity" />
-
         </activity>
         <activity
             android:name=".assistant.PickAvatarActivity"
@@ -67,7 +66,7 @@
         </activity>
 
         <activity
-            android:name=".quest.QuestCompleteActivity"
+            android:name=".quest.activities.QuestCompleteActivity"
             android:label="@string/title_activity_quest_complete"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
@@ -79,7 +78,7 @@
             android:theme="@style/Theme.iPoli.DialogActivity" />
 
         <activity
-            android:name=".quest.EditQuestActivity"
+            android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_edit_quest"
             android:screenOrientation="portrait" />
 

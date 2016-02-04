@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.QuestActivity;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 

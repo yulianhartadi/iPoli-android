@@ -25,8 +25,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
@@ -103,7 +103,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     private void setDueDate(TextView due, Quest q) {
-        if(q.getDue() == null) {
+        if (q.getDue() == null) {
             due.setVisibility(View.GONE);
         } else {
             due.setText(DueDateFormatter.formatWithoutYear(q.getDue()));
@@ -112,7 +112,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     private void setStartTime(TextView startTime, Quest q) {
-        if(q.getStartTime() == null) {
+        if (q.getStartTime() == null) {
             startTime.setVisibility(View.GONE);
         } else {
             startTime.setText(StartTimeFormatter.format(q.getStartTime()));
@@ -121,7 +121,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     private void setDuration(TextView duration, Quest q) {
-        if(q.getDuration() <= 0) {
+        if (q.getDuration() <= 0) {
             duration.setVisibility(View.GONE);
         } else {
             duration.setText(DurationFormatter.format(context, q.getDuration()));
@@ -153,6 +153,12 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
 
     public void addQuest(int position, Quest quest) {
         quests.add(position, quest);
+        notifyDataSetChanged();
+    }
+
+    public void updateQuests(List<Quest> newQuests) {
+        quests.clear();
+        quests.addAll(newQuests);
         notifyDataSetChanged();
     }
 

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,9 +27,11 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
+import io.ipoli.android.quest.PlanDayQuestAdapter;
+import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -114,8 +115,7 @@ public class PlanDayActivity extends BaseActivity {
 
         if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
             List<Quest> quests = questPersistenceService.findAllUncompleted();
-            planDayQuestAdapter = new PlanDayQuestAdapter(this, quests, eventBus);
-            questList.setAdapter(planDayQuestAdapter);
+            planDayQuestAdapter.updateQuests(quests);
         }
     }
 
@@ -140,9 +140,6 @@ public class PlanDayActivity extends BaseActivity {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                if(quest == null) {
-                    Log.d("Null Here", "Here");
-                }
                 questPersistenceService.delete(quest);
                 eventBus.post(new DeleteQuestEvent(quest));
             }

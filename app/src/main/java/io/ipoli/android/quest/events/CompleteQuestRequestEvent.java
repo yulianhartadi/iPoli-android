@@ -8,10 +8,8 @@ import io.ipoli.android.quest.Quest;
  */
 public class CompleteQuestRequestEvent {
     public final Quest quest;
-    public final int position;
 
-    public CompleteQuestRequestEvent(Quest quest, int position) {
+    public CompleteQuestRequestEvent(Quest quest) {
         this.quest = quest;
-        this.position = position;
     }
 }

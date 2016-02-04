@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +27,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;

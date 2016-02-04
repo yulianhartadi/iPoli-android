@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
@@ -26,7 +27,10 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
+import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -59,12 +63,22 @@ public class QuestListActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         appComponent().inject(this);
 
-        toolbar.setTitle(new SimpleDateFormat("'Today' EEE, d MMM ''yy", Locale.getDefault()).format(new Date()));
+        toolbar.setTitle(new SimpleDateFormat("'Today - 'EEE, d MMM", Locale.getDefault()).format(new Date()));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.addItemDecoration(new DividerItemDecoration(this));
         questList.setLayoutManager(layoutManager);
+
+        List<Quest> quests = questPersistenceService.findAllPlannedForToday();
+        questAdapter = new QuestAdapter(this, quests, eventBus);
+        questList.setAdapter(questAdapter);
+
+        int swipeFlags = ItemTouchHelper.END;
+        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags, 0);
+        touchCallback.setLongPressDragEnabled(false);
+        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
+        helper.attachToRecyclerView(questList);
     }
 
     @Override
@@ -81,9 +95,12 @@ public class QuestListActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        resetQuestDataset();
+    }
+
+    private void resetQuestDataset() {
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-        questAdapter = new QuestAdapter(this, quests);
-        questList.setAdapter(questAdapter);
+        questAdapter.updateQuests(quests);
     }
 
     @Override
@@ -93,7 +110,7 @@ public class QuestListActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestCompleteRequest(final CompleteQuestRequestEvent e) {
+    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
@@ -109,9 +126,7 @@ public class QuestListActivity extends BaseActivity {
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
             if (DateUtils.isToday(q.getDue())) {
-                List<Quest> quests = questPersistenceService.findAllPlannedForToday();
-                questAdapter = new QuestAdapter(this, quests);
-                questList.setAdapter(questAdapter);
+                resetQuestDataset();
             } else {
                 questAdapter.removeQuest(position);
             }

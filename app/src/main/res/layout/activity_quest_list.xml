@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".quest.QuestListActivity">
+    tools:context=".quest.activities.QuestListActivity">
 
     <io.ipoli.android.app.ui.PlayerBarLayout
         android:layout_width="match_parent"

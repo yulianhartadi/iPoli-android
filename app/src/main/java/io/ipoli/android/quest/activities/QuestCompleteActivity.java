@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +19,9 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.quest.Difficulty;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
