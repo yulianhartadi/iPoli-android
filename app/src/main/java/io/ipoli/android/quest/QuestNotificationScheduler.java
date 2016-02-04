@@ -76,4 +76,9 @@ public class QuestNotificationScheduler {
         return PendingIntent.getBroadcast(context, Constants.QUEST_SHOW_DONE_REQUEST_CODE,
                 intent, 0);
     }
+
+    public static void stopAll(String questId, Context context) {
+        stopDone(questId, context);
+        stopTimer(questId, context);
+    }
 }

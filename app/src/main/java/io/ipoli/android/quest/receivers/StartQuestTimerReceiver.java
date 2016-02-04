@@ -74,8 +74,7 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
                 .setLargeIcon(largeIcon)
                 .setWhen(q.getActualStartDateTime().getTime())
                 .setOnlyAlertOnce(true)
-                .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true);
     }

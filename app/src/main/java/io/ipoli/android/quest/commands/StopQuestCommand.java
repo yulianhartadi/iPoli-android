@@ -27,7 +27,6 @@ public class StopQuestCommand {
         quest.setStatus(Status.PLANNED.name());
         quest.setActualStartDateTime(null);
         quest = questPersistenceService.save(quest);
-        QuestNotificationScheduler.stopTimer(quest.getId(), context);
-        QuestNotificationScheduler.stopDone(quest.getId(), context);
+        QuestNotificationScheduler.stopAll(quest.getId(), context);
     }
 }

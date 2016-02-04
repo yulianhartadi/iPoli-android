@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -71,6 +73,11 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+
+        if (Quest.getStatus(q) == Status.STARTED) {
+            Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
+            holder.indicator.startAnimation(blinkAnimation);
+        }
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));

@@ -21,6 +21,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -95,6 +96,7 @@ public class QuestCompleteActivity extends BaseActivity {
         }
 
         quest = questPersistenceService.save(quest);
+        QuestNotificationScheduler.stopAll(quest.getId(), this);
         eventBus.post(new CompleteQuestEvent(quest));
     }
 }

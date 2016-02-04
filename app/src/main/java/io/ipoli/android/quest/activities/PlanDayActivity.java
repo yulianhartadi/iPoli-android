@@ -29,6 +29,7 @@ import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.PlanDayQuestAdapter;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -142,6 +143,7 @@ public class PlanDayActivity extends BaseActivity {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
+                QuestNotificationScheduler.stopAll(quest.getId(), PlanDayActivity.this);
                 questPersistenceService.delete(quest);
                 eventBus.post(new DeleteQuestEvent(quest));
                 if (planDayQuestAdapter.getQuests().isEmpty()) {
