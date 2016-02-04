@@ -2,6 +2,8 @@ package io.ipoli.android.quest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,9 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
         holder.name.setText(q.getName());
 
+        GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+
         if (q.getStartTime() == null) {
             holder.startTime.setVisibility(View.INVISIBLE);
         } else {
@@ -82,18 +87,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
         return quests.size();
     }
 
-    public void putQuest(int position, Quest quest) {
-        quests.add(position, quest);
-        notifyItemInserted(position);
-    }
-
     public List<Quest> getQuests() {
         return quests;
-    }
-
-    public void addQuest(Quest quest) {
-        quests.add(quest);
-        notifyItemInserted(quests.size() - 1);
     }
 
     public void removeQuest(int position) {
@@ -130,6 +125,9 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.ViewHolder> 
 
         @Bind(R.id.quest_duration)
         public TextView duration;
+
+        @Bind(R.id.quest_indicator)
+        public View indicator;
 
         public ViewHolder(View v) {
             super(v);

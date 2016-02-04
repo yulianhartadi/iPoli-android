@@ -1,6 +1,8 @@
 package io.ipoli.android.quest;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,6 +68,9 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
                 eventBus.post(new EditQuestRequestEvent(q.getId(), q.getName(), holder.getAdapterPosition(), q.getDue()));
             }
         });
+
+        GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
@@ -183,6 +188,9 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
 
         @Bind(R.id.quest_delete)
         ImageView delete;
+
+        @Bind(R.id.quest_indicator)
+        View indicator;
 
         public ViewHolder(View v) {
             super(v);

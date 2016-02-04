@@ -53,6 +53,7 @@ public class StartQuestCommand {
         for (Quest cq : quests) {
             if (!cq.getId().equals(q.getId()) && Status.valueOf(cq.getStatus()) == Status.STARTED) {
                 cq.setStatus(Status.PLANNED.name());
+                cq.setActualStartDateTime(null);
                 questPersistenceService.save(cq);
             }
         }

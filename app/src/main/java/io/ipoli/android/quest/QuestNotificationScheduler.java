@@ -43,7 +43,7 @@ public class QuestNotificationScheduler {
     @NonNull
     private static PendingIntent getQuestTimerPendingIntent(Context context, Intent intent) {
         return PendingIntent.getBroadcast(context, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
-                intent, 0);
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private static void cancelUpdateTimerIntent(String questId, Context context) {

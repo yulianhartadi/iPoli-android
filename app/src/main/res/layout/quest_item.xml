@@ -28,13 +28,13 @@
         android:layout_marginStart="16dp"
         tools:text="12:45" />
 
-    <TextView
+    <View
         android:id="@+id/quest_indicator"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="72dp"
-        android:background="@color/md_blue_500" />
+        android:background="@drawable/ic_context_indicator" />
 
     <TextView
         android:id="@id/quest_name"

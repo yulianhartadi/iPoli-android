@@ -86,7 +86,6 @@ public class PlanDayActivity extends BaseActivity {
         helper.attachToRecyclerView(questList);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -112,9 +111,12 @@ public class PlanDayActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
             List<Quest> quests = questPersistenceService.findAllUncompleted();
+            if (quests.isEmpty()) {
+                finish();
+                return;
+            }
             planDayQuestAdapter.updateQuests(quests);
         }
     }
@@ -142,6 +144,9 @@ public class PlanDayActivity extends BaseActivity {
                 super.onDismissed(snackbar, event);
                 questPersistenceService.delete(quest);
                 eventBus.post(new DeleteQuestEvent(quest));
+                if (planDayQuestAdapter.getQuests().isEmpty()) {
+                    finish();
+                }
             }
         });
 

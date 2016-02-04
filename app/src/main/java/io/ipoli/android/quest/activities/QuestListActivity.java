@@ -95,11 +95,15 @@ public class QuestListActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        resetQuestDataset();
+        resetQuestDataSet();
     }
 
-    private void resetQuestDataset() {
+    private void resetQuestDataSet() {
         List<Quest> quests = questPersistenceService.findAllPlannedForToday();
+        if (quests.isEmpty()) {
+            finish();
+            return;
+        }
         questAdapter.updateQuests(quests);
     }
 
@@ -126,7 +130,7 @@ public class QuestListActivity extends BaseActivity {
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             final Quest q = questPersistenceService.findById(id);
             if (DateUtils.isToday(q.getDue())) {
-                resetQuestDataset();
+                resetQuestDataSet();
             } else {
                 questAdapter.removeQuest(position);
             }
