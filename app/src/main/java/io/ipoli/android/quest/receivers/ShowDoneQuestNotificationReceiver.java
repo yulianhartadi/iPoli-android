@@ -14,9 +14,10 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
@@ -62,10 +63,9 @@ public class ShowDoneQuestNotificationReceiver extends BroadcastReceiver {
 
     private PendingIntent getPendingIntent(Context context, String questId) {
         Intent i = new Intent(context, QuestActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         i.setAction(QuestActivity.ACTION_QUEST_DONE);
-        return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_ONE_SHOT);
+        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, i, context);
     }
 
 }

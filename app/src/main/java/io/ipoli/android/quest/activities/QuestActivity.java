@@ -215,8 +215,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @OnClick(R.id.quest_details_done)
     public void onDoneTap(View v) {
         stopTimer();
-        QuestNotificationScheduler.stopTimer(quest.getId(), this);
-        QuestNotificationScheduler.stopDone(quest.getId(), this);
+        QuestNotificationScheduler.stopAll(quest.getId(), this);
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 
 import java.util.concurrent.TimeUnit;
@@ -80,17 +81,26 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     }
 
     private PendingIntent getContentIntent(String questId) {
+
         Intent intent = new Intent(context, QuestActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return getPendingIntentWithParentStack(intent);
     }
 
     private PendingIntent getPendingIntent(String questId, String action) {
         Intent intent = new Intent(context, QuestActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.setAction(action);
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return getPendingIntentWithParentStack(intent);
+    }
+
+    private PendingIntent getPendingIntentWithParentStack(Intent intent) {
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(QuestActivity.class);
+        stackBuilder.addNextIntent(intent);
+
+        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
