@@ -25,7 +25,7 @@ public interface Constants {
 
     int DEFAULT_PLAYER_EXPERIENCE = 5;
     int DEFAULT_SNOOZE_TIME_MINUTES = 10;
-    String DEFAULT_ASSISTANT_AVATAR = "avatar_06";
+    String DEFAULT_ASSISTANT_AVATAR = "avatar_12";
     String DEFAULT_PLAYER_AVATAR = "avatar_07";
     int INVITE_PLAYER_PROBABILITY = 50;
 
@@ -40,4 +40,5 @@ public interface Constants {
     String POSITION_EXTRA_KEY = "quest_position";
 
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
+    int AVATAR_COUNT = 12;
 }

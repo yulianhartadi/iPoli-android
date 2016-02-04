@@ -10,11 +10,13 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.ResourceUtils;
@@ -39,8 +41,8 @@ public class PickAvatarActivity extends BaseActivity {
 
         avatarList.setLayoutManager(new GridLayoutManager(this, 2));
         List<String> avatars = new ArrayList<>();
-        for(int i = 10; i >= 1; i--) {
-            avatars.add(String.format("avatar_%02d", i));
+        for (int i = Constants.AVATAR_COUNT; i >= 1; i--) {
+            avatars.add(String.format(Locale.getDefault(), "avatar_%02d", i));
         }
         avatarList.setAdapter(new AvatarAdapter(this, avatars, eventBus));
     }
