@@ -14,9 +14,6 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -126,9 +123,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     private void resetTimerUI() {
         timer.setBase(0);
         int minuteDuration = questHasDuration ? quest.getDuration() : 0;
-        Date d = new Date(TimeUnit.MINUTES.toMillis(minuteDuration));
-        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss", Locale.getDefault());
-        timer.setText(sdf.format(d));
+        timer.setText(TimerFormatter.format(TimeUnit.MINUTES.toMillis(minuteDuration)));
         timerProgress.setProgress(0);
         long totalTime = questHasDuration ?
                 TimeUnit.MINUTES.toMillis(quest.getDuration()) :
