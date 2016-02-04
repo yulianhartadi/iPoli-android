@@ -86,6 +86,7 @@ public class Quest extends RealmObject {
         this.status = status;
         this.due = due;
         this.createdAt = new Date();
+        this.context = QuestContext.PERSONAL.name();
     }
 
     public String getName() {

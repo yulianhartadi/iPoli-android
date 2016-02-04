@@ -1,16 +1,21 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -28,6 +33,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
@@ -42,6 +48,9 @@ public class EditQuestActivity extends BaseActivity {
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
+
+    @Bind(R.id.appbar)
+    AppBarLayout appBar;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -60,6 +69,9 @@ public class EditQuestActivity extends BaseActivity {
 
     @Bind(R.id.quest_start_time)
     Button startTimeBtn;
+
+    @Bind(R.id.quest_context_name)
+    TextView contextName;
 
     @Bind(R.id.quest_context_container)
     LinearLayout contextContainer;
@@ -128,9 +140,60 @@ public class EditQuestActivity extends BaseActivity {
             }
         });
 
+        initContextUI();
 
-//        GradientDrawable drawable = (GradientDrawable) personalContext.getBackground();
-//        drawable.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+    }
+
+    private void initContextUI() {
+        changeContext(Quest.getContext(quest));
+
+        final QuestContext[] ctxs = QuestContext.values();
+        for (int i = 0; i < contextContainer.getChildCount(); i++) {
+            final ImageView iv = (ImageView) contextContainer.getChildAt(i);
+            GradientDrawable drawable = (GradientDrawable) iv.getBackground();
+            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
+
+            final QuestContext ctx = ctxs[i];
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeSelectedContextCheck();
+                    changeContext(ctx);
+                }
+            });
+
+        }
+    }
+
+    private void changeContext(QuestContext ctx) {
+        setBackgroundColors(ctx);
+        Quest.setContext(quest, ctx);
+        setSelectedContext();
+    }
+
+    private void setSelectedContext() {
+        getCurrentContextImageView().setImageResource(R.drawable.ic_done_white_24dp);
+        setContextName();
+    }
+
+    private void removeSelectedContextCheck() {
+        getCurrentContextImageView().setImageDrawable(null);
+    }
+
+    private ImageView getCurrentContextImageView() {
+        String ctxId = "quest_context_" + quest.getContext().toLowerCase();
+        int ctxResId = getResources().getIdentifier(ctxId, "id", getPackageName());
+        return (ImageView) findViewById(ctxResId);
+    }
+
+    private void setBackgroundColors(QuestContext ctx) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, ctx.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkColor));
+    }
+
+    private void setContextName() {
+        contextName.setText(quest.getContext().substring(0, 1).toUpperCase() + quest.getContext().substring(1).toLowerCase());
     }
 
     @Override
