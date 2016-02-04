@@ -1,6 +1,5 @@
 package io.ipoli.android.quest;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,11 +7,20 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.squareup.otto.Bus;
+
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -20,14 +28,19 @@ import io.ipoli.android.app.BaseActivity;
  */
 public class QuestCompleteActivity extends BaseActivity {
 
-    public static final String DIFFICULTY_EXTRA_KEY = "difficulty";
-    public static final String LOG_EXTRA_KEY = "log";
-
     @Bind(R.id.quest_complete_log)
     EditText log;
 
     @Bind(R.id.quest_complete_difficulty_group)
     RadioGroup difficultyGroup;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    Bus eventBus;
+
+    private Quest quest;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,26 +49,22 @@ public class QuestCompleteActivity extends BaseActivity {
         setFinishOnTouchOutside(false);
         ButterKnife.bind(this);
         appComponent().inject(this);
+
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        quest = questPersistenceService.findById(questId);
     }
 
     @OnClick(R.id.quest_complete_done)
     public void onDoneTap(View v) {
-        Intent data = new Intent();
-        data.putExtras(getIntent());
-        Difficulty difficulty = getDifficulty();
-        data.putExtra(DIFFICULTY_EXTRA_KEY, difficulty);
-        data.putExtra(LOG_EXTRA_KEY, log.getText().toString());
-        setResult(RESULT_OK, data);
+        saveQuest();
+        setResult(RESULT_OK);
         finish();
     }
 
     @Override
     public void onBackPressed() {
-        Intent data = new Intent();
-        data.putExtras(getIntent());
-        data.putExtra(DIFFICULTY_EXTRA_KEY, Difficulty.UNKNOWN);
-        data.putExtra(LOG_EXTRA_KEY, "");
-        setResult(RESULT_CANCELED, data);
+        saveQuest();
+        setResult(RESULT_CANCELED);
         super.onBackPressed();
     }
 
@@ -69,5 +78,20 @@ public class QuestCompleteActivity extends BaseActivity {
         } catch (Exception ignored) {
             return Difficulty.UNKNOWN;
         }
+    }
+
+    private void saveQuest() {
+        quest.setStatus(Status.COMPLETED.name());
+        quest.setLog(log.getText().toString());
+        quest.setDifficulty(getDifficulty().name());
+
+        if (quest.getActualStartDateTime() != null) {
+            long nowMillis = System.currentTimeMillis();
+            long startMillis = quest.getActualStartDateTime().getTime();
+            quest.setMeasuredDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
+        }
+
+        quest = questPersistenceService.save(quest);
+        eventBus.post(new CompleteQuestEvent(quest));
     }
 }

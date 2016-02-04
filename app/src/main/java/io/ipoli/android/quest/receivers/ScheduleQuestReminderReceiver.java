@@ -31,18 +31,33 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
+        AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        cancelScheduledReminder(context, alarm);
+
         Quest q = questPersistenceService.findQuestStartingAfter(new Date());
         if (q == null) {
             return;
         }
+        scheduleNextReminder(context, alarm, q);
+    }
+
+    private void cancelScheduledReminder(Context context, AlarmManager alarm) {
+        alarm.cancel(getCancelPendingIntent(context));
+    }
+
+    private void scheduleNextReminder(Context context, AlarmManager alarm, Quest q) {
         Intent i = new Intent(context, ReminderIntentService.class);
         i.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         PendingIntent pendingIntent = PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
                 i, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pendingIntent);
-
         alarm.setExact(AlarmManager.RTC_WAKEUP, Quest.getStartDateTime(q).getTime(), pendingIntent);
+    }
+
+    public PendingIntent getCancelPendingIntent(Context context) {
+        Intent i = new Intent(context, ReminderIntentService.class);
+        i.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
+        return PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
+                i, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }

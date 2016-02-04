@@ -34,7 +34,10 @@ public interface Constants {
     int QUEST_SHOW_DONE_REQUEST_CODE = 1003;
 
     int QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30;
+    int MAX_QUEST_DURATION_HOURS = 4;
+
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String POSITION_EXTRA_KEY = "quest_position";
+
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
 }

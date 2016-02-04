@@ -144,12 +144,12 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     public Quest findQuestStartingAfter(Date date) {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
-        Calendar startTime = Calendar.getInstance();
-        startTime.setTimeInMillis(0);
 
         Calendar dateCalendar = Calendar.getInstance();
         dateCalendar.setTime(date);
 
+        Calendar startTime = Calendar.getInstance();
+        startTime.setTimeInMillis(0);
         startTime.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
         startTime.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
 

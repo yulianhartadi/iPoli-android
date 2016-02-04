@@ -3,7 +3,9 @@ package io.ipoli.android.quest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -34,12 +36,13 @@ public class Quest extends RealmObject {
     private Date actualStartDateTime;
     private String log;
     private String difficulty;
+    private int measuredDuration;
 
     public Quest() {
     }
 
     public void setDuration(int duration) {
-        this.duration = duration;
+        this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
     public int getDuration() {
@@ -151,5 +154,13 @@ public class Quest extends RealmObject {
 
     public void setActualStartDateTime(Date actualStartDateTime) {
         this.actualStartDateTime = actualStartDateTime;
+    }
+
+    public int getMeasuredDuration() {
+        return measuredDuration;
+    }
+
+    public void setMeasuredDuration(int measuredDuration) {
+        this.measuredDuration = measuredDuration;
     }
 }

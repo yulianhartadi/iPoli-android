@@ -29,7 +29,6 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
-import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -137,27 +136,22 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onPause() {
         super.onPause();
-        if (isTimerRunning && !ACTION_QUEST_DONE.equals(getIntent().getAction())) {
-            stopTimer();
-            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStartDateTime().getTime());
-            boolean isNotOverdue = quest.getDuration() - elapsedMinutes > 0;
-            if (!questHasDuration || isNotOverdue) {
-                QuestNotificationScheduler.scheduleUpdateTimer(quest.getId(), this);
-            }
+        if (!isTimerRunning) {
+            return;
         }
+        stopTimer();
+        long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStartDateTime().getTime());
+        boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
+        if (isOverdue || ACTION_QUEST_DONE.equals(getIntent().getAction())) {
+            return;
+        }
+        QuestNotificationScheduler.scheduleUpdateTimer(quest.getId(), this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED) && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
-            final Difficulty d = (Difficulty) data.getSerializableExtra(QuestCompleteActivity.DIFFICULTY_EXTRA_KEY);
-            final String log = data.getStringExtra(QuestCompleteActivity.LOG_EXTRA_KEY);
-            quest.setStatus(Status.COMPLETED.name());
-            quest.setLog(log);
-            quest.setDifficulty(d.name());
-            questPersistenceService.save(quest);
-            eventBus.post(new CompleteQuestEvent(quest));
             stopTimer();
             finish();
         } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {

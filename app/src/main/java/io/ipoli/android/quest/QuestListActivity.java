@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.squareup.otto.Bus;
@@ -28,10 +27,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
-import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class QuestListActivity extends BaseActivity {
@@ -99,7 +96,6 @@ public class QuestListActivity extends BaseActivity {
     public void onQuestCompleteRequest(final CompleteQuestRequestEvent e) {
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        i.putExtra(Constants.POSITION_EXTRA_KEY, e.position);
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
 
@@ -107,44 +103,7 @@ public class QuestListActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED) && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
-            final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
-            final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-            final Quest q = questPersistenceService.findById(id);
-            final Difficulty d = (Difficulty) data.getSerializableExtra(QuestCompleteActivity.DIFFICULTY_EXTRA_KEY);
-            final String log = data.getStringExtra(QuestCompleteActivity.LOG_EXTRA_KEY);
-
-            final Snackbar snackbar = Snackbar
-                    .make(rootContainer,
-                            getString(R.string.quest_complete),
-                            Snackbar.LENGTH_SHORT);
-
-            snackbar.setCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    super.onDismissed(snackbar, event);
-                    q.setStatus(Status.COMPLETED.name());
-                    q.setLog(log);
-                    q.setDifficulty(d.name());
-                    questPersistenceService.save(q);
-                    eventBus.post(new CompleteQuestEvent(q));
-                }
-
-            });
-
-            snackbar.setAction(R.string.undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (position >= 0) {
-                        questAdapter.putQuest(position, q);
-                    } else {
-                        questAdapter.addQuest(q);
-                    }
-                    snackbar.setCallback(null);
-                    eventBus.post(new UndoCompleteQuestEvent(q));
-                }
-            });
-
-            snackbar.show();
+            showSnackBar(R.string.quest_complete);
         } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
             final int position = data.getIntExtra(Constants.POSITION_EXTRA_KEY, -1);
             final String id = data.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);

@@ -24,18 +24,17 @@ import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
-import io.ipoli.android.quest.events.UndoCompleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 
 /**
@@ -209,12 +208,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCompleteQuest(CompleteQuestEvent e) {
         track(createEventBuilder("quest", "complete")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
-    }
-
-    @Subscribe
-    public void onUndoCompleteQuest(UndoCompleteQuestEvent e) {
-        track(createEventBuilder("quest", "undo-complete")
                 .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
