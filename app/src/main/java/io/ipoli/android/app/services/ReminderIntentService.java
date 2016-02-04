@@ -18,13 +18,13 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
-import io.ipoli.android.quest.receivers.StartQuestReceiver;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -99,25 +99,27 @@ public class ReminderIntentService extends IntentService {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             notificationManagerCompat.notify(Constants.REMIND_REVIEW_DAY_NOTIFICATION_ID, builder.build());
         } else if (action.equals(ACTION_REMIND_START_QUEST)) {
-            Intent remindStartQuestIntent = new Intent(this, QuestActivity.class);
-            remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             Quest q = questPersistenceService.findById(questId);
             if (q == null) {
                 return;
             }
+            Intent remindStartQuestIntent = new Intent(this, QuestActivity.class);
+            remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
+            remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
             String name = q.getName();
 
-            PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, remindStartQuestIntent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pendingNotificationIntent = ActivityIntentFactory.createWithParentStack(QuestActivity.class, remindStartQuestIntent, this);
 
             Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
-            PendingIntent startQuestPI = getActionPendingIntent(q.getId(), StartQuestReceiver.ACTION_START_QUEST);
-            PendingIntent snoozeQuestPI = getActionPendingIntent(q.getId(), SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
+            PendingIntent startQuestPI = getStartPendingIntent(q.getId());
+            PendingIntent snoozeQuestPI = getSnoozePendingIntent(q.getId());
 
             NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                     .setContentTitle(name)
                     .setContentText("Ready to start?")
+                    .setContentIntent(pendingNotificationIntent)
                     .setShowWhen(false)
                     .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(q.getStartTime()))
                     .setSmallIcon(R.drawable.ic_notification_small)
@@ -126,7 +128,6 @@ public class ReminderIntentService extends IntentService {
                     .setAutoCancel(true)
                     .addAction(R.drawable.ic_snooze_black_24dp, "SNOOZE", snoozeQuestPI)
                     .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
-                    .setContentIntent(pendingNotificationIntent)
                     .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -135,8 +136,16 @@ public class ReminderIntentService extends IntentService {
         }
     }
 
-    private PendingIntent getActionPendingIntent(String questId, String action) {
-        Intent intent = new Intent(action);
+    private PendingIntent getStartPendingIntent(String questId) {
+        Intent intent = new Intent(this, QuestActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(QuestActivity.ACTION_START_QUEST);
+
+        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, this);
+    }
+
+    private PendingIntent getSnoozePendingIntent(String questId) {
+        Intent intent = new Intent(SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }

@@ -43,8 +43,9 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
  */
 public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener {
 
-    public static final String ACTION_QUEST_DONE = "io.ipoli.android.action.QUEST_DONE";
-    public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.action.QUEST_CANCELED";
+    public static final String ACTION_QUEST_DONE = "io.ipoli.android.intent.action.QUEST_DONE";
+    public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
+    public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
 
     @Bind(R.id.quest_details_content)
     CoordinatorLayout rootContainer;
@@ -95,14 +96,16 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         Intent intent = getIntent();
         String action = intent.getAction();
 
-        if (QuestActivity.ACTION_QUEST_CANCELED.equals(action)) {
+        if (ACTION_QUEST_CANCELED.equals(action)) {
             new StopQuestCommand(quest, questPersistenceService, this).execute();
-        } else if (QuestActivity.ACTION_QUEST_DONE.equals(action)) {
+        } else if (ACTION_QUEST_DONE.equals(action)) {
             QuestNotificationScheduler.stopTimer(questId, this);
             QuestNotificationScheduler.stopDone(questId, this);
             Intent i = new Intent(this, QuestCompleteActivity.class);
             i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
             startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+        } else if (ACTION_START_QUEST.equals(action)) {
+            new StartQuestCommand(this, questPersistenceService, quest).execute();
         }
     }
 

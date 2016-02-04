@@ -99,14 +99,6 @@
         </receiver>
 
         <receiver
-            android:name=".quest.receivers.StartQuestReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.START_QUEST" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
             android:name=".quest.receivers.SnoozeQuestReceiver"
             android:exported="false">
             <intent-filter>
