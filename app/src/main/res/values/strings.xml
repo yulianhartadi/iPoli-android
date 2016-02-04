@@ -101,7 +101,7 @@
     <string name="tutorial_planned_quest_1">Tap me to edit me</string>
     <string name="tutorial_planned_quest_2">Swipe me to the left to remove me</string>
     <string name="tutorial_planned_quest_3">Check me to schedule me for today</string>
-    <string name="tutorial_show_quest_1">Pay rent at 12:00</string>
+    <string name="tutorial_show_quest_1">Swipe me to complete or tap to start</string>
     <string name="tutorial_show_quest_2">Run for 30 min at 8:30</string>
     <string name="tutorial_show_quest_3">Meditate for 15 min at 19:30</string>
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>

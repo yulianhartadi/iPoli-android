@@ -33,10 +33,11 @@ import io.ipoli.android.assistant.events.ShowExamplesEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.assistant.events.UnknownCommandEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
-import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.activities.QuestListActivity;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.Status;
+import io.ipoli.android.quest.activities.PlanDayActivity;
+import io.ipoli.android.quest.activities.QuestListActivity;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -322,9 +323,18 @@ public class SimpleAssistantService implements AssistantService {
 
     private void addPlanTodayTutorialQuests() {
         List<Quest> planQuests = new ArrayList<>();
-        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_1)));
-        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_2)));
-        planQuests.add(new Quest(context.getString(R.string.tutorial_planned_quest_3)));
+        Quest q1 = new Quest(context.getString(R.string.tutorial_planned_quest_1));
+        Quest.setContext(q1, QuestContext.PERSONAL);
+        planQuests.add(q1);
+
+        Quest q2 = new Quest(context.getString(R.string.tutorial_planned_quest_2));
+        Quest.setContext(q2, QuestContext.LEARNING);
+        planQuests.add(q2);
+
+        Quest q3 = new Quest(context.getString(R.string.tutorial_planned_quest_3));
+        Quest.setContext(q3, QuestContext.WORK);
+        planQuests.add(q3);
+
         questPersistenceService.saveAll(planQuests);
     }
 
@@ -342,6 +352,7 @@ public class SimpleAssistantService implements AssistantService {
         Calendar st = DateUtils.getTodayAtMidnight();
         st.set(Calendar.HOUR_OF_DAY, 12);
         q.setStartTime(st.getTime());
+        Quest.setContext(q, QuestContext.FUN);
         return q;
     }
 
@@ -349,11 +360,11 @@ public class SimpleAssistantService implements AssistantService {
     private Quest createSecondTutorialShowQuest() {
         Quest q = new Quest(context.getString(R.string.tutorial_show_quest_2), Status.PLANNED.name(), new Date());
         q.setDuration(30);
-
         Calendar st = DateUtils.getTodayAtMidnight();
         st.set(Calendar.HOUR_OF_DAY, 8);
         st.set(Calendar.MINUTE, 30);
         q.setStartTime(st.getTime());
+        Quest.setContext(q, QuestContext.WORK);
         return q;
     }
 
@@ -365,6 +376,7 @@ public class SimpleAssistantService implements AssistantService {
         st.set(Calendar.HOUR_OF_DAY, 19);
         st.set(Calendar.MINUTE, 30);
         q.setStartTime(st.getTime());
+        Quest.setContext(q, QuestContext.WELLNESS);
         return q;
     }
 

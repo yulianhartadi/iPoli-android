@@ -20,6 +20,7 @@
             android:layout_margin="32dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif"
+            android:gravity="center"
             android:maxLines="2"
             android:textColor="@color/md_light_text_87" />
 
