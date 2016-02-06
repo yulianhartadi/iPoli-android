@@ -21,7 +21,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
@@ -54,7 +53,7 @@ public class ReminderIntentService extends IntentService {
         String action = intent.getAction();
         if (action.equals(ACTION_REMIND_PLAN_DAY)) {
 
-            Intent planDayIntent = new Intent(this, PlanDayActivity.class);
+            Intent planDayIntent = new Intent(this, ChatActivity.class);
             planDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             planDayIntent.setAction(ACTION_REMIND_PLAN_DAY);
 
