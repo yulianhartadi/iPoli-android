@@ -22,7 +22,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@id/unscheduled_quests"
         android:layout_width="match_parent"
-        android:layout_height="144dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/md_white" />
 </io.ipoli.android.app.ui.calendar.CalendarLayout>

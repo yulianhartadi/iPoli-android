@@ -41,4 +41,6 @@ public interface Constants {
 
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
     int AVATAR_COUNT = 12;
+    int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
+    int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
 }

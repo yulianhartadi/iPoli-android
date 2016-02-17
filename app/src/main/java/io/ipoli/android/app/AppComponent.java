@@ -83,6 +83,8 @@ public interface AppComponent {
 
     void inject(MainActivity mainActivity);
 
-    void inject(MainActivity.OneFragment oneFragment);
+    void inject(CalendarDayFragment calendarDayFragment);
+
+    void inject(QuestListFragment questListFragment);
 }
 

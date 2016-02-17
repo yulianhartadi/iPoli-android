@@ -2,6 +2,7 @@ package io.ipoli.android.quest.ui;
 
 import java.util.Date;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.quest.Quest;
 
@@ -18,7 +19,7 @@ public class QuestCalendarEvent implements CalendarEvent {
 
     public QuestCalendarEvent(Quest quest) {
         this.name = quest.getName();
-        this.duration = quest.getDuration();
+        this.duration = Math.max(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         this.backgroundColor = Quest.getContext(quest).backgroundColor;
         this.startTime = quest.getStartTime();
     }
