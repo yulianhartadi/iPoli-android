@@ -105,6 +105,8 @@
     <string name="tutorial_show_quest_2">Run for 30 min at 8:30</string>
     <string name="tutorial_show_quest_3">Meditate for 15 min at 19:30</string>
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
+    <string name="tomorrow">tomorrow</string>
+    <string name="upcoming">upcoming</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

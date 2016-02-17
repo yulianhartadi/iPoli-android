@@ -102,6 +102,37 @@ public class QuestListFragment extends Fragment {
         quests.add(qqqq);
         quests.add(qqqqq);
 
+        Quest tq = new Quest("Work on presentation", Status.PLANNED.name(), new Date());
+        Quest.setContext(tq, QuestContext.WORK);
+        calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
+        calendar.set(Calendar.MINUTE, 0);
+        tq.setStartTime(calendar.getTime());
+        tq.setDuration(120);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(tq.getDue());
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        tq.setDue(c.getTime());
+
+        quests.add(tq);
+
+        Quest uq = new Quest("Call Mom", Status.PLANNED.name(), new Date());
+        Quest.setContext(uq, QuestContext.PERSONAL);
+        calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 15);
+        uq.setStartTime(calendar.getTime());
+        uq.setDuration(15);
+
+        c = Calendar.getInstance();
+        c.setTime(uq.getDue());
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        uq.setDue(c.getTime());
+        quests.add(uq);
+
         QuestAdapter questAdapter = new QuestAdapter(getContext(), quests, eventBus);
         questList.setAdapter(questAdapter);
 
