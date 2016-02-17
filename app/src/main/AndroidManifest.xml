@@ -16,24 +16,26 @@
             android:name=".InviteOnlyActivity"
             android:label="@string/title_activity_chat"
             android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".app.MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".chat.ChatActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
 
         <activity
             android:name=".quest.activities.PlanDayActivity"
             android:label="@string/title_activity_plan_day"
-            android:parentActivityName=".chat.ChatActivity"
+            android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.chat.ChatActivity" />
+                android:value="io.ipoli.android.app.MainActivity" />
         </activity>
 
         <activity
@@ -48,21 +50,21 @@
         <activity
             android:name=".quest.activities.QuestListActivity"
             android:label="@string/title_activity_quest_list"
-            android:parentActivityName=".chat.ChatActivity"
+            android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.chat.ChatActivity" />
+                android:value="io.ipoli.android.app.MainActivity" />
         </activity>
         <activity
             android:name=".assistant.PickAvatarActivity"
             android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".chat.ChatActivity"
+            android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.chat.ChatActivity" />
+                android:value="io.ipoli.android.app.MainActivity" />
         </activity>
 
         <activity

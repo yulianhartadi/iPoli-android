@@ -80,5 +80,9 @@ public interface AppComponent {
     void inject(ShowDoneQuestNotificationReceiver showDoneQuestNotificationReceiver);
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
+
+    void inject(MainActivity mainActivity);
+
+    void inject(MainActivity.OneFragment oneFragment);
 }
 
