@@ -107,6 +107,8 @@
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
     <string name="tomorrow">tomorrow</string>
     <string name="upcoming">upcoming</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_quest">ADD quest</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>
