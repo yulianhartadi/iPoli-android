@@ -2,18 +2,22 @@ package io.ipoli.android.quest.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +45,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     @Bind(R.id.duration)
     ImageButton duration;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<SpannableString> adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,12 +56,9 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         ButterKnife.bind(this);
         appComponent().inject(this);
         setFinishOnTouchOutside(false);
-        String[] COUNTRIES = new String[]{
-                "for 30 min", "for 1 hour", "for 15 min", "for 1 h and 30 m"
-        };
 
         adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, COUNTRIES);
+                R.layout.add_quest_autocomplete_item, new ArrayList());
         questName.setAdapter(adapter);
         questName.setOnItemClickListener(this);
 
@@ -136,12 +137,25 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String item = ((TextView) view).getText().toString();
+        SpannableString ss = adapter.getItem(position);
+        String selectedText = ss.toString();
+        ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+        for(int i = spans.length - 1; i >=0; i--) {
+            ForegroundColorSpan span = spans[i];
+            int start = ss.getSpanStart(span);
+            int end = ss.getSpanEnd(span);
+            if(start > 0) {
+                selectedText = selectedText.substring(0, start);
+            } else {
+                selectedText = selectedText.substring(end, selectedText.length());
+            }
+        }
+
         String questText = questName.getText().toString();
         if(!questText.endsWith(" ")) {
             questText += " ";
         }
-        questName.setText(questText + item);
+        questName.setText(questText + selectedText);
         questName.setThreshold(1000);
         questName.setSelection(questName.getText().length());
     }
@@ -149,7 +163,18 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     @OnClick(R.id.due_date)
     public void onDueDateClick(View v) {
-        String[] items = {"... on 15 Feb", "today", "tommorrow", "after 3 days", "after 2 months"};
+        int hintColor = ContextCompat.getColor(this, R.color.md_dark_text_26);
+        SpannableString s1 = new SpannableString("... on 15 Feb");
+        s1.setSpan(new ForegroundColorSpan(hintColor), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        s1.setSpan(new ForegroundColorSpan(hintColor), 6, s1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString s2 = new SpannableString("after 3 days");
+        s2.setSpan(new ForegroundColorSpan(hintColor), 5, s2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString s3 = new SpannableString("after 2 months");
+        s3.setSpan(new ForegroundColorSpan(hintColor), 5, s3.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        SpannableString[] items = {s1, new SpannableString("today"), new SpannableString("tommorrow"), s2, s3};
         adapter = new ArrayAdapter<>(this,
                 R.layout.add_quest_autocomplete_item, items);
         questName.setAdapter(adapter);
@@ -160,21 +185,21 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     @OnClick(R.id.start_time)
     public void onStartTimeClick(View v) {
         String[] items = {"... at 19:00", "... at 7pm"};
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, items);
-        questName.setAdapter(adapter);
-        questName.setThreshold(1);
-        questName.showDropDown();
+//        adapter = new ArrayAdapter<>(this,
+//                R.layout.add_quest_autocomplete_item, items);
+//        questName.setAdapter(adapter);
+//        questName.setThreshold(1);
+//        questName.showDropDown();
     }
 
     @OnClick(R.id.duration)
     public void onDurationClick(View v) {
         String[] items = {"for 30 min", "for 1 hour", "for 15 min", "for 1 h and 30 m"};
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, items);
-        questName.setAdapter(adapter);
-        questName.setThreshold(1);
-        questName.showDropDown();
+//        adapter = new ArrayAdapter<>(this,
+//                R.layout.add_quest_autocomplete_item, items);
+//        questName.setAdapter(adapter);
+//        questName.setThreshold(1);
+//        questName.showDropDown();
     }
 
 
