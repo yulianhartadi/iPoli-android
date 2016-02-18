@@ -15,16 +15,17 @@
         android:layout_marginStart="24dp"
         app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
-        <AutoCompleteTextView
+        <io.ipoli.android.app.ui.AddQuestAutocompleteTextView
             android:id="@+id/quest_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edit_quest_name_hint"
+            android:imeOptions="actionDone"
             android:inputType="textCapSentences"
             android:singleLine="true">
 
             <requestFocus />
-        </AutoCompleteTextView>
+        </io.ipoli.android.app.ui.AddQuestAutocompleteTextView>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -35,6 +36,7 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/due_date"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="16dp"
@@ -42,32 +44,33 @@
             android:src="@drawable/ic_today_white_24dp" />
 
         <ImageButton
+            android:id="@+id/start_time"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/circle_accent"
+            android:background="@drawable/circle_disable"
             android:src="@drawable/ic_alarm_white_24dp" />
 
         <ImageButton
+            android:id="@+id/duration"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/circle_normal"
+            android:background="@drawable/circle_disable"
             android:src="@drawable/ic_timer_white_24dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:layout_marginTop="24dp">
 
         <Button
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@string/cancel"
-            android:textColor="?attr/colorAccent" />
+            android:text="@string/cancel" />
 
         <Button
             style="@style/Base.Widget.AppCompat.Button.Borderless"
