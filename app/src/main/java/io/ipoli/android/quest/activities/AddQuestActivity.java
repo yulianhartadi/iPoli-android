@@ -5,9 +5,12 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -17,6 +20,7 @@ import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 
@@ -24,7 +28,7 @@ import io.ipoli.android.app.BaseActivity;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/18/16.
  */
-public class AddQuestActivity extends BaseActivity {
+public class AddQuestActivity extends BaseActivity implements AdapterView.OnItemClickListener {
 
     @Bind(R.id.quest_name)
     AutoCompleteTextView questName;
@@ -37,6 +41,7 @@ public class AddQuestActivity extends BaseActivity {
 
     @Bind(R.id.duration)
     ImageButton duration;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,9 +55,11 @@ public class AddQuestActivity extends BaseActivity {
         String[] COUNTRIES = new String[]{
                 "for 30 min", "for 1 hour", "for 15 min", "for 1 h and 30 m"
         };
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+
+        adapter = new ArrayAdapter<>(this,
+                R.layout.add_quest_autocomplete_item, COUNTRIES);
         questName.setAdapter(adapter);
+        questName.setOnItemClickListener(this);
 
         final PrettyTimeParser parser = new PrettyTimeParser();
 
@@ -126,6 +133,50 @@ public class AddQuestActivity extends BaseActivity {
             }
         });
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String item = ((TextView) view).getText().toString();
+        String questText = questName.getText().toString();
+        if(!questText.endsWith(" ")) {
+            questText += " ";
+        }
+        questName.setText(questText + item);
+        questName.setThreshold(1000);
+        questName.setSelection(questName.getText().length());
+    }
+
+
+    @OnClick(R.id.due_date)
+    public void onDueDateClick(View v) {
+        String[] items = {"... on 15 Feb", "today", "tommorrow", "after 3 days", "after 2 months"};
+        adapter = new ArrayAdapter<>(this,
+                R.layout.add_quest_autocomplete_item, items);
+        questName.setAdapter(adapter);
+        questName.setThreshold(1);
+        questName.showDropDown();
+    }
+
+    @OnClick(R.id.start_time)
+    public void onStartTimeClick(View v) {
+        String[] items = {"... at 19:00", "... at 7pm"};
+        adapter = new ArrayAdapter<>(this,
+                R.layout.add_quest_autocomplete_item, items);
+        questName.setAdapter(adapter);
+        questName.setThreshold(1);
+        questName.showDropDown();
+    }
+
+    @OnClick(R.id.duration)
+    public void onDurationClick(View v) {
+        String[] items = {"for 30 min", "for 1 hour", "for 15 min", "for 1 h and 30 m"};
+        adapter = new ArrayAdapter<>(this,
+                R.layout.add_quest_autocomplete_item, items);
+        questName.setAdapter(adapter);
+        questName.setThreshold(1);
+        questName.showDropDown();
+    }
+
 
     public interface QuestTextMatcher {
         String match(String text);

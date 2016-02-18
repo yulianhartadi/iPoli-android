@@ -34,4 +34,9 @@ public class AddQuestAutocompleteTextView extends AutoCompleteTextView {
         int removed = this.getInputType() ^ InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         this.setInputType(removed);
     }
+
+    @Override
+    protected void replaceText(CharSequence text) {
+
+    }
 }
