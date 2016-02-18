@@ -1,5 +1,6 @@
 package io.ipoli.android.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -7,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.squareup.otto.Bus;
 
@@ -20,7 +22,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -39,7 +43,6 @@ public class MainActivity extends BaseActivity {
 
     @Bind(R.id.viewpager)
     CustomViewPager viewPager;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,6 +64,12 @@ public class MainActivity extends BaseActivity {
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_list_white_24dp);
+    }
+
+    @OnClick(R.id.add_quest)
+    public void onAddQuest(View view) {
+        startActivity(new Intent(this, AddQuestActivity.class));
+        overridePendingTransition(R.anim.slide_up, 0);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

@@ -68,6 +68,18 @@
         </activity>
 
         <activity
+            android:name=".quest.activities.AddQuestActivity"
+            android:label="Add new quest"
+            android:parentActivityName=".app.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.ipoli.android.app.MainActivity" />
+        </activity>
+
+        <activity
             android:name=".quest.activities.QuestCompleteActivity"
             android:label="@string/title_activity_quest_complete"
             android:screenOrientation="portrait"

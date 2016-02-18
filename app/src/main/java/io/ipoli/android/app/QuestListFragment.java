@@ -118,8 +118,8 @@ public class QuestListFragment extends Fragment {
 
         quests.add(tq);
 
-        Quest uq = new Quest("Call Mom", Status.PLANNED.name(), new Date());
-        Quest.setContext(uq, QuestContext.PERSONAL);
+        Quest uq = new Quest("Jump on a single foot", Status.PLANNED.name(), new Date());
+        Quest.setContext(uq, QuestContext.WELLNESS);
         calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
