@@ -109,6 +109,8 @@
     <string name="upcoming">upcoming</string>
     <string name="cancel">cancel</string>
     <string name="add_quest">add quest</string>
+    <string name="title_activity_add_quest">Add new Quest</string>
+    <string name="quest_added">Quest added</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

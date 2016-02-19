@@ -78,13 +78,13 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_add_quest);
 
         ButterKnife.bind(this);
         appComponent().inject(this);
         setFinishOnTouchOutside(false);
 
+        disableButtons();
 
         dueDateAutoCompletes = new SpannableString[]{
                 new SpannableString("today"),
@@ -137,9 +137,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
                 Pattern namePattern = Pattern.compile("\\w+\\s", Pattern.CASE_INSENSITIVE);
                 if (!namePattern.matcher(text).find()) {
-                    duration.setBackgroundResource(R.drawable.circle_disable);
-                    startTime.setBackgroundResource(R.drawable.circle_disable);
-                    dueDate.setBackgroundResource(R.drawable.circle_disable);
+                    disableButtons();
                     return;
                 }
 
@@ -184,6 +182,15 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         });
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
+    }
+
+    private void disableButtons() {
+        duration.setBackgroundResource(R.drawable.circle_disable);
+        startTime.setBackgroundResource(R.drawable.circle_disable);
+        dueDate.setBackgroundResource(R.drawable.circle_disable);
+        duration.setEnabled(false);
+        startTime.setEnabled(false);
+        dueDate.setEnabled(false);
     }
 
     @Override
@@ -280,6 +287,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
             quest.setDue(dueDate);
         }
         eventBus.post(new NewQuestEvent(name, startTime, duration, dueDate));
+        Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         finish();
         overridePendingTransition(0, R.anim.slide_down);
     }

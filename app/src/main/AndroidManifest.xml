@@ -69,7 +69,7 @@
 
         <activity
             android:name=".quest.activities.AddQuestActivity"
-            android:label="Add new quest"
+            android:label="@string/title_activity_add_quest"
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity"
