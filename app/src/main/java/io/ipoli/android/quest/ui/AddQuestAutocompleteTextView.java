@@ -1,4 +1,4 @@
-package io.ipoli.android.app.ui;
+package io.ipoli.android.quest.ui;
 
 import android.content.Context;
 import android.text.InputType;

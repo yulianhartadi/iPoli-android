@@ -37,8 +37,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.NewQuestEvent;
 
 /**
@@ -258,18 +256,16 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         String text = questText.getText().toString().trim();
 
         String matchedDurationText = durationMatcher.match(text);
-        int duration = durationMatcher.parse(matchedDurationText);
+        int duration = durationMatcher.parse(text);
         text = text.replace(matchedDurationText, " ");
 
         String matchedStartTimeText = startTimeMatcher.match(text);
-        Date startTime = startTimeMatcher.parse(matchedStartTimeText);
+        Date startTime = startTimeMatcher.parse(text);
         text = text.replace(matchedStartTimeText, " ");
 
         String matchedDueDateText = dueDateMatcher.match(text);
-        Date dueDate = dueDateMatcher.parse(matchedDueDateText);
+        Date dueDate = dueDateMatcher.parse(text);
         text = text.replace(matchedDueDateText, " ");
-
-        text = text.trim().replaceAll("\\s+", " ");
 
         if (TextUtils.isEmpty(text)) {
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
@@ -278,13 +274,6 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
         String name = text;
 
-        Quest quest = new Quest(name);
-        quest.setDuration(duration);
-        quest.setStartTime(startTime);
-        if (dueDate != null) {
-            quest.setStatus(Status.PLANNED.name());
-            quest.setDue(dueDate);
-        }
         eventBus.post(new NewQuestEvent(name, startTime, duration, dueDate));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         finish();

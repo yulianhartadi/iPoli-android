@@ -15,7 +15,7 @@
         android:layout_marginStart="24dp"
         app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
-        <io.ipoli.android.app.ui.AddQuestAutocompleteTextView
+        <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView
             android:id="@+id/quest_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
             android:singleLine="true">
 
             <requestFocus />
-        </io.ipoli.android.app.ui.AddQuestAutocompleteTextView>
+        </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
 
     </android.support.design.widget.TextInputLayout>
 

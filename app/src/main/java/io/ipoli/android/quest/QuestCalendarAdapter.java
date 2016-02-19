@@ -5,24 +5,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.ui.calendar.CalendarAdapter;
+import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/17/16.
  */
-public class QuestCalendarAdapter extends CalendarAdapter<QuestCalendarEvent> {
+public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent> {
 
     private final List<QuestCalendarEvent> questCalendarEvents;
+    private final Bus eventBus;
 
-    public QuestCalendarAdapter(List<QuestCalendarEvent> questCalendarEvents) {
+    public QuestCalendarAdapter(List<QuestCalendarEvent> questCalendarEvents, Bus eventBus) {
         this.questCalendarEvents = questCalendarEvents;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -32,8 +37,14 @@ public class QuestCalendarAdapter extends CalendarAdapter<QuestCalendarEvent> {
 
     @Override
     public View getView(ViewGroup parent, int position) {
-        QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
+        final QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventBus.post(new ShowQuestEvent(calendarEvent.getQuest()));
+            }
+        });
         v.setBackgroundResource(calendarEvent.getBackgroundColor());
         TextView name = (TextView) v.findViewById(R.id.quest_name);
         name.setText(questCalendarEvents.get(position).getName());

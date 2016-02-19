@@ -83,41 +83,6 @@ public enum Command {
                         cmd.parameters.put("name", txt);
                     } else if (cmd == ADD_QUEST || cmd == ADD_TODAY_QUEST) {
 
-                        // Parse duration
-
-                        Pattern dp = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
-                        Matcher dm = dp.matcher(txt);
-                        if (dm.find()) {
-                            int fd = Integer.valueOf(dm.group(1));
-                            String fUnit = dm.group(2);
-                            int duration = fd;
-                            if (fUnit.startsWith("h")) {
-                                duration = (int) TimeUnit.HOURS.toMinutes(fd);
-                            }
-
-                            if (dm.group(3) != null && dm.group(4) != null) {
-                                duration += Integer.valueOf(dm.group(3));
-                            }
-
-                            cmd.parameters.put("duration", duration);
-                            txt = txt.replace(dm.group(), " ");
-                            txt = txt.trim().replaceAll("\\s+", " ");
-                        }
-
-                        // Parse start time
-
-                        Pattern stp = Pattern.compile(START_TIME_PATTERN, Pattern.CASE_INSENSITIVE);
-                        Matcher stm = stp.matcher(txt);
-
-                        if (stm.find()) {
-                            List<Date> dates = parser.parse(stm.group());
-                            if (!dates.isEmpty()) {
-                                Date startTime = dates.get(0);
-                                cmd.parameters.put("startTime", startTime);
-                                txt = txt.replace(stm.group(), " ");
-                            }
-                        }
-
                         // Parse due date
 
                         Pattern[] dueDatePatterns = {
@@ -152,6 +117,45 @@ public enum Command {
                                 break;
                             }
                         }
+
+                        // Parse start time
+
+                        Pattern stp = Pattern.compile(START_TIME_PATTERN, Pattern.CASE_INSENSITIVE);
+                        Matcher stm = stp.matcher(txt);
+
+                        if (stm.find()) {
+                            List<Date> dates = parser.parse(stm.group());
+                            if (!dates.isEmpty()) {
+                                Date startTime = dates.get(0);
+                                cmd.parameters.put("startTime", startTime);
+                                txt = txt.replace(stm.group(), " ");
+                            }
+                        }
+
+
+
+                        // Parse duration
+
+                        Pattern dp = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
+                        Matcher dm = dp.matcher(txt);
+                        if (dm.find()) {
+                            int fd = Integer.valueOf(dm.group(1));
+                            String fUnit = dm.group(2);
+                            int duration = fd;
+                            if (fUnit.startsWith("h")) {
+                                duration = (int) TimeUnit.HOURS.toMinutes(fd);
+                            }
+
+                            if (dm.group(3) != null && dm.group(4) != null) {
+                                duration += Integer.valueOf(dm.group(3));
+                            }
+
+                            cmd.parameters.put("duration", duration);
+                            txt = txt.replace(dm.group(), " ");
+                            txt = txt.trim().replaceAll("\\s+", " ");
+                        }
+
+
 
                         String name = txt.trim();
                         if (name.isEmpty()) {

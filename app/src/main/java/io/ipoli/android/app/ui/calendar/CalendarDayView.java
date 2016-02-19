@@ -37,7 +37,7 @@ public class CalendarDayView extends FrameLayout {
     private ObservableScrollView scrollView;
     private View timeLine;
 
-    private CalendarAdapter adapter;
+    private BaseCalendarAdapter adapter;
 
     public CalendarDayView(Context context) {
         super(context);
@@ -120,7 +120,7 @@ public class CalendarDayView extends FrameLayout {
         cont.addView(timeRL);
     }
 
-    public void setAdapter(CalendarAdapter<? extends CalendarEvent> adapter) {
+    public void setAdapter(BaseCalendarAdapter<? extends CalendarEvent> adapter) {
         this.adapter = adapter;
         adapter.setCalendarDayView(this);
         adapter.notifyDataSetChanged();
@@ -223,16 +223,9 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private int getDurationOffset(int duration) {
-        if (duration <= 15) {
-            return 5;
-        } else if (duration <= 30) {
-            return 15;
-        } else if (duration <= 45) {
-            return 25;
-        } else if (duration <= 60) {
-            return 30;
-        }
-        return 40;
+        int mid = duration / 2;
+        int remainder = mid % 5;
+        return mid + (5 - remainder);
     }
 
     int getYPositionFor(int hours, int minutes) {

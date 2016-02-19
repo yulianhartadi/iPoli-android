@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/17/16.
  */
-public abstract class CalendarAdapter<E extends CalendarEvent> {
+public abstract class BaseCalendarAdapter<E extends CalendarEvent> {
 
     protected CalendarDayView calendarDayView;
 

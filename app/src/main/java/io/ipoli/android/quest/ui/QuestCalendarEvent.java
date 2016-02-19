@@ -15,9 +15,11 @@ public class QuestCalendarEvent implements CalendarEvent {
     private final String name;
     private final int duration;
     private final int backgroundColor;
+    private final Quest quest;
     private Date startTime;
 
     public QuestCalendarEvent(Quest quest) {
+        this.quest = quest;
         this.name = quest.getName();
         this.duration = Math.max(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         this.backgroundColor = Quest.getContext(quest).backgroundColor;
@@ -47,5 +49,9 @@ public class QuestCalendarEvent implements CalendarEvent {
     @Override
     public String getName() {
         return name;
+    }
+
+    public Quest getQuest() {
+        return quest;
     }
 }

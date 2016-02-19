@@ -1,6 +1,5 @@
-package io.ipoli.android.app;
+package io.ipoli.android.quest.fragments;
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,16 +22,12 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestAdapter;
-import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.activities.QuestCompleteActivity;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -50,6 +45,7 @@ public class QuestListFragment extends Fragment {
 
     @Inject
     QuestPersistenceService questPersistenceService;
+
     private QuestAdapter questAdapter;
 
     @Override
@@ -80,13 +76,6 @@ public class QuestListFragment extends Fragment {
     }
 
     @Subscribe
-    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
-        Intent i = new Intent(getContext(), QuestCompleteActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
-    }
-
-    @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         if (!DateUtils.isToday(e.quest.getDue())) {
@@ -95,13 +84,6 @@ public class QuestListFragment extends Fragment {
         }
         questAdapter.updateQuests(questPersistenceService.findAllPlanned());
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe
-    public void onEditQuestRequest(EditQuestRequestEvent e) {
-        Intent i = new Intent(getContext(), QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
     }
 
     @Override
