@@ -16,6 +16,7 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 
@@ -74,7 +75,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     @Override
     public void onStartTimeUpdated(QuestCalendarEvent calendarEvent, Date oldStartTime) {
         if (canAddEvent(calendarEvent)) {
-            // save new quest start time
+            eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         } else {
             calendarEvent.setStartTime(oldStartTime);
         }

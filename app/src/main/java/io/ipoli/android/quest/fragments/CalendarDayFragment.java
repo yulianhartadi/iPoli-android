@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,7 +26,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.OnQuestLongClickListener;
 import io.ipoli.android.app.UnscheduledQuestsAdapter;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
@@ -32,6 +33,11 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestCalendarAdapter;
+import io.ipoli.android.quest.Status;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
+import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
+import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 
@@ -39,7 +45,8 @@ import io.ipoli.android.quest.ui.QuestCalendarEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/17/16.
  */
-public class CalendarDayFragment extends Fragment implements OnQuestLongClickListener, CalendarListener {
+public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarEvent> {
+
     @Inject
     Bus eventBus;
 
@@ -58,7 +65,7 @@ public class CalendarDayFragment extends Fragment implements OnQuestLongClickLis
     private int movingQuestPosition;
 
     private Quest movingQuest;
-    private UnscheduledQuestsAdapter adapter;
+    private UnscheduledQuestsAdapter unscheduledQuestsAdapter;
     private QuestCalendarAdapter calendarAdapter;
 
     BroadcastReceiver tickReceiver = new BroadcastReceiver() {
@@ -93,10 +100,10 @@ public class CalendarDayFragment extends Fragment implements OnQuestLongClickLis
             }
         }
 
-        adapter = new UnscheduledQuestsAdapter(getContext(), unscheduledQuests, eventBus, this);
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), unscheduledQuests, eventBus);
         setUnscheduledQuestsHeight();
 
-        unscheduledQuestList.setAdapter(adapter);
+        unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
         calendarDayView.scrollToNow();
@@ -106,8 +113,23 @@ public class CalendarDayFragment extends Fragment implements OnQuestLongClickLis
         return v;
     }
 
+    @Subscribe
+    public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
+        Calendar c = Calendar.getInstance();
+        Quest q = e.quest;
+        int duration = q.getDuration() > 0 ? q.getDuration() : Constants.DEFAULT_UNSCHEDULED_QUEST_MIN_DURATION;
+        c.add(Calendar.MINUTE, -duration);
+        q.setStartTime(c.getTime());
+        q.setStatus(Status.COMPLETED.name());
+        q = questPersistenceService.save(q);
+        eventBus.post(new CompleteQuestRequestEvent(q));
+        calendarAdapter.addEvent(new QuestCalendarEvent(q));
+        unscheduledQuestsAdapter.removeQuest(e.quest);
+        setUnscheduledQuestsHeight();
+    }
+
     private void setUnscheduledQuestsHeight() {
-        int unscheduledQuestsToShow = Math.min(adapter.getItemCount(), Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT);
+        int unscheduledQuestsToShow = Math.min(unscheduledQuestsAdapter.getItemCount(), Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT);
 
         int itemHeight = getResources().getDimensionPixelSize(R.dimen.unscheduled_quest_item_height);
 
@@ -119,35 +141,48 @@ public class CalendarDayFragment extends Fragment implements OnQuestLongClickLis
     @Override
     public void onResume() {
         super.onResume();
+        eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
     @Override
     public void onPause() {
+        eventBus.unregister(this);
         getContext().unregisterReceiver(tickReceiver);
         super.onPause();
     }
 
-    @Override
-    public void onLongClick(int position, Quest quest) {
-        this.movingQuestPosition = position;
-        movingQuest = quest;
-        CalendarEvent calendarEvent = new QuestCalendarEvent(quest);
+    @Subscribe
+    public void onMoveQuestToCalendarRequest(MoveQuestToCalendarRequestEvent e) {
+        movingQuestPosition = unscheduledQuestsAdapter.indexOf(e.quest);
+        movingQuest = e.quest;
+        CalendarEvent calendarEvent = new QuestCalendarEvent(e.quest);
         calendarContainer.acceptNewEvent(calendarEvent);
+        unscheduledQuestsAdapter.removeQuest(e.quest);
+    }
+
+    @Subscribe
+    public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
+        QuestCalendarEvent qce = e.questCalendarEvent;
+        Quest q = qce.getQuest();
+        q.setStartTime(qce.getStartTime());
+        q.setStatus(Status.PLANNED.name());
+        questPersistenceService.save(q);
     }
 
     @Override
-    public void onUnableToAcceptNewEvent(CalendarEvent calendarEvent) {
-        adapter.addQuest(movingQuestPosition, movingQuest);
+    public void onUnableToAcceptNewEvent(QuestCalendarEvent calendarEvent) {
+        unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingQuest);
         setUnscheduledQuestsHeight();
     }
 
     @Override
-    public void onAcceptEvent(CalendarEvent calendarEvent) {
-        if (calendarAdapter.canAddEvent((QuestCalendarEvent) calendarEvent)) {
-            calendarAdapter.addEvent((QuestCalendarEvent) calendarEvent);
+    public void onAcceptEvent(QuestCalendarEvent calendarEvent) {
+        if (calendarAdapter.canAddEvent(calendarEvent)) {
+            eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
+            calendarAdapter.addEvent(calendarEvent);
         } else {
-            adapter.addQuest(movingQuestPosition, movingQuest);
+            unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingQuest);
         }
         setUnscheduledQuestsHeight();
     }

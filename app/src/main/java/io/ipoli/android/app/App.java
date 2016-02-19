@@ -89,7 +89,7 @@ public class App extends Application {
             calendar.setTime(new Date());
             calendar.set(Calendar.HOUR_OF_DAY, 12);
             calendar.set(Calendar.MINUTE, 15);
-            qqq.setStartTime(calendar.getTime());
+//            qqq.setStartTime(calendar.getTime());
             qqq.setDuration(15);
 
             Quest qqqq = new Quest("Work on presentation", Status.PLANNED.name(), new Date());

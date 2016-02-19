@@ -31,6 +31,7 @@ import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.QuestListFragment;

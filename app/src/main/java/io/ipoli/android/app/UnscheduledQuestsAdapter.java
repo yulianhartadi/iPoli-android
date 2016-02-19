@@ -22,7 +22,8 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.Status;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
+import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 
 /**
@@ -34,13 +35,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
-    private OnQuestLongClickListener questLongClickListener;
 
-    public UnscheduledQuestsAdapter(Context context, List<Quest> quests, Bus eventBus, OnQuestLongClickListener questLongClickListener) {
+    public UnscheduledQuestsAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
-        this.questLongClickListener = questLongClickListener;
     }
 
     @Override
@@ -72,9 +71,8 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                questLongClickListener.onLongClick(holder.getAdapterPosition(), q);
-                quests.remove(q);
-                notifyItemRemoved(holder.getAdapterPosition());
+
+                eventBus.post(new MoveQuestToCalendarRequestEvent(q));
                 return true;
             }
         });
@@ -82,8 +80,8 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked) {
-                    eventBus.post(new CompleteQuestRequestEvent(q));
+                if (checked) {
+                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(q));
                 }
             }
         });
@@ -101,6 +99,16 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     public void addQuest(int position, Quest quest) {
         quests.add(position, quest);
         notifyItemInserted(position);
+    }
+
+    public void removeQuest(Quest quest) {
+        int position = quests.indexOf(quest);
+        quests.remove(quest);
+        notifyItemRemoved(position);
+    }
+
+    public int indexOf(Quest quest) {
+        return quests.indexOf(quest);
     }
 
 
