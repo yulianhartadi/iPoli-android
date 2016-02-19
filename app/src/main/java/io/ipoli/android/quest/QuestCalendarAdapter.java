@@ -53,9 +53,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         });
 
         QuestContext ctx = Quest.getContext(q);
-        v.setBackgroundResource(ctx.resLightColor);
-        v.getBackground().setAlpha((int) (255 * 0.12));
-        v.findViewById(R.id.quest_indicator).setBackgroundResource(ctx.resDarkColor);
+        v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
+        v.findViewById(R.id.quest_indicator).setBackgroundResource(ctx.resLightColor);
 
         TextView name = (TextView) v.findViewById(R.id.quest_name);
         name.setText(q.getName());
@@ -74,7 +73,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                 }
             }
         });
-
 
         return v;
     }

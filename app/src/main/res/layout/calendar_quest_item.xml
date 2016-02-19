@@ -3,13 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="72dp"
-    android:background="@color/md_blue_50"
-    android:orientation="vertical">
+    android:background="@android:color/transparent">
+
+    <View
+        android:id="@+id/quest_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.12" />
 
     <View
         android:id="@+id/quest_indicator"
         android:layout_width="4dp"
         android:layout_height="match_parent"
+        android:alpha="0.54"
         android:layout_alignParentStart="true" />
 
     <LinearLayout
