@@ -1,10 +1,10 @@
 package io.ipoli.android.quest;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +15,17 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
-import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
@@ -42,7 +42,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private List<Object> items;
     private Bus eventBus;
 
-    private int[] headerIndices = new int[3];
+    private int[] headerIndices;
 
     public QuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
@@ -66,42 +66,35 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     private void calculateHeaderIndices(List<Quest> quests) {
-        Calendar c = Calendar.getInstance();
-        int dayOfYear = c.get(Calendar.DAY_OF_YEAR);
-        int year = c.get(Calendar.YEAR);
-        int headerIndex = 0;
-        while (isDueFor(quests.get(headerIndex), dayOfYear, year)) {
-            headerIndex++;
-        }
-        if (headerIndex == 0) {
-            headerIndices[0] = -1;
-        }
-        if (headerIndex > quests.size()) {
-            headerIndices[1] = -1;
-            return;
-        }
-        headerIndices[1] = headerIndex + 1;
+        headerIndices = new int[]{-1, -1, -1};
+        List<Quest> todayQuests = new ArrayList<>();
+        List<Quest> tomorrowQuests = new ArrayList<>();
+        List<Quest> upcomingQuests = new ArrayList<>();
 
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        dayOfYear = c.get(Calendar.DAY_OF_YEAR);
-        year = c.get(Calendar.YEAR);
-        while (headerIndex < quests.size() && isDueFor(quests.get(headerIndex), dayOfYear, year)) {
-            headerIndex++;
+        for (Quest q : quests) {
+            if (DateUtils.isToday(q.getDue())) {
+                todayQuests.add(q);
+            } else if (DateUtils.isTomorrow(q.getDue())) {
+                tomorrowQuests.add(q);
+            } else {
+                upcomingQuests.add(q);
+            }
         }
-        if (headerIndex > quests.size()) {
-            headerIndices[2] = -1;
-            return;
-        }
-        headerIndices[2] = headerIndex + 1;
-    }
 
-    private boolean isDueFor(Quest quest, int dayOfYear, int year) {
-        if (quest.getDue() == null) {
-            return false;
+        int freeIndex = 0;
+        if (!todayQuests.isEmpty()) {
+            headerIndices[0] = 0;
+            freeIndex = todayQuests.size() + 1;
         }
-        Calendar c = Calendar.getInstance();
-        c.setTime(quest.getDue());
-        return c.get(Calendar.YEAR) == year && c.get(Calendar.DAY_OF_YEAR) == dayOfYear;
+
+        if (!tomorrowQuests.isEmpty()) {
+            headerIndices[1] = freeIndex;
+            freeIndex = freeIndex + tomorrowQuests.size() + 1;
+        }
+
+        if (!upcomingQuests.isEmpty()) {
+            headerIndices[2] = freeIndex;
+        }
     }
 
     @Override
@@ -138,9 +131,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             questHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(context, QuestActivity.class);
-                    i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
-                    context.startActivity(i);
+                    eventBus.post(new EditQuestRequestEvent(q));
                 }
             });
 
@@ -194,7 +185,11 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Quest q = (Quest) items.get(position);
         items.remove(position);
         notifyItemRemoved(position);
-        eventBus.post(new CompleteQuestRequestEvent(q));
+        if (direction == ItemTouchHelper.END) {
+            eventBus.post(new CompleteQuestRequestEvent(q));
+        } else if (direction == ItemTouchHelper.START) {
+            eventBus.post(new ScheduleQuestForTodayEvent(q));
+        }
     }
 
     public void updateQuests(List<Quest> newQuests) {
@@ -231,24 +226,58 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundResource(R.color.md_blue_100);
+
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(0);
+
         }
 
         @Override
-        public void onItemSwipeStart() {
-            itemView.findViewById(R.id.quest_complete_check).setVisibility(View.VISIBLE);
-            itemView.findViewById(R.id.quest_start_time).setVisibility(View.GONE);
+        public void onItemSwipeStart(int direction) {
+            if (direction == ItemTouchHelper.START) {
+                showScheduleForToday();
+                hideQuestCompleteCheck();
+            } else if (direction == ItemTouchHelper.END) {
+                showQuestCompleteCheck();
+                hideScheduleForToday();
+            }
+        }
+
+        private void showScheduleForToday() {
+            changeScheduleVisibility(View.VISIBLE, View.GONE);
+        }
+
+        private void showQuestCompleteCheck() {
+            changeCheckVisibility(View.VISIBLE, View.GONE);
+        }
+
+        private void hideScheduleForToday() {
+            changeScheduleVisibility(View.GONE, View.VISIBLE);
+        }
+
+        private void hideQuestCompleteCheck() {
+            changeCheckVisibility(View.GONE, View.VISIBLE);
+        }
+
+        private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
+            itemView.findViewById(R.id.quest_schedule_for_today).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_duration).setVisibility(durationVisibility);
+        }
+
+        private void changeCheckVisibility(int iconVisibility, int startTimeVisibility) {
+            itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_start_time).setVisibility(startTimeVisibility);
         }
 
         @Override
-        public void onItemSwipeStopped() {
-            itemView.findViewById(R.id.quest_complete_check).setVisibility(View.GONE);
-            itemView.findViewById(R.id.quest_start_time).setVisibility(View.VISIBLE);
+        public void onItemSwipeStopped(int direction) {
+            if (direction == ItemTouchHelper.START) {
+                hideScheduleForToday();
+            } else if (direction == ItemTouchHelper.END) {
+                hideQuestCompleteCheck();
+            }
         }
     }
 }

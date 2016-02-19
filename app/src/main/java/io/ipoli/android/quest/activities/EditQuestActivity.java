@@ -115,10 +115,7 @@ public class EditQuestActivity extends BaseActivity {
 
         setStartTimeText(quest.getStartTime());
 
-        long dueDateMillis = getIntent().getLongExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, 0);
-        Date due = dueDateMillis > 0 ? new Date(dueDateMillis) : quest.getDue();
-        quest.setDue(due);
-        setDueDateText(due);
+        setDueDateText(quest.getDue());
 
         durationHours.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

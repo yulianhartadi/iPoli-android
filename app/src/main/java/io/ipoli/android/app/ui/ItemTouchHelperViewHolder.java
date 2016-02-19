@@ -10,7 +10,7 @@ public interface ItemTouchHelperViewHolder {
 
     void onItemClear();
 
-    void onItemSwipeStart();
+    void onItemSwipeStart(int direction);
 
-    void onItemSwipeStopped();
+    void onItemSwipeStopped(int direction);
 }

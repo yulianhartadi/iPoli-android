@@ -166,11 +166,11 @@ public class PlanDayActivity extends BaseActivity {
 
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
-        Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
-        if (e.due != null) {
-            i.putExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, e.due.getTime());
-        }
-        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
+//        Intent i = new Intent(this, EditQuestActivity.class);
+//        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
+//        if (e.due != null) {
+//            i.putExtra(EditQuestActivity.DUE_DATE_MILLIS_EXTRA_KEY, e.due.getTime());
+//        }
+//        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 }

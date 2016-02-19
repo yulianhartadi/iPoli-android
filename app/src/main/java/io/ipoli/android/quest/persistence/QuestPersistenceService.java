@@ -31,4 +31,6 @@ public interface QuestPersistenceService {
     Quest findQuestStartingAfter(Date date);
 
     Quest findById(String id);
+
+    List<Quest> findAllPlanned();
 }

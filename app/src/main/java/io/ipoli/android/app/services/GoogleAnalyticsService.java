@@ -109,7 +109,7 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         track(createEventBuilder("quest", "edit-request")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe

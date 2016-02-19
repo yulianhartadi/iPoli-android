@@ -35,6 +35,12 @@ public class DateUtils {
         return isSameDay(date, new Date());
     }
 
+    public static boolean isTomorrow(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        return isSameDay(date, c.getTime());
+    }
+
     public static boolean isBeforeToday(Date d) {
         if (d == null) {
             return false;

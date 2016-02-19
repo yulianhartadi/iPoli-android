@@ -163,7 +163,6 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
                 String matchedDueDate = dueDateMatcher.match(text);
                 if (!TextUtils.isEmpty(matchedDueDate)) {
-                    text = text.replace(matchedDueDate, " ");
                     dueDate.setBackgroundResource(R.drawable.circle_disable);
                     dueDate.setEnabled(false);
                 } else {

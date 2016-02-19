@@ -170,4 +170,11 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .equalTo("id", id).findFirst());
     }
 
+    @Override
+    public List<Quest> findAllPlanned() {
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
+                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING));
+    }
+
 }

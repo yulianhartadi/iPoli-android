@@ -30,7 +30,6 @@ import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
@@ -67,7 +66,7 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q.getId(), q.getName(), holder.getAdapterPosition(), q.getDue()));
+//                eventBus.post(new EditQuestRequestEvent(q.getId(), q.getName(), holder.getAdapterPosition(), q.getDue()));
             }
         });
 
@@ -215,13 +214,13 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
         }
 
         @Override
-        public void onItemSwipeStart() {
+        public void onItemSwipeStart(int dir) {
             itemView.findViewById(R.id.quest_delete).setVisibility(View.VISIBLE);
             itemView.findViewById(R.id.quest_created_at).setVisibility(View.INVISIBLE);
         }
 
         @Override
-        public void onItemSwipeStopped() {
+        public void onItemSwipeStopped(int dir) {
             itemView.findViewById(R.id.quest_delete).setVisibility(View.GONE);
             itemView.findViewById(R.id.quest_created_at).setVisibility(View.VISIBLE);
         }
