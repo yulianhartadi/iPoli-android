@@ -23,11 +23,6 @@ import com.squareup.otto.Bus;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -37,7 +32,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.parsers.DueDateMatcher;
+import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.StartTimeMatcher;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -69,9 +69,6 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
-    private final DueDateMatcher dueDateMatcher = new DueDateMatcher(parser);
-    private final StartTimeMatcher startTimeMatcher = new StartTimeMatcher(parser);
-    private final DurationMatcher durationMatcher = new DurationMatcher();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -139,7 +136,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
                     return;
                 }
 
-                String matchedDuration = durationMatcher.match(text);
+                String matchedDuration = new DurationMatcher().match(text);
                 if (!TextUtils.isEmpty(matchedDuration)) {
                     text = text.replace(matchedDuration, " ");
                     duration.setBackgroundResource(R.drawable.circle_disable);
@@ -149,7 +146,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
                     duration.setEnabled(true);
                 }
 
-                String matchedStartTime = startTimeMatcher.match(text);
+                String matchedStartTime = new StartTimeMatcher(parser).match(text);
                 if (!TextUtils.isEmpty(matchedStartTime)) {
                     text = text.replace(matchedStartTime, " ");
                     startTime.setBackgroundResource(R.drawable.circle_disable);
@@ -159,7 +156,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
                     startTime.setEnabled(true);
                 }
 
-                String matchedDueDate = dueDateMatcher.match(text);
+                String matchedDueDate = new DueDateMatcher(parser).match(text);
                 if (!TextUtils.isEmpty(matchedDueDate)) {
                     dueDate.setBackgroundResource(R.drawable.circle_disable);
                     dueDate.setEnabled(false);
@@ -255,26 +252,12 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     public void onSaveQuestClick(View v) {
         String text = questText.getText().toString().trim();
 
-        String matchedDurationText = durationMatcher.match(text);
-        int duration = durationMatcher.parse(text);
-        text = text.replace(matchedDurationText, " ");
-
-        String matchedStartTimeText = startTimeMatcher.match(text);
-        Date startTime = startTimeMatcher.parse(text);
-        text = text.replace(matchedStartTimeText, " ");
-
-        String matchedDueDateText = dueDateMatcher.match(text);
-        Date dueDate = dueDateMatcher.parse(text);
-        text = text.replace(matchedDueDateText, " ");
-
-        if (TextUtils.isEmpty(text)) {
+        Quest q = new QuestParser(parser).parse(text);
+        if (TextUtils.isEmpty(q.getName())) {
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return;
         }
-
-        String name = text;
-
-        eventBus.post(new NewQuestEvent(name, startTime, duration, dueDate));
+        eventBus.post(new NewQuestEvent(q.getName(), q.getStartTime(), q.getDuration(), q.getDue()));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         finish();
         overridePendingTransition(0, R.anim.slide_down);
@@ -292,157 +275,4 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         overridePendingTransition(0, R.anim.slide_down);
     }
 
-    public interface QuestTextMatcher<R> {
-        String match(String text);
-
-        R parse(String text);
-    }
-
-    public static class DurationMatcher implements QuestTextMatcher<Integer> {
-
-        private static final String DURATION_PATTERN = " for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?";
-        Pattern pattern = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
-
-        @Override
-        public String match(String text) {
-
-            Matcher dm = createMatcher(text);
-            if (dm.find()) {
-                return dm.group();
-            }
-            return "";
-        }
-
-        @NonNull
-        private Matcher createMatcher(String text) {
-            return pattern.matcher(text);
-        }
-
-        @Override
-        public Integer parse(String text) {
-            Matcher dm = createMatcher(text);
-            if (dm.find()) {
-                int fd = Integer.valueOf(dm.group(1));
-                String fUnit = dm.group(2);
-                int duration = fd;
-                if (fUnit.startsWith("h")) {
-                    duration = (int) TimeUnit.HOURS.toMinutes(fd);
-                }
-
-                if (dm.group(3) != null && dm.group(4) != null) {
-                    duration += Integer.valueOf(dm.group(3));
-                }
-                return duration;
-            }
-            return -1;
-        }
-    }
-
-    public static class StartTimeMatcher implements QuestTextMatcher<Date> {
-
-        private static final String PATTERN = " at (\\d{1,2}[:|\\.]?(\\d{2})?\\s?(am|pm)?)";
-        private final PrettyTimeParser parser;
-        private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
-
-        public StartTimeMatcher(PrettyTimeParser parser) {
-            this.parser = parser;
-        }
-
-        @Override
-        public String match(String text) {
-            Matcher m = pattern.matcher(text);
-            if (m.find()) {
-                return m.group();
-            }
-            return "";
-        }
-
-        @Override
-        public Date parse(String text) {
-            Matcher stm = pattern.matcher(text);
-            if (stm.find()) {
-                List<Date> dates = parser.parse(stm.group());
-                if (!dates.isEmpty()) {
-                    return dates.get(0);
-                }
-            }
-            return null;
-        }
-    }
-
-    public static class DueDateMatcher implements QuestTextMatcher<Date> {
-
-        private static final String DUE_TODAY_TOMORROW_PATTERN = "today|tomorrow";
-        private static final String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
-        private static final String DUE_AFTER_IN_PATTERN = "(after|in)\\s\\w+\\s(day|week|month|year)s?";
-        private static final String DUE_FROM_NOW_PATTERN = "\\w+\\s(day|week|month|year)s?\\sfrom\\snow";
-        private static final String DUE_THIS_NEXT_PATTERN = "(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)";
-        private static final String DUE_THIS_MONTH_PATTERN = "on\\s?(\\d{1,2})\\s?(st|th)$";
-
-        private static final Pattern[] dueDatePatterns = {
-                Pattern.compile(DUE_TODAY_TOMORROW_PATTERN, Pattern.CASE_INSENSITIVE),
-                Pattern.compile(DUE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE),
-                Pattern.compile(DUE_THIS_NEXT_PATTERN, Pattern.CASE_INSENSITIVE),
-                Pattern.compile(DUE_AFTER_IN_PATTERN, Pattern.CASE_INSENSITIVE),
-                Pattern.compile(DUE_FROM_NOW_PATTERN, Pattern.CASE_INSENSITIVE)
-        };
-
-        private static final Pattern dueThisMonthPattern = Pattern.compile(DUE_THIS_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
-        private final PrettyTimeParser parser;
-
-        public DueDateMatcher(PrettyTimeParser parser) {
-            this.parser = parser;
-        }
-
-        @Override
-        public String match(String text) {
-
-            Matcher tmm = dueThisMonthPattern.matcher(text);
-            if (tmm.find()) {
-                int day = Integer.parseInt(tmm.group(1));
-                Calendar c = Calendar.getInstance();
-                int maxDaysInMoth = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-                if (day > maxDaysInMoth) {
-                    return "";
-                }
-                return tmm.group();
-            }
-
-            for (Pattern p : dueDatePatterns) {
-                Matcher matcher = p.matcher(text);
-                if (matcher.find()) {
-                    return matcher.group();
-                }
-            }
-            return "";
-        }
-
-        @Override
-        public Date parse(String text) {
-            Matcher tmm = dueThisMonthPattern.matcher(text);
-            if (tmm.find()) {
-                int day = Integer.parseInt(tmm.group(1));
-                Calendar c = Calendar.getInstance();
-                int maxDaysInMoth = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-                if (day > maxDaysInMoth) {
-                    return null;
-                }
-                c.set(Calendar.DAY_OF_MONTH, day);
-                return c.getTime();
-            }
-
-            for (Pattern p : dueDatePatterns) {
-                Matcher matcher = p.matcher(text);
-                if (matcher.find()) {
-                    List<Date> dueResult = parser.parse(matcher.group());
-                    if (dueResult.size() != 1) {
-                        return null;
-                    }
-                    return dueResult.get(0);
-                }
-            }
-            return null;
-        }
-
-    }
 }

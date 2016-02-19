@@ -26,6 +26,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
@@ -145,18 +146,26 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 questHolder.indicator.startAnimation(blinkAnimation);
             }
 
-            if (q.getStartTime() == null) {
-                questHolder.startTime.setVisibility(View.INVISIBLE);
-            } else {
+            if (q.getStartTime() != null) {
                 questHolder.startTime.setVisibility(View.VISIBLE);
                 questHolder.startTime.setText(StartTimeFormatter.format(q.getStartTime()));
+            } else {
+                questHolder.startTime.setVisibility(View.INVISIBLE);
             }
 
-            if (q.getDuration() <= 0) {
-                questHolder.duration.setVisibility(View.INVISIBLE);
+            boolean isUpcoming = !DateUtils.isToday(q.getDue()) && !DateUtils.isTomorrow(q.getDue());
+            if (q.getDue() != null && isUpcoming) {
+                questHolder.dueDate.setVisibility(View.VISIBLE);
+                questHolder.dueDate.setText(DueDateFormatter.formatWithoutYear(q.getDue()));
             } else {
+                questHolder.dueDate.setVisibility(View.GONE);
+            }
+
+            if (q.getDuration() > 0) {
                 questHolder.duration.setVisibility(View.VISIBLE);
                 questHolder.duration.setText(DurationFormatter.format(context, q.getDuration()));
+            } else {
+                questHolder.duration.setVisibility(View.INVISIBLE);
             }
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
@@ -219,6 +228,9 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Bind(R.id.quest_indicator)
         public View indicator;
 
+        @Bind(R.id.quest_due_date)
+        public TextView dueDate;
+
         public QuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
@@ -268,7 +280,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         private void changeCheckVisibility(int iconVisibility, int startTimeVisibility) {
             itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_start_time).setVisibility(startTimeVisibility);
+            itemView.findViewById(R.id.quest_start_date_time_container).setVisibility(startTimeVisibility);
         }
 
         @Override
