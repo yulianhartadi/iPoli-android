@@ -3,6 +3,8 @@ package io.ipoli.android.quest;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -13,6 +15,7 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 
@@ -38,16 +41,33 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     @Override
     public View getView(ViewGroup parent, int position) {
         final QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
+        final Quest q = calendarEvent.getQuest();
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new ShowQuestEvent(calendarEvent.getQuest()));
+                eventBus.post(new ShowQuestEvent(q));
             }
         });
         v.setBackgroundResource(calendarEvent.getBackgroundColor());
+
         TextView name = (TextView) v.findViewById(R.id.quest_name);
-        name.setText(questCalendarEvents.get(position).getName());
+        name.setText(q.getName());
+
+        CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
+        if (Quest.getStatus(q) == Status.COMPLETED) {
+            check.setChecked(true);
+        } else {
+            check.setChecked(false);
+        }
+        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked) {
+                    eventBus.post(new CompleteQuestRequestEvent(q));
+                }
+            }
+        });
         return v;
     }
 

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -21,7 +22,8 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.Status;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -54,7 +56,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q));
+                eventBus.post(new ShowQuestEvent(q));
             }
         });
 
@@ -74,6 +76,15 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 quests.remove(q);
                 notifyItemRemoved(holder.getAdapterPosition());
                 return true;
+            }
+        });
+
+        holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked) {
+                    eventBus.post(new CompleteQuestRequestEvent(q));
+                }
             }
         });
     }
