@@ -2,7 +2,9 @@ package io.ipoli.android.quest.ui.dialogs;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
@@ -18,7 +20,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 
 
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
 
     @Inject
     Bus eventBus;
@@ -28,6 +30,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -35,6 +38,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, year, month, day);
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getString(R.string.unknown_choice), this);
         dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         return dialog;
     }
@@ -48,5 +52,10 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
         eventBus.post(new DateSelectedEvent(c.getTime()));
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+        eventBus.post(new DateSelectedEvent(null));
     }
 }

@@ -111,6 +111,7 @@
     <string name="add_quest">add quest</string>
     <string name="title_activity_add_quest">Add new Quest</string>
     <string name="quest_added">Quest added</string>
+    <string name="unknown_choice">don\'t know</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

@@ -230,15 +230,18 @@ public class EditQuestActivity extends BaseActivity {
     @OnClick(R.id.save_quest)
     public void onSaveQuest(FloatingActionButton button) {
         String name = nameText.getText().toString().trim();
-        int hours = Integer.parseInt(durationHours.getText().toString());
-        int mins = Integer.parseInt(durationMins.getText().toString());
-        int duration = hours * 60 + mins;
+        int duration = -1;
+        try {
+            int hours = Integer.parseInt(durationHours.getText().toString());
+            int mins = Integer.parseInt(durationMins.getText().toString());
+            duration = hours * 60 + mins;
+        } catch (Exception e) {
+        }
 
         quest.setName(name);
         quest.setDuration(duration);
-        if (quest.getDue() != null) {
-            quest.setStatus(Status.PLANNED.name());
-        }
+        Status s = quest.getDue() == null ? Status.UNPLANNED : Status.PLANNED;
+        quest.setStatus(s.name());
         quest = questPersistenceService.save(quest);
 
         Intent data = new Intent();

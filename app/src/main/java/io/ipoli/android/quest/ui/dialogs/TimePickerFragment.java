@@ -3,6 +3,7 @@ package io.ipoli.android.quest.ui.dialogs;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -20,7 +21,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 
 public class TimePickerFragment extends DialogFragment
-        implements TimePickerDialog.OnTimeSetListener {
+        implements TimePickerDialog.OnTimeSetListener, DialogInterface.OnClickListener {
 
     @Inject
     Bus eventBus;
@@ -36,8 +37,10 @@ public class TimePickerFragment extends DialogFragment
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
 
-        return new TimePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, hour, minute,
+        TimePickerDialog dialog = new TimePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, hour, minute,
                 DateFormat.is24HourFormat(getActivity()));
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getString(R.string.unknown_choice), this);
+        return dialog;
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -45,5 +48,10 @@ public class TimePickerFragment extends DialogFragment
         c.set(Calendar.HOUR_OF_DAY, hourOfDay);
         c.set(Calendar.MINUTE, minute);
         eventBus.post(new TimeSelectedEvent(c.getTime()));
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int i) {
+        eventBus.post(new TimeSelectedEvent(null));
     }
 }
