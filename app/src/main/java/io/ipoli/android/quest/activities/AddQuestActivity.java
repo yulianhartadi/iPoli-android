@@ -89,6 +89,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         dueDateAutoCompletes = new SpannableString[]{
                 new SpannableString("today"),
                 new SpannableString("tomorrow"),
+                createSpannableString("on ", "12 Feb"),
                 createSpannableString("next ", "Monday"),
                 createSpannableString("after ", "3 days"),
                 createSpannableString("in ", "2 months")
