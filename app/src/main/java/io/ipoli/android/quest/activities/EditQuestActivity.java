@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -8,7 +9,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -138,7 +142,12 @@ public class EditQuestActivity extends BaseActivity {
         });
 
         initContextUI();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_quest_menu, menu);
+        return true;
     }
 
     private void initContextUI() {
@@ -209,7 +218,27 @@ public class EditQuestActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                setResult(RESULT_CANCELED);
                 finish();
+                return true;
+            case R.id.action_remove:
+                AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_remove_quest_title)).setMessage(getString(R.string.dialog_remove_quest_message)).create();
+                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        questPersistenceService.delete(quest);
+                        Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    }
+                });
+                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.undo), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                d.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

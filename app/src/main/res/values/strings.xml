@@ -112,6 +112,10 @@
     <string name="title_activity_add_quest">Add new Quest</string>
     <string name="quest_added">Quest added</string>
     <string name="unknown_choice">don\'t know</string>
+    <string name="remove">remove</string>
+    <string name="remove_it">REMOVE IT</string>
+    <string name="dialog_remove_quest_title">Remove quest</string>
+    <string name="dialog_remove_quest_message">Sure you want to remove this awesome quest?</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

@@ -174,6 +174,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 //the quest shouldn't be able to start today
                 finish();
             }
+        } else if (resultCode == Constants.RESULT_REMOVED) {
+            finish();
         }
     }
 
