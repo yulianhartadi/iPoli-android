@@ -116,6 +116,7 @@
     <string name="remove_it">REMOVE IT</string>
     <string name="dialog_remove_quest_title">Remove quest</string>
     <string name="dialog_remove_quest_message">Sure you want to remove this awesome quest?</string>
+    <string name="inbox">Inbox</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

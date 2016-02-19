@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 
 import com.squareup.otto.Bus;
@@ -31,7 +32,6 @@ import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.QuestListFragment;
@@ -94,6 +94,12 @@ public class MainActivity extends BaseActivity {
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
