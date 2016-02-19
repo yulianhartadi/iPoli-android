@@ -43,6 +43,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     public View getView(ViewGroup parent, int position) {
         final QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
         final Quest q = calendarEvent.getQuest();
+
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +51,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                 eventBus.post(new ShowQuestEvent(q));
             }
         });
-        v.setBackgroundResource(calendarEvent.getBackgroundColor());
+
+        QuestContext ctx = Quest.getContext(q);
+        v.setBackgroundResource(ctx.resLightColor);
+        v.getBackground().setAlpha((int) (255 * 0.12));
+        v.findViewById(R.id.quest_indicator).setBackgroundResource(ctx.resDarkColor);
 
         TextView name = (TextView) v.findViewById(R.id.quest_name);
         name.setText(q.getName());
@@ -69,6 +74,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                 }
             }
         });
+
+
         return v;
     }
 

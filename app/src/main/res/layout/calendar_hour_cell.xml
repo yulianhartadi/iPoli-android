@@ -18,6 +18,12 @@
         android:background="@color/md_white">
 
         <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:background="@color/md_grey_100" />
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_alignParentTop="true"
