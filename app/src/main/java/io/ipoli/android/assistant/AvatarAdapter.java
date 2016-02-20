@@ -14,7 +14,6 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.assistant.events.AvatarSelectedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -43,13 +42,6 @@ public class AvatarAdapter extends RecyclerView.Adapter {
         final Integer avatarRes = avatars.get(position);
         ImageView avatar = (ImageView) holder.itemView.findViewById(R.id.avatar_image);
         avatar.setImageResource(avatarRes);
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new AvatarSelectedEvent(avatarRes));
-            }
-        });
     }
 
     @Override

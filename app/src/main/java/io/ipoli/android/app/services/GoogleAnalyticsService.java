@@ -10,13 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.assistant.events.HelpEvent;
-import io.ipoli.android.assistant.events.NewTodayQuestEvent;
-import io.ipoli.android.assistant.events.PlanTodayEvent;
-import io.ipoli.android.assistant.events.RenameAssistantEvent;
-import io.ipoli.android.assistant.events.ReviewTodayEvent;
-import io.ipoli.android.assistant.events.ShowExamplesEvent;
-import io.ipoli.android.assistant.events.ShowQuestsEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -72,12 +65,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onTodayNewQuest(NewTodayQuestEvent e) {
-        track(createEventBuilder("quest", "create-today")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
-    }
-
-    @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         track(createEventBuilder("quest", "edit-request")
                 .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
@@ -125,31 +112,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onPlanToday(PlanTodayEvent e) {
-        trackUIEvent("chat", "plan-day");
-    }
-
-    @Subscribe
-    public void onShowExamples(ShowExamplesEvent e) {
-        trackUIEvent("chat", "show-examples");
-    }
-
-    @Subscribe
-    public void onHelp(HelpEvent e) {
-        trackUIEvent("chat", "help");
-    }
-
-    @Subscribe
-    public void onRename(RenameAssistantEvent e) {
-        trackUIEvent("chat", "rename");
-    }
-
-    @Subscribe
-    public void onShowQuests(ShowQuestsEvent e) {
-        trackUIEvent("chat", "show-quests");
-    }
-
-    @Subscribe
     public void onQuestsPlanned(QuestsPlannedEvent e) {
         List<String> questNames = new ArrayList<>();
         for (Quest q : e.quests) {
@@ -157,11 +119,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
         }
         track(createEventBuilder("quest", "planned")
                 .setCustomDimension(QUESTS_DIMENSION_INDEX, TextUtils.join("\n", questNames)));
-    }
-
-    @Subscribe
-    public void onReviewToday(ReviewTodayEvent e) {
-        trackUIEvent("chat", "review-day");
     }
 
     @Subscribe

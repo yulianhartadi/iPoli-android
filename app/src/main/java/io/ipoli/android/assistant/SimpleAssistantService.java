@@ -2,7 +2,6 @@ package io.ipoli.android.assistant;
 
 import com.squareup.otto.Subscribe;
 
-import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.Status;
@@ -35,12 +34,6 @@ public class SimpleAssistantService implements AssistantService {
             quest.setDue(e.dueDate);
         }
         questPersistenceService.save(quest);
-    }
-
-    @Subscribe
-    public void onRenameAssistant(RenameAssistantEvent e) {
-        assistant.setName(e.name);
-        assistant = assistantPersistenceService.save(assistant);
     }
 
     @Override

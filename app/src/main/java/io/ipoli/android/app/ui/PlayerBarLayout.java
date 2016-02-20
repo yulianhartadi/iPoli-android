@@ -26,7 +26,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.assistant.Assistant;
-import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
@@ -146,11 +145,6 @@ public class PlayerBarLayout extends AppBarLayout {
     protected void onDetachedFromWindow() {
         eventBus.unregister(this);
         super.onDetachedFromWindow();
-    }
-
-    @Subscribe
-    public void onRenameAssistant(RenameAssistantEvent e) {
-        toolbar.setTitle(e.name);
     }
 
     @Subscribe

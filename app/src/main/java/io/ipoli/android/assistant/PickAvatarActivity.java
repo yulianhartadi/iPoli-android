@@ -1,12 +1,10 @@
 package io.ipoli.android.assistant;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.assistant.events.AvatarSelectedEvent;
 
 public class PickAvatarActivity extends BaseActivity {
 
@@ -57,14 +53,6 @@ public class PickAvatarActivity extends BaseActivity {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Subscribe
-    public void onAvatarSelected(AvatarSelectedEvent e) {
-        Intent data = new Intent();
-        data.putExtra("avatar", ResourceUtils.extractDrawableName(this, e.avatarRes));
-        setResult(0, data);
-        finish();
     }
 
 }
