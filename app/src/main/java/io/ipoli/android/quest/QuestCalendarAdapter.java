@@ -26,7 +26,7 @@ import io.ipoli.android.quest.ui.QuestCalendarEvent;
  */
 public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent> {
 
-    private final List<QuestCalendarEvent> questCalendarEvents;
+    private List<QuestCalendarEvent> questCalendarEvents;
     private final Bus eventBus;
 
     public QuestCalendarAdapter(List<QuestCalendarEvent> questCalendarEvents, Bus eventBus) {
@@ -84,6 +84,12 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         } else {
             calendarEvent.setStartTime(oldStartTime);
         }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateEvents(List<QuestCalendarEvent> calendarEvents) {
+        this.questCalendarEvents = calendarEvents;
         notifyDataSetChanged();
     }
 

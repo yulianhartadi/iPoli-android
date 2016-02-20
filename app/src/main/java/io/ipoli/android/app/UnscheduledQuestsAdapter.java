@@ -111,6 +111,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         return quests.indexOf(quest);
     }
 
+    public void updateQuests(List<Quest> quests) {
+        this.quests = quests;
+        notifyDataSetChanged();
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.quest_check)

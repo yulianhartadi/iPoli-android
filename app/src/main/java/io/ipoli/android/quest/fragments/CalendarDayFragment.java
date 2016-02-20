@@ -143,6 +143,23 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         super.onResume();
         eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+
+        List<Quest> todayQuests = questPersistenceService.findAllForToday();
+
+        List<Quest> unscheduledQuests = new ArrayList<>();
+        List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
+        for (Quest q : todayQuests) {
+            if (q.getStartTime() == null) {
+                unscheduledQuests.add(q);
+            } else {
+                calendarEvents.add(new QuestCalendarEvent(q));
+            }
+        }
+
+        unscheduledQuestsAdapter.updateQuests(unscheduledQuests);
+        setUnscheduledQuestsHeight();
+        calendarAdapter.updateEvents(calendarEvents);
+        calendarDayView.scrollToNow();
     }
 
     @Override
