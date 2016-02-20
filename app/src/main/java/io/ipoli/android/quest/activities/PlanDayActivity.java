@@ -119,6 +119,7 @@ public class PlanDayActivity extends BaseActivity {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+        overridePendingTransition(R.anim.slide_in_top, R.anim.slide_out_top);
     }
 
     @Override

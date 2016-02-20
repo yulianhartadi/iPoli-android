@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
         startActivity(new Intent(this, AddQuestActivity.class));
-        overridePendingTransition(R.anim.slide_up, 0);
+        overridePendingTransition(R.anim.slide_up_interpolate, 0);
     }
 
     @Subscribe
@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_plan_day:
-                startActivity(new Intent(this, PlanDayActivity.class));
+                startPlanDayActivity();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -125,8 +125,13 @@ public class MainActivity extends BaseActivity {
         eventBus.register(this);
         Intent i = getIntent();
         if (ReminderIntentService.ACTION_REMIND_PLAN_DAY.equals(i.getAction())) {
-            startActivity(new Intent(this, PlanDayActivity.class));
+            startPlanDayActivity();
         }
+    }
+
+    private void startPlanDayActivity() {
+        startActivity(new Intent(this, PlanDayActivity.class));
+        overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
     }
 
     @Override

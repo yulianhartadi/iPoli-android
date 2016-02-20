@@ -260,19 +260,19 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         eventBus.post(new NewQuestEvent(q.getName(), q.getStartTime(), q.getDuration(), q.getDue()));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         finish();
-        overridePendingTransition(0, R.anim.slide_down);
+        overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(0, R.anim.slide_down);
+        overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
     @OnClick(R.id.cancel_save)
     public void onCancelClick(View v) {
         finish();
-        overridePendingTransition(0, R.anim.slide_down);
+        overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
 }

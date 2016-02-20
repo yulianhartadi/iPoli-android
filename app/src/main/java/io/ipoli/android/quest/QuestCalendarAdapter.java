@@ -68,15 +68,17 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                     eventBus.post(new ShowQuestEvent(q));
                 }
             });
-        }
-        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if (checked) {
-                    eventBus.post(new CompleteQuestRequestEvent(q));
+
+            check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                    if (checked) {
+                        eventBus.post(new CompleteQuestRequestEvent(q));
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
         return v;
     }
