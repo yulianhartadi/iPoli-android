@@ -27,8 +27,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.MainViewPager;
 import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -106,6 +108,10 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        Intent i = getIntent();
+        if (ReminderIntentService.ACTION_REMIND_PLAN_DAY.equals(i.getAction())) {
+            startActivity(new Intent(this, PlanDayActivity.class));
+        }
     }
 
     @Override
