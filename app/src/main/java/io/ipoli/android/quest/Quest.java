@@ -37,6 +37,7 @@ public class Quest extends RealmObject {
     private int duration;
     private Date startTime;
     private Date actualStartDateTime;
+    private Date completedDateTime;
     private String log;
     private String difficulty;
     private int measuredDuration;
@@ -182,5 +183,13 @@ public class Quest extends RealmObject {
 
     public void setMeasuredDuration(int measuredDuration) {
         this.measuredDuration = measuredDuration;
+    }
+
+    public Date getCompletedDateTime() {
+        return completedDateTime;
+    }
+
+    public void setCompletedDateTime(Date completedDateTime) {
+        this.completedDateTime = completedDateTime;
     }
 }
