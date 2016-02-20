@@ -88,19 +88,8 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         calendarContainer.setCalendarListener(this);
 
-        List<Quest> todayQuests = questPersistenceService.findAllForToday();
-
-        List<Quest> unscheduledQuests = new ArrayList<>();
-        List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
-        for (Quest q : todayQuests) {
-            if (q.getStartTime() == null) {
-                unscheduledQuests.add(q);
-            } else {
-                calendarEvents.add(new QuestCalendarEvent(q));
-            }
-        }
-
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), unscheduledQuests, eventBus);
+        Schedule schedule = new CalendarScheduler().schedule();
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), schedule.getUnscheduledQuests(), eventBus);
         setUnscheduledQuestsHeight();
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
@@ -108,7 +97,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         calendarDayView.scrollToNow();
 
-        calendarAdapter = new QuestCalendarAdapter(calendarEvents, eventBus);
+        calendarAdapter = new QuestCalendarAdapter(schedule.getCalendarEvents(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
         return v;
     }
@@ -144,21 +133,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
 
-        List<Quest> todayQuests = questPersistenceService.findAllForToday();
+        Schedule schedule = new CalendarScheduler().schedule();
 
-        List<Quest> unscheduledQuests = new ArrayList<>();
-        List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
-        for (Quest q : todayQuests) {
-            if (q.getStartTime() == null) {
-                unscheduledQuests.add(q);
-            } else {
-                calendarEvents.add(new QuestCalendarEvent(q));
-            }
-        }
-
-        unscheduledQuestsAdapter.updateQuests(unscheduledQuests);
+        unscheduledQuestsAdapter.updateQuests(schedule.getUnscheduledQuests());
         setUnscheduledQuestsHeight();
-        calendarAdapter.updateEvents(calendarEvents);
+        calendarAdapter.updateEvents(schedule.getCalendarEvents());
         calendarDayView.scrollToNow();
     }
 
@@ -202,5 +181,41 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingQuest);
         }
         setUnscheduledQuestsHeight();
+    }
+
+    private class CalendarScheduler {
+
+        public Schedule schedule() {
+            List<Quest> todayQuests = questPersistenceService.findAllForToday();
+
+            List<Quest> unscheduledQuests = new ArrayList<>();
+            List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
+            for (Quest q : todayQuests) {
+                if (q.getStartTime() == null) {
+                    unscheduledQuests.add(q);
+                } else {
+                    calendarEvents.add(new QuestCalendarEvent(q));
+                }
+            }
+            return new Schedule(unscheduledQuests, calendarEvents);
+        }
+    }
+
+    private class Schedule {
+        private List<Quest> unscheduledQuests;
+        private List<QuestCalendarEvent> calendarEvents;
+
+        private Schedule(List<Quest> unscheduledQuests, List<QuestCalendarEvent> calendarEvents) {
+            this.unscheduledQuests = unscheduledQuests;
+            this.calendarEvents = calendarEvents;
+        }
+
+        public List<Quest> getUnscheduledQuests() {
+            return unscheduledQuests;
+        }
+
+        public List<QuestCalendarEvent> getCalendarEvents() {
+            return calendarEvents;
+        }
     }
 }
