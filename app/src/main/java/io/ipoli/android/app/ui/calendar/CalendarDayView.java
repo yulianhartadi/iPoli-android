@@ -1,6 +1,7 @@
 package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
@@ -31,8 +32,10 @@ import io.ipoli.android.R;
 public class CalendarDayView extends FrameLayout {
 
     public static final int HOURS_PER_SCREEN = 5;
+    public static final int HOURS_IN_A_DAY = 24;
+
     private float minuteHeight;
-    private RelativeLayout eventContainer;
+    private RelativeLayout eventsContainer;
     private int hourHeight;
     private ObservableScrollView scrollView;
     private View timeLine;
@@ -60,55 +63,77 @@ public class CalendarDayView extends FrameLayout {
         }
     }
 
+
+    public CalendarDayView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        if (!isInEditMode()) {
+            initUI(context);
+        }
+    }
+
     private void initUI(Context context) {
-        // Create our internal scroll view
-        scrollView = new ObservableScrollView(context);
-        scrollView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrollView.setVerticalScrollBarEnabled(true);
-        addView(scrollView);
 
-        FrameLayout cont = new FrameLayout(context);
-        cont.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        final LinearLayout container = new LinearLayout(context);
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        cont.addView(container);
-
-        scrollView.addView(cont);
+        hourHeight = getScreenHeight(context) / HOURS_PER_SCREEN;
+        minuteHeight = hourHeight / 60.0f;
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(metrics);
+        FrameLayout mainContainer = initMainContainer(context);
+        mainContainer.addView(initHourCellsContainer(context, inflater));
+        mainContainer.addView(initEventsContainer(context));
+        mainContainer.addView(initTimeLineContainer(context, inflater));
 
+        addView(initScrollView(context, mainContainer));
+    }
 
-        int screenHeight = metrics.heightPixels;
+    private ObservableScrollView initScrollView(Context context, FrameLayout mainContainer) {
+        scrollView = new ObservableScrollView(context);
+        scrollView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollView.setVerticalScrollBarEnabled(true);
+        scrollView.addView(mainContainer);
+        return scrollView;
+    }
 
-        hourHeight = screenHeight / HOURS_PER_SCREEN;
+    @NonNull
+    private FrameLayout initMainContainer(Context context) {
+        FrameLayout mainContainer = new FrameLayout(context);
+        mainContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        return mainContainer;
+    }
 
-        minuteHeight = hourHeight / 60.0f;
+    @NonNull
+    private LinearLayout initHourCellsContainer(Context context, LayoutInflater inflater) {
+        LinearLayout hourCellsContainer = new LinearLayout(context);
+        hourCellsContainer.setOrientation(LinearLayout.VERTICAL);
+        hourCellsContainer.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        for (int i = 0; i < 24; i++) {
-
-            View hourCell = inflater.inflate(R.layout.calendar_hour_cell, container, false);
-            if (i > 0) {
-                TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
-                tv.setText(String.format(Locale.getDefault(), "%02d:00", i));
-            }
-            ViewGroup.LayoutParams lp = hourCell.getLayoutParams();
-//            Log.d("height", timeRow.getHeight() + " " + timeRow.getMeasuredHeight());
-            lp.height = hourHeight;
-            hourCell.setLayoutParams(lp);
-            container.addView(hourCell);
+        for (int i = 0; i < HOURS_IN_A_DAY; i++) {
+            hourCellsContainer.addView(initHourCell(i, hourCellsContainer, inflater));
         }
+        return hourCellsContainer;
+    }
 
-        eventContainer = new RelativeLayout(context);
-        eventContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    @NonNull
+    private View initHourCell(int hour, LinearLayout hourCellsContainer, LayoutInflater inflater) {
+        View hourCell = inflater.inflate(R.layout.calendar_hour_cell, hourCellsContainer, false);
+        if (hour > 0) {
+            TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
+            tv.setText(String.format(Locale.getDefault(), "%02d:00", hour));
+        }
+        ViewGroup.LayoutParams hcp = hourCell.getLayoutParams();
+        hcp.height = hourHeight;
+        hourCell.setLayoutParams(hcp);
+        return hourCell;
+    }
 
-        cont.addView(eventContainer);
+    private RelativeLayout initEventsContainer(Context context) {
+        eventsContainer = new RelativeLayout(context);
+        eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        return eventsContainer;
+    }
 
+    @NonNull
+    private RelativeLayout initTimeLineContainer(Context context, LayoutInflater inflater) {
         RelativeLayout timeRL = new RelativeLayout(context);
         timeRL.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -117,7 +142,15 @@ public class CalendarDayView extends FrameLayout {
         RelativeLayout.LayoutParams lPTime = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
         lPTime.topMargin = getCurrentTimeYPosition();
         timeRL.addView(timeLine, lPTime);
-        cont.addView(timeRL);
+        return timeRL;
+    }
+
+    private int getScreenHeight(Context context) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metrics);
+
+        return metrics.heightPixels;
     }
 
     public void setAdapter(BaseCalendarAdapter<? extends CalendarEvent> adapter) {
@@ -127,13 +160,13 @@ public class CalendarDayView extends FrameLayout {
     }
 
     <E extends CalendarEvent> void addEvent(final E calendarEvent, int position) {
-        final View eventView = adapter.getView(eventContainer, position);
+        final View eventView = adapter.getView(eventsContainer, position);
         RelativeLayout.LayoutParams qlp = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
         Calendar c = Calendar.getInstance();
         c.setTime(calendarEvent.getStartTime());
         qlp.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         qlp.height = getHeightFor(calendarEvent.getDuration());
-        eventContainer.addView(eventView, qlp);
+        eventsContainer.addView(eventView, qlp);
 
         final GestureDetectorCompat gestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
 
@@ -196,9 +229,9 @@ public class CalendarDayView extends FrameLayout {
 
     public void onMinuteChanged() {
 
-        RelativeLayout.LayoutParams lPTime = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
-        lPTime.topMargin = getCurrentTimeYPosition();
-
+        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
+        p.topMargin = getCurrentTimeYPosition();
+        timeLine.setLayoutParams(p);
         // @TODO consider date change
     }
 
@@ -242,12 +275,6 @@ public class CalendarDayView extends FrameLayout {
         return minuteHeight * minutes;
     }
 
-    public CalendarDayView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        if (!isInEditMode()) {
-            initUI(context);
-        }
-    }
 
     public int getCurrentTimeYPosition() {
         return getCurrentTimeYPosition(0);
@@ -285,6 +312,6 @@ public class CalendarDayView extends FrameLayout {
     }
 
     public void removeAllEvents() {
-        eventContainer.removeAllViews();
+        eventsContainer.removeAllViews();
     }
 }
