@@ -113,7 +113,7 @@ public class CalendarLayout extends RelativeLayout {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
         dragView.setLayoutParams(params);
-        TextView nameView = (TextView) dragView.findViewById(R.id.quest_name);
+        TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
         addView(dragView);

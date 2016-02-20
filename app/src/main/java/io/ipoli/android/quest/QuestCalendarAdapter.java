@@ -50,7 +50,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
         v.findViewById(R.id.quest_context_indicator).setBackgroundResource(ctx.resLightColor);
 
-        TextView name = (TextView) v.findViewById(R.id.quest_name);
+        TextView name = (TextView) v.findViewById(R.id.quest_text);
         name.setText(q.getName());
 
         CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);

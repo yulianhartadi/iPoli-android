@@ -30,7 +30,7 @@
             app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
             <EditText
-                android:id="@+id/quest_name"
+                android:id="@+id/quest_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/edit_quest_name_hint"

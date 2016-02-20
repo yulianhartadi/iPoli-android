@@ -66,7 +66,7 @@ public class App extends Application {
         initPlanDayReminder();
         initReviewDayReminder();
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
-        if (questPersistenceService.findAllPlannedForToday().isEmpty()) {
+        if (questPersistenceService.countAllPlannedForToday() == 0) {
 
             Quest q = new Quest("Go for a run", Status.PLANNED.name(), new Date());
             Quest.setContext(q, QuestContext.WELLNESS);

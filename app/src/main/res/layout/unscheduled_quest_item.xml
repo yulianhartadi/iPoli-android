@@ -35,7 +35,7 @@
                 android:background="@drawable/ic_context_indicator" />
 
             <TextView
-                android:id="@+id/quest_name"
+                android:id="@+id/quest_text"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -10,12 +10,15 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -30,6 +33,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.Quest;
@@ -48,7 +52,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     @Inject
     Bus eventBus;
 
-    @Bind(R.id.quest_name)
+    @Bind(R.id.quest_text)
     AutoCompleteTextView questText;
 
     @Bind(R.id.due_date)
@@ -261,6 +265,17 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         finish();
         overridePendingTransition(0, R.anim.slide_down_interpolate);
+    }
+
+    @OnEditorAction(R.id.quest_text)
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            onSaveQuestClick(v);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

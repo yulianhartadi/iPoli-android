@@ -116,7 +116,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_name)
+        @Bind(R.id.quest_text)
         TextView name;
 
         @Bind(R.id.quest_created_at)

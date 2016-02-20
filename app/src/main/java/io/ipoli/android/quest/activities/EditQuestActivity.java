@@ -59,7 +59,7 @@ public class EditQuestActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.quest_name)
+    @Bind(R.id.quest_text)
     EditText nameText;
 
     @Bind(R.id.duration_hours)

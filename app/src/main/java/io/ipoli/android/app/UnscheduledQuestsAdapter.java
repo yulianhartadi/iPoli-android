@@ -121,7 +121,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @Bind(R.id.quest_check)
         CheckBox check;
 
-        @Bind(R.id.quest_name)
+        @Bind(R.id.quest_text)
         TextView name;
 
         @Bind(R.id.quest_context_indicator)

@@ -216,7 +216,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public static class QuestViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_name)
+        @Bind(R.id.quest_text)
         public TextView name;
 
         @Bind(R.id.quest_start_time)
