@@ -18,8 +18,8 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.MainActivity;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -53,7 +53,7 @@ public class ReminderIntentService extends IntentService {
         String action = intent.getAction();
         if (action.equals(ACTION_REMIND_PLAN_DAY)) {
 
-            Intent planDayIntent = new Intent(this, ChatActivity.class);
+            Intent planDayIntent = new Intent(this, MainActivity.class);
             planDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             planDayIntent.setAction(ACTION_REMIND_PLAN_DAY);
 
@@ -76,7 +76,7 @@ public class ReminderIntentService extends IntentService {
             notificationManagerCompat.notify(Constants.REMIND_PLAN_DAY_NOTIFICATION_ID, builder.build());
         } else if (action.equals(ACTION_REMIND_REVIEW_DAY)) {
 
-            Intent reviewDayIntent = new Intent(this, ChatActivity.class);
+            Intent reviewDayIntent = new Intent(this, MainActivity.class);
             reviewDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             reviewDayIntent.setAction(ACTION_REMIND_REVIEW_DAY);
 

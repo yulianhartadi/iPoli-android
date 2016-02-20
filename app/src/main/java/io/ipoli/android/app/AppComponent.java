@@ -8,20 +8,17 @@ import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
-import io.ipoli.android.app.modules.CommandParserModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerModule;
 import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
-import io.ipoli.android.chat.ChatActivity;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.PlanDayActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
-import io.ipoli.android.quest.activities.QuestListActivity;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.QuestListFragment;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
@@ -42,19 +39,16 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
-                CommandParserModule.class,
                 AssistantModule.class,
                 PlayerModule.class
         }
 )
 public interface AppComponent {
-    void inject(ChatActivity activity);
 
     void inject(App app);
 
     void inject(PlanDayActivity planDayActivity);
 
-    void inject(QuestListActivity questListActivity);
 
     void inject(PlayerBarLayout playerBarLayout);
 

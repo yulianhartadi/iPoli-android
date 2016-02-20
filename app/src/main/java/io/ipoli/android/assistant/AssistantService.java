@@ -7,9 +7,6 @@ package io.ipoli.android.assistant;
 public interface AssistantService {
 
     Assistant getAssistant();
+
     void changeAvatar(String newAvatar);
-
-    void onPlayerMessage(String text);
-
-    void start();
 }

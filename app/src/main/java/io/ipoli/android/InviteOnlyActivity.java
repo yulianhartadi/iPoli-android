@@ -19,8 +19,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.MainActivity;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.chat.ChatActivity;
 
 public class InviteOnlyActivity extends BaseActivity {
 
@@ -62,7 +62,7 @@ public class InviteOnlyActivity extends BaseActivity {
     }
 
     private void startMainActivity() {
-        startActivity(new Intent(this, ChatActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

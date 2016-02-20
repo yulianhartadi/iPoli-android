@@ -29,6 +29,9 @@ import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
 /**
@@ -196,5 +199,24 @@ public class App extends Application {
         }
 
         return appComponent;
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        scheduleNextReminder();
+    }
+
+    @Subscribe
+    public void onQuestsSaved(QuestsSavedEvent e) {
+        scheduleNextReminder();
+    }
+
+    @Subscribe
+    public void onQuestDeleted(QuestDeletedEvent e) {
+        scheduleNextReminder();
+    }
+
+    private void scheduleNextReminder() {
+        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
     }
 }

@@ -40,22 +40,13 @@
 
         <activity
             android:name=".quest.activities.QuestActivity"
-            android:parentActivityName=".quest.activities.QuestListActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".quest.activities.QuestListActivity" />
-        </activity>
-
-        <activity
-            android:name=".quest.activities.QuestListActivity"
-            android:label="@string/title_activity_quest_list"
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
+                android:value=".app.MainActivity" />
         </activity>
+
         <activity
             android:name=".assistant.PickAvatarActivity"
             android:label="@string/title_activity_pick_avatar"

@@ -11,16 +11,12 @@ import java.util.List;
 
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.assistant.events.HelpEvent;
-import io.ipoli.android.assistant.events.NewFeedbackEvent;
 import io.ipoli.android.assistant.events.NewTodayQuestEvent;
 import io.ipoli.android.assistant.events.PlanTodayEvent;
 import io.ipoli.android.assistant.events.RenameAssistantEvent;
 import io.ipoli.android.assistant.events.ReviewTodayEvent;
 import io.ipoli.android.assistant.events.ShowExamplesEvent;
 import io.ipoli.android.assistant.events.ShowQuestsEvent;
-import io.ipoli.android.chat.events.AvatarChangedEvent;
-import io.ipoli.android.chat.events.NewMessageEvent;
-import io.ipoli.android.chat.events.RequestAvatarChangeEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -67,31 +63,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     public void onPlayerLevelUp(PlayerLevelUpEvent e) {
         track(createEventBuilder("player", "level-up")
                 .setCustomDimension(LEVEL_DIMENSION_INDEX, e.newLevel + ""));
-    }
-
-    @Subscribe
-    public void onRequestAvatarChange(RequestAvatarChangeEvent e) {
-        track(createEventBuilder("avatar", "request-change")
-                .setCustomDimension(MESSAGE_AUTHOR_DIMENSION_INDEX, e.messageAuthor.name()));
-    }
-
-    @Subscribe
-    public void onAvatarChanged(AvatarChangedEvent e) {
-        track(createEventBuilder("avatar", "change")
-                .setCustomDimension(MESSAGE_AUTHOR_DIMENSION_INDEX, e.messageAuthor.name())
-                .setCustomDimension(AVATAR_DIMENSION_INDEX, e.avatar));
-    }
-
-    @Subscribe
-    public void onNewFeedback(NewFeedbackEvent e) {
-        track(createEventBuilder("feedback", "create")
-                .setCustomDimension(TEXT_DIMENSION_INDEX, e.text));
-    }
-
-    @Subscribe
-    public void onNewMessage(NewMessageEvent e) {
-        track(createEventBuilder("message", "create")
-                .setCustomDimension(TEXT_DIMENSION_INDEX, e.message.getText()));
     }
 
     @Subscribe
