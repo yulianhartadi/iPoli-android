@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity {
         viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_list_white_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
     }
 
     @OnClick(R.id.add_quest)
