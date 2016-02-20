@@ -31,14 +31,14 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/8/16.
  */
-public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> implements ItemTouchHelperAdapter {
 
     private final PrettyTime prettyTime;
     private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
 
-    public PlanDayQuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
+    public InboxAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
@@ -46,8 +46,8 @@ public class PlanDayQuestAdapter extends RecyclerView.Adapter<PlanDayQuestAdapte
     }
 
     @Override
-    public PlanDayQuestAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                             int viewType) {
+    public InboxAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                      int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.plan_quest_item, parent, false));
     }
 

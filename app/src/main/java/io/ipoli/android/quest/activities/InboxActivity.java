@@ -31,7 +31,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.quest.PlanDayQuestAdapter;
+import io.ipoli.android.quest.InboxAdapter;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.Status;
@@ -42,7 +42,7 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-public class PlanDayActivity extends BaseActivity {
+public class InboxActivity extends BaseActivity {
 
     @Bind(R.id.plan_day_container)
     CoordinatorLayout rootContainer;
@@ -62,7 +62,7 @@ public class PlanDayActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private PlanDayQuestAdapter planDayQuestAdapter;
+    private InboxAdapter inboxAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +83,11 @@ public class PlanDayActivity extends BaseActivity {
         questList.setLayoutManager(layoutManager);
 
         List<Quest> quests = getAllUnplanned();
-        planDayQuestAdapter = new PlanDayQuestAdapter(this, quests, eventBus);
-        questList.setAdapter(planDayQuestAdapter);
+        inboxAdapter = new InboxAdapter(this, quests, eventBus);
+        questList.setAdapter(inboxAdapter);
         questList.addItemDecoration(new DividerItemDecoration(this));
 
-        ItemTouchCallback touchCallback = new ItemTouchCallback(planDayQuestAdapter, ItemTouchHelper.START | ItemTouchHelper.END);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(inboxAdapter, ItemTouchHelper.START | ItemTouchHelper.END);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_red_500)));
         touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
@@ -125,7 +125,7 @@ public class PlanDayActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        planDayQuestAdapter.updateQuests(getAllUnplanned());
+        inboxAdapter.updateQuests(getAllUnplanned());
     }
 
     @Subscribe
@@ -141,10 +141,10 @@ public class PlanDayActivity extends BaseActivity {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                QuestNotificationScheduler.stopAll(quest.getId(), PlanDayActivity.this);
+                QuestNotificationScheduler.stopAll(quest.getId(), InboxActivity.this);
                 questPersistenceService.delete(quest);
                 eventBus.post(new DeleteQuestEvent(quest));
-                if (planDayQuestAdapter.getQuests().isEmpty()) {
+                if (inboxAdapter.getQuests().isEmpty()) {
                     finish();
                 }
             }
@@ -153,7 +153,7 @@ public class PlanDayActivity extends BaseActivity {
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                planDayQuestAdapter.addQuest(e.position, quest);
+                inboxAdapter.addQuest(e.position, quest);
                 snackbar.setCallback(null);
                 eventBus.post(new UndoDeleteQuestEvent(quest));
             }

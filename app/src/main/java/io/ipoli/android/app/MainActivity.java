@@ -32,7 +32,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.MainViewPager;
 import io.ipoli.android.quest.activities.AddQuestActivity;
-import io.ipoli.android.quest.activities.PlanDayActivity;
+import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_plan_day:
-                startPlanDayActivity();
+                startInboxActivity();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -125,12 +125,12 @@ public class MainActivity extends BaseActivity {
         eventBus.register(this);
         Intent i = getIntent();
         if (ReminderIntentService.ACTION_REMIND_PLAN_DAY.equals(i.getAction())) {
-            startPlanDayActivity();
+            startInboxActivity();
         }
     }
 
-    private void startPlanDayActivity() {
-        startActivity(new Intent(this, PlanDayActivity.class));
+    private void startInboxActivity() {
+        startActivity(new Intent(this, InboxActivity.class));
         overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_bottom);
     }
 

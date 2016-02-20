@@ -29,8 +29,8 @@
         </activity>
 
         <activity
-            android:name=".quest.activities.PlanDayActivity"
-            android:label="@string/title_activity_plan_day"
+            android:name=".quest.activities.InboxActivity"
+            android:label="@string/title_activity_inbox"
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait">
             <meta-data

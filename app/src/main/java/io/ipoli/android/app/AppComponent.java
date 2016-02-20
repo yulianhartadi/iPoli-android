@@ -16,7 +16,7 @@ import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.PlanDayActivity;
+import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
@@ -47,7 +47,7 @@ public interface AppComponent {
 
     void inject(App app);
 
-    void inject(PlanDayActivity planDayActivity);
+    void inject(InboxActivity inboxActivity);
 
 
     void inject(PlayerBarLayout playerBarLayout);

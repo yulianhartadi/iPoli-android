@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".quest.activities.PlanDayActivity">
+    tools:context=".quest.activities.InboxActivity">
 
     <io.ipoli.android.app.ui.PlayerBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:player_bar_show_level="false"
-        app:player_bar_title="@string/title_activity_plan_day" />
+        app:player_bar_title="@string/title_activity_inbox" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/quest_list"
