@@ -28,7 +28,7 @@
             android:orientation="horizontal">
 
             <View
-                android:id="@+id/quest_indicator"
+                android:id="@+id/quest_context_indicator"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_gravity="center_vertical"

@@ -124,7 +124,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @Bind(R.id.quest_name)
         TextView name;
 
-        @Bind(R.id.quest_indicator)
+        @Bind(R.id.quest_context_indicator)
         View indicator;
 
         public ViewHolder(View v) {

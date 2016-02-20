@@ -132,13 +132,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         super.onResume();
         eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-
         Schedule schedule = new CalendarScheduler().schedule();
-
         unscheduledQuestsAdapter.updateQuests(schedule.getUnscheduledQuests());
-        setUnscheduledQuestsHeight();
         calendarAdapter.updateEvents(schedule.getCalendarEvents());
         calendarDayView.scrollToNow();
+        setUnscheduledQuestsHeight();
     }
 
     @Override

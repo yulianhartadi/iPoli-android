@@ -45,25 +45,29 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         final Quest q = calendarEvent.getQuest();
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new ShowQuestEvent(q));
-            }
-        });
 
         QuestContext ctx = Quest.getContext(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
-        v.findViewById(R.id.quest_indicator).setBackgroundResource(ctx.resLightColor);
+        v.findViewById(R.id.quest_context_indicator).setBackgroundResource(ctx.resLightColor);
 
         TextView name = (TextView) v.findViewById(R.id.quest_name);
         name.setText(q.getName());
 
         CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
+        View checkDone = v.findViewById(R.id.quest_check_done);
         if (Quest.getStatus(q) == Status.COMPLETED) {
-            check.setChecked(true);
+            check.setVisibility(View.GONE);
+            checkDone.setVisibility(View.VISIBLE);
+            checkDone.setBackgroundResource(ctx.resLightColor);
         } else {
-            check.setChecked(false);
+            check.setVisibility(View.VISIBLE);
+            checkDone.setVisibility(View.GONE);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    eventBus.post(new ShowQuestEvent(q));
+                }
+            });
         }
         check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

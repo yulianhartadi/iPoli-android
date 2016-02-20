@@ -225,7 +225,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Bind(R.id.quest_duration)
         public TextView duration;
 
-        @Bind(R.id.quest_indicator)
+        @Bind(R.id.quest_context_indicator)
         public View indicator;
 
         @Bind(R.id.quest_due_date)

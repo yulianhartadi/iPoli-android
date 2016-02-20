@@ -58,6 +58,13 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
+    public List<Quest> findAllUnplanned() {
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .equalTo("status", Status.UNPLANNED.name())
+                .findAllSorted("createdAt", Sort.DESCENDING));
+    }
+
+    @Override
     public List<Quest> findAllPlannedForToday() {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
