@@ -32,7 +32,7 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/6/16.
  */
-public class CalendarDayView extends FrameLayout implements View.OnDragListener {
+public class CalendarDayView extends FrameLayout {
 
     public static final int HOURS_PER_SCREEN = 5;
     public static final int HOURS_IN_A_DAY = 24;
@@ -45,6 +45,7 @@ public class CalendarDayView extends FrameLayout implements View.OnDragListener 
 
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
+
 
     public CalendarDayView(Context context) {
         super(context);
@@ -67,13 +68,13 @@ public class CalendarDayView extends FrameLayout implements View.OnDragListener 
         }
     }
 
-
     public CalendarDayView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         if (!isInEditMode()) {
             initUI(context);
         }
     }
+
 
     private void initUI(Context context) {
 
@@ -90,8 +91,51 @@ public class CalendarDayView extends FrameLayout implements View.OnDragListener 
 
         addView(initScrollView(context, mainContainer));
 
-        setOnDragListener(this);
+        setOnDragListener(dragListener);
     }
+
+    private OnDragListener dragListener = new OnDragListener() {
+
+        private int initialTouchHeight;
+
+        @Override
+        public boolean onDrag(View _, DragEvent event) {
+            View draggedView = (View) event.getLocalState();
+            CalendarEvent calendarEvent = eventViewToCalendarEvent.get(draggedView);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) draggedView.getLayoutParams();
+            switch (event.getAction()) {
+
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    initialTouchHeight = getTouchPositionFromDragEvent(event).y - getViewTop(draggedView);
+                    break;
+
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    int touchY = getTouchPositionFromDragEvent(event).y;
+                    layoutParams.topMargin = toLocalY(touchY - initialTouchHeight);
+                    draggedView.setLayoutParams(layoutParams);
+                    break;
+
+                //the drag and drop operation has concluded.
+                case DragEvent.ACTION_DRAG_ENDED:
+                    int h = getHoursFor(getViewTop(draggedView));
+                    int m = getMinutesFor(getViewTop(draggedView), 5);
+                    layoutParams.topMargin = getYPositionFor(h, m);
+                    draggedView.setLayoutParams(layoutParams);
+                    Date oldStartTime = calendarEvent.getStartTime();
+                    Calendar c = Calendar.getInstance();
+                    c.set(Calendar.HOUR_OF_DAY, h);
+                    c.set(Calendar.MINUTE, m);
+                    calendarEvent.setStartTime(c.getTime());
+                    adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
+                    break;
+
+
+                default:
+                    break;
+            }
+            return true;
+        }
+    };
 
     private NestedScrollView initScrollView(Context context, FrameLayout mainContainer) {
         scrollView = new CalendarScrollView(context);
@@ -247,7 +291,7 @@ public class CalendarDayView extends FrameLayout implements View.OnDragListener 
     private int toLocalY(int y) {
         int offsets[] = new int[2];
         getLocationOnScreen(offsets);
-        return scrollView.getScrollY() + y - offsets[1];
+        return Math.max(0, scrollView.getScrollY() + y - offsets[1]);
     }
 
     public void scrollToNow() {
@@ -271,45 +315,6 @@ public class CalendarDayView extends FrameLayout implements View.OnDragListener 
     public void removeAllEvents() {
         eventsContainer.removeAllViews();
         eventViewToCalendarEvent.clear();
-    }
-
-    @Override
-    public boolean onDrag(View _, DragEvent event) {
-        View draggedView = (View) event.getLocalState();
-        CalendarEvent calendarEvent = eventViewToCalendarEvent.get(draggedView);
-        switch (event.getAction()) {
-
-            case DragEvent.ACTION_DRAG_LOCATION:
-
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) draggedView.getLayoutParams();
-                int yPos = getTouchPositionFromDragEvent(event).y - getHeightFor(getDurationOffset(calendarEvent.getDuration()));
-
-                int h = getHoursFor(yPos);
-                int m = getMinutesFor(yPos, 5);
-
-                layoutParams.topMargin = getYPositionFor(h, m);
-                draggedView.setLayoutParams(layoutParams);
-                break;
-
-            case DragEvent.ACTION_DRAG_STARTED:
-                break;
-
-            //the drag and drop operation has concluded.
-            case DragEvent.ACTION_DRAG_ENDED:
-                Date oldStartTime = calendarEvent.getStartTime();
-                int viewTop = getViewTop(draggedView);
-                Calendar c = Calendar.getInstance();
-                c.set(Calendar.HOUR_OF_DAY, getHoursFor(viewTop));
-                c.set(Calendar.MINUTE, getMinutesFor(viewTop, 5));
-                calendarEvent.setStartTime(c.getTime());
-                adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
-                break;
-
-
-            default:
-                break;
-        }
-        return true;
     }
 
     private Point getTouchPositionFromDragEvent(DragEvent event) {
