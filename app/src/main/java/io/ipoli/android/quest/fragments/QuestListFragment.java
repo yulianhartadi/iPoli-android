@@ -28,6 +28,7 @@ import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestAdapter;
+import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -79,7 +80,7 @@ public class QuestListFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isResumed() && isVisibleToUser) {
-            questAdapter.updateQuests(questPersistenceService.findAllPlanned());
+            updateQuests();
         }
     }
 
@@ -90,15 +91,25 @@ public class QuestListFragment extends Fragment {
             q.setDue(new Date());
             questPersistenceService.save(q);
         }
-        questAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        updateQuests();
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onQuestSnoozed(QuestSnoozedEvent e) {
+        updateQuests();
+
+    }
+
+    private void updateQuests() {
+        questAdapter.updateQuests(questPersistenceService.findAllPlanned());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        questAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        updateQuests();
     }
 
     @Override
