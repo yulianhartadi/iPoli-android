@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.squareup.otto.Bus;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,6 +15,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
@@ -22,6 +25,9 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 public class SnoozeQuestReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SNOOZE_QUEST = "io.ipoli.android.intent.action.SNOOZE_QUEST";
+
+    @Inject
+    Bus eventBus;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -39,8 +45,9 @@ public class SnoozeQuestReceiver extends BroadcastReceiver {
         c.setTime(startTime);
         c.add(Calendar.MINUTE, Constants.DEFAULT_SNOOZE_TIME_MINUTES);
         q.setStartTime(c.getTime());
-        questPersistenceService.save(q);
+        q = questPersistenceService.save(q);
         scheduleNextQuestReminder(context);
+        eventBus.post(new QuestSnoozedEvent(q));
     }
 
     private Quest getQuest(Intent intent) {
