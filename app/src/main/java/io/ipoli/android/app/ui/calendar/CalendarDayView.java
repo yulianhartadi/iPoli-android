@@ -105,6 +105,10 @@ public class CalendarDayView extends FrameLayout {
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) draggedView.getLayoutParams();
             switch (event.getAction()) {
 
+                case DragEvent.ACTION_DRAG_STARTED:
+                    adapter.onDragStarted(draggedView);
+                    break;
+
                 case DragEvent.ACTION_DRAG_ENTERED:
                     initialTouchHeight = getTouchPositionFromDragEvent(event).y - getViewTop(draggedView);
                     break;
@@ -127,8 +131,8 @@ public class CalendarDayView extends FrameLayout {
                     c.set(Calendar.MINUTE, m);
                     calendarEvent.setStartTime(c.getTime());
                     adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
+                    adapter.onDragEnded(draggedView);
                     break;
-
 
                 default:
                     break;

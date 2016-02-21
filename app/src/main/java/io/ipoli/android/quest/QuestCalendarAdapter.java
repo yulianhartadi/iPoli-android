@@ -122,6 +122,18 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         notifyDataSetChanged();
     }
 
+    @Override
+    public void onDragStarted(View draggedView) {
+        View background = draggedView.findViewById(R.id.quest_background);
+        background.setAlpha(0.26f);
+    }
+
+    @Override
+    public void onDragEnded(View draggedView) {
+        View background = draggedView.findViewById(R.id.quest_background);
+        background.setAlpha(0.12f);
+    }
+
     public void addEvent(QuestCalendarEvent calendarEvent) {
         questCalendarEvents.add(calendarEvent);
         notifyDataSetChanged();

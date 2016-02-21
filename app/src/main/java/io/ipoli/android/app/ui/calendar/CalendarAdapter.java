@@ -20,4 +20,8 @@ public interface CalendarAdapter<E extends CalendarEvent> {
     void notifyDataSetChanged();
 
     void updateEvents(List<E> calendarEvents);
+
+    void onDragStarted(View draggedView);
+
+    void onDragEnded(View draggedView);
 }
