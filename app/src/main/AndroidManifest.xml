@@ -64,7 +64,7 @@
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.ipoli.android.app.MainActivity" />

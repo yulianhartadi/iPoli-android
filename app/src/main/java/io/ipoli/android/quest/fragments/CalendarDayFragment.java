@@ -192,7 +192,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             List<Quest> completedTodayQuests = questPersistenceService.findAllCompletedToday();
 
             // completed events should be added first since we don't want them to intercept clicks
-            // for incompleted events
+            // for incomplete events
             for (Quest q : completedTodayQuests) {
                 QuestCalendarEvent event = new QuestCalendarEvent(q);
                 if (isNotScheduledForToday(q)) {

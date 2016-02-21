@@ -12,7 +12,6 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,7 +46,7 @@ import io.ipoli.android.quest.parsers.StartTimeMatcher;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/18/16.
  */
-public class AddQuestActivity extends BaseActivity implements AdapterView.OnItemClickListener {
+public class AddQuestActivity extends BaseActivity implements AdapterView.OnItemClickListener, TextWatcher {
 
     @Inject
     Bus eventBus;
@@ -116,70 +115,8 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
                 R.layout.add_quest_autocomplete_item, new ArrayList<SpannableString>());
         questText.setAdapter(adapter);
         questText.setOnItemClickListener(this);
-
-        questText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                String text = s.toString();
-
-                Pattern namePattern = Pattern.compile("\\w+\\s", Pattern.CASE_INSENSITIVE);
-                if (!namePattern.matcher(text).find()) {
-                    disableButtons();
-                    return;
-                }
-
-                String matchedDuration = new DurationMatcher().match(text);
-                if (!TextUtils.isEmpty(matchedDuration)) {
-                    text = text.replace(matchedDuration, " ");
-                    duration.setBackgroundResource(R.drawable.circle_disable);
-                    duration.setEnabled(false);
-                } else {
-                    duration.setBackgroundResource(R.drawable.circle_normal);
-                    duration.setEnabled(true);
-                }
-
-                String matchedStartTime = new StartTimeMatcher(parser).match(text);
-                if (!TextUtils.isEmpty(matchedStartTime)) {
-                    text = text.replace(matchedStartTime, " ");
-                    startTime.setBackgroundResource(R.drawable.circle_disable);
-                    startTime.setEnabled(false);
-                } else {
-                    startTime.setBackgroundResource(R.drawable.circle_normal);
-                    startTime.setEnabled(true);
-                }
-
-                String matchedDueDate = new DueDateMatcher(parser).match(text);
-                if (!TextUtils.isEmpty(matchedDueDate)) {
-                    dueDate.setBackgroundResource(R.drawable.circle_disable);
-                    dueDate.setEnabled(false);
-                } else {
-                    dueDate.setBackgroundResource(R.drawable.circle_normal);
-                    dueDate.setEnabled(true);
-                }
-
-                if (TextUtils.isEmpty(matchedDueDate)) {
-                    dueDate.setBackgroundResource(R.drawable.circle_accent);
-                } else if (TextUtils.isEmpty(matchedStartTime)) {
-                    startTime.setBackgroundResource(R.drawable.circle_accent);
-                } else if (TextUtils.isEmpty(matchedDuration)) {
-                    duration.setBackgroundResource(R.drawable.circle_accent);
-                }
-            }
-        });
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
+        questText.addTextChangedListener(this);
+        questText.requestFocus();
     }
 
     private void disableButtons() {
@@ -290,4 +227,61 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        String text = editable.toString();
+
+        Pattern namePattern = Pattern.compile("\\w+\\s", Pattern.CASE_INSENSITIVE);
+        if (!namePattern.matcher(text).find()) {
+            disableButtons();
+            return;
+        }
+
+        String matchedDuration = new DurationMatcher().match(text);
+        if (!TextUtils.isEmpty(matchedDuration)) {
+            text = text.replace(matchedDuration, " ");
+            duration.setBackgroundResource(R.drawable.circle_disable);
+            duration.setEnabled(false);
+        } else {
+            duration.setBackgroundResource(R.drawable.circle_normal);
+            duration.setEnabled(true);
+        }
+
+        String matchedStartTime = new StartTimeMatcher(parser).match(text);
+        if (!TextUtils.isEmpty(matchedStartTime)) {
+            text = text.replace(matchedStartTime, " ");
+            startTime.setBackgroundResource(R.drawable.circle_disable);
+            startTime.setEnabled(false);
+        } else {
+            startTime.setBackgroundResource(R.drawable.circle_normal);
+            startTime.setEnabled(true);
+        }
+
+        String matchedDueDate = new DueDateMatcher(parser).match(text);
+        if (!TextUtils.isEmpty(matchedDueDate)) {
+            dueDate.setBackgroundResource(R.drawable.circle_disable);
+            dueDate.setEnabled(false);
+        } else {
+            dueDate.setBackgroundResource(R.drawable.circle_normal);
+            dueDate.setEnabled(true);
+        }
+
+        if (TextUtils.isEmpty(matchedDueDate)) {
+            dueDate.setBackgroundResource(R.drawable.circle_accent);
+        } else if (TextUtils.isEmpty(matchedStartTime)) {
+            startTime.setBackgroundResource(R.drawable.circle_accent);
+        } else if (TextUtils.isEmpty(matchedDuration)) {
+            duration.setBackgroundResource(R.drawable.circle_accent);
+        }
+    }
 }
