@@ -75,6 +75,14 @@ public class QuestListFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isResumed() && isVisibleToUser) {
+            questAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        }
+    }
+
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;

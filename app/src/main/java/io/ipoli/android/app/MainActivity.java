@@ -73,12 +73,12 @@ public class MainActivity extends BaseActivity {
 
         appComponent().inject(this);
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CalendarDayFragment());
-        adapter.addFragment(new QuestListFragment());
-        viewPager.setAdapter(adapter);
-        viewPager.setPagingEnabled(false);
-        tabLayout.setupWithViewPager(viewPager);
+        final ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragment(new CalendarDayFragment());
+        viewPagerAdapter.addFragment(new QuestListFragment());
+        this.viewPager.setAdapter(viewPagerAdapter);
+        this.viewPager.setPagingEnabled(false);
+        tabLayout.setupWithViewPager(this.viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
     }
