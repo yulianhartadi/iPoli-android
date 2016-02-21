@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 
 import com.squareup.otto.Bus;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -92,6 +93,7 @@ public class QuestCompleteActivity extends BaseActivity {
             long startMillis = quest.getActualStartDateTime().getTime();
             quest.setMeasuredDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
         }
+        quest.setCompletedAtDateTime(new Date());
 
         quest = questPersistenceService.save(quest);
         QuestNotificationScheduler.stopAll(quest.getId(), this);

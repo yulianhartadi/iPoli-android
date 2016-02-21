@@ -81,20 +81,6 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
-    public List<Quest> findAllForToday() {
-        Calendar yesterday = DateUtils.getTodayAtMidnight();
-        yesterday.add(Calendar.SECOND, -1);
-
-        Calendar tomorrow = DateUtils.getTodayAtMidnight();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
-
-        return realm.copyFromRealm(realm.where(Quest.class)
-                .greaterThan("due", yesterday.getTime())
-                .lessThan("due", tomorrow.getTime())
-                .findAll());
-    }
-
-    @Override
     public long countAllUncompleted() {
         return realm.where(Quest.class)
                 .isNull("completedAtDateTime")
@@ -185,6 +171,20 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .isNotNull("due")
                 .isNull("completedAtDateTime")
                 .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING));
+    }
+
+    @Override
+    public List<Quest> findAllCompletedToday() {
+        Calendar yesterday = DateUtils.getTodayAtMidnight();
+        yesterday.add(Calendar.SECOND, -1);
+
+        Calendar tomorrow = DateUtils.getTodayAtMidnight();
+        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .greaterThan("completedAtDateTime", yesterday.getTime())
+                .lessThan("completedAtDateTime", tomorrow.getTime())
+                .findAll());
     }
 
 }

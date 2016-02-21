@@ -20,8 +20,6 @@ public interface QuestPersistenceService {
 
     List<Quest> findAllPlannedAndStartedToday();
 
-    List<Quest> findAllForToday();
-
     long countAllUncompleted();
 
     long countAllPlannedForToday();
@@ -35,4 +33,6 @@ public interface QuestPersistenceService {
     Quest findById(String id);
 
     List<Quest> findAllPlanned();
+
+    List<Quest> findAllCompletedToday();
 }

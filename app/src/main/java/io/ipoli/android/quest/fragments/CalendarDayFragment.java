@@ -17,6 +17,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestCalendarAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -103,14 +105,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        Calendar c = Calendar.getInstance();
-        Quest q = e.quest;
-        int duration = q.getDuration() > 0 ? q.getDuration() : Constants.DEFAULT_UNSCHEDULED_QUEST_MIN_DURATION;
-        c.add(Calendar.MINUTE, -duration);
-        q.setStartTime(c.getTime());
-        q = questPersistenceService.save(q);
-        eventBus.post(new CompleteQuestRequestEvent(q));
-        calendarAdapter.addEvent(new QuestCalendarEvent(q));
+        eventBus.post(new CompleteQuestRequestEvent(e.quest));
         unscheduledQuestsAdapter.removeQuest(e.quest);
         setUnscheduledQuestsHeight();
     }
@@ -192,18 +187,38 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     private class CalendarScheduler {
 
         public Schedule schedule() {
-            List<Quest> todayQuests = questPersistenceService.findAllForToday();
+            List<Quest> plannedQuests = questPersistenceService.findAllPlannedAndStartedToday();
+            List<Quest> completedTodayQuests = questPersistenceService.findAllCompletedToday();
 
             List<Quest> unscheduledQuests = new ArrayList<>();
             List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
-            for (Quest q : todayQuests) {
+            for (Quest q : plannedQuests) {
                 if (q.getStartTime() == null) {
                     unscheduledQuests.add(q);
                 } else {
                     calendarEvents.add(new QuestCalendarEvent(q));
                 }
             }
+            for (Quest q : completedTodayQuests) {
+                QuestCalendarEvent event = new QuestCalendarEvent(q);
+                if (isNotScheduledForToday(q)) {
+                    Calendar c = Calendar.getInstance();
+                    Date completedAt = q.getCompletedAtDateTime();
+                    c.setTime(completedAt);
+                    c.add(Calendar.MINUTE, -event.getDuration());
+                    // actual start time was yesterday, so yeah we do not include multi-day events
+                    if (!DateUtils.isToday(c.getTime())) {
+                        continue;
+                    }
+                    event.setStartTime(c.getTime());
+                }
+                calendarEvents.add(event);
+            }
             return new Schedule(unscheduledQuests, calendarEvents);
+        }
+
+        private boolean isNotScheduledForToday(Quest q) {
+            return q.getDue() == null || !DateUtils.isToday(q.getDue());
         }
     }
 
