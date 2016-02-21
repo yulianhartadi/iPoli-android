@@ -218,7 +218,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         }
 
         private boolean isNotScheduledForToday(Quest q) {
-            return q.getDue() == null || !DateUtils.isToday(q.getDue());
+            return !DateUtils.isToday(q.getDue());
         }
     }
 
