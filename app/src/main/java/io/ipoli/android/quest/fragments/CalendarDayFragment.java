@@ -199,7 +199,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             // for incomplete events
             for (Quest q : completedTodayQuests) {
                 QuestCalendarEvent event = new QuestCalendarEvent(q);
-                if (isNotScheduledForToday(q)) {
+                if (isNotScheduledForToday(q) || hasNoStartTime(q)) {
                     Calendar c = Calendar.getInstance();
                     Date completedAt = q.getCompletedAtDateTime();
                     c.setTime(completedAt);
@@ -224,6 +224,10 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             }
 
             return new Schedule(unscheduledQuests, calendarEvents);
+        }
+
+        private boolean hasNoStartTime(Quest q) {
+            return q.getStartTime() == null;
         }
 
         private boolean isNotScheduledForToday(Quest q) {
