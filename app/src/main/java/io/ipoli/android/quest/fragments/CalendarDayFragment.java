@@ -187,18 +187,12 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     private class CalendarScheduler {
 
         public Schedule schedule() {
-            List<Quest> plannedQuests = questPersistenceService.findAllPlannedAndStartedToday();
+            List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
+
             List<Quest> completedTodayQuests = questPersistenceService.findAllCompletedToday();
 
-            List<Quest> unscheduledQuests = new ArrayList<>();
-            List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
-            for (Quest q : plannedQuests) {
-                if (q.getStartTime() == null) {
-                    unscheduledQuests.add(q);
-                } else {
-                    calendarEvents.add(new QuestCalendarEvent(q));
-                }
-            }
+            // completed events should be added first since we don't want them to intercept clicks
+            // for incompleted events
             for (Quest q : completedTodayQuests) {
                 QuestCalendarEvent event = new QuestCalendarEvent(q);
                 if (isNotScheduledForToday(q)) {
@@ -214,6 +208,17 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                 }
                 calendarEvents.add(event);
             }
+
+            List<Quest> unscheduledQuests = new ArrayList<>();
+            List<Quest> plannedQuests = questPersistenceService.findAllPlannedAndStartedToday();
+            for (Quest q : plannedQuests) {
+                if (q.getStartTime() == null) {
+                    unscheduledQuests.add(q);
+                } else {
+                    calendarEvents.add(new QuestCalendarEvent(q));
+                }
+            }
+
             return new Schedule(unscheduledQuests, calendarEvents);
         }
 

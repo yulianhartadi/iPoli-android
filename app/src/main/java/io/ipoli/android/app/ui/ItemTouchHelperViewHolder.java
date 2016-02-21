@@ -13,4 +13,8 @@ public interface ItemTouchHelperViewHolder {
     void onItemSwipeStart(int direction);
 
     void onItemSwipeStopped(int direction);
+
+    boolean isEndSwipeEnabled();
+
+    boolean isStartSwipeEnabled();
 }

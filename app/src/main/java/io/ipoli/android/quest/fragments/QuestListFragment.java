@@ -65,7 +65,7 @@ public class QuestListFragment extends Fragment {
         questList.setAdapter(questAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, swipeFlags, 0);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_green_500)));
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_blue_500)));

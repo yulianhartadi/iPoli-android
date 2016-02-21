@@ -188,5 +188,15 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 hideSchedule();
             }
         }
+
+        @Override
+        public boolean isEndSwipeEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isStartSwipeEnabled() {
+            return true;
+        }
     }
 }

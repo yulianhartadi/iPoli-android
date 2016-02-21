@@ -129,6 +129,10 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             final Quest q = (Quest) items.get(questHolder.getAdapterPosition());
 
+            if (DateUtils.isToday(q.getDue())) {
+                questHolder.setSwipeStartEnabled(false);
+            }
+
             questHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -231,9 +235,13 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Bind(R.id.quest_due_date)
         public TextView dueDate;
 
+
+        private boolean swipeStartEnabled;
+
         public QuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
+            this.swipeStartEnabled = true;
         }
 
         @Override
@@ -290,6 +298,20 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             } else if (direction == ItemTouchHelper.END) {
                 hideQuestCompleteCheck();
             }
+        }
+
+        @Override
+        public boolean isEndSwipeEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isStartSwipeEnabled() {
+            return swipeStartEnabled;
+        }
+
+        public void setSwipeStartEnabled(boolean swipeStartEnabled) {
+            this.swipeStartEnabled = swipeStartEnabled;
         }
     }
 }

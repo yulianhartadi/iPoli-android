@@ -10,29 +10,26 @@ import android.view.View;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/15.
  */
-public class ItemTouchCallback extends ItemTouchHelper.Callback {
+public class ItemTouchCallback extends ItemTouchHelper.SimpleCallback {
 
     private static final int SWIPE_START_THRESHOLD = 2;
     public static final int SWIPE_DRAWABLE_OFFSET = 5;
     private final ItemTouchHelperAdapter adapter;
-    private final int swipeFlags;
-    private final int dragFlags;
     private boolean isLongPressDragEnabled;
     private Drawable swipeStartDrawable;
     private Drawable swipeEndDrawable;
 
     public ItemTouchCallback(ItemTouchHelperAdapter adapter) {
-        this(adapter, ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.UP | ItemTouchHelper.DOWN);
+        this(adapter, ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
     }
 
     public ItemTouchCallback(ItemTouchHelperAdapter adapter, int swipeFlags) {
-        this(adapter, swipeFlags, ItemTouchHelper.UP | ItemTouchHelper.DOWN);
+        this(adapter, ItemTouchHelper.UP | ItemTouchHelper.DOWN, swipeFlags);
     }
 
-    public ItemTouchCallback(ItemTouchHelperAdapter adapter, int swipeFlags, int dragFlags) {
+    public ItemTouchCallback(ItemTouchHelperAdapter adapter, int dragDirs, int swipeDirs) {
+        super(dragDirs, swipeDirs);
         this.adapter = adapter;
-        this.swipeFlags = swipeFlags;
-        this.dragFlags = dragFlags;
         this.isLongPressDragEnabled = true;
     }
 
@@ -49,6 +46,22 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
+    public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        if (!(viewHolder instanceof ItemTouchHelperViewHolder)) {
+            return 0;
+        }
+        ItemTouchHelperViewHolder holder = (ItemTouchHelperViewHolder) viewHolder;
+        int flags = 0;
+        if (holder.isStartSwipeEnabled()) {
+            flags = ItemTouchHelper.START;
+        }
+        if (holder.isEndSwipeEnabled()) {
+            flags |= ItemTouchHelper.END;
+        }
+        return flags;
+    }
+
+    @Override
     public boolean isLongPressDragEnabled() {
         return isLongPressDragEnabled;
     }
@@ -56,14 +69,6 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
     @Override
     public boolean isItemViewSwipeEnabled() {
         return true;
-    }
-
-    @Override
-    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        if (viewHolder instanceof ItemTouchHelperViewHolder) {
-            return makeMovementFlags(dragFlags, swipeFlags);
-        }
-        return 0;
     }
 
     @Override
@@ -83,23 +88,23 @@ public class ItemTouchCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        if (!(viewHolder instanceof ItemTouchHelperViewHolder)) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            return;
+        }
+        ItemTouchHelperViewHolder touchHelperViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+
         if (!isCurrentlyActive && actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                ItemTouchHelperViewHolder itemViewHolder =
-                        (ItemTouchHelperViewHolder) viewHolder;
-                int direction = dX > 0 ? ItemTouchHelper.END : ItemTouchHelper.START;
-                itemViewHolder.onItemSwipeStopped(direction);
-            }
+            int direction = dX > 0 ? ItemTouchHelper.END : ItemTouchHelper.START;
+            touchHelperViewHolder.onItemSwipeStopped(direction);
         }
 
-
         if (isCurrentlyActive && actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-            if (viewHolder instanceof ItemTouchHelperViewHolder) {
-                onSwipeStart(c, viewHolder, dX);
-            }
+            onSwipeStart(c, viewHolder, dX);
         }
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
     }
 
     private void onSwipeStart(Canvas c, RecyclerView.ViewHolder viewHolder, float dX) {
