@@ -1,10 +1,13 @@
 package io.ipoli.android.quest;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -13,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -79,8 +83,19 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
             });
         }
 
+        if(q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+            centerQuestInView(v);
+        }
 
         return v;
+    }
+
+    private void centerQuestInView(View v) {
+        LinearLayout detailsContainer = (LinearLayout) v.findViewById(R.id.quest_details_container);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) detailsContainer.getLayoutParams();
+        params.topMargin = 0;
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        detailsContainer.setLayoutParams(params);
     }
 
     @Override
