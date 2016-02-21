@@ -107,8 +107,8 @@ public class App extends Application {
             Quest.setContext(qqqqq, QuestContext.FUN);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-            calendar.set(Calendar.HOUR_OF_DAY, 19);
-            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.HOUR_OF_DAY, 17);
+            calendar.set(Calendar.MINUTE, 30);
             qqqqq.setStartTime(calendar.getTime());
             qqqqq.setDuration(180);
 

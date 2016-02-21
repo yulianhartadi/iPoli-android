@@ -89,16 +89,14 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         calendarContainer.setCalendarListener(this);
 
-        Schedule schedule = new CalendarScheduler().schedule();
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), schedule.getUnscheduledQuests(), eventBus);
-        setUnscheduledQuestsHeight();
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<Quest>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
         calendarDayView.scrollToNow();
 
-        calendarAdapter = new QuestCalendarAdapter(schedule.getCalendarEvents(), eventBus);
+        calendarAdapter = new QuestCalendarAdapter(new ArrayList<QuestCalendarEvent>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
         return v;
     }

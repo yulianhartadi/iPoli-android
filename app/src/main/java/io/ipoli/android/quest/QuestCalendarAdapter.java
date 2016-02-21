@@ -44,7 +44,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         final QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
         final Quest q = calendarEvent.getQuest();
 
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
+        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
 
         QuestContext ctx = Quest.getContext(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
@@ -55,6 +55,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
 
         CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
         View checkDone = v.findViewById(R.id.quest_check_done);
+
         if (Quest.isCompleted(q)) {
             check.setVisibility(View.GONE);
             checkDone.setVisibility(View.VISIBLE);
@@ -66,6 +67,14 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                 @Override
                 public void onClick(View view) {
                     eventBus.post(new ShowQuestEvent(q));
+                }
+            });
+
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    calendarDayView.editView(view);
+                    return true;
                 }
             });
 
@@ -82,6 +91,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
 
         return v;
     }
+
 
     @Override
     public void onStartTimeUpdated(QuestCalendarEvent calendarEvent, Date oldStartTime) {
