@@ -38,7 +38,6 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -269,8 +268,6 @@ public class EditQuestActivity extends BaseActivity {
 
         quest.setName(name);
         quest.setDuration(duration);
-        Status s = quest.getDue() == null ? Status.UNPLANNED : Status.PLANNED;
-        quest.setStatus(s.name());
         quest = questPersistenceService.save(quest);
 
         Intent data = new Intent();

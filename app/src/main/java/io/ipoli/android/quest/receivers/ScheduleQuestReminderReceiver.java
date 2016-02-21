@@ -34,7 +34,7 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         cancelScheduledReminder(context, alarm);
 
-        Quest q = questPersistenceService.findQuestStartingAfter(new Date());
+        Quest q = questPersistenceService.findPlannedQuestStartingAfter(new Date());
         if (q == null) {
             return;
         }

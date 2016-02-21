@@ -141,7 +141,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             GradientDrawable drawable = (GradientDrawable) questHolder.indicator.getBackground();
             drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
 
-            if (Quest.getStatus(q) == Status.STARTED) {
+            if (Quest.isStarted(q)) {
                 Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
                 questHolder.indicator.startAnimation(blinkAnimation);
             }

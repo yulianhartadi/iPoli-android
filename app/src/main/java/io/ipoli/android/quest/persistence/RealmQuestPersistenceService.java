@@ -10,7 +10,6 @@ import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -53,19 +52,21 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public List<Quest> findAllUncompleted() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .notEqualTo("status", Status.COMPLETED.name())
+                .isNull("completedAtDateTime")
                 .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
 
     @Override
     public List<Quest> findAllUnplanned() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .equalTo("status", Status.UNPLANNED.name())
+                .isNull("due")
+                .isNull("actualStartDateTime")
+                .isNull("completedAtDateTime")
                 .findAllSorted("createdAt", Sort.DESCENDING));
     }
 
     @Override
-    public List<Quest> findAllPlannedForToday() {
+    public List<Quest> findAllPlannedAndStartedToday() {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
 
@@ -75,7 +76,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
+                .isNull("completedAtDateTime")
                 .findAllSorted("startTime", Sort.ASCENDING));
     }
 
@@ -96,7 +97,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public long countAllUncompleted() {
         return realm.where(Quest.class)
-                .notEqualTo("status", Status.COMPLETED.name())
+                .isNull("completedAtDateTime")
                 .count();
     }
 
@@ -111,7 +112,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         return realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .lessThan("due", tomorrow.getTime())
-                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
+                .isNull("completedAtDateTime")
                 .count();
     }
 
@@ -148,7 +149,7 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
-    public Quest findQuestStartingAfter(Date date) {
+    public Quest findPlannedQuestStartingAfter(Date date) {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
 
@@ -163,7 +164,8 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         RealmResults<Quest> quests = realm.where(Quest.class)
                 .greaterThan("due", yesterday.getTime())
                 .greaterThanOrEqualTo("startTime", startTime.getTime())
-                .equalTo("status", Status.PLANNED.name())
+                .isNull("actualStartDateTime")
+                .isNull("completedAtDateTime")
                 .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING);
         if (quests.isEmpty()) {
             return null;
@@ -180,7 +182,8 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public List<Quest> findAllPlanned() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .equalTo("status", Status.PLANNED.name()).or().equalTo("status", Status.STARTED.name())
+                .isNotNull("due")
+                .isNull("completedAtDateTime")
                 .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING));
     }
 

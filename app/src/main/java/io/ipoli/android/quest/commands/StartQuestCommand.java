@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
@@ -34,7 +33,6 @@ public class StartQuestCommand {
     public void execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
-        quest.setStatus(Status.STARTED.name());
         quest.setActualStartDateTime(new Date());
         quest = questPersistenceService.save(quest);
         scheduleNextQuestReminder(context);
@@ -49,10 +47,9 @@ public class StartQuestCommand {
 
 
     private void stopOtherRunningQuests(Quest q) {
-        List<Quest> quests = questPersistenceService.findAllPlannedForToday();
+        List<Quest> quests = questPersistenceService.findAllPlannedAndStartedToday();
         for (Quest cq : quests) {
-            if (!cq.getId().equals(q.getId()) && Status.valueOf(cq.getStatus()) == Status.STARTED) {
-                cq.setStatus(Status.PLANNED.name());
+            if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
                 cq.setActualStartDateTime(null);
                 questPersistenceService.save(cq);
             }

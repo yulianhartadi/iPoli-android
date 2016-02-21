@@ -65,7 +65,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
 
-        if (Quest.getStatus(q) == Status.STARTED) {
+        if (Quest.isStarted(q)) {
             Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
             holder.contextIndicator.startAnimation(blinkAnimation);
         }

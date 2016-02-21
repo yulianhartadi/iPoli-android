@@ -27,7 +27,6 @@ import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -68,7 +67,7 @@ public class App extends Application {
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
         if (questPersistenceService.countAllPlannedForToday() == 0) {
 
-            Quest q = new Quest("Go for a run", Status.PLANNED.name(), new Date());
+            Quest q = new Quest("Go for a run", new Date());
             Quest.setContext(q, QuestContext.WELLNESS);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -77,7 +76,7 @@ public class App extends Application {
             q.setStartTime(calendar.getTime());
             q.setDuration(30);
 
-            Quest qq = new Quest("Read a book", Status.PLANNED.name(), new Date());
+            Quest qq = new Quest("Read a book", new Date());
             Quest.setContext(qq, QuestContext.LEARNING);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -86,7 +85,7 @@ public class App extends Application {
             qq.setStartTime(calendar.getTime());
             qq.setDuration(60);
 
-            Quest qqq = new Quest("Call Mom", Status.PLANNED.name(), new Date());
+            Quest qqq = new Quest("Call Mom", new Date());
             Quest.setContext(qqq, QuestContext.PERSONAL);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -95,7 +94,7 @@ public class App extends Application {
 //            qqq.setStartTime(calendar.getTime());
             qqq.setDuration(15);
 
-            Quest qqqq = new Quest("Work on presentation", Status.PLANNED.name(), new Date());
+            Quest qqqq = new Quest("Work on presentation", new Date());
             Quest.setContext(qqqq, QuestContext.WORK);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -104,7 +103,7 @@ public class App extends Application {
             qqqq.setStartTime(calendar.getTime());
             qqqq.setDuration(120);
 
-            Quest qqqqq = new Quest("Watch Star Wars", Status.PLANNED.name(), new Date());
+            Quest qqqqq = new Quest("Watch Star Wars", new Date());
             Quest.setContext(qqqqq, QuestContext.FUN);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -120,7 +119,7 @@ public class App extends Application {
             quests.add(qqqq);
             quests.add(qqqqq);
 
-            Quest tq = new Quest("Work on presentation", Status.PLANNED.name(), new Date());
+            Quest tq = new Quest("Work on presentation", new Date());
             Quest.setContext(tq, QuestContext.WORK);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -136,7 +135,7 @@ public class App extends Application {
 
             quests.add(tq);
 
-            Quest uq = new Quest("Jump on a single foot", Status.PLANNED.name(), new Date());
+            Quest uq = new Quest("Jump on a single foot", new Date());
             Quest.setContext(uq, QuestContext.WELLNESS);
             calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -159,7 +158,6 @@ public class App extends Application {
         List<Quest> quests = questPersistenceService.findAllUncompleted();
         for (Quest q : quests) {
             if (q.getDue() != null && DateUtils.isBeforeToday(q.getDue())) {
-                q.setStatus(Status.UNPLANNED.name());
                 q.setDue(null);
                 questPersistenceService.save(q);
             }

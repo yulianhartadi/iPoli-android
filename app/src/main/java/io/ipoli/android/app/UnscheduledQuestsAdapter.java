@@ -21,7 +21,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -62,7 +61,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
 
-        if (Quest.getStatus(q) == Status.STARTED) {
+        if (Quest.isStarted(q)) {
             Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
             holder.indicator.startAnimation(blinkAnimation);
         }

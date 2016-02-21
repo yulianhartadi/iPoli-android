@@ -4,7 +4,6 @@ import com.squareup.otto.Subscribe;
 
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -30,7 +29,6 @@ public class SimpleAssistantService implements AssistantService {
         quest.setDuration(e.duration);
         quest.setStartTime(e.startTime);
         if (e.dueDate != null) {
-            quest.setStatus(Status.PLANNED.name());
             quest.setDue(e.dueDate);
         }
         questPersistenceService.save(quest);

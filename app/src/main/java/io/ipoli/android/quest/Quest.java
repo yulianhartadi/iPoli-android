@@ -27,9 +27,6 @@ public class Quest extends RealmObject {
     private Date createdAt;
 
     @Required
-    private String status;
-
-    @Required
     private String context;
 
     private Date due;
@@ -37,7 +34,7 @@ public class Quest extends RealmObject {
     private int duration;
     private Date startTime;
     private Date actualStartDateTime;
-    private Date completedDateTime;
+    private Date completedAtDateTime;
     private String log;
     private String difficulty;
     private int measuredDuration;
@@ -78,13 +75,12 @@ public class Quest extends RealmObject {
     }
 
     public Quest(String name) {
-        this(name, Status.UNPLANNED.name(), null);
+        this(name, null);
     }
 
-    public Quest(String name, String status, Date due) {
+    public Quest(String name, Date due) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.status = status;
         this.due = due;
         this.createdAt = new Date();
         this.context = QuestContext.PERSONAL.name();
@@ -122,14 +118,6 @@ public class Quest extends RealmObject {
         this.id = id;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getContext() {
         return context;
     }
@@ -144,10 +132,6 @@ public class Quest extends RealmObject {
         } catch (Exception e) {
             return Difficulty.UNKNOWN;
         }
-    }
-
-    public static Status getStatus(Quest quest) {
-        return Status.valueOf(quest.getStatus());
     }
 
     public static QuestContext getContext(Quest quest) {
@@ -185,11 +169,27 @@ public class Quest extends RealmObject {
         this.measuredDuration = measuredDuration;
     }
 
-    public Date getCompletedDateTime() {
-        return completedDateTime;
+    public Date getCompletedAtDateTime() {
+        return completedAtDateTime;
     }
 
-    public void setCompletedDateTime(Date completedDateTime) {
-        this.completedDateTime = completedDateTime;
+    public void setCompletedAtDateTime(Date completedAtDateTime) {
+        this.completedAtDateTime = completedAtDateTime;
+    }
+
+    public static boolean isUnplanned(Quest quest) {
+        return quest.getDue() == null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
+    }
+
+    public static boolean isPlanned(Quest quest) {
+        return quest.getDue() != null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
+    }
+
+    public static boolean isStarted(Quest quest) {
+        return quest.getActualStartDateTime() != null && quest.getCompletedAtDateTime() == null;
+    }
+
+    public static boolean isCompleted(Quest quest) {
+        return quest.getCompletedAtDateTime() != null;
     }
 }

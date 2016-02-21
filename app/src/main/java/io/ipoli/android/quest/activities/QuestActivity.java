@@ -28,7 +28,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -136,7 +135,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onResume() {
         QuestNotificationScheduler.stopTimer(quest.getId(), this);
-        if (Quest.getStatus(quest) == Status.STARTED) {
+        if (Quest.isStarted(quest)) {
             elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStartDateTime().getTime());
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);

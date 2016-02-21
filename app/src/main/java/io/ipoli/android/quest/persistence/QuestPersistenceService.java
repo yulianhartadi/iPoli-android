@@ -18,7 +18,7 @@ public interface QuestPersistenceService {
 
     List<Quest> findAllUnplanned();
 
-    List<Quest> findAllPlannedForToday();
+    List<Quest> findAllPlannedAndStartedToday();
 
     List<Quest> findAllForToday();
 
@@ -30,7 +30,7 @@ public interface QuestPersistenceService {
 
     void deleteByNames(String... names);
 
-    Quest findQuestStartingAfter(Date date);
+    Quest findPlannedQuestStartingAfter(Date date);
 
     Quest findById(String id);
 

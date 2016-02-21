@@ -55,7 +55,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
 
         CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
         View checkDone = v.findViewById(R.id.quest_check_done);
-        if (Quest.getStatus(q) == Status.COMPLETED) {
+        if (Quest.isCompleted(q)) {
             check.setVisibility(View.GONE);
             checkDone.setVisibility(View.VISIBLE);
             checkDone.setBackgroundResource(ctx.resLightColor);

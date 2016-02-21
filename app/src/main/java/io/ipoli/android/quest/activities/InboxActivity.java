@@ -34,7 +34,6 @@ import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.InboxAdapter;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
-import io.ipoli.android.quest.Status;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -165,7 +164,6 @@ public class InboxActivity extends BaseActivity {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        q.setStatus(Status.PLANNED.name());
         q.setDue(new Date());
         questPersistenceService.save(q);
         Toast.makeText(this, "Quest scheduled for today", Toast.LENGTH_SHORT).show();
