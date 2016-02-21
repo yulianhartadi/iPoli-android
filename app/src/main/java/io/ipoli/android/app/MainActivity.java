@@ -73,11 +73,11 @@ public class MainActivity extends BaseActivity {
 
         appComponent().inject(this);
 
-        final ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new CalendarDayFragment());
         viewPagerAdapter.addFragment(new QuestListFragment());
-        this.viewPager.setAdapter(viewPagerAdapter);
-        this.viewPager.setPagingEnabled(false);
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(this.viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
@@ -159,11 +159,6 @@ public class MainActivity extends BaseActivity {
 
         public void addFragment(Fragment fragment) {
             fragments.add(fragment);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return null;
         }
     }
 }
