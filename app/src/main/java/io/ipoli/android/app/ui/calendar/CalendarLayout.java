@@ -6,11 +6,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 
 /**
@@ -113,6 +115,9 @@ public class CalendarLayout extends RelativeLayout {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
         dragView.setLayoutParams(params);
+        if(calendarEvent.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+            centerQuestInView(dragView);
+        }
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
@@ -131,5 +136,13 @@ public class CalendarLayout extends RelativeLayout {
             }
         });
 
+    }
+
+    private void centerQuestInView(View v) {
+        LinearLayout detailsContainer = (LinearLayout) v.findViewById(R.id.quest_details_container);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) detailsContainer.getLayoutParams();
+        params.topMargin = 0;
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        detailsContainer.setLayoutParams(params);
     }
 }
