@@ -97,12 +97,6 @@
     <string name="quest_item_hours_duration">%d h</string>
     <string name="quest_timer_hours_and_minutes">For %1$d hour(s) and %2$02d minutes</string>
     <string name="quest_timer_minutes">For %d minutes</string>
-    <string name="tutorial_planned_quest_1">Tap me to edit me</string>
-    <string name="tutorial_planned_quest_2">Swipe me to the left to remove me</string>
-    <string name="tutorial_planned_quest_3">Check me to schedule me for today</string>
-    <string name="tutorial_show_quest_1">Swipe me to complete or tap to start</string>
-    <string name="tutorial_show_quest_2">Run for 30 min at 8:30</string>
-    <string name="tutorial_show_quest_3">Meditate for 15 min at 19:30</string>
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
     <string name="tomorrow">tomorrow</string>
     <string name="upcoming">upcoming</string>
@@ -118,15 +112,15 @@
     <string name="inbox">Inbox</string>
     <string name="today_date_format">\'Today - \'EEE, d MMM</string>
     <string name="undo">undo</string>
-    <string-array name="example_quests">
-        <item>Buy eggs</item>
-        <item>Call Lilly at 1pm</item>
-        <item>Meet John next Sunday</item>
-        <item>Read a book for 30 min</item>
-        <item>Visit the doctor in 3 days</item>
-        <item>Change car oil after 3 months</item>
-        <item>Workout at 6:30 for 30 min tomorrow</item>
-        <item>Pay rent at 12:00 on 21st next month</item>
-        <item>Math exam tomorrow at 9:30 for 1h and 30m</item>
+
+    <string-array name="quest_durations">
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>45 min</item>
+        <item>1 hour</item>
+        <item>1h and 30 min</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>4 hours</item>
     </string-array>
 </resources>

@@ -125,51 +125,13 @@
                 android:layout_weight="4"
                 android:text="@string/edit_quest_duration_hint" />
 
-            <LinearLayout
+            <Spinner
+                android:id="@+id/quest_duration"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
-                android:layout_weight="3">
-
-
-                <EditText
-                    android:id="@+id/duration_hours"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:hint="00"
-                    android:inputType="number"
-                    android:maxLength="2"
-                    android:singleLine="true"
-                    android:textColor="@color/colorAccent" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="h " />
-
-                <EditText
-                    android:id="@+id/duration_mins"
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="00"
-                    android:inputType="number"
-                    android:maxLength="2"
-                    android:singleLine="true"
-                    android:textColor="@color/colorAccent" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="m" />
-            </LinearLayout>
+                android:layout_weight="3" />
 
         </LinearLayout>
 

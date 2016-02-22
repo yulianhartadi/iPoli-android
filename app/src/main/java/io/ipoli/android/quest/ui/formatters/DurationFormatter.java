@@ -27,4 +27,21 @@ public class DurationFormatter {
             return context.getString(R.string.quest_item_minutes_duration, mins);
         }
     }
+
+    public static String formatReadable(int duration) {
+        long hours = TimeUnit.MINUTES.toHours(duration);
+        long mins = duration - hours * 60;
+        if (hours <= 0 && mins <= 0) {
+            return "";
+        }
+        if (hours > 0 && mins > 0) {
+            return hours + "h and " + mins + " min";
+        }
+
+        if (hours > 0 && mins == 0) {
+            return hours == 1 ? "1 hour" : hours + " hours";
+        }
+
+        return mins == 1 ? "1 minute" : mins + " minutes";
+    }
 }

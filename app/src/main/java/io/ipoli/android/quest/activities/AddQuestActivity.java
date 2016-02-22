@@ -241,7 +241,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     public void afterTextChanged(Editable editable) {
         String text = editable.toString();
 
-        Pattern namePattern = Pattern.compile("\\w+\\s", Pattern.CASE_INSENSITIVE);
+        Pattern namePattern = Pattern.compile("\\w{3,}", Pattern.CASE_INSENSITIVE);
         if (!namePattern.matcher(text).find()) {
             disableButtons();
             return;

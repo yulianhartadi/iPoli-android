@@ -48,4 +48,8 @@ public class DurationMatcher implements QuestTextMatcher<Integer> {
         }
         return -1;
     }
+
+    public Integer parseShort(String text) {
+        return parse(" for " + text);
+    }
 }
