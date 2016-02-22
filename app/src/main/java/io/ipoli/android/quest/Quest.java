@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.Time;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -191,5 +192,9 @@ public class Quest extends RealmObject {
 
     public static boolean isCompleted(Quest quest) {
         return quest.getCompletedAtDateTime() != null;
+    }
+
+    public static void setStartTime(Quest quest, Time time) {
+        quest.setStartTime(time.toDate());
     }
 }

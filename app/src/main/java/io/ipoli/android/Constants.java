@@ -45,4 +45,6 @@ public interface Constants {
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
     int DEFAULT_UNSCHEDULED_QUEST_MIN_DURATION = 5;
     int RESULT_REMOVED = 100;
+
+    String KEY_APP_RUN_COUNT = "RUN_COUNT";
 }

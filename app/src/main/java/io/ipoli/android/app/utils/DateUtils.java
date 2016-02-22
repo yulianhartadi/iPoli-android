@@ -56,7 +56,7 @@ public class DateUtils {
     }
 
     public static Date getNormalizedStartTime(Date startTime) {
-        if(startTime == null) {
+        if (startTime == null) {
             return null;
         }
         Calendar sc = Calendar.getInstance();
@@ -66,6 +66,13 @@ public class DateUtils {
         c.setTimeInMillis(0);
         c.set(Calendar.HOUR_OF_DAY, sc.get(Calendar.HOUR_OF_DAY));
         c.set(Calendar.MINUTE, sc.get(Calendar.MINUTE));
+        return c.getTime();
+    }
+
+
+    public static Date getTomorrow() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, 1);
         return c.getTime();
     }
 }

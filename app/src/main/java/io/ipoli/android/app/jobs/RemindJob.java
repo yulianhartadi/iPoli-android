@@ -18,8 +18,8 @@ public abstract class RemindJob {
 
     public void schedule() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, time.hour);
-        calendar.set(Calendar.MINUTE, time.minute);
+        calendar.set(Calendar.HOUR_OF_DAY, time.getHours());
+        calendar.set(Calendar.MINUTE, time.getMinutes());
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 

@@ -22,12 +22,12 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     }
 
     private void initRemindPlanDayJob(Context context) {
-        Time time = Time.of(Constants.DEFAULT_PLAN_DAY_TIME);
+        Time time = Time.at(Constants.DEFAULT_PLAN_DAY_TIME);
         new RemindPlanDayJob(context, time).schedule();
     }
 
     private void initRemindReviewDayJob(Context context) {
-        Time time = Time.of(Constants.DEFAULT_REVIEW_DAY_TIME);
+        Time time = Time.at(Constants.DEFAULT_REVIEW_DAY_TIME);
         new RemindReviewDayJob(context, time).schedule();
     }
 }
