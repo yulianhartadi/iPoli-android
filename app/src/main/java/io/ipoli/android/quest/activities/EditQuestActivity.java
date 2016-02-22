@@ -57,7 +57,6 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 public class EditQuestActivity extends BaseActivity {
-    public static final String DUE_DATE_MILLIS_EXTRA_KEY = "quest_due";
 
     @Bind(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
@@ -126,6 +125,9 @@ public class EditQuestActivity extends BaseActivity {
         }
         durationSuggestions.addAll(createAutoSuggestions(qDurationTxt));
         questDuration.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, durationSuggestions));
+
+        setStartTimeText(quest.getStartTime());
+        setDueDateText(quest.getDue());
 
         initContextUI();
     }
@@ -266,6 +268,8 @@ public class EditQuestActivity extends BaseActivity {
         int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
         quest.setName(name);
         quest.setDuration(duration);
+        quest.setDue((Date) dueDateBtn.getTag());
+        quest.setStartTime((Date) startTimeBtn.getTag());
         quest = questPersistenceService.save(quest);
 
         Intent data = new Intent();
@@ -277,13 +281,11 @@ public class EditQuestActivity extends BaseActivity {
     @Subscribe
     public void onDueDateSelected(DateSelectedEvent e) {
         setDueDateText(e.date);
-        quest.setDue(e.date);
     }
 
     @Subscribe
     public void onStartTimeSelected(TimeSelectedEvent e) {
         setStartTimeText(e.time);
-        quest.setStartTime(e.time);
     }
 
     private void setDueDateText(Date date) {
@@ -294,6 +296,7 @@ public class EditQuestActivity extends BaseActivity {
             text = DateUtils.isToday(date) ? getString(R.string.today) : DueDateFormatter.format(date);
         }
         dueDateBtn.setText(text);
+        dueDateBtn.setTag(date);
     }
 
     private void setStartTimeText(Date time) {
@@ -302,5 +305,6 @@ public class EditQuestActivity extends BaseActivity {
         } else {
             startTimeBtn.setText(StartTimeFormatter.format(time));
         }
+        startTimeBtn.setTag(time);
     }
 }

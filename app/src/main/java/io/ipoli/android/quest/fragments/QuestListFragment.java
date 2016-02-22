@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -60,9 +60,7 @@ public class QuestListFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        List<Quest> quests = questPersistenceService.findAllPlanned();
-
-        questAdapter = new QuestAdapter(getContext(), quests, eventBus);
+        questAdapter = new QuestAdapter(getContext(), new ArrayList<Quest>(), eventBus);
         questList.setAdapter(questAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;

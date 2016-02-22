@@ -75,4 +75,16 @@ public class DateUtils {
         c.add(Calendar.DAY_OF_YEAR, 1);
         return c.getTime();
     }
+
+    public static Date getNormalizedDueDate(Date dueDate) {
+        if (dueDate == null) {
+            return null;
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(dueDate);
+        Calendar normalizedDueDate = getTodayAtMidnight();
+        normalizedDueDate.set(Calendar.DAY_OF_YEAR, c.get(Calendar.DAY_OF_YEAR));
+        normalizedDueDate.set(Calendar.YEAR, c.get(Calendar.YEAR));
+        return normalizedDueDate.getTime();
+    }
 }

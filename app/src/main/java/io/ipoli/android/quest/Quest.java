@@ -82,7 +82,7 @@ public class Quest extends RealmObject {
     public Quest(String name, Date due) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.due = due;
+        setDue(due);
         this.createdAt = new Date();
         this.context = QuestContext.PERSONAL.name();
     }
@@ -108,7 +108,7 @@ public class Quest extends RealmObject {
     }
 
     public void setDue(Date due) {
-        this.due = due;
+        this.due = DateUtils.getNormalizedDueDate(due);
     }
 
     public String getId() {
