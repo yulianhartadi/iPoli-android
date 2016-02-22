@@ -2,8 +2,6 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.ClipData;
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -17,6 +15,7 @@ import java.util.Calendar;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.ViewUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -113,7 +112,7 @@ public class CalendarLayout extends RelativeLayout {
             }
 
             @Override
-            public void onDragEnded(DragEvent event) {
+            public void onDragDropped(DragEvent event) {
                 CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
                 if (event.getY() <= calendarDayView.getTop() || event.getY() > calendarDayView.getBottom()) {
                     // return to list
@@ -122,8 +121,8 @@ public class CalendarLayout extends RelativeLayout {
                     }
                 } else {
                     Calendar c = Calendar.getInstance();
-                    int hours = calendarDayView.getHoursFor(getViewTop(dragView));
-                    int minutes = calendarDayView.getMinutesFor(getViewTop(dragView), 5);
+                    int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
+                    int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
                     c.set(Calendar.HOUR_OF_DAY, hours);
                     c.set(Calendar.MINUTE, minutes);
                     calendarEvent.setStartTime(c.getTime());
@@ -165,18 +164,6 @@ public class CalendarLayout extends RelativeLayout {
         detailsContainer.setLayoutParams(params);
     }
 
-    private int getViewTop(View v) {
-        int[] loc = new int[2];
-        v.getLocationInWindow(loc);
-        return loc[1];
-    }
-
-    private Point getTouchPositionFromDragEvent(DragEvent event) {
-        Rect rItem = new Rect();
-        calendarDayView.getGlobalVisibleRect(rItem);
-        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
-    }
-
     private OnDragListener dragListener = new OnDragListener() {
 
         @Override
@@ -201,7 +188,7 @@ public class CalendarLayout extends RelativeLayout {
                     break;
 
                 case DragEvent.ACTION_DROP:
-                    dragStrategy.onDragEnded(event);
+                    dragStrategy.onDragDropped(event);
                     break;
 
                 default:

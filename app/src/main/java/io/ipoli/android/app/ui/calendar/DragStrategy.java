@@ -13,5 +13,5 @@ public interface DragStrategy {
 
     void onDragMoved(DragEvent event);
 
-    void onDragEnded(DragEvent event);
+    void onDragDropped(DragEvent event);
 }
