@@ -22,6 +22,7 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
+import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -76,7 +77,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    calendarDayView.editView(view);
+                    eventBus.post(new EditCalendarEventEvent(view));
                     return true;
                 }
             });

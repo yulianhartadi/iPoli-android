@@ -42,6 +42,7 @@ import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
+import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -156,6 +157,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         CalendarEvent calendarEvent = new QuestCalendarEvent(e.quest);
         calendarContainer.acceptNewEvent(calendarEvent);
         unscheduledQuestsAdapter.removeQuest(e.quest);
+    }
+
+    @Subscribe
+    public void onEditCalendarEvent(EditCalendarEventEvent e) {
+        calendarContainer.editView(e.calendarEventView);
     }
 
     @Subscribe

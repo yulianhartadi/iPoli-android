@@ -23,13 +23,12 @@ import io.ipoli.android.R;
  * on 2/16/16.
  */
 public class CalendarLayout extends RelativeLayout {
-    //    private boolean shouldIntercept = false;
-//    private View dragView;
     private float y;
     private CalendarListener calendarListener;
-//    private CalendarEvent calendarEvent;
     private CalendarDayView calendarDayView;
     private LayoutInflater inflater;
+
+    private DragStrategy dragStrategy;
 
     public CalendarLayout(Context context) {
         super(context);
@@ -52,7 +51,7 @@ public class CalendarLayout extends RelativeLayout {
     }
 
     private void initUI() {
-
+        setOnDragListener(dragListener);
     }
 
 
@@ -74,8 +73,6 @@ public class CalendarLayout extends RelativeLayout {
     }
 
     public void acceptNewEvent(CalendarEvent calendarEvent) {
-//        this.calendarEvent = calendarEvent;
-
 
         View dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
         dragView.setBackgroundResource(calendarEvent.getBackgroundColor());
@@ -118,8 +115,7 @@ public class CalendarLayout extends RelativeLayout {
             @Override
             public void onDragEnded(DragEvent event) {
                 CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
-                Point dragPoint = getTouchPositionFromDragEvent(event);
-                if (dragPoint.y <= calendarDayView.getTop() || dragPoint.y > calendarDayView.getBottom()) {
+                if (event.getY() <= calendarDayView.getTop() || event.getY() > calendarDayView.getBottom()) {
                     // return to list
                     if (calendarListener != null) {
                         calendarListener.onUnableToAcceptNewEvent(calendarEvent);
@@ -147,7 +143,7 @@ public class CalendarLayout extends RelativeLayout {
 
         }.init(dragView, calendarEvent);
 
-        calendarDayView.setDragStrategy(dragStrategy);
+        setDragStrategy(dragStrategy);
 
         dragView.startDrag(ClipData.newPlainText("", ""),
                 new DummyDragShadowBuilder(),
@@ -157,6 +153,10 @@ public class CalendarLayout extends RelativeLayout {
 
     }
 
+    public void setDragStrategy(DragStrategy dragStrategy) {
+        this.dragStrategy = dragStrategy;
+    }
+
     private void adjustQuestDetailsView(View v) {
         LinearLayout detailsContainer = (LinearLayout) v.findViewById(R.id.quest_details_container);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) detailsContainer.getLayoutParams();
@@ -164,6 +164,7 @@ public class CalendarLayout extends RelativeLayout {
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         detailsContainer.setLayoutParams(params);
     }
+
     private int getViewTop(View v) {
         int[] loc = new int[2];
         v.getLocationInWindow(loc);
@@ -176,8 +177,47 @@ public class CalendarLayout extends RelativeLayout {
         return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
     }
 
+    private OnDragListener dragListener = new OnDragListener() {
 
-//    private
+        @Override
+        public boolean onDrag(View _, DragEvent event) {
+
+            if (dragStrategy == null) {
+                return false;
+            }
+
+            switch (event.getAction()) {
+
+                case DragEvent.ACTION_DRAG_STARTED:
+                    dragStrategy.onDragStarted(event);
+                    break;
+
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    dragStrategy.onDragEntered(event);
+                    break;
+
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    dragStrategy.onDragMoved(event);
+                    break;
+
+                case DragEvent.ACTION_DROP:
+                    dragStrategy.onDragEnded(event);
+                    break;
+
+                default:
+                    break;
+            }
+            return true;
+        }
+    };
 
 
+    public void editView(View calendarEventView) {
+        setDragStrategy(calendarDayView.getEditViewDragStrategy(calendarEventView));
+        calendarEventView.startDrag(ClipData.newPlainText("", ""),
+                new DummyDragShadowBuilder(),
+                calendarEventView,
+                0
+        );
+    }
 }
