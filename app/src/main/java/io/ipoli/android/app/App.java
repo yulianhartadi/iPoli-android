@@ -91,7 +91,6 @@ public class App extends Application {
     private void addTodayUnscheduledQuests(List<Quest> initialQuests) {
         Quest trashQuest = new Quest("Throw away the trash", new Date());
         Quest.setContext(trashQuest, QuestContext.CHORES);
-
         initialQuests.add(trashQuest);
     }
 
@@ -106,7 +105,7 @@ public class App extends Application {
 
         Quest brushQuest = new Quest("Brush your teeth", tomorrow);
         Quest.setContext(brushQuest, QuestContext.WELLNESS);
-        brushQuest.setStartTime(Time.at(10, 0).toDate());
+        Quest.setStartTime(brushQuest, Time.atHours(10));
 
         initialQuests.add(brushQuest);
     }
@@ -124,13 +123,13 @@ public class App extends Application {
     private void addScheduledQuestsForToday(List<Quest> initialQuests) {
         Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.getNow());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.after(0, 10));
+        Quest.setStartTime(welcomeQuest, Time.afterMinutes(10));
         initialQuests.add(welcomeQuest);
 
         Quest readQuest = new Quest("Read a book", DateUtils.getNow());
         Quest.setContext(readQuest, QuestContext.LEARNING);
         readQuest.setDuration(60);
-        readQuest.setStartTime(Time.after(2, 0).toDate());
+        Quest.setStartTime(readQuest, Time.afterHours(2));
         initialQuests.add(readQuest);
 
         Quest callQuest = new Quest("Call mom & dad", new Date());
