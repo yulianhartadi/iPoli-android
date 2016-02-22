@@ -28,7 +28,6 @@
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="quest_removed">Quest removed</string>
-    <string name="undo">UNDO</string>
     <string name="player_level">Level %d</string>
     <string name="pick_assistant_avatar_title">Pick my new avatar</string>
     <string name="pick_player_avatar_title">Pick your new avatar</string>
@@ -118,6 +117,7 @@
     <string name="dialog_remove_quest_message">Sure you want to remove this awesome quest?</string>
     <string name="inbox">Inbox</string>
     <string name="today_date_format">\'Today - \'EEE, d MMM</string>
+    <string name="undo">undo</string>
     <string-array name="example_quests">
         <item>Buy eggs</item>
         <item>Call Lilly at 1pm</item>

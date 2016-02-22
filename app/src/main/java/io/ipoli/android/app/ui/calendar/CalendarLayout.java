@@ -1,8 +1,11 @@
 package io.ipoli.android.app.ui.calendar;
 
+import android.content.ClipData;
 import android.content.Context;
-import android.support.v4.view.MotionEventCompat;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,27 +23,44 @@ import io.ipoli.android.R;
  * on 2/16/16.
  */
 public class CalendarLayout extends RelativeLayout {
-    private boolean shouldIntercept = false;
-    private View dragView;
-    private float x;
+    //    private boolean shouldIntercept = false;
+//    private View dragView;
     private float y;
     private CalendarListener calendarListener;
-    private CalendarEvent calendarEvent;
+//    private CalendarEvent calendarEvent;
+    private CalendarDayView calendarDayView;
+    private LayoutInflater inflater;
 
     public CalendarLayout(Context context) {
         super(context);
+        initUI();
     }
 
     public CalendarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initUI();
     }
 
     public CalendarLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initUI();
     }
 
     public CalendarLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        initUI();
+    }
+
+    private void initUI() {
+
+    }
+
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
+        inflater = LayoutInflater.from(getContext());
     }
 
     public void setCalendarListener(CalendarListener calendarListener) {
@@ -49,92 +69,91 @@ public class CalendarLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        x = ev.getX();
         y = ev.getY();
-        return shouldIntercept;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        if (!shouldIntercept) {
-            return false;
-        }
-
-        switch (MotionEventCompat.getActionMasked(event)) {
-            case MotionEvent.ACTION_MOVE:
-
-                dragView.animate()
-                        .x(event.getX() - dragView.getWidth() / 2)
-                        .y(event.getY() - dragView.getHeight() / 2)
-                        .setDuration(0)
-                        .start();
-                break;
-
-            case MotionEvent.ACTION_UP:
-                shouldIntercept = false;
-                CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
-                if (event.getY() <= calendarDayView.getTop() || event.getY() > calendarDayView.getBottom()) {
-                    // return to list
-                    if (calendarListener != null) {
-                        calendarListener.onUnableToAcceptNewEvent(calendarEvent);
-                    }
-                    removeView(dragView);
-                } else {
-
-                    float yPos = event.getRawY() - dragView.getHeight() / 2;
-                    int h = calendarDayView.getHoursFor(yPos);
-                    int m = calendarDayView.getMinutesFor(yPos, 15);
-
-                    Calendar c = Calendar.getInstance();
-                    c.set(Calendar.HOUR_OF_DAY, h);
-                    c.set(Calendar.MINUTE, m);
-                    calendarEvent.setStartTime(c.getTime());
-
-                    if (calendarListener != null) {
-                        calendarListener.onAcceptEvent(calendarEvent);
-                    }
-
-
-                    removeView(dragView);
-                }
-                break;
-            default:
-                return false;
-        }
-        return true;
+        return false;
     }
 
     public void acceptNewEvent(CalendarEvent calendarEvent) {
-        this.calendarEvent = calendarEvent;
-        shouldIntercept = true;
-        CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
+//        this.calendarEvent = calendarEvent;
+
+
+        View dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
         dragView.setBackgroundResource(calendarEvent.getBackgroundColor());
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
+        params.topMargin = (int) y - params.height / 2;
         dragView.setLayoutParams(params);
-        if(calendarEvent.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+        if (calendarEvent.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(dragView);
         }
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
         addView(dragView);
-        dragView.setVisibility(INVISIBLE);
 
-        dragView.post(new Runnable() {
+        DragStrategy dragStrategy = new DragStrategy() {
+            public View dragView;
+            private CalendarEvent calendarEvent;
+            public int initialTouchHeight;
+
             @Override
-            public void run() {
-                dragView.setVisibility(VISIBLE);
-                dragView.animate()
-                        .x(x - dragView.getWidth() / 2)
-                        .y(y - dragView.getHeight() / 2)
-                        .setDuration(0)
-                        .start();
+            public void onDragStarted(DragEvent event) {
+                int[] loc = new int[2];
+                calendarDayView.getLocationOnScreen(loc);
+                initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
             }
-        });
+
+            @Override
+            public void onDragEntered(DragEvent event) {
+
+            }
+
+            @Override
+            public void onDragMoved(DragEvent event) {
+                LayoutParams layoutParams = (LayoutParams) dragView.getLayoutParams();
+                layoutParams.topMargin = (int) event.getY() - initialTouchHeight;
+                dragView.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onDragEnded(DragEvent event) {
+                CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
+                Point dragPoint = getTouchPositionFromDragEvent(event);
+                if (dragPoint.y <= calendarDayView.getTop() || dragPoint.y > calendarDayView.getBottom()) {
+                    // return to list
+                    if (calendarListener != null) {
+                        calendarListener.onUnableToAcceptNewEvent(calendarEvent);
+                    }
+                } else {
+                    Calendar c = Calendar.getInstance();
+                    int hours = calendarDayView.getHoursFor(getViewTop(dragView));
+                    int minutes = calendarDayView.getMinutesFor(getViewTop(dragView), 5);
+                    c.set(Calendar.HOUR_OF_DAY, hours);
+                    c.set(Calendar.MINUTE, minutes);
+                    calendarEvent.setStartTime(c.getTime());
+
+                    if (calendarListener != null) {
+                        calendarListener.onAcceptEvent(calendarEvent);
+                    }
+                }
+                removeView(dragView);
+            }
+
+            private DragStrategy init(View dragView, CalendarEvent calendarEvent) {
+                this.dragView = dragView;
+                this.calendarEvent = calendarEvent;
+                return this;
+            }
+
+        }.init(dragView, calendarEvent);
+
+        calendarDayView.setDragStrategy(dragStrategy);
+
+        dragView.startDrag(ClipData.newPlainText("", ""),
+                new DummyDragShadowBuilder(),
+                dragView,
+                0
+        );
 
     }
 
@@ -145,4 +164,20 @@ public class CalendarLayout extends RelativeLayout {
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         detailsContainer.setLayoutParams(params);
     }
+    private int getViewTop(View v) {
+        int[] loc = new int[2];
+        v.getLocationInWindow(loc);
+        return loc[1];
+    }
+
+    private Point getTouchPositionFromDragEvent(DragEvent event) {
+        Rect rItem = new Rect();
+        calendarDayView.getGlobalVisibleRect(rItem);
+        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
+    }
+
+
+//    private
+
+
 }

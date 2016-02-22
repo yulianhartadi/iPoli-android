@@ -231,7 +231,7 @@ public class EditQuestActivity extends BaseActivity {
                         finish();
                     }
                 });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.undo), new DialogInterface.OnClickListener() {
+                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 

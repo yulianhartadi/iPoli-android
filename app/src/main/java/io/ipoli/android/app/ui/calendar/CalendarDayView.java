@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,7 @@ public class CalendarDayView extends FrameLayout {
 
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
-
+    private DragStrategy dragStrategy;
 
     public CalendarDayView(Context context) {
         super(context);
@@ -92,46 +93,35 @@ public class CalendarDayView extends FrameLayout {
         addView(initScrollView(context, mainContainer));
 
         setOnDragListener(dragListener);
+
     }
 
     private OnDragListener dragListener = new OnDragListener() {
 
-        private int initialTouchHeight;
-
         @Override
         public boolean onDrag(View _, DragEvent event) {
-            View draggedView = (View) event.getLocalState();
-            CalendarEvent calendarEvent = eventViewToCalendarEvent.get(draggedView);
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) draggedView.getLayoutParams();
+
+            if (dragStrategy == null) {
+                return false;
+            }
+
             switch (event.getAction()) {
 
                 case DragEvent.ACTION_DRAG_STARTED:
-                    adapter.onDragStarted(draggedView);
+                    dragStrategy.onDragStarted(event);
                     break;
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    initialTouchHeight = getTouchPositionFromDragEvent(event).y - getViewTop(draggedView);
+                    dragStrategy.onDragEntered(event);
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    int touchY = getTouchPositionFromDragEvent(event).y;
-                    layoutParams.topMargin = toLocalY(touchY - initialTouchHeight);
-                    draggedView.setLayoutParams(layoutParams);
+                    Log.d("Drag loc", event.getY() + "loc");
+                    dragStrategy.onDragMoved(event);
                     break;
 
-                //the drag and drop operation has concluded.
                 case DragEvent.ACTION_DRAG_ENDED:
-                    int h = getHoursFor(getViewTop(draggedView));
-                    int m = getMinutesFor(getViewTop(draggedView), 5);
-                    layoutParams.topMargin = getYPositionFor(h, m);
-                    draggedView.setLayoutParams(layoutParams);
-                    Date oldStartTime = calendarEvent.getStartTime();
-                    Calendar c = Calendar.getInstance();
-                    c.set(Calendar.HOUR_OF_DAY, h);
-                    c.set(Calendar.MINUTE, m);
-                    calendarEvent.setStartTime(c.getTime());
-                    adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
-                    adapter.onDragEnded(draggedView);
+                    dragStrategy.onDragEnded(event);
                     break;
 
                 default:
@@ -224,7 +214,46 @@ public class CalendarDayView extends FrameLayout {
         eventViewToCalendarEvent.put(eventView, calendarEvent);
     }
 
-    public void editView(View eventView) {
+    public void editView(final View eventView) {
+
+        dragStrategy = new DragStrategy() {
+            public int initialTouchHeight;
+
+            @Override
+            public void onDragStarted(DragEvent event) {
+                adapter.onDragStarted(eventView);
+            }
+
+            @Override
+            public void onDragEntered(DragEvent event) {
+                initialTouchHeight = getTouchPositionFromDragEvent(event).y - getViewTop(eventView);
+            }
+
+            @Override
+            public void onDragMoved(DragEvent event) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
+                int touchY = getTouchPositionFromDragEvent(event).y;
+                layoutParams.topMargin = getRelativeY(touchY - initialTouchHeight);
+                eventView.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onDragEnded(DragEvent event) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
+                int h = getHoursFor(getViewTop(eventView));
+                int m = getMinutesFor(getViewTop(eventView), 5);
+                layoutParams.topMargin = getYPositionFor(h, m);
+                eventView.setLayoutParams(layoutParams);
+                CalendarEvent calendarEvent = eventViewToCalendarEvent.get(eventView);
+                Date oldStartTime = calendarEvent.getStartTime();
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.HOUR_OF_DAY, h);
+                c.set(Calendar.MINUTE, m);
+                calendarEvent.setStartTime(c.getTime());
+                adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
+                adapter.onDragEnded(eventView);
+            }
+        };
         eventView.startDrag(ClipData.newPlainText("", ""),
                 new DummyDragShadowBuilder(),
                 eventView,
@@ -241,12 +270,12 @@ public class CalendarDayView extends FrameLayout {
     }
 
     public int getHoursFor(float y) {
-        float h = toLocalY((int) y) / hourHeight;
+        float h = getRelativeY((int) y) / hourHeight;
         return Math.min(Math.round(h), 23);
     }
 
     public int getMinutesFor(float y, int rangeLength) {
-        int minutes = (int) ((toLocalY((int) y) % hourHeight) / minuteHeight);
+        int minutes = (int) ((getRelativeY((int) y) % hourHeight) / minuteHeight);
         minutes = Math.max(0, minutes);
         List<Integer> bounds = new ArrayList<>();
         int rangeStart = 0;
@@ -292,7 +321,7 @@ public class CalendarDayView extends FrameLayout {
         return getYPositionFor(hour, minutes);
     }
 
-    private int toLocalY(int y) {
+    int getRelativeY(int y) {
         int offsets[] = new int[2];
         getLocationOnScreen(offsets);
         return Math.max(0, scrollView.getScrollY() + y - offsets[1]);
@@ -331,5 +360,9 @@ public class CalendarDayView extends FrameLayout {
         int[] loc = new int[2];
         v.getLocationInWindow(loc);
         return loc[1];
+    }
+
+    public void setDragStrategy(DragStrategy dragStrategy) {
+        this.dragStrategy = dragStrategy;
     }
 }
