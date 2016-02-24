@@ -249,6 +249,7 @@ public class EditQuestActivity extends BaseActivity {
     }
 
     private void onBackButton() {
+        saveQuest();
         Intent data = new Intent();
         data.putExtras(getIntent());
         setResult(RESULT_OK, data);

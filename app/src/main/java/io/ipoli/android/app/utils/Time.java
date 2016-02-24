@@ -73,4 +73,13 @@ public class Time {
         Calendar c = Calendar.getInstance();
         return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
+
+    public static Time of(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    }
 }

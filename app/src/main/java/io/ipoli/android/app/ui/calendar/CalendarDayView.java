@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
 
 /**
@@ -36,6 +37,7 @@ public class CalendarDayView extends FrameLayout {
 
     public static final int HOURS_PER_SCREEN = 5;
     public static final int HOURS_IN_A_DAY = 24;
+    public static final int TOP_PADDING_HOURS = (int) Math.floor(HOURS_PER_SCREEN / 2.0f);
 
     private float minuteHeight;
     private RelativeLayout eventsContainer;
@@ -238,13 +240,26 @@ public class CalendarDayView extends FrameLayout {
             public void run() {
                 Calendar c = Calendar.getInstance();
                 int hour = c.get(Calendar.HOUR_OF_DAY);
-                int pHours = 2;
-                hour = Math.max(0, hour - pHours);
+                hour = Math.max(0, hour - TOP_PADDING_HOURS);
                 if (hour == 0) {
                     scrollView.scrollTo(scrollView.getScrollX(), 0);
                 } else {
                     int minutes = c.get(Calendar.MINUTE);
                     scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
+                }
+            }
+        });
+    }
+
+    public void smoothScrollToTime(final Time time) {
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+                if (hour == 0) {
+                    scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+                } else {
+                    scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
                 }
             }
         });

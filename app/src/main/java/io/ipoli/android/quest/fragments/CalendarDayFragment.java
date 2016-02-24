@@ -33,6 +33,7 @@ import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestCalendarAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -41,6 +42,7 @@ import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
@@ -100,6 +102,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<QuestCalendarEvent>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
+        eventBus.register(this);
         return v;
     }
 
@@ -131,7 +134,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     @Override
     public void onResume() {
         super.onResume();
-        eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
     }
@@ -145,9 +147,14 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        eventBus.unregister(this);
         getContext().unregisterReceiver(tickReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        eventBus.unregister(this);
+        super.onDestroyView();
     }
 
     @Subscribe
@@ -192,6 +199,19 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingQuest);
         }
         setUnscheduledQuestsHeight();
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = e.quest;
+        if (!DateUtils.isToday(q.getDue())) {
+            return;
+        }
+        Time startTime = Quest.getStartTime(e.quest);
+        if (startTime == null) {
+            return;
+        }
+        calendarDayView.smoothScrollToTime(startTime);
     }
 
     private class CalendarScheduler {

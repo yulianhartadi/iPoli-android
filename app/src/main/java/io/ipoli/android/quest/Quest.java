@@ -55,8 +55,8 @@ public class Quest extends RealmObject {
         this.startTime = DateUtils.getNormalizedStartTime(startTime);
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public static Time getStartTime(Quest quest) {
+        return Time.of(quest.getStartTime());
     }
 
     public void setLog(String log) {
@@ -196,5 +196,9 @@ public class Quest extends RealmObject {
 
     public static void setStartTime(Quest quest, Time time) {
         quest.setStartTime(time.toDate());
+    }
+
+    public Date getStartTime() {
+        return startTime;
     }
 }
