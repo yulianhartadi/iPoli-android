@@ -1,15 +1,10 @@
 package io.ipoli.android.quest.activities;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -25,7 +20,6 @@ import com.squareup.otto.Bus;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -63,12 +57,12 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     @Bind(R.id.duration)
     ImageButton duration;
 
-    private ArrayAdapter<SpannableString> adapter;
-    private SpannableString[] durationAutoCompletes;
+    private ArrayAdapter<String> adapter;
+    private String[] durationAutoCompletes;
 
-    private SpannableString[] dueDateAutoCompletes;
+    private String[] dueDateAutoCompletes;
 
-    private SpannableString[] startTimeAutoCompletes;
+    private String[] startTimeAutoCompletes;
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
@@ -84,35 +78,12 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
         disableButtons();
 
-        dueDateAutoCompletes = new SpannableString[]{
-                new SpannableString("today"),
-                new SpannableString("tomorrow"),
-                createSpannableString("on ", "12 Feb"),
-                createSpannableString("next ", "Monday"),
-                createSpannableString("after ", "3 days"),
-                createSpannableString("in ", "2 months")
-        };
-
-        startTimeAutoCompletes = new SpannableString[]{
-                createSpannableString("at ", "19:30"),
-                createSpannableString("at ", "7 pm"),
-                new SpannableString("at 9:00"),
-                new SpannableString("at 12:00"),
-                new SpannableString("at 20:00"),
-                new SpannableString("at 22:00")
-        };
-
-        durationAutoCompletes = new SpannableString[]{
-                new SpannableString("for 10 min"),
-                new SpannableString("for 15 min"),
-                new SpannableString("for 30 min"),
-                new SpannableString("for 1h"),
-                new SpannableString("for 1h and 30m"),
-                createSpannableString("for ", "5m")
-        };
+        dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
+        startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
+        durationAutoCompletes = getResources().getStringArray(R.array.duration_auto_completes);
 
         adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, new ArrayList<SpannableString>());
+                R.layout.add_quest_autocomplete_item, new ArrayList<String>());
         questText.setAdapter(adapter);
         questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
@@ -130,29 +101,15 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SpannableString ss = adapter.getItem(position);
-        String selectedText = ss.toString();
-        ForegroundColorSpan[] spans = ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
-        for (int i = spans.length - 1; i >= 0; i--) {
-            ForegroundColorSpan span = spans[i];
-            int start = ss.getSpanStart(span);
-            int end = ss.getSpanEnd(span);
-            if (start > 0) {
-                selectedText = selectedText.substring(0, start);
-            } else {
-                selectedText = selectedText.substring(end, selectedText.length());
-            }
-        }
-
+        String selectedText = adapter.getItem(position);
         String text = this.questText.getText().toString();
         if (!text.endsWith(" ")) {
-            text += " ";
+            selectedText = " " + selectedText;
         }
-        questText.setText(text + selectedText);
+        questText.append(selectedText);
         questText.setThreshold(1000);
         questText.setSelection(this.questText.getText().length());
     }
-
 
     @OnClick(R.id.due_date)
     public void onDueDateClick(View v) {
@@ -161,14 +118,6 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         questText.setAdapter(adapter);
         questText.setThreshold(1);
         questText.showDropDown();
-    }
-
-    @NonNull
-    private SpannableString createSpannableString(String text, String hintText) {
-        int hintColor = ContextCompat.getColor(this, R.color.md_dark_text_26);
-        SpannableString spannableString = new SpannableString(text + hintText);
-        spannableString.setSpan(new ForegroundColorSpan(hintColor), spannableString.toString().indexOf(hintText), spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannableString;
     }
 
     @OnClick(R.id.start_time)
@@ -241,8 +190,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
     public void afterTextChanged(Editable editable) {
         String text = editable.toString();
 
-        Pattern namePattern = Pattern.compile("\\w{3,}", Pattern.CASE_INSENSITIVE);
-        if (!namePattern.matcher(text).find()) {
+        if (text.replaceAll(" ", "").length() < 3) {
             disableButtons();
             return;
         }

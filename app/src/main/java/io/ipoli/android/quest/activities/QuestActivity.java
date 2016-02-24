@@ -24,7 +24,6 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -167,12 +166,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             finish();
         } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
             quest = questPersistenceService.findById(quest.getId());
-            if (DateUtils.isToday(quest.getDue())) {
-                initUI();
-            } else {
-                //the quest shouldn't be able to start today
-                finish();
-            }
+            initUI();
         } else if (resultCode == Constants.RESULT_REMOVED) {
             finish();
         }
