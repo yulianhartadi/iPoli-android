@@ -81,28 +81,6 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     }
 
     @Override
-    public long countAllUncompleted() {
-        return realm.where(Quest.class)
-                .isNull("completedAtDateTime")
-                .count();
-    }
-
-    @Override
-    public long countAllPlannedForToday() {
-        Calendar yesterday = DateUtils.getTodayAtMidnight();
-        yesterday.add(Calendar.SECOND, -1);
-
-        Calendar tomorrow = DateUtils.getTodayAtMidnight();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
-
-        return realm.where(Quest.class)
-                .greaterThan("due", yesterday.getTime())
-                .lessThan("due", tomorrow.getTime())
-                .isNull("completedAtDateTime")
-                .count();
-    }
-
-    @Override
     public void delete(Quest quest) {
         if (quest == null) {
             return;
@@ -118,20 +96,6 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         realmQuest.removeFromRealm();
         realm.commitTransaction();
         eventBus.post(new QuestDeletedEvent());
-    }
-
-    @Override
-    public void deleteByNames(String... names) {
-        realm.beginTransaction();
-        for (String name : names) {
-            Quest realmQuest = realm.where(Quest.class)
-                    .equalTo("name", name)
-                    .findFirst();
-            if (realmQuest != null) {
-                realmQuest.removeFromRealm();
-            }
-        }
-        realm.commitTransaction();
     }
 
     @Override
@@ -163,6 +127,13 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     public Quest findById(String id) {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .equalTo("id", id).findFirst());
+    }
+
+    @Override
+    public List<Quest> findAllCompleted() {
+        return realm.copyFromRealm(realm.where(Quest.class)
+                .isNotNull("completedAtDateTime")
+                .findAllSorted("completedAtDateTime", Sort.DESCENDING));
     }
 
     @Override

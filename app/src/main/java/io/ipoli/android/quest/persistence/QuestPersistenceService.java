@@ -10,29 +10,25 @@ import io.ipoli.android.quest.Quest;
  * on 1/7/16.
  */
 public interface QuestPersistenceService {
+    Quest findById(String id);
+
+    List<Quest> findAllCompleted();
+
+    List<Quest> findAllUnplanned();
+
+    List<Quest> findAllPlanned();
+
+    List<Quest> findAllPlannedAndStartedToday();
+
+    List<Quest> findAllUncompleted();
+
+    List<Quest> findAllCompletedToday();
+
+    Quest findPlannedQuestStartingAfter(Date date);
+
     Quest save(Quest quest);
 
     List<Quest> saveAll(List<Quest> quests);
 
-    List<Quest> findAllUncompleted();
-
-    List<Quest> findAllUnplanned();
-
-    List<Quest> findAllPlannedAndStartedToday();
-
-    long countAllUncompleted();
-
-    long countAllPlannedForToday();
-
     void delete(Quest quest);
-
-    void deleteByNames(String... names);
-
-    Quest findPlannedQuestStartingAfter(Date date);
-
-    Quest findById(String id);
-
-    List<Quest> findAllPlanned();
-
-    List<Quest> findAllCompletedToday();
 }

@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +19,7 @@ import com.squareup.otto.Bus;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -35,18 +35,20 @@ import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/18/16.
  */
-public class AddQuestActivity extends BaseActivity implements AdapterView.OnItemClickListener, TextWatcher {
+public class AddQuestActivity extends BaseActivity implements TextWatcher, AdapterView.OnItemClickListener {
 
     @Inject
     Bus eventBus;
 
     @Bind(R.id.quest_text)
-    AutoCompleteTextView questText;
+    AddQuestAutocompleteTextView questText;
 
     @Bind(R.id.due_date)
     ImageButton dueDate;
@@ -66,6 +68,11 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    private List<String> questNameAutoCompletes;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,39 +83,43 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         appComponent().inject(this);
         setFinishOnTouchOutside(false);
 
-        disableButtons();
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
         durationAutoCompletes = getResources().getStringArray(R.array.duration_auto_completes);
 
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, new ArrayList<String>());
-        questText.setAdapter(adapter);
+        questNameAutoCompletes = createQuestNameAutoCompletes();
+
         questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
         questText.requestFocus();
+        resetUI();
     }
 
-    private void disableButtons() {
+    private List<String> createQuestNameAutoCompletes() {
+        List<Quest> completedQuests = questPersistenceService.findAllCompleted();
+        List<String> names = new ArrayList<>();
+        for (Quest q : completedQuests) {
+            names.add(q.getName());
+        }
+        return names;
+    }
+
+    private void resetUI() {
+        resetButtons();
+        adapter = new ArrayAdapter<>(this,
+                R.layout.add_quest_autocomplete_item, questNameAutoCompletes);
+        questText.setAdapter(adapter);
+        questText.setThreshold(1);
+    }
+
+    private void resetButtons() {
         duration.setBackgroundResource(R.drawable.circle_disable);
         startTime.setBackgroundResource(R.drawable.circle_disable);
         dueDate.setBackgroundResource(R.drawable.circle_disable);
         duration.setEnabled(false);
         startTime.setEnabled(false);
         dueDate.setEnabled(false);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String selectedText = adapter.getItem(position);
-        String text = this.questText.getText().toString();
-        if (!text.endsWith(" ")) {
-            selectedText = " " + selectedText;
-        }
-        questText.append(selectedText);
-        questText.setThreshold(1000);
-        questText.setSelection(this.questText.getText().length());
     }
 
     @OnClick(R.id.due_date)
@@ -153,6 +164,22 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String selectedText = adapter.getItem(position);
+        if (questNameAutoCompletes.contains(selectedText)) {
+            questText.setText(selectedText);
+        } else {
+            String text = this.questText.getText().toString();
+            if (!text.endsWith(" ")) {
+                selectedText = " " + selectedText;
+            }
+            questText.append(selectedText);
+            questText.setThreshold(1000);
+        }
+        questText.setSelection(this.questText.getText().length());
+    }
+
     @OnEditorAction(R.id.quest_text)
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
@@ -191,7 +218,7 @@ public class AddQuestActivity extends BaseActivity implements AdapterView.OnItem
         String text = editable.toString();
 
         if (text.replaceAll(" ", "").length() < 3) {
-            disableButtons();
+            resetUI();
             return;
         }
 
