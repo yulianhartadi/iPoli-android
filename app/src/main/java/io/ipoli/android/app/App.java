@@ -82,7 +82,7 @@ public class App extends Application {
 
         addTomorrowQuests(quests);
         addTodayUnscheduledQuests(quests);
-        addScheduledQuestsForToday(quests);
+        addTodayScheduledQuests(quests);
         addInboxQuests(quests);
 
         questPersistenceService.saveAll(quests);
@@ -120,7 +120,7 @@ public class App extends Application {
         initialQuests.add(dentistQuest);
     }
 
-    private void addScheduledQuestsForToday(List<Quest> initialQuests) {
+    private void addTodayScheduledQuests(List<Quest> initialQuests) {
         Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.getNow());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
         Quest.setStartTime(welcomeQuest, Time.afterMinutes(10));
