@@ -84,8 +84,8 @@ public class CalendarDayView extends FrameLayout {
 
         FrameLayout mainContainer = initMainContainer(context);
         mainContainer.addView(initHourCellsContainer(context, inflater));
-        mainContainer.addView(initEventsContainer(context));
         mainContainer.addView(initTimeLineContainer(context, inflater));
+        mainContainer.addView(initEventsContainer(context));
 
         addView(initScrollView(context, mainContainer));
     }

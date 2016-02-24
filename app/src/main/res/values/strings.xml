@@ -112,6 +112,34 @@
     <string name="inbox">Inbox</string>
     <string name="today_date_format">\'Today - \'EEE, d MMM</string>
     <string name="undo">undo</string>
+    <string name="quest_scheduled_for_today">Quest scheduled for today</string>
+
+    <string-array name="due_date_auto_completes">
+        <item>today</item>
+        <item>tomorrow</item>
+        <item>on 12 Feb</item>
+        <item>next Monday</item>
+        <item>after 3 days</item>
+        <item>in 2 months</item>
+    </string-array>
+
+    <string-array name="start_time_auto_completes">
+        <item>at 19:30</item>
+        <item>at 7 pm</item>
+        <item>at 9:00</item>
+        <item>at 12:00</item>
+        <item>at 20:00</item>
+        <item>at 22:00</item>
+    </string-array>
+
+    <string-array name="duration_auto_completes">
+        <item>for 10 min</item>
+        <item>for 15 min</item>
+        <item>for 30 min</item>
+        <item>for 1h</item>
+        <item>for 1h and 30m</item>
+        <item>for 5m</item>
+    </string-array>
 
     <string-array name="quest_durations">
         <item>15 min</item>

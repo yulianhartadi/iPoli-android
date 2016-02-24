@@ -20,7 +20,7 @@ import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
-import io.ipoli.android.quest.fragments.QuestListFragment;
+import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
@@ -82,7 +82,7 @@ public interface AppComponent {
 
     void inject(CalendarDayFragment calendarDayFragment);
 
-    void inject(QuestListFragment questListFragment);
+    void inject(OverviewFragment overviewFragment);
 
     void inject(AddQuestActivity addQuestActivity);
 }

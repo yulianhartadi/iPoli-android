@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -223,7 +222,7 @@ public class EditQuestActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                setResult(RESULT_CANCELED);
+                onBackButton();
                 finish();
                 return true;
             case R.id.action_remove:
@@ -249,6 +248,12 @@ public class EditQuestActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void onBackButton() {
+        Intent data = new Intent();
+        data.putExtras(getIntent());
+        setResult(RESULT_OK, data);
+    }
+
     @OnClick(R.id.quest_due_date)
     public void onDueDateClick(Button button) {
         DialogFragment f = new DatePickerFragment();
@@ -261,21 +266,20 @@ public class EditQuestActivity extends BaseActivity {
         f.show(this.getSupportFragmentManager(), "timePicker");
     }
 
-    @OnClick(R.id.save_quest)
-    public void onSaveQuest(FloatingActionButton button) {
-        String name = nameText.getText().toString().trim();
+    @Override
+    public void onBackPressed() {
+        onBackButton();
+        super.onBackPressed();
+    }
 
+    private void saveQuest() {
+        String name = nameText.getText().toString().trim();
         int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
         quest.setName(name);
         quest.setDuration(duration);
         quest.setDue((Date) dueDateBtn.getTag());
         quest.setStartTime((Date) startTimeBtn.getTag());
         quest = questPersistenceService.save(quest);
-
-        Intent data = new Intent();
-        data.putExtras(getIntent());
-        setResult(RESULT_OK, data);
-        finish();
     }
 
     @Subscribe

@@ -37,7 +37,7 @@ import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
-import io.ipoli.android.quest.fragments.QuestListFragment;
+import io.ipoli.android.quest.fragments.OverviewFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,7 +74,7 @@ public class MainActivity extends BaseActivity {
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new CalendarDayFragment());
-        viewPagerAdapter.addFragment(new QuestListFragment());
+        viewPagerAdapter.addFragment(new OverviewFragment());
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(this.viewPager);

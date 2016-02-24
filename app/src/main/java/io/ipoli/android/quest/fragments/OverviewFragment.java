@@ -26,8 +26,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.OverviewAdapter;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.QuestAdapter;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -36,7 +36,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/17/16.
  */
-public class QuestListFragment extends Fragment {
+public class OverviewFragment extends Fragment {
 
     @Inject
     Bus eventBus;
@@ -47,12 +47,12 @@ public class QuestListFragment extends Fragment {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private QuestAdapter questAdapter;
+    private OverviewAdapter overviewAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_quest_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_overview, container, false);
         ButterKnife.bind(this, v);
         App.getAppComponent(getContext()).inject(this);
 
@@ -60,11 +60,11 @@ public class QuestListFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        questAdapter = new QuestAdapter(getContext(), new ArrayList<Quest>(), eventBus);
-        questList.setAdapter(questAdapter);
+        overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<Quest>(), eventBus);
+        questList.setAdapter(overviewAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(questAdapter, 0, swipeFlags);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(overviewAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_green_500)));
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_blue_500)));
@@ -90,7 +90,7 @@ public class QuestListFragment extends Fragment {
             questPersistenceService.save(q);
         }
         updateQuests();
-        Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.quest_scheduled_for_today, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe
@@ -100,7 +100,7 @@ public class QuestListFragment extends Fragment {
     }
 
     private void updateQuests() {
-        questAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        overviewAdapter.updateQuests(questPersistenceService.findAllPlanned());
     }
 
     @Override

@@ -34,7 +34,7 @@ import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
+public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int QUEST_ITEM_VIEW_TYPE = 1;
@@ -45,7 +45,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private int[] headerIndices;
 
-    public QuestAdapter(Context context, List<Quest> quests, Bus eventBus) {
+    public OverviewAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         setItems(quests);
@@ -128,10 +128,6 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             QuestViewHolder questHolder = (QuestViewHolder) holder;
 
             final Quest q = (Quest) items.get(questHolder.getAdapterPosition());
-
-            if (DateUtils.isToday(q.getDue())) {
-                questHolder.setSwipeStartEnabled(false);
-            }
 
             questHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -235,13 +231,9 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Bind(R.id.quest_due_date)
         public TextView dueDate;
 
-
-        private boolean swipeStartEnabled;
-
         public QuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
-            this.swipeStartEnabled = true;
         }
 
         @Override
@@ -307,11 +299,7 @@ public class QuestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public boolean isStartSwipeEnabled() {
-            return swipeStartEnabled;
-        }
-
-        public void setSwipeStartEnabled(boolean swipeStartEnabled) {
-            this.swipeStartEnabled = swipeStartEnabled;
+            return true;
         }
     }
 }
