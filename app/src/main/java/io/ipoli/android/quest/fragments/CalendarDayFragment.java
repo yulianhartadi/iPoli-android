@@ -143,6 +143,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         unscheduledQuestsAdapter.updateQuests(schedule.getUnscheduledQuests());
         calendarAdapter.updateEvents(schedule.getCalendarEvents());
         setUnscheduledQuestsHeight();
+        calendarDayView.scrollToNow();
     }
 
     @Override
