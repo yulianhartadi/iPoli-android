@@ -19,7 +19,9 @@ import com.squareup.otto.Bus;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -98,11 +100,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
     private List<String> createQuestNameAutoCompletes() {
         List<Quest> completedQuests = questPersistenceService.findAllCompleted();
-        List<String> names = new ArrayList<>();
+        Set<String> names = new HashSet<>();
         for (Quest q : completedQuests) {
             names.add(q.getName());
         }
-        return names;
+        return new ArrayList<>(names);
     }
 
     private void resetUI() {

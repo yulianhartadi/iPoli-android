@@ -113,6 +113,8 @@
     <string name="today_date_format">\'Today - \'EEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
+    <string name="remind_plan_day_message">What will you get done by the end of the day?</string>
+    <string name="remind_plan_day_title">New day ahead</string>
 
     <string-array name="due_date_auto_completes">
         <item>today</item>

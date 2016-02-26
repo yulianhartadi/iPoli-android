@@ -62,8 +62,8 @@ public class ReminderIntentService extends IntentService {
             Bitmap largeIcon = BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher);
 
             NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                    .setContentTitle("New day ahead")
-                    .setContentText("Ready to plan your great day?")
+                    .setContentTitle(getString(R.string.remind_plan_day_title))
+                    .setContentText(getString(R.string.remind_plan_day_message))
                     .setSmallIcon(R.drawable.ic_notification_small)
                     .setLargeIcon(largeIcon)
                     .setOnlyAlertOnce(true)
@@ -146,6 +146,6 @@ public class ReminderIntentService extends IntentService {
     private PendingIntent getSnoozePendingIntent(String questId) {
         Intent intent = new Intent(SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

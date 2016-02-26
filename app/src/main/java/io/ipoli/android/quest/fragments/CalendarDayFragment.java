@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.UnscheduledQuestsAdapter;
+import io.ipoli.android.quest.UnscheduledQuestsAdapter;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;

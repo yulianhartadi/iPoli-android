@@ -7,6 +7,7 @@
     android:background="@color/md_blue_800">
 
     <RelativeLayout
+        android:id="@+id/root_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -54,7 +55,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        app:layout_anchor="@id/quest_details_content"
+        app:layout_anchor="@id/root_container"
         app:layout_anchorGravity="bottom">
 
 
