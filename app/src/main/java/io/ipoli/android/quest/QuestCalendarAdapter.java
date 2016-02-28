@@ -1,5 +1,6 @@
 package io.ipoli.android.quest;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
 
         if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);
+            name.setSingleLine(true);
+            name.setEllipsize(TextUtils.TruncateAt.END);
         }
 
         return v;

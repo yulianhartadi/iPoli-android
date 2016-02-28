@@ -69,12 +69,13 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-
                 eventBus.post(new MoveQuestToCalendarRequestEvent(q));
                 return true;
             }
         });
-
+        
+        holder.check.setOnCheckedChangeListener(null);
+        holder.check.setChecked(false);
         holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
