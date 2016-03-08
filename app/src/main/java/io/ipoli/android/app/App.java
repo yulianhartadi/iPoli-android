@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
@@ -60,6 +61,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if(Build.VERSION.SDK_INT < 21) {
+            return;
+        }
         getAppComponent(this).inject(this);
         resetDueDateForIncompleteQuests();
         registerServices();

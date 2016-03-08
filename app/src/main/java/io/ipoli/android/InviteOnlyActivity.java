@@ -3,6 +3,7 @@ package io.ipoli.android;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -34,6 +35,11 @@ public class InviteOnlyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
         setContentView(R.layout.activity_invite_only);
+        ButterKnife.bind(this);
+
+        if(Build.VERSION.SDK_INT < 21) {
+            return;
+        }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean("is_invited", false)) {
@@ -58,7 +64,6 @@ public class InviteOnlyActivity extends BaseActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(getResources().getColor(R.color.md_blue_700));
-        ButterKnife.bind(this);
     }
 
     private void startMainActivity() {
@@ -77,6 +82,9 @@ public class InviteOnlyActivity extends BaseActivity {
 
     @OnClick(R.id.invite_logo_image)
     public void onLogoClick(View view) {
+        if(Build.VERSION.SDK_INT < 21) {
+            return;
+        }
         eventBus.post(new PlayerRequestedInviteEvent());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("is_invited", true);
