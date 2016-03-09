@@ -79,6 +79,7 @@ public class App extends Application {
         SharedPreferences.Editor e = prefs.edit();
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
+
     }
 
     private void saveInitialQuests() {

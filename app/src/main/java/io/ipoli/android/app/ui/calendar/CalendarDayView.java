@@ -315,5 +315,16 @@ public class CalendarDayView extends FrameLayout {
                 adapter.onDragEnded(dragView);
             }
         };
+
+    }
+
+    public View getView(String eventName) {
+        for(View v : eventViewToCalendarEvent.keySet()) {
+            CalendarEvent e = eventViewToCalendarEvent.get(v);
+            if(e.getName().contains(eventName)) {
+                return v;
+            }
+        }
+        return null;
     }
 }

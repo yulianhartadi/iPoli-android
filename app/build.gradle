@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "io.ipoli.android"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 10
         versionName "1.0.9"
@@ -52,6 +52,7 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0.2'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
+    compile 'com.github.iammert:MaterialIntroView:1.5'
 
     apt 'com.google.dagger:dagger-compiler:2.0.2'
 

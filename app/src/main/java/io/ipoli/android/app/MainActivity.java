@@ -2,6 +2,7 @@ package io.ipoli.android.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -29,6 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.Tutorial;
 import io.ipoli.android.app.ui.MainViewPager;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
@@ -57,6 +60,8 @@ public class MainActivity extends BaseActivity {
     @Bind(R.id.viewpager)
     MainViewPager viewPager;
 
+    private View inboxButton;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +85,7 @@ public class MainActivity extends BaseActivity {
         tabLayout.setupWithViewPager(this.viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
+        Tutorial.getInstance(this).addItem(Tutorial.State.TUTORIAL_VIEW_OVERVIEW, this, ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1));
     }
 
     @OnClick(R.id.add_quest)
@@ -105,13 +111,21 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                inboxButton = findViewById(R.id.action_inbox);
+                Tutorial.getInstance(MainActivity.this).addItem(Tutorial.State.TUTORIAL_VIEW_INBOX, MainActivity.this, inboxButton, false);
+            }
+        });
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_plan_day:
+            case R.id.action_inbox:
                 startInboxActivity();
                 break;
         }
@@ -122,7 +136,6 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        Intent i = getIntent();
     }
 
     private void startInboxActivity() {
