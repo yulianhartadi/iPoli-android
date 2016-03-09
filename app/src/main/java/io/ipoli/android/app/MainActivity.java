@@ -29,9 +29,11 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.Tutorial;
+import io.ipoli.android.TutorialItem;
 import io.ipoli.android.app.ui.MainViewPager;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
@@ -85,7 +87,13 @@ public class MainActivity extends BaseActivity {
         tabLayout.setupWithViewPager(this.viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
-        Tutorial.getInstance(this).addItem(Tutorial.State.TUTORIAL_VIEW_OVERVIEW, this, ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1));
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_VIEW_OVERVIEW)
+                        .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
+                        .enableDotAnimation(false)
+                        .setFocusType(Focus.MINIMUM)
+                        .build());
     }
 
     @OnClick(R.id.add_quest)
@@ -115,7 +123,12 @@ public class MainActivity extends BaseActivity {
             @Override
             public void run() {
                 inboxButton = findViewById(R.id.action_inbox);
-                Tutorial.getInstance(MainActivity.this).addItem(Tutorial.State.TUTORIAL_VIEW_INBOX, MainActivity.this, inboxButton, false);
+                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+                        .setTarget(inboxButton)
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .setState(Tutorial.State.TUTORIAL_VIEW_INBOX)
+                        .build());
             }
         });
 

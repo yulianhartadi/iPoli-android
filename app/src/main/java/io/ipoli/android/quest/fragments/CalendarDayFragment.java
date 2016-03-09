@@ -25,10 +25,10 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.mobiwise.materialintro.shape.Focus;
-import co.mobiwise.materialintro.shape.FocusGravity;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.Tutorial;
+import io.ipoli.android.TutorialItem;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
@@ -139,7 +139,14 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         super.onResume();
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
-        Tutorial.getInstance(getContext()).addItem(Tutorial.State.TUTORIAL_DRAG_CALENDAR_QUEST, getActivity(), calendarDayView.getView("iPoli"), false, Focus.ALL, FocusGravity.LEFT);
+        Tutorial.getInstance(getContext()).addItem(
+                new TutorialItem.Builder(getActivity())
+                .setState(Tutorial.State.TUTORIAL_DRAG_CALENDAR_QUEST)
+                .setTarget(calendarDayView)
+                .setFocusType(Focus.ALL)
+                .performClick(false)
+                .setTargetPadding(-200)
+                .build());
     }
 
     private void updateSchedule() {

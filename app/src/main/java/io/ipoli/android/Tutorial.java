@@ -1,11 +1,9 @@
 package io.ipoli.android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
-import android.view.View;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +20,7 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
  */
 public class Tutorial {
     private static final String KEY_TUTORIAL_COMPLETED_STEP = "tutorial_completed_step";
+    private static Context context;
     private final SharedPreferences prefs;
     private static Tutorial instance;
     private boolean isTutorialVisible = false;
@@ -29,6 +28,7 @@ public class Tutorial {
     private MaterialIntroConfiguration config;
 
     public static Tutorial getInstance(Context context) {
+        Tutorial.context = context;
         if(instance == null) {
             instance = new Tutorial(context);
         }
@@ -44,25 +44,33 @@ public class Tutorial {
 
     public enum State {
 //        TUTORIAL_START,
-        TUTORIAL_DRAG_CALENDAR_QUEST(1, R.string.invite_welcome_text),
+        TUTORIAL_DRAG_CALENDAR_QUEST(R.string.invite_welcome_text),
 //        TUTORIAL_COMPLETE_CALENDAR_QUEST,
 //        TUTORIAL_SCHEDULE_CALENDAR_UNSCHEDULED_QUEST,
-        TUTORIAL_VIEW_OVERVIEW(2, R.string.invite_welcome_text),
+        TUTORIAL_VIEW_OVERVIEW(R.string.invite_welcome_text),
         //TUTORIAL_SWIPE_OVERVIEW_LEFT, TUTORIAL_SWIPE_OVERVIEW_RIGHT,
         //TUTORIAL_ADD_QUEST,
         //...
-        TUTORIAL_VIEW_INBOX(3, R.string.invite_welcome_text);
+        TUTORIAL_VIEW_INBOX(R.string.invite_welcome_text);
         //...
         //NORMAL
-        private int step;
 
         @StringRes
         private int textRes;
 
-        State(int step, int textRes) {
-            this.step = step;
+        State(int textRes) {
             this.textRes = textRes;
         }
+
+        private int getStep() {
+            for(int i=0; i< values().length; i++) {
+                if(this == values()[i]) {
+                    return i + 1;
+                }
+            }
+            return -1;
+        }
+
     }
 
     private Map<State, TutorialItem> stateToTutorialItem= new HashMap<>();
@@ -79,31 +87,11 @@ public class Tutorial {
         config.setFadeAnimationEnabled(true);
     }
 
-    public void addItem(State state, Activity activity, View view) {
-        addItem(state, activity, view, true, Focus.NORMAL, FocusGravity.CENTER);
-    }
-
-    public void addItem(State state, Activity activity, View view, boolean performClick) {
-        addItem(state, activity, view, performClick, Focus.NORMAL, FocusGravity.CENTER);
-    }
-
-    public void addItem(State state, Activity activity, View view, Focus focusType) {
-        addItem(state, activity, view, true, focusType, FocusGravity.CENTER);
-    }
-
-    public void addItem(State state, Activity activity, View view, FocusGravity focusGravity) {
-        addItem(state, activity, view, true, Focus.NORMAL, focusGravity);
-    }
-
-    public void addItem(State state, Activity activity, View view, boolean performClick, Focus focusType, FocusGravity focusGravity) {
-        if(state.step < lastCompletedStep) {
+    public void addItem(TutorialItem item) {
+        if(item.getState().getStep() < lastCompletedStep) {
             return;
         }
-        TutorialItem item = new TutorialItem(state, activity, view);
-        item.performClick = performClick;
-        item.focus = focusType;
-        item.focusGravity = focusGravity;
-        stateToTutorialItem.put(state, item);
+        stateToTutorialItem.put(item.getState(), item);
         if(!isTutorialVisible) {
             show();
         }
@@ -111,7 +99,7 @@ public class Tutorial {
 
     private State getNextState() {
         for(State s : stateToTutorialItem.keySet()) {
-            if(s.step == lastCompletedStep + 1) {
+            if(s.getStep() == lastCompletedStep + 1) {
                 return s;
             }
         }
@@ -129,19 +117,14 @@ public class Tutorial {
     }
 
     private MaterialIntroView.Builder build(final TutorialItem item) {
-        return new MaterialIntroView.Builder(item.activity)
-                .setConfiguration(config)
-                .performClick(item.performClick)
-                .setInfoText(item.activity.getResources().getString(item.state.textRes))
-                .setTarget(item.view)
-                .setUsageId(item.state.name()) //THIS SHOULD BE UNIQUE ID
-                .setFocusGravity(item.focusGravity)
-                .setFocusType(item.focus)
+        return item.getMivBuilder()
+                .setInfoText(context.getResources().getString(item.getState().textRes))
+                .setUsageId(item.getState().name()) //THIS SHOULD BE UNIQUE ID
                 .setListener(new MaterialIntroListener() {
                     @Override
                     public void onUserClicked(String s) {
                         isTutorialVisible = false;
-                        lastCompletedStep = item.state.step;
+                        lastCompletedStep = item.getState().getStep();
                         saveCompletedStep();
                         show();
                     }
@@ -154,18 +137,4 @@ public class Tutorial {
         e.apply();
     }
 
-    public static class TutorialItem {
-        private State state;
-        private Activity activity;
-        private View view;
-        private boolean performClick = true;
-        private Focus focus = Focus.NORMAL;
-        private FocusGravity focusGravity = FocusGravity.CENTER;
-
-        public TutorialItem(State state, Activity activity, View view) {
-            this.state = state;
-            this.activity = activity;
-            this.view = view;
-        }
-    }
 }
