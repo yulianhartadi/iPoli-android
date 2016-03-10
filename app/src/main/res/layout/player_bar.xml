@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/AppTheme.AppBarOverlay"
-    tools:showIn="@layout/activity_chat">
+    android:theme="@style/AppTheme.AppBarOverlay">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

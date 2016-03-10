@@ -160,11 +160,12 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                         .performClick(false)
                         .setTargetPadding(-120)
                         .build());
-        //TODO what if null
+
+        View questView = calendarDayView.getView("iPoli");
         Tutorial.getInstance(getContext()).addItem(
                 new TutorialItem.Builder(getActivity())
                         .setState(Tutorial.State.TUTORIAL_CALENDAR_COMPLETE_QUEST)
-                        .setTarget(calendarDayView.getView("iPoli").findViewById(R.id.quest_check))
+                        .setTarget(questView == null ? null : questView.findViewById(R.id.quest_check))
                         .setFocusType(Focus.MINIMUM)
                         .enableDotAnimation(false)
                         .build());
@@ -172,7 +173,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         Tutorial.getInstance(getContext()).addItem(
                 new TutorialItem.Builder(getActivity())
                         .setState(Tutorial.State.TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS)
-                        .setTarget(unscheduledQuestList)
+                        .setTarget(unscheduledQuestsAdapter.getItemCount() > 0 ? unscheduledQuestList : null)
                         .setFocusType(Focus.NORMAL)
                         .enableDotAnimation(false)
                         .dismissOnTouch(true)

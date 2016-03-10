@@ -60,9 +60,9 @@
     <string name="remind_plan_day_title">New day ahead</string>
 
 
-    <string name="tutorial_calendar_quest"> Here is a quest in your calendar. You can long press and drag it to reschedule it.</string>
+    <string name="tutorial_calendar_quest"> You can long press and drag quest in the calendar to reschedule it.</string>
     <string name="tutorial_calendar_complete_quest">When you are ready check it to complete it</string>
-    <string name="tutorial_calendar_unscheduled_quests">These are your todo\'s for today. You can long press and drag them to the calendar</string>
+    <string name="tutorial_calendar_unscheduled_quests">These are your todo\'s for today. You can long press and drag them to the calendar.</string>
     <string name="tutorial_welcome">Welcome to iPoli - your personal sidekick :)</string>
     <string name="tutorial_start_overview">Use this tab to see overview of your quests</string>
     <string name="tutorial_overview_swipe">Swipe quest left to complete it or swipe it right to schedule it for today.</string>

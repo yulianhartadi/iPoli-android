@@ -45,9 +45,9 @@ public class Tutorial {
         TUTORIAL_CALENDAR_DRAG_QUEST(R.string.tutorial_calendar_quest, 0),
         TUTORIAL_CALENDAR_COMPLETE_QUEST(R.string.tutorial_calendar_complete_quest, 0),
         TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS(R.string.tutorial_calendar_unscheduled_quests, 4000),
-        TUTORIAL_START_OVERVIEW(R.string.tutorial_start_overview, 3000),
+        TUTORIAL_START_OVERVIEW(R.string.tutorial_start_overview, 2500),
         TUTORIAL_OVERVIEW_SWIPE(R.string.tutorial_overview_swipe, 0),
-        TUTORIAL_START_ADD_QUEST(R.string.tutorial_start_add_quest, 3000),
+        TUTORIAL_START_ADD_QUEST(R.string.tutorial_start_add_quest, 2500),
         TUTORIAL_ADD_QUEST(R.string.tutorial_add_quest, 0),
         TUTORIAL_START_INBOX(R.string.tutorial_start_inbox, 0),
         TUTORIAL_INBOX_SWIPE(R.string.tutorial_inbox_swipe, 0);
@@ -100,8 +100,15 @@ public class Tutorial {
         if (s == null) {
             return;
         }
+        TutorialItem item = stateToTutorialItem.get(s);
+        if(item.getTarget() == null) {
+            stateToTutorialItem.remove(s);
+            lastCompletedStep += 1;
+            show();
+            return;
+        }
 
-        if(stateToTutorialItem.get(s).getTarget().getVisibility() != View.VISIBLE) {
+        if(item.getTarget().getVisibility() != View.VISIBLE) {
             return;
         }
         build(stateToTutorialItem.remove(s)).show();

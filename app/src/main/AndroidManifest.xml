@@ -62,7 +62,6 @@
             android:label="@string/title_activity_add_quest"
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

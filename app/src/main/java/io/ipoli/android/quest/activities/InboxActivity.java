@@ -69,7 +69,7 @@ public class InboxActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_plan_day);
+        setContentView(R.layout.activity_inbox);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

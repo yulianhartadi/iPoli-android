@@ -31,6 +31,7 @@ public class SimpleAssistantService implements AssistantService {
         if (e.dueDate != null) {
             quest.setDue(e.dueDate);
         }
+        Quest.setContext(quest, e.context);
         questPersistenceService.save(quest);
     }
 
