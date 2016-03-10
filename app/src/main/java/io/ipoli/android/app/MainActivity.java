@@ -89,9 +89,18 @@ public class MainActivity extends BaseActivity {
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
-                        .setState(Tutorial.State.TUTORIAL_VIEW_OVERVIEW)
+                        .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
                         .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
                         .enableDotAnimation(false)
+                        .setFocusType(Focus.MINIMUM)
+                        .build());
+
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_START_ADD_QUEST)
+                        .setTarget(findViewById(R.id.add_quest))
+                        .enableDotAnimation(true)
+                        .performClick(true)
                         .setFocusType(Focus.MINIMUM)
                         .build());
     }
@@ -127,7 +136,7 @@ public class MainActivity extends BaseActivity {
                         .setTarget(inboxButton)
                         .setFocusType(Focus.MINIMUM)
                         .enableDotAnimation(false)
-                        .setState(Tutorial.State.TUTORIAL_VIEW_INBOX)
+                        .setState(Tutorial.State.TUTORIAL_START_INBOX)
                         .build());
             }
         });

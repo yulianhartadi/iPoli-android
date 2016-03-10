@@ -128,7 +128,7 @@ public class App extends Application {
     private void addTodayScheduledQuests(List<Quest> initialQuests) {
         Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.getNow());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.afterMinutes(10));
+        Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
         initialQuests.add(welcomeQuest);
 
         Quest readQuest = new Quest("Read a book", DateUtils.getNow());

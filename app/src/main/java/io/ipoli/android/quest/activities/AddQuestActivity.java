@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.R;
+import io.ipoli.android.Tutorial;
+import io.ipoli.android.TutorialItem;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestParser;
@@ -48,6 +52,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
     @Inject
     Bus eventBus;
+
+    @Bind(R.id.add_quest_container)
+    LinearLayout rootContainer;
 
     @Bind(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
@@ -80,11 +87,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_quest);
-
         ButterKnife.bind(this);
         appComponent().inject(this);
         setFinishOnTouchOutside(false);
-
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
@@ -96,6 +101,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         questText.addTextChangedListener(this);
         questText.requestFocus();
         resetUI();
+
+
+
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_ADD_QUEST)
+                        .setTarget(getWindow().getDecorView())
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .dismissOnTouch(true)
+                        .build());
+
     }
 
     private List<String> createQuestNameAutoCompletes() {

@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
+        android:id="@+id/quest_text_layout"
         app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
         <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView

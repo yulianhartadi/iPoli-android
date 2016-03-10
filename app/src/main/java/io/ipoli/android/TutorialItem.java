@@ -15,6 +15,7 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
 public class TutorialItem {
     private Tutorial.State state;
     private MaterialIntroView.Builder mivBuilder;
+    private View target;
 
     public Tutorial.State getState() {
         return state;
@@ -22,6 +23,10 @@ public class TutorialItem {
 
     public MaterialIntroView.Builder getMivBuilder() {
         return mivBuilder;
+    }
+
+    public View getTarget() {
+        return target;
     }
 
     public static class Builder {
@@ -50,6 +55,7 @@ public class TutorialItem {
 
         public TutorialItem.Builder setTarget(View view) {
             mivBuilder.setTarget(view);
+            tutorialItem.target = view;
             return this;
         }
 
@@ -87,6 +93,11 @@ public class TutorialItem {
 
         public TutorialItem.Builder performClick(boolean isPerformClick) {
             mivBuilder.performClick(isPerformClick);
+            return this;
+        }
+
+        public TutorialItem.Builder setDelayMillis(int delayMillis) {
+            mivBuilder.setDelayMillis(delayMillis);
             return this;
         }
 

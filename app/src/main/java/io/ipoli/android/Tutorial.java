@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
+import android.view.View;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import co.mobiwise.materialintro.MaterialIntroConfiguration;
 import co.mobiwise.materialintro.animation.MaterialIntroListener;
-import co.mobiwise.materialintro.shape.Focus;
-import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 
 /**
@@ -29,7 +28,7 @@ public class Tutorial {
 
     public static Tutorial getInstance(Context context) {
         Tutorial.context = context;
-        if(instance == null) {
+        if (instance == null) {
             instance = new Tutorial(context);
         }
 
@@ -39,32 +38,33 @@ public class Tutorial {
     private Tutorial(Context context) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastCompletedStep = prefs.getInt(KEY_TUTORIAL_COMPLETED_STEP, 0);
-        initConfig();
     }
 
     public enum State {
-//        TUTORIAL_START,
-        TUTORIAL_DRAG_CALENDAR_QUEST(R.string.invite_welcome_text),
-//        TUTORIAL_COMPLETE_CALENDAR_QUEST,
-//        TUTORIAL_SCHEDULE_CALENDAR_UNSCHEDULED_QUEST,
-        TUTORIAL_VIEW_OVERVIEW(R.string.invite_welcome_text),
-        //TUTORIAL_SWIPE_OVERVIEW_LEFT, TUTORIAL_SWIPE_OVERVIEW_RIGHT,
-        //TUTORIAL_ADD_QUEST,
-        //...
-        TUTORIAL_VIEW_INBOX(R.string.invite_welcome_text);
-        //...
-        //NORMAL
+        TUTORIAL_WELCOME(R.string.tutorial_welcome, 0),
+        TUTORIAL_CALENDAR_DRAG_QUEST(R.string.tutorial_calendar_quest, 0),
+        TUTORIAL_CALENDAR_COMPLETE_QUEST(R.string.tutorial_calendar_complete_quest, 0),
+        TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS(R.string.tutorial_calendar_unscheduled_quests, 4000),
+        TUTORIAL_START_OVERVIEW(R.string.tutorial_start_overview, 3000),
+        TUTORIAL_OVERVIEW_SWIPE(R.string.tutorial_overview_swipe, 0),
+        TUTORIAL_START_ADD_QUEST(R.string.tutorial_start_add_quest, 3000),
+        TUTORIAL_ADD_QUEST(R.string.tutorial_add_quest, 0),
+        TUTORIAL_START_INBOX(R.string.tutorial_start_inbox, 0),
+        TUTORIAL_INBOX_SWIPE(R.string.tutorial_inbox_swipe, 0);
 
         @StringRes
         private int textRes;
 
-        State(int textRes) {
+        private int delayMillis;
+
+        State(int textRes, int delayMillis) {
             this.textRes = textRes;
+            this.delayMillis = delayMillis;
         }
 
         private int getStep() {
-            for(int i=0; i< values().length; i++) {
-                if(this == values()[i]) {
+            for (int i = 0; i < values().length; i++) {
+                if (this == values()[i]) {
                     return i + 1;
                 }
             }
@@ -73,33 +73,21 @@ public class Tutorial {
 
     }
 
-    private Map<State, TutorialItem> stateToTutorialItem= new HashMap<>();
-
-
-    private void initConfig() {
-        config = new MaterialIntroConfiguration();
-        config.setDelayMillis(1000);
-        config.setFadeAnimationEnabled(true);
-        config.setDotViewEnabled(true);
-        config.setFocusGravity(FocusGravity.CENTER);
-        config.setFocusType(Focus.MINIMUM);
-        config.setDelayMillis(500);
-        config.setFadeAnimationEnabled(true);
-    }
+    private Map<State, TutorialItem> stateToTutorialItem = new HashMap<>();
 
     public void addItem(TutorialItem item) {
-        if(item.getState().getStep() < lastCompletedStep) {
+        if (item.getState().getStep() < lastCompletedStep) {
             return;
         }
         stateToTutorialItem.put(item.getState(), item);
-        if(!isTutorialVisible) {
+        if (!isTutorialVisible) {
             show();
         }
     }
 
     private State getNextState() {
-        for(State s : stateToTutorialItem.keySet()) {
-            if(s.getStep() == lastCompletedStep + 1) {
+        for (State s : stateToTutorialItem.keySet()) {
+            if (s.getStep() == lastCompletedStep + 1) {
                 return s;
             }
         }
@@ -109,7 +97,11 @@ public class Tutorial {
 
     public void show() {
         State s = getNextState();
-        if(s == null) {
+        if (s == null) {
+            return;
+        }
+
+        if(stateToTutorialItem.get(s).getTarget().getVisibility() != View.VISIBLE) {
             return;
         }
         build(stateToTutorialItem.remove(s)).show();
@@ -120,6 +112,7 @@ public class Tutorial {
         return item.getMivBuilder()
                 .setInfoText(context.getResources().getString(item.getState().textRes))
                 .setUsageId(item.getState().name()) //THIS SHOULD BE UNIQUE ID
+                .setDelayMillis(item.getState().delayMillis)
                 .setListener(new MaterialIntroListener() {
                     @Override
                     public void onUserClicked(String s) {

@@ -139,14 +139,44 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         super.onResume();
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
+
+
         Tutorial.getInstance(getContext()).addItem(
                 new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_DRAG_CALENDAR_QUEST)
-                .setTarget(calendarDayView)
-                .setFocusType(Focus.ALL)
-                .performClick(false)
-                .setTargetPadding(-200)
-                .build());
+                        .setState(Tutorial.State.TUTORIAL_WELCOME)
+                        .setTarget(calendarDayView)
+                        .setFocusType(Focus.ALL)
+                        .performClick(false)
+                        .dismissOnTouch(true)
+                        .enableDotAnimation(false)
+                        .setTargetPadding(-120)
+                        .build());
+
+        Tutorial.getInstance(getContext()).addItem(
+                new TutorialItem.Builder(getActivity())
+                        .setState(Tutorial.State.TUTORIAL_CALENDAR_DRAG_QUEST)
+                        .setTarget(calendarDayView)
+                        .setFocusType(Focus.ALL)
+                        .performClick(false)
+                        .setTargetPadding(-120)
+                        .build());
+        //TODO what if null
+        Tutorial.getInstance(getContext()).addItem(
+                new TutorialItem.Builder(getActivity())
+                        .setState(Tutorial.State.TUTORIAL_CALENDAR_COMPLETE_QUEST)
+                        .setTarget(calendarDayView.getView("iPoli").findViewById(R.id.quest_check))
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .build());
+
+        Tutorial.getInstance(getContext()).addItem(
+                new TutorialItem.Builder(getActivity())
+                        .setState(Tutorial.State.TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS)
+                        .setTarget(unscheduledQuestList)
+                        .setFocusType(Focus.NORMAL)
+                        .enableDotAnimation(false)
+                        .dismissOnTouch(true)
+                        .build());
     }
 
     private void updateSchedule() {

@@ -22,7 +22,10 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.R;
+import io.ipoli.android.Tutorial;
+import io.ipoli.android.TutorialItem;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -79,6 +82,14 @@ public class OverviewFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isResumed() && isVisibleToUser) {
             updateQuests();
+            Tutorial.getInstance(getContext()).addItem(
+                    new TutorialItem.Builder(getActivity())
+                            .setState(Tutorial.State.TUTORIAL_OVERVIEW_SWIPE)
+                            .setTarget(questList)
+                            .setFocusType(Focus.MINIMUM)
+                            .enableDotAnimation(false)
+                            .dismissOnTouch(true)
+                            .build());
         }
     }
 
