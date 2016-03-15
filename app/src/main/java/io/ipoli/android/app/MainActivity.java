@@ -32,9 +32,12 @@ import butterknife.OnClick;
 import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.Tutorial;
-import io.ipoli.android.TutorialItem;
+import io.ipoli.android.app.events.ContactUsClickEvent;
+import io.ipoli.android.app.events.FeedbackClickEvent;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.ui.MainViewPager;
+import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -65,6 +68,7 @@ public class MainActivity extends BaseActivity {
     MainViewPager viewPager;
 
     private View inboxButton;
+    private View feedbackView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,11 +142,20 @@ public class MainActivity extends BaseActivity {
             @Override
             public void run() {
                 inboxButton = findViewById(R.id.action_inbox);
+                feedbackView = findViewById(R.id.action_feedback);
                 Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
                         .setTarget(inboxButton)
                         .setFocusType(Focus.MINIMUM)
                         .enableDotAnimation(false)
                         .setState(Tutorial.State.TUTORIAL_START_INBOX)
+                        .build());
+                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+                        .setTarget(feedbackView)
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .performClick(false)
+                        .dismissOnTouch(true)
+                        .setState(Tutorial.State.TUTORIAL_VIEW_FEEDBACK)
                         .build());
             }
         });
@@ -155,6 +168,14 @@ public class MainActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.action_inbox:
                 startInboxActivity();
+                break;
+            case R.id.action_feedback:
+                eventBus.post(new FeedbackClickEvent());
+                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                break;
+            case R.id.action_contact_us:
+                eventBus.post(new ContactUsClickEvent());
+                EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
                 break;
         }
         return super.onOptionsItemSelected(item);

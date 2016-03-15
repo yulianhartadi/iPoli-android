@@ -53,6 +53,8 @@
     <string name="dialog_remove_quest_title">Remove quest</string>
     <string name="dialog_remove_quest_message">Sure you want to remove this awesome quest?</string>
     <string name="inbox">Inbox</string>
+    <string name="feedback">Feedback</string>
+    <string name="contact_us">Contact us</string>
     <string name="today_date_format">\'Today - \'EEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
@@ -70,8 +72,15 @@
     <string name="tutorial_start_add_quest">It\'s time to add your first quest</string>
     <string name="tutorial_add_quest">Write your quest in everyday language. Buttons will help you.</string>
     <string name="tutorial_start_inbox">Manage your unscheduled quests from the inbox</string>
-    <string name="tutorial_inbox_swipe">Swipe quest left to schedule it for today or swite it right to delete it</string>
+    <string name="tutorial_inbox_swipe">Swipe quest left to schedule it for today or swipe it right to delete it</string>
+    <string name="tutorial_view_feedback">Help us improve iPoli by sharing your precious opinion with us. Let the focus begin!</string>
+
     <string name="add_quest_today">today</string>
+
+    <string name="feedback_email_subject">How iPoli can be improved</string>
+    <string name="contact_us_email_subject">Hi</string>
+    <string name="feedback_email_chooser_title">How to make iPoli better</string>
+    <string name="contact_us_email_chooser_title">Contact us</string>
 
 
     <string-array name="due_date_auto_completes">

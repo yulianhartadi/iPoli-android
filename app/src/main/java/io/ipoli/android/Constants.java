@@ -5,6 +5,7 @@ package io.ipoli.android;
  * on 6/15/15.
  */
 public interface Constants {
+
     String DEFAULT_PLAN_DAY_TIME = "9:00";
     String DEFAULT_REVIEW_DAY_TIME = "22:00";
 

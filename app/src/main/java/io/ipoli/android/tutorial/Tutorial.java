@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.tutorial;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,12 +6,19 @@ import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
 import android.view.View;
 
+import com.squareup.otto.Bus;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import co.mobiwise.materialintro.MaterialIntroConfiguration;
 import co.mobiwise.materialintro.animation.MaterialIntroListener;
 import co.mobiwise.materialintro.view.MaterialIntroView;
+import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.tutorial.events.ShowTutorialItemEvent;
 
 /**
  * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
@@ -19,6 +26,10 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
  */
 public class Tutorial {
     private static final String KEY_TUTORIAL_COMPLETED_STEP = "tutorial_completed_step";
+
+    @Inject
+    Bus eventBus;
+
     private static Context context;
     private final SharedPreferences prefs;
     private static Tutorial instance;
@@ -36,6 +47,7 @@ public class Tutorial {
     }
 
     private Tutorial(Context context) {
+        App.getAppComponent(context).inject(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         lastCompletedStep = prefs.getInt(KEY_TUTORIAL_COMPLETED_STEP, 0);
     }
@@ -50,7 +62,8 @@ public class Tutorial {
         TUTORIAL_START_ADD_QUEST(R.string.tutorial_start_add_quest, 2500),
         TUTORIAL_ADD_QUEST(R.string.tutorial_add_quest, 0),
         TUTORIAL_START_INBOX(R.string.tutorial_start_inbox, 0),
-        TUTORIAL_INBOX_SWIPE(R.string.tutorial_inbox_swipe, 0);
+        TUTORIAL_INBOX_SWIPE(R.string.tutorial_inbox_swipe, 0),
+        TUTORIAL_VIEW_FEEDBACK(R.string.tutorial_view_feedback, 0);
 
         @StringRes
         private int textRes;
@@ -111,6 +124,7 @@ public class Tutorial {
         if(item.getTarget().getVisibility() != View.VISIBLE) {
             return;
         }
+        eventBus.post(new ShowTutorialItemEvent(item.getState().name()));
         build(stateToTutorialItem.remove(s)).show();
         isTutorialVisible = true;
     }

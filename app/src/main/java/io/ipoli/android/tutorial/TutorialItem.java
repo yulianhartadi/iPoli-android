@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.tutorial;
 
 import android.app.Activity;
 import android.view.View;

@@ -9,6 +9,8 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.app.events.ContactUsClickEvent;
+import io.ipoli.android.app.events.FeedbackClickEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.Quest;
@@ -25,6 +27,7 @@ import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.tutorial.events.ShowTutorialItemEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -137,6 +140,23 @@ public class GoogleAnalyticsService implements AnalyticsService {
     public void onCompleteQuest(CompleteQuestEvent e) {
         track(createEventBuilder("quest", "complete")
                 .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    }
+
+
+    @Subscribe
+    public void onFeedbackClick(FeedbackClickEvent e) {
+        trackUIEvent("feedback", "click");
+    }
+
+    @Subscribe
+    public void onContactUsClick(ContactUsClickEvent e) {
+        trackUIEvent("contact-us", "click");
+    }
+
+    @Subscribe
+    public void onShowTutorialItem(ShowTutorialItemEvent e) {
+        track(createEventBuilder("tutorial", "show")
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.state));
     }
 
     private void track(HitBuilders.EventBuilder builder) {

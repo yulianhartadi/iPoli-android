@@ -2,7 +2,6 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +21,7 @@ import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.MainActivity;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
+import io.ipoli.android.app.utils.EmailUtils;
 
 public class InviteOnlyActivity extends BaseActivity {
 
@@ -74,10 +74,7 @@ public class InviteOnlyActivity extends BaseActivity {
     @OnClick(R.id.invite_button)
     public void onInviteClick(Button button) {
         eventBus.post(new PlayerRequestedInviteEvent());
-        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "hi@ipoli.io", null));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "iPoli invitation request");
-        startActivity(Intent.createChooser(emailIntent, "Request your invite"));
+        EmailUtils.send(this, "iPoli invitation request", "Request your invite");
     }
 
     @OnClick(R.id.invite_logo_image)
