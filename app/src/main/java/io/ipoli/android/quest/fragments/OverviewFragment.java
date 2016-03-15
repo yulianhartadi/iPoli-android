@@ -96,12 +96,16 @@ public class OverviewFragment extends Fragment {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        if (!DateUtils.isToday(e.quest.getDue())) {
-            q.setDue(new Date());
-            questPersistenceService.save(q);
+        Date due = new Date();
+        String toast = getString(R.string.quest_scheduled_for_today);
+        if (DateUtils.isToday(e.quest.getDue())) {
+            toast = getString(R.string.quest_scheduled_for_tomorrow);
+            due = DateUtils.getTomorrow();
         }
+        q.setDue(due);
+        questPersistenceService.save(q);
         updateQuests();
-        Toast.makeText(getContext(), R.string.quest_scheduled_for_today, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe
