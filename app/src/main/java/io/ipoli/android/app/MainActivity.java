@@ -49,6 +49,8 @@ import io.ipoli.android.quest.fragments.OverviewFragment;
  * on 2/16/16.
  */
 public class MainActivity extends BaseActivity {
+    private static final int CALENDAR_TAB_POSITION = 0;
+    private static final int OVERVIEW_TAB_POSITION = 1;
 
     @Inject
     Bus eventBus;
@@ -85,8 +87,8 @@ public class MainActivity extends BaseActivity {
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(this.viewPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
+        tabLayout.getTabAt(CALENDAR_TAB_POSITION).setIcon(R.drawable.ic_today_white_24dp);
+        tabLayout.getTabAt(OVERVIEW_TAB_POSITION).setIcon(R.drawable.ic_assignment_white_24dp);
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
                         .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
@@ -107,7 +109,11 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
-        startActivity(new Intent(this, AddQuestActivity.class));
+        Intent i = new Intent(this, AddQuestActivity.class);
+        if(tabLayout.getSelectedTabPosition() == CALENDAR_TAB_POSITION) {
+            i.putExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
+        }
+        startActivity(i);
         overridePendingTransition(R.anim.slide_up_interpolate, 0);
     }
 

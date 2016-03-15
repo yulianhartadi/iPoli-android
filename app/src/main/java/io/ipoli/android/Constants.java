@@ -38,6 +38,7 @@ public interface Constants {
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String POSITION_EXTRA_KEY = "quest_position";
+    String IS_TODAY_QUEST_EXTRA_KEY = "is_today_quest";
 
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
     int AVATAR_COUNT = 12;

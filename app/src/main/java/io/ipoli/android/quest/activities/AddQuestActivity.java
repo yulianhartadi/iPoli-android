@@ -39,6 +39,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import co.mobiwise.materialintro.shape.Focus;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.Tutorial;
 import io.ipoli.android.TutorialItem;
@@ -102,7 +103,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
     private QuestContext questContext;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +124,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
         questText.requestFocus();
+        if(getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
+            questText.setText(" " + getString(R.string.add_quest_today));
+        }
         resetUI();
 
         initContextUI();

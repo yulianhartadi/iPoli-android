@@ -70,6 +70,7 @@
     <string name="tutorial_add_quest">Write your quest in everyday language. Buttons will help you.</string>
     <string name="tutorial_start_inbox">Manage your unscheduled quests from the inbox</string>
     <string name="tutorial_inbox_swipe">Swipe quest left to schedule it for today or swite it right to delete it</string>
+    <string name="add_quest_today">today</string>
 
     <string-array name="due_date_auto_completes">
         <item>today</item>
