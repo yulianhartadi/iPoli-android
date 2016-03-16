@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.squareup.otto.Bus;
@@ -60,6 +61,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if(Build.VERSION.SDK_INT < 21) {
+            return;
+        }
         getAppComponent(this).inject(this);
         resetDueDateForIncompleteQuests();
         registerServices();
@@ -75,6 +79,7 @@ public class App extends Application {
         SharedPreferences.Editor e = prefs.edit();
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
+
     }
 
     private void saveInitialQuests() {
@@ -123,7 +128,7 @@ public class App extends Application {
     private void addTodayScheduledQuests(List<Quest> initialQuests) {
         Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.getNow());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.afterMinutes(10));
+        Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
         initialQuests.add(welcomeQuest);
 
         Quest readQuest = new Quest("Read a book", DateUtils.getNow());

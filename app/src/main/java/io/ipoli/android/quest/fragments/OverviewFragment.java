@@ -22,7 +22,10 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.R;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -79,18 +82,30 @@ public class OverviewFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isResumed() && isVisibleToUser) {
             updateQuests();
+            Tutorial.getInstance(getContext()).addItem(
+                    new TutorialItem.Builder(getActivity())
+                            .setState(Tutorial.State.TUTORIAL_OVERVIEW_SWIPE)
+                            .setTarget(questList)
+                            .setFocusType(Focus.MINIMUM)
+                            .enableDotAnimation(false)
+                            .dismissOnTouch(true)
+                            .build());
         }
     }
 
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        if (!DateUtils.isToday(e.quest.getDue())) {
-            q.setDue(new Date());
-            questPersistenceService.save(q);
+        Date due = new Date();
+        String toast = getString(R.string.quest_scheduled_for_today);
+        if (DateUtils.isToday(e.quest.getDue())) {
+            toast = getString(R.string.quest_scheduled_for_tomorrow);
+            due = DateUtils.getTomorrow();
         }
+        q.setDue(due);
+        questPersistenceService.save(q);
         updateQuests();
-        Toast.makeText(getContext(), R.string.quest_scheduled_for_today, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe

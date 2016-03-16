@@ -2,6 +2,7 @@ package io.ipoli.android.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -27,9 +29,15 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.ContactUsClickEvent;
+import io.ipoli.android.app.events.FeedbackClickEvent;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.ui.MainViewPager;
+import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -44,6 +52,8 @@ import io.ipoli.android.quest.fragments.OverviewFragment;
  * on 2/16/16.
  */
 public class MainActivity extends BaseActivity {
+    private static final int CALENDAR_TAB_POSITION = 0;
+    private static final int OVERVIEW_TAB_POSITION = 1;
 
     @Inject
     Bus eventBus;
@@ -56,6 +66,9 @@ public class MainActivity extends BaseActivity {
 
     @Bind(R.id.viewpager)
     MainViewPager viewPager;
+
+    private View inboxButton;
+    private View feedbackView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,13 +91,33 @@ public class MainActivity extends BaseActivity {
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(this.viewPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_today_white_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_assignment_white_24dp);
+        tabLayout.getTabAt(CALENDAR_TAB_POSITION).setIcon(R.drawable.ic_today_white_24dp);
+        tabLayout.getTabAt(OVERVIEW_TAB_POSITION).setIcon(R.drawable.ic_assignment_white_24dp);
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
+                        .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
+                        .enableDotAnimation(false)
+                        .setFocusType(Focus.MINIMUM)
+                        .build());
+
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_START_ADD_QUEST)
+                        .setTarget(findViewById(R.id.add_quest))
+                        .enableDotAnimation(true)
+                        .performClick(true)
+                        .setFocusType(Focus.MINIMUM)
+                        .build());
     }
 
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
-        startActivity(new Intent(this, AddQuestActivity.class));
+        Intent i = new Intent(this, AddQuestActivity.class);
+        if(tabLayout.getSelectedTabPosition() == CALENDAR_TAB_POSITION) {
+            i.putExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
+        }
+        startActivity(i);
         overridePendingTransition(R.anim.slide_up_interpolate, 0);
     }
 
@@ -105,14 +138,44 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                inboxButton = findViewById(R.id.action_inbox);
+                feedbackView = findViewById(R.id.action_feedback);
+                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+                        .setTarget(inboxButton)
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .setState(Tutorial.State.TUTORIAL_START_INBOX)
+                        .build());
+                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+                        .setTarget(feedbackView)
+                        .setFocusType(Focus.MINIMUM)
+                        .enableDotAnimation(false)
+                        .performClick(false)
+                        .dismissOnTouch(true)
+                        .setState(Tutorial.State.TUTORIAL_VIEW_FEEDBACK)
+                        .build());
+            }
+        });
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_plan_day:
+            case R.id.action_inbox:
                 startInboxActivity();
+                break;
+            case R.id.action_feedback:
+                eventBus.post(new FeedbackClickEvent());
+                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                break;
+            case R.id.action_contact_us:
+                eventBus.post(new ContactUsClickEvent());
+                EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -122,7 +185,6 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        Intent i = getIntent();
     }
 
     private void startInboxActivity() {

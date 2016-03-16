@@ -36,12 +36,27 @@ public class Time {
         return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
 
+    public static Time ago(int hours, int minutes) {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.HOUR_OF_DAY, - hours);
+        c.add(Calendar.MINUTE, - minutes);
+        return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    }
+
     public static Time afterHours(int hours) {
         return after(hours, 0);
     }
 
     public static Time afterMinutes(int minutes) {
         return after(0, minutes);
+    }
+
+    public static Time hoursAgo(int hours) {
+        return ago(hours, 0);
+    }
+
+    public static Time minutesAgo(int minutes) {
+        return ago(0, minutes);
     }
 
     private static int parseHours(String time) {

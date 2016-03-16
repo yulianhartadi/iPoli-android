@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.ipoli.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -61,7 +62,6 @@
             android:label="@string/title_activity_add_quest"
             android:parentActivityName=".app.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

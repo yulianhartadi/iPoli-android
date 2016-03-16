@@ -16,7 +16,7 @@
         android:layout_above="@+id/invite_title"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/logo" />
 
     <TextView
         android:id="@id/invite_title"

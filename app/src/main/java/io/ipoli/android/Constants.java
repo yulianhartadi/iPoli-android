@@ -5,6 +5,7 @@ package io.ipoli.android;
  * on 6/15/15.
  */
 public interface Constants {
+
     String DEFAULT_PLAN_DAY_TIME = "9:00";
     String DEFAULT_REVIEW_DAY_TIME = "22:00";
 
@@ -38,6 +39,7 @@ public interface Constants {
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String POSITION_EXTRA_KEY = "quest_position";
+    String IS_TODAY_QUEST_EXTRA_KEY = "is_today_quest";
 
     int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
     int AVATAR_COUNT = 12;

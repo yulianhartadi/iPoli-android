@@ -27,6 +27,7 @@ import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.tutorial.Tutorial;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -85,5 +86,7 @@ public interface AppComponent {
     void inject(OverviewFragment overviewFragment);
 
     void inject(AddQuestActivity addQuestActivity);
+
+    void inject(Tutorial tutorial);
 }
 

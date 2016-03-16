@@ -26,8 +26,11 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -66,7 +69,7 @@ public class InboxActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_plan_day);
+        setContentView(R.layout.activity_inbox);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -92,6 +95,16 @@ public class InboxActivity extends BaseActivity {
         touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
+
+        Tutorial.getInstance(this).addItem(
+                new TutorialItem.Builder(this)
+                        .setState(Tutorial.State.TUTORIAL_INBOX_SWIPE)
+                        .setTarget(questList)
+                        .setFocusType(Focus.ALL)
+                        .setTargetPadding(-30)
+                        .enableDotAnimation(false)
+                        .dismissOnTouch(true)
+                        .build());
     }
 
     private List<Quest> getAllUnplanned() {
