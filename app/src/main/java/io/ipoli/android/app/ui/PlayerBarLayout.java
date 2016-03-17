@@ -29,7 +29,9 @@ import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
 import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.PlayerLevelDownEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
+import io.ipoli.android.player.events.PlayerXPDecreasedEvent;
 import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
@@ -156,7 +158,19 @@ public class PlayerBarLayout extends AppBarLayout {
     }
 
     @Subscribe
+    public void onPlayerLevelDown(PlayerLevelDownEvent e) {
+        experienceBar.setMax(e.maxXPForLevel);
+        experienceBar.setProgress(e.newLevelXP);
+        playerLevel.setText(getContext().getString(R.string.player_level, e.newLevel));
+    }
+
+    @Subscribe
     public void onPlayerXPIncreased(PlayerXPIncreasedEvent e) {
+        animateExperienceProgress(e.currentXP, e.newXP, 0);
+    }
+
+    @Subscribe
+    public void onPlayerXPDecreased(PlayerXPDecreasedEvent e) {
         animateExperienceProgress(e.currentXP, e.newXP, 0);
     }
 

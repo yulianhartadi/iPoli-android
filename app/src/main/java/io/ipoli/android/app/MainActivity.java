@@ -34,18 +34,23 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.ContactUsClickEvent;
 import io.ipoli.android.app.events.FeedbackClickEvent;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.ui.MainViewPager;
 import io.ipoli.android.app.utils.EmailUtils;
+import io.ipoli.android.quest.Difficulty;
+import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,6 +62,9 @@ public class MainActivity extends BaseActivity {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -133,6 +141,18 @@ public class MainActivity extends BaseActivity {
         Intent i = new Intent(this, QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
+        Quest quest = e.quest;
+        quest.setLog("");
+        quest.setDifficulty(Difficulty.UNKNOWN.name());
+        quest.setActualStartDateTime(null);
+        quest.setMeasuredDuration(0);
+        quest.setCompletedAtDateTime(null);
+        quest = questPersistenceService.save(quest);
+        eventBus.post(new UndoCompletedQuestEvent(quest));
     }
 
     @Override

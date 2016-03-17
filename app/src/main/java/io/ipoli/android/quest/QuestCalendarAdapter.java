@@ -22,6 +22,7 @@ import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
@@ -58,39 +59,22 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         TextView name = (TextView) v.findViewById(R.id.quest_text);
         name.setText(q.getName());
 
-        CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
-        View checkDone = v.findViewById(R.id.quest_check_done);
+        final CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
+        final View checkDone = v.findViewById(R.id.quest_check_done);
 
         if (Quest.isCompleted(q)) {
             check.setVisibility(View.GONE);
             checkDone.setVisibility(View.VISIBLE);
             checkDone.setBackgroundResource(ctx.resLightColor);
+            checkDone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View _) {
+                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
+                    enableCompleteQuest(q, v, check, checkDone);
+                }
+            });
         } else {
-            check.setVisibility(View.VISIBLE);
-            checkDone.setVisibility(View.GONE);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    eventBus.post(new ShowQuestEvent(q));
-                }
-            });
-
-            v.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    eventBus.post(new EditCalendarEventEvent(view));
-                    return true;
-                }
-            });
-
-            check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                    if (checked) {
-                        eventBus.post(new CompleteQuestRequestEvent(q));
-                    }
-                }
-            });
+            enableCompleteQuest(q, v, check, checkDone);
         }
 
         if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
@@ -100,6 +84,34 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         }
 
         return v;
+    }
+
+    private void enableCompleteQuest(final Quest q, View v, CheckBox check, View checkDone) {
+        check.setVisibility(View.VISIBLE);
+        checkDone.setVisibility(View.GONE);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventBus.post(new ShowQuestEvent(q));
+            }
+        });
+
+        v.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                eventBus.post(new EditCalendarEventEvent(view));
+                return true;
+            }
+        });
+
+        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked) {
+                    eventBus.post(new CompleteQuestRequestEvent(q));
+                }
+            }
+        });
     }
 
     private void adjustQuestDetailsView(View v) {

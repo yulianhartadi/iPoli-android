@@ -6,7 +6,10 @@ import com.squareup.otto.Subscribe;
 import java.util.Random;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.player.events.PlayerLevelDownEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
+import io.ipoli.android.player.events.PlayerXPDecreasedEvent;
 import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.Difficulty;
@@ -45,6 +48,27 @@ public class SimplePlayerService implements PlayerService {
         } else {
             updatePlayerXP(player, newXP);
             eventBus.post(new PlayerXPIncreasedEvent(currentXP, newXP, earnedXP));
+        }
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
+        Player player = playerPersistenceService.find();
+        int currentXP = player.getExperience();
+        int earnedXP = getExperienceForQuest(e.quest);
+        int newXP = currentXP - earnedXP;
+
+        if (newXP < 0) {
+            int newLevel = Math.max(0, player.getLevel() - 1);
+            player.setLevel(newLevel);
+            int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(newLevel);
+            // Every level starts from 0 experience (or the leftover from the previous one)
+            newXP = maxXPForCurrentLevel - Math.abs(newXP);
+            updatePlayerXP(player, newXP);
+            eventBus.post(new PlayerLevelDownEvent(newLevel, newXP, maxXPForCurrentLevel, earnedXP));
+        } else {
+            updatePlayerXP(player, newXP);
+            eventBus.post(new PlayerXPDecreasedEvent(currentXP, newXP, earnedXP));
         }
     }
 
