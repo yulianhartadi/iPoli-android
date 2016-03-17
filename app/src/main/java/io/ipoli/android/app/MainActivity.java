@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -122,7 +123,7 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
         Intent i = new Intent(this, AddQuestActivity.class);
-        if(tabLayout.getSelectedTabPosition() == CALENDAR_TAB_POSITION) {
+        if (tabLayout.getSelectedTabPosition() == CALENDAR_TAB_POSITION) {
             i.putExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
         }
         startActivity(i);
@@ -153,6 +154,7 @@ public class MainActivity extends BaseActivity {
         quest.setCompletedAtDateTime(null);
         quest = questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
+        Toast.makeText(this, "Quest undone", Toast.LENGTH_SHORT).show();
     }
 
     @Override

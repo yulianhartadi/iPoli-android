@@ -1,6 +1,11 @@
 package io.ipoli.android.quest;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +19,7 @@ import com.squareup.otto.Bus;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import io.ipoli.android.Constants;
@@ -31,6 +37,15 @@ import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
  * on 2/17/16.
  */
 public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent> {
+
+    private static final HashMap<QuestContext, Integer> QUEST_CONTEXT_TO_CHECKBOX_STYLE = new HashMap<QuestContext, Integer>() {{
+        put(QuestContext.LEARNING, R.style.LearningCheckbox);
+        put(QuestContext.WELLNESS, R.style.WellnessCheckbox);
+        put(QuestContext.PERSONAL, R.style.PersonalCheckbox);
+        put(QuestContext.WORK, R.style.WorkCheckbox);
+        put(QuestContext.FUN, R.style.FunCheckbox);
+        put(QuestContext.CHORES, R.style.ChoresCheckbox);
+    }};
 
     private List<QuestCalendarEvent> questCalendarEvents;
     private final Bus eventBus;
@@ -59,20 +74,10 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         TextView name = (TextView) v.findViewById(R.id.quest_text);
         name.setText(q.getName());
 
-        final CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
+        ViewGroup detailsRoot = (ViewGroup) v.findViewById(R.id.quest_details_container);
 
-        enableCompleteQuest(q, v, check);
-
-        if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
-            adjustQuestDetailsView(v);
-            name.setSingleLine(true);
-            name.setEllipsize(TextUtils.TruncateAt.END);
-        }
-
-        return v;
-    }
-
-    private void enableCompleteQuest(final Quest q, View v, CheckBox check) {
+        CheckBox checkBox = createCheckBox(q, v.getContext());
+        detailsRoot.addView(checkBox, 0);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,7 +93,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
             }
         });
 
-        check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        if (Quest.isCompleted(q)) {
+            checkBox.setChecked(true);
+        }
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
@@ -98,6 +107,34 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
                 }
             }
         });
+
+        if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+            adjustQuestDetailsView(v);
+            name.setSingleLine(true);
+            name.setEllipsize(TextUtils.TruncateAt.END);
+        }
+
+        return v;
+    }
+
+    @NonNull
+    private CheckBox createCheckBox(Quest q, Context context) {
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CONTEXT_TO_CHECKBOX_STYLE.get(Quest.getContext(q))));
+        LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        int marginEndDP = 16;
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                marginEndDP,
+                context.getResources().getDisplayMetrics()
+        );
+        check.setScaleX(1.3f);
+        check.setScaleY(1.3f);
+
+        checkLP.setMarginEnd(px);
+        checkLP.gravity = Gravity.CENTER_VERTICAL;
+        check.setLayoutParams(checkLP);
+        return check;
     }
 
     private void adjustQuestDetailsView(View v) {

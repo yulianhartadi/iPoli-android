@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.App;
@@ -220,6 +221,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         Quest q = qce.getQuest();
         q.setStartTime(qce.getStartTime());
         questPersistenceService.save(q);
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
+        updateSchedule();
     }
 
     @Subscribe
