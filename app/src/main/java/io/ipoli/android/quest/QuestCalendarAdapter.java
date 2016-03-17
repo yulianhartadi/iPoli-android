@@ -60,22 +60,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         name.setText(q.getName());
 
         final CheckBox check = (CheckBox) v.findViewById(R.id.quest_check);
-        final View checkDone = v.findViewById(R.id.quest_check_done);
 
-        if (Quest.isCompleted(q)) {
-            check.setVisibility(View.GONE);
-            checkDone.setVisibility(View.VISIBLE);
-            checkDone.setBackgroundResource(ctx.resLightColor);
-            checkDone.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View _) {
-                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
-                    enableCompleteQuest(q, v, check, checkDone);
-                }
-            });
-        } else {
-            enableCompleteQuest(q, v, check, checkDone);
-        }
+        enableCompleteQuest(q, v, check);
 
         if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);
@@ -86,9 +72,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         return v;
     }
 
-    private void enableCompleteQuest(final Quest q, View v, CheckBox check, View checkDone) {
-        check.setVisibility(View.VISIBLE);
-        checkDone.setVisibility(View.GONE);
+    private void enableCompleteQuest(final Quest q, View v, CheckBox check) {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,6 +93,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked) {
                     eventBus.post(new CompleteQuestRequestEvent(q));
+                } else {
+                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
                 }
             }
         });
