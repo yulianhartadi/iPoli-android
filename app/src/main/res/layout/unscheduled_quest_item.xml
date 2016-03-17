@@ -20,7 +20,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="72dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/quest_name_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,20 +31,37 @@
                 android:id="@+id/quest_context_indicator"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:layout_gravity="center_vertical"
+                android:layout_centerVertical="true"
                 android:background="@drawable/ic_context_indicator" />
 
             <TextView
                 android:id="@+id/quest_text"
+                android:layout_toEndOf="@+id/quest_context_indicator"
                 style="@style/TextAppearance.AppCompat.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textSize="16sp" />
-        </LinearLayout>
+
+            <ImageView
+                android:layout_alignParentEnd="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_alarm_black_18dp"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/md_grey_300"
+                />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
