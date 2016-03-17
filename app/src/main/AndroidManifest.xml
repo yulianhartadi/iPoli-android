@@ -85,11 +85,25 @@
             android:label="@string/title_activity_edit_quest"
             android:screenOrientation="portrait" />
 
-        <service android:name=".app.services.ReminderIntentService" />
-
         <receiver android:name=".app.receivers.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".app.receivers.PlanDayReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.REMIND_PLAN_DAY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".app.receivers.ReviewDayReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.REMIND_REVIEW_DAY" />
             </intent-filter>
         </receiver>
 
@@ -122,6 +136,14 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="io.ipoli.android.intent.action.SHOW_QUEST_TIMER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".quest.receivers.RemindStartQuestReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.REMIND_START_QUEST" />
             </intent-filter>
         </receiver>
 

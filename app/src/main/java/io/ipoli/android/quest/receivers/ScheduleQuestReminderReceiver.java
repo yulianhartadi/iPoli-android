@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.services.ReminderIntentService;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -46,18 +46,14 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
     }
 
     private void scheduleNextReminder(Context context, AlarmManager alarm, Quest q) {
-        Intent i = new Intent(context, ReminderIntentService.class);
-        i.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
+        Intent i = new Intent(context, RemindStartQuestReceiver.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
-        PendingIntent pendingIntent = PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
-                i, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
         alarm.setExact(AlarmManager.RTC_WAKEUP, Quest.getStartDateTime(q).getTime(), pendingIntent);
     }
 
     public PendingIntent getCancelPendingIntent(Context context) {
-        Intent i = new Intent(context, ReminderIntentService.class);
-        i.setAction(ReminderIntentService.ACTION_REMIND_START_QUEST);
-        return PendingIntent.getService(context, Constants.REMIND_QUEST_START_REQUEST_CODE,
-                i, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent i = new Intent(context, RemindStartQuestReceiver.class);
+        return IntentUtils.getBroadcastPendingIntent(context, i);
     }
 }
