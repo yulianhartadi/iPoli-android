@@ -278,10 +278,12 @@ public class CalendarDayView extends FrameLayout {
 
     DragStrategy getEditViewDragStrategy(final View dragView) {
         return new DragStrategy() {
+            public boolean hasDropped;
             public int initialTouchHeight;
 
             @Override
             public void onDragStarted(DragEvent event) {
+                hasDropped = false;
                 adapter.onDragStarted(dragView);
             }
 
@@ -300,6 +302,7 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragDropped(DragEvent event) {
+                hasDropped = true;
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
                 int h = getHoursFor(ViewUtils.getViewRawTop(dragView));
                 int m = getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
@@ -314,14 +317,44 @@ public class CalendarDayView extends FrameLayout {
                 adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
                 adapter.onDragEnded(dragView);
             }
+
+            @Override
+            public void onDragExited(DragEvent event) {
+                float midY = getY() + (getHeight() / 2);
+                if (event.getY() < midY) {
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
+                    layoutParams.topMargin = Math.max(0, layoutParams.topMargin - getHeightFor(60));
+                    dragView.setLayoutParams(layoutParams);
+                    scrollView.smoothScrollBy(0, -getHeightFor(60));
+                } else {
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
+                    layoutParams.topMargin = Math.min(scrollView.getChildAt(0).getHeight() - dragView.getHeight(), layoutParams.topMargin + getHeightFor(60));
+                    dragView.setLayoutParams(layoutParams);
+                    scrollView.smoothScrollBy(0, getHeightFor(60));
+                }
+            }
+
+            @Override
+            public void onDragEnded() {
+                if (!hasDropped) {
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
+                    CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
+                    Date startTime = calendarEvent.getStartTime();
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(startTime);
+                    layoutParams.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+                    dragView.setLayoutParams(layoutParams);
+                    adapter.onDragEnded(dragView);
+                }
+            }
         };
 
     }
 
     public View getView(String eventName) {
-        for(View v : eventViewToCalendarEvent.keySet()) {
+        for (View v : eventViewToCalendarEvent.keySet()) {
             CalendarEvent e = eventViewToCalendarEvent.get(v);
-            if(e.getName().contains(eventName)) {
+            if (e.getName().contains(eventName)) {
                 return v;
             }
         }

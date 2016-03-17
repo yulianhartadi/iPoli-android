@@ -3,6 +3,7 @@ package io.ipoli.android.app.ui.calendar;
 import android.content.ClipData;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -88,12 +89,16 @@ public class CalendarLayout extends RelativeLayout {
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {
+
+            private boolean hasDropped;
+
             public View dragView;
             private CalendarEvent calendarEvent;
             public int initialTouchHeight;
 
             @Override
             public void onDragStarted(DragEvent event) {
+                hasDropped = false;
                 int[] loc = new int[2];
                 CalendarLayout.this.getLocationOnScreen(loc);
                 initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
@@ -113,6 +118,7 @@ public class CalendarLayout extends RelativeLayout {
 
             @Override
             public void onDragDropped(DragEvent event) {
+                hasDropped = true;
                 CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
                 if (event.getY() <= calendarDayView.getTop() || event.getY() > calendarDayView.getBottom()) {
                     // return to list
@@ -132,6 +138,21 @@ public class CalendarLayout extends RelativeLayout {
                     }
                 }
                 removeView(dragView);
+            }
+
+            @Override
+            public void onDragExited(DragEvent event) {
+
+            }
+
+            @Override
+            public void onDragEnded() {
+                if (!hasDropped) {
+                    if (calendarListener != null) {
+                        calendarListener.onUnableToAcceptNewEvent(calendarEvent);
+                    }
+                    removeView(dragView);
+                }
             }
 
             private DragStrategy init(View dragView, CalendarEvent calendarEvent) {
@@ -189,6 +210,14 @@ public class CalendarLayout extends RelativeLayout {
 
                 case DragEvent.ACTION_DROP:
                     dragStrategy.onDragDropped(event);
+                    break;
+
+                case DragEvent.ACTION_DRAG_EXITED:
+                    dragStrategy.onDragExited(event);
+                    break;
+
+                case DragEvent.ACTION_DRAG_ENDED:
+                    dragStrategy.onDragEnded();
                     break;
 
                 default:
