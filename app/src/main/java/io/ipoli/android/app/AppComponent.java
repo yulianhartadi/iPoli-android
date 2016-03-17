@@ -10,7 +10,6 @@ import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerModule;
-import io.ipoli.android.app.services.ReminderIntentService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
@@ -21,6 +20,7 @@ import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
@@ -50,14 +50,11 @@ public interface AppComponent {
 
     void inject(InboxActivity inboxActivity);
 
-
     void inject(PlayerBarLayout playerBarLayout);
 
     void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
-
-    void inject(ReminderIntentService reminderIntentService);
 
     void inject(QuestCompleteActivity questCompleteActivity);
 
@@ -88,5 +85,7 @@ public interface AppComponent {
     void inject(AddQuestActivity addQuestActivity);
 
     void inject(Tutorial tutorial);
+
+    void inject(RemindStartQuestReceiver remindStartQuestReceiver);
 }
 

@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 
@@ -21,7 +22,7 @@ public class QuestNotificationScheduler {
 
     public static void scheduleUpdateTimer(String questId, Context context) {
         Intent intent = getQuestTimerIntent(questId, context);
-        PendingIntent pendingIntent = getQuestTimerPendingIntent(context, intent);
+        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, intent);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, TimeUnit.MINUTES.toMillis(1),
                 TimeUnit.MINUTES.toMillis(1), pendingIntent);
@@ -40,15 +41,9 @@ public class QuestNotificationScheduler {
         return intent;
     }
 
-    @NonNull
-    private static PendingIntent getQuestTimerPendingIntent(Context context, Intent intent) {
-        return PendingIntent.getBroadcast(context, Constants.QUEST_UPDATE_TIMER_REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
     private static void cancelUpdateTimerIntent(String questId, Context context) {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(getQuestTimerPendingIntent(context, getQuestTimerIntent(questId, context)));
+        alarm.cancel(IntentUtils.getBroadcastPendingIntent(context, getQuestTimerIntent(questId, context)));
     }
 
     private static void dismissTimerNotification(Context context) {
@@ -73,8 +68,7 @@ public class QuestNotificationScheduler {
     private static PendingIntent getShowDonePendingIntent(String questId, Context context) {
         Intent intent = new Intent(ShowDoneQuestNotificationReceiver.ACTION_SHOW_DONE_QUEST_NOTIFICATION);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        return PendingIntent.getBroadcast(context, Constants.QUEST_SHOW_DONE_REQUEST_CODE,
-                intent, 0);
+        return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
     public static void stopAll(String questId, Context context) {

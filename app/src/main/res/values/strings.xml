@@ -81,6 +81,8 @@
     <string name="contact_us_email_subject">Hi</string>
     <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
+    <string name="review_day_title">Day in review</string>
+    <string name="review_day_text">Ready to review your day?</string>
 
 
     <string-array name="due_date_auto_completes">
