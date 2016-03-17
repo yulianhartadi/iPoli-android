@@ -95,7 +95,7 @@ public class CalendarLayout extends RelativeLayout {
             @Override
             public void onDragStarted(DragEvent event) {
                 int[] loc = new int[2];
-                calendarDayView.getLocationOnScreen(loc);
+                CalendarLayout.this.getLocationOnScreen(loc);
                 initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
             }
 
