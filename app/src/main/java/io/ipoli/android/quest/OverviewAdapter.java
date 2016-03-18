@@ -16,6 +16,7 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -113,10 +114,10 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (viewType) {
 
             case HEADER_ITEM_VIEW_TYPE:
-                return new HeaderViewHolder(inflater.inflate(R.layout.quest_header_item, parent, false));
+                return new HeaderViewHolder(inflater.inflate(R.layout.overview_quest_header_item, parent, false));
 
             default:
-                return new QuestViewHolder(inflater.inflate(R.layout.quest_item, parent, false));
+                return new QuestViewHolder(inflater.inflate(R.layout.overview_quest_item, parent, false));
         }
     }
 
@@ -167,6 +168,11 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 questHolder.duration.setVisibility(View.INVISIBLE);
             }
+
+            if(new Random().nextFloat() < 0.5) {
+                questHolder.habitIndicatorsContainer.setVisibility(View.GONE);
+            }
+
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
             Integer textRes = (Integer) items.get(position);
@@ -227,6 +233,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Bind(R.id.quest_context_indicator)
         public View indicator;
+
+        @Bind(R.id.quest_habit_indicators_container)
+        public View habitIndicatorsContainer;
 
         @Bind(R.id.quest_due_date)
         public TextView dueDate;

@@ -175,7 +175,7 @@ public class CalendarDayView extends FrameLayout {
                 v.setImageResource(R.drawable.ic_broom_blue_grey);
                 habitLine.setBackgroundResource(R.color.md_blue_grey_300);
             } else {
-                v.setImageResource(R.drawable.ic_favorite_green_24dp);
+                v.setImageResource(R.drawable.ic_flower_green_24dp);
                 habitLine.setBackgroundResource(R.color.md_green_300);
             }
 

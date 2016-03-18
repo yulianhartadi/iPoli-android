@@ -19,6 +19,7 @@ import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
@@ -87,5 +88,7 @@ public interface AppComponent {
     void inject(Tutorial tutorial);
 
     void inject(RemindStartQuestReceiver remindStartQuestReceiver);
+
+    void inject(HabitsFragment habitsFragment);
 }
 

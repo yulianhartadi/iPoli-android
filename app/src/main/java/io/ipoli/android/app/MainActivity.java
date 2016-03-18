@@ -48,6 +48,7 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.Tutorial;
@@ -60,6 +61,7 @@ import io.ipoli.android.tutorial.TutorialItem;
 public class MainActivity extends BaseActivity {
     private static final int CALENDAR_TAB_POSITION = 0;
     private static final int OVERVIEW_TAB_POSITION = 1;
+    private static final int HABITS_TAB_POSITION = 2;
 
     @Inject
     Bus eventBus;
@@ -97,11 +99,14 @@ public class MainActivity extends BaseActivity {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new CalendarDayFragment());
         viewPagerAdapter.addFragment(new OverviewFragment());
+        viewPagerAdapter.addFragment(new HabitsFragment());
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setPagingEnabled(false);
         tabLayout.setupWithViewPager(this.viewPager);
         tabLayout.getTabAt(CALENDAR_TAB_POSITION).setIcon(R.drawable.ic_today_white_24dp);
         tabLayout.getTabAt(OVERVIEW_TAB_POSITION).setIcon(R.drawable.ic_assignment_white_24dp);
+        tabLayout.getTabAt(HABITS_TAB_POSITION).setIcon(R.drawable.ic_favorite_white_24dp);
+
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
                         .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
