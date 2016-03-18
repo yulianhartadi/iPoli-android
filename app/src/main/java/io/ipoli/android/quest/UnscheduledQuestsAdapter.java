@@ -65,7 +65,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             holder.indicator.startAnimation(blinkAnimation);
         }
 
-        holder.name.setText(q.getName());
+        holder.name.setText(q.getName() + " (x2)");
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
