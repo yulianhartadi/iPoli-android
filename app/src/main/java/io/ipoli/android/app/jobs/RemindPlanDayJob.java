@@ -24,7 +24,7 @@ public class RemindPlanDayJob extends RemindJob {
 
     @Override
     protected void execute(long timeToSchedule) {
-        Intent i = new Intent(context, PlanDayReceiver.class);
+        Intent i = new Intent(PlanDayReceiver.ACTION_REMIND_PLAN_DAY);
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pendingIntent);
