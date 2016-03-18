@@ -27,7 +27,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.OverviewAdapter;
+import io.ipoli.android.quest.HabitsAdapter;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -49,7 +49,7 @@ public class HabitsFragment extends Fragment {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private OverviewAdapter overviewAdapter;
+    private HabitsAdapter habitsAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,11 +62,11 @@ public class HabitsFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<Quest>(), eventBus);
-        questList.setAdapter(overviewAdapter);
+        habitsAdapter = new HabitsAdapter(getContext(), new ArrayList<Quest>(), eventBus);
+        questList.setAdapter(habitsAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(overviewAdapter, 0, swipeFlags);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(habitsAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_green_500)));
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_blue_500)));
@@ -114,7 +114,7 @@ public class HabitsFragment extends Fragment {
     }
 
     private void updateQuests() {
-        overviewAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        habitsAdapter.updateQuests(questPersistenceService.findAllPlanned());
     }
 
     @Override
