@@ -46,14 +46,14 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
     }
 
     private void scheduleNextReminder(Context context, AlarmManager alarm, Quest q) {
-        Intent i = new Intent(context, RemindStartQuestReceiver.class);
+        Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
         alarm.setExact(AlarmManager.RTC_WAKEUP, Quest.getStartDateTime(q).getTime(), pendingIntent);
     }
 
     public PendingIntent getCancelPendingIntent(Context context) {
-        Intent i = new Intent(context, RemindStartQuestReceiver.class);
+        Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
         return IntentUtils.getBroadcastPendingIntent(context, i);
     }
 }
