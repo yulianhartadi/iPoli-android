@@ -52,6 +52,7 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
     compile 'com.github.iammert:MaterialIntroView:1.5'
+    compile 'com.roughike:bottom-bar:1.1.7'
 
     apt 'com.google.dagger:dagger-compiler:2.0.2'
 
