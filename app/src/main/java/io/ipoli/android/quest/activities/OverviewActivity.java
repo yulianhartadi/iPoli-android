@@ -54,6 +54,7 @@ public class OverviewActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.OVERVIEW_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -64,7 +65,6 @@ public class OverviewActivity extends BaseActivity {
         }
 
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 1);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

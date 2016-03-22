@@ -5,21 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.roughike.bottombar.BottomBar;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -36,15 +31,12 @@ import butterknife.ButterKnife;
 import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.events.ContactUsClickEvent;
-import io.ipoli.android.app.events.FeedbackClickEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
@@ -78,9 +70,6 @@ import rx.schedulers.Schedulers;
 public class CalendarDayActivity extends BaseActivity implements CalendarListener<QuestCalendarEvent> {
 
     @Inject
-    Bus eventBus;
-
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Bind(R.id.toolbar)
@@ -108,8 +97,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         }
     };
 
-    private View feedbackView;
-
     private BottomBar bottomBar;
 
     interface APIService {
@@ -124,6 +111,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_day);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.CALENDAR_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -135,7 +123,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
         appComponent().inject(this);
 
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 0);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -235,47 +222,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         Toast.makeText(this, "Quest undone", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                feedbackView = findViewById(R.id.action_feedback);
-//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
-//                        .setTarget(inboxButton)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .enableDotAnimation(false)
-//                        .setState(Tutorial.State.TUTORIAL_START_INBOX)
-//                        .build());
-//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
-//                        .setTarget(feedbackView)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .enableDotAnimation(false)
-//                        .performClick(false)
-//                        .dismissOnTouch(true)
-//                        .setState(Tutorial.State.TUTORIAL_VIEW_FEEDBACK)
-//                        .build());
-            }
-        });
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_feedback:
-                eventBus.post(new FeedbackClickEvent());
-                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
-                break;
-            case R.id.action_contact_us:
-                eventBus.post(new ContactUsClickEvent());
-                EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onResume() {

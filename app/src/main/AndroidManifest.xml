@@ -30,32 +30,17 @@
         <activity
             android:name=".quest.activities.OverviewActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".app.CalendarDayActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.CalendarDayActivity" />
-        </activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".quest.activities.HabitsActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".app.CalendarDayActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.CalendarDayActivity" />
-        </activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".quest.activities.InboxActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".app.CalendarDayActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.CalendarDayActivity" />
-        </activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".quest.activities.QuestActivity"
@@ -80,13 +65,8 @@
         <activity
             android:name=".quest.activities.AddQuestActivity"
             android:label="@string/title_activity_add_quest"
-            android:parentActivityName=".app.CalendarDayActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.CalendarDayActivity" />
-        </activity>
+            android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <activity
             android:name=".quest.activities.QuestCompleteActivity"

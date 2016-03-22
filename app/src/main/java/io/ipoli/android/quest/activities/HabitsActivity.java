@@ -53,7 +53,8 @@ public class HabitsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overview);
+        setContentView(R.layout.activity_habits);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.HABITS_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -64,7 +65,6 @@ public class HabitsActivity extends BaseActivity {
         }
 
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 4);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
