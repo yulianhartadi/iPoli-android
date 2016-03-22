@@ -95,6 +95,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_day);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.CALENDAR_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -106,7 +107,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
         appComponent().inject(this);
 
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.CALENDAR_TAB_INDEX);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

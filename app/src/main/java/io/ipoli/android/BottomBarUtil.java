@@ -6,7 +6,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabSelectedListener;
+import com.roughike.bottombar.BottomBarTab;
+import com.roughike.bottombar.OnTabSelectedListener;
 
 import io.ipoli.android.app.CalendarDayActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -29,51 +30,52 @@ public class BottomBarUtil {
         BottomBar bottomBar = BottomBar.attach(activity, savedInstanceState);
         bottomBar.useOnlyStatusBarTopOffset();
 
-        bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabSelectedListener() {
+        bottomBar.setItems(
+                new BottomBarTab(R.drawable.ic_event_white_24dp, "Calendar"),
+                new BottomBarTab(R.drawable.ic_assignment_white_24dp, "Overview"),
+                new BottomBarTab(R.drawable.ic_add_white_24dp, "Add Quest"),
+                new BottomBarTab(R.drawable.ic_storage_white_24dp, "Inbox"),
+                new BottomBarTab(R.drawable.ic_favorite_white_24dp, "Habits")
+        );
+
+        bottomBar.setOnItemSelectedListener(new OnTabSelectedListener() {
             @Override
-            public void onMenuItemSelected(int menuItemId) {
-                switch (menuItemId) {
-                    case R.id.bottom_bar_calendar:
-                        if (selectedPosition != CALENDAR_TAB_INDEX) {
-                            startActivity(activity, CalendarDayActivity.class);
-                        }
-                        break;
-                    case R.id.bottom_bar_overview:
-                        if (selectedPosition != OVERVIEW_TAB_INDEX) {
-                            startActivity(activity, OverviewActivity.class);
-                        }
-                        break;
-                    case R.id.bottom_bar_add_quest:
-                        if (selectedPosition != ADD_QUEST_TAB_INDEX) {
-                            Bundle b = new Bundle();
-                            if (activity instanceof CalendarDayActivity) {
-                                b.putBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
-                            }
-                            startActivity(activity, AddQuestActivity.class, b);
-                        }
-                        break;
-                    case R.id.bottom_bar_inbox:
-                        if (selectedPosition != INBOX_TAB_INDEX) {
-                            startActivity(activity, InboxActivity.class);
-                        }
-                        break;
-                    case R.id.bottom_bar_habits:
-                        if (selectedPosition != HABITS_TAB_INDEX) {
-                            startActivity(activity, HabitsActivity.class);
-                        }
-                        break;
+            public void onItemSelected(int position) {
+                if (position == selectedPosition) {
+                    return;
                 }
 
+                switch (position) {
+                    case CALENDAR_TAB_INDEX:
+                        startActivity(activity, CalendarDayActivity.class);
+                        break;
+                    case OVERVIEW_TAB_INDEX:
+                        startActivity(activity, OverviewActivity.class);
+                        break;
+                    case ADD_QUEST_TAB_INDEX:
+                        Bundle b = new Bundle();
+                        if (activity instanceof CalendarDayActivity) {
+                            b.putBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
+                        }
+                        startActivity(activity, AddQuestActivity.class, b);
+                        break;
+                    case INBOX_TAB_INDEX:
+                        startActivity(activity, InboxActivity.class);
+                        break;
+                    case HABITS_TAB_INDEX:
+                        startActivity(activity, HabitsActivity.class);
+                        break;
+                }
             }
         });
 
-        bottomBar.selectTabAtPosition(selectedPosition, false);
+        bottomBar.selectTabAtPosition(selectedPosition, true);
 
-        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorAccent));
-        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, 0xFF5D4037);
-        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, "#7B1FA2");
-        bottomBar.mapColorForTab(INBOX_TAB_INDEX, "#FF5252");
-        bottomBar.mapColorForTab(HABITS_TAB_INDEX, "#FF9800");
+        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
+        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
+        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
+        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
+        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
 
 
         return bottomBar;

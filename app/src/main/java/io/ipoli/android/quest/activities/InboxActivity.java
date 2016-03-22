@@ -68,12 +68,12 @@ public class InboxActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.INBOX_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.INBOX_TAB_INDEX);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

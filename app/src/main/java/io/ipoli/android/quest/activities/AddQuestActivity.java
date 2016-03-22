@@ -109,10 +109,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_quest);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
