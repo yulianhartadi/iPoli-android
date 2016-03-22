@@ -15,12 +15,11 @@ import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.HabitsActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
+import io.ipoli.android.quest.activities.OverviewActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
-import io.ipoli.android.quest.fragments.CalendarDayFragment;
-import io.ipoli.android.quest.fragments.HabitsFragment;
-import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
@@ -77,11 +76,7 @@ public interface AppComponent {
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 
-    void inject(MainActivity mainActivity);
-
-    void inject(CalendarDayFragment calendarDayFragment);
-
-    void inject(OverviewFragment overviewFragment);
+    void inject(CalendarDayActivity calendarDayActivity);
 
     void inject(AddQuestActivity addQuestActivity);
 
@@ -89,6 +84,8 @@ public interface AppComponent {
 
     void inject(RemindStartQuestReceiver remindStartQuestReceiver);
 
-    void inject(HabitsFragment habitsFragment);
+    void inject(OverviewActivity overviewActivity);
+
+    void inject(HabitsActivity habitsActivity);
 }
 

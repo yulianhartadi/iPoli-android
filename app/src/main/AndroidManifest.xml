@@ -23,49 +23,69 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.MainActivity"
+            android:name=".app.CalendarDayActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".quest.activities.InboxActivity"
+            android:name=".quest.activities.OverviewActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".app.CalendarDayActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
+                android:value=".app.CalendarDayActivity" />
+        </activity>
+
+        <activity
+            android:name=".quest.activities.HabitsActivity"
+            android:label="@string/title_activity_inbox"
+            android:parentActivityName=".app.CalendarDayActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".app.CalendarDayActivity" />
+        </activity>
+
+        <activity
+            android:name=".quest.activities.InboxActivity"
+            android:label="@string/title_activity_inbox"
+            android:parentActivityName=".app.CalendarDayActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".app.CalendarDayActivity" />
         </activity>
 
         <activity
             android:name=".quest.activities.QuestActivity"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".app.CalendarDayActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.MainActivity" />
+                android:value=".app.CalendarDayActivity" />
         </activity>
 
         <activity
             android:name=".assistant.PickAvatarActivity"
             android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".app.CalendarDayActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
+                android:value=".app.CalendarDayActivity" />
         </activity>
 
         <activity
             android:name=".quest.activities.AddQuestActivity"
             android:label="@string/title_activity_add_quest"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".app.CalendarDayActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
+                android:value=".app.CalendarDayActivity" />
         </activity>
 
         <activity

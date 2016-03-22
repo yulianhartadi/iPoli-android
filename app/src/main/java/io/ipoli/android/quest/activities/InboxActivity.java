@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -27,10 +28,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import co.mobiwise.materialintro.shape.Focus;
+import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -43,6 +43,8 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 
 public class InboxActivity extends BaseActivity {
 
@@ -65,6 +67,7 @@ public class InboxActivity extends BaseActivity {
     QuestPersistenceService questPersistenceService;
 
     private InboxAdapter inboxAdapter;
+    private BottomBar bottomBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,7 @@ public class InboxActivity extends BaseActivity {
         }
 
         appComponent().inject(this);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 3);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -105,6 +109,12 @@ public class InboxActivity extends BaseActivity {
                         .enableDotAnimation(false)
                         .dismissOnTouch(true)
                         .build());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        bottomBar.onSaveInstanceState(outState);
     }
 
     private List<Quest> getAllUnplanned() {

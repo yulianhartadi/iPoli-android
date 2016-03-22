@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
@@ -39,10 +40,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import co.mobiwise.materialintro.shape.Focus;
+import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
@@ -53,6 +53,8 @@ import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -102,6 +104,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     private List<String> questNameAutoCompletes;
 
     private QuestContext questContext;
+    private BottomBar bottomBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,6 +117,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
             ab.setDisplayHomeAsUpEnabled(true);
         }
         appComponent().inject(this);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 2);
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
@@ -140,6 +144,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
                         .dismissOnTouch(true)
                         .build());
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        bottomBar.onSaveInstanceState(outState);
     }
 
     private List<String> createQuestNameAutoCompletes() {

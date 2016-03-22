@@ -1,50 +1,63 @@
-package io.ipoli.android.quest.fragments;
+package io.ipoli.android.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.mobiwise.materialintro.shape.Focus;
+import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.ContactUsClickEvent;
+import io.ipoli.android.app.events.FeedbackClickEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestCalendarAdapter;
 import io.ipoli.android.quest.UnscheduledQuestsAdapter;
+import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
@@ -52,12 +65,18 @@ import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 2/17/16.
+ * on 2/16/16.
  */
-public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarEvent> {
+public class CalendarDayActivity extends BaseActivity implements CalendarListener<QuestCalendarEvent> {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
 
     @Bind(R.id.unscheduled_quests)
     RecyclerView unscheduledQuestList;
@@ -67,9 +86,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Bind(R.id.calendar_container)
     CalendarLayout calendarContainer;
-
-    @Inject
-    QuestPersistenceService questPersistenceService;
 
     private int movingQuestPosition;
 
@@ -84,20 +100,34 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         }
     };
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_calendar_day_view, container, false);
-        ButterKnife.bind(this, v);
-        App.getAppComponent(getContext()).inject(this);
+    private View feedbackView;
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+    private BottomBar bottomBar;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_calendar_day);
+
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new Date()));
+        }
+
+        appComponent().inject(this);
+
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 0);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         unscheduledQuestList.setLayoutManager(layoutManager);
 
         calendarContainer.setCalendarListener(this);
 
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<Quest>(), eventBus);
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(this, new ArrayList<Quest>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
@@ -106,8 +136,29 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<QuestCalendarEvent>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
-        eventBus.register(this);
-        return v;
+
+//        Tutorial.getInstance(this).addItem(
+//                new TutorialItem.Builder(this)
+//                        .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
+//                        .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
+//                        .enableDotAnimation(false)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .build());
+//
+//        Tutorial.getInstance(this).addItem(
+//                new TutorialItem.Builder(this)
+//                        .setState(Tutorial.State.TUTORIAL_START_ADD_QUEST)
+//                        .setTarget(findViewById(R.id.add_quest))
+//                        .enableDotAnimation(true)
+//                        .performClick(true)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .build());
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        bottomBar.onSaveInstanceState(outState);
     }
 
     @Subscribe
@@ -127,58 +178,81 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         unscheduledQuestList.setLayoutParams(layoutParams);
     }
 
+    @Subscribe
+    public void onShowQuestEvent(ShowQuestEvent e) {
+        Intent i = new Intent(this, QuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
+        Intent i = new Intent(this, QuestCompleteActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
+        Quest quest = e.quest;
+        quest.setLog("");
+        quest.setDifficulty(Difficulty.UNKNOWN.name());
+        quest.setActualStartDateTime(null);
+        quest.setMeasuredDuration(0);
+        quest.setCompletedAtDateTime(null);
+        quest = questPersistenceService.save(quest);
+        eventBus.post(new UndoCompletedQuestEvent(quest));
+        Toast.makeText(this, "Quest undone", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isResumed() && isVisibleToUser) {
-            updateSchedule();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                feedbackView = findViewById(R.id.action_feedback);
+//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+//                        .setTarget(inboxButton)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .enableDotAnimation(false)
+//                        .setState(Tutorial.State.TUTORIAL_START_INBOX)
+//                        .build());
+//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
+//                        .setTarget(feedbackView)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .enableDotAnimation(false)
+//                        .performClick(false)
+//                        .dismissOnTouch(true)
+//                        .setState(Tutorial.State.TUTORIAL_VIEW_FEEDBACK)
+//                        .build());
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_feedback:
+                eventBus.post(new FeedbackClickEvent());
+                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                break;
+            case R.id.action_contact_us:
+                eventBus.post(new ContactUsClickEvent());
+                EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        eventBus.register(this);
+       registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
-
-
-        Tutorial.getInstance(getContext()).addItem(
-                new TutorialItem.Builder(getActivity())
-                        .setState(Tutorial.State.TUTORIAL_WELCOME)
-                        .setTarget(calendarDayView)
-                        .setFocusType(Focus.ALL)
-                        .performClick(false)
-                        .dismissOnTouch(true)
-                        .enableDotAnimation(false)
-                        .setTargetPadding(-120)
-                        .build());
-
-        Tutorial.getInstance(getContext()).addItem(
-                new TutorialItem.Builder(getActivity())
-                        .setState(Tutorial.State.TUTORIAL_CALENDAR_DRAG_QUEST)
-                        .setTarget(calendarDayView)
-                        .setFocusType(Focus.ALL)
-                        .performClick(false)
-                        .setTargetPadding(-120)
-                        .build());
-
-        View questView = calendarDayView.getView("iPoli");
-        Tutorial.getInstance(getContext()).addItem(
-                new TutorialItem.Builder(getActivity())
-                        .setState(Tutorial.State.TUTORIAL_CALENDAR_COMPLETE_QUEST)
-                        .setTarget(questView == null ? null : questView.findViewById(R.id.quest_check))
-                        .setFocusType(Focus.MINIMUM)
-                        .enableDotAnimation(false)
-                        .build());
-
-        Tutorial.getInstance(getContext()).addItem(
-                new TutorialItem.Builder(getActivity())
-                        .setState(Tutorial.State.TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS)
-                        .setTarget(unscheduledQuestsAdapter.getItemCount() > 0 ? unscheduledQuestList : null)
-                        .setFocusType(Focus.NORMAL)
-                        .enableDotAnimation(false)
-                        .dismissOnTouch(true)
-                        .build());
     }
 
     private void updateSchedule() {
@@ -191,14 +265,9 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        getContext().unregisterReceiver(tickReceiver);
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
         eventBus.unregister(this);
-        super.onDestroyView();
+        unregisterReceiver(tickReceiver);
+        super.onPause();
     }
 
     @Subscribe
