@@ -59,6 +59,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -99,12 +101,16 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     private BottomBar bottomBar;
 
+    class QuestDTO {
+        private String name;
+    }
+
     interface APIService {
 
-        String API_ENDPOINT = "http://192.168.0.100:8080/v1/";
+        String API_ENDPOINT = "http://10.0.3.2:8080/v1/";
 
         @GET("schedules/{date}")
-        Observable<List<Quest>> getSchedule(String date);
+        Observable<List<QuestDTO>> getSchedule(@Path("date") String date, @Query("user_id") String userId);
     }
 
     @Override
@@ -163,13 +169,9 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
         APIService apiService = retrofit.create(APIService.class);
-        apiService.getSchedule("2016-03-22").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                quests -> {
-                    Log.d("ApiResult", quests.toString());
-                },
-                throwable -> {
-                    Log.d("APIError", throwable.getMessage());
-                });
+        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
+            Log.d("OnNext", questDTOs.toString());
+        });
     }
 
     @Override
