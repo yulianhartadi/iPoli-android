@@ -3,7 +3,6 @@ package io.ipoli.android.app.ui.calendar;
 import android.content.ClipData;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -188,7 +187,7 @@ public class CalendarLayout extends RelativeLayout {
     private OnDragListener dragListener = new OnDragListener() {
 
         @Override
-        public boolean onDrag(View _, DragEvent event) {
+        public boolean onDrag(View v, DragEvent event) {
 
             if (dragStrategy == null) {
                 return false;

@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,6 +63,13 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -103,6 +111,14 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     private View feedbackView;
 
     private BottomBar bottomBar;
+
+    interface APIService {
+
+        String API_ENDPOINT = "http://192.168.0.100:8080/v1/";
+
+        @GET("schedules/{date}")
+        Observable<List<Quest>> getSchedule(String date);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,6 +169,20 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //                        .performClick(true)
 //                        .setFocusType(Focus.MINIMUM)
 //                        .build());
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(APIService.API_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+        APIService apiService = retrofit.create(APIService.class);
+        apiService.getSchedule("2016-03-22").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                quests -> {
+                    Log.d("ApiResult", quests.toString());
+                },
+                throwable -> {
+                    Log.d("APIError", throwable.getMessage());
+                });
     }
 
     @Override
@@ -251,7 +281,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-       registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
     }
 

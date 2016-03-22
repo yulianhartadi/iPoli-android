@@ -70,9 +70,9 @@ public class BottomBarUtil {
 
         bottomBar.mapColorForTab(0, ContextCompat.getColor(activity, R.color.colorAccent));
         bottomBar.mapColorForTab(1, 0xFF5D4037);
-        bottomBar.mapColorForTab(2, "#7B1FA2");
-        bottomBar.mapColorForTab(3, "#FF5252");
-        bottomBar.mapColorForTab(4, "#FF9800");
+        bottomBar.mapColorForTab(2, 0xFF5D4037);
+        bottomBar.mapColorForTab(3, 0xFF5D4037);
+        bottomBar.mapColorForTab(4, 0xFF5D4037);
 
 
         return bottomBar;
