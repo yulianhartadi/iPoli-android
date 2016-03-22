@@ -64,7 +64,7 @@ public class OverviewActivity extends BaseActivity {
         }
 
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 1);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.OVERVIEW_TAB_INDEX);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

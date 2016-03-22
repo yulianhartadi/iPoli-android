@@ -87,5 +87,7 @@ public interface AppComponent {
     void inject(OverviewActivity overviewActivity);
 
     void inject(HabitsActivity habitsActivity);
+
+    void inject(BaseActivity baseActivity);
 }
 

@@ -19,46 +19,47 @@ import io.ipoli.android.quest.activities.OverviewActivity;
  * on 3/22/16.
  */
 public class BottomBarUtil {
+    public static final int CALENDAR_TAB_INDEX = 0;
+    public static final int OVERVIEW_TAB_INDEX = 1;
+    public static final int ADD_QUEST_TAB_INDEX = 2;
+    public static final int INBOX_TAB_INDEX = 3;
+    public static final int HABITS_TAB_INDEX = 4;
 
     public static BottomBar getBottomBar(final AppCompatActivity activity, Bundle savedInstanceState, final int selectedPosition) {
         BottomBar bottomBar = BottomBar.attach(activity, savedInstanceState);
         bottomBar.useOnlyStatusBarTopOffset();
+
         bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabSelectedListener() {
             @Override
             public void onMenuItemSelected(int menuItemId) {
                 switch (menuItemId) {
                     case R.id.bottom_bar_calendar:
-                        if (selectedPosition != 0) {
-                            activity.startActivity(new Intent(activity, CalendarDayActivity.class));
-                            activity.overridePendingTransition(0, 0);
+                        if (selectedPosition != CALENDAR_TAB_INDEX) {
+                            startActivity(activity, CalendarDayActivity.class);
                         }
                         break;
                     case R.id.bottom_bar_overview:
-                        if (selectedPosition != 1) {
-                            activity.startActivity(new Intent(activity, OverviewActivity.class));
-                            activity.overridePendingTransition(0, 0);
+                        if (selectedPosition != OVERVIEW_TAB_INDEX) {
+                            startActivity(activity, OverviewActivity.class);
                         }
                         break;
                     case R.id.bottom_bar_add_quest:
-                        if (selectedPosition != 2) {
-                            Intent i = new Intent(activity, AddQuestActivity.class);
+                        if (selectedPosition != ADD_QUEST_TAB_INDEX) {
+                            Bundle b = new Bundle();
                             if (activity instanceof CalendarDayActivity) {
-                                i.putExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
+                                b.putBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY, true);
                             }
-                            activity.startActivity(i);
-                            activity.overridePendingTransition(0, 0);
+                            startActivity(activity, AddQuestActivity.class, b);
                         }
                         break;
                     case R.id.bottom_bar_inbox:
-                        if (selectedPosition != 3) {
-                            activity.startActivity(new Intent(activity, InboxActivity.class));
-                            activity.overridePendingTransition(0, 0);
+                        if (selectedPosition != INBOX_TAB_INDEX) {
+                            startActivity(activity, InboxActivity.class);
                         }
                         break;
                     case R.id.bottom_bar_habits:
-                        if (selectedPosition != 4) {
-                            activity.startActivity(new Intent(activity, HabitsActivity.class));
-                            activity.overridePendingTransition(0, 0);
+                        if (selectedPosition != HABITS_TAB_INDEX) {
+                            startActivity(activity, HabitsActivity.class);
                         }
                         break;
                 }
@@ -68,13 +69,28 @@ public class BottomBarUtil {
 
         bottomBar.selectTabAtPosition(selectedPosition, false);
 
-        bottomBar.mapColorForTab(0, ContextCompat.getColor(activity, R.color.colorAccent));
-        bottomBar.mapColorForTab(1, 0xFF5D4037);
-        bottomBar.mapColorForTab(2, "#7B1FA2");
-        bottomBar.mapColorForTab(3, "#FF5252");
-        bottomBar.mapColorForTab(4, "#FF9800");
+        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorAccent));
+        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, 0xFF5D4037);
+        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, "#7B1FA2");
+        bottomBar.mapColorForTab(INBOX_TAB_INDEX, "#FF5252");
+        bottomBar.mapColorForTab(HABITS_TAB_INDEX, "#FF9800");
 
 
         return bottomBar;
     }
+
+    private static void startActivity(AppCompatActivity activity, Class<?> newActivityClass) {
+        startActivity(activity, newActivityClass, null);
+    }
+
+    private static void startActivity(AppCompatActivity activity, Class<?> newActivityClass, Bundle params) {
+        Intent i = new Intent(activity, newActivityClass);
+        if (params != null) {
+            i.putExtras(params);
+        }
+        activity.startActivity(i);
+        activity.overridePendingTransition(0, 0);
+        activity.finish();
+    }
+
 }

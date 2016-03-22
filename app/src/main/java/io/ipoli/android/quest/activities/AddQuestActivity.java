@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -112,12 +111,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         setContentView(R.layout.activity_add_quest);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
         appComponent().inject(this);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, 2);
+        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
@@ -128,6 +123,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
         questText.requestFocus();
+
         if(getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
             questText.setText(" " + getString(R.string.add_quest_today));
         }
@@ -284,8 +280,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         }
         eventBus.post(new NewQuestEvent(q.getName(), q.getStartTime(), q.getDuration(), q.getDue(), questContext));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
-        finish();
-        overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
     @Override
