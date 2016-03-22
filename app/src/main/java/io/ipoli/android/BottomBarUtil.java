@@ -69,7 +69,7 @@ public class BottomBarUtil {
             }
         });
 
-        bottomBar.selectTabAtPosition(selectedPosition, true);
+        bottomBar.selectTabAtPosition(selectedPosition, false);
 
         bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
         bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
