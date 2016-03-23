@@ -51,6 +51,7 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -112,6 +113,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     private StartTimeMatcher startTimeMatcher;
     private DueDateMatcher dueDateMatcher;
     private TimesPerDayMatcher timesPerDayMatcher;
+    private RecurrenceMatcher recurrenceMatcher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -156,6 +158,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         startTimeMatcher = new StartTimeMatcher(parser);
         dueDateMatcher = new DueDateMatcher(parser);
         timesPerDayMatcher = new TimesPerDayMatcher();
+        recurrenceMatcher = new RecurrenceMatcher();
     }
 
     @Override
@@ -352,8 +355,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
             return;
         }
 
-        String spannableText = text;
-
         String matchedDuration = durationMatcher.match(text);
         if (!TextUtils.isEmpty(matchedDuration)) {
             text = text.replace(matchedDuration, " ");
@@ -378,6 +379,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
         String matchedDueDate = dueDateMatcher.match(text);
         if (!TextUtils.isEmpty(matchedDueDate)) {
+            text = text.replace(matchedDueDate, " ");
             dueDate.setBackgroundResource(R.drawable.circle_disable);
             dueDate.setEnabled(false);
             markText(editable, matchedDueDate, R.color.md_green_200);
@@ -388,10 +390,15 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
         String matchedTimesPerDay = timesPerDayMatcher.match(text);
         if(!TextUtils.isEmpty(matchedTimesPerDay)) {
+            text = text.replace(matchedTimesPerDay, " ");
             markText(editable, matchedTimesPerDay, R.color.md_orange_200);
         }
 
-//        questText.setText(spannableText);
+        String matchedRecurrence = recurrenceMatcher.match(text);
+        if(!TextUtils.isEmpty(matchedRecurrence)) {
+            text = text.replace(matchedRecurrence, " ");
+            markText(editable, matchedRecurrence, R.color.md_purple_200);
+        }
 
         if (TextUtils.isEmpty(matchedDueDate)) {
             dueDate.setBackgroundResource(R.drawable.circle_accent);
