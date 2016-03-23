@@ -54,7 +54,7 @@ public class HabitsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_habits);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.HABITS_TAB_INDEX);
+        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_list, savedInstanceState, BottomBarUtil.HABITS_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

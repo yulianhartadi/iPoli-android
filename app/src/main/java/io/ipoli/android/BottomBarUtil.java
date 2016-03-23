@@ -2,6 +2,8 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,6 +12,7 @@ import com.roughike.bottombar.BottomBarTab;
 import com.roughike.bottombar.OnTabSelectedListener;
 
 import io.ipoli.android.app.CalendarDayActivity;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.HabitsActivity;
 import io.ipoli.android.quest.activities.InboxActivity;
@@ -26,9 +29,10 @@ public class BottomBarUtil {
     public static final int INBOX_TAB_INDEX = 3;
     public static final int HABITS_TAB_INDEX = 4;
 
-    public static BottomBar getBottomBar(final AppCompatActivity activity, Bundle savedInstanceState, final int selectedPosition) {
-        BottomBar bottomBar = BottomBar.attach(activity, savedInstanceState);
-        bottomBar.useOnlyStatusBarTopOffset();
+    public static BottomBar getBottomBar(final AppCompatActivity activity, @IdRes int layoutId, @IdRes int scrollableContentId, Bundle savedInstanceState, final int selectedPosition) {
+//        BottomBar bottomBar = BottomBar.attach(activity, savedInstanceState);
+        BottomBar bottomBar = BottomBar.attachShy((CoordinatorLayout) activity.findViewById(layoutId), activity.findViewById(scrollableContentId), savedInstanceState);
+//        bottomBar.useOnlyStatusBarTopOffset();
 
         bottomBar.setItems(
                 new BottomBarTab(R.drawable.ic_event_white_24dp, "Calendar"),
@@ -73,10 +77,9 @@ public class BottomBarUtil {
 
         bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
         bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
-        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
+        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(activity, QuestContext.PERSONAL.resLightColor));
         bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
         bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(activity, R.color.colorPrimary));
-
 
         return bottomBar;
     }

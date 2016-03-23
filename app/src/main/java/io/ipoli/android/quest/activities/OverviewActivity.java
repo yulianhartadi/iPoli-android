@@ -54,7 +54,7 @@ public class OverviewActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.OVERVIEW_TAB_INDEX);
+        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_list, savedInstanceState, BottomBarUtil.OVERVIEW_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

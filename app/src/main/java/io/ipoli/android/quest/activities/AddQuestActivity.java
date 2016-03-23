@@ -109,7 +109,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_quest);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         appComponent().inject(this);
@@ -129,8 +128,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         }
         resetUI();
 
+        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_container, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         initContextUI();
-
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
                         .setState(Tutorial.State.TUTORIAL_ADD_QUEST)
@@ -219,6 +218,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         appBar.setBackgroundColor(ContextCompat.getColor(this, ctx.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkColor));
+        bottomBar.mapColorForTab(BottomBarUtil.ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, ctx.resLightColor));
+        bottomBar.selectTabAtPosition(BottomBarUtil.ADD_QUEST_TAB_INDEX, false);
     }
 
     private void setContextName() {
