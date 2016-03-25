@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class DueDateMatcher implements QuestTextMatcher<Date> {
 
-    private static final String DUE_TODAY_TOMORROW_PATTERN = "today|tomorrow";
+    private static final String DUE_TODAY_TOMORROW_PATTERN = "(^|\\s)(today|tomorrow)($|\\s)";
     private static final String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
     private static final String DUE_AFTER_IN_PATTERN = "(after|in)\\s\\w+\\s(day|week|month|year)s?";
     private static final String DUE_FROM_NOW_PATTERN = "\\w+\\s(day|week|month|year)s?\\sfrom\\snow";

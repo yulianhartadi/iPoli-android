@@ -168,6 +168,23 @@ public class QuestParserTest {
     }
 
     @Test
+    public void addQuestDueToday() {
+        Quest q = parse("Workout today");
+        assertThat(q.getName(), is("Workout"));
+        Calendar expected = Calendar.getInstance();
+        assertDueDate(q, expected);
+    }
+
+    @Test
+    public void addQuestDueTomorrow() {
+        Quest q = parse("Workout todays tomorrow");
+        assertThat(q.getName(), is("Workout todays"));
+        Calendar expected = Calendar.getInstance();
+        expected.add(Calendar.DAY_OF_YEAR, 1);
+        assertDueDate(q, expected);
+    }
+
+    @Test
     public void addQuestDue21stNextMonth() {
         Quest q = parse("Workout on 21st next month");
         assertThat(q.getName(), is("Workout"));

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class DurationMatcher implements QuestTextMatcher<Integer> {
 
-    private static final String DURATION_PATTERN = " for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?";
+    private static final String DURATION_PATTERN = " for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?($|\\s)";
     Pattern pattern = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
@@ -20,7 +20,7 @@ public class DurationMatcher implements QuestTextMatcher<Integer> {
 
         Matcher dm = createMatcher(text);
         if (dm.find()) {
-            return dm.group();
+            return dm.group().trim();
         }
         return "";
     }

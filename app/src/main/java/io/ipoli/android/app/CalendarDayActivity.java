@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -40,8 +39,8 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.QuestCalendarAdapter;
-import io.ipoli.android.quest.UnscheduledQuestsAdapter;
+import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
+import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -55,15 +54,10 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -163,15 +157,15 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //                        .setFocusType(Focus.MINIMUM)
 //                        .build());
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(APIService.API_ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-        APIService apiService = retrofit.create(APIService.class);
-        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
-            Log.d("OnNext", questDTOs.toString());
-        });
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(APIService.API_ENDPOINT)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .build();
+//        APIService apiService = retrofit.create(APIService.class);
+//        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
+//            Log.d("OnNext", questDTOs.toString());
+//        });
     }
 
     @Override

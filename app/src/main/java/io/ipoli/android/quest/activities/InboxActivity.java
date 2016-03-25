@@ -32,7 +32,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.quest.InboxAdapter;
+import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.events.DeleteQuestEvent;
