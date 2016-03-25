@@ -12,10 +12,6 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
 
     @Override
     public Observable<Player> find() {
-        Player p = where(Player.class).findFirst();
-        if (p == null) {
-            return Observable.just(null);
-        }
-        return Observable.just(p);
+        return Observable.just(where(Player.class).findFirst());
     }
 }
