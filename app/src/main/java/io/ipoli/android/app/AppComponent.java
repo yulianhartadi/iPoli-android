@@ -10,6 +10,8 @@ import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerModule;
+import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
@@ -42,6 +44,7 @@ import io.ipoli.android.tutorial.Tutorial;
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 AssistantModule.class,
+                RestAPIModule.class,
                 PlayerModule.class
         }
 )
@@ -92,5 +95,7 @@ public interface AppComponent {
     void inject(BaseActivity baseActivity);
 
     void inject(SuggestionAdapterManager suggestionAdapterManager);
+
+    void inject(AppJobService appJobService);
 }
 

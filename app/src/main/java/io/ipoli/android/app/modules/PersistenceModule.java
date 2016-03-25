@@ -31,7 +31,7 @@ public class PersistenceModule {
     }
 
     @Provides
-    public PlayerPersistenceService providePlayerPersistenceService(Context context) {
-        return new RealmPlayerPersistenceService(context);
+    public PlayerPersistenceService providePlayerPersistenceService() {
+        return new RealmPlayerPersistenceService();
     }
 }

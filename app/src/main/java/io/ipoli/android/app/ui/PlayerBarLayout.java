@@ -27,7 +27,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.assistant.Assistant;
 import io.ipoli.android.assistant.persistence.AssistantPersistenceService;
-import io.ipoli.android.player.LevelExperienceGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PlayerLevelDownEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
@@ -110,10 +109,10 @@ public class PlayerBarLayout extends AppBarLayout {
 
         toolbar.setTitle(title);
 
-        player = playerPersistenceService.find();
-        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
-        playerLevel.setText(context.getString(R.string.player_level, player.getLevel()));
-        animateExperienceProgress(0, player.getExperience(), INITIAL_EXPERIENCE_ANIMATION_DELAY);
+//        player = playerPersistenceService.find();
+//        experienceBar.setMax(LevelExperienceGenerator.experienceForLevel(player.getLevel()));
+//        playerLevel.setText(context.getString(R.string.player_level, player.getLevel()));
+//        animateExperienceProgress(0, player.getExperience(), INITIAL_EXPERIENCE_ANIMATION_DELAY);
     }
 
     private void animateLevelUp() {

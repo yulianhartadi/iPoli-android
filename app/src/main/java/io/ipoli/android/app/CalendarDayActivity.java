@@ -1,6 +1,9 @@
 package io.ipoli.android.app;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,6 +34,7 @@ import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -39,10 +43,10 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
-import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
-import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
+import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
+import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -54,10 +58,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
-import rx.Observable;
+import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -95,18 +96,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     private BottomBar bottomBar;
 
-    class QuestDTO {
-        private String name;
-    }
-
-    interface APIService {
-
-        String API_ENDPOINT = "http://10.0.3.2:8080/v1/";
-
-        @GET("schedules/{date}")
-        Observable<List<QuestDTO>> getSchedule(@Path("date") String date, @Query("user_id") String userId);
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,14 +119,14 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
         calendarContainer.setCalendarListener(this);
 
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(this, new ArrayList<Quest>(), eventBus);
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(this, new ArrayList<>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
         calendarDayView.scrollToNow();
 
-        calendarAdapter = new QuestCalendarAdapter(new ArrayList<QuestCalendarEvent>(), eventBus);
+        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
 
 //        Tutorial.getInstance(this).addItem(
@@ -166,6 +155,13 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
 //            Log.d("OnNext", questDTOs.toString());
 //        });
+
+        JobScheduler mJobScheduler = (JobScheduler)
+                getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobInfo.Builder builder = new JobInfo.Builder(1,
+                new ComponentName(getPackageName(),
+                        AppJobService.class.getName()));
+        mJobScheduler.schedule(builder.setOverrideDeadline(1).build());
     }
 
     @Override

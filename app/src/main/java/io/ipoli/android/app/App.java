@@ -20,6 +20,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.jobs.RemindPlanDayJob;
 import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.app.modules.AppModule;
+import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
@@ -34,6 +36,8 @@ import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -61,9 +65,15 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if(Build.VERSION.SDK_INT < 21) {
+        if (Build.VERSION.SDK_INT < 21) {
             return;
         }
+
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .schemaVersion(0)
+                .build();
+        Realm.setDefaultConfiguration(config);
+
         getAppComponent(this).inject(this);
         resetDueDateForIncompleteQuests();
         registerServices();
@@ -183,6 +193,7 @@ public class App extends Application {
         if (appComponent == null) {
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(context))
+                    .restAPIModule(new RestAPIModule(APIService.API_ENDPOINT))
                     .build();
         }
 
