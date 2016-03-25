@@ -46,7 +46,7 @@ import io.ipoli.android.tutorial.TutorialItem;
 
 public class InboxActivity extends BaseActivity {
 
-    @Bind(R.id.plan_day_container)
+    @Bind(R.id.root_container)
     CoordinatorLayout rootContainer;
 
     @Bind(R.id.toolbar)
@@ -68,7 +68,7 @@ public class InboxActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.INBOX_TAB_INDEX);
+        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_list, savedInstanceState, BottomBarUtil.INBOX_TAB_INDEX);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

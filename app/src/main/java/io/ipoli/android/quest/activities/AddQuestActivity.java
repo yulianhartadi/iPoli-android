@@ -7,8 +7,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +51,9 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
+import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
@@ -105,14 +109,21 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     private QuestContext questContext;
     private BottomBar bottomBar;
 
+    private DurationMatcher durationMatcher;
+    private StartTimeMatcher startTimeMatcher;
+    private DueDateMatcher dueDateMatcher;
+    private TimesPerDayMatcher timesPerDayMatcher;
+    private RecurrenceMatcher recurrenceMatcher;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_quest);
-        bottomBar = BottomBarUtil.getBottomBar(this, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         appComponent().inject(this);
+
+        initMatchers();
 
         dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
         startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
@@ -129,8 +140,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         }
         resetUI();
 
+        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_container, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         initContextUI();
-
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
                         .setState(Tutorial.State.TUTORIAL_ADD_QUEST)
@@ -140,6 +151,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
                         .dismissOnTouch(true)
                         .build());
 
+    }
+
+    private void initMatchers() {
+        durationMatcher = new DurationMatcher();
+        startTimeMatcher = new StartTimeMatcher(parser);
+        dueDateMatcher = new DueDateMatcher(parser);
+        timesPerDayMatcher = new TimesPerDayMatcher();
+        recurrenceMatcher = new RecurrenceMatcher();
     }
 
     @Override
@@ -219,6 +238,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         appBar.setBackgroundColor(ContextCompat.getColor(this, ctx.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkColor));
+        bottomBar.mapColorForTab(BottomBarUtil.ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, ctx.resLightColor));
+        bottomBar.selectTabAtPosition(BottomBarUtil.ADD_QUEST_TAB_INDEX, false);
     }
 
     private void setContextName() {
@@ -334,33 +355,49 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
             return;
         }
 
-        String matchedDuration = new DurationMatcher().match(text);
+        String matchedDuration = durationMatcher.match(text);
         if (!TextUtils.isEmpty(matchedDuration)) {
             text = text.replace(matchedDuration, " ");
             duration.setBackgroundResource(R.drawable.circle_disable);
             duration.setEnabled(false);
+            markText(editable, matchedDuration, R.color.md_red_200);
         } else {
             duration.setBackgroundResource(R.drawable.circle_normal);
             duration.setEnabled(true);
         }
 
-        String matchedStartTime = new StartTimeMatcher(parser).match(text);
+        String matchedStartTime = startTimeMatcher.match(text);
         if (!TextUtils.isEmpty(matchedStartTime)) {
             text = text.replace(matchedStartTime, " ");
             startTime.setBackgroundResource(R.drawable.circle_disable);
             startTime.setEnabled(false);
+            markText(editable, matchedStartTime, R.color.md_blue_200);
         } else {
             startTime.setBackgroundResource(R.drawable.circle_normal);
             startTime.setEnabled(true);
         }
 
-        String matchedDueDate = new DueDateMatcher(parser).match(text);
+        String matchedDueDate = dueDateMatcher.match(text);
         if (!TextUtils.isEmpty(matchedDueDate)) {
+            text = text.replace(matchedDueDate, " ");
             dueDate.setBackgroundResource(R.drawable.circle_disable);
             dueDate.setEnabled(false);
+            markText(editable, matchedDueDate, R.color.md_green_200);
         } else {
             dueDate.setBackgroundResource(R.drawable.circle_normal);
             dueDate.setEnabled(true);
+        }
+
+        String matchedTimesPerDay = timesPerDayMatcher.match(text);
+        if(!TextUtils.isEmpty(matchedTimesPerDay)) {
+            text = text.replace(matchedTimesPerDay, " ");
+            markText(editable, matchedTimesPerDay, R.color.md_orange_200);
+        }
+
+        String matchedRecurrence = recurrenceMatcher.match(text);
+        if(!TextUtils.isEmpty(matchedRecurrence)) {
+            text = text.replace(matchedRecurrence, " ");
+            markText(editable, matchedRecurrence, R.color.md_purple_200);
         }
 
         if (TextUtils.isEmpty(matchedDueDate)) {
@@ -370,5 +407,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         } else if (TextUtils.isEmpty(matchedDuration)) {
             duration.setBackgroundResource(R.drawable.circle_accent);
         }
+    }
+
+    private void markText(Editable text, String spanText, int colorRes) {
+        spanText = spanText.trim();
+        int startIdx = text.toString().indexOf(spanText);
+        int endIdx = startIdx + spanText.length();
+        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 }
