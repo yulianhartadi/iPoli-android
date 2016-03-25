@@ -31,12 +31,7 @@ public class BusModule {
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 super.post(event);
             } else {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainThreadBus.super.post(event);
-                    }
-                });
+                handler.post(() -> MainThreadBus.super.post(event));
             }
         }
     }

@@ -7,10 +7,6 @@ import java.util.Random;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.player.events.PlayerLevelDownEvent;
-import io.ipoli.android.player.events.PlayerLevelUpEvent;
-import io.ipoli.android.player.events.PlayerXPDecreasedEvent;
-import io.ipoli.android.player.events.PlayerXPIncreasedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.Quest;
@@ -32,44 +28,44 @@ public class SimplePlayerService implements PlayerService {
 
     @Subscribe
     public void onQuestComplete(CompleteQuestEvent e) {
-        Player player = playerPersistenceService.find();
-        int currentXP = player.getExperience();
-        int earnedXP = getExperienceForQuest(e.quest);
-        int newXP = currentXP + earnedXP;
-        int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
-        if (newXP >= maxXPForCurrentLevel) {
-            int newLevel = player.getLevel() + 1;
-            player.setLevel(newLevel);
-            // Every level starts from 0 experience (or the leftover from the previous one)
-            newXP = newXP - maxXPForCurrentLevel;
-            updatePlayerXP(player, newXP);
-            int maxXPForNewLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
-            eventBus.post(new PlayerLevelUpEvent(newLevel, newXP, maxXPForNewLevel, earnedXP));
-        } else {
-            updatePlayerXP(player, newXP);
-            eventBus.post(new PlayerXPIncreasedEvent(currentXP, newXP, earnedXP));
-        }
+//        Player player = playerPersistenceService.find();
+//        int currentXP = player.getExperience();
+//        int earnedXP = getExperienceForQuest(e.quest);
+//        int newXP = currentXP + earnedXP;
+//        int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
+//        if (newXP >= maxXPForCurrentLevel) {
+//            int newLevel = player.getLevel() + 1;
+//            player.setLevel(newLevel);
+//            // Every level starts from 0 experience (or the leftover from the previous one)
+//            newXP = newXP - maxXPForCurrentLevel;
+//            updatePlayerXP(player, newXP);
+//            int maxXPForNewLevel = LevelExperienceGenerator.experienceForLevel(player.getLevel());
+//            eventBus.post(new PlayerLevelUpEvent(newLevel, newXP, maxXPForNewLevel, earnedXP));
+//        } else {
+//            updatePlayerXP(player, newXP);
+//            eventBus.post(new PlayerXPIncreasedEvent(currentXP, newXP, earnedXP));
+//        }
     }
 
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
-        Player player = playerPersistenceService.find();
-        int currentXP = player.getExperience();
-        int earnedXP = getExperienceForQuest(e.quest);
-        int newXP = currentXP - earnedXP;
-
-        if (newXP < 0) {
-            int newLevel = Math.max(0, player.getLevel() - 1);
-            player.setLevel(newLevel);
-            int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(newLevel);
-            // Every level starts from 0 experience (or the leftover from the previous one)
-            newXP = maxXPForCurrentLevel - Math.abs(newXP);
-            updatePlayerXP(player, newXP);
-            eventBus.post(new PlayerLevelDownEvent(newLevel, newXP, maxXPForCurrentLevel, earnedXP));
-        } else {
-            updatePlayerXP(player, newXP);
-            eventBus.post(new PlayerXPDecreasedEvent(currentXP, newXP, earnedXP));
-        }
+//        Player player = playerPersistenceService.find();
+//        int currentXP = player.getExperience();
+//        int earnedXP = getExperienceForQuest(e.quest);
+//        int newXP = currentXP - earnedXP;
+//
+//        if (newXP < 0) {
+//            int newLevel = Math.max(0, player.getLevel() - 1);
+//            player.setLevel(newLevel);
+//            int maxXPForCurrentLevel = LevelExperienceGenerator.experienceForLevel(newLevel);
+//            // Every level starts from 0 experience (or the leftover from the previous one)
+//            newXP = maxXPForCurrentLevel - Math.abs(newXP);
+//            updatePlayerXP(player, newXP);
+//            eventBus.post(new PlayerLevelDownEvent(newLevel, newXP, maxXPForCurrentLevel, earnedXP));
+//        } else {
+//            updatePlayerXP(player, newXP);
+//            eventBus.post(new PlayerXPDecreasedEvent(currentXP, newXP, earnedXP));
+//        }
     }
 
     private int getExperienceForQuest(Quest quest) {

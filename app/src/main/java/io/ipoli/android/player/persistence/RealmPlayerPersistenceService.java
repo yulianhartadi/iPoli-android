@@ -1,37 +1,21 @@
 package io.ipoli.android.player.persistence;
 
-import android.content.Context;
-
-import io.ipoli.android.Constants;
+import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.player.Player;
-import io.realm.Realm;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
-public class RealmPlayerPersistenceService implements PlayerPersistenceService {
-
-    private Realm realm;
-
-    public RealmPlayerPersistenceService(Context context) {
-        realm = Realm.getInstance(context);
-    }
+public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<Player> implements PlayerPersistenceService {
 
     @Override
-    public Player save(Player player) {
-        realm.beginTransaction();
-        Player realmPlayer = realm.copyFromRealm(realm.copyToRealmOrUpdate(player));
-        realm.commitTransaction();
-        return realmPlayer;
-    }
-
-    @Override
-    public Player find() {
-        Player player = realm.where(Player.class).findFirst();
-        if (player == null) {
-            return new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+    public Observable<Player> find() {
+        Player p = where(Player.class).findFirst();
+        if (p == null) {
+            return Observable.just(null);
         }
-        return realm.copyFromRealm(player);
+        return Observable.just(p);
     }
 }

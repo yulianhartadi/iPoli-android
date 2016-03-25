@@ -2,6 +2,7 @@ package io.ipoli.android.player;
 
 import java.util.UUID;
 
+import io.ipoli.android.app.sync.Remotable;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -9,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
-public class Player extends RealmObject {
+public class Player extends RealmObject implements Remotable<Player> {
 
     @PrimaryKey
     private String id;
@@ -19,6 +20,9 @@ public class Player extends RealmObject {
 
     private String avatar;
 
+    private String remoteId;
+    private boolean isSyncedWithRemote;
+
     public Player() {
     }
 
@@ -27,6 +31,7 @@ public class Player extends RealmObject {
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
+        this.isSyncedWithRemote = false;
     }
 
     public String getId() {
@@ -59,5 +64,40 @@ public class Player extends RealmObject {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setNeedsSync() {
+        isSyncedWithRemote = false;
+    }
+
+    @Override
+    public boolean needsSyncWithRemote() {
+        return !isSyncedWithRemote;
+    }
+
+    @Override
+    public void updateLocal(Player remoteObject) {
+
+    }
+
+    @Override
+    public Player updateRemote() {
+        return null;
+    }
+
+    @Override
+    public void setSyncedWithRemote() {
+        this.isSyncedWithRemote = true;
     }
 }
