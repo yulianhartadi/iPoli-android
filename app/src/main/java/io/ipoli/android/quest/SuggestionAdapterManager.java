@@ -49,16 +49,23 @@ public class SuggestionAdapterManager {
             switch (sa) {
                 case DUE_DATE:
                     currentAdapter.setSuggestions(getDueDateSuggestions());
-                    currentAdapter.setType(QuestPartType.DUE_DATE);
                     break;
                 case DURATION:
                     currentAdapter.setSuggestions(getDurationSuggestions());
-                    currentAdapter.setType(QuestPartType.DURATION);
+                    break;
+                case START_TIME:
+                    currentAdapter.setSuggestions(getStartTimeSuggestions());
+                    break;
+                case RECURRENT:
+                    currentAdapter.setSuggestions(getRecurrentSuggestions());
+                    break;
+                case TIMES_PER_DAY:
+                    currentAdapter.setSuggestions(getTimesPerDaySuggestions());
                     break;
                 default:
                     currentAdapter.setSuggestions(getMainSuggestions());
-                    currentAdapter.setType(QuestPartType.MAIN);
             }
+            currentAdapter.setType(sa);
         }
         eventBus.post(new SuggestionsAdapterChangedEvent());
     }
@@ -111,6 +118,36 @@ public class SuggestionAdapterManager {
         suggestions.add(new AddQuestSuggestion(icon, "30 min", "for 30 min"));
         suggestions.add(new AddQuestSuggestion(icon, "1 hour", "for 1 hour"));
         suggestions.add(new AddQuestSuggestion(icon, "1h and 30m", "for 1h and 30m"));
+        return suggestions;
+    }
+
+    private List<AddQuestSuggestion> getStartTimeSuggestions() {
+        int icon = R.drawable.ic_alarm_black_18dp;
+        List<AddQuestSuggestion> suggestions = new ArrayList<>();
+        suggestions.add(new AddQuestSuggestion(icon, "19:30", "at 19:30"));
+        suggestions.add(new AddQuestSuggestion(icon, "7 pm", "at 7 pm"));
+        suggestions.add(new AddQuestSuggestion(icon, "12:00", "at 12:00"));
+        suggestions.add(new AddQuestSuggestion(icon, "22:00", "at 22:00"));
+        return suggestions;
+    }
+
+    private List<AddQuestSuggestion> getRecurrentSuggestions() {
+        int icon = R.drawable.ic_repeat_black_24dp;
+        List<AddQuestSuggestion> suggestions = new ArrayList<>();
+        suggestions.add(new AddQuestSuggestion(icon, "day", "every day"));
+        suggestions.add(new AddQuestSuggestion(icon, "Mon", "every Mon"));
+        suggestions.add(new AddQuestSuggestion(icon, "Tue", "everyTue"));
+        return suggestions;
+    }
+
+    private List<AddQuestSuggestion> getTimesPerDaySuggestions() {
+        int icon = R.drawable.ic_clear_24dp;
+        List<AddQuestSuggestion> suggestions = new ArrayList<>();
+        suggestions.add(new AddQuestSuggestion(icon, "2", "2 times per day"));
+        suggestions.add(new AddQuestSuggestion(icon, "3", "3 times per day"));
+        suggestions.add(new AddQuestSuggestion(icon, "4", "4 times per day"));
+        suggestions.add(new AddQuestSuggestion(icon, "5", "5 times per day"));
+        suggestions.add(new AddQuestSuggestion(icon, "6", "6 times per day"));
         return suggestions;
     }
 }

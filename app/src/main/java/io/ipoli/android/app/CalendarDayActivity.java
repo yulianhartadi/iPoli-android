@@ -58,7 +58,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
-import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

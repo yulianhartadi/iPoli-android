@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,7 +66,7 @@ import io.ipoli.android.tutorial.TutorialItem;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/18/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, AdapterView.OnItemClickListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher {
 
     @Inject
     Bus eventBus;
@@ -103,6 +102,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     private TimesPerDayMatcher timesPerDayMatcher;
     private RecurrenceMatcher recurrenceMatcher;
     private MainMatcher mainMatcher;
+    private Map<QuestPartType, QuestTextMatcher> typeToMatcher;
+
+    private Map<QuestPartType, QuestPart> typeToQuestPart = new HashMap<>();
+
 
     private SuggestionAdapterManager suggestionAdapterManager;
 
@@ -117,7 +120,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
 
         initMatchers();
 
-        questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
         questText.requestFocus();
 
@@ -146,6 +148,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         timesPerDayMatcher = new TimesPerDayMatcher();
         recurrenceMatcher = new RecurrenceMatcher();
         mainMatcher = new MainMatcher();
+        typeToMatcher = new HashMap<QuestPartType, QuestTextMatcher>(){{
+           put(QuestPartType.DURATION, durationMatcher);
+           put(QuestPartType.START_TIME, startTimeMatcher);
+           put(QuestPartType.DUE_DATE, dueDateMatcher);
+           put(QuestPartType.TIMES_PER_DAY, timesPerDayMatcher);
+           put(QuestPartType.RECURRENT, recurrenceMatcher);
+        }};
     }
 
     @Override
@@ -255,22 +264,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        String selectedText = adapter.getItem(position).visibleText;
-//        if (questNameAutoCompletes.contains(selectedText)) {
-//            questText.setText(selectedText);
-//        } else {
-//            String text = this.questText.getText().toString();
-//            if (!text.endsWith(" ")) {
-//                selectedText = " " + selectedText;
-//            }
-//            questText.append(selectedText);
-//            questText.setThreshold(1000);
-//        }
-//        questText.setSelection(this.questText.getText().length());
-    }
-
     @OnEditorAction(R.id.quest_text)
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
@@ -288,8 +281,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
-    Map<QuestPartType, QuestPart> typeToQuestPart = new HashMap<>();
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
     }
@@ -301,69 +292,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         String originalText = s.toString();
 
         if (count == 0 && before == 1) {//delete
-            QuestPartType typeToRemove = null;
-            for (QuestPartType t : typeToQuestPart.keySet()) {
-                QuestPart p = typeToQuestPart.get(t);
-                if (p.containsIndex(start)) {
-                    typeToRemove = t;
-                    break;
-                }
-            }
+            QuestPartType typeToDelete = findQuestPartToDelete(start);
 
-            if (typeToRemove != null) {
-                QuestPart p = typeToQuestPart.get(typeToRemove);
-                typeToQuestPart.remove(typeToRemove);
-                if (!TextUtils.isEmpty(p.text)) {
-                    String begin = originalText.substring(0, p.start).trim() + " ";
-                    String end = originalText.substring(p.end()).trim();
-                    if (!TextUtils.isEmpty(end)) {
-                        end += " ";
-                    }
-                    questText.setText(begin + end);
-                    questText.setSelection(begin.length());
-                }
-
+            if (typeToDelete != null) {
+                deleteQuestPartAndUpdateText(originalText, typeToDelete);
                 return;
             }
         }
 
         Map<QuestPartType, QuestPart> currParts = new HashMap<>();
 
-        String matchedDuration = durationMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedDuration)) {
-            suggestionAdapterManager.markAdapterAsUsed(QuestPartType.DURATION);
-
-            int i = originalText.indexOf(matchedDuration);
-            currParts.put(QuestPartType.DURATION, new QuestPart(matchedDuration, i, durationMatcher, QuestPartType.DURATION));
-            text = text.replace(matchedDuration, " ");
-        } else {
-            suggestionAdapterManager.markAdapterAsNotUsed(QuestPartType.DURATION);
-        }
-
-        String matchedStartTime = startTimeMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedStartTime)) {
-            text = text.replace(matchedStartTime, " ");
-        }
-
-        String matchedDueDate = dueDateMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedDueDate)) {
-            suggestionAdapterManager.markAdapterAsUsed(QuestPartType.DUE_DATE);
-            matchedDueDate = matchedDueDate.trim();
-            int i = originalText.indexOf(matchedDueDate);
-            currParts.put(QuestPartType.DUE_DATE, new QuestPart(matchedDueDate, i, durationMatcher, QuestPartType.DUE_DATE));
-            text = text.replace(matchedDueDate, " ");
-        } else {
-            suggestionAdapterManager.markAdapterAsNotUsed(QuestPartType.DUE_DATE);
-        }
-
-        String matchedTimesPerDay = timesPerDayMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedTimesPerDay)) {
-            text = text.replace(matchedTimesPerDay, " ");
-        }
-
-        String matchedRecurrence = recurrenceMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedRecurrence)) {
-            text = text.replace(matchedRecurrence, " ");
+        for(QuestPartType t : QuestPartType.getOrdered()) {
+            text = match(t, text, originalText, currParts);
         }
 
         String matchedPreposition = mainMatcher.match(text);
@@ -372,30 +312,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
             suggestionAdapterManager.changeAdapterSuggestions(matchedPreposition);
         }
 
-
-        if (currParts.size() < typeToQuestPart.size()) {
-            for (QuestPartType t : typeToQuestPart.keySet()) {
-                if (!currParts.containsKey(t)) {
-                    QuestPart p = typeToQuestPart.get(t);
-                    if (p.containsOrIsNextToIdx(start)) {
-                        p.isParsed = false;
-                        if (count == 1 && before == 0) { // add
-                            if (p.start + p.length() >= originalText.length()) {
-                                p.text = originalText.substring(p.start);
-                            } else {
-                                p.text = originalText.substring(p.start, p.start + p.length() + 1);
-                            }
-                        }
-
-                        typeToQuestPart.put(t, p);
-                    }
-                } else {
-                    typeToQuestPart.put(t, currParts.get(t));
-                }
-            }
-        } else {
-            typeToQuestPart = currParts;
-        }
+        updateParsedQuestParts(start, before, count, originalText, currParts);
     }
 
     @Override
@@ -420,6 +337,72 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         int startIdx = text.toString().indexOf(spanText);
         int endIdx = startIdx + spanText.length();
         text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private String match(QuestPartType type, String text, String originalText, Map<QuestPartType, QuestPart> currParts) {
+        String matchedText = typeToMatcher.get(type).match(text);
+        if (!TextUtils.isEmpty(matchedText)) {
+            suggestionAdapterManager.markAdapterAsUsed(type);
+            int i = originalText.indexOf(matchedText);
+            currParts.put(type, new QuestPart(matchedText, i, typeToMatcher.get(type), type));
+            text = text.replace(matchedText, " ");
+        } else {
+            suggestionAdapterManager.markAdapterAsNotUsed(type);
+        }
+        return text;
+    }
+
+    @Nullable
+    private QuestPartType findQuestPartToDelete(int start) {
+        QuestPartType typeToRemove = null;
+        for (QuestPartType t : typeToQuestPart.keySet()) {
+            QuestPart p = typeToQuestPart.get(t);
+            if (p.containsIndex(start)) {
+                typeToRemove = t;
+                break;
+            }
+        }
+        return typeToRemove;
+    }
+
+    private void deleteQuestPartAndUpdateText(String originalText, QuestPartType typeToDelete) {
+        QuestPart p = typeToQuestPart.get(typeToDelete);
+        typeToQuestPart.remove(typeToDelete);
+        if (!TextUtils.isEmpty(p.text)) {
+            String begin = originalText.substring(0, p.start).trim() + " ";
+            String end = originalText.substring(p.end()).trim();
+            if (!TextUtils.isEmpty(end)) {
+                end = " " + end + " ";
+            }
+            questText.setText(begin + end);
+            questText.setSelection(begin.length());
+        }
+    }
+
+    private void updateParsedQuestParts(int start, int before, int count, String originalText, Map<QuestPartType, QuestPart> currParts) {
+        if (currParts.size() < typeToQuestPart.size()) {
+            for (QuestPartType t : typeToQuestPart.keySet()) {
+                if (!currParts.containsKey(t)) {
+                    QuestPart p = typeToQuestPart.get(t);
+                    if (p.containsOrIsNextToIdx(start)) {
+                        p.isParsed = false;
+                        if (count == 1 && before == 0) { // add
+                            if (p.start + p.length() >= originalText.length()) {
+                                p.text = originalText.substring(p.start);
+                            } else {
+                                p.text = originalText.substring(p.start, p.start + p.length() + 1);
+                            }
+                        }
+
+                        typeToQuestPart.put(t, p);
+                    }
+                } else {
+                    typeToQuestPart.put(t, currParts.get(t));
+                }
+            }
+        } else {
+            typeToQuestPart = currParts;
+        }
     }
 
     @Subscribe
