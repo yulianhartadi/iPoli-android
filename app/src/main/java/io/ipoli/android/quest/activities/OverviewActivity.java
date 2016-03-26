@@ -28,7 +28,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.OverviewAdapter;
+import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;

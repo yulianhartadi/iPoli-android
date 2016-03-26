@@ -60,7 +60,7 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
     compile 'com.github.iammert:MaterialIntroView:1.5'
-    compile 'com.roughike:bottom-bar:1.1.8'
+    compile 'com.roughike:bottom-bar:1.2.1'
     compile 'io.reactivex:rxandroid:1.1.0'
     compile 'io.reactivex:rxjava:1.1.2'
     compile 'com.squareup.retrofit2:retrofit:2.0.0'

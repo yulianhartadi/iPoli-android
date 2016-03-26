@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;

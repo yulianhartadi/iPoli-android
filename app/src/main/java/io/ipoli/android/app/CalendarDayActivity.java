@@ -41,10 +41,10 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestCalendarAdapter;
-import io.ipoli.android.quest.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
+import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
+import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
@@ -126,6 +126,33 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
+
+//        Tutorial.getInstance(this).addItem(
+//                new TutorialItem.Builder(this)
+//                        .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
+//                        .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
+//                        .enableDotAnimation(false)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .build());
+//
+//        Tutorial.getInstance(this).addItem(
+//                new TutorialItem.Builder(this)
+//                        .setState(Tutorial.State.TUTORIAL_START_ADD_QUEST)
+//                        .setTarget(findViewById(R.id.add_quest))
+//                        .enableDotAnimation(true)
+//                        .performClick(true)
+//                        .setFocusType(Focus.MINIMUM)
+//                        .build());
+
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(APIService.API_ENDPOINT)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .build();
+//        APIService apiService = retrofit.create(APIService.class);
+//        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
+//            Log.d("OnNext", questDTOs.toString());
+//        });
 
         JobScheduler mJobScheduler = (JobScheduler)
                 getSystemService(Context.JOB_SCHEDULER_SERVICE);

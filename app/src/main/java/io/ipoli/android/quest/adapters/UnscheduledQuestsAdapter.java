@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -74,7 +74,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 return true;
             }
         });
-        
+
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(false);
         holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

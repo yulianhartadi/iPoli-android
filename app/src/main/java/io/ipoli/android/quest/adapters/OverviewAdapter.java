@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -170,7 +170,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.duration.setVisibility(View.INVISIBLE);
             }
 
-            if(new Random().nextFloat() < 0.5) {
+            if (new Random().nextFloat() < 0.5) {
                 questHolder.habitIndicatorsContainer.setVisibility(View.GONE);
             }
 

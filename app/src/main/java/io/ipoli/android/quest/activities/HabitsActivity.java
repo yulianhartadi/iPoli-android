@@ -28,7 +28,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.HabitsAdapter;
+import io.ipoli.android.quest.adapters.HabitsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -70,7 +70,7 @@ public class HabitsActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        habitsAdapter = new HabitsAdapter(this, new ArrayList<Quest>(), eventBus);
+        habitsAdapter = new HabitsAdapter(this, new ArrayList<>(), eventBus);
         questList.setAdapter(habitsAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;

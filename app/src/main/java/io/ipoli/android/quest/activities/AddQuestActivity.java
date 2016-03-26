@@ -16,9 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,31 +24,36 @@ import android.widget.Toast;
 
 import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.AddQuestSuggestion;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
+import io.ipoli.android.quest.QuestPartType;
+import io.ipoli.android.quest.SuggestionAdapterManager;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
+import io.ipoli.android.quest.events.SuggestionsAdapterChangedEvent;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.MainMatcher;
+import io.ipoli.android.quest.parsers.QuestTextMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
@@ -63,7 +66,7 @@ import io.ipoli.android.tutorial.TutorialItem;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/18/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, AdapterView.OnItemClickListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher {
 
     @Inject
     Bus eventBus;
@@ -77,34 +80,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     @Bind(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
 
-    @Bind(R.id.due_date)
-    ImageButton dueDate;
-
-    @Bind(R.id.start_time)
-    ImageButton startTime;
-
-    @Bind(R.id.duration)
-    ImageButton duration;
-
     @Bind(R.id.quest_context_name)
     TextView contextName;
 
     @Bind(R.id.quest_context_container)
     LinearLayout contextContainer;
 
-    private ArrayAdapter<String> adapter;
-    private String[] durationAutoCompletes;
-
-    private String[] dueDateAutoCompletes;
-
-    private String[] startTimeAutoCompletes;
+    private ArrayAdapter<AddQuestSuggestion> adapter;
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
     @Inject
     QuestPersistenceService questPersistenceService;
-
-    private List<String> questNameAutoCompletes;
 
     private QuestContext questContext;
     private BottomBar bottomBar;
@@ -114,6 +101,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     private DueDateMatcher dueDateMatcher;
     private TimesPerDayMatcher timesPerDayMatcher;
     private RecurrenceMatcher recurrenceMatcher;
+    private MainMatcher mainMatcher;
+    private Map<QuestPartType, QuestTextMatcher> typeToMatcher;
+
+    private Map<QuestPartType, QuestPart> typeToQuestPart = new HashMap<>();
+
+
+    private SuggestionAdapterManager suggestionAdapterManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -122,23 +116,17 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         appComponent().inject(this);
+        suggestionAdapterManager = new SuggestionAdapterManager(this);
 
         initMatchers();
 
-        dueDateAutoCompletes = getResources().getStringArray(R.array.due_date_auto_completes);
-        startTimeAutoCompletes = getResources().getStringArray(R.array.start_time_auto_completes);
-        durationAutoCompletes = getResources().getStringArray(R.array.duration_auto_completes);
-
-        questNameAutoCompletes = createQuestNameAutoCompletes();
-
-        questText.setOnItemClickListener(this);
         questText.addTextChangedListener(this);
         questText.requestFocus();
 
-        if(getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
+        if (getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
             questText.setText(" " + getString(R.string.add_quest_today));
         }
-        resetUI();
+        initUI();
 
         bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_container, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
         initContextUI();
@@ -159,6 +147,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         dueDateMatcher = new DueDateMatcher(parser);
         timesPerDayMatcher = new TimesPerDayMatcher();
         recurrenceMatcher = new RecurrenceMatcher();
+        mainMatcher = new MainMatcher();
+        typeToMatcher = new HashMap<QuestPartType, QuestTextMatcher>() {{
+            put(QuestPartType.DURATION, durationMatcher);
+            put(QuestPartType.START_TIME, startTimeMatcher);
+            put(QuestPartType.DUE_DATE, dueDateMatcher);
+            put(QuestPartType.TIMES_PER_DAY, timesPerDayMatcher);
+            put(QuestPartType.RECURRENT, recurrenceMatcher);
+        }};
     }
 
     @Override
@@ -167,30 +163,22 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         bottomBar.onSaveInstanceState(outState);
     }
 
-    private List<String> createQuestNameAutoCompletes() {
-        List<Quest> completedQuests = questPersistenceService.findAllCompleted();
-        Set<String> names = new HashSet<>();
-        for (Quest q : completedQuests) {
-            names.add(q.getName());
-        }
-        return new ArrayList<>(names);
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
     }
 
-    private void resetUI() {
-        resetButtons();
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, questNameAutoCompletes);
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    private void initUI() {
+        adapter = suggestionAdapterManager.getAdapter();
         questText.setAdapter(adapter);
         questText.setThreshold(1);
-    }
-
-    private void resetButtons() {
-        duration.setBackgroundResource(R.drawable.circle_disable);
-        startTime.setBackgroundResource(R.drawable.circle_disable);
-        dueDate.setBackgroundResource(R.drawable.circle_disable);
-        duration.setEnabled(false);
-        startTime.setEnabled(false);
-        dueDate.setEnabled(false);
     }
 
     private void initContextUI() {
@@ -264,33 +252,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.due_date)
-    public void onDueDateClick(View v) {
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, dueDateAutoCompletes);
-        questText.setAdapter(adapter);
-        questText.setThreshold(1);
-        questText.showDropDown();
-    }
-
-    @OnClick(R.id.start_time)
-    public void onStartTimeClick(View v) {
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, startTimeAutoCompletes);
-        questText.setAdapter(adapter);
-        questText.setThreshold(1);
-        questText.showDropDown();
-    }
-
-    @OnClick(R.id.duration)
-    public void onDurationClick(View v) {
-        adapter = new ArrayAdapter<>(this,
-                R.layout.add_quest_autocomplete_item, durationAutoCompletes);
-        questText.setAdapter(adapter);
-        questText.setThreshold(1);
-        questText.showDropDown();
-    }
-
     public void saveQuest() {
         String text = questText.getText().toString().trim();
 
@@ -301,22 +262,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         }
         eventBus.post(new NewQuestEvent(q.getName(), q.getStartMinute(), q.getDuration(), q.getEndDate(), questContext));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String selectedText = adapter.getItem(position);
-        if (questNameAutoCompletes.contains(selectedText)) {
-            questText.setText(selectedText);
-        } else {
-            String text = this.questText.getText().toString();
-            if (!text.endsWith(" ")) {
-                selectedText = " " + selectedText;
-            }
-            questText.append(selectedText);
-            questText.setThreshold(1000);
-        }
-        questText.setSelection(this.questText.getText().length());
     }
 
     @OnEditorAction(R.id.quest_text)
@@ -337,76 +282,54 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
     }
 
     @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
     }
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
 
+        String text = s.toString();
+        String originalText = s.toString();
+
+        if (count == 0 && before == 1) {//delete
+            QuestPartType typeToDelete = findQuestPartToDelete(start);
+
+            if (typeToDelete != null) {
+                deleteQuestPartAndUpdateText(originalText, typeToDelete);
+                return;
+            }
+        }
+
+        Map<QuestPartType, QuestPart> currParts = new HashMap<>();
+
+        for (QuestPartType t : QuestPartType.getOrdered()) {
+            text = match(t, text, originalText, currParts);
+        }
+
+        String matchedPreposition = mainMatcher.match(text);
+        if (!TextUtils.isEmpty(matchedPreposition)) {
+            text = text.replace(matchedPreposition, " ");
+            suggestionAdapterManager.changeAdapterSuggestions(matchedPreposition);
+        }
+
+        updateParsedQuestParts(start, before, count, originalText, currParts);
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
-        String text = editable.toString();
+        clearSpans(editable);
 
-        if (text.replaceAll(" ", "").length() < 3) {
-            resetUI();
-            return;
+        for (QuestPart p : typeToQuestPart.values()) {
+            if (p.isParsed) {
+                markText(editable, p.text, R.color.md_purple_300);
+            }
         }
+    }
 
-        String matchedDuration = durationMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedDuration)) {
-            text = text.replace(matchedDuration, " ");
-            duration.setBackgroundResource(R.drawable.circle_disable);
-            duration.setEnabled(false);
-            markText(editable, matchedDuration, R.color.md_red_200);
-        } else {
-            duration.setBackgroundResource(R.drawable.circle_normal);
-            duration.setEnabled(true);
-        }
-
-        String matchedStartTime = startTimeMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedStartTime)) {
-            text = text.replace(matchedStartTime, " ");
-            startTime.setBackgroundResource(R.drawable.circle_disable);
-            startTime.setEnabled(false);
-            markText(editable, matchedStartTime, R.color.md_blue_200);
-        } else {
-            startTime.setBackgroundResource(R.drawable.circle_normal);
-            startTime.setEnabled(true);
-        }
-
-        String matchedDueDate = dueDateMatcher.match(text);
-        if (!TextUtils.isEmpty(matchedDueDate)) {
-            text = text.replace(matchedDueDate, " ");
-            dueDate.setBackgroundResource(R.drawable.circle_disable);
-            dueDate.setEnabled(false);
-            markText(editable, matchedDueDate, R.color.md_green_200);
-        } else {
-            dueDate.setBackgroundResource(R.drawable.circle_normal);
-            dueDate.setEnabled(true);
-        }
-
-        String matchedTimesPerDay = timesPerDayMatcher.match(text);
-        if(!TextUtils.isEmpty(matchedTimesPerDay)) {
-            text = text.replace(matchedTimesPerDay, " ");
-            markText(editable, matchedTimesPerDay, R.color.md_orange_200);
-        }
-
-        String matchedRecurrence = recurrenceMatcher.match(text);
-        if(!TextUtils.isEmpty(matchedRecurrence)) {
-            text = text.replace(matchedRecurrence, " ");
-            markText(editable, matchedRecurrence, R.color.md_purple_200);
-        }
-
-        if (TextUtils.isEmpty(matchedDueDate)) {
-            dueDate.setBackgroundResource(R.drawable.circle_accent);
-        } else if (TextUtils.isEmpty(matchedStartTime)) {
-            startTime.setBackgroundResource(R.drawable.circle_accent);
-        } else if (TextUtils.isEmpty(matchedDuration)) {
-            duration.setBackgroundResource(R.drawable.circle_accent);
-        }
+    private void clearSpans(Editable editable) {
+        BackgroundColorSpan[] spansToRemove = editable.getSpans(0, editable.toString().length(), BackgroundColorSpan.class);
+        for (int i = 0; i < spansToRemove.length; i++)
+            editable.removeSpan(spansToRemove[i]);
     }
 
     private void markText(Editable text, String spanText, int colorRes) {
@@ -414,5 +337,145 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
         int startIdx = text.toString().indexOf(spanText);
         int endIdx = startIdx + spanText.length();
         text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private String match(QuestPartType type, String text, String originalText, Map<QuestPartType, QuestPart> currParts) {
+        String matchedText = typeToMatcher.get(type).match(text);
+        if (!TextUtils.isEmpty(matchedText)) {
+            suggestionAdapterManager.markAdapterAsUsed(type);
+            int i = originalText.indexOf(matchedText);
+            currParts.put(type, new QuestPart(matchedText, i, typeToMatcher.get(type), type));
+            text = text.replace(matchedText, " ");
+        } else {
+            suggestionAdapterManager.markAdapterAsNotUsed(type);
+        }
+        return text;
+    }
+
+    @Nullable
+    private QuestPartType findQuestPartToDelete(int start) {
+        QuestPartType typeToRemove = null;
+        for (QuestPartType t : typeToQuestPart.keySet()) {
+            QuestPart p = typeToQuestPart.get(t);
+            if (p.containsIndex(start)) {
+                typeToRemove = t;
+                break;
+            }
+        }
+        return typeToRemove;
+    }
+
+    private void deleteQuestPartAndUpdateText(String originalText, QuestPartType typeToDelete) {
+        QuestPart p = typeToQuestPart.get(typeToDelete);
+        typeToQuestPart.remove(typeToDelete);
+        if (!TextUtils.isEmpty(p.text)) {
+            String begin = originalText.substring(0, p.start).trim() + " ";
+            String end = originalText.substring(p.end()).trim();
+            if (!TextUtils.isEmpty(end)) {
+                end = " " + end + " ";
+            }
+            questText.setText(begin + end);
+            questText.setSelection(begin.length());
+        }
+    }
+
+    private void updateParsedQuestParts(int start, int before, int count, String originalText, Map<QuestPartType, QuestPart> currParts) {
+        if (currParts.size() < typeToQuestPart.size()) {
+            for (QuestPartType t : typeToQuestPart.keySet()) {
+                if (!currParts.containsKey(t)) {
+                    QuestPart p = typeToQuestPart.get(t);
+                    if (p.containsOrIsNextToIdx(start)) {
+                        p.isParsed = false;
+                        if (count == 1 && before == 0) { // add
+                            if (p.start + p.length() >= originalText.length()) {
+                                p.text = originalText.substring(p.start);
+                            } else {
+                                p.text = originalText.substring(p.start, p.start + p.length() + 1);
+                            }
+                        }
+
+                        typeToQuestPart.put(t, p);
+                    }
+                } else {
+                    typeToQuestPart.put(t, currParts.get(t));
+                }
+            }
+        } else {
+            typeToQuestPart = currParts;
+        }
+    }
+
+    @Subscribe
+    public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
+        QuestPartType at = suggestionAdapterManager.getAdapter().getType();
+        int i = questText.getSelectionStart();
+        String s = e.suggestionItem.text;
+        String text = questText.getText().toString();
+        String begin = text.substring(0, i);
+        String end = text.substring(i);
+
+        if (at != QuestPartType.MAIN) {
+            begin = begin.trim();
+            if (begin.endsWith(at.text)) {
+                begin = begin.substring(0, begin.length() - at.text.length());
+            }
+        }
+
+        if (typeToQuestPart.containsKey(at)) {
+            QuestPart p = typeToQuestPart.get(at);
+            if (p.containsOrIsNextToIdx(i)) {
+                if (begin.endsWith(p.text)) {
+                    begin = begin.substring(0, begin.length() - p.length());
+                } else if (end.startsWith(p.text)) {
+                    end = end.substring(p.length());
+                }
+            }
+        }
+
+        if (!begin.endsWith(" ")) {
+            s = " " + s;
+        }
+        if (!end.startsWith(" ")) {
+            s = s + " ";
+        }
+        questText.setText(begin + s + end);
+        questText.setSelection(begin.length() + s.length());
+    }
+
+    @Subscribe
+    public void onAdapterChanged(SuggestionsAdapterChangedEvent e) {
+        questText.showDropDown();
+    }
+
+    public class QuestPart {
+        String text;
+        int start;
+        boolean isParsed;
+        QuestTextMatcher mather;
+        QuestPartType type;
+
+        public QuestPart(String text, int start, QuestTextMatcher mather, QuestPartType type) {
+            this.text = text;
+            this.start = start;
+            this.mather = mather;
+            this.type = type;
+            isParsed = true;
+        }
+
+        public int length() {
+            return text.length();
+        }
+
+        public int end() {
+            return start + text.length() - 1;
+        }
+
+        public boolean containsIndex(int index) {
+            return index >= start && index <= end();
+        }
+
+        public boolean containsOrIsNextToIdx(int index) {
+            return containsIndex(index) || start - 1 == index || end() + 1 == index;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;

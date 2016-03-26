@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -23,6 +23,7 @@ import java.util.List;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
