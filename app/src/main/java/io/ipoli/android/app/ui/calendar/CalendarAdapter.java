@@ -3,7 +3,6 @@ package io.ipoli.android.app.ui.calendar;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ public interface CalendarAdapter<E extends CalendarEvent> {
 
     View getView(ViewGroup parent, int position);
 
-    void onStartTimeUpdated(E calendarEvent, Date oldStartTime);
+    void onStartTimeUpdated(E calendarEvent, int oldStartTime);
 
     void notifyDataSetChanged();
 

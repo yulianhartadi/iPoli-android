@@ -17,14 +17,13 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -146,11 +145,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     }
 
     @Override
-    public void onStartTimeUpdated(QuestCalendarEvent calendarEvent, Date oldStartTime) {
+    public void onStartTimeUpdated(QuestCalendarEvent calendarEvent, int oldStartTime) {
         if (canAddEvent(calendarEvent)) {
             eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         } else {
-            calendarEvent.setStartTime(oldStartTime);
+            calendarEvent.setStartMinute(oldStartTime);
         }
         notifyDataSetChanged();
     }
@@ -179,17 +178,13 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     }
 
     public boolean canAddEvent(QuestCalendarEvent calendarEvent) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(calendarEvent.getStartTime());
-        int newStartMin = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+        int newStartMin = calendarEvent.getStartMinute();
         int newEndMin = newStartMin + calendarEvent.getDuration();
         for (QuestCalendarEvent e : getEvents()) {
             if (e == calendarEvent) {
                 continue;
             }
-            Calendar c = Calendar.getInstance();
-            c.setTime(e.getStartTime());
-            int curStartMin = c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
+            int curStartMin = e.getStartMinute();
             int curEndMin = curStartMin + e.getDuration();
 
             if ((newStartMin < curEndMin) && (newEndMin > curStartMin)) {

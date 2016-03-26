@@ -41,12 +41,11 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.Difficulty;
-import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestCalendarAdapter;
 import io.ipoli.android.quest.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -176,10 +175,11 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     @Subscribe
     public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
         Quest quest = e.quest;
-        quest.setLog("");
-        quest.setDifficulty(Difficulty.UNKNOWN.name());
+        // @TODO remove old logs
+        quest.getLogs().clear();
+        quest.setDifficulty(0);
         quest.setActualStartDateTime(null);
-        quest.setMeasuredDuration(0);
+        quest.setActualDuration(0);
         quest.setCompletedAtDateTime(null);
         quest = questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
@@ -228,7 +228,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
         QuestCalendarEvent qce = e.questCalendarEvent;
         Quest q = qce.getQuest();
-        q.setStartTime(qce.getStartTime());
+        q.setStartMinute(qce.getStartMinute());
         questPersistenceService.save(q);
     }
 
@@ -262,7 +262,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = e.quest;
-        if (!DateUtils.isToday(q.getDue())) {
+        if (!DateUtils.isToday(q.getEndDate())) {
             return;
         }
         Time startTime = Quest.getStartTime(e.quest);
@@ -292,7 +292,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
                     if (!DateUtils.isToday(c.getTime())) {
                         continue;
                     }
-                    event.setStartTime(c.getTime());
+                    event.setStartMinute(Time.of(c.getTime()).toMinutesAfterMidnight());
                 }
                 calendarEvents.add(event);
             }
@@ -300,7 +300,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
             List<Quest> unscheduledQuests = new ArrayList<>();
             List<Quest> plannedQuests = questPersistenceService.findAllPlannedAndStartedToday();
             for (Quest q : plannedQuests) {
-                if (q.getStartTime() == null) {
+                if (hasNoStartTime(q)) {
                     unscheduledQuests.add(q);
                 } else {
                     calendarEvents.add(new QuestCalendarEvent(q));
@@ -311,11 +311,11 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         }
 
         private boolean hasNoStartTime(Quest q) {
-            return q.getStartTime() == null;
+            return q.getStartMinute() < 0;
         }
 
         private boolean isNotScheduledForToday(Quest q) {
-            return !DateUtils.isToday(q.getDue());
+            return !DateUtils.isToday(q.getEndDate());
         }
     }
 

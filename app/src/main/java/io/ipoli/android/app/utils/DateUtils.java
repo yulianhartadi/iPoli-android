@@ -55,21 +55,6 @@ public class DateUtils {
         return c.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR);
     }
 
-    public static Date getNormalizedStartTime(Date startTime) {
-        if (startTime == null) {
-            return null;
-        }
-        Calendar sc = Calendar.getInstance();
-        sc.setTime(startTime);
-
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(0);
-        c.set(Calendar.HOUR_OF_DAY, sc.get(Calendar.HOUR_OF_DAY));
-        c.set(Calendar.MINUTE, sc.get(Calendar.MINUTE));
-        return c.getTime();
-    }
-
-
     public static Date getTomorrow() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, 1);

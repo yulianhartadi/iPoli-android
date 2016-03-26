@@ -15,6 +15,7 @@ import java.util.Calendar;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
 
 /**
@@ -128,9 +129,7 @@ public class CalendarLayout extends RelativeLayout {
                     Calendar c = Calendar.getInstance();
                     int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                     int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
-                    c.set(Calendar.HOUR_OF_DAY, hours);
-                    c.set(Calendar.MINUTE, minutes);
-                    calendarEvent.setStartTime(c.getTime());
+                    calendarEvent.setStartMinute(Time.at(hours, minutes).toMinutesAfterMidnight());
 
                     if (calendarListener != null) {
                         calendarListener.onAcceptEvent(calendarEvent);

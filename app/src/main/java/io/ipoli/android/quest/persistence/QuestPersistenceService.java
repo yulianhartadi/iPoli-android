@@ -3,7 +3,7 @@ package io.ipoli.android.quest.persistence;
 import java.util.Date;
 import java.util.List;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,6 +23,8 @@ public interface QuestPersistenceService {
     List<Quest> findAllUncompleted();
 
     List<Quest> findAllCompletedToday();
+
+    List<Quest> findAllWhoNeedSyncWithRemote();
 
     Quest findPlannedQuestStartingAfter(Date date);
 

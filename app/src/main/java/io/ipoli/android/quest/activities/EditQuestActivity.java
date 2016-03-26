@@ -43,8 +43,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.parsers.DurationMatcher;
@@ -125,8 +126,8 @@ public class EditQuestActivity extends BaseActivity {
         durationSuggestions.addAll(createAutoSuggestions(qDurationTxt));
         questDuration.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, durationSuggestions));
 
-        setStartTimeText(quest.getStartTime());
-        setDueDateText(quest.getDue());
+        setStartTimeText(Quest.getStartTime(quest));
+        setDueDateText(quest.getEndDate());
 
         initContextUI();
     }
@@ -278,8 +279,8 @@ public class EditQuestActivity extends BaseActivity {
         int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
         quest.setName(name);
         quest.setDuration(duration);
-        quest.setDue((Date) dueDateBtn.getTag());
-        quest.setStartTime((Date) startTimeBtn.getTag());
+        quest.setEndDate((Date) dueDateBtn.getTag());
+        Quest.setStartTime(quest, Time.of((Date) startTimeBtn.getTag()));
         quest = questPersistenceService.save(quest);
     }
 
@@ -304,11 +305,11 @@ public class EditQuestActivity extends BaseActivity {
         dueDateBtn.setTag(date);
     }
 
-    private void setStartTimeText(Date time) {
+    private void setStartTimeText(Time time) {
         if (time == null) {
             startTimeBtn.setText(R.string.start_time_default);
         } else {
-            startTimeBtn.setText(StartTimeFormatter.format(time));
+            startTimeBtn.setText(StartTimeFormatter.format(time.toDate()));
         }
         startTimeBtn.setTag(time);
     }

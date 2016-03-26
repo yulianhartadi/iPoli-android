@@ -9,6 +9,7 @@ import io.ipoli.android.R;
  * on 2/4/16.
  */
 public enum QuestContext {
+    UNKNOWN(R.color.md_blue_grey_50, R.color.md_blue_grey_500, R.color.md_blue_grey_700, R.color.md_blue_grey_800),
     LEARNING(R.color.md_blue_50, R.color.md_blue_500, R.color.md_blue_700, R.color.md_blue_800),
     WELLNESS(R.color.md_green_50, R.color.md_green_500, R.color.md_green_700, R.color.md_green_800),
     PERSONAL(R.color.md_orange_50, R.color.md_orange_500, R.color.md_orange_700, R.color.md_orange_800),

@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -53,13 +54,13 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     public List<Quest> findAllUncompleted() {
         return realm.copyFromRealm(realm.where(Quest.class)
                 .isNull("completedAtDateTime")
-                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
+                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
 
     @Override
     public List<Quest> findAllUnplanned() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .isNull("due")
+                .isNull("endDate")
                 .isNull("actualStartDateTime")
                 .isNull("completedAtDateTime")
                 .findAllSorted("createdAt", Sort.DESCENDING));
@@ -74,10 +75,10 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         tomorrow.add(Calendar.DAY_OF_YEAR, 1);
 
         return realm.copyFromRealm(realm.where(Quest.class)
-                .greaterThan("due", yesterday.getTime())
-                .lessThan("due", tomorrow.getTime())
+                .greaterThan("endDate", yesterday.getTime())
+                .lessThan("endDate", tomorrow.getTime())
                 .isNull("completedAtDateTime")
-                .findAllSorted("startTime", Sort.ASCENDING));
+                .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
@@ -103,20 +104,12 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
 
-        Calendar dateCalendar = Calendar.getInstance();
-        dateCalendar.setTime(date);
-
-        Calendar startTime = Calendar.getInstance();
-        startTime.setTimeInMillis(0);
-        startTime.set(Calendar.HOUR_OF_DAY, dateCalendar.get(Calendar.HOUR_OF_DAY));
-        startTime.set(Calendar.MINUTE, dateCalendar.get(Calendar.MINUTE));
-
         RealmResults<Quest> quests = realm.where(Quest.class)
-                .greaterThan("due", yesterday.getTime())
-                .greaterThanOrEqualTo("startTime", startTime.getTime())
+                .greaterThan("endDate", yesterday.getTime())
+                .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStartDateTime")
                 .isNull("completedAtDateTime")
-                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING);
+                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING);
         if (quests.isEmpty()) {
             return null;
         }
@@ -139,9 +132,9 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
     @Override
     public List<Quest> findAllPlanned() {
         return realm.copyFromRealm(realm.where(Quest.class)
-                .isNotNull("due")
+                .isNotNull("endDate")
                 .isNull("completedAtDateTime")
-                .findAllSorted("due", Sort.ASCENDING, "startTime", Sort.ASCENDING));
+                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
     @Override
@@ -156,6 +149,11 @@ public class RealmQuestPersistenceService implements QuestPersistenceService {
                 .greaterThan("completedAtDateTime", yesterday.getTime())
                 .lessThan("completedAtDateTime", tomorrow.getTime())
                 .findAll());
+    }
+
+    @Override
+    public List<Quest> findAllWhoNeedSyncWithRemote() {
+        return realm.copyFromRealm(realm.where(Quest.class).equalTo("needsSyncWithRemote", true).findAll());
     }
 
 }

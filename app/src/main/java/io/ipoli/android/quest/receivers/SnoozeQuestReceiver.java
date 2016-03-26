@@ -7,14 +7,11 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.squareup.otto.Bus;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -40,11 +37,7 @@ public class SnoozeQuestReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
 
         Quest q = getQuest(intent);
-        Date startTime = q.getStartTime();
-        Calendar c = Calendar.getInstance();
-        c.setTime(startTime);
-        c.add(Calendar.MINUTE, Constants.DEFAULT_SNOOZE_TIME_MINUTES);
-        q.setStartTime(c.getTime());
+        q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
         q = questPersistenceService.save(q);
         scheduleNextQuestReminder(context);
         eventBus.post(new QuestSnoozedEvent(q));

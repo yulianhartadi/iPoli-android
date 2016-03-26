@@ -4,6 +4,7 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.Date;
 
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
@@ -25,12 +26,14 @@ public class QuestParser {
 
     public Quest parse(String text) {
 
+        String originalText = text;
+
         String matchedDurationText = durationMatcher.match(text);
         int duration = durationMatcher.parse(text);
         text = text.replace(matchedDurationText, "");
 
         String matchedStartTimeText = startTimeMatcher.match(text);
-        Date startTime = startTimeMatcher.parse(text);
+        int startTime = startTimeMatcher.parse(text);
         text = text.replace(matchedStartTimeText, "");
 
         String matchedDueDateText = dueDateMatcher.match(text);
@@ -40,9 +43,10 @@ public class QuestParser {
         String name = text;
 
         Quest q = new Quest(name.trim());
+        q.setRawText(originalText);
         q.setDuration(duration);
-        q.setDue(dueDate);
-        q.setStartTime(startTime);
+        q.setEndDate(dueDate);
+        q.setStartMinute(startTime);
         return q;
     }
 }

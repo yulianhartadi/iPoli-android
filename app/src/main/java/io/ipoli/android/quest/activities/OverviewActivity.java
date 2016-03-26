@@ -29,7 +29,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.OverviewAdapter;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -106,11 +106,11 @@ public class OverviewActivity extends BaseActivity {
         Quest q = e.quest;
         Date due = new Date();
         String toast = getString(R.string.quest_scheduled_for_today);
-        if (DateUtils.isToday(e.quest.getDue())) {
+        if (DateUtils.isToday(e.quest.getEndDate())) {
             toast = getString(R.string.quest_scheduled_for_tomorrow);
             due = DateUtils.getTomorrow();
         }
-        q.setDue(due);
+        q.setEndDate(due);
         questPersistenceService.save(q);
         updateQuests();
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();

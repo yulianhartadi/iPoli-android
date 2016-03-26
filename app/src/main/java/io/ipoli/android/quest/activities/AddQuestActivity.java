@@ -45,7 +45,7 @@ import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -299,7 +299,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, Adapt
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return;
         }
-        eventBus.post(new NewQuestEvent(q.getName(), q.getStartTime(), q.getDuration(), q.getDue(), questContext));
+        eventBus.post(new NewQuestEvent(q.getName(), q.getStartMinute(), q.getDuration(), q.getEndDate(), questContext));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 

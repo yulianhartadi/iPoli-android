@@ -29,7 +29,7 @@ import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -157,8 +157,8 @@ public class App extends Application {
     private void resetDueDateForIncompleteQuests() {
         List<Quest> quests = questPersistenceService.findAllUncompleted();
         for (Quest q : quests) {
-            if (q.getDue() != null && DateUtils.isBeforeToday(q.getDue())) {
-                q.setDue(null);
+            if (q.getEndDate() != null && DateUtils.isBeforeToday(q.getEndDate())) {
+                q.setEndDate(null);
                 questPersistenceService.save(q);
             }
         }

@@ -6,6 +6,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -17,6 +20,8 @@ import io.ipoli.android.app.net.dto.QuestDTO;
 import io.ipoli.android.app.net.dto.SnippetDTO;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,8 +34,12 @@ import rx.schedulers.Schedulers;
 public class AppJobService extends JobService {
 
     public static final int SYNC_JOB_ID = 1;
+
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Inject
     APIService apiService;
@@ -45,10 +54,14 @@ public class AppJobService extends JobService {
             }
             return Observable.just(player);
         }).concatMap(player -> {
-            SnippetDTO snippet = new SnippetDTO();
-            snippet.text = "Meet with Jill at 12:00 +work";
-            Log.d("Runnable", "Create snippet " + player);
-            return createSnippet(snippet, player.getRemoteId());
+            List<Observable<QuestDTO>> res = new ArrayList<>();
+            for (Quest q : questPersistenceService.findAllWhoNeedSyncWithRemote()) {
+                SnippetDTO snippet = new SnippetDTO();
+                snippet.text = q.getName();
+                Log.d("Runnable", "Create snippet " + snippet.text + " player: " + player);
+                res.add(createSnippet(snippet, player.getRemoteId()));
+            }
+            return Observable.merge(res);
         }).subscribe(questDTO -> {
             Log.d("Runnable", questDTO.toString());
         }, Throwable::printStackTrace);
@@ -84,7 +97,7 @@ public class AppJobService extends JobService {
     }
 
     private Observable<QuestDTO> createSnippet(SnippetDTO
-            snippet, String userId) {
+                                                       snippet, String userId) {
         return apiService.createQuestFromSnippet(snippet, userId).compose(applySchedulers());
     }
 

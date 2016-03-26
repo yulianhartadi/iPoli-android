@@ -2,9 +2,9 @@ package io.ipoli.android.quest.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.squareup.otto.Bus;
@@ -20,9 +20,9 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Difficulty;
-import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.data.Log;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -72,26 +72,23 @@ public class QuestCompleteActivity extends BaseActivity {
         super.onBackPressed();
     }
 
-    private Difficulty getDifficulty() {
+    private int getDifficulty() {
         int radioButtonID = difficultyGroup.getCheckedRadioButtonId();
         View radioButton = difficultyGroup.findViewById(radioButtonID);
-        int idx = difficultyGroup.indexOfChild(radioButton);
-        RadioButton r = (RadioButton) difficultyGroup.getChildAt(idx);
-        try {
-            return Difficulty.valueOf(r.getText().toString().toUpperCase());
-        } catch (Exception ignored) {
-            return Difficulty.UNKNOWN;
-        }
+        return difficultyGroup.indexOfChild(radioButton);
     }
 
     private void saveQuest() {
-        quest.setLog(log.getText().toString());
-        quest.setDifficulty(getDifficulty().name());
+        String logText = log.getText().toString();
+        if (!TextUtils.isEmpty(logText)) {
+            quest.getLogs().add(new Log(logText));
+        }
+        quest.setDifficulty(getDifficulty() + 1);
 
         if (quest.getActualStartDateTime() != null) {
             long nowMillis = System.currentTimeMillis();
             long startMillis = quest.getActualStartDateTime().getTime();
-            quest.setMeasuredDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
+            quest.setActualDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
         }
         quest.setCompletedAtDateTime(new Date());
 
