@@ -280,7 +280,7 @@ public class EditQuestActivity extends BaseActivity {
         quest.setName(name);
         quest.setDuration(duration);
         quest.setEndDate((Date) dueDateBtn.getTag());
-        Quest.setStartTime(quest, Time.of((Date) startTimeBtn.getTag()));
+        Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
         quest = questPersistenceService.save(quest);
     }
 
