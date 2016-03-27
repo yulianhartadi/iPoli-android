@@ -318,4 +318,10 @@ public class Quest extends RealmObject implements Remotable<Quest> {
     public void setTags(RealmList<Tag> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public void markUpdated() {
+        setNeedsSync();
+        setUpdatedAt(new Date());
+    }
 }

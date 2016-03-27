@@ -30,7 +30,6 @@ import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -80,6 +79,7 @@ public class OverviewActivity extends BaseActivity {
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
+        updateQuests();
     }
 
     @Override
@@ -92,7 +92,6 @@ public class OverviewActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updateQuests();
     }
 
     @Override
@@ -112,17 +111,12 @@ public class OverviewActivity extends BaseActivity {
         }
         q.setEndDate(due);
         questPersistenceService.save(q);
-        updateQuests();
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
     }
 
-    @Subscribe
-    public void onQuestSnoozed(QuestSnoozedEvent e) {
-        updateQuests();
-
-    }
-
     private void updateQuests() {
-        overviewAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        questPersistenceService.findAllPlanned().subscribe(quests -> {
+            overviewAdapter.updateQuests(quests);
+        });
     }
 }

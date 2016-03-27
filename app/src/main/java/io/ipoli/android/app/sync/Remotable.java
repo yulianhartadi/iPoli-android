@@ -18,4 +18,6 @@ public interface Remotable<T> {
     T updateRemote();
 
     void setSyncedWithRemote();
+
+    void markUpdated();
 }

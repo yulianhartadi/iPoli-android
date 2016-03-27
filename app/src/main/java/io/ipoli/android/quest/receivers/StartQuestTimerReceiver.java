@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,16 +16,18 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/2/16.
  */
-public class StartQuestTimerReceiver extends BroadcastReceiver {
+public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
 
     public static final String ACTION_SHOW_QUEST_TIMER = "io.ipoli.android.intent.action.SHOW_QUEST_TIMER";
 
@@ -36,13 +37,15 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
         this.context = context;
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Quest q = questPersistenceService.findById(questId);
-        showQuestTimerNotification(q);
+        return questPersistenceService.findById(questId).flatMap(q -> {
+            showQuestTimerNotification(q);
+            return Observable.empty();
+        });
     }
 
     private void showQuestTimerNotification(Quest q) {

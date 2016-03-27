@@ -109,11 +109,13 @@ public class EditQuestActivity extends BaseActivity {
         durationMatcher = new DurationMatcher();
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        initUI(questId);
+        questPersistenceService.findById(questId).subscribe(q -> {
+            quest = q;
+            initUI();
+        });
     }
 
-    private void initUI(String questId) {
-        quest = questPersistenceService.findById(questId);
+    private void initUI() {
         nameText.setText(quest.getName());
         nameText.setSelection(nameText.getText().length());
 
@@ -281,7 +283,7 @@ public class EditQuestActivity extends BaseActivity {
         quest.setDuration(duration);
         quest.setEndDate((Date) dueDateBtn.getTag());
         Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
-        quest = questPersistenceService.save(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe

@@ -43,6 +43,7 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
+import rx.Observable;
 
 public class InboxActivity extends BaseActivity {
 
@@ -79,18 +80,14 @@ public class InboxActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        List<Quest> quests = getAllUnplanned();
-        inboxAdapter = new InboxAdapter(this, quests, eventBus);
-        questList.setAdapter(inboxAdapter);
-        questList.addItemDecoration(new DividerItemDecoration(this));
+        getAllUnplanned().subscribe(quests -> {
+            initQuestList(quests);
+            addTutorialItem();
+        });
 
-        ItemTouchCallback touchCallback = new ItemTouchCallback(inboxAdapter, ItemTouchHelper.START | ItemTouchHelper.END);
-        touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_red_500)));
-        touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
-        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(questList);
+    }
 
+    private void addTutorialItem() {
         Tutorial.getInstance(this).addItem(
                 new TutorialItem.Builder(this)
                         .setState(Tutorial.State.TUTORIAL_INBOX_SWIPE)
@@ -102,13 +99,26 @@ public class InboxActivity extends BaseActivity {
                         .build());
     }
 
+    private void initQuestList(List<Quest> quests) {
+        inboxAdapter = new InboxAdapter(this, quests, eventBus);
+        questList.setAdapter(inboxAdapter);
+        questList.addItemDecoration(new DividerItemDecoration(this));
+
+        ItemTouchCallback touchCallback = new ItemTouchCallback(inboxAdapter, ItemTouchHelper.START | ItemTouchHelper.END);
+        touchCallback.setLongPressDragEnabled(false);
+        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_red_500)));
+        touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
+        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
+        helper.attachToRecyclerView(questList);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         bottomBar.onSaveInstanceState(outState);
     }
 
-    private List<Quest> getAllUnplanned() {
+    private Observable<List<Quest>> getAllUnplanned() {
         return questPersistenceService.findAllUnplanned();
     }
 
@@ -132,12 +142,6 @@ public class InboxActivity extends BaseActivity {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        inboxAdapter.updateQuests(getAllUnplanned());
     }
 
     @Subscribe

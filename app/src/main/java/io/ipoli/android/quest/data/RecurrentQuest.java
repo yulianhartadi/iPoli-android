@@ -226,4 +226,9 @@ public class RecurrentQuest extends RealmObject implements Remotable<RecurrentQu
     public void setSyncedWithRemote() {
         this.needsSyncWithRemote = false;
     }
+
+    @Override
+    public void markUpdated() {
+
+    }
 }

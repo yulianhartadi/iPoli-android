@@ -21,8 +21,8 @@ import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    public QuestPersistenceService provideQuestPersistenceService(Context context, Bus eventBus) {
-        return new RealmQuestPersistenceService(context, eventBus);
+    public QuestPersistenceService provideQuestPersistenceService(Bus eventBus) {
+        return new RealmQuestPersistenceService(eventBus);
     }
 
     @Provides

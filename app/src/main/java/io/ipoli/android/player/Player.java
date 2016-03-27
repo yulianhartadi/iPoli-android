@@ -100,4 +100,9 @@ public class Player extends RealmObject implements Remotable<Player> {
     public void setSyncedWithRemote() {
         this.needsSyncWithRemote = false;
     }
+
+    @Override
+    public void markUpdated() {
+
+    }
 }

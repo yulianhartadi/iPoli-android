@@ -123,6 +123,9 @@ public class HabitsActivity extends BaseActivity {
     }
 
     private void updateQuests() {
-        habitsAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        questPersistenceService.findAllPlanned().subscribe(quests -> {
+            habitsAdapter.updateQuests(quests);
+        });
+
     }
 }

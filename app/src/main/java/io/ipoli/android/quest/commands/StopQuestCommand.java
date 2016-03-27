@@ -24,7 +24,7 @@ public class StopQuestCommand {
 
     public void execute() {
         quest.setActualStartDateTime(null);
-        quest = questPersistenceService.save(quest);
+        questPersistenceService.save(quest);
         QuestNotificationScheduler.stopAll(quest.getId(), context);
     }
 }

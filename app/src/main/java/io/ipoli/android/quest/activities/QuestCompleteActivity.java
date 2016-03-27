@@ -25,6 +25,7 @@ import io.ipoli.android.quest.data.Log;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -55,14 +56,19 @@ public class QuestCompleteActivity extends BaseActivity {
         appComponent().inject(this);
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        quest = questPersistenceService.findById(questId);
+        questPersistenceService.findById(questId).subscribe(q -> {
+            quest = q;
+        });
     }
 
     @OnClick(R.id.quest_complete_done)
     public void onDoneTap(View v) {
-        saveQuest();
-        setResult(RESULT_OK);
-        finish();
+        saveQuest().subscribe(q -> {
+            QuestNotificationScheduler.stopAll(q.getId(), this);
+            eventBus.post(new CompleteQuestEvent(q));
+            setResult(RESULT_OK);
+            finish();
+        });
     }
 
     @Override
@@ -78,7 +84,7 @@ public class QuestCompleteActivity extends BaseActivity {
         return difficultyGroup.indexOfChild(radioButton);
     }
 
-    private void saveQuest() {
+    private Observable<Quest> saveQuest() {
         String logText = log.getText().toString();
         if (!TextUtils.isEmpty(logText)) {
             quest.getLogs().add(new Log(logText));
@@ -92,8 +98,7 @@ public class QuestCompleteActivity extends BaseActivity {
         }
         quest.setCompletedAtDateTime(new Date());
 
-        quest = questPersistenceService.save(quest);
-        QuestNotificationScheduler.stopAll(quest.getId(), this);
-        eventBus.post(new CompleteQuestEvent(quest));
+        return questPersistenceService.save(quest);
+
     }
 }

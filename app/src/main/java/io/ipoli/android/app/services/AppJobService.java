@@ -20,7 +20,6 @@ import io.ipoli.android.app.net.dto.QuestDTO;
 import io.ipoli.android.app.net.dto.SnippetDTO;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import okhttp3.RequestBody;
 import rx.Observable;
@@ -55,12 +54,12 @@ public class AppJobService extends JobService {
             return Observable.just(player);
         }).concatMap(player -> {
             List<Observable<QuestDTO>> res = new ArrayList<>();
-            for (Quest q : questPersistenceService.findAllWhoNeedSyncWithRemote()) {
-                SnippetDTO snippet = new SnippetDTO();
-                snippet.text = q.getName();
-                Log.d("Runnable", "Create snippet " + snippet.text + " player: " + player);
-                res.add(createSnippet(snippet, player.getRemoteId()));
-            }
+//            for (Quest q : questPersistenceService.findAllWhoNeedSyncWithRemote()) {
+//                SnippetDTO snippet = new SnippetDTO();
+//                snippet.text = q.getName();
+//                Log.d("Runnable", "Create snippet " + snippet.text + " player: " + player);
+//                res.add(createSnippet(snippet, player.getRemoteId()));
+//            }
             return Observable.merge(res);
         }).subscribe(questDTO -> {
             Log.d("Runnable", questDTO.toString());

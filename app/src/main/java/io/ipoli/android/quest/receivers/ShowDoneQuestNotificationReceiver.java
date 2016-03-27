@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,16 +14,18 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/1/16.
  */
-public class ShowDoneQuestNotificationReceiver extends BroadcastReceiver {
+public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
 
     public static final String ACTION_SHOW_DONE_QUEST_NOTIFICATION = "io.ipoli.android.intent.action.SHOW_DONE_QUEST_NOTIFICATION";
 
@@ -32,16 +33,17 @@ public class ShowDoneQuestNotificationReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         QuestNotificationScheduler.stopTimer(questId, context);
-        Quest q = questPersistenceService.findById(questId);
-
-        NotificationCompat.Builder builder = createNotificationBuilder(context, q);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(Constants.QUEST_DONE_NOTIFICATION_ID, builder.build());
+        return questPersistenceService.findById(questId).flatMap(q -> {
+            NotificationCompat.Builder builder = createNotificationBuilder(context, q);
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.notify(Constants.QUEST_DONE_NOTIFICATION_ID, builder.build());
+            return Observable.empty();
+        });
     }
 
     private NotificationCompat.Builder createNotificationBuilder(Context context, Quest q) {
