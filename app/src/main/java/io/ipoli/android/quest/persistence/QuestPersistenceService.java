@@ -34,4 +34,6 @@ public interface QuestPersistenceService {
     Observable<List<Quest>> saveAll(List<Quest> quests);
 
     void delete(Quest quest);
+
+    Observable<List<Quest>> findAllWhoNeedSyncWithRemote();
 }

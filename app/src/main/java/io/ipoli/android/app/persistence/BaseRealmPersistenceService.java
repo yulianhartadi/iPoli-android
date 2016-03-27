@@ -57,6 +57,9 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remota
     protected abstract Class<T> getRealmObjectClass();
 
     protected Observable<T> fromRealm(T obj) {
+        if(obj == null) {
+            return Observable.just(null);
+        }
         return Observable.just(getRealm().copyFromRealm(obj));
     }
 

@@ -1,7 +1,10 @@
 package io.ipoli.android.app.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateUtils {
 
@@ -71,5 +74,18 @@ public class DateUtils {
         normalizedDueDate.set(Calendar.DAY_OF_YEAR, c.get(Calendar.DAY_OF_YEAR));
         normalizedDueDate.set(Calendar.YEAR, c.get(Calendar.YEAR));
         return normalizedDueDate.getTime();
+    }
+
+    public static String toDateString(Date date) {
+        return toDateString(date, TimeZone.getDefault());
+    }
+
+    public static String toDateString(Date date, TimeZone timeZone) {
+        if (date == null) {
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        formatter.setTimeZone(timeZone);
+        return formatter.format(date);
     }
 }
