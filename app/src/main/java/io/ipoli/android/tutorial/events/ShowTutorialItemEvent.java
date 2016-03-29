@@ -1,7 +1,7 @@
 package io.ipoli.android.tutorial.events;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/15/16.
  */
 public class ShowTutorialItemEvent {

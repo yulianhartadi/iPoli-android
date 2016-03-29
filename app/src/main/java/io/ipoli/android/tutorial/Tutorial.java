@@ -21,7 +21,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.tutorial.events.ShowTutorialItemEvent;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/9/16.
  */
 public class Tutorial {

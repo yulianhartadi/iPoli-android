@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public class StartTimeMatcher implements QuestTextMatcher<Date> {
 
-    private static final String PATTERN = " at (\\d{1,2}[:|\\.]?(\\d{2})?\\s?(am|pm)?)";
+    private static final String PATTERN = "(?:^|\\s)at (\\d{1,2}([:|\\.]\\d{2})?(\\s?(am|pm))?)(?:$|\\s)";
     private final PrettyTimeParser parser;
     private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
@@ -25,7 +25,7 @@ public class StartTimeMatcher implements QuestTextMatcher<Date> {
     public String match(String text) {
         Matcher m = pattern.matcher(text);
         if (m.find()) {
-            return m.group();
+            return m.group().trim();
         }
         return "";
     }
@@ -40,5 +40,12 @@ public class StartTimeMatcher implements QuestTextMatcher<Date> {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean partiallyMatches(String text) {
+        Matcher m = pattern.matcher(text);
+        m.matches();
+        return m.hitEnd();
     }
 }

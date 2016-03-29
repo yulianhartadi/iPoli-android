@@ -1,9 +1,9 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.AddQuestSuggestion;
+import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/24/16.
  */
 public class SuggestionAdapterItemClickEvent {
