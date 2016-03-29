@@ -1,7 +1,10 @@
 package io.ipoli.android.app.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateUtils {
 
@@ -55,21 +58,6 @@ public class DateUtils {
         return c.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR);
     }
 
-    public static Date getNormalizedStartTime(Date startTime) {
-        if (startTime == null) {
-            return null;
-        }
-        Calendar sc = Calendar.getInstance();
-        sc.setTime(startTime);
-
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(0);
-        c.set(Calendar.HOUR_OF_DAY, sc.get(Calendar.HOUR_OF_DAY));
-        c.set(Calendar.MINUTE, sc.get(Calendar.MINUTE));
-        return c.getTime();
-    }
-
-
     public static Date getTomorrow() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, 1);
@@ -86,5 +74,18 @@ public class DateUtils {
         normalizedDueDate.set(Calendar.DAY_OF_YEAR, c.get(Calendar.DAY_OF_YEAR));
         normalizedDueDate.set(Calendar.YEAR, c.get(Calendar.YEAR));
         return normalizedDueDate.getTime();
+    }
+
+    public static String toDateString(Date date) {
+        return toDateString(date, TimeZone.getDefault());
+    }
+
+    public static String toDateString(Date date, TimeZone timeZone) {
+        if (date == null) {
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        formatter.setTimeZone(timeZone);
+        return formatter.format(date);
     }
 }

@@ -8,8 +8,7 @@ import java.util.Random;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.Difficulty;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 
 /**
@@ -69,16 +68,16 @@ public class SimplePlayerService implements PlayerService {
     }
 
     private int getExperienceForQuest(Quest quest) {
-        Difficulty qDiff = Quest.getDifficulty(quest);
-        if (qDiff == Difficulty.UNKNOWN) {
-            return Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
-        }
+//        Difficulty qDiff = Quest.getDifficulty(quest);
+//        if (qDiff == Difficulty.UNKNOWN) {
+//            return Constants.COMPLETE_QUEST_DEFAULT_EXPERIENCE;
+//        }
         int multiplier = 1;
-        if (qDiff == Difficulty.MEDIUM) {
-            multiplier = 2;
-        } else if (qDiff == Difficulty.HARD) {
-            multiplier = 3;
-        }
+//        if (qDiff == Difficulty.MEDIUM) {
+//            multiplier = 2;
+//        } else if (qDiff == Difficulty.HARD) {
+//            multiplier = 3;
+//        }
 
         int baseXP = Constants.BASE_XP_OUTCOMES[new Random().nextInt(Constants.BASE_XP_OUTCOMES.length)];
         return baseXP * multiplier;

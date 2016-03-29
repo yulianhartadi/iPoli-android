@@ -13,7 +13,7 @@ import io.ipoli.android.app.events.ContactUsClickEvent;
 import io.ipoli.android.app.events.FeedbackClickEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DateSelectedEvent;

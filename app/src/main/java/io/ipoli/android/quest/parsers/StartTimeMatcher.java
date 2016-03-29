@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.app.utils.Time;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class StartTimeMatcher implements QuestTextMatcher<Date> {
+public class StartTimeMatcher implements QuestTextMatcher<Integer> {
 
     private static final String PATTERN = "(?:^|\\s)at (\\d{1,2}([:|\\.]\\d{2})?(\\s?(am|pm))?)(?:$|\\s)";
     private final PrettyTimeParser parser;
@@ -31,15 +33,15 @@ public class StartTimeMatcher implements QuestTextMatcher<Date> {
     }
 
     @Override
-    public Date parse(String text) {
+    public Integer parse(String text) {
         Matcher stm = pattern.matcher(text);
         if (stm.find()) {
             List<Date> dates = parser.parse(stm.group());
             if (!dates.isEmpty()) {
-                return dates.get(0);
+                return Time.of(dates.get(0)).toMinutesAfterMidnight();
             }
         }
-        return null;
+        return -1;
     }
 
     @Override

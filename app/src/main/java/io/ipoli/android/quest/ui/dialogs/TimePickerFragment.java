@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 
 public class TimePickerFragment extends DialogFragment
@@ -44,10 +45,7 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        final Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        c.set(Calendar.MINUTE, minute);
-        eventBus.post(new TimeSelectedEvent(c.getTime()));
+        eventBus.post(new TimeSelectedEvent(Time.at(hourOfDay, minute)));
     }
 
     @Override

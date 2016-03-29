@@ -2,7 +2,6 @@ package io.ipoli.android.quest.receivers;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
@@ -12,15 +11,17 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/1/16.
  */
-public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
+public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
 
     public static final String ACTION_SCHEDULE_REMINDER = "io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDER";
 
@@ -28,17 +29,18 @@ public class ScheduleQuestReminderReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         cancelScheduledReminder(context, alarm);
-
-        Quest q = questPersistenceService.findPlannedQuestStartingAfter(new Date());
-        if (q == null) {
-            return;
-        }
-        scheduleNextReminder(context, alarm, q);
+        return questPersistenceService.findPlannedQuestStartingAfter(new Date()).flatMap(quest -> {
+            if (quest == null) {
+                return Observable.empty();
+            }
+            scheduleNextReminder(context, alarm, quest);
+            return Observable.empty();
+        });
     }
 
     private void cancelScheduledReminder(Context context, AlarmManager alarm) {

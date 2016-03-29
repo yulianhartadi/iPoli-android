@@ -21,7 +21,7 @@ public class Player extends RealmObject implements Remotable<Player> {
     private String avatar;
 
     private String remoteId;
-    private boolean isSyncedWithRemote;
+    private boolean needsSyncWithRemote;
 
     public Player() {
     }
@@ -31,7 +31,7 @@ public class Player extends RealmObject implements Remotable<Player> {
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
-        this.isSyncedWithRemote = false;
+        this.needsSyncWithRemote = true;
     }
 
     public String getId() {
@@ -78,12 +78,12 @@ public class Player extends RealmObject implements Remotable<Player> {
 
     @Override
     public void setNeedsSync() {
-        isSyncedWithRemote = false;
+        needsSyncWithRemote = true;
     }
 
     @Override
     public boolean needsSyncWithRemote() {
-        return !isSyncedWithRemote;
+        return needsSyncWithRemote;
     }
 
     @Override
@@ -98,6 +98,11 @@ public class Player extends RealmObject implements Remotable<Player> {
 
     @Override
     public void setSyncedWithRemote() {
-        this.isSyncedWithRemote = true;
+        this.needsSyncWithRemote = false;
+    }
+
+    @Override
+    public void markUpdated() {
+
     }
 }

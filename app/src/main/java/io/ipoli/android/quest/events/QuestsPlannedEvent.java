@@ -2,7 +2,7 @@ package io.ipoli.android.quest.events;
 
 import java.util.List;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

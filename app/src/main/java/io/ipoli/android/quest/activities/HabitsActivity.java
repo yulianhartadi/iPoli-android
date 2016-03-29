@@ -29,7 +29,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -70,7 +70,7 @@ public class HabitsActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        habitsAdapter = new HabitsAdapter(this, new ArrayList<Quest>(), eventBus);
+        habitsAdapter = new HabitsAdapter(this, new ArrayList<>(), eventBus);
         questList.setAdapter(habitsAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
@@ -106,11 +106,11 @@ public class HabitsActivity extends BaseActivity {
         Quest q = e.quest;
         Date due = new Date();
         String toast = getString(R.string.quest_scheduled_for_today);
-        if (DateUtils.isToday(e.quest.getDue())) {
+        if (DateUtils.isToday(e.quest.getEndDate())) {
             toast = getString(R.string.quest_scheduled_for_tomorrow);
             due = DateUtils.getTomorrow();
         }
-        q.setDue(due);
+        q.setEndDate(due);
         questPersistenceService.save(q);
         updateQuests();
         Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
@@ -123,6 +123,9 @@ public class HabitsActivity extends BaseActivity {
     }
 
     private void updateQuests() {
-        habitsAdapter.updateQuests(questPersistenceService.findAllPlanned());
+        questPersistenceService.findAllPlanned().subscribe(quests -> {
+            habitsAdapter.updateQuests(quests);
+        });
+
     }
 }

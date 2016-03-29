@@ -24,7 +24,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -75,9 +75,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         List<Quest> upcomingQuests = new ArrayList<>();
 
         for (Quest q : quests) {
-            if (DateUtils.isToday(q.getDue())) {
+            if (DateUtils.isToday(q.getEndDate())) {
                 todayQuests.add(q);
-            } else if (DateUtils.isTomorrow(q.getDue())) {
+            } else if (DateUtils.isTomorrow(q.getEndDate())) {
                 tomorrowQuests.add(q);
             } else {
                 upcomingQuests.add(q);
@@ -148,17 +148,17 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.indicator.startAnimation(blinkAnimation);
             }
 
-            if (q.getStartTime() != null) {
+            if (q.getStartMinute() >= 0) {
                 questHolder.startTime.setVisibility(View.VISIBLE);
-                questHolder.startTime.setText(StartTimeFormatter.format(q.getStartTime()));
+                questHolder.startTime.setText(StartTimeFormatter.format(Quest.getStartTime(q).toDate()));
             } else {
                 questHolder.startTime.setVisibility(View.INVISIBLE);
             }
 
-            boolean isUpcoming = !DateUtils.isToday(q.getDue()) && !DateUtils.isTomorrow(q.getDue());
-            if (q.getDue() != null && isUpcoming) {
+            boolean isUpcoming = !DateUtils.isToday(q.getEndDate()) && !DateUtils.isTomorrow(q.getEndDate());
+            if (q.getEndDate() != null && isUpcoming) {
                 questHolder.dueDate.setVisibility(View.VISIBLE);
-                questHolder.dueDate.setText(DueDateFormatter.formatWithoutYear(q.getDue()));
+                questHolder.dueDate.setText(DueDateFormatter.formatWithoutYear(q.getEndDate()));
             } else {
                 questHolder.dueDate.setVisibility(View.GONE);
             }
@@ -170,7 +170,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.duration.setVisibility(View.INVISIBLE);
             }
 
-            if(new Random().nextFloat() < 0.5) {
+            if (new Random().nextFloat() < 0.5) {
                 questHolder.habitIndicatorsContainer.setVisibility(View.GONE);
             }
 

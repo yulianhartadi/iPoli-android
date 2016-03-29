@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -203,9 +202,7 @@ public class CalendarDayView extends FrameLayout {
     <E extends CalendarEvent> void addEvent(E calendarEvent, int position) {
         final View eventView = adapter.getView(eventsContainer, position);
         RelativeLayout.LayoutParams qlp = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
-        Calendar c = Calendar.getInstance();
-        c.setTime(calendarEvent.getStartTime());
-        qlp.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+        qlp.topMargin = getYPositionFor(calendarEvent.getStartMinute());
         qlp.height = getHeightFor(calendarEvent.getDuration());
         eventsContainer.addView(eventView, qlp);
         eventViewToCalendarEvent.put(eventView, calendarEvent);
@@ -243,6 +240,11 @@ public class CalendarDayView extends FrameLayout {
         int y = hours * hourHeight;
         y += getMinutesHeight(minutes);
         return y;
+    }
+
+    private int getYPositionFor(int minutesAfterMidnight) {
+        Time time = Time.fromMinutesAfterMidnight(minutesAfterMidnight);
+        return getYPositionFor(time.getHours(), time.getMinutes());
     }
 
     int getHeightFor(int duration) {
@@ -345,11 +347,8 @@ public class CalendarDayView extends FrameLayout {
                 layoutParams.topMargin = getYPositionFor(h, m);
                 dragView.setLayoutParams(layoutParams);
                 CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
-                Date oldStartTime = calendarEvent.getStartTime();
-                Calendar c = Calendar.getInstance();
-                c.set(Calendar.HOUR_OF_DAY, h);
-                c.set(Calendar.MINUTE, m);
-                calendarEvent.setStartTime(c.getTime());
+                int oldStartTime = calendarEvent.getStartMinute();
+                calendarEvent.setStartMinute(Time.at(h, m).toMinutesAfterMidnight());
                 adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
                 adapter.onDragEnded(dragView);
             }
@@ -386,10 +385,7 @@ public class CalendarDayView extends FrameLayout {
                 if (!hasDropped) {
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
                     CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
-                    Date startTime = calendarEvent.getStartTime();
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(startTime);
-                    layoutParams.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+                    layoutParams.topMargin = getYPositionFor(calendarEvent.getStartMinute());
                     dragView.setLayoutParams(layoutParams);
                     adapter.onDragEnded(dragView);
                 }

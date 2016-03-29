@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 public class EditQuestRequestEvent {
 

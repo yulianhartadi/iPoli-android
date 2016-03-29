@@ -24,7 +24,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
@@ -84,24 +84,26 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         appComponent().inject(this);
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        quest = questPersistenceService.findById(questId);
+        questPersistenceService.findById(questId).subscribe(q -> {
+            quest = q;
+            initUI();
 
-        initUI();
+            Intent intent = getIntent();
+            String action = intent.getAction();
 
-        Intent intent = getIntent();
-        String action = intent.getAction();
+            if (ACTION_QUEST_CANCELED.equals(action)) {
+                new StopQuestCommand(quest, questPersistenceService, this).execute();
+            } else if (ACTION_QUEST_DONE.equals(action)) {
+                QuestNotificationScheduler.stopTimer(questId, this);
+                QuestNotificationScheduler.stopDone(questId, this);
+                Intent i = new Intent(this, QuestCompleteActivity.class);
+                i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
+                startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+            } else if (ACTION_START_QUEST.equals(action)) {
+                new StartQuestCommand(this, questPersistenceService, quest).execute();
+            }
+        });
 
-        if (ACTION_QUEST_CANCELED.equals(action)) {
-            new StopQuestCommand(quest, questPersistenceService, this).execute();
-        } else if (ACTION_QUEST_DONE.equals(action)) {
-            QuestNotificationScheduler.stopTimer(questId, this);
-            QuestNotificationScheduler.stopDone(questId, this);
-            Intent i = new Intent(this, QuestCompleteActivity.class);
-            i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
-            startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
-        } else if (ACTION_START_QUEST.equals(action)) {
-            new StartQuestCommand(this, questPersistenceService, quest).execute();
-        }
     }
 
     private void initUI() {
@@ -165,7 +167,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             stopTimer();
             finish();
         } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            quest = questPersistenceService.findById(quest.getId());
+            questPersistenceService.findById(quest.getId());
             initUI();
         } else if (resultCode == Constants.RESULT_REMOVED) {
             finish();

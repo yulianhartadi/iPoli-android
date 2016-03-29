@@ -3,32 +3,37 @@ package io.ipoli.android.quest.persistence;
 import java.util.Date;
 import java.util.List;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
 public interface QuestPersistenceService {
-    Quest findById(String id);
+    Observable<Quest> findById(String id);
 
-    List<Quest> findAllCompleted();
+    Observable<List<Quest>> findAllCompleted();
 
-    List<Quest> findAllUnplanned();
+    Observable<List<Quest>> findAllUnplanned();
 
-    List<Quest> findAllPlanned();
+    Observable<List<Quest>> findAllPlanned();
 
-    List<Quest> findAllPlannedAndStartedToday();
+    Observable<List<Quest>> findAllPlannedAndStartedToday();
 
-    List<Quest> findAllUncompleted();
+    Observable<List<Quest>> findAllUncompleted();
 
-    List<Quest> findAllCompletedToday();
+    Observable<List<Quest>> findAllCompletedToday();
 
-    Quest findPlannedQuestStartingAfter(Date date);
+    Observable<Quest> findPlannedQuestStartingAfter(Date date);
 
-    Quest save(Quest quest);
+    Observable<List<Quest>> findAllPlannedForToday();
 
-    List<Quest> saveAll(List<Quest> quests);
+    Observable<Quest> save(Quest quest);
+
+    Observable<List<Quest>> saveAll(List<Quest> quests);
 
     void delete(Quest quest);
+
+    Observable<List<Quest>> findAllWhoNeedSyncWithRemote();
 }

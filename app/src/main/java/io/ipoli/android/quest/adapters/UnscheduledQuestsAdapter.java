@@ -20,7 +20,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -74,7 +74,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 return true;
             }
         });
-        
+
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(false);
         holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

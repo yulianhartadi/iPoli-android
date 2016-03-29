@@ -1,15 +1,15 @@
 package io.ipoli.android.quest.events;
 
-import java.util.Date;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Naughty Spirit <hi@naughtyspirit.co>
  * on 1/24/16.
  */
 public class TimeSelectedEvent {
-    public Date time;
+    public Time time;
 
-    public TimeSelectedEvent(Date time) {
+    public TimeSelectedEvent(Time time) {
         this.time = time;
     }
 }

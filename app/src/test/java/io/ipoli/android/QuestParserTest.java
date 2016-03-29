@@ -9,7 +9,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.suggestions.SuggestionType;
 import io.ipoli.android.quest.suggestions.DueDateTextSuggester;
@@ -59,7 +60,7 @@ public class QuestParserTest {
         Quest q = parse("read book for 30 minutes today");
         assertEquals("read book", q.getName());
         assertEquals(30, q.getDuration());
-        assertTrue(DateUtils.isToday(q.getDue()));
+        assertTrue(DateUtils.isToday(q.getEndDate()));
     }
 
     @Test
@@ -94,55 +95,42 @@ public class QuestParserTest {
     public void addQuestWithStartTime() {
         Quest q = parse("Workout at 10:00");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
     }
 
     @Test
     public void addQuestWith2DigitStartTime() {
         Quest q = parse("Workout at 10 am");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
     }
 
     @Test
     public void addQuestWith4DigitStartTime() {
         Quest q = parse("Workout at 10:00");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
     }
 
     @Test
     public void addQuestWithPmStartTime() {
         Quest q = parse("Workout at 10pm");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 22);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(22).toMinutesAfterMidnight()));
     }
 
     @Test
     public void addQuestWithDotStartTime() {
         Quest q = parse("Workout at 10.30pm");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 22);
-        today.set(Calendar.MINUTE, 30);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.at(22, 30).toMinutesAfterMidnight()));
     }
 
     @Test
     public void addQuestWithStartTimeAndDuration() {
         Quest q = parse("Workout for 1h at 10:00");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
         assertThat(q.getDuration(), is(60));
     }
 
@@ -150,9 +138,7 @@ public class QuestParserTest {
     public void addQuestWithReversedStartTimeAndDuration() {
         Quest q = parse("Workout at 10:00 for 1h");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
         assertThat(q.getDuration(), is(60));
     }
 
@@ -160,9 +146,7 @@ public class QuestParserTest {
     public void addQuestWithHourAndMinuteDurationAndStartTime() {
         Quest q = parse("Workout for 1h and 10 minutes at 10:00");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
         assertThat(q.getDuration(), is(70));
     }
 
@@ -170,9 +154,7 @@ public class QuestParserTest {
     public void addQuestWithReversedHourAndMinuteDurationAndStartTime() {
         Quest q = parse("Workout at 10:00 for 1h and 10 minutes");
         assertThat(q.getName(), is("Workout"));
-        Calendar today = DateUtils.getTodayAtMidnight();
-        today.set(Calendar.HOUR_OF_DAY, 10);
-        assertThat(q.getStartTime(), is(DateUtils.getNormalizedStartTime(today.getTime())));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
         assertThat(q.getDuration(), is(70));
     }
 
@@ -379,7 +361,7 @@ public class QuestParserTest {
 
     private void assertDueDate(Quest q, Calendar expected) {
         Calendar dueC = Calendar.getInstance();
-        dueC.setTime(q.getDue());
+        dueC.setTime(q.getEndDate());
         assertTrue(expected.get(Calendar.DAY_OF_YEAR) == dueC.get(Calendar.DAY_OF_YEAR));
     }
 }

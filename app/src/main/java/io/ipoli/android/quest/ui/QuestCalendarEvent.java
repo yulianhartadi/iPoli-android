@@ -1,10 +1,8 @@
 package io.ipoli.android.quest.ui;
 
-import java.util.Date;
-
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -16,18 +14,18 @@ public class QuestCalendarEvent implements CalendarEvent {
     private final int duration;
     private final int backgroundColor;
     private final Quest quest;
-    private Date startTime;
+    private int startTime;
 
     public QuestCalendarEvent(Quest quest) {
         this.quest = quest;
         this.name = quest.getName();
         this.duration = Math.max(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         this.backgroundColor = Quest.getContext(quest).backgroundColor;
-        this.startTime = quest.getStartTime();
+        this.startTime = quest.getStartMinute();
     }
 
     @Override
-    public Date getStartTime() {
+    public int getStartMinute() {
         return startTime;
     }
 
@@ -37,8 +35,8 @@ public class QuestCalendarEvent implements CalendarEvent {
     }
 
     @Override
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStartMinute(int startMinute) {
+        this.startTime = startMinute;
     }
 
     @Override

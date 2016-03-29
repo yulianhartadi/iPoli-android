@@ -2,14 +2,19 @@ package io.ipoli.android.app.utils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Time {
-    private final int hours;
     private final int minutes;
 
     private Time(int hours, int minutes) {
-        this.hours = hours;
-        this.minutes = minutes;
+        this.minutes = hours * 60 + minutes;
+    }
+
+    public static Time fromMinutesAfterMidnight(int minutes) {
+        int h = (int) TimeUnit.MINUTES.toHours(minutes);
+        int m = minutes - h * 60;
+        return Time.at(h, m);
     }
 
     public static Time at(String timeString) {
@@ -18,11 +23,6 @@ public class Time {
 
     public static Time at(int hours, int minutes) {
         return new Time(hours, minutes);
-    }
-
-    public static Time atMinutes(int minutes) {
-        Calendar c = Calendar.getInstance();
-        return at(c.get(Calendar.HOUR_OF_DAY), minutes);
     }
 
     public static Time atHours(int hours) {
@@ -71,17 +71,22 @@ public class Time {
 
     public Date toDate() {
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, hours);
-        c.set(Calendar.MINUTE, minutes);
+        c.setTimeInMillis(0);
+        c.set(Calendar.HOUR_OF_DAY, getHours());
+        c.set(Calendar.MINUTE, getMinutes());
         return c.getTime();
     }
 
+    public int toMinutesAfterMidnight() {
+        return minutes;
+    }
+
     public int getHours() {
-        return hours;
+        return (int) TimeUnit.MINUTES.toHours(minutes);
     }
 
     public int getMinutes() {
-        return minutes;
+        return minutes - getHours() * 60;
     }
 
     public static Time now() {

@@ -41,11 +41,11 @@ import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionsAdapterChangedEvent;
@@ -65,6 +65,7 @@ import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
+import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -264,7 +265,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return;
         }
-        eventBus.post(new NewQuestEvent(q.getName(), q.getStartTime(), q.getDuration(), q.getDue(), questContext));
+        eventBus.post(new NewQuestEvent(q.getName(), q.getStartMinute(), q.getDuration(), q.getEndDate(), questContext));
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 

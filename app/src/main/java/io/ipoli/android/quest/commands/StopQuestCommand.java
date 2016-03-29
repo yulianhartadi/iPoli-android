@@ -2,7 +2,7 @@ package io.ipoli.android.quest.commands;
 
 import android.content.Context;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -24,7 +24,7 @@ public class StopQuestCommand {
 
     public void execute() {
         quest.setActualStartDateTime(null);
-        quest = questPersistenceService.save(quest);
+        questPersistenceService.save(quest);
         QuestNotificationScheduler.stopAll(quest.getId(), context);
     }
 }
