@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.suggestions;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
 
@@ -78,8 +79,11 @@ public class SuggestionsManager {
         if(type == currentType) {
             return;
         }
+        Log.d("ChangeCurrentSuggester", "From: " + currentType.name()
+        + " To: " + type.name() + " startIdx: " + startIdx + " length: " + length);
         currentType = type;
         getCurrentSuggester().setStartIdx(startIdx);
+        getCurrentSuggester().setLength(length);
         suggestionsUpdatedListener.onSuggestionsUpdated();
     }
 
@@ -104,11 +108,13 @@ public class SuggestionsManager {
 
             SuggestionType next = SuggestionType.MAIN;
             int nextStartIdx = suggester.getStartIdx() + r.getMatch().length() + 1;
+            int nextLength = 0;
             if (r.getNextSuggesterType() != null) {
                 next = r.getNextSuggesterType();
                 nextStartIdx = r.getNextSuggesterStartIdx();
+                nextLength = r.getMatch().length();
             }
-            changeCurrentSuggester(next, nextStartIdx, 0);
+            changeCurrentSuggester(next, nextStartIdx, nextLength);
         } else if (state == SuggesterState.CONTINUE) {
             if(currentType != SuggestionType.MAIN) {
                 p.isPartial = true;
@@ -136,6 +142,20 @@ public class SuggestionsManager {
             parsedParts.add(p);
         }
         return p;
+    }
+
+    public int[] onSuggestionItemClick(int selectionStart) {
+        BaseTextSuggester s = getCurrentSuggester();
+        int startIdx = s.getStartIdx();
+        int endIdx = s.getEndIdx();
+        if(startIdx == 0 && endIdx == 0) {
+            startIdx = selectionStart;
+            endIdx = selectionStart;
+        }
+
+        return new int[] {
+                startIdx, endIdx
+        };
     }
 
 //    private List<AddQuestSuggestion> getRecurrentDayOfWeekSuggestions() {

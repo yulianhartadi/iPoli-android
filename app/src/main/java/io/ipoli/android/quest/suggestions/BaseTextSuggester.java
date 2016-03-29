@@ -31,6 +31,7 @@ public class BaseTextSuggester implements TextSuggester {
                 lastParsedText = "";
                 return new SuggesterResult(SuggesterState.CANCEL);
             } else {
+                length = match.length();
                 return new SuggesterResult(lastParsedText, SuggesterState.FINISH);
             }
         }
@@ -59,5 +60,9 @@ public class BaseTextSuggester implements TextSuggester {
 
     public void setLength(int length) {
         this.length = length;
+    }
+
+    public int getEndIdx() {
+        return length == 0 ? startIdx : startIdx + length - 1;
     }
 }

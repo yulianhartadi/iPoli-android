@@ -65,7 +65,6 @@ import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
-import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -362,43 +361,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
         AddQuestSuggestion suggestion = e.suggestionItem;
         String s = suggestion.text;
-        if(TextUtils.isEmpty(s)) {
-            if(suggestion.hasNextSuggestionType()) {
-//                suggestionsManager.changeAdapterSuggestions(suggestion.nextSuggestionType);
-            }
-            return;
-        }
+        String text = questText.getText().toString();
+        int selectionStart = questText.getSelectionStart();
+        int[] idxs = suggestionsManager.onSuggestionItemClick(selectionStart);
 
-//        SuggestionType pt = suggestionsManager.getAdapter().getType();
 
-//        int i = questText.getSelectionStart();
-//        String text = questText.getText().toString();
-//        String begin = text.substring(0, i);
-//        String end = text.substring(i);
-//
-//        if (pt != SuggestionType.MAIN) {
-//            begin = begin.trim();
-//            if (!TextUtils.isEmpty(pt.text) && begin.endsWith(pt.text)) {
-//                begin = begin.substring(0, begin.length() - pt.text.length());
-//            }
-//        }
-//
-//        if (typeToQuestPart.containsKey(pt)) {
-//            QuestPart p = typeToQuestPart.get(pt);
-//            if (p.containsOrIsNextToIdx(i)) {
-//                if (begin.endsWith(p.text)) {
-//                    begin = begin.substring(0, begin.length() - p.length());
-//                } else if (end.startsWith(p.text)) {
-//                    end = end.substring(p.length());
-//                }
-//            }
-//        }
-//
-//        s = !begin.endsWith(" ") ? " " + s : s;
-//        s = !end.startsWith(" ") ? s + " " : s;
+        String begin = text.substring(0, idxs[0]);
+        String end = idxs[1] + 1 < text.length() ? text.substring(idxs[1] + 1).trim() : "";
+        s = !begin.endsWith(" ") ? " " + s : s;
+        s = s + " ";
 
-//        questText.setText(begin + s + end);
-//        questText.setSelection(begin.length() + s.length());
+        questText.setText(begin + s + end);
+        questText.setSelection(begin.length() + s.length());
     }
 
     @Subscribe
