@@ -4,11 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
 public class TimesPerDayMatcher implements QuestTextMatcher<Integer> {
-    private static final String PATTERN = "\\s(\\d+)\\stimes(?:\\sper\\sday)?";
+    private static final String PATTERN = "\\s(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
@@ -30,5 +30,12 @@ public class TimesPerDayMatcher implements QuestTextMatcher<Integer> {
             }
         }
         return -1;
+    }
+
+    @Override
+    public boolean partiallyMatches(String text) {
+        Matcher m = pattern.matcher(text);
+        m.matches();
+        return m.hitEnd();
     }
 }

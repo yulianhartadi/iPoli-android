@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
  */
 public class DueDateMatcher implements QuestTextMatcher<Date> {
 
-    private static final String DUE_TODAY_TOMORROW_PATTERN = "(^|\\s)(today|tomorrow)($|\\s)";
-    private static final String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
-    private static final String DUE_AFTER_IN_PATTERN = "(after|in)\\s\\w+\\s(day|week|month|year)s?";
-    private static final String DUE_FROM_NOW_PATTERN = "\\w+\\s(day|week|month|year)s?\\sfrom\\snow";
-    private static final String DUE_THIS_NEXT_PATTERN = "(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)";
-    private static final String DUE_THIS_MONTH_PATTERN = "on\\s?(\\d{1,2})\\s?(st|th)$";
+    private static final String DUE_TODAY_TOMORROW_PATTERN = "(?:^|\\s)(today|tomorrow)(?:$|\\s)";
+    private static final String DUE_MONTH_PATTERN = "((?:^|\\s)on)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
+    private static final String DUE_AFTER_IN_PATTERN = "(?:^|\\s)(after|in)\\s\\w+\\s(day|week|month|year)s?(?:$|\\s)";
+    private static final String DUE_FROM_NOW_PATTERN = "(?:^|\\s)\\w+\\s(day|week|month|year)s?\\sfrom\\snow(?:$|\\s)";
+    private static final String DUE_THIS_NEXT_PATTERN = "(?:^|\\s)(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)(?:$|\\s)";
+    private static final String DUE_THIS_MONTH_PATTERN = "(?:^|\\s)on\\s?(\\d{1,2})\\s?(st|th)$";
 
     private static final Pattern[] dueDatePatterns = {
             Pattern.compile(DUE_TODAY_TOMORROW_PATTERN, Pattern.CASE_INSENSITIVE),
@@ -47,13 +47,13 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
             if (day > maxDaysInMoth) {
                 return "";
             }
-            return tmm.group();
+            return tmm.group().trim();
         }
 
         for (Pattern p : dueDatePatterns) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
-                return matcher.group();
+                return matcher.group().trim();
             }
         }
         return "";
@@ -84,6 +84,24 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean partiallyMatches(String text) {
+        Matcher tmm = dueThisMonthPattern.matcher(text);
+        tmm.matches();
+        if(tmm.hitEnd()) {
+            return true;
+        }
+
+        for (Pattern p : dueDatePatterns) {
+            Matcher matcher = p.matcher(text);
+            matcher.matches();
+            if(matcher.hitEnd()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -9,7 +9,7 @@ import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/9/16.
  */
 public class TutorialItem {

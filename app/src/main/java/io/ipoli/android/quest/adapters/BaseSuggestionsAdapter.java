@@ -15,18 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.AddQuestSuggestion;
-import io.ipoli.android.quest.QuestPartType;
+import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
 public abstract class BaseSuggestionsAdapter extends ArrayAdapter<AddQuestSuggestion> {
     protected Bus eventBus;
 
     protected List<AddQuestSuggestion> suggestions;
-    protected QuestPartType type;
 
     public BaseSuggestionsAdapter(Context context, Bus eventBus, List<AddQuestSuggestion> suggestions) {
         super(context, R.layout.add_quest_suggestion_item, R.id.suggestion_text);
@@ -38,14 +36,6 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<AddQuestSugges
         super(context, R.layout.add_quest_suggestion_item, R.id.suggestion_text);
         this.suggestions = new ArrayList<>();
         this.eventBus = eventBus;
-    }
-
-    public QuestPartType getType() {
-        return type;
-    }
-
-    public void setType(QuestPartType type) {
-        this.type = type;
     }
 
     @Override

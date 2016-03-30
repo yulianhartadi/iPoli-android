@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/28/16.
  */
 public class DueDateFormatter {

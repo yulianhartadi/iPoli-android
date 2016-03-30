@@ -15,7 +15,7 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
-import io.ipoli.android.quest.SuggestionAdapterManager;
+import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.HabitsActivity;
@@ -94,7 +94,7 @@ public interface AppComponent {
 
     void inject(BaseActivity baseActivity);
 
-    void inject(SuggestionAdapterManager suggestionAdapterManager);
+    void inject(SuggestionsManager suggestionsManager);
 
     void inject(AppJobService appJobService);
 }
