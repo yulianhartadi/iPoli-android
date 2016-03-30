@@ -1,10 +1,10 @@
-package io.ipoli.android.app.sync;
+package io.ipoli.android.app.net;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/23/16.
  */
-public interface Remotable<T> {
+public interface RemoteObject<T> {
     void setRemoteId(String remoteId);
 
     String getRemoteId();
@@ -12,10 +12,6 @@ public interface Remotable<T> {
     void setNeedsSync();
 
     boolean needsSyncWithRemote();
-
-    void updateLocal(T remoteObject);
-
-    T updateRemote();
 
     void setSyncedWithRemote();
 

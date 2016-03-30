@@ -1,13 +1,20 @@
 package io.ipoli.android.app.modules;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Date;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.app.net.APIService;
+import io.ipoli.android.app.net.UtcDateTypeAdapter;
+import io.realm.RealmObject;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -40,9 +47,28 @@ public class RestAPIModule {
 
     @Provides
     @Singleton
-    public Converter.Factory provideJsonFactory() {
-        return GsonConverterFactory.create(
-                new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create());
+    public Gson provideGson() {
+        return new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(Date.class, new UtcDateTypeAdapter())
+                .create();
+    }
+
+    @Provides
+    @Singleton
+    public Converter.Factory provideJsonFactory(Gson gson) {
+        return GsonConverterFactory.create(gson);
     }
 
     @Provides

@@ -6,7 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.sync.Remotable;
+import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
@@ -19,7 +19,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class RecurrentQuest extends RealmObject implements Remotable<RecurrentQuest> {
+public class RecurrentQuest extends RealmObject implements RemoteObject<RecurrentQuest> {
     @PrimaryKey
     private String id;
 
@@ -210,16 +210,6 @@ public class RecurrentQuest extends RealmObject implements Remotable<RecurrentQu
     @Override
     public boolean needsSyncWithRemote() {
         return needsSyncWithRemote;
-    }
-
-    @Override
-    public void updateLocal(RecurrentQuest remoteObject) {
-
-    }
-
-    @Override
-    public RecurrentQuest updateRemote() {
-        return null;
     }
 
     @Override
