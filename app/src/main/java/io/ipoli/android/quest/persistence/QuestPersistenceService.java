@@ -3,6 +3,7 @@ package io.ipoli.android.quest.persistence;
 import java.util.Date;
 import java.util.List;
 
+import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import rx.Observable;
 
@@ -10,7 +11,7 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public interface QuestPersistenceService {
+public interface QuestPersistenceService extends PersistenceService<Quest> {
     Observable<Quest> findById(String id);
 
     Observable<List<Quest>> findAllCompleted();
@@ -28,10 +29,6 @@ public interface QuestPersistenceService {
     Observable<Quest> findPlannedQuestStartingAfter(Date date);
 
     Observable<List<Quest>> findAllPlannedForToday();
-
-    Observable<Quest> save(Quest quest);
-
-    Observable<List<Quest>> saveAll(List<Quest> quests);
 
     void delete(Quest quest);
 

@@ -2,7 +2,7 @@ package io.ipoli.android.app.persistence;
 
 import java.util.List;
 
-import io.ipoli.android.app.sync.Remotable;
+import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
@@ -12,14 +12,20 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/25/16.
  */
-public abstract class BaseRealmPersistenceService<T extends RealmObject & Remotable> {
+public abstract class BaseRealmPersistenceService<T extends RealmObject & RemoteObject> {
 
     protected RealmQuery<T> where() {
         return getRealm().where(getRealmObjectClass());
     }
 
     public Observable<T> save(T obj) {
-        obj.markUpdated();
+        return save(obj, true);
+    }
+
+    public Observable<T> save(T obj, boolean markUpdated) {
+        if (markUpdated) {
+            obj.markUpdated();
+        }
         Realm realm = getRealm();
         realm.beginTransaction();
         T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(obj));
@@ -29,8 +35,14 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remota
     }
 
     public Observable<List<T>> saveAll(List<T> objs) {
-        for (T o : objs) {
-            o.markUpdated();
+        return saveAll(objs, true);
+    }
+
+    public Observable<List<T>> saveAll(List<T> objs, boolean markUpdated) {
+        if (markUpdated) {
+            for (T o : objs) {
+                o.markUpdated();
+            }
         }
         Realm realm = getRealm();
         realm.beginTransaction();
@@ -57,7 +69,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remota
     protected abstract Class<T> getRealmObjectClass();
 
     protected Observable<T> fromRealm(T obj) {
-        if(obj == null) {
+        if (obj == null) {
             return Observable.just(null);
         }
         return Observable.just(getRealm().copyFromRealm(obj));

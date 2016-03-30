@@ -2,7 +2,7 @@ package io.ipoli.android.player;
 
 import java.util.UUID;
 
-import io.ipoli.android.app.sync.Remotable;
+import io.ipoli.android.app.net.RemoteObject;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -10,7 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
-public class Player extends RealmObject implements Remotable<Player> {
+public class Player extends RealmObject implements RemoteObject<Player> {
 
     @PrimaryKey
     private String id;
@@ -84,16 +84,6 @@ public class Player extends RealmObject implements Remotable<Player> {
     @Override
     public boolean needsSyncWithRemote() {
         return needsSyncWithRemote;
-    }
-
-    @Override
-    public void updateLocal(Player remoteObject) {
-
-    }
-
-    @Override
-    public Player updateRemote() {
-        return null;
     }
 
     @Override

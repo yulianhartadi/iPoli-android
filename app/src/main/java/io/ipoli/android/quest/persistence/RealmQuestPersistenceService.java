@@ -105,7 +105,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .isNull("completedAtDateTime")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING);
         if (quests.isEmpty()) {
-            return null;
+            return Observable.just(null);
         }
         return fromRealm(quests.first());
     }
