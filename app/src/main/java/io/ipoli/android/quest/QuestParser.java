@@ -28,8 +28,7 @@ public class QuestParser {
 
         String originalText = text;
 
-        String matchedDurationText = durationMatcher.match(text);
-        int duration = durationMatcher.parse(text);
+        String matchedDurationText = durationMatcher.match(text);int duration = durationMatcher.parse(text);
         text = text.replace(matchedDurationText, "");
 
         String matchedStartTimeText = startTimeMatcher.match(text);

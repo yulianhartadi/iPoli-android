@@ -295,11 +295,20 @@ public class QuestParserTest {
 
     @Test
     public void testHitEndDueDate() {
-        String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
+       String DUE_MONTH_PATTERN = "((?:^|\\s)on)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
         Pattern p = Pattern.compile(DUE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(" on 21st next ");
         m.matches();
         assertTrue(m.hitEnd());
+    }
+
+    @Test
+    public void testHitEndToday() {
+        String PATTERN = "(?:^|\\s)(today|tomorrow)(?:$|\\s)";
+        Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher("today ");
+        m.matches();
+        assertTrue(!m.hitEnd());
     }
 
     @Test
