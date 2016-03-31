@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.suggestions;
+package io.ipoli.android.quest.suggestions.suggesters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,10 @@ import java.util.Set;
 
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.MainMatcher;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
+import io.ipoli.android.quest.suggestions.SuggesterResult;
+import io.ipoli.android.quest.suggestions.SuggesterState;
+import io.ipoli.android.quest.suggestions.SuggestionType;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -55,22 +59,22 @@ public class MainTextSuggester extends BaseTextSuggester {
     }
 
     @Override
-    public List<AddQuestSuggestion> getSuggestions() {
-        List<AddQuestSuggestion> suggestions = new ArrayList<>();
+    public List<SuggestionDropDownItem> getSuggestions() {
+        List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         if (!usedTypes.contains(SuggestionType.DUE_DATE)) {
-            suggestions.add(new AddQuestSuggestion(R.drawable.ic_event_black_18dp, "on ...", "on", SuggestionType.DUE_DATE));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_event_black_18dp, "on ...", "on", SuggestionType.DUE_DATE));
         }
         if (!usedTypes.contains(SuggestionType.START_TIME)) {
-            suggestions.add(new AddQuestSuggestion(R.drawable.ic_alarm_black_18dp, "at ...", "at", SuggestionType.START_TIME));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_alarm_black_18dp, "at ...", "at", SuggestionType.START_TIME));
         }
         if (!usedTypes.contains(SuggestionType.DURATION)) {
-            suggestions.add(new AddQuestSuggestion(R.drawable.ic_timer_black_18dp, "for ...", "for", SuggestionType.DURATION));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_timer_black_18dp, "for ...", "for", SuggestionType.DURATION));
         }
         if (!usedTypes.contains(SuggestionType.RECURRENT)) {
-            suggestions.add(new AddQuestSuggestion(R.drawable.ic_repeat_black_24dp, "every ...", "every", SuggestionType.RECURRENT));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_repeat_black_24dp, "every ...", "every", SuggestionType.RECURRENT));
         }
         if (!usedTypes.contains(SuggestionType.TIMES_PER_DAY)) {
-            suggestions.add(new AddQuestSuggestion(R.drawable.ic_multiply_black_24dp, "times per day ...", "times per day", SuggestionType.TIMES_PER_DAY));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_multiply_black_24dp, "times per day ...", "times per day", SuggestionType.TIMES_PER_DAY));
         }
         return suggestions;
     }

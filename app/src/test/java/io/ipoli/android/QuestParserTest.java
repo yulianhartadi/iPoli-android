@@ -13,8 +13,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.suggestions.SuggestionType;
-import io.ipoli.android.quest.suggestions.DueDateTextSuggester;
-import io.ipoli.android.quest.suggestions.MainTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.MainTextSuggester;
 import io.ipoli.android.quest.suggestions.SuggesterResult;
 import io.ipoli.android.quest.suggestions.SuggesterState;
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
+import io.ipoli.android.quest.suggestions.suggesters.BaseTextSuggester;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -17,14 +18,14 @@ public class TimesPerDayTextSuggester extends BaseTextSuggester {
     }
 
     @Override
-    public List<AddQuestSuggestion> getSuggestions() {
+    public List<SuggestionDropDownItem> getSuggestions() {
         int icon = R.drawable.ic_clear_24dp;
-        List<AddQuestSuggestion> suggestions = new ArrayList<>();
-        suggestions.add(new AddQuestSuggestion(icon, "2", "2 times per day"));
-        suggestions.add(new AddQuestSuggestion(icon, "3", "3 times per day"));
-        suggestions.add(new AddQuestSuggestion(icon, "4", "4 times per day"));
-        suggestions.add(new AddQuestSuggestion(icon, "5", "5 times per day"));
-        suggestions.add(new AddQuestSuggestion(icon, "6", "6 times per day"));
+        List<SuggestionDropDownItem> suggestions = new ArrayList<>();
+        suggestions.add(new SuggestionDropDownItem(icon, "2", "2 times per day"));
+        suggestions.add(new SuggestionDropDownItem(icon, "3", "3 times per day"));
+        suggestions.add(new SuggestionDropDownItem(icon, "4", "4 times per day"));
+        suggestions.add(new SuggestionDropDownItem(icon, "5", "5 times per day"));
+        suggestions.add(new SuggestionDropDownItem(icon, "6", "6 times per day"));
         return suggestions;
     }
 }

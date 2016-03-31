@@ -1,15 +1,15 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/24/16.
  */
 public class SuggestionAdapterItemClickEvent {
-    public AddQuestSuggestion suggestionItem;
+    public SuggestionDropDownItem suggestionItem;
 
-    public SuggestionAdapterItemClickEvent(AddQuestSuggestion suggestionItem) {
+    public SuggestionAdapterItemClickEvent(SuggestionDropDownItem suggestionItem) {
         this.suggestionItem = suggestionItem;
     }
 }

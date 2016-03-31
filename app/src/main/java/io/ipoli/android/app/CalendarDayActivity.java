@@ -1,9 +1,6 @@
 package io.ipoli.android.app;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -34,7 +31,6 @@ import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -155,12 +151,12 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //            Log.d("OnNext", questDTOs.toString());
 //        });
 
-        JobScheduler mJobScheduler = (JobScheduler)
-                getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        JobInfo.Builder builder = new JobInfo.Builder(1,
-                new ComponentName(getPackageName(),
-                        AppJobService.class.getName()));
-        mJobScheduler.schedule(builder.setOverrideDeadline(1).build());
+//        JobScheduler mJobScheduler = (JobScheduler)
+//                getSystemService(Context.JOB_SCHEDULER_SERVICE);
+//        JobInfo.Builder builder = new JobInfo.Builder(1,
+//                new ComponentName(getPackageName(),
+//                        AppJobService.class.getName()));
+//        mJobScheduler.schedule(builder.setOverrideDeadline(1).build());
     }
 
     @Override

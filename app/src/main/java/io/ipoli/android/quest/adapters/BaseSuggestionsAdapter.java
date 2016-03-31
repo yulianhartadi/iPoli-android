@@ -15,18 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public abstract class BaseSuggestionsAdapter extends ArrayAdapter<AddQuestSuggestion> {
+public abstract class BaseSuggestionsAdapter extends ArrayAdapter<SuggestionDropDownItem> {
     protected Bus eventBus;
 
-    protected List<AddQuestSuggestion> suggestions;
+    protected List<SuggestionDropDownItem> suggestions;
 
-    public BaseSuggestionsAdapter(Context context, Bus eventBus, List<AddQuestSuggestion> suggestions) {
+    public BaseSuggestionsAdapter(Context context, Bus eventBus, List<SuggestionDropDownItem> suggestions) {
         super(context, R.layout.add_quest_suggestion_item, R.id.suggestion_text);
         this.suggestions = suggestions;
         this.eventBus = eventBus;
@@ -74,11 +74,11 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<AddQuestSugges
     }
 
     @Override
-    public AddQuestSuggestion getItem(int position) {
+    public SuggestionDropDownItem getItem(int position) {
         return suggestions.get(position);
     }
 
-    public void setSuggestions(List<AddQuestSuggestion> suggestions) {
+    public void setSuggestions(List<SuggestionDropDownItem> suggestions) {
         this.suggestions = suggestions;
         notifyDataSetChanged();
     }
@@ -91,7 +91,7 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<AddQuestSugges
     protected Filter textFilter = new Filter() {
         @Override
         public String convertResultToString(Object resultValue){
-            return ((AddQuestSuggestion)resultValue).visibleText;
+            return ((SuggestionDropDownItem)resultValue).visibleText;
         }
 
         @Override
