@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.suggestions;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
@@ -17,6 +18,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -89,14 +91,14 @@ public class SuggestionsManager {
 
     public List<ParsedPart> onTextChange(String text, int start, int before, int count, boolean finishCurrentSuggester) {
 
-        ParsedPart p = getParsedPart(currentType);
         BaseTextSuggester suggester = getCurrentSuggester();
         SuggesterResult r = suggester.parse(text);
         SuggesterState state = r.getState();
 
         if (state == SuggesterState.FINISH || finishCurrentSuggester) {
             if (currentType != SuggestionType.MAIN) {
-                usedTypes.add(currentType);
+                addUsedType(currentType);
+                ParsedPart p = getParsedPart(currentType);
                 p.isPartial = false;
                 p.startIdx = suggester.getStartIdx();
                 p.endIdx = finishCurrentSuggester ? suggester.getStartIdx() + suggester.getLastParsedText().length() - 1 : suggester.getEndIdx();
@@ -112,11 +114,13 @@ public class SuggestionsManager {
             }
             changeCurrentSuggester(next, nextStartIdx, nextLength);
         } else if (state == SuggesterState.CANCEL) {
-            usedTypes.remove(currentType);
+            removeUsedType(currentType);
+            ParsedPart p = getParsedPart(currentType);
             parsedParts.remove(p);
             changeCurrentSuggester(SuggestionType.MAIN, text.length(), 0);
         } else if (state == SuggesterState.CONTINUE) {
             if (currentType != SuggestionType.MAIN) {
+                ParsedPart p = getParsedPart(currentType);
                 p.isPartial = true;
                 p.startIdx = suggester.getStartIdx();
                 p.endIdx = suggester.getEndIdx();
@@ -152,13 +156,14 @@ public class SuggestionsManager {
         int selectionIndex = startIdx;
         ParsedPart partToDelete = findNotPartialParsedPartContainingIdx(startIdx);
         if (partToDelete != null) {
-            text = deleteText(text, partToDelete.startIdx, partToDelete.endIdx);
+            text = StringUtils.cut(text, partToDelete.startIdx, partToDelete.endIdx);
             deletedLength = partToDelete.endIdx - partToDelete.startIdx + 1;
             selectionIndex = partToDelete.startIdx;
-            usedTypes.remove(partToDelete.type);
+            removeUsedType(partToDelete.type);
             parsedParts.remove(partToDelete);
+            removeUsedType(partToDelete.type);
         } else {
-            text = text.substring(0, startIdx) + (startIdx + deletedLength >= text.length() ? "" : text.substring(startIdx + deletedLength));
+            text = StringUtils.cutLength(text, startIdx, deletedLength);
         }
         updateIndexesAfterDelete(startIdx, deletedLength);
         return new TextViewProps(text, selectionIndex);
@@ -170,8 +175,8 @@ public class SuggestionsManager {
         SuggesterResult r = suggester.parse(text);
 
         String match = r.getMatch();
-        if (!match.isEmpty() && currentType != SuggestionType.MAIN) {
-            usedTypes.add(currentType);
+        if (!TextUtils.isEmpty(match) && currentType != SuggestionType.MAIN) {
+            addUsedType(currentType);
             p.isPartial = false;
             p.startIdx = suggester.getStartIdx();
             p.endIdx = suggester.getEndIdx();
@@ -245,10 +250,6 @@ public class SuggestionsManager {
         return p;
     }
 
-    private String deleteText(String text, int startIdx, int endIdx) {
-        return text.substring(0, startIdx) + (endIdx + 1 < text.length() ? text.substring(endIdx + 1) : "");
-    }
-
     private ParsedPart findNotPartialParsedPartContainingIdx(int index) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx <= index && index <= p.endIdx && !p.isPartial) {
@@ -290,6 +291,17 @@ public class SuggestionsManager {
         }
     }
 
+    private void addUsedType(SuggestionType type) {
+        usedTypes.add(type);
+        ((MainTextSuggester)textSuggesters.get(SuggestionType.MAIN)).addUsedSuggestionType(type);
+        suggestionsUpdatedListener.onSuggestionsUpdated();
+    }
+
+    private void removeUsedType(SuggestionType type) {
+        usedTypes.remove(type);
+        ((MainTextSuggester)textSuggesters.get(SuggestionType.MAIN)).removeUsedSuggestionType(type);
+        suggestionsUpdatedListener.onSuggestionsUpdated();
+    }
 //    private List<AddQuestSuggestion> getRecurrentDayOfWeekSuggestions() {
 //        int icon = R.drawable.ic_event_black_18dp;
 //        List<AddQuestSuggestion> suggestions = new ArrayList<>();

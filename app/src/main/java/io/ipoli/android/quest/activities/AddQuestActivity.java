@@ -162,6 +162,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
            put(SuggestionType.DUE_DATE, dueDateMatcher);
            put(SuggestionType.TIMES_PER_DAY, timesPerDayMatcher);
            put(SuggestionType.RECURRENT, recurrenceMatcher);
+           put(SuggestionType.MAIN, mainMatcher);
         }};
     }
 
@@ -311,7 +312,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
 
         if(before < count && !changeTextFromDropDown) {
-            suggestionsManager.onTextInserted(start, count);
+            String insertedText = s.toString().substring(start, start + count);
+            if(!insertedText.equals(" ")) {
+                suggestionsManager.onTextInserted(start, count);
+            }
         }
 
         String text = s.toString();

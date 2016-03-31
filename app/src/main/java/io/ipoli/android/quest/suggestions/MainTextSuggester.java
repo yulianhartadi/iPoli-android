@@ -50,6 +50,10 @@ public class MainTextSuggester extends BaseTextSuggester {
         usedTypes.add(suggestionType);
     }
 
+    public void removeUsedSuggestionType(SuggestionType suggestionType) {
+        usedTypes.remove(suggestionType);
+    }
+
     @Override
     public List<AddQuestSuggestion> getSuggestions() {
         List<AddQuestSuggestion> suggestions = new ArrayList<>();
