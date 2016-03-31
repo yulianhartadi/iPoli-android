@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.parsers;
 
+import android.util.Log;
+
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.Calendar;
@@ -91,6 +93,7 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
         Matcher tmm = dueThisMonthPattern.matcher(text);
         tmm.matches();
         if(tmm.hitEnd()) {
+            Log.d("Due Date part true tmm", dueThisMonthPattern.toString());
             return true;
         }
 
@@ -98,6 +101,7 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
             Matcher matcher = p.matcher(text);
             matcher.matches();
             if(matcher.hitEnd()) {
+                Log.d("Due Date partially true", p.toString());
                 return true;
             }
         }

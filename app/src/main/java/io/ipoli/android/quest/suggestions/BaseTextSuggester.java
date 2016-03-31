@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.suggestions;
 
+import android.util.Log;
+
 import java.util.List;
 
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
@@ -23,6 +25,7 @@ public class BaseTextSuggester implements TextSuggester {
         }
 
         boolean partiallyMatches = matcher.partiallyMatches(textToParse);
+        Log.d("Sugg partiallyMatch", partiallyMatches + " " + matcher.toString());
         if(partiallyMatches) {
             length = textToParse.length();
             return new SuggesterResult(textToParse, SuggesterState.CONTINUE);
@@ -32,7 +35,8 @@ public class BaseTextSuggester implements TextSuggester {
                 return new SuggesterResult(SuggesterState.CANCEL);
             } else {
                 length = match.length();
-                return new SuggesterResult(lastParsedText, SuggesterState.FINISH);
+                lastParsedText = "";
+                return new SuggesterResult(match, SuggesterState.FINISH);
             }
         }
     }
