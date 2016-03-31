@@ -1,13 +1,11 @@
 package io.ipoli.android.quest.data;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.realm.RealmList;
@@ -41,13 +39,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     @Required
     private Date updatedAt;
 
-    private Date completedAtDateTime;
-
     private int startMinute;
     private int duration;
-
-    private Date startDate;
-    private Date endDate;
 
     private RealmList<Reminder> reminders;
 
@@ -90,14 +83,10 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     public RecurrentQuest(String name) {
-        this(name, null);
-    }
-
-    public RecurrentQuest(String name, Date endDate) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        setEndDate(endDate);
         this.createdAt = new Date();
+        this.updatedAt = new Date();
         this.context = QuestContext.UNKNOWN.name();
         this.needsSyncWithRemote = true;
     }
@@ -118,14 +107,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         return createdAt;
     }
 
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = DateUtils.getNormalizedDueDate(endDate);
-    }
-
     public String getId() {
         return id;
     }
@@ -142,49 +123,15 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.context = context;
     }
 
-    public static QuestContext getContext(Quest quest) {
+    public static QuestContext getContext(RecurrentQuest quest) {
         return QuestContext.valueOf(quest.getContext());
     }
 
-    public static void setContext(Quest quest, QuestContext context) {
+    public static void setContext(RecurrentQuest quest, QuestContext context) {
         quest.setContext(context.name());
     }
 
-    public static Date getStartDateTime(Quest quest) {
-        Calendar startDateTime = Calendar.getInstance();
-        startDateTime.setTime(quest.getEndDate());
-        int h = (int) TimeUnit.MINUTES.toHours(quest.getStartMinute());
-        int min = quest.getStartMinute() - h * 60;
-        startDateTime.set(Calendar.HOUR_OF_DAY, h);
-        startDateTime.set(Calendar.MINUTE, min);
-        return startDateTime.getTime();
-    }
-
-    public Date getCompletedAtDateTime() {
-        return completedAtDateTime;
-    }
-
-    public void setCompletedAtDateTime(Date completedAtDateTime) {
-        this.completedAtDateTime = completedAtDateTime;
-    }
-
-    public static boolean isUnplanned(Quest quest) {
-        return quest.getEndDate() == null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
-    }
-
-    public static boolean isPlanned(Quest quest) {
-        return quest.getEndDate() != null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
-    }
-
-    public static boolean isStarted(Quest quest) {
-        return quest.getActualStartDateTime() != null && quest.getCompletedAtDateTime() == null;
-    }
-
-    public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAtDateTime() != null;
-    }
-
-    public static void setStartTime(Quest quest, Time time) {
+    public static void setStartTime(RecurrentQuest quest, Time time) {
         quest.setStartMinute(time.toMinutesAfterMidnight());
     }
 
@@ -219,6 +166,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     @Override
     public void markUpdated() {
-
+        setNeedsSync();
+        updatedAt = new Date();
     }
 }

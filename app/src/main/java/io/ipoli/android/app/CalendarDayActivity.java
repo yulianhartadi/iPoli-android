@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -54,10 +55,13 @@ import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import rx.Observable;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -79,6 +83,9 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     @Bind(R.id.calendar_container)
     CalendarLayout calendarContainer;
+
+    @Inject
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     private int movingQuestPosition;
 
@@ -154,6 +161,18 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
 //            Log.d("OnNext", questDTOs.toString());
 //        });
+
+        RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                Log.d("RX Error", e.getMessage(), e);
+            }
+        });
+
+//        RecurrentQuest rq = new RecurrentQuest("");
+//        rq.setRawText("Work every day");
+//        recurrentQuestPersistenceService.save(rq);
+
 
         JobScheduler mJobScheduler = (JobScheduler)
                 getSystemService(Context.JOB_SCHEDULER_SERVICE);
