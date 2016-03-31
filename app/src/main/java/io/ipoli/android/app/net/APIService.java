@@ -4,10 +4,12 @@ import java.util.List;
 
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -28,4 +30,10 @@ public interface APIService {
 
     @POST("quests")
     Observable<List<Quest>> updateQuests(@Body RequestBody data);
+
+    @POST("snippets")
+    Observable<RecurrentQuest> createRecurrentQuest(@Body RequestBody data);
+
+    @PUT("quests/{quest_id}?quest_type=recurrent")
+    Observable<RecurrentQuest> updateRecurrentQuest(@Body RequestBody data, @Path("quest_id") String questId);
 }

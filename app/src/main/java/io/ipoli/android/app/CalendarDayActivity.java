@@ -1,6 +1,9 @@
 package io.ipoli.android.app;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -31,6 +35,7 @@ import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -50,10 +55,13 @@ import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import rx.Observable;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -75,6 +83,9 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     @Bind(R.id.calendar_container)
     CalendarLayout calendarContainer;
+
+    @Inject
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     private int movingQuestPosition;
 
@@ -151,12 +162,24 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //            Log.d("OnNext", questDTOs.toString());
 //        });
 
-//        JobScheduler mJobScheduler = (JobScheduler)
-//                getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//        JobInfo.Builder builder = new JobInfo.Builder(1,
-//                new ComponentName(getPackageName(),
-//                        AppJobService.class.getName()));
-//        mJobScheduler.schedule(builder.setOverrideDeadline(1).build());
+        RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                Log.d("RX Error", e.getMessage(), e);
+            }
+        });
+
+//        RecurrentQuest rq = new RecurrentQuest("");
+//        rq.setRawText("Work every day");
+//        recurrentQuestPersistenceService.save(rq);
+
+
+        JobScheduler mJobScheduler = (JobScheduler)
+                getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobInfo.Builder builder = new JobInfo.Builder(1,
+                new ComponentName(getPackageName(),
+                        AppJobService.class.getName()));
+        mJobScheduler.schedule(builder.setOverrideDeadline(1).build());
     }
 
     @Override
