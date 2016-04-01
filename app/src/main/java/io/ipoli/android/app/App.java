@@ -1,6 +1,9 @@
 package io.ipoli.android.app;
 
 import android.app.Application;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,12 +20,15 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.jobs.RemindPlanDayJob;
 import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
+import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.assistant.AssistantService;
@@ -45,6 +51,7 @@ import io.realm.RealmConfiguration;
  */
 public class App extends Application {
 
+    public static final int SYNC_JOB_ID = 1;
     private static AppComponent appComponent;
 
     @Inject
@@ -195,7 +202,6 @@ public class App extends Application {
                     .restAPIModule(new RestAPIModule(APIService.API_ENDPOINT))
                     .build();
         }
-
         return appComponent;
     }
 
@@ -212,6 +218,33 @@ public class App extends Application {
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
         scheduleNextReminder();
+    }
+
+    @Subscribe
+    public void onSyncRequest(SyncRequestEvent e) {
+        scheduleJob(defaultSyncJob()
+                .build());
+    }
+
+    private void scheduleJob(JobInfo job) {
+        JobScheduler jobScheduler = (JobScheduler)
+                getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(SYNC_JOB_ID);
+        jobScheduler.schedule(job);
+    }
+
+    @Subscribe
+    public void onForceSyncRequest(ForceSyncRequestEvent e) {
+        scheduleJob(defaultSyncJob().setOverrideDeadline(1).build());
+    }
+
+    private JobInfo.Builder defaultSyncJob() {
+        JobInfo.Builder builder = new JobInfo.Builder(SYNC_JOB_ID,
+                new ComponentName(getPackageName(),
+                        AppJobService.class.getName()));
+        return builder.setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
     }
 
     private void scheduleNextReminder() {
