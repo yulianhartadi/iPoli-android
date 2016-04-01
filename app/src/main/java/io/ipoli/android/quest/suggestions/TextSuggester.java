@@ -10,5 +10,5 @@ public interface TextSuggester {
 
     SuggesterResult parse(String text);
 
-    List<AddQuestSuggestion> getSuggestions();
+    List<SuggestionDropDownItem> getSuggestions();
 }

@@ -56,7 +56,7 @@ import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionType;
@@ -372,7 +372,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Subscribe
     public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
-        AddQuestSuggestion suggestion = e.suggestionItem;
+        SuggestionDropDownItem suggestion = e.suggestionItem;
         String s = suggestion.text;
         String text = questText.getText().toString();
         int selectionStart = questText.getSelectionStart();

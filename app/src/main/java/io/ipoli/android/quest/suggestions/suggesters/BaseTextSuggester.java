@@ -1,10 +1,14 @@
-package io.ipoli.android.quest.suggestions;
+package io.ipoli.android.quest.suggestions.suggesters;
 
 import android.util.Log;
 
 import java.util.List;
 
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
+import io.ipoli.android.quest.suggestions.SuggesterResult;
+import io.ipoli.android.quest.suggestions.SuggesterState;
+import io.ipoli.android.quest.suggestions.TextSuggester;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -30,8 +34,7 @@ public class BaseTextSuggester implements TextSuggester {
             length = textToParse.length();
             return new SuggesterResult(textToParse, SuggesterState.CONTINUE);
         } else {
-            if(lastParsedText.isEmpty()) {
-                lastParsedText = "";
+            if(match.isEmpty()) {
                 return new SuggesterResult(SuggesterState.CANCEL);
             } else {
                 length = match.length();
@@ -42,7 +45,7 @@ public class BaseTextSuggester implements TextSuggester {
     }
 
     @Override
-    public List<AddQuestSuggestion> getSuggestions() {
+    public List<SuggestionDropDownItem> getSuggestions() {
         return null;
     }
 

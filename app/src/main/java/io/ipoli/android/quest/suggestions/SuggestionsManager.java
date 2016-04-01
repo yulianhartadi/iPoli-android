@@ -19,6 +19,12 @@ import javax.inject.Inject;
 
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.quest.suggestions.suggesters.BaseTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.DurationTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.MainTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.RecurrenceTextSuggester;
+import io.ipoli.android.quest.suggestions.suggesters.StartTimeTextSuggester;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -63,7 +69,7 @@ public class SuggestionsManager {
         this.suggestionsUpdatedListener = suggestionsUpdatedListener;
     }
 
-    public List<AddQuestSuggestion> getSuggestions() {
+    public List<SuggestionDropDownItem> getSuggestions() {
         return getCurrentSuggester().getSuggestions();
     }
 

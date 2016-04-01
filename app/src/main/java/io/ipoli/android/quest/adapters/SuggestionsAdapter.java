@@ -7,7 +7,7 @@ import com.squareup.otto.Bus;
 
 import java.util.List;
 
-import io.ipoli.android.quest.suggestions.AddQuestSuggestion;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 
 /**
@@ -20,7 +20,7 @@ public class SuggestionsAdapter extends BaseSuggestionsAdapter {
         super(context, eventBus);
     }
 
-    public SuggestionsAdapter(Context context, Bus eventBus, List<AddQuestSuggestion> suggestions) {
+    public SuggestionsAdapter(Context context, Bus eventBus, List<SuggestionDropDownItem> suggestions) {
         super(context, eventBus, suggestions);
     }
 
