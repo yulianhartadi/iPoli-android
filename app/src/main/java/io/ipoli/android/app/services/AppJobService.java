@@ -75,9 +75,6 @@ public class AppJobService extends JobService {
 
     Observable<List<Quest>> syncQuests(Player player) {
         return questPersistenceService.findAllWhoNeedSyncWithRemote().flatMap(quests -> {
-            if (quests.isEmpty()) {
-                return Observable.just(new ArrayList<Quest>());
-            }
             JsonArray jsonQuests = new JsonArray();
             for (Quest q : quests) {
                 JsonObject qJson = (JsonObject) gson.toJsonTree(q);
