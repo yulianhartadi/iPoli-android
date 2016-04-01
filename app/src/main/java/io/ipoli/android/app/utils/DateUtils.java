@@ -1,8 +1,10 @@
 package io.ipoli.android.app.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -87,5 +89,17 @@ public class DateUtils {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         formatter.setTimeZone(timeZone);
         return formatter.format(date);
+    }
+
+    public static List<String> getNext7Days() {
+        List<String> dates = new ArrayList<>();
+        Calendar c = Calendar.getInstance();
+        dates.add(toDateString(c.getTime()));
+        for(int i = 1; i < 7; i++) {
+            c.add(Calendar.DAY_OF_YEAR, 1);
+            dates.add(toDateString(c.getTime()));
+        }
+
+        return dates;
     }
 }

@@ -66,6 +66,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     protected void onObjectsSaved(List<T> objs) {
     }
 
+    public Observable<T> findByRemoteId(String remoteId) {
+        return fromRealm(where().equalTo("remoteId", remoteId).findFirst());
+    }
+
     protected abstract Class<T> getRealmObjectClass();
 
     protected Observable<T> fromRealm(T obj) {

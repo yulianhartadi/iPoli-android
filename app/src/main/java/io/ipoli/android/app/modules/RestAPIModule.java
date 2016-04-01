@@ -15,6 +15,8 @@ import dagger.Provides;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
 import io.realm.RealmObject;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -36,11 +38,12 @@ public class RestAPIModule {
 
     @Provides
     @Singleton
-    public APIService provideApiService(Converter.Factory jsonFactory, CallAdapter.Factory callAdapterFactory) {
+    public APIService provideApiService(Converter.Factory jsonFactory, CallAdapter.Factory callAdapterFactory, OkHttpClient client) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseApiUrl)
                 .addConverterFactory(jsonFactory)
                 .addCallAdapterFactory(callAdapterFactory)
+                .client(client)
                 .build();
         return retrofit.create(APIService.class);
     }
@@ -75,5 +78,15 @@ public class RestAPIModule {
     @Singleton
     public CallAdapter.Factory provideCallAdapterFactory() {
         return RxJavaCallAdapterFactory.create();
+    }
+
+    @Provides
+    @Singleton
+    public OkHttpClient provideHttpClient() {
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+            Request request = chain.request();
+            request = request.newBuilder().addHeader("Content-Type", "application/json").build();
+            return chain.proceed(request);
+        }).build();
     }
 }

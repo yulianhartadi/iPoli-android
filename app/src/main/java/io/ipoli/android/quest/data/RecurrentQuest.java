@@ -169,4 +169,12 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         setNeedsSync();
         updatedAt = new Date();
     }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

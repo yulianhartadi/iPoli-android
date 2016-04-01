@@ -36,4 +36,7 @@ public interface APIService {
 
     @PUT("quests/{quest_id}?quest_type=recurrent")
     Observable<RecurrentQuest> updateRecurrentQuest(@Body RequestBody data, @Path("quest_id") String questId);
+
+    @GET("quests?quest_type=recurrent")
+    Observable<List<RecurrentQuest>> getRecurrentQuests(@Query("user_id") String userId);
 }
