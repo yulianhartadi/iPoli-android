@@ -149,16 +149,6 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 //                        .setFocusType(Focus.MINIMUM)
 //                        .build());
 
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(APIService.API_ENDPOINT)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-//                .build();
-//        APIService apiService = retrofit.create(APIService.class);
-//        apiService.getSchedule("2016-03-22", "123").subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(questDTOs -> {
-//            Log.d("OnNext", questDTOs.toString());
-//        });
-
 //        RecurrentQuest rq = new RecurrentQuest("");
 //        rq.setRawText("Work every day");
 //        recurrentQuestPersistenceService.save(rq);

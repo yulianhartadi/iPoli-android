@@ -117,9 +117,7 @@ public class AppJobService extends JobService {
             if (TextUtils.isEmpty(rq.getRemoteId())) {
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("text", rq.getRawText()).param("user_id", player.getRemoteId()).build();
                 return apiService.createRecurrentQuest(requestBody).compose(applySchedulers()).flatMap(sq -> {
-                    sq.setRemoteId(sq.getId());
-                    sq.setId(rq.getId());
-                    sq.setSyncedWithRemote();
+                    updateRecurrentQuest(rq, sq);
                     return recurrentQuestPersistenceService.save(sq);
                 });
             } else {
@@ -127,34 +125,32 @@ public class AppJobService extends JobService {
                 qJson.addProperty("id", rq.getRemoteId());
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getRemoteId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getRemoteId()).compose(applySchedulers()).flatMap(sq -> {
-                    sq.setRemoteId(sq.getId());
-                    sq.setId(rq.getId());
-                    sq.setSyncedWithRemote();
+                    updateRecurrentQuest(rq, sq);
                     return recurrentQuestPersistenceService.save(sq);
                 });
             }
         });
     }
 
+    private void updateRecurrentQuest(RecurrentQuest rq, RecurrentQuest sq) {
+        sq.setRemoteId(sq.getId());
+        sq.setId(rq.getId());
+        sq.setSyncedWithRemote();
+    }
+
     Observable<RecurrentQuest> getRecurrentQuests(Player player) {
         return apiService.getRecurrentQuests(player.getRemoteId())
                 .compose(applySchedulers()).flatMapIterable(recurrentQuests -> recurrentQuests)
                 .flatMap(sq -> recurrentQuestPersistenceService.findByRemoteId(sq.getId()).flatMap(rq -> {
-                    if (rq == null) {
-                        sq.setRemoteId(sq.getId());
-                        sq.setId(UUID.randomUUID().toString());
-                        sq.setSyncedWithRemote();
-                        return recurrentQuestPersistenceService.save(sq, false);
-                    } else {
-                        if (sq.getUpdatedAt().getTime() > rq.getUpdatedAt().getTime()) {
-                            sq.setRemoteId(sq.getId());
-                            sq.setId(rq.getId());
-                            sq.setSyncedWithRemote();
-                            return recurrentQuestPersistenceService.save(sq, false);
-                        } else {
-                            return Observable.just(rq);
-                        }
+
+                    if (rq != null && sq.getUpdatedAt().getTime() <= rq.getUpdatedAt().getTime()) {
+                        return Observable.just(rq);
                     }
+                    String id = rq == null ? UUID.randomUUID().toString() : rq.getId();
+                    sq.setRemoteId(sq.getId());
+                    sq.setId(id);
+                    sq.setSyncedWithRemote();
+                    return recurrentQuestPersistenceService.save(sq, false);
                 }));
     }
 
@@ -162,21 +158,14 @@ public class AppJobService extends JobService {
         return Observable.just(DateUtils.getNext7Days()).concatMapIterable(dates -> dates)
                 .concatMap(date -> apiService.getSchedule(date, player.getRemoteId()).compose(applySchedulers())).concatMapIterable(quests -> quests)
                 .concatMap(sq -> questPersistenceService.findByRemoteId(sq.getId()).concatMap(q -> {
-                    if (q == null) {
-                        sq.setRemoteId(sq.getId());
-                        sq.setId(UUID.randomUUID().toString());
-                        sq.setSyncedWithRemote();
-                        return questPersistenceService.save(sq, false);
-                    } else {
-                        if (sq.getUpdatedAt().getTime() > q.getUpdatedAt().getTime()) {
-                            sq.setRemoteId(sq.getId());
-                            sq.setId(q.getId());
-                            sq.setSyncedWithRemote();
-                            return questPersistenceService.save(sq, false);
-                        } else {
-                            return Observable.just(q);
-                        }
+                    if (q != null && sq.getUpdatedAt().getTime() <= q.getUpdatedAt().getTime()) {
+                        return Observable.just(q);
                     }
+                    String id = q == null ? UUID.randomUUID().toString() : q.getId();
+                    sq.setRemoteId(sq.getId());
+                    sq.setId(id);
+                    sq.setSyncedWithRemote();
+                    return questPersistenceService.save(sq, false);
                 }));
     }
 
