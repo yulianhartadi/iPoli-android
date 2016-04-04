@@ -1,24 +1,28 @@
 package io.ipoli.android.quest.suggestions;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.squareup.otto.Bus;
-
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.quest.parsers.DueDateMatcher;
+import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.MainMatcher;
+import io.ipoli.android.quest.parsers.Match;
+import io.ipoli.android.quest.parsers.QuestTextMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceMatcher;
+import io.ipoli.android.quest.parsers.StartTimeMatcher;
+import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.suggestions.suggesters.BaseTextSuggester;
 import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
 import io.ipoli.android.quest.suggestions.suggesters.DurationTextSuggester;
@@ -31,30 +35,25 @@ import io.ipoli.android.quest.suggestions.suggesters.StartTimeTextSuggester;
  * on 3/24/16.
  */
 public class SuggestionsManager {
-    @Inject
-    Bus eventBus;
 
-    Context context;
-
+    private Map<SuggestionType, QuestTextMatcher> typeToMatcher;
     SuggestionType currentType;
     Map<SuggestionType, BaseTextSuggester> textSuggesters = new HashMap<>();
     Set<SuggestionType> usedTypes = new HashSet<>();
-    List<SuggestionType> orderedSuggesterTypes = new ArrayList<SuggestionType>() {{
+    List<SuggestionType> orderedSuggestionTypes = new ArrayList<SuggestionType>() {{
         add(SuggestionType.DURATION);
         add(SuggestionType.START_TIME);
         add(SuggestionType.DUE_DATE);
         add(SuggestionType.TIMES_PER_DAY);
         add(SuggestionType.RECURRENT);
-        add(SuggestionType.MAIN);
+//        add(SuggestionType.MAIN);
     }};
 
     List<ParsedPart> parsedParts = new ArrayList<>();
 
     OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
-    public SuggestionsManager(Context context, PrettyTimeParser parser) {
-        this.context = context;
-        App.getAppComponent(context).inject(this);
+    public SuggestionsManager(PrettyTimeParser parser) {
         currentType = SuggestionType.MAIN;
 
         textSuggesters.put(SuggestionType.MAIN, new MainTextSuggester());
@@ -63,6 +62,75 @@ public class SuggestionsManager {
         textSuggesters.put(SuggestionType.START_TIME, new StartTimeTextSuggester(parser));
         textSuggesters.put(SuggestionType.RECURRENT, new RecurrenceTextSuggester());
         textSuggesters.put(SuggestionType.TIMES_PER_DAY, new TimesPerDayTextSuggester());
+
+        typeToMatcher = new HashMap<SuggestionType, QuestTextMatcher>() {{
+            put(SuggestionType.DURATION, new DurationMatcher());
+            put(SuggestionType.START_TIME, new StartTimeMatcher(parser));
+            put(SuggestionType.DUE_DATE, new DueDateMatcher(parser));
+            put(SuggestionType.TIMES_PER_DAY, new TimesPerDayMatcher());
+            put(SuggestionType.RECURRENT, new RecurrenceMatcher());
+            put(SuggestionType.MAIN, new MainMatcher());
+        }};
+    }
+
+    public List<ParsedPart> onTextChange(String text, int selectionIndex) {
+        List<ParsedPart> parsedParts = parse(text, selectionIndex);
+        ParsedPart partialPart = findPartialPart(parsedParts);
+        if(partialPart != null) {
+            changeCurrentSuggester(partialPart.type);
+        } else {
+            changeCurrentSuggester(SuggestionType.MAIN);
+        }
+        return parsedParts;
+    }
+
+    public List<ParsedPart> parse(String text, int selectionIndex) {
+        List<ParsedPart> parts = new ArrayList<>();
+        for(SuggestionType t : orderedSuggestionTypes) {
+            QuestTextMatcher mather = typeToMatcher.get(t);
+            Match partialMatch = mather.partialMatch(text.substring(0, selectionIndex));
+            if(partialMatch != null && findPartialPart(parts) == null) {
+                int start = partialMatch.text.startsWith(" ") ? partialMatch.start + 1 : partialMatch.start;
+                int end = partialMatch.end;
+                parts.add(new ParsedPart(start, end, t, true));
+            } else {
+                Match match = typeToMatcher.get(t).match(text);
+                if (match != null) {
+                    if (t == SuggestionType.MAIN) {
+                        break;
+                    }
+                    int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
+                    int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
+                    parts.add(new ParsedPart(start, end, t, false));
+                }
+            }
+        }
+        Collections.sort(parts, new Comparator<ParsedPart>() {
+
+            @Override
+            public int compare(ParsedPart lhs, ParsedPart rhs) {
+                return lhs.startIdx < rhs.startIdx ? -1 : 1;
+            }
+        });
+
+        return parts;
+    }
+
+    public void changeCurrentSuggester(SuggestionType type) {
+        if (type == currentType) {
+            return;
+        }
+        currentType = type;
+        suggestionsUpdatedListener.onSuggestionsUpdated();
+    }
+
+    private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
+        for(ParsedPart p : parsedParts) {
+            if(p.isPartial) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public void setSuggestionsUpdatedListener(OnSuggestionsUpdatedListener suggestionsUpdatedListener) {
@@ -75,7 +143,7 @@ public class SuggestionsManager {
 
     public List<SuggestionType> getUnusedTypes() {
         List<SuggestionType> types = new ArrayList<>();
-        for (SuggestionType t : orderedSuggesterTypes) {
+        for (SuggestionType t : orderedSuggestionTypes) {
             if (!usedTypes.contains(t)) {
                 types.add(t);
             }
@@ -178,9 +246,7 @@ public class SuggestionsManager {
     public List<ParsedPart> onCursorSelectionChanged(String text, int startIdx) {
         ParsedPart p = getParsedPart(currentType);
         BaseTextSuggester suggester = getCurrentSuggester();
-        SuggesterResult r = suggester.parse(text);
-
-        String match = r.getMatch();
+        String match = suggester.getLastParsedText();
         if (!TextUtils.isEmpty(match) && currentType != SuggestionType.MAIN) {
             addUsedType(currentType);
             p.isPartial = false;
@@ -256,7 +322,7 @@ public class SuggestionsManager {
         return p;
     }
 
-    private ParsedPart findNotPartialParsedPartContainingIdx(int index) {
+    public ParsedPart findNotPartialParsedPartContainingIdx(int index) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx <= index && index <= p.endIdx && !p.isPartial) {
                 return p;
@@ -287,6 +353,10 @@ public class SuggestionsManager {
         }
     }
 
+    public List<ParsedPart> getParsedParts() {
+        return parsedParts;
+    }
+
     public class TextViewProps {
         public String text;
         public int selectionStartIdx;
@@ -299,13 +369,13 @@ public class SuggestionsManager {
 
     private void addUsedType(SuggestionType type) {
         usedTypes.add(type);
-        ((MainTextSuggester)textSuggesters.get(SuggestionType.MAIN)).addUsedSuggestionType(type);
+        ((MainTextSuggester) textSuggesters.get(SuggestionType.MAIN)).addUsedSuggestionType(type);
         suggestionsUpdatedListener.onSuggestionsUpdated();
     }
 
     private void removeUsedType(SuggestionType type) {
         usedTypes.remove(type);
-        ((MainTextSuggester)textSuggesters.get(SuggestionType.MAIN)).removeUsedSuggestionType(type);
+        ((MainTextSuggester) textSuggesters.get(SuggestionType.MAIN)).removeUsedSuggestionType(type);
         suggestionsUpdatedListener.onSuggestionsUpdated();
     }
 //    private List<AddQuestSuggestion> getRecurrentDayOfWeekSuggestions() {

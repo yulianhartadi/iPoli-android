@@ -9,6 +9,7 @@ import java.util.Set;
 
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.MainMatcher;
+import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggesterResult;
 import io.ipoli.android.quest.suggestions.SuggesterState;
@@ -38,12 +39,12 @@ public class MainTextSuggester extends BaseTextSuggester {
     @Override
     public SuggesterResult parse(String text) {
         String textToParse = text.substring(startIdx);
-        String match = matcher.match(textToParse);
-        if (!match.isEmpty()) {
-            SuggestionType nextSuggestionType = suggestionTypePrepositions.get(match.trim());
-            lastParsedText = match;
-            length = match.length();
-            startIdx = startIdx + textToParse.indexOf(match);
+        Match match = matcher.match(textToParse);
+        if (match != null) {
+            SuggestionType nextSuggestionType = suggestionTypePrepositions.get(match.text.trim());
+            lastParsedText = match.text;
+            length = match.text.length();
+            startIdx = startIdx + match.start;
             return new SuggesterResult(lastParsedText, SuggesterState.FINISH, nextSuggestionType, startIdx);
         }
 

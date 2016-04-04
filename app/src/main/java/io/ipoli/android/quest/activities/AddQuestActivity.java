@@ -56,9 +56,9 @@ import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionType;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
@@ -120,7 +120,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         appComponent().inject(this);
-        suggestionsManager = new SuggestionsManager(this, parser);
+        suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         initMatchers();
@@ -156,13 +156,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         timesPerDayMatcher = new TimesPerDayMatcher();
         recurrenceMatcher = new RecurrenceMatcher();
         mainMatcher = new MainMatcher();
-        typeToMatcher = new HashMap<SuggestionType, QuestTextMatcher>(){{
-           put(SuggestionType.DURATION, durationMatcher);
-           put(SuggestionType.START_TIME, startTimeMatcher);
-           put(SuggestionType.DUE_DATE, dueDateMatcher);
-           put(SuggestionType.TIMES_PER_DAY, timesPerDayMatcher);
-           put(SuggestionType.RECURRENT, recurrenceMatcher);
-           put(SuggestionType.MAIN, mainMatcher);
+        typeToMatcher = new HashMap<SuggestionType, QuestTextMatcher>() {{
+            put(SuggestionType.DURATION, durationMatcher);
+            put(SuggestionType.START_TIME, startTimeMatcher);
+            put(SuggestionType.DUE_DATE, dueDateMatcher);
+            put(SuggestionType.TIMES_PER_DAY, timesPerDayMatcher);
+            put(SuggestionType.RECURRENT, recurrenceMatcher);
+            put(SuggestionType.MAIN, mainMatcher);
         }};
     }
 
@@ -291,42 +291,44 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     boolean isDelete = false;
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        if(isDelete(count, after) && !isDelete) {
-            SuggestionsManager.TextViewProps props = suggestionsManager.onTextDeleted(s.toString(), start, count);
-            isDelete = true;
-            questText.setText(props.text);
-            questText.setSelection(props.selectionStartIdx);
-            isDelete = false;
-            afterDelete = true;
-
-        }
+//        if (isDelete(count, after) && !isDelete) {
+//            SuggestionsManager.TextViewProps props = suggestionsManager.onTextDeleted(s.toString(), start, count);
+//            isDelete = true;
+//            questText.setText(props.text);
+//            questText.setSelection(props.selectionStartIdx);
+//            isDelete = false;
+//            afterDelete = true;
+//
+//        }
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if(afterDelete) {
-            afterDelete = false;
-            return;
-        }
+//        if (afterDelete) {
+//            afterDelete = false;
+//            return;
+//        }
+//
+//        if (before < count && !changeTextFromDropDown) {
+//            String insertedText = s.toString().substring(start, start + count);
+//            if (!insertedText.equals(" ")) {
+//                suggestionsManager.onTextInserted(start, count);
+//            }
+//        }
+//
+//        String text = s.toString();
+//        String originalText = s.toString();
+//
+//        for (SuggestionType t : suggestionsManager.getUnusedTypes()) {
+//            text = match(t, text, originalText);
+//        }
+//
+//        parsedParts = suggestionsManager.onTextChange(originalText, start, before, count, changeTextFromDropDown);
 
-        if(before < count && !changeTextFromDropDown) {
-            String insertedText = s.toString().substring(start, start + count);
-            if(!insertedText.equals(" ")) {
-                suggestionsManager.onTextInserted(start, count);
-            }
-        }
-
-        String text = s.toString();
-        String originalText = s.toString();
-
-        for(SuggestionType t : suggestionsManager.getUnusedTypes()) {
-            text = match(t, text, originalText);
-        }
-
-        parsedParts = suggestionsManager.onTextChange(originalText, start, before, count, changeTextFromDropDown);
-
+        parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
     }
 
     private boolean isDelete(int replacedLen, int newLen) {
@@ -341,7 +343,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private void colorParsedParts(Editable editable) {
         clearSpans(editable);
-        for(ParsedPart p : parsedParts) {
+        for (ParsedPart p : parsedParts) {
             int color = p.isPartial ? R.color.md_yellow_200 : R.color.md_blue_200;
             markText(editable, p.startIdx, p.endIdx, color);
         }
@@ -358,15 +360,15 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private String match(SuggestionType type, String text, String originalText) {
-        if(!typeToMatcher.containsKey(type)) {
-            return text;
-        }
-        String matchedText = typeToMatcher.get(type).match(text);
-        if (!TextUtils.isEmpty(matchedText)) {
-            int i = originalText.indexOf(matchedText);
-            suggestionsManager.changeCurrentSuggester(type, i, matchedText.length());
-            text = text.replace(matchedText, " ");
-        }
+//        if (!typeToMatcher.containsKey(type)) {
+//            return text;
+//        }
+//        String matchedText = typeToMatcher.get(type).match(text);
+//        if (!TextUtils.isEmpty(matchedText)) {
+//            int i = originalText.indexOf(matchedText);
+////            suggestionsManager.changeCurrentSuggester(type, i, matchedText.length());
+//            text = text.replace(matchedText, " ");
+//        }
         return text;
     }
 
@@ -392,7 +394,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onSuggestionsUpdated() {
-        if(adapter != null) {
+        if (adapter != null) {
             adapter.setSuggestions(suggestionsManager.getSuggestions());
         }
     }
@@ -400,12 +402,19 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onSelectionChanged(int selStart, int selEnd) {
-        if(Math.abs(selectionStartIdx - selStart) == 1  || changeTextFromDropDown) {
-            selectionStartIdx = selStart;
-            return;
-        }
-        selectionStartIdx = selStart;
-         parsedParts = suggestionsManager.onCursorSelectionChanged(questText.getText().toString(), selStart);
-        colorParsedParts(questText.getText());
+//        if (Math.abs(selectionStartIdx - selStart) <= 1 || changeTextFromDropDown) {
+//            selectionStartIdx = selStart;
+//            return;
+//        }
+//
+//        ParsedPart p = suggestionsManager.findNotPartialParsedPartContainingIdx(selStart);
+//        if (p != null) {
+//            questText.setSelection(p.startIdx);
+//            selectionStartIdx = p.startIdx;
+//        } else {
+//            selectionStartIdx = selStart;
+//        }
+//        parsedParts = suggestionsManager.onCursorSelectionChanged(questText.getText().toString(), selectionStartIdx);
+//        colorParsedParts(questText.getText());
     }
 }

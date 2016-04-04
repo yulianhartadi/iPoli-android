@@ -5,7 +5,7 @@ package io.ipoli.android.quest.parsers;
  * on 2/19/16.
  */
 public interface QuestTextMatcher<R> {
-    String match(String text);
+    Match match(String text);
     R parse(String text);
-    boolean partiallyMatches(String text);
+    Match partialMatch(String text);
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 
 /**
@@ -28,14 +29,18 @@ public class QuestParser {
 
         String originalText = text;
 
-        String matchedDurationText = durationMatcher.match(text);int duration = durationMatcher.parse(text);
+        Match durationMatch = durationMatcher.match(text);
+        String matchedDurationText = durationMatch != null ? durationMatch.text : "";
+        int duration = durationMatcher.parse(text);
         text = text.replace(matchedDurationText, "");
 
-        String matchedStartTimeText = startTimeMatcher.match(text);
+        Match startTimeMatch = startTimeMatcher.match(text);
+        String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
         int startTime = startTimeMatcher.parse(text);
         text = text.replace(matchedStartTimeText, "");
 
-        String matchedDueDateText = dueDateMatcher.match(text);
+        Match dueDateMatch = dueDateMatcher.match(text);
+        String matchedDueDateText = dueDateMatch != null ? dueDateMatch.text : "";
         Date dueDate = dueDateMatcher.parse(text);
         text = text.replace(matchedDueDateText, "");
 

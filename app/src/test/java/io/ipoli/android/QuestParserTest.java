@@ -10,13 +10,13 @@ import java.util.regex.Pattern;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestParser;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.suggestions.SuggesterResult;
+import io.ipoli.android.quest.suggestions.SuggesterState;
 import io.ipoli.android.quest.suggestions.SuggestionType;
 import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
 import io.ipoli.android.quest.suggestions.suggesters.MainTextSuggester;
-import io.ipoli.android.quest.suggestions.SuggesterResult;
-import io.ipoli.android.quest.suggestions.SuggesterState;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -295,9 +295,9 @@ public class QuestParserTest {
 
     @Test
     public void testHitEndDueDate() {
-       String DUE_MONTH_PATTERN = "((?:^|\\s)on)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
+       String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
         Pattern p = Pattern.compile(DUE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(" on 21st next ");
+        Matcher m = p.matcher("on 12");
         m.matches();
         assertTrue(m.hitEnd());
     }
@@ -312,10 +312,19 @@ public class QuestParserTest {
     }
 
     @Test
+    public void testHitEndTimesPerDay() {
+        String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
+        Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(" 4 times per");
+        m.matches();
+        assertTrue(m.hitEnd());
+    }
+
+    @Test
     public void testHitEndStartTime() {
         String PATTERN = "(?:^|\\s)at (\\d{1,2}([:|\\.]\\d{2})?(\\s?(am|pm))?)(?:$|\\s)";
         Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher("at ");
+        Matcher m = p.matcher("at 7pm ");
         m.matches();
         assertTrue(m.hitEnd());
     }
@@ -361,7 +370,6 @@ public class QuestParserTest {
         assertTrue(r.getState() == SuggesterState.CANCEL);
         assertTrue(r.getMatch() == null);
     }
-
 
     public Calendar getNextDayOfWeek(int dayOfWeek) {
         Calendar today = Calendar.getInstance();

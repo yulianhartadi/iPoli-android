@@ -7,17 +7,17 @@ import java.util.regex.Pattern;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class TimesPerDayMatcher implements QuestTextMatcher<Integer> {
-    private static final String PATTERN = "\\s(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
+public class TimesPerDayMatcher extends BaseMatcher<Integer> {
+    private static final String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
         Matcher m = pattern.matcher(text);
         if (m.find()) {
-            return m.group();
+            return new Match(m.group(), m.start(), m.end() - 1);
         }
-        return "";
+        return null;
     }
 
     @Override

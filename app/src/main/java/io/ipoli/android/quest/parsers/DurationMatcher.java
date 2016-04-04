@@ -10,19 +10,19 @@ import java.util.regex.Pattern;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class DurationMatcher implements QuestTextMatcher<Integer> {
+public class DurationMatcher extends BaseMatcher<Integer> {
 
     private static final String DURATION_PATTERN = "(?:^|\\s)for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?(?:$|\\s)";
     Pattern pattern = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
 
         Matcher dm = createMatcher(text);
         if (dm.find()) {
-            return dm.group().trim();
+            return new Match(dm.group(), dm.start(), dm.end() - 1);
         }
-        return "";
+        return null;
     }
 
     @NonNull

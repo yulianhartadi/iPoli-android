@@ -1,13 +1,11 @@
 package io.ipoli.android.quest.suggestions.suggesters;
 
-import android.util.Log;
-
 import java.util.List;
 
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
-import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggesterResult;
 import io.ipoli.android.quest.suggestions.SuggesterState;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.TextSuggester;
 
 /**
@@ -22,26 +20,26 @@ public class BaseTextSuggester implements TextSuggester {
 
     @Override
     public SuggesterResult parse(String text) {
-        String textToParse = text.substring(startIdx);
-        String match = matcher.match(textToParse);
-        if (!match.isEmpty()) {
-            lastParsedText = match;
-        }
-
-        boolean partiallyMatches = matcher.partiallyMatches(textToParse);
-        Log.d("Sugg partiallyMatch", partiallyMatches + " " + matcher.toString());
-        if(partiallyMatches) {
-            length = textToParse.length();
-            return new SuggesterResult(textToParse, SuggesterState.CONTINUE);
-        } else {
-            if(match.isEmpty()) {
+//        String textToParse = text.substring(startIdx);
+//        Match match = matcher.match(textToParse);
+//        if (match != null) {
+//            lastParsedText = match.text;
+//        }
+//
+//        boolean partiallyMatches = matcher.partiallyMatches(textToParse);
+//        Log.d("Sugg partiallyMatch", partiallyMatches + " " + matcher.toString());
+//        if(partiallyMatches) {
+//            length = textToParse.length();
+//            return new SuggesterResult(textToParse, SuggesterState.CONTINUE);
+//        } else {
+//            if(match == null) {
                 return new SuggesterResult(SuggesterState.CANCEL);
-            } else {
-                length = match.length();
-                lastParsedText = "";
-                return new SuggesterResult(match, SuggesterState.FINISH);
-            }
-        }
+//            } else {
+//                length = match.text.length();
+//                lastParsedText = "";
+//                return new SuggesterResult(match.text, SuggesterState.FINISH);
+//            }
+//        }
     }
 
     @Override

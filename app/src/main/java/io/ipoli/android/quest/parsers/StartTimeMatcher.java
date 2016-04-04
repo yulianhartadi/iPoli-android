@@ -13,7 +13,7 @@ import io.ipoli.android.app.utils.Time;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class StartTimeMatcher implements QuestTextMatcher<Integer> {
+public class StartTimeMatcher extends BaseMatcher<Integer> {
 
     private static final String PATTERN = "(?:^|\\s)at (\\d{1,2}([:|\\.]\\d{2})?(\\s?(am|pm))?)(?:$|\\s)";
     private final PrettyTimeParser parser;
@@ -24,12 +24,12 @@ public class StartTimeMatcher implements QuestTextMatcher<Integer> {
     }
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
         Matcher m = pattern.matcher(text);
         if (m.find()) {
-            return m.group().trim();
+            return new Match(m.group(), m.start(), m.end() - 1);
         }
-        return "";
+        return null;
     }
 
     @Override

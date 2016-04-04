@@ -7,17 +7,17 @@ import java.util.regex.Pattern;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/24/16.
  */
-public class MainMatcher implements QuestTextMatcher<String> {
+public class MainMatcher extends BaseMatcher<String> {
     private static final String PATTERN = "(?:^|\\s)(on|at|for|every|times\\sper\\sday)\\s";
     private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
         Matcher m = pattern.matcher(text);
         if(m.find()) {
-            return m.group(1);
+            return new Match(m.group(), m.start(), m.end() - 1);
         }
-        return "";
+        return null;
     }
 
     @Override

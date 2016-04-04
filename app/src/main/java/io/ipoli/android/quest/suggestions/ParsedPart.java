@@ -9,4 +9,14 @@ public class ParsedPart {
     public int endIdx = 0;
     public SuggestionType type;
     public boolean isPartial = false;
+
+    public ParsedPart() {
+    }
+
+    public ParsedPart(int startIdx, int endIdx, SuggestionType type, boolean isPartial) {
+        this.startIdx = startIdx;
+        this.endIdx = endIdx;
+        this.type = type;
+        this.isPartial = isPartial;
+    }
 }

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class RecurrenceMatcher implements QuestTextMatcher<String> {
+public class RecurrenceMatcher extends BaseMatcher<String> {
     private static final String EVERY_DAY_PATTERN = "(?:^|\\s)every\\sday(?:$|\\s)";
     private static final String WEEKDAY_PATTERN = "(?:^|\\s)every((\\,\\s?|\\s|\\sand\\s|\\s\\&\\s)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun))+(?:$|\\s)";
     private static final String ON_EVERY_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d{1,2})(st|nd|th|rd)?\\s(every|each)\\smonth(?:$|\\s)";
@@ -21,14 +21,14 @@ public class RecurrenceMatcher implements QuestTextMatcher<String> {
     };
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
         for (Pattern p : patterns) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
-                return matcher.group().trim();
+                return new Match(matcher.group(), matcher.start(), matcher.end() - 1);
             }
         }
-        return "";
+        return null;
     }
 
     @Override
