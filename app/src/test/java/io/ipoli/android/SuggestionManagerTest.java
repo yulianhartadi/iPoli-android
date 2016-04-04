@@ -109,6 +109,18 @@ public class SuggestionManagerTest {
         assertParsedPart(parts.get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, true);
     }
 
+    @Test
+    public void parseSpace() {
+        String text = " ";
+        assertTrue(sm.parse(text, text.length()).isEmpty());
+    }
+
+    @Test
+    public void parseEmpty() {
+        String text = "";
+        assertTrue(sm.parse(text, text.length()).isEmpty());
+    }
+
     private void assertParsedPart(ParsedPart part, SuggestionType type, int startIdx, int endIdx, boolean isPartial) {
         assertTrue(part.type == type);
         assertTrue(part.startIdx == startIdx);
