@@ -369,6 +369,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         String s = suggestion.text;
         String text = questText.getText().toString();
         int selectionStart = questText.getSelectionStart();
+
+
+
 //        int[] idxs = suggestionsManager.onSuggestionItemClick(selectionStart);
 
 

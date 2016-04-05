@@ -133,14 +133,31 @@ public class SuggestionsManager {
 
     public int getSelectionIndex(String text, int selectedIndex) {
         ParsedPart p = findNotPartialParsedPartContainingIdx(selectedIndex, parse(text));
-        if(p == null) {
+        if (p == null) {
             return selectedIndex;
         }
-        if(selectedIndex - p.startIdx < (p.endIdx + 1) - selectedIndex) {
+        if (selectedIndex - p.startIdx < (p.endIdx + 1) - selectedIndex) {
             return p.startIdx;
         } else {
             return Math.min(p.endIdx + 1, text.length() - 1);
         }
+    }
+
+    public TextTransformResult replace(String text, String replaceText, int selectionIndex) {
+        ParsedPart parsedPart = findPartialPart(parse(text, selectionIndex));
+        String start, end;
+        if (parsedPart == null) {
+            start = text.substring(0, selectionIndex);
+            end = text.substring(selectionIndex);
+        } else {
+            start = text.substring(0, parsedPart.startIdx);
+            end = parsedPart.endIdx + 1 < text.length() ? text.substring(parsedPart.endIdx + 1) : "";
+        }
+
+        replaceText += " ";
+        start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
+        end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
+        return new TextTransformResult(start + replaceText + end, (start + replaceText).length());
     }
 
 

@@ -127,6 +127,7 @@ public class SuggestionManagerTest {
     public void deleteDueDate() {
         String preDeleteText = "Work today for ";
         String expectedText = "Work  for ";
+        parse(preDeleteText);
         SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 9);
         assertTransformedResult(res, expectedText, 5);
     }
@@ -135,6 +136,7 @@ public class SuggestionManagerTest {
     public void deleteDueDateAndParse() {
         String preDeleteText = "Work today for 1h with";
         String expectedText = "Work  for 1h with";
+        parse(preDeleteText);
         SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 9);
         assertTransformedResult(res, expectedText, 5);
 
@@ -200,6 +202,86 @@ public class SuggestionManagerTest {
         int expectedSelectionIndex = 4;
         int selectedIndex = 4;
         assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
+    }
+
+    @Test
+    public void replaceEmpty() {
+        String text = "Work ";
+        String replaceText = "on";
+        String expectedText = text + replaceText + " ";
+        assertTransformedResult(sm.replace(text, replaceText, text.length()), expectedText, expectedText.length());
+    }
+
+    @Test
+    public void replaceEmptyEnd() {
+        String text = "Work";
+        String replaceText = "on";
+        String expectedText = text + " " + replaceText + " ";
+        assertTransformedResult(sm.replace(text, replaceText, text.length()), expectedText, expectedText.length());
+    }
+
+    @Test
+    public void replaceEmptyOnStart() {
+        String text = "work";
+        String replaceText = "on";
+        String expectedText = replaceText + "  " + text;
+        assertTransformedResult(sm.replace(text, replaceText, 0), expectedText, 3);
+    }
+
+    @Test
+    public void replaceEmptyInTheMiddle1() {
+        String text = "work hard";
+        String replaceText = "on";
+        String expectedText = "work on  hard";
+        assertTransformedResult(sm.replace(text, replaceText, 4), expectedText, 8);
+    }
+
+    @Test
+    public void replaceEmptyInTheMiddle2() {
+        String text = "work  hard";
+        String replaceText = "on";
+        String expectedText = "work on  hard";
+        assertTransformedResult(sm.replace(text, replaceText, 5), expectedText, 8);
+    }
+
+    @Test
+    public void replaceEmptyInTheMiddle3() {
+        String text = "work hard";
+        String replaceText = "on";
+        String expectedText = "work on  hard";
+        assertTransformedResult(sm.replace(text, replaceText, 5), expectedText, 8);
+    }
+
+    @Test
+    public void replacePartialDueDate() {
+        String text = "Work on ";
+        String replaceText = "today";
+        String expectedText = "Work today ";
+        assertTransformedResult(sm.replace(text, replaceText, text.length()), expectedText, expectedText.length());
+    }
+
+    @Test
+    public void replacePartialDueDateOnStart() {
+        String text = "On  work";
+        String replaceText = "today";
+        String expectedText = "today  work";
+        assertTransformedResult(sm.replace(text, replaceText, 3), expectedText, 6);
+    }
+
+    @Test
+    public void replacePartialDueDateInTheMiddle() {
+        String text = "work on  at 12:00";
+        String replaceText = "today";
+        String expectedText = "work today  at 12:00";
+        assertTransformedResult(sm.replace(text, replaceText, 8), expectedText, 11);
+    }
+
+    private void parse(String text) {
+        String currText = "";
+        for(char c : text.toCharArray()) {
+            currText += c;
+            sm.parse(currText);
+        }
     }
 
     private void assertParsedPart(ParsedPart part, SuggestionType type, int startIdx, int endIdx, boolean isPartial) {
