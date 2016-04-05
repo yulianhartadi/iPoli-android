@@ -127,8 +127,8 @@ public class SuggestionManagerTest {
     public void deleteDueDate() {
         String preDeleteText = "Work today for ";
         String expectedText = "Work  for ";
-        assertThat(sm.deleteText(preDeleteText, 9).text, is(expectedText));
-        assertThat(sm.deleteText(preDeleteText, 9).selectionIndex, is(5));
+        SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 9);
+        assertTransformedResult(res, expectedText, 5);
     }
 
     @Test
@@ -136,19 +136,81 @@ public class SuggestionManagerTest {
         String preDeleteText = "Work today for 1h with";
         String expectedText = "Work  for 1h with";
         SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 9);
-        assertThat(res.text, is(expectedText));
-        assertThat(res.selectionIndex, is(5));
+        assertTransformedResult(res, expectedText, 5);
 
         List<ParsedPart> parts = sm.parse(res.text, res.selectionIndex);
         assertThat(parts.size(), is(1));
-        assertThat(parts.get(0).startIdx, is(6));
-        assertThat(parts.get(0).endIdx, is(11));
+        assertParsedPart(parts.get(0),  SuggestionType.DURATION, 6, 11, false);
+    }
+
+    @Test
+    public void deleteDurationAndParse() {
+        String preDeleteText = "Work today for 1h and 1m";
+        String expectedText = "Work today for 1h and 1";
+        SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, preDeleteText.length() - 1);
+        assertTransformedResult(res, expectedText, expectedText.length());
+        List<ParsedPart> parts = sm.parse(res.text, res.selectionIndex);
+        assertThat(parts.size(), is(2));
+        assertParsedPart(parts.get(1),  SuggestionType.DURATION, 11, expectedText.length() - 1, true);
+    }
+
+    @Test
+    public void deleteNonParsedPart() {
+        String preDeleteText = "Work today for ";
+        String expectedText = "Work today or ";
+        SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 11);
+        assertTransformedResult(res, expectedText, 11);
+    }
+
+    @Test
+    public void selectionOnParsedPartLeft() {
+        String text = "Work today for ";
+        int expectedSelectionIndex = 5;
+        int selectedIndex = expectedSelectionIndex + 2;
+        assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
+    }
+
+    @Test
+    public void selectionOnParsedPartRight() {
+        String text = "Work today for ";
+        int expectedSelectionIndex = 10;
+        int selectedIndex = expectedSelectionIndex - 2;
+        assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
+    }
+
+    @Test
+    public void selectionOnParsedPartMiddle() {
+        String text = "Work for 1h at ";
+        int expectedSelectionIndex = 11;
+        int selectedIndex = expectedSelectionIndex - 3;
+        assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
+    }
+
+    @Test
+    public void selectionOnParsedPartOnStart() {
+        String text = "Today work for ";
+        int expectedSelectionIndex = 0;
+        int selectedIndex = expectedSelectionIndex + 2;
+        assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
+    }
+
+    @Test
+    public void selectionOnNonParsedPart() {
+        String text = "Work today ";
+        int expectedSelectionIndex = 4;
+        int selectedIndex = 4;
+        assertThat(sm.getSelectionIndex(text, selectedIndex), is(expectedSelectionIndex));
     }
 
     private void assertParsedPart(ParsedPart part, SuggestionType type, int startIdx, int endIdx, boolean isPartial) {
-        assertTrue(part.type == type);
-        assertTrue(part.startIdx == startIdx);
-        assertTrue(part.endIdx == endIdx);
-        assertTrue(part.isPartial == isPartial);
+        assertThat(part.type, is(type));
+        assertThat(part.startIdx, is(startIdx));
+        assertThat(part.endIdx, is(endIdx));
+        assertThat(part.isPartial, is(isPartial));
+    }
+
+    private void assertTransformedResult(SuggestionsManager.TextTransformResult res, String text, int selectionIndex) {
+        assertThat(res.text, is(text));
+        assertThat(res.selectionIndex, is(selectionIndex));
     }
 }

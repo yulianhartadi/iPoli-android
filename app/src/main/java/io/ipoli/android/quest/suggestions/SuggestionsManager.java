@@ -83,12 +83,16 @@ public class SuggestionsManager {
         return parsedParts;
     }
 
+    public List<ParsedPart> parse(String text) {
+        return parse(text, text.length());
+    }
+
     public List<ParsedPart> parse(String text, int selectionIndex) {
         List<ParsedPart> parts = new ArrayList<>();
         for (SuggestionType t : orderedSuggestionTypes) {
             QuestTextMatcher mather = typeToMatcher.get(t);
             Match partialMatch = mather.partialMatch(text.substring(0, selectionIndex));
-            if (partialMatch != null && findPartialPart(parts) == null) {
+            if (partialMatch != null && findPartialPart(parts) == null && !usedTypes.contains(t)) {
                 int start = partialMatch.text.startsWith(" ") ? partialMatch.start + 1 : partialMatch.start;
                 int end = partialMatch.end;
                 parts.add(new ParsedPart(start, end, t, true));
@@ -98,9 +102,12 @@ public class SuggestionsManager {
                     if (t == SuggestionType.MAIN) {
                         break;
                     }
+                    usedTypes.add(t);
                     int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
                     int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
                     parts.add(new ParsedPart(start, end, t, false));
+                } else {
+                    usedTypes.remove(t);
                 }
             }
         }
@@ -116,12 +123,26 @@ public class SuggestionsManager {
     }
 
     public TextTransformResult deleteText(String preDeleteText, int deleteStartIndex) {
-        ParsedPart partToDelete = findNotPartialParsedPartContainingIdx(deleteStartIndex, parse(preDeleteText, preDeleteText.length() - 1));
+        ParsedPart partToDelete = findNotPartialParsedPartContainingIdx(deleteStartIndex, parse(preDeleteText, deleteStartIndex));
         if (partToDelete == null) {
             return new TextTransformResult(StringUtils.cut(preDeleteText, deleteStartIndex, deleteStartIndex), deleteStartIndex);
         }
+        usedTypes.remove(partToDelete.type);
         return new TextTransformResult(StringUtils.cut(preDeleteText, partToDelete.startIdx, partToDelete.endIdx), partToDelete.startIdx);
     }
+
+    public int getSelectionIndex(String text, int selectedIndex) {
+        ParsedPart p = findNotPartialParsedPartContainingIdx(selectedIndex, parse(text));
+        if(p == null) {
+            return selectedIndex;
+        }
+        if(selectedIndex - p.startIdx < (p.endIdx + 1) - selectedIndex) {
+            return p.startIdx;
+        } else {
+            return Math.min(p.endIdx + 1, text.length() - 1);
+        }
+    }
+
 
     public void changeCurrentSuggester(SuggestionType type) {
         if (type == currentType) {
@@ -191,6 +212,7 @@ public class SuggestionsManager {
         }
         return null;
     }
+
 
     public class TextTransformResult {
         public String text;

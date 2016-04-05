@@ -44,9 +44,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/edit_quest_name_hint"
                 android:imeOptions="actionDone"
-                android:inputType="textCapSentences"
-                android:singleLine="true"
-                android:textIsSelectable="false">
+                android:inputType="textNoSuggestions"
+                android:singleLine="true">
 
                 <requestFocus />
             </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
