@@ -355,8 +355,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private void clearSpans(Editable editable) {
         BackgroundColorSpan[] spansToRemove = editable.getSpans(0, editable.toString().length(), BackgroundColorSpan.class);
-        for (int i = 0; i < spansToRemove.length; i++)
-            editable.removeSpan(spansToRemove[i]);
+        for (BackgroundColorSpan span : spansToRemove) {
+            editable.removeSpan(span);
+        }
     }
 
     private void markText(Editable text, int startIdx, int endIdx, int colorRes) {
