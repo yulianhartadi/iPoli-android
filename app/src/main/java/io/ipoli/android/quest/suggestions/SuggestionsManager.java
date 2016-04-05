@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.suggestions;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
@@ -49,7 +48,7 @@ public class SuggestionsManager {
 //        add(SuggestionType.MAIN);
     }};
 
-    List<ParsedPart> parsedParts = new ArrayList<>();
+//    List<ParsedPart> parsedParts = new ArrayList<>();
 
     OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
@@ -76,7 +75,7 @@ public class SuggestionsManager {
     public List<ParsedPart> onTextChange(String text, int selectionIndex) {
         List<ParsedPart> parsedParts = parse(text, selectionIndex);
         ParsedPart partialPart = findPartialPart(parsedParts);
-        if(partialPart != null) {
+        if (partialPart != null) {
             changeCurrentSuggester(partialPart.type);
         } else {
             changeCurrentSuggester(SuggestionType.MAIN);
@@ -86,10 +85,10 @@ public class SuggestionsManager {
 
     public List<ParsedPart> parse(String text, int selectionIndex) {
         List<ParsedPart> parts = new ArrayList<>();
-        for(SuggestionType t : orderedSuggestionTypes) {
+        for (SuggestionType t : orderedSuggestionTypes) {
             QuestTextMatcher mather = typeToMatcher.get(t);
             Match partialMatch = mather.partialMatch(text.substring(0, selectionIndex));
-            if(partialMatch != null && findPartialPart(parts) == null) {
+            if (partialMatch != null && findPartialPart(parts) == null) {
                 int start = partialMatch.text.startsWith(" ") ? partialMatch.start + 1 : partialMatch.start;
                 int end = partialMatch.end;
                 parts.add(new ParsedPart(start, end, t, true));
@@ -116,6 +115,14 @@ public class SuggestionsManager {
         return parts;
     }
 
+    public TextTransformResult deleteText(String preDeleteText, int deleteStartIndex) {
+        ParsedPart partToDelete = findNotPartialParsedPartContainingIdx(deleteStartIndex, parse(preDeleteText, preDeleteText.length() - 1));
+        if (partToDelete == null) {
+            return new TextTransformResult(StringUtils.cut(preDeleteText, deleteStartIndex, deleteStartIndex), deleteStartIndex);
+        }
+        return new TextTransformResult(StringUtils.cut(preDeleteText, partToDelete.startIdx, partToDelete.endIdx), partToDelete.startIdx);
+    }
+
     public void changeCurrentSuggester(SuggestionType type) {
         if (type == currentType) {
             return;
@@ -125,8 +132,8 @@ public class SuggestionsManager {
     }
 
     private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
-        for(ParsedPart p : parsedParts) {
-            if(p.isPartial) {
+        for (ParsedPart p : parsedParts) {
+            if (p.isPartial) {
                 return p;
             }
         }
@@ -163,166 +170,11 @@ public class SuggestionsManager {
         suggestionsUpdatedListener.onSuggestionsUpdated();
     }
 
-    public List<ParsedPart> onTextChange(String text, int start, int before, int count, boolean finishCurrentSuggester) {
-
-        BaseTextSuggester suggester = getCurrentSuggester();
-        SuggesterResult r = suggester.parse(text);
-        SuggesterState state = r.getState();
-
-        if (state == SuggesterState.FINISH || finishCurrentSuggester) {
-            if (currentType != SuggestionType.MAIN) {
-                addUsedType(currentType);
-                ParsedPart p = getParsedPart(currentType);
-                p.isPartial = false;
-                p.startIdx = suggester.getStartIdx();
-                p.endIdx = finishCurrentSuggester ? suggester.getStartIdx() + suggester.getLastParsedText().length() - 1 : suggester.getEndIdx();
-            }
-
-            SuggestionType next = SuggestionType.MAIN;
-            int nextStartIdx = suggester.getEndIdx() + 1;
-            int nextLength = 0;
-            if (r.getNextSuggesterType() != null) {
-                next = r.getNextSuggesterType();
-                nextStartIdx = r.getNextSuggesterStartIdx();
-                nextLength = r.getMatch().length();
-            }
-            changeCurrentSuggester(next, nextStartIdx, nextLength);
-        } else if (state == SuggesterState.CANCEL) {
-            removeUsedType(currentType);
-            ParsedPart p = getParsedPart(currentType);
-            parsedParts.remove(p);
-            changeCurrentSuggester(SuggestionType.MAIN, text.length(), 0);
-        } else if (state == SuggesterState.CONTINUE) {
-            if (currentType != SuggestionType.MAIN) {
-                ParsedPart p = getParsedPart(currentType);
-                p.isPartial = true;
-                p.startIdx = suggester.getStartIdx();
-                p.endIdx = suggester.getEndIdx();
-            }
-        }
-
-        return parsedParts;
-    }
-
-    public void onTextInserted(int start, int count) {
-        updateIndexesAfterInsert(start, count);
-        ParsedPart updatedPart = findNotPartialParsedPartContainingOrNextToIdx(start);
-        if (updatedPart != null) {
-            changeCurrentSuggester(updatedPart.type, Math.min(updatedPart.startIdx, start), updatedPart.endIdx - updatedPart.startIdx + 1 + count);
-        }
-    }
-
-    public int[] onSuggestionItemClick(int selectionStart) {
-        BaseTextSuggester s = getCurrentSuggester();
-        int startIdx = s.getStartIdx();
-        int endIdx = s.getEndIdx();
-        if (startIdx == 0 && endIdx == 0) {
-            startIdx = selectionStart;
-            endIdx = selectionStart;
-        }
-
-        return new int[]{
-                startIdx, endIdx
-        };
-    }
-
-    public TextViewProps onTextDeleted(String text, int startIdx, int deletedLength) {
-        int selectionIndex = startIdx;
-        ParsedPart partToDelete = findNotPartialParsedPartContainingIdx(startIdx);
-        if (partToDelete != null) {
-            text = StringUtils.cut(text, partToDelete.startIdx, partToDelete.endIdx);
-            deletedLength = partToDelete.endIdx - partToDelete.startIdx + 1;
-            selectionIndex = partToDelete.startIdx;
-            removeUsedType(partToDelete.type);
-            parsedParts.remove(partToDelete);
-            removeUsedType(partToDelete.type);
-        } else {
-            text = StringUtils.cutLength(text, startIdx, deletedLength);
-        }
-        updateIndexesAfterDelete(startIdx, deletedLength);
-        return new TextViewProps(text, selectionIndex);
-    }
-
-    public List<ParsedPart> onCursorSelectionChanged(String text, int startIdx) {
-        ParsedPart p = getParsedPart(currentType);
-        BaseTextSuggester suggester = getCurrentSuggester();
-        String match = suggester.getLastParsedText();
-        if (!TextUtils.isEmpty(match) && currentType != SuggestionType.MAIN) {
-            addUsedType(currentType);
-            p.isPartial = false;
-            p.startIdx = suggester.getStartIdx();
-            p.endIdx = suggester.getEndIdx();
-        } else {
-            removeParsedPart(currentType);
-        }
-
-        changeCurrentSuggester(SuggestionType.MAIN, startIdx, 0);
-        return parsedParts;
-    }
-
-    private void updateIndexesAfterDelete(int startIdx, int lenToShiftLeft) {
-        for (SuggestionType t : textSuggesters.keySet()) {
-            BaseTextSuggester s = textSuggesters.get(t);
-            if (s.getStartIdx() > startIdx) {
-                s.setStartIdx(s.getStartIdx() - lenToShiftLeft);
-            }
-        }
-        BaseTextSuggester currentSuggester = getCurrentSuggester();
-        if (currentSuggester.getStartIdx() > startIdx) {
-            currentSuggester.setStartIdx(currentSuggester.getStartIdx() - lenToShiftLeft);
-        } else if (currentSuggester.getLength() <= lenToShiftLeft) {
-            removeParsedPart(currentType);
-            changeCurrentSuggester(SuggestionType.MAIN, startIdx, 0);
-        }
-
-        for (ParsedPart p : parsedParts) {
-            if (p.startIdx > startIdx) {
-                p.startIdx = Math.max(0, p.startIdx - lenToShiftLeft);
-                p.endIdx = Math.max(0, p.endIdx - lenToShiftLeft);
-            }
-        }
-    }
-
-    private void updateIndexesAfterInsert(int startIdx, int lenToShiftRight) {
-        for (SuggestionType t : textSuggesters.keySet()) {
-            BaseTextSuggester s = textSuggesters.get(t);
-            if (s.getStartIdx() > startIdx) {
-                s.setStartIdx(s.getStartIdx() + lenToShiftRight);
-            }
-        }
-        BaseTextSuggester currentSuggester = getCurrentSuggester();
-        if (currentSuggester.getStartIdx() > startIdx) {
-            currentSuggester.setStartIdx(currentSuggester.getStartIdx() + lenToShiftRight);
-        }
-
-        for (ParsedPart p : parsedParts) {
-            if (p.startIdx > startIdx) {
-                p.startIdx = p.startIdx + lenToShiftRight;
-                p.endIdx = p.endIdx + lenToShiftRight;
-            }
-        }
-    }
-
-
     public BaseTextSuggester getCurrentSuggester() {
         return textSuggesters.get(currentType);
     }
 
-    private ParsedPart getParsedPart(SuggestionType type) {
-        for (ParsedPart p : parsedParts) {
-            if (p.type == type) {
-                return p;
-            }
-        }
-        ParsedPart p = new ParsedPart();
-        p.type = currentType;
-        if (type != SuggestionType.MAIN) {
-            parsedParts.add(p);
-        }
-        return p;
-    }
-
-    public ParsedPart findNotPartialParsedPartContainingIdx(int index) {
+    public ParsedPart findNotPartialParsedPartContainingIdx(int index, List<ParsedPart> parsedParts) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx <= index && index <= p.endIdx && !p.isPartial) {
                 return p;
@@ -331,7 +183,7 @@ public class SuggestionsManager {
         return null;
     }
 
-    private ParsedPart findNotPartialParsedPartContainingOrNextToIdx(int index) {
+    private ParsedPart findNotPartialParsedPartContainingOrNextToIdx(int index, List<ParsedPart> parsedParts) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx - 1 <= index && index <= p.endIdx + 1 && !p.isPartial) {
                 return p;
@@ -340,44 +192,16 @@ public class SuggestionsManager {
         return null;
     }
 
-    private void removeParsedPart(SuggestionType type) {
-        ParsedPart remove = null;
-        for (ParsedPart p : parsedParts) {
-            if (p.type == type) {
-                remove = p;
-                break;
-            }
-        }
-        if (remove != null) {
-            parsedParts.remove(remove);
-        }
-    }
-
-    public List<ParsedPart> getParsedParts() {
-        return parsedParts;
-    }
-
-    public class TextViewProps {
+    public class TextTransformResult {
         public String text;
-        public int selectionStartIdx;
+        public int selectionIndex;
 
-        public TextViewProps(String text, int selectionStartIdx) {
+        public TextTransformResult(String text, int selectionIndex) {
             this.text = text;
-            this.selectionStartIdx = selectionStartIdx;
+            this.selectionIndex = selectionIndex;
         }
     }
 
-    private void addUsedType(SuggestionType type) {
-        usedTypes.add(type);
-        ((MainTextSuggester) textSuggesters.get(SuggestionType.MAIN)).addUsedSuggestionType(type);
-        suggestionsUpdatedListener.onSuggestionsUpdated();
-    }
-
-    private void removeUsedType(SuggestionType type) {
-        usedTypes.remove(type);
-        ((MainTextSuggester) textSuggesters.get(SuggestionType.MAIN)).removeUsedSuggestionType(type);
-        suggestionsUpdatedListener.onSuggestionsUpdated();
-    }
 //    private List<AddQuestSuggestion> getRecurrentDayOfWeekSuggestions() {
 //        int icon = R.drawable.ic_event_black_18dp;
 //        List<AddQuestSuggestion> suggestions = new ArrayList<>();

@@ -11,6 +11,8 @@ import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionType;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -119,6 +121,28 @@ public class SuggestionManagerTest {
     public void parseEmpty() {
         String text = "";
         assertTrue(sm.parse(text, text.length()).isEmpty());
+    }
+
+    @Test
+    public void deleteDueDate() {
+        String preDeleteText = "Work today for ";
+        String expectedText = "Work  for ";
+        assertThat(sm.deleteText(preDeleteText, 9).text, is(expectedText));
+        assertThat(sm.deleteText(preDeleteText, 9).selectionIndex, is(5));
+    }
+
+    @Test
+    public void deleteDueDateAndParse() {
+        String preDeleteText = "Work today for 1h with";
+        String expectedText = "Work  for 1h with";
+        SuggestionsManager.TextTransformResult res = sm.deleteText(preDeleteText, 9);
+        assertThat(res.text, is(expectedText));
+        assertThat(res.selectionIndex, is(5));
+
+        List<ParsedPart> parts = sm.parse(res.text, res.selectionIndex);
+        assertThat(parts.size(), is(1));
+        assertThat(parts.get(0).startIdx, is(6));
+        assertThat(parts.get(0).endIdx, is(11));
     }
 
     private void assertParsedPart(ParsedPart part, SuggestionType type, int startIdx, int endIdx, boolean isPartial) {

@@ -107,7 +107,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private MainMatcher mainMatcher;
     private Map<SuggestionType, QuestTextMatcher> typeToMatcher;
     private SuggestionsManager suggestionsManager;
-    private List<ParsedPart> parsedParts;
+//    private List<ParsedPart> parsedParts;
 
     boolean changeTextFromDropDown = false;
     boolean afterDelete = false;
@@ -294,41 +294,25 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//        if (isDelete(count, after) && !isDelete) {
-//            SuggestionsManager.TextViewProps props = suggestionsManager.onTextDeleted(s.toString(), start, count);
-//            isDelete = true;
-//            questText.setText(props.text);
-//            questText.setSelection(props.selectionStartIdx);
-//            isDelete = false;
-//            afterDelete = true;
-//
-//        }
+        if(isDelete(count, after) && !isDelete) {
+            SuggestionsManager.TextTransformResult result = suggestionsManager.deleteText(s.toString(), start);
+            isDelete = true;
+            questText.setText(result.text);
+            questText.setSelection(result.selectionIndex);
+            afterDelete = true;
+            isDelete = false;
+        }
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-//        if (afterDelete) {
-//            afterDelete = false;
-//            return;
-//        }
-//
-//        if (before < count && !changeTextFromDropDown) {
-//            String insertedText = s.toString().substring(start, start + count);
-//            if (!insertedText.equals(" ")) {
-//                suggestionsManager.onTextInserted(start, count);
-//            }
-//        }
-//
-//        String text = s.toString();
-//        String originalText = s.toString();
-//
-//        for (SuggestionType t : suggestionsManager.getUnusedTypes()) {
-//            text = match(t, text, originalText);
-//        }
-//
-//        parsedParts = suggestionsManager.onTextChange(originalText, start, before, count, changeTextFromDropDown);
+        if (afterDelete) {
+            afterDelete = false;
+            return;
+        }
 
-        parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
+        List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
+        colorParsedParts(questText.getText(), parsedParts);
     }
 
     private boolean isDelete(int replacedLen, int newLen) {
@@ -337,11 +321,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void afterTextChanged(Editable editable) {
-        colorParsedParts(editable);
 
     }
 
-    private void colorParsedParts(Editable editable) {
+    private void colorParsedParts(Editable editable, List<ParsedPart> parsedParts) {
         clearSpans(editable);
         for (ParsedPart p : parsedParts) {
             int color = p.isPartial ? R.color.md_yellow_200 : R.color.md_blue_200;
@@ -378,18 +361,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         String s = suggestion.text;
         String text = questText.getText().toString();
         int selectionStart = questText.getSelectionStart();
-        int[] idxs = suggestionsManager.onSuggestionItemClick(selectionStart);
+//        int[] idxs = suggestionsManager.onSuggestionItemClick(selectionStart);
 
 
-        String begin = text.substring(0, idxs[0]);
-        String end = idxs[1] + 1 < text.length() ? text.substring(idxs[1] + 1).trim() : "";
-        s = !begin.endsWith(" ") ? " " + s : s;
-        s = s + " ";
-
-        changeTextFromDropDown = true;
-        questText.setText(begin + s + end);
-        questText.setSelection(begin.length() + s.length());
-        changeTextFromDropDown = false;
+//        String begin = text.substring(0, idxs[0]);
+//        String end = idxs[1] + 1 < text.length() ? text.substring(idxs[1] + 1).trim() : "";
+//        s = !begin.endsWith(" ") ? " " + s : s;
+//        s = s + " ";
+//
+//        changeTextFromDropDown = true;
+//        questText.setText(begin + s + end);
+//        questText.setSelection(begin.length() + s.length());
+//        changeTextFromDropDown = false;
     }
 
     @Override
@@ -402,19 +385,19 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onSelectionChanged(int selStart, int selEnd) {
-//        if (Math.abs(selectionStartIdx - selStart) <= 1 || changeTextFromDropDown) {
-//            selectionStartIdx = selStart;
+//        if (Math.abs(selectionIndex - selStart) <= 1 || changeTextFromDropDown) {
+//            selectionIndex = selStart;
 //            return;
 //        }
 //
 //        ParsedPart p = suggestionsManager.findNotPartialParsedPartContainingIdx(selStart);
 //        if (p != null) {
 //            questText.setSelection(p.startIdx);
-//            selectionStartIdx = p.startIdx;
+//            selectionIndex = p.startIdx;
 //        } else {
-//            selectionStartIdx = selStart;
+//            selectionIndex = selStart;
 //        }
-//        parsedParts = suggestionsManager.onCursorSelectionChanged(questText.getText().toString(), selectionStartIdx);
+//        parsedParts = suggestionsManager.onCursorSelectionChanged(questText.getText().toString(), selectionIndex);
 //        colorParsedParts(questText.getText());
     }
 }
