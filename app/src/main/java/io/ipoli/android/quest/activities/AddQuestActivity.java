@@ -369,21 +369,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         String s = suggestion.text;
         String text = questText.getText().toString();
         int selectionStart = questText.getSelectionStart();
-
-
-
-//        int[] idxs = suggestionsManager.onSuggestionItemClick(selectionStart);
-
-
-//        String begin = text.substring(0, idxs[0]);
-//        String end = idxs[1] + 1 < text.length() ? text.substring(idxs[1] + 1).trim() : "";
-//        s = !begin.endsWith(" ") ? " " + s : s;
-//        s = s + " ";
-//
-//        changeTextFromDropDown = true;
-//        questText.setText(begin + s + end);
-//        questText.setSelection(begin.length() + s.length());
-//        changeTextFromDropDown = false;
+        SuggestionsManager.TextTransformResult result = suggestionsManager.replace(text, s, selectionStart);
+        questText.setText(result.text);
+        questText.setSelection(result.selectionIndex);
     }
 
     @Override
