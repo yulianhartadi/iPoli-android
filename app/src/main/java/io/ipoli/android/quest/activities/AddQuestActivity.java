@@ -305,17 +305,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        if (isDelete(count, after)) {
-
-            if (textWatcherState == TextWatcherState.FROM_DELETE) {
-                return;
-            }
-
-            SuggestionsManager.TextTransformResult result = suggestionsManager.deleteText(s.toString(), start);
-            setTransformedText(result, TextWatcherState.FROM_DELETE);
-            textWatcherState = TextWatcherState.AFTER_DELETE;
-
+        if (isInsert(count, after) || textWatcherState == TextWatcherState.FROM_DELETE) {
+            return;
         }
+
+        SuggestionsManager.TextTransformResult result = suggestionsManager.deleteText(s.toString(), start);
+        setTransformedText(result, TextWatcherState.FROM_DELETE);
+        textWatcherState = TextWatcherState.AFTER_DELETE;
+
     }
 
     @Override
@@ -338,8 +335,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         textWatcherState = TextWatcherState.GUI_CHANGE;
     }
 
-    private boolean isDelete(int replacedLen, int newLen) {
-        return newLen < replacedLen;
+    private boolean isInsert(int replacedLen, int newLen) {
+        return newLen >= replacedLen;
     }
 
     @Override
