@@ -11,7 +11,6 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,8 +59,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
-import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
+import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
@@ -108,11 +107,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private MainMatcher mainMatcher;
     private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
     private SuggestionsManager suggestionsManager;
-//    private List<ParsedPart> parsedParts;
-
-    boolean changeTextFromDropDown = false;
-    boolean afterDelete = false;
     private int selectionStartIdx = 0;
+
+    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
+
+    TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -303,36 +303,39 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
-    boolean isDelete = false;
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        Log.d("beforeTextChanged", start + " " + count);
-        if (isDelete(count, after) && !isDelete) {
-//            Log.d("iPoli Typing", continiusTyping + "");
+        if (isDelete(count, after)) {
+
+            if (textWatcherState == TextWatcherState.FROM_DELETE) {
+                return;
+            }
+
             SuggestionsManager.TextTransformResult result = suggestionsManager.deleteText(s.toString(), start);
-            isDelete = true;
+            setTransformedText(result, TextWatcherState.FROM_DELETE);
+            textWatcherState = TextWatcherState.AFTER_DELETE;
 
-            questText.setText(result.text);
-            questText.setSelection(result.selectionIndex);
-
-            List<ParsedPart> parsedParts = suggestionsManager.onTextChange(result.text, result.selectionIndex);
-            colorParsedParts(parsedParts);
-            afterDelete = true;
-            isDelete = false;
         }
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        Log.d("onTextChanged", start + " " + count);
-        if (afterDelete || isDelete) {
-            afterDelete = false;
-            return;
+        switch (textWatcherState) {
+            case FROM_DELETE:
+            case FROM_DROP_DOWN:
+                List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx);
+                colorParsedParts(parsedParts);
+                break;
+
+            case GUI_CHANGE:
+                parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
+                colorParsedParts(parsedParts);
+                break;
+            case AFTER_DELETE:
+                break;
         }
 
-        List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
-        colorParsedParts(parsedParts);
+        textWatcherState = TextWatcherState.GUI_CHANGE;
     }
 
     private boolean isDelete(int replacedLen, int newLen) {
@@ -371,6 +374,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         String text = questText.getText().toString();
         int selectionStart = questText.getSelectionStart();
         SuggestionsManager.TextTransformResult result = suggestionsManager.replace(text, s, selectionStart);
+        setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
+
+    }
+
+    private void setTransformedText(SuggestionsManager.TextTransformResult result, TextWatcherState state) {
+        textWatcherState = state;
+        selectionStartIdx = result.selectionIndex;
         questText.setText(result.text);
         questText.setSelection(result.selectionIndex);
     }

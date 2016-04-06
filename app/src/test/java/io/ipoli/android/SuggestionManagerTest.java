@@ -118,7 +118,7 @@ public class SuggestionManagerTest {
     @Test
     public void parseSpace() {
         String text = " ";
-        assertTrue(sm.parse(text, text.length()).isEmpty());
+        assertThat(sm.parse(text, text.length()).size(), is(0));
     }
 
     @Test
