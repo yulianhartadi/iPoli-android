@@ -342,17 +342,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Subscribe
     public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
         SuggestionDropDownItem suggestion = e.suggestionItem;
-        String s = suggestion.text;
         String text = questText.getText().toString();
-        int selectionStart = questText.getSelectionStart();
-        SuggestionsManager.TextTransformResult result;
-
-        if (suggestion.shouldReplace) {
-            result = suggestionsManager.replace(text, s, selectionStart);
-            suggestionsManager.addUsedType(suggestionsManager.getCurrentSuggestionsProviderType());
-        } else {
-            result = suggestionsManager.append(text, s, selectionStart);
-        }
+        int selectionIndex = questText.getSelectionStart();
+        SuggestionsManager.TextTransformResult result = suggestionsManager.onSuggestionItemClick(text, suggestion, selectionIndex);
         setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
         if (suggestion.nextTextEntityType != null) {
             suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType);

@@ -135,6 +135,17 @@ public class SuggestionsManager {
         return new TextTransformResult(StringUtils.cut(preDeleteText, partToDelete.startIdx, partToDelete.endIdx), partToDelete.startIdx);
     }
 
+    public TextTransformResult onSuggestionItemClick(String text, SuggestionDropDownItem suggestion, int selectionIndex) {
+        TextTransformResult result;
+        if (suggestion.shouldReplace) {
+            result = replace(text, suggestion.text, selectionIndex);
+            addUsedType(currentType);
+        } else {
+            result = append(text, suggestion.text, selectionIndex);
+        }
+        return result;
+    }
+
     public int getSelectionIndex(String text, int selectedIndex) {
         ParsedPart p = findNotPartialParsedPartContainingIdx(selectedIndex, parse(text));
         if (p == null) {
@@ -162,6 +173,15 @@ public class SuggestionsManager {
         start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
         end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
         return new TextTransformResult(start + replaceText + end, (start + replaceText).length());
+    }
+
+    public TextTransformResult append(String text, String appendText, int selectionIndex) {
+        String start = text.substring(0, selectionIndex);
+        String end = text.substring(selectionIndex);
+        appendText += appendText.isEmpty() ? "" : " ";
+        start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
+        end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
+        return new TextTransformResult(start + appendText + end, (start + appendText).length());
     }
 
     public void changeCurrentSuggestionsProvider(TextEntityType type) {
@@ -201,38 +221,19 @@ public class SuggestionsManager {
         return null;
     }
 
-    private ParsedPart findNotPartialParsedPartContainingOrNextToIdx(int index, List<ParsedPart> parsedParts) {
-        for (ParsedPart p : parsedParts) {
-            if (p.startIdx - 1 <= index && index <= p.endIdx + 1 && !p.isPartial) {
-                return p;
-            }
-        }
-        return null;
-    }
-
     public TextEntityType getCurrentSuggestionsProviderType() {
         return currentType;
     }
 
-    public void addUsedType(TextEntityType type) {
+    private void addUsedType(TextEntityType type) {
         usedTypes.add(type);
         ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
     }
 
-    public void removeUsedType(TextEntityType type) {
+    private void removeUsedType(TextEntityType type) {
         usedTypes.remove(type);
         ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
     }
-
-    public TextTransformResult append(String text, String appendText, int selectionIndex) {
-        String start = text.substring(0, selectionIndex);
-        String end = text.substring(selectionIndex);
-        appendText += appendText.isEmpty() ? "" : " ";
-        start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
-        end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
-        return new TextTransformResult(start + appendText + end, (start + appendText).length());
-    }
-
 
     public class TextTransformResult {
         public String text;
