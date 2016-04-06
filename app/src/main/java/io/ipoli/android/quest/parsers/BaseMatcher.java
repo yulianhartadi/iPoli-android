@@ -10,7 +10,7 @@ public abstract class BaseMatcher<R> implements QuestTextMatcher<R> {
     public Match partialMatch(String text) {
         String currText = text;
         while (!currText.isEmpty()) {
-            if (partiallyMatches(currText) && currText.length() > 2) {
+            if (partiallyMatches(currText)) {
                 int start = text.length() - currText.length();
                 int end = text.length() - 1;
                 return new Match(currText, start, end);

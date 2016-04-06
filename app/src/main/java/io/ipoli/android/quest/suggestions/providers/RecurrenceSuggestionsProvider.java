@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.suggestions.suggesters;
+package io.ipoli.android.quest.suggestions.providers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,14 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
-import io.ipoli.android.quest.suggestions.SuggestionType;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class RecurrenceTextSuggester extends BaseTextSuggester {
+public class RecurrenceSuggestionsProvider extends BaseSuggestionsProvider {
 
-    public RecurrenceTextSuggester() {
+    public RecurrenceSuggestionsProvider() {
         matcher = new RecurrenceMatcher();
     }
 
@@ -23,8 +22,8 @@ public class RecurrenceTextSuggester extends BaseTextSuggester {
         int icon = R.drawable.ic_repeat_black_24dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "day", "every day"));
-        suggestions.add(new SuggestionDropDownItem(icon, "day of week", "", SuggestionType.RECURRENT_DAY_OF_WEEK));
-        suggestions.add(new SuggestionDropDownItem(icon, "day of month", "", SuggestionType.RECURRENT_DAY_OF_MONTH));
+        suggestions.add(new SuggestionDropDownItem(icon, "day of week", ""));
+        suggestions.add(new SuggestionDropDownItem(icon, "day of month", ""));
         return suggestions;
     }
 }

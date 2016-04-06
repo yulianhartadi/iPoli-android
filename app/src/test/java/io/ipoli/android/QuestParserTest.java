@@ -12,11 +12,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.suggestions.SuggesterResult;
-import io.ipoli.android.quest.suggestions.SuggesterState;
-import io.ipoli.android.quest.suggestions.SuggestionType;
-import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.MainTextSuggester;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -327,48 +322,6 @@ public class QuestParserTest {
         Matcher m = p.matcher("at 7pm ");
         m.matches();
         assertTrue(m.hitEnd());
-    }
-
-    @Test
-    public void mainTextSuggesterReturnNewSuggester() {
-        MainTextSuggester s = new MainTextSuggester();
-        int startIdx = "Workout ".length();
-        s.setStartIdx(startIdx);
-        SuggesterResult r = s.parse("Workout on ");
-        assertTrue(r.getState() == SuggesterState.FINISH);
-        assertTrue(r.getNextSuggesterType() == SuggestionType.DUE_DATE);
-        assertTrue(r.getNextSuggesterStartIdx() == startIdx);
-    }
-
-    @Test
-    public void dueDateTextSuggesterContinueState() {
-        DueDateTextSuggester s = new DueDateTextSuggester(parser);
-        int startIdx = "Workout ".length();
-        s.setStartIdx(startIdx);
-        SuggesterResult r = s.parse("Workout on 21st ne");
-        assertTrue(r.getState() == SuggesterState.CONTINUE);
-    }
-
-    @Test
-    public void dueDateTextSuggesterFinishState() {
-        DueDateTextSuggester s = new DueDateTextSuggester(parser);
-        int startIdx = "Workout ".length();
-        s.setStartIdx(startIdx);
-        s.parse("Workout on 21st");
-        SuggesterResult r = s.parse("Workout on 21st new");
-        assertTrue(r.getState() == SuggesterState.FINISH);
-        assertTrue(r.getMatch().equals("on 21st"));
-    }
-
-    @Test
-    public void dueDateTextSuggesterCancelState() {
-        DueDateTextSuggester s = new DueDateTextSuggester(parser);
-        int startIdx = "Workout ".length();
-        s.setStartIdx(startIdx);
-        s.parse("Workout on 2 ");
-        SuggesterResult r = s.parse("Workout on 2 p");
-        assertTrue(r.getState() == SuggesterState.CANCEL);
-        assertTrue(r.getMatch() == null);
     }
 
     public Calendar getNextDayOfWeek(int dayOfWeek) {

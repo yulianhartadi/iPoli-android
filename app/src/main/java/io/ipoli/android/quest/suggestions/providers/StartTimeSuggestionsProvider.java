@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.suggestions.suggesters;
+package io.ipoli.android.quest.suggestions.providers;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -13,9 +13,9 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class StartTimeTextSuggester extends BaseTextSuggester {
+public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
 
-    public StartTimeTextSuggester(PrettyTimeParser parser) {
+    public StartTimeSuggestionsProvider(PrettyTimeParser parser) {
         matcher = new StartTimeMatcher(parser);
     }
 

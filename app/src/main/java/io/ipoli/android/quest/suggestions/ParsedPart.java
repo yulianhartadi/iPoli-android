@@ -7,13 +7,13 @@ package io.ipoli.android.quest.suggestions;
 public class ParsedPart {
     public int startIdx = 0;
     public int endIdx = 0;
-    public SuggestionType type;
+    public TextEntityType type;
     public boolean isPartial = false;
 
     public ParsedPart() {
     }
 
-    public ParsedPart(int startIdx, int endIdx, SuggestionType type, boolean isPartial) {
+    public ParsedPart(int startIdx, int endIdx, TextEntityType type, boolean isPartial) {
         this.startIdx = startIdx;
         this.endIdx = endIdx;
         this.type = type;

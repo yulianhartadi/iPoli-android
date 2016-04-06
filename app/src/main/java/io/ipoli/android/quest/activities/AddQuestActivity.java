@@ -60,7 +60,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
-import io.ipoli.android.quest.suggestions.SuggestionType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
@@ -106,7 +106,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private TimesPerDayMatcher timesPerDayMatcher;
     private RecurrenceMatcher recurrenceMatcher;
     private MainMatcher mainMatcher;
-    private Map<SuggestionType, QuestTextMatcher> typeToMatcher;
+    private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
     private SuggestionsManager suggestionsManager;
 //    private List<ParsedPart> parsedParts;
 
@@ -169,13 +169,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         timesPerDayMatcher = new TimesPerDayMatcher();
         recurrenceMatcher = new RecurrenceMatcher();
         mainMatcher = new MainMatcher();
-        typeToMatcher = new HashMap<SuggestionType, QuestTextMatcher>() {{
-            put(SuggestionType.DURATION, durationMatcher);
-            put(SuggestionType.START_TIME, startTimeMatcher);
-            put(SuggestionType.DUE_DATE, dueDateMatcher);
-            put(SuggestionType.TIMES_PER_DAY, timesPerDayMatcher);
-            put(SuggestionType.RECURRENT, recurrenceMatcher);
-            put(SuggestionType.MAIN, mainMatcher);
+        typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
+            put(TextEntityType.DURATION, durationMatcher);
+            put(TextEntityType.START_TIME, startTimeMatcher);
+            put(TextEntityType.DUE_DATE, dueDateMatcher);
+            put(TextEntityType.TIMES_PER_DAY, timesPerDayMatcher);
+            put(TextEntityType.RECURRENT, recurrenceMatcher);
+            put(TextEntityType.MAIN, mainMatcher);
         }};
     }
 

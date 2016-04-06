@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.suggestions.suggesters;
+package io.ipoli.android.quest.suggestions.providers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,9 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class DurationTextSuggester extends BaseTextSuggester {
+public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
 
-    public DurationTextSuggester() {
+    public DurationSuggestionsProvider() {
         matcher = new DurationMatcher();
     }
 

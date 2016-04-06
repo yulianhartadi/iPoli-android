@@ -5,13 +5,13 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
-import io.ipoli.android.quest.suggestions.suggesters.BaseTextSuggester;
+import io.ipoli.android.quest.suggestions.providers.BaseSuggestionsProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class TimesPerDayTextSuggester extends BaseTextSuggester {
+public class TimesPerDayTextSuggester extends BaseSuggestionsProvider {
 
     public TimesPerDayTextSuggester() {
         matcher = new TimesPerDayMatcher();

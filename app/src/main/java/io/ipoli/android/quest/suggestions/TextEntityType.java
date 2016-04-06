@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/25/16.
  */
-public enum SuggestionType {
+public enum TextEntityType {
     MAIN(6),
     DUE_DATE(3),
     DURATION(1),
@@ -22,20 +22,20 @@ public enum SuggestionType {
     RECURRENT_DAY_OF_MONTH(8);
 
     public int parseOrder;
-    public SuggestionType parent;
+    public TextEntityType parent;
 
-    SuggestionType(int parseOrder) {
+    TextEntityType(int parseOrder) {
         this.parseOrder = parseOrder;
     }
 
-    public static List<SuggestionType> getOrdered() {
-        List<SuggestionType> types = new ArrayList<>(Arrays.asList(values()));
+    public static List<TextEntityType> getOrdered() {
+        List<TextEntityType> types = new ArrayList<>(Arrays.asList(values()));
         types.remove(MAIN);
 
-        Collections.sort(types, new Comparator<SuggestionType>() {
+        Collections.sort(types, new Comparator<TextEntityType>() {
 
             @Override
-            public int compare(SuggestionType p1, SuggestionType p2) {
+            public int compare(TextEntityType p1, TextEntityType p2) {
                 return p1.parseOrder < p2.parseOrder ? -1 : 1;
             }
         });

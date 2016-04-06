@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.suggestions.suggesters;
+package io.ipoli.android.quest.suggestions.providers;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -13,9 +13,9 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class DueDateTextSuggester extends BaseTextSuggester {
+public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
 
-    public DueDateTextSuggester(PrettyTimeParser parser) {
+    public DueDateSuggestionsProvider(PrettyTimeParser parser) {
         matcher = new DueDateMatcher(parser);
     }
 

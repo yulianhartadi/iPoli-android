@@ -22,12 +22,12 @@ import io.ipoli.android.quest.parsers.QuestTextMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
-import io.ipoli.android.quest.suggestions.suggesters.BaseTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.DueDateTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.DurationTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.MainTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.RecurrenceTextSuggester;
-import io.ipoli.android.quest.suggestions.suggesters.StartTimeTextSuggester;
+import io.ipoli.android.quest.suggestions.providers.BaseSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.DurationSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.RecurrenceSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.StartTimeSuggestionsProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,16 +35,16 @@ import io.ipoli.android.quest.suggestions.suggesters.StartTimeTextSuggester;
  */
 public class SuggestionsManager {
 
-    private Map<SuggestionType, QuestTextMatcher> typeToMatcher;
-    SuggestionType currentType;
-    Map<SuggestionType, BaseTextSuggester> textSuggesters = new HashMap<>();
-    Set<SuggestionType> usedTypes = new HashSet<>();
-    List<SuggestionType> orderedSuggestionTypes = new ArrayList<SuggestionType>() {{
-        add(SuggestionType.DURATION);
-        add(SuggestionType.START_TIME);
-        add(SuggestionType.DUE_DATE);
-        add(SuggestionType.TIMES_PER_DAY);
-        add(SuggestionType.RECURRENT);
+    private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
+    TextEntityType currentType;
+    Map<TextEntityType, BaseSuggestionsProvider> textSuggesters = new HashMap<>();
+    Set<TextEntityType> usedTypes = new HashSet<>();
+    List<TextEntityType> orderedTextEntityTypes = new ArrayList<TextEntityType>() {{
+        add(TextEntityType.DURATION);
+        add(TextEntityType.START_TIME);
+        add(TextEntityType.DUE_DATE);
+        add(TextEntityType.TIMES_PER_DAY);
+        add(TextEntityType.RECURRENT);
 //        add(SuggestionType.MAIN);
     }};
 
@@ -53,22 +53,22 @@ public class SuggestionsManager {
     OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
     public SuggestionsManager(PrettyTimeParser parser) {
-        currentType = SuggestionType.MAIN;
+        currentType = TextEntityType.MAIN;
 
-        textSuggesters.put(SuggestionType.MAIN, new MainTextSuggester());
-        textSuggesters.put(SuggestionType.DUE_DATE, new DueDateTextSuggester(parser));
-        textSuggesters.put(SuggestionType.DURATION, new DurationTextSuggester());
-        textSuggesters.put(SuggestionType.START_TIME, new StartTimeTextSuggester(parser));
-        textSuggesters.put(SuggestionType.RECURRENT, new RecurrenceTextSuggester());
-        textSuggesters.put(SuggestionType.TIMES_PER_DAY, new TimesPerDayTextSuggester());
+        textSuggesters.put(TextEntityType.MAIN, new MainSuggestionsProvider());
+        textSuggesters.put(TextEntityType.DUE_DATE, new DueDateSuggestionsProvider(parser));
+        textSuggesters.put(TextEntityType.DURATION, new DurationSuggestionsProvider());
+        textSuggesters.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider(parser));
+        textSuggesters.put(TextEntityType.RECURRENT, new RecurrenceSuggestionsProvider());
+        textSuggesters.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggester());
 
-        typeToMatcher = new HashMap<SuggestionType, QuestTextMatcher>() {{
-            put(SuggestionType.DURATION, new DurationMatcher());
-            put(SuggestionType.START_TIME, new StartTimeMatcher(parser));
-            put(SuggestionType.DUE_DATE, new DueDateMatcher(parser));
-            put(SuggestionType.TIMES_PER_DAY, new TimesPerDayMatcher());
-            put(SuggestionType.RECURRENT, new RecurrenceMatcher());
-            put(SuggestionType.MAIN, new MainMatcher());
+        typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
+            put(TextEntityType.DURATION, new DurationMatcher());
+            put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
+            put(TextEntityType.DUE_DATE, new DueDateMatcher(parser));
+            put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
+            put(TextEntityType.RECURRENT, new RecurrenceMatcher());
+            put(TextEntityType.MAIN, new MainMatcher());
         }};
     }
 
@@ -76,9 +76,9 @@ public class SuggestionsManager {
         List<ParsedPart> parsedParts = parse(text, selectionIndex);
         ParsedPart partialPart = findPartialPart(parsedParts);
         if (partialPart != null) {
-            changeCurrentSuggester(partialPart.type);
+            changeCurrentSuggestionsProvider(partialPart.type);
         } else {
-            changeCurrentSuggester(SuggestionType.MAIN);
+            changeCurrentSuggestionsProvider(TextEntityType.MAIN);
         }
         return parsedParts;
     }
@@ -89,7 +89,7 @@ public class SuggestionsManager {
 
     public List<ParsedPart> parse(String text, int selectionIndex) {
         List<ParsedPart> parts = new ArrayList<>();
-        for (SuggestionType t : orderedSuggestionTypes) {
+        for (TextEntityType t : orderedTextEntityTypes) {
             QuestTextMatcher mather = typeToMatcher.get(t);
             Match partialMatch = mather.partialMatch(text.substring(0, selectionIndex));
             if (partialMatch != null && findPartialPart(parts) == null && !usedTypes.contains(t)) {
@@ -99,15 +99,15 @@ public class SuggestionsManager {
             } else {
                 Match match = typeToMatcher.get(t).match(text);
                 if (match != null) {
-                    if (t == SuggestionType.MAIN) {
+                    if (t == TextEntityType.MAIN) {
                         break;
                     }
-                    usedTypes.add(t);
+                    addUsedType(t);
                     int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
                     int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
                     parts.add(new ParsedPart(start, end, t, false));
                 } else {
-                    usedTypes.remove(t);
+                    removeUsedType(t);
                 }
             }
         }
@@ -127,7 +127,7 @@ public class SuggestionsManager {
         if (partToDelete == null) {
             return new TextTransformResult(StringUtils.cut(preDeleteText, deleteStartIndex, deleteStartIndex), deleteStartIndex);
         }
-        usedTypes.remove(partToDelete.type);
+        removeUsedType(partToDelete.type);
         return new TextTransformResult(StringUtils.cut(preDeleteText, partToDelete.startIdx, partToDelete.endIdx), partToDelete.startIdx);
     }
 
@@ -161,12 +161,11 @@ public class SuggestionsManager {
     }
 
 
-    public void changeCurrentSuggester(SuggestionType type) {
-        if (type == currentType) {
-            return;
-        }
+    public void changeCurrentSuggestionsProvider(TextEntityType type) {
         currentType = type;
-        suggestionsUpdatedListener.onSuggestionsUpdated();
+        if(suggestionsUpdatedListener != null) {
+            suggestionsUpdatedListener.onSuggestionsUpdated();
+        }
     }
 
     private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
@@ -186,9 +185,9 @@ public class SuggestionsManager {
         return getCurrentSuggester().getSuggestions();
     }
 
-    public List<SuggestionType> getUnusedTypes() {
-        List<SuggestionType> types = new ArrayList<>();
-        for (SuggestionType t : orderedSuggestionTypes) {
+    public List<TextEntityType> getUnusedTypes() {
+        List<TextEntityType> types = new ArrayList<>();
+        for (TextEntityType t : orderedTextEntityTypes) {
             if (!usedTypes.contains(t)) {
                 types.add(t);
             }
@@ -196,7 +195,7 @@ public class SuggestionsManager {
         return types;
     }
 
-    public void changeCurrentSuggester(SuggestionType type, int startIdx, int length) {
+    public void changeCurrentSuggestionsProvider(TextEntityType type, int startIdx, int length) {
         if (type == currentType) {
             return;
         }
@@ -208,7 +207,7 @@ public class SuggestionsManager {
         suggestionsUpdatedListener.onSuggestionsUpdated();
     }
 
-    public BaseTextSuggester getCurrentSuggester() {
+    public BaseSuggestionsProvider getCurrentSuggester() {
         return textSuggesters.get(currentType);
     }
 
@@ -228,6 +227,20 @@ public class SuggestionsManager {
             }
         }
         return null;
+    }
+
+    public TextEntityType getCurrentSuggestionsProviderType() {
+        return currentType;
+    }
+
+    private void addUsedType(TextEntityType type) {
+        usedTypes.add(type);
+        ((MainSuggestionsProvider)textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
+    }
+
+    private void removeUsedType(TextEntityType type) {
+        usedTypes.remove(type);
+        ((MainSuggestionsProvider)textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
     }
 
 

@@ -7,7 +7,7 @@ package io.ipoli.android.quest.suggestions;
 public class SuggesterResult {
     private String match;
     private SuggesterState state;
-    private SuggestionType nextSuggesterType;
+    private TextEntityType nextSuggesterType;
     private int nextSuggesterStartIdx;
 
     public SuggesterResult(SuggesterState state) {
@@ -19,7 +19,7 @@ public class SuggesterResult {
         this.state = state;
     }
 
-    public SuggesterResult(String match, SuggesterState state, SuggestionType nextSuggesterType, int nextSuggesterStartIdx) {
+    public SuggesterResult(String match, SuggesterState state, TextEntityType nextSuggesterType, int nextSuggesterStartIdx) {
         this.match = match;
         this.state = state;
         this.nextSuggesterType = nextSuggesterType;
@@ -42,11 +42,11 @@ public class SuggesterResult {
         this.state = state;
     }
 
-    public SuggestionType getNextSuggesterType() {
+    public TextEntityType getNextSuggesterType() {
         return nextSuggesterType;
     }
 
-    public void setNextSuggesterType(SuggestionType nextSuggesterType) {
+    public void setNextSuggesterType(TextEntityType nextSuggesterType) {
         this.nextSuggesterType = nextSuggesterType;
     }
 

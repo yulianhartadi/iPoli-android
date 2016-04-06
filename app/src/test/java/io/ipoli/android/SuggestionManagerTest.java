@@ -6,13 +6,17 @@ import org.junit.Test;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.List;
+import java.util.Set;
 
 import io.ipoli.android.quest.suggestions.ParsedPart;
-import io.ipoli.android.quest.suggestions.SuggestionType;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -44,7 +48,7 @@ public class SuggestionManagerTest {
         String dueDate = "today";
         String text = "Work " + dueDate;
         assertTrue(sm.parse(text, text.length()).size() == 1);
-        assertParsedPart(sm.parse(text, text.length()).get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, true);
+        assertParsedPart(sm.parse(text, text.length()).get(0), TextEntityType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, true);
     }
 
     @Test
@@ -53,7 +57,7 @@ public class SuggestionManagerTest {
         String text = "Work " + dueDate;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 1);
-        assertParsedPart(parts.get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 2, false);
+        assertParsedPart(parts.get(0), TextEntityType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 2, false);
     }
 
     @Test
@@ -63,8 +67,8 @@ public class SuggestionManagerTest {
         String text = "Work " + dueDate + " " + startTime;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 2);
-        assertParsedPart(parts.get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, false);
-        assertParsedPart(parts.get(1), SuggestionType.START_TIME, text.indexOf(startTime), text.indexOf(startTime) + startTime.length() - 2, false);
+        assertParsedPart(parts.get(0), TextEntityType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, false);
+        assertParsedPart(parts.get(1), TextEntityType.START_TIME, text.indexOf(startTime), text.indexOf(startTime) + startTime.length() - 2, false);
     }
 
     @Test
@@ -74,8 +78,8 @@ public class SuggestionManagerTest {
         String text = "Work " + dueDate + " " + startTime;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 2);
-        assertParsedPart(parts.get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, false);
-        assertParsedPart(parts.get(1), SuggestionType.START_TIME, text.indexOf(startTime), text.indexOf(startTime) + startTime.length() - 1, true);
+        assertParsedPart(parts.get(0), TextEntityType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, false);
+        assertParsedPart(parts.get(1), TextEntityType.START_TIME, text.indexOf(startTime), text.indexOf(startTime) + startTime.length() - 1, true);
     }
 
     @Test
@@ -90,7 +94,7 @@ public class SuggestionManagerTest {
         String text = "Work on presentation " + duration;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 1);
-        assertParsedPart(parts.get(0), SuggestionType.DURATION, text.indexOf(duration), text.indexOf(duration) + duration.length() - 1, true);
+        assertParsedPart(parts.get(0), TextEntityType.DURATION, text.indexOf(duration), text.indexOf(duration) + duration.length() - 1, true);
     }
 
     @Test
@@ -99,7 +103,7 @@ public class SuggestionManagerTest {
         String text = "Work on 12 presentations " + duration;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 1);
-        assertParsedPart(parts.get(0), SuggestionType.DURATION, text.indexOf(duration), text.indexOf(duration) + duration.length() - 1, true);
+        assertParsedPart(parts.get(0), TextEntityType.DURATION, text.indexOf(duration), text.indexOf(duration) + duration.length() - 1, true);
     }
 
     @Test
@@ -108,7 +112,7 @@ public class SuggestionManagerTest {
         String text = "Work " + dueDate;
         List<ParsedPart> parts = sm.parse(text, text.length());
         assertTrue(parts.size() == 1);
-        assertParsedPart(parts.get(0), SuggestionType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, true);
+        assertParsedPart(parts.get(0), TextEntityType.DUE_DATE, text.indexOf(dueDate), text.indexOf(dueDate) + dueDate.length() - 1, true);
     }
 
     @Test
@@ -142,7 +146,7 @@ public class SuggestionManagerTest {
 
         List<ParsedPart> parts = sm.parse(res.text, res.selectionIndex);
         assertThat(parts.size(), is(1));
-        assertParsedPart(parts.get(0),  SuggestionType.DURATION, 6, 11, false);
+        assertParsedPart(parts.get(0),  TextEntityType.DURATION, 6, 11, false);
     }
 
     @Test
@@ -153,7 +157,7 @@ public class SuggestionManagerTest {
         assertTransformedResult(res, expectedText, expectedText.length());
         List<ParsedPart> parts = sm.parse(res.text, res.selectionIndex);
         assertThat(parts.size(), is(2));
-        assertParsedPart(parts.get(1),  SuggestionType.DURATION, 11, expectedText.length() - 1, true);
+        assertParsedPart(parts.get(1),  TextEntityType.DURATION, 11, expectedText.length() - 1, true);
     }
 
     @Test
@@ -276,15 +280,41 @@ public class SuggestionManagerTest {
         assertTransformedResult(sm.replace(text, replaceText, 8), expectedText, 11);
     }
 
+    @Test
+    public void showMainSuggestions() {
+        String text = "W";
+        sm.parse(text);
+        assertThat(sm.getCurrentSuggestionsProviderType(), is(TextEntityType.MAIN));
+        assertThat(sm.getCurrentSuggester().getSuggestions().size(), is(5));
+    }
+
+    @Test
+    public void showMainSuggestionsWithoutDueDate() {
+        String text = "Work today ";
+        parse(text);
+        assertThat(sm.getCurrentSuggestionsProviderType(), is(TextEntityType.MAIN));
+        assertThat(sm.getCurrentSuggester().getSuggestions().size(), is(4));
+        Set<TextEntityType> usedTypes = ((MainSuggestionsProvider) sm.getCurrentSuggester()).getUsedTypes();
+        assertThat(usedTypes, contains(TextEntityType.DUE_DATE));
+        assertThat(usedTypes, not(contains(TextEntityType.DURATION)));
+    }
+
+    @Test
+    public void showDueDateSuggestions() {
+        String text = "Work tod";
+        parse(text);
+        assertThat(sm.getCurrentSuggestionsProviderType(), is(TextEntityType.DUE_DATE));
+    }
+
     private void parse(String text) {
         String currText = "";
         for(char c : text.toCharArray()) {
             currText += c;
-            sm.parse(currText);
+            sm.onTextChange(currText, currText.length());
         }
     }
 
-    private void assertParsedPart(ParsedPart part, SuggestionType type, int startIdx, int endIdx, boolean isPartial) {
+    private void assertParsedPart(ParsedPart part, TextEntityType type, int startIdx, int endIdx, boolean isPartial) {
         assertThat(part.type, is(type));
         assertThat(part.startIdx, is(startIdx));
         assertThat(part.endIdx, is(endIdx));
