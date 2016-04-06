@@ -148,14 +148,14 @@ public class SuggestionsManager {
     }
 
     public TextTransformResult replace(String text, String replaceText, int selectionIndex) {
-        ParsedPart parsedPart = findPartialPart(parse(text, selectionIndex));
+        ParsedPart partialPart = findPartialPart(parse(text, selectionIndex));
         String start, end;
-        if (parsedPart == null) {
+        if (partialPart == null) {
             start = text.substring(0, selectionIndex);
             end = text.substring(selectionIndex);
         } else {
-            start = text.substring(0, parsedPart.startIdx);
-            end = parsedPart.endIdx + 1 < text.length() ? text.substring(parsedPart.endIdx + 1) : "";
+            start = text.substring(0, partialPart.startIdx);
+            end = partialPart.endIdx + 1 < text.length() ? text.substring(partialPart.endIdx + 1) : "";
         }
 
         replaceText += replaceText.isEmpty() ? "" : " ";
@@ -214,12 +214,12 @@ public class SuggestionsManager {
         return currentType;
     }
 
-    private void addUsedType(TextEntityType type) {
+    public void addUsedType(TextEntityType type) {
         usedTypes.add(type);
         ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
     }
 
-    private void removeUsedType(TextEntityType type) {
+    public void removeUsedType(TextEntityType type) {
         usedTypes.remove(type);
         ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
     }
