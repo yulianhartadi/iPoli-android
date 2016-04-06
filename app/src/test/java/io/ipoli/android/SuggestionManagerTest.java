@@ -285,7 +285,7 @@ public class SuggestionManagerTest {
         String text = "W";
         sm.parse(text);
         assertThat(sm.getCurrentSuggestionsProviderType(), is(TextEntityType.MAIN));
-        assertThat(sm.getCurrentSuggester().getSuggestions().size(), is(5));
+        assertThat(sm.getCurrentSuggester().filter().size(), is(5));
     }
 
     @Test
@@ -293,7 +293,7 @@ public class SuggestionManagerTest {
         String text = "Work today ";
         parse(text);
         assertThat(sm.getCurrentSuggestionsProviderType(), is(TextEntityType.MAIN));
-        assertThat(sm.getCurrentSuggester().getSuggestions().size(), is(4));
+        assertThat(sm.getCurrentSuggester().filter().size(), is(4));
         Set<TextEntityType> usedTypes = ((MainSuggestionsProvider) sm.getCurrentSuggester()).getUsedTypes();
         assertThat(usedTypes, contains(TextEntityType.DUE_DATE));
         assertThat(usedTypes, not(contains(TextEntityType.DURATION)));

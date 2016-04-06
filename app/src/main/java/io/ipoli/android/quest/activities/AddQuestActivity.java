@@ -27,9 +27,7 @@ import com.squareup.otto.Subscribe;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -48,19 +46,11 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
-import io.ipoli.android.quest.parsers.DueDateMatcher;
-import io.ipoli.android.quest.parsers.DurationMatcher;
-import io.ipoli.android.quest.parsers.MainMatcher;
-import io.ipoli.android.quest.parsers.QuestTextMatcher;
-import io.ipoli.android.quest.parsers.RecurrenceMatcher;
-import io.ipoli.android.quest.parsers.StartTimeMatcher;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
-import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.tutorial.Tutorial;
 import io.ipoli.android.tutorial.TutorialItem;
@@ -99,13 +89,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private QuestContext questContext;
     private BottomBar bottomBar;
 
-    private DurationMatcher durationMatcher;
-    private StartTimeMatcher startTimeMatcher;
-    private DueDateMatcher dueDateMatcher;
-    private TimesPerDayMatcher timesPerDayMatcher;
-    private RecurrenceMatcher recurrenceMatcher;
-    private MainMatcher mainMatcher;
-    private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
 
@@ -123,8 +106,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         appComponent().inject(this);
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
-
-        initMatchers();
 
         questText.addTextChangedListener(this);
         questText.requestFocus();
@@ -162,23 +143,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         });
     }
 
-    private void initMatchers() {
-        durationMatcher = new DurationMatcher();
-        startTimeMatcher = new StartTimeMatcher(parser);
-        dueDateMatcher = new DueDateMatcher(parser);
-        timesPerDayMatcher = new TimesPerDayMatcher();
-        recurrenceMatcher = new RecurrenceMatcher();
-        mainMatcher = new MainMatcher();
-        typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
-            put(TextEntityType.DURATION, durationMatcher);
-            put(TextEntityType.START_TIME, startTimeMatcher);
-            put(TextEntityType.DUE_DATE, dueDateMatcher);
-            put(TextEntityType.TIMES_PER_DAY, timesPerDayMatcher);
-            put(TextEntityType.RECURRENT, recurrenceMatcher);
-            put(TextEntityType.MAIN, mainMatcher);
-        }};
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -198,7 +162,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void initUI() {
-        adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
+        adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions(questText.getText().toString()));
         questText.setAdapter(adapter);
         questText.setThreshold(1);
     }
@@ -319,8 +283,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         switch (textWatcherState) {
             case FROM_DELETE:
+                List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx, false);
+                colorParsedParts(parsedParts);
+                break;
             case FROM_DROP_DOWN:
-                List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx);
+                parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx);
                 colorParsedParts(parsedParts);
                 break;
 
@@ -367,12 +334,22 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Subscribe
     public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
         SuggestionDropDownItem suggestion = e.suggestionItem;
-        String s = suggestion.text;
-        String text = questText.getText().toString();
-        int selectionStart = questText.getSelectionStart();
-        SuggestionsManager.TextTransformResult result = suggestionsManager.replace(text, s, selectionStart);
-        setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
-
+        if (suggestion.shouldReplace) {
+            String s = suggestion.text;
+            String text = questText.getText().toString();
+            int selectionStart = questText.getSelectionStart();
+            SuggestionsManager.TextTransformResult result = suggestionsManager.replace(text, s, selectionStart);
+            setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
+        } else {
+            String s = suggestion.text;
+            String text = questText.getText().toString();
+            int selectionStart = questText.getSelectionStart();
+            SuggestionsManager.TextTransformResult result = suggestionsManager.append(text, s, selectionStart);
+            setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
+        }
+        if (suggestion.nextTextEntityType != null) {
+            suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType);
+        }
     }
 
     private void setTransformedText(SuggestionsManager.TextTransformResult result, TextWatcherState state) {
@@ -385,7 +362,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Override
     public void onSuggestionsUpdated() {
         if (adapter != null) {
-            adapter.setSuggestions(suggestionsManager.getSuggestions());
+            adapter.setSuggestions(suggestionsManager.getSuggestions(questText.getText().toString()));
         }
     }
 }

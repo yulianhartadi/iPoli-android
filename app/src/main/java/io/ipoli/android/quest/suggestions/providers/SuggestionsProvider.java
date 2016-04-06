@@ -10,5 +10,5 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  */
 public interface SuggestionsProvider {
 
-    List<SuggestionDropDownItem> getSuggestions();
+    List<SuggestionDropDownItem> filter(String text);
 }

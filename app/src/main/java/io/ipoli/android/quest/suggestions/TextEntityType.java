@@ -1,46 +1,17 @@
 package io.ipoli.android.quest.suggestions;
 
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/25/16.
  */
 public enum TextEntityType {
-    MAIN(6),
-    DUE_DATE(3),
-    DURATION(1),
-    START_TIME(2),
-    TIMES_PER_DAY(4),
-    RECURRENT(5),
-    RECURRENT_DAY_OF_WEEK(7),
-    RECURRENT_DAY_OF_MONTH(8);
-
-    public int parseOrder;
-    public TextEntityType parent;
-
-    TextEntityType(int parseOrder) {
-        this.parseOrder = parseOrder;
-    }
-
-    public static List<TextEntityType> getOrdered() {
-        List<TextEntityType> types = new ArrayList<>(Arrays.asList(values()));
-        types.remove(MAIN);
-
-        Collections.sort(types, new Comparator<TextEntityType>() {
-
-            @Override
-            public int compare(TextEntityType p1, TextEntityType p2) {
-                return p1.parseOrder < p2.parseOrder ? -1 : 1;
-            }
-        });
-
-        return types;
-    }
+    MAIN,
+    DUE_DATE,
+    DURATION,
+    START_TIME,
+    TIMES_PER_DAY,
+    RECURRENT,
+    RECURRENT_DAY_OF_WEEK,
+    RECURRENT_DAY_OF_MONTH;
 }
 

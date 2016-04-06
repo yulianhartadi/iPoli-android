@@ -1,26 +1,19 @@
 package io.ipoli.android.quest.suggestions.providers;
 
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
-
-    public DueDateSuggestionsProvider(PrettyTimeParser parser) {
-        matcher = new DueDateMatcher(parser);
-    }
+public class DueDateSuggestionsProvider implements SuggestionsProvider {
 
     @Override
-    public List<SuggestionDropDownItem> getSuggestions() {
+    public List<SuggestionDropDownItem> filter(String text) {
         int icon = R.drawable.ic_event_black_18dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "today"));

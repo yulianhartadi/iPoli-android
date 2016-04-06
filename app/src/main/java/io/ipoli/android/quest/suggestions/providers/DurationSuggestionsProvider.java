@@ -4,21 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
-
-    public DurationSuggestionsProvider() {
-        matcher = new DurationMatcher();
-    }
+public class DurationSuggestionsProvider implements SuggestionsProvider {
 
     @Override
-    public List<SuggestionDropDownItem> getSuggestions() {
+    public List<SuggestionDropDownItem> filter(String text) {
         int icon = R.drawable.ic_timer_black_18dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "15 min", "for 15 min"));

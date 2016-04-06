@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.suggestions;
 
-import android.util.Log;
-
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
@@ -16,18 +14,20 @@ import java.util.Set;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
-import io.ipoli.android.quest.parsers.MainMatcher;
 import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
-import io.ipoli.android.quest.suggestions.providers.BaseSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.DayOfMonthSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.DayOfWeekSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.DurationSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.RecurrenceSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.StartTimeSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestiosProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -37,7 +37,7 @@ public class SuggestionsManager {
 
     private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
     TextEntityType currentType;
-    Map<TextEntityType, BaseSuggestionsProvider> textSuggesters = new HashMap<>();
+    Map<TextEntityType, SuggestionsProvider> textSuggesters = new HashMap<>();
     Set<TextEntityType> usedTypes = new HashSet<>();
     List<TextEntityType> orderedTextEntityTypes = new ArrayList<TextEntityType>() {{
         add(TextEntityType.DURATION);
@@ -45,10 +45,7 @@ public class SuggestionsManager {
         add(TextEntityType.DUE_DATE);
         add(TextEntityType.TIMES_PER_DAY);
         add(TextEntityType.RECURRENT);
-//        add(SuggestionType.MAIN);
     }};
-
-//    List<ParsedPart> parsedParts = new ArrayList<>();
 
     OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
@@ -56,11 +53,13 @@ public class SuggestionsManager {
         currentType = TextEntityType.MAIN;
 
         textSuggesters.put(TextEntityType.MAIN, new MainSuggestionsProvider());
-        textSuggesters.put(TextEntityType.DUE_DATE, new DueDateSuggestionsProvider(parser));
+        textSuggesters.put(TextEntityType.DUE_DATE, new DueDateSuggestionsProvider());
         textSuggesters.put(TextEntityType.DURATION, new DurationSuggestionsProvider());
-        textSuggesters.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider(parser));
+        textSuggesters.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider());
         textSuggesters.put(TextEntityType.RECURRENT, new RecurrenceSuggestionsProvider());
-        textSuggesters.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggester());
+        textSuggesters.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggestiosProvider());
+        textSuggesters.put(TextEntityType.RECURRENT_DAY_OF_WEEK, new DayOfWeekSuggestionsProvider());
+        textSuggesters.put(TextEntityType.RECURRENT_DAY_OF_MONTH, new DayOfMonthSuggestionsProvider());
 
         typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
             put(TextEntityType.DURATION, new DurationMatcher());
@@ -68,18 +67,22 @@ public class SuggestionsManager {
             put(TextEntityType.DUE_DATE, new DueDateMatcher(parser));
             put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceMatcher());
-            put(TextEntityType.MAIN, new MainMatcher());
         }};
     }
 
     public List<ParsedPart> onTextChange(String text, int selectionIndex) {
+        return onTextChange(text, selectionIndex, true);
+    }
+
+    public List<ParsedPart> onTextChange(String text, int selectionIndex, boolean changeState) {
         List<ParsedPart> parsedParts = parse(text, selectionIndex);
         ParsedPart partialPart = findPartialPart(parsedParts);
-        if (partialPart != null) {
-            changeCurrentSuggestionsProvider(partialPart.type);
-        } else {
-            changeCurrentSuggestionsProvider(TextEntityType.MAIN);
+
+        TextEntityType newType = currentType;
+        if (changeState) {
+            newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
         }
+        changeCurrentSuggestionsProvider(newType);
         return parsedParts;
     }
 
@@ -128,6 +131,7 @@ public class SuggestionsManager {
             return new TextTransformResult(StringUtils.cut(preDeleteText, deleteStartIndex, deleteStartIndex), deleteStartIndex);
         }
         removeUsedType(partToDelete.type);
+
         return new TextTransformResult(StringUtils.cut(preDeleteText, partToDelete.startIdx, partToDelete.endIdx), partToDelete.startIdx);
     }
 
@@ -154,16 +158,15 @@ public class SuggestionsManager {
             end = parsedPart.endIdx + 1 < text.length() ? text.substring(parsedPart.endIdx + 1) : "";
         }
 
-        replaceText += " ";
+        replaceText += replaceText.isEmpty() ? "" : " ";
         start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
         end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
         return new TextTransformResult(start + replaceText + end, (start + replaceText).length());
     }
 
-
     public void changeCurrentSuggestionsProvider(TextEntityType type) {
         currentType = type;
-        if(suggestionsUpdatedListener != null) {
+        if (suggestionsUpdatedListener != null) {
             suggestionsUpdatedListener.onSuggestionsUpdated();
         }
     }
@@ -181,33 +184,11 @@ public class SuggestionsManager {
         this.suggestionsUpdatedListener = suggestionsUpdatedListener;
     }
 
-    public List<SuggestionDropDownItem> getSuggestions() {
-        return getCurrentSuggester().getSuggestions();
+    public List<SuggestionDropDownItem> getSuggestions(String text) {
+        return getCurrentSuggester().filter(text);
     }
 
-    public List<TextEntityType> getUnusedTypes() {
-        List<TextEntityType> types = new ArrayList<>();
-        for (TextEntityType t : orderedTextEntityTypes) {
-            if (!usedTypes.contains(t)) {
-                types.add(t);
-            }
-        }
-        return types;
-    }
-
-    public void changeCurrentSuggestionsProvider(TextEntityType type, int startIdx, int length) {
-        if (type == currentType) {
-            return;
-        }
-        Log.d("ChangeCurrentSuggester", "From: " + currentType.name()
-                + " To: " + type.name() + " startIdx: " + startIdx + " length: " + length);
-        currentType = type;
-        getCurrentSuggester().setStartIdx(startIdx);
-        getCurrentSuggester().setLength(length);
-        suggestionsUpdatedListener.onSuggestionsUpdated();
-    }
-
-    public BaseSuggestionsProvider getCurrentSuggester() {
+    public SuggestionsProvider getCurrentSuggester() {
         return textSuggesters.get(currentType);
     }
 
@@ -235,12 +216,21 @@ public class SuggestionsManager {
 
     private void addUsedType(TextEntityType type) {
         usedTypes.add(type);
-        ((MainSuggestionsProvider)textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
+        ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
     }
 
     private void removeUsedType(TextEntityType type) {
         usedTypes.remove(type);
-        ((MainSuggestionsProvider)textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
+        ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
+    }
+
+    public TextTransformResult append(String text, String appendText, int selectionIndex) {
+        String start = text.substring(0, selectionIndex);
+        String end = text.substring(selectionIndex);
+        appendText += appendText.isEmpty() ? "" : " ";
+        start = start.isEmpty() || start.endsWith(" ") ? start : start + " ";
+        end = end.isEmpty() || end.startsWith(" ") ? end : " " + end;
+        return new TextTransformResult(start + appendText + end, (start + appendText).length());
     }
 
 
@@ -253,26 +243,5 @@ public class SuggestionsManager {
             this.selectionIndex = selectionIndex;
         }
     }
-
-//    private List<AddQuestSuggestion> getRecurrentDayOfWeekSuggestions() {
-//        int icon = R.drawable.ic_event_black_18dp;
-//        List<AddQuestSuggestion> suggestions = new ArrayList<>();
-//        suggestions.add(new AddQuestSuggestion(icon, "Monday", "Mon"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Tuesday", "Tue"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Wednesday", "Wed"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Thursday", "Thur"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Friday", "Fri"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Saturday", "Sat"));
-//        suggestions.add(new AddQuestSuggestion(icon, "Sunday", "Sun"));
-//        return suggestions;
-//    }
-
-//    private List<AddQuestSuggestion> getRecurrentDayOfMonthSuggestions() {
-//        int icon = R.drawable.ic_event_black_18dp;
-//        List<AddQuestSuggestion> suggestions = new ArrayList<>();
-//        suggestions.add(new AddQuestSuggestion(icon, "21st of the month"));
-//        suggestions.add(new AddQuestSuggestion(icon, "22nd of the month"));
-//        return suggestions;
-//    }
 
 }

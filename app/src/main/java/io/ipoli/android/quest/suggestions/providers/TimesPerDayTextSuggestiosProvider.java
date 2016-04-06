@@ -1,24 +1,19 @@
-package io.ipoli.android.quest.suggestions;
+package io.ipoli.android.quest.suggestions.providers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
-import io.ipoli.android.quest.suggestions.providers.BaseSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class TimesPerDayTextSuggester extends BaseSuggestionsProvider {
-
-    public TimesPerDayTextSuggester() {
-        matcher = new TimesPerDayMatcher();
-    }
+public class TimesPerDayTextSuggestiosProvider implements SuggestionsProvider {
 
     @Override
-    public List<SuggestionDropDownItem> getSuggestions() {
+    public List<SuggestionDropDownItem> filter(String text) {
         int icon = R.drawable.ic_clear_24dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "2", "2 times per day"));
