@@ -11,6 +11,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -113,6 +114,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         if (getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
             questText.setText(" " + getString(R.string.add_quest_today));
         }
+
+
         initUI();
 
         bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_container, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
@@ -315,20 +318,25 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Editable editable = questText.getText();
         clearSpans(editable);
         for (ParsedPart p : parsedParts) {
-            int color = p.isPartial ? R.color.md_yellow_200 : R.color.md_blue_200;
+            int color = p.isPartial ? R.color.md_red_A200 : R.color.md_blue_500;
             markText(editable, p.startIdx, p.endIdx, color);
         }
     }
 
     private void clearSpans(Editable editable) {
-        BackgroundColorSpan[] spansToRemove = editable.getSpans(0, editable.toString().length(), BackgroundColorSpan.class);
-        for (BackgroundColorSpan span : spansToRemove) {
+        BackgroundColorSpan[] backgroundSpansToRemove = editable.getSpans(0, editable.toString().length(), BackgroundColorSpan.class);
+        for (BackgroundColorSpan span : backgroundSpansToRemove) {
+            editable.removeSpan(span);
+        }
+        ForegroundColorSpan[] foregroundSpansToRemove = editable.getSpans(0, editable.toString().length(), ForegroundColorSpan.class);
+        for (ForegroundColorSpan span : foregroundSpansToRemove) {
             editable.removeSpan(span);
         }
     }
 
     private void markText(Editable text, int startIdx, int endIdx, int colorRes) {
         text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Subscribe
