@@ -192,7 +192,7 @@ public class QuestParserTest {
 
     @Test
     public void addQuestDue15Feb() {
-        Quest q = parse("Workout 15 Feb");
+        Quest q = parse("Workout on 15 Feb");
         assertThat(q.getName(), is("Workout"));
         Calendar expected = Calendar.getInstance();
         expected.set(Calendar.MONTH, Calendar.FEBRUARY);
@@ -253,11 +253,11 @@ public class QuestParserTest {
     }
 
     @Test
-    public void addQuestTenDayFromNow() {
-        Quest q = parse("Workout ten day from now");
+    public void addQuestThreeDayFromNow() {
+        Quest q = parse("Workout three day from now");
         assertThat(q.getName(), is("Workout"));
         Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 10);
+        tomorrow.add(Calendar.DAY_OF_YEAR, 3);
         assertDueDate(q, tomorrow);
     }
 
@@ -311,15 +311,6 @@ public class QuestParserTest {
         String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
         Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(" 4 times per");
-        m.matches();
-        assertTrue(m.hitEnd());
-    }
-
-    @Test
-    public void testHitEndStartTime() {
-        String PATTERN = "(?:^|\\s)at (\\d{1,2}([:|\\.]\\d{2})?(\\s?(am|pm))?)(?:$|\\s)";
-        Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher("at 7pm ");
         m.matches();
         assertTrue(m.hitEnd());
     }

@@ -35,6 +35,7 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
+import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -199,6 +200,11 @@ public class App extends Application {
     @Subscribe
     public void onNewRecurrentQuest(NewRecurrentQuestEvent e) {
         recurrentQuestPersistenceService.save(e.recurrentQuest);
+    }
+
+    @Subscribe
+    public void onRecurrentQuestSaved(RecurrentQuestSavedEvent e) {
+        eventBus.post(new ForceSyncRequestEvent());
     }
 
     @Subscribe

@@ -1,7 +1,5 @@
 package io.ipoli.android.quest;
 
-import android.text.TextUtils;
-
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.Date;
@@ -24,8 +22,8 @@ public class QuestParser {
     private final DueDateMatcher dueDateMatcher;
     private final StartTimeMatcher startTimeMatcher;
     private final DurationMatcher durationMatcher = new DurationMatcher();
-    private RecurrenceMatcher recurrenceMatcher = new RecurrenceMatcher();
-    private TimesPerDayMatcher timesPerDayMatcher = new TimesPerDayMatcher();
+    private final RecurrenceMatcher recurrenceMatcher = new RecurrenceMatcher();
+    private final TimesPerDayMatcher timesPerDayMatcher = new TimesPerDayMatcher();
 
     public QuestParser(PrettyTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
@@ -34,31 +32,31 @@ public class QuestParser {
 
     public Quest parse(String text) {
 
-        String originalText = text;
+        String rawText = text;
 
         Match durationMatch = durationMatcher.match(text);
         String matchedDurationText = durationMatch != null ? durationMatch.text : "";
         int duration = durationMatcher.parse(text);
-        text = text.replace(matchedDurationText, "");
+        text = text.replace(matchedDurationText.trim(), "");
 
         Match startTimeMatch = startTimeMatcher.match(text);
         String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
         int startTime = startTimeMatcher.parse(text);
-        text = text.replace(matchedStartTimeText, "");
+        text = text.replace(matchedStartTimeText.trim(), "");
 
         Match dueDateMatch = dueDateMatcher.match(text);
         String matchedDueDateText = dueDateMatch != null ? dueDateMatch.text : "";
         Date dueDate = dueDateMatcher.parse(text);
-        text = text.replace(matchedDueDateText, "");
+        text = text.replace(matchedDueDateText.trim(), "");
 
         String name = text.trim();
 
-        if (TextUtils.isEmpty(name)) {
+        if (name.isEmpty()) {
             return null;
         }
 
         Quest q = new Quest(name);
-        q.setRawText(originalText);
+        q.setRawText(rawText);
         q.setDuration(duration);
         q.setEndDate(dueDate);
         q.setStartMinute(startTime);
@@ -67,33 +65,35 @@ public class QuestParser {
 
     public RecurrentQuest parseRecurrent(String text) {
 
+        String rawText = text;
+
         Match durationMatch = durationMatcher.match(text);
         String matchedDurationText = durationMatch != null ? durationMatch.text : "";
-        text = text.replace(matchedDurationText, "");
+        text = text.replace(matchedDurationText.trim(), "");
 
         Match startTimeMatch = startTimeMatcher.match(text);
         String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
-        text = text.replace(matchedStartTimeText, "");
+        text = text.replace(matchedStartTimeText.trim(), "");
 
         Match dueDateMatch = dueDateMatcher.match(text);
         String matchedDueDateText = dueDateMatch != null ? dueDateMatch.text : "";
-        text = text.replace(matchedDueDateText, "");
+        text = text.replace(matchedDueDateText.trim(), "");
 
         Match recurrentMatch = recurrenceMatcher.match(text);
-        String matchedRecurrenceText = recurrentMatch.text != null ? recurrentMatch.text : "";
-        text = text.replace(matchedRecurrenceText, "");
+        String matchedRecurrenceText = recurrentMatch != null ? recurrentMatch.text : "";
+        text = text.replace(matchedRecurrenceText.trim(), "");
 
         Match timesPerDayMatch = timesPerDayMatcher.match(text);
-        String matchedTimesPerDayText = timesPerDayMatch.text != null ? timesPerDayMatch.text : "";
-        text = text.replace(matchedTimesPerDayText, "");
+        String matchedTimesPerDayText = timesPerDayMatch != null ? timesPerDayMatch.text : "";
+        text = text.replace(matchedTimesPerDayText.trim(), "");
 
         String name = text.trim();
 
-        if (TextUtils.isEmpty(name)) {
+        if (name.isEmpty()) {
             return null;
         }
 
-        return new RecurrentQuest(text);
+        return new RecurrentQuest(rawText);
     }
 
     public boolean isRecurrent(String text) {

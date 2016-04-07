@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
 import rx.Observable;
 
 /**
@@ -18,6 +19,11 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
 
     public RealmRecurrentQuestPersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
+    }
+
+    @Override
+    protected void onObjectSaved(RecurrentQuest obj) {
+        eventBus.post(new RecurrentQuestSavedEvent(obj));
     }
 
     @Override
