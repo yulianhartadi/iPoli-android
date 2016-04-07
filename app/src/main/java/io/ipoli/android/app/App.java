@@ -31,13 +31,15 @@ import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.assistant.AssistantService;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.player.PlayerService;
 import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -61,10 +63,10 @@ public class App extends Application {
     AnalyticsService analyticsService;
 
     @Inject
-    AssistantService assistantService;
+    QuestPersistenceService questPersistenceService;
 
     @Inject
-    QuestPersistenceService questPersistenceService;
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Inject
     PlayerService playerService;
@@ -172,7 +174,6 @@ public class App extends Application {
 
     private void registerServices() {
         eventBus.register(analyticsService);
-        eventBus.register(assistantService);
         eventBus.register(playerService);
         eventBus.register(this);
     }
@@ -203,6 +204,16 @@ public class App extends Application {
                     .build();
         }
         return appComponent;
+    }
+
+    @Subscribe
+    public void onNewQuest(NewQuestEvent e) {
+        questPersistenceService.save(e.quest);
+    }
+
+    @Subscribe
+    public void onNewRecurrentQuest(NewRecurrentQuestEvent e) {
+        recurrentQuestPersistenceService.save(e.recurrentQuest);
     }
 
     @Subscribe

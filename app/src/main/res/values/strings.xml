@@ -83,6 +83,7 @@
     <string name="contact_us_email_chooser_title">Contact us</string>
     <string name="review_day_title">Day in review</string>
     <string name="review_day_text">Ready to review your day?</string>
+    <string name="recurrent_quest_added">Recurrent quest added</string>
 
 
     <string-array name="due_date_auto_completes">

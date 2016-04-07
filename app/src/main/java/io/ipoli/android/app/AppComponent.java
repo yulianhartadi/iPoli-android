@@ -6,13 +6,11 @@ import dagger.Component;
 import io.ipoli.android.InviteOnlyActivity;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
-import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.app.ui.PlayerBarLayout;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -42,7 +40,6 @@ import io.ipoli.android.tutorial.Tutorial;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
-                AssistantModule.class,
                 RestAPIModule.class,
                 PlayerModule.class
         }
@@ -52,8 +49,6 @@ public interface AppComponent {
     void inject(App app);
 
     void inject(InboxActivity inboxActivity);
-
-    void inject(PlayerBarLayout playerBarLayout);
 
     void inject(PickAvatarActivity pickAvatarActivity);
 

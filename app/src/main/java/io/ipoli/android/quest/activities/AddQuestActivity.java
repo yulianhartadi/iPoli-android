@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
@@ -45,7 +44,9 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
@@ -244,13 +245,26 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public void saveQuest() {
         String text = questText.getText().toString().trim();
 
-        Quest q = new QuestParser(parser).parse(text);
-        if (TextUtils.isEmpty(q.getName())) {
-            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
-            return;
+        QuestParser qParser = new QuestParser(parser);
+        if (qParser.isRecurrent(text)) {
+            RecurrentQuest recurrentQuest = qParser.parseRecurrent(text);
+            if (recurrentQuest == null) {
+                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+                return;
+            }
+            recurrentQuest.setContext(questContext.name());
+            eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
+            Toast.makeText(this, R.string.recurrent_quest_added, Toast.LENGTH_SHORT).show();
+        } else {
+            Quest q = qParser.parse(text);
+            if (q == null) {
+                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Quest.setContext(q, questContext);
+            eventBus.post(new NewQuestEvent(q));
+            Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
-        eventBus.post(new NewQuestEvent(q.getName(), q.getStartMinute(), q.getDuration(), q.getEndDate(), questContext));
-        Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 
     @OnEditorAction(R.id.quest_text)

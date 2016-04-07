@@ -23,7 +23,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     private String rawText;
 
-    @Required
     private String name;
 
     @Required
@@ -82,9 +81,9 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         return Time.fromMinutesAfterMidnight(quest.getStartMinute());
     }
 
-    public RecurrentQuest(String name) {
+    public RecurrentQuest(String rawText) {
         this.id = UUID.randomUUID().toString();
-        this.name = name;
+        this.rawText = rawText;
         this.createdAt = new Date();
         this.updatedAt = new Date();
         this.context = QuestContext.UNKNOWN.name();

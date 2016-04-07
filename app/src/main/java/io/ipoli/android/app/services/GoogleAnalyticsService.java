@@ -64,7 +64,7 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         track(createEventBuilder("quest", "create")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.name));
+                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
     @Subscribe
