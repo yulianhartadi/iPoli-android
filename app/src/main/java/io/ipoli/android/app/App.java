@@ -31,9 +31,6 @@ import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.LevelUpActivity;
-import io.ipoli.android.player.PlayerService;
-import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -67,9 +64,6 @@ public class App extends Application {
 
     @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
-
-    @Inject
-    PlayerService playerService;
 
     @Override
     public void onCreate() {
@@ -174,16 +168,7 @@ public class App extends Application {
 
     private void registerServices() {
         eventBus.register(analyticsService);
-        eventBus.register(playerService);
         eventBus.register(this);
-    }
-
-    @Subscribe
-    public void onPlayerLevelUp(PlayerLevelUpEvent e) {
-        Intent i = new Intent(this, LevelUpActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra(LevelUpActivity.LEVEL_EXTRA_KEY, e.newLevel);
-        startActivity(i);
     }
 
     private void initPlanDayReminder() {

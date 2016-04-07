@@ -8,11 +8,9 @@ import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
-import io.ipoli.android.app.modules.PlayerModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
-import io.ipoli.android.player.LevelUpActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.HabitsActivity;
@@ -40,8 +38,7 @@ import io.ipoli.android.tutorial.Tutorial;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
-                RestAPIModule.class,
-                PlayerModule.class
+                RestAPIModule.class
         }
 )
 public interface AppComponent {
@@ -55,8 +52,6 @@ public interface AppComponent {
     void inject(InviteOnlyActivity inviteOnlyActivity);
 
     void inject(QuestCompleteActivity questCompleteActivity);
-
-    void inject(LevelUpActivity levelUpActivity);
 
     void inject(EditQuestActivity editQuestActivity);
 

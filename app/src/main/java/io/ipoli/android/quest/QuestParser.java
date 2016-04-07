@@ -80,10 +80,12 @@ public class QuestParser {
         text = text.replace(matchedDueDateText, "");
 
         Match recurrentMatch = recurrenceMatcher.match(text);
-        text = text.replace(recurrentMatch.text, "");
+        String matchedRecurrenceText = recurrentMatch.text != null ? recurrentMatch.text : "";
+        text = text.replace(matchedRecurrenceText, "");
 
         Match timesPerDayMatch = timesPerDayMatcher.match(text);
-        text = text.replace(timesPerDayMatch.text, "");
+        String matchedTimesPerDayText = timesPerDayMatch.text != null ? timesPerDayMatch.text : "";
+        text = text.replace(matchedTimesPerDayText, "");
 
         String name = text.trim();
 
@@ -95,6 +97,6 @@ public class QuestParser {
     }
 
     public boolean isRecurrent(String text) {
-        return recurrenceMatcher.match(text) != null;
+        return recurrenceMatcher.match(text) != null || timesPerDayMatcher.match(text) != null;
     }
 }

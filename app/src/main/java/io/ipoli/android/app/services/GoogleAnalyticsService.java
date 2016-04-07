@@ -12,7 +12,6 @@ import java.util.List;
 import io.ipoli.android.app.events.ContactUsClickEvent;
 import io.ipoli.android.app.events.FeedbackClickEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.player.events.PlayerLevelUpEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -53,12 +52,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPlayerRequestedInvite(PlayerRequestedInviteEvent e) {
         track(createEventBuilder("invite", "create"));
-    }
-
-    @Subscribe
-    public void onPlayerLevelUp(PlayerLevelUpEvent e) {
-        track(createEventBuilder("player", "level-up")
-                .setCustomDimension(LEVEL_DIMENSION_INDEX, e.newLevel + ""));
     }
 
     @Subscribe

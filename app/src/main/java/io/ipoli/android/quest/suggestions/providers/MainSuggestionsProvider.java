@@ -34,7 +34,7 @@ public class MainSuggestionsProvider implements SuggestionsProvider {
         if (!usedTypes.contains(TextEntityType.DUE_DATE) && !usedTypes.contains(TextEntityType.RECURRENT)) {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_event_black_18dp, "on ...", "on"));
         }
-        if (!usedTypes.contains(TextEntityType.START_TIME)) {
+        if (!usedTypes.contains(TextEntityType.START_TIME) && !usedTypes.contains(TextEntityType.TIMES_PER_DAY)) {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_alarm_black_18dp, "at ...", "at"));
         }
         if (!usedTypes.contains(TextEntityType.DURATION)) {
@@ -43,7 +43,7 @@ public class MainSuggestionsProvider implements SuggestionsProvider {
         if (!usedTypes.contains(TextEntityType.RECURRENT) && !usedTypes.contains(TextEntityType.DUE_DATE)) {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_repeat_black_24dp, "every ...", "every"));
         }
-        if (!usedTypes.contains(TextEntityType.TIMES_PER_DAY)) {
+        if (!usedTypes.contains(TextEntityType.START_TIME) && !usedTypes.contains(TextEntityType.TIMES_PER_DAY)) {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_multiply_black_24dp, "times per day ...", "", TextEntityType.TIMES_PER_DAY));
         }
         return suggestions;
