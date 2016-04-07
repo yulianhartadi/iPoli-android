@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import android.text.TextUtils;
+
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +27,11 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     private String name;
 
-    @Required
     private String context;
 
     private boolean isAllDay;
 
-    private int priority;
+    private Integer priority;
 
     @Required
     private Date createdAt;
@@ -38,8 +39,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     @Required
     private Date updatedAt;
 
-    private int startMinute;
-    private int duration;
+    private Integer startMinute;
+    private Integer duration;
 
     private RealmList<Reminder> reminders;
 
@@ -70,7 +71,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     public int getDuration() {
-        return duration;
+        return duration != null ? duration : 0;
     }
 
     public void setStartMinute(int startMinute) {
@@ -86,7 +87,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.rawText = rawText;
         this.createdAt = new Date();
         this.updatedAt = new Date();
-        this.context = QuestContext.UNKNOWN.name();
+        this.context = QuestContext.PERSONAL.name();
         this.needsSyncWithRemote = true;
     }
 
@@ -115,7 +116,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     public String getContext() {
-        return context;
+        return TextUtils.isEmpty(context) ? QuestContext.PERSONAL.name() : context;
     }
 
     public void setContext(String context) {

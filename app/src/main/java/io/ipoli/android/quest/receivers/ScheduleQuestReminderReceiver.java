@@ -51,7 +51,11 @@ public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
         Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
-        alarm.setExact(AlarmManager.RTC_WAKEUP, Quest.getStartDateTime(q).getTime(), pendingIntent);
+        Date startDateTime = Quest.getStartDateTime(q);
+        if (startDateTime == null) {
+            return;
+        }
+        alarm.setExact(AlarmManager.RTC_WAKEUP, startDateTime.getTime(), pendingIntent);
     }
 
     public PendingIntent getCancelPendingIntent(Context context) {

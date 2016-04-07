@@ -94,6 +94,11 @@ public class App extends Application {
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
 
+//        eventBus.post(new ForceSyncRequestEvent());
+
+//        recurrentQuestPersistenceService.findAll().subscribe(recurrentQuests -> {
+//            Log.d("RecQuests", recurrentQuests.size() + " ");
+//        });
     }
 
     private void saveInitialQuests() {

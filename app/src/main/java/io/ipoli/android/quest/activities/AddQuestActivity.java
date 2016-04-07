@@ -14,7 +14,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,7 +47,6 @@ import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -85,9 +83,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
-    @Inject
-    QuestPersistenceService questPersistenceService;
-
     private QuestContext questContext;
     private BottomBar bottomBar;
 
@@ -97,7 +92,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -181,12 +175,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
 
             final QuestContext ctx = ctxs[i];
-            iv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeSelectedContextCheck();
-                    changeContext(ctx);
-                }
+            iv.setOnClickListener(v -> {
+                removeSelectedContextCheck();
+                changeContext(ctx);
             });
         }
     }

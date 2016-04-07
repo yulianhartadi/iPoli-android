@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import android.text.TextUtils;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,12 +32,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Required
     private String name;
 
-    @Required
     private String context;
 
     private boolean isAllDay;
 
-    private int priority;
+    private Integer priority;
 
     @Required
     private Date createdAt;
@@ -45,8 +46,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Date completedAtDateTime;
 
-    private int startMinute;
-    private int duration;
+    private Integer startMinute;
+    private Integer duration;
 
     private Date startDate;
     private Date endDate;
@@ -57,8 +58,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private RealmList<Reminder> reminders;
     private RealmList<Tag> tags;
 
-    private int difficulty;
-    private int actualDuration;
+    private Integer difficulty;
+    private Integer actualDuration;
     private Date actualStartDateTime;
 
     private String remoteId;
@@ -92,7 +93,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public int getDuration() {
-        return duration;
+        return duration != null ? duration : 0;
     }
 
     public void setStartMinute(int startMinute) {
@@ -199,7 +200,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public String getContext() {
-        return context;
+        return TextUtils.isEmpty(context) ? QuestContext.PERSONAL.name() : context;
     }
 
     public void setContext(String context) {
@@ -215,6 +216,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public static Date getStartDateTime(Quest quest) {
+        if (quest.getStartMinute() < 0) {
+            return null;
+        }
         Calendar startDateTime = Calendar.getInstance();
         startDateTime.setTime(quest.getEndDate());
         int h = (int) TimeUnit.MINUTES.toHours(quest.getStartMinute());
@@ -233,7 +237,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public int getActualDuration() {
-        return actualDuration;
+        return actualDuration != null ? actualDuration : 0;
     }
 
     public void setActualDuration(int actualDuration) {
@@ -269,7 +273,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public int getStartMinute() {
-        return startMinute;
+        return startMinute != null ? startMinute : -1;
     }
 
     @Override
