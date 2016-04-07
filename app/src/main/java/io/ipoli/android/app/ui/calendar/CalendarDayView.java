@@ -1,8 +1,6 @@
 package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
@@ -152,30 +150,23 @@ public class CalendarDayView extends FrameLayout {
 
         for (int i = 0; i < 10; i++) {
 
-            View habitLineContainer = inflater.inflate(R.layout.calendar_habit_line, timeRL, false);
+            View habitLineContainer = inflater.inflate(R.layout.calendar_habit_item, timeRL, false);
             Random random = new Random();
             int rint = random.nextInt(6);
 
-            ImageView v = (ImageView) habitLineContainer.findViewById(R.id.habit_line_indicator);
-            View habitLine = habitLineContainer.findViewById(R.id.habit_line);
+            ImageView v = (ImageView) habitLineContainer.findViewById(R.id.habit_indicator);
             if (rint == 1) {
                 v.setImageResource(R.drawable.ic_work_red_24dp);
-                habitLine.setBackgroundResource(R.color.md_red_300);
             } else if (rint == 2) {
                 v.setImageResource(R.drawable.ic_import_contacts_blue_24dp);
-                habitLine.setBackgroundResource(R.color.md_blue_300);
             } else if (rint == 3) {
                 v.setImageResource(R.drawable.ic_duck_orange_24dp);
-                habitLine.setBackgroundResource(R.color.md_orange_300);
             } else if (rint == 4) {
                 v.setImageResource(R.drawable.ic_sentiment_satisfied_purple);
-                habitLine.setBackgroundResource(R.color.md_purple_300);
             } else if (rint == 5) {
                 v.setImageResource(R.drawable.ic_broom_blue_grey);
-                habitLine.setBackgroundResource(R.color.md_blue_grey_300);
             } else {
                 v.setImageResource(R.drawable.ic_flower_green_24dp);
-                habitLine.setBackgroundResource(R.color.md_green_300);
             }
 
             RelativeLayout.LayoutParams hLP = (RelativeLayout.LayoutParams) habitLineContainer.getLayoutParams();
@@ -269,36 +260,34 @@ public class CalendarDayView extends FrameLayout {
     private int getRelativeY(int y) {
         int offsets[] = new int[2];
         getLocationOnScreen(offsets);
-        return Math.max(0, scrollView.getScrollY() + y - offsets[1]);
+        return getRelativeY(y, offsets[1]);
+    }
+
+    private int getRelativeY(int y, int yOffset) {
+        return Math.max(0, scrollView.getScrollY() + y - yOffset);
     }
 
     public void scrollToNow() {
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                Calendar c = Calendar.getInstance();
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                hour = Math.max(0, hour - TOP_PADDING_HOURS);
-                if (hour == 0) {
-                    scrollView.scrollTo(scrollView.getScrollX(), 0);
-                } else {
-                    int minutes = c.get(Calendar.MINUTE);
-                    scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
-                }
+        scrollView.post(() -> {
+            Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            hour = Math.max(0, hour - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.scrollTo(scrollView.getScrollX(), 0);
+            } else {
+                int minutes = c.get(Calendar.MINUTE);
+                scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
             }
         });
     }
 
     public void smoothScrollToTime(final Time time) {
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
-                if (hour == 0) {
-                    scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
-                } else {
-                    scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
-                }
+        scrollView.post(() -> {
+            int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+            } else {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
             }
         });
     }
@@ -306,12 +295,6 @@ public class CalendarDayView extends FrameLayout {
     public void removeAllEvents() {
         eventsContainer.removeAllViews();
         eventViewToCalendarEvent.clear();
-    }
-
-    private Point getTouchPositionFromDragEvent(DragEvent event) {
-        Rect rItem = new Rect();
-        getGlobalVisibleRect(rItem);
-        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
     }
 
     DragStrategy getEditViewDragStrategy(final View dragView) {
@@ -327,14 +310,15 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragEntered(DragEvent event) {
-                initialTouchHeight = getTouchPositionFromDragEvent(event).y - ViewUtils.getViewRawTop(dragView);
+                int[] loc = new int[2];
+                dragView.getLocationOnScreen(loc);
+                initialTouchHeight = (int) (event.getY() - loc[1]);
             }
 
             @Override
             public void onDragMoved(DragEvent event) {
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
-                int touchY = getTouchPositionFromDragEvent(event).y;
-                layoutParams.topMargin = getRelativeY(touchY - initialTouchHeight);
+                layoutParams.topMargin = getRelativeY((int) (event.getY() - initialTouchHeight), getTop());
                 dragView.setLayoutParams(layoutParams);
             }
 
@@ -371,12 +355,7 @@ public class CalendarDayView extends FrameLayout {
                 final int scrollYDelta = isOnTopEdge ? -getHeightFor(minutes) : getHeightFor(minutes);
                 layoutParams.topMargin = topMargin;
                 dragView.setLayoutParams(layoutParams);
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.smoothScrollBy(0, scrollYDelta);
-                    }
-                });
+                scrollView.post(() -> scrollView.smoothScrollBy(0, scrollYDelta));
 
             }
 
@@ -391,16 +370,5 @@ public class CalendarDayView extends FrameLayout {
                 }
             }
         };
-
-    }
-
-    public View getView(String eventName) {
-        for (View v : eventViewToCalendarEvent.keySet()) {
-            CalendarEvent e = eventViewToCalendarEvent.get(v);
-            if (e.getName().contains(eventName)) {
-                return v;
-            }
-        }
-        return null;
     }
 }
