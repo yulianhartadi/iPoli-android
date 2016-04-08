@@ -1,5 +1,7 @@
 package io.ipoli.android.app.utils;
 
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.View;
 
 /**
@@ -11,5 +13,9 @@ public class ViewUtils {
         int[] loc = new int[2];
         v.getLocationInWindow(loc);
         return loc[1];
+    }
+
+    public static float dpToPx(int dips, Resources resources) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, resources.getDisplayMetrics());
     }
 }

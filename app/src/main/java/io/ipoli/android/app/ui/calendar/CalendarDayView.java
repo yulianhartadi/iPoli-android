@@ -156,17 +156,17 @@ public class CalendarDayView extends FrameLayout {
 
             ImageView v = (ImageView) habitLineContainer.findViewById(R.id.habit_indicator);
             if (rint == 1) {
-                v.setImageResource(R.drawable.ic_work_red_24dp);
+                v.setImageResource(R.drawable.ic_context_work_red_24dp);
             } else if (rint == 2) {
-                v.setImageResource(R.drawable.ic_import_contacts_blue_24dp);
+                v.setImageResource(R.drawable.ic_context_learning_blue_24dp);
             } else if (rint == 3) {
-                v.setImageResource(R.drawable.ic_duck_orange_24dp);
+                v.setImageResource(R.drawable.ic_context_personal_orange_24dp);
             } else if (rint == 4) {
-                v.setImageResource(R.drawable.ic_sentiment_satisfied_purple);
+                v.setImageResource(R.drawable.ic_context_fun_purple);
             } else if (rint == 5) {
-                v.setImageResource(R.drawable.ic_broom_blue_grey);
+                v.setImageResource(R.drawable.ic_context_chores_brown);
             } else {
-                v.setImageResource(R.drawable.ic_flower_green_24dp);
+                v.setImageResource(R.drawable.ic_context_wellness_green_24dp);
             }
 
             RelativeLayout.LayoutParams hLP = (RelativeLayout.LayoutParams) habitLineContainer.getLayoutParams();

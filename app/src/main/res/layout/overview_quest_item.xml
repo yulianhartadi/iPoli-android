@@ -103,7 +103,7 @@
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="2dp"
-                android:src="@drawable/ic_import_contacts_blue_24dp" />
+                android:src="@drawable/ic_context_learning_blue_24dp" />
 
             <ImageView
                 android:layout_width="16dp"
@@ -111,7 +111,7 @@
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitXY"
                 android:layout_marginEnd="2dp"
-                android:src="@drawable/ic_import_contacts_blue_24dp" />
+                android:src="@drawable/ic_context_learning_blue_24dp" />
 
             <ImageView
                 android:layout_width="16dp"
@@ -119,7 +119,7 @@
                 android:scaleType="fitXY"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="2dp"
-                android:src="@drawable/ic_import_contacts_blue_24dp" />
+                android:src="@drawable/ic_context_learning_blue_24dp" />
 
             <ImageView
                 android:layout_width="16dp"
@@ -127,7 +127,7 @@
                 android:scaleType="fitXY"
                 android:layout_marginEnd="8dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_import_contacts_blue_24dp" />
+                android:src="@drawable/ic_context_learning_blue_24dp" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -8,29 +8,24 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
 import java.util.List;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
-import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -61,37 +56,14 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final Quest q = quests.get(questHolder.getAdapterPosition());
 
-        questHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new ShowQuestEvent(q));
-            }
-        });
+        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
 
         questHolder.name.setText(q.getName());
 
-        GradientDrawable drawable = (GradientDrawable) questHolder.indicator.getBackground();
+        GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
 
-        if (Quest.isStarted(q)) {
-            Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
-            questHolder.indicator.startAnimation(blinkAnimation);
-        }
-
-        if (q.getStartMinute() >= 0) {
-            questHolder.startTime.setVisibility(View.VISIBLE);
-            questHolder.startTime.setText(StartTimeFormatter.format(Time.fromMinutesAfterMidnight(q.getStartMinute()).toDate()));
-        } else {
-            questHolder.startTime.setVisibility(View.INVISIBLE);
-        }
-
-        boolean isUpcoming = !DateUtils.isToday(q.getEndDate()) && !DateUtils.isTomorrow(q.getEndDate());
-        if (q.getEndDate() != null && isUpcoming) {
-            questHolder.dueDate.setVisibility(View.VISIBLE);
-            questHolder.dueDate.setText(DueDateFormatter.formatWithoutYear(q.getEndDate()));
-        } else {
-            questHolder.dueDate.setVisibility(View.GONE);
-        }
+        questHolder.contextIndicatorImage.setImageResource(Quest.getContext(q).whiteImage);
 
         if (q.getDuration() > 0) {
             questHolder.duration.setVisibility(View.VISIBLE);
@@ -100,10 +72,20 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             questHolder.duration.setVisibility(View.INVISIBLE);
         }
 
-        if (new Random().nextFloat() < 0.5) {
-            questHolder.habitIndicatorsContainer.setVisibility(View.GONE);
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        for (int i = 0; i < 2; i++) {
+            View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
+            GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
+            progressViewBackground.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+            questHolder.progressContainer.addView(progressView);
         }
 
+        View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
+        GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
+
+        progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+        questHolder.progressContainer.addView(progressViewEmpty);
     }
 
     @Override
@@ -143,20 +125,17 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @Bind(R.id.quest_text)
         public TextView name;
 
-        @Bind(R.id.quest_start_time)
-        public TextView startTime;
-
         @Bind(R.id.quest_duration)
         public TextView duration;
 
-        @Bind(R.id.quest_context_indicator)
-        public View indicator;
+        @Bind(R.id.quest_context_indicator_background)
+        public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_habit_indicators_container)
-        public View habitIndicatorsContainer;
+        @Bind(R.id.quest_context_indicator_image)
+        public ImageView contextIndicatorImage;
 
-        @Bind(R.id.quest_due_date)
-        public TextView dueDate;
+        @Bind(R.id.progress_container)
+        public ViewGroup progressContainer;
 
         public ViewHolder(View v) {
             super(v);
