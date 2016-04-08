@@ -24,6 +24,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
@@ -114,7 +115,7 @@ public class AppJobService extends JobService {
             if (TextUtils.isEmpty(rq.getRemoteId())) {
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("text", rq.getRawText()).param("user_id", player.getRemoteId()).build();
                 return apiService.createRecurrentQuest(requestBody).compose(applySchedulers()).flatMap(sq -> {
-                    updateRecurrentQuest(rq, sq);
+                    updateRecurrentQuest(sq, rq.getId(), rq.getRecurrence());
                     return recurrentQuestPersistenceService.save(sq);
                 });
             } else {
@@ -122,17 +123,21 @@ public class AppJobService extends JobService {
                 qJson.addProperty("id", rq.getRemoteId());
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getRemoteId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getRemoteId()).compose(applySchedulers()).flatMap(sq -> {
-                    updateRecurrentQuest(rq, sq);
+                    updateRecurrentQuest(sq, rq.getId(), rq.getRecurrence());
                     return recurrentQuestPersistenceService.save(sq);
                 });
             }
         });
     }
 
-    private void updateRecurrentQuest(RecurrentQuest rq, RecurrentQuest sq) {
-        sq.setRemoteId(sq.getId());
-        sq.setId(rq.getId());
-        sq.setSyncedWithRemote();
+    private void updateRecurrentQuest(RecurrentQuest quest, String remoteId, Recurrence localRecurrence) {
+        if(localRecurrence != null) {
+            String localId = localRecurrence.getId();
+            quest.getRecurrence().setId(localId);
+        }
+        quest.setRemoteId(quest.getId());
+        quest.setId(remoteId);
+        quest.setSyncedWithRemote();
     }
 
     Observable<RecurrentQuest> getRecurrentQuests(Player player) {
@@ -144,9 +149,8 @@ public class AppJobService extends JobService {
                         return Observable.just(rq);
                     }
                     String id = rq == null ? UUID.randomUUID().toString() : rq.getId();
-                    sq.setRemoteId(sq.getId());
-                    sq.setId(id);
-                    sq.setSyncedWithRemote();
+                    Recurrence localRecurrence = rq == null ? null : rq.getRecurrence();
+                    updateRecurrentQuest(sq, id, localRecurrence);
                     return recurrentQuestPersistenceService.save(sq, false);
                 }));
     }

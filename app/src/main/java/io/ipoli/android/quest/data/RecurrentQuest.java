@@ -12,6 +12,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -20,6 +21,7 @@ import io.realm.annotations.Required;
  * on 3/26/16.
  */
 public class RecurrentQuest extends RealmObject implements RemoteObject<RecurrentQuest> {
+
     @PrimaryKey
     private String id;
 
@@ -43,9 +45,13 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     private Integer duration;
 
     private RealmList<Reminder> reminders;
+    private Recurrence recurrence;
 
     private String remoteId;
     private boolean needsSyncWithRemote;
+
+    @Ignore
+    private transient int completedTimes = 0;
 
     public RecurrentQuest() {
     }
@@ -136,7 +142,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     public int getStartMinute() {
-        return startMinute;
+        return startMinute != null ? startMinute : -1;
     }
 
     @Override
@@ -176,5 +182,21 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public int getCompletedTimes() {
+        return completedTimes;
+    }
+
+    public void setCompletedTimes(int completedTimes) {
+        this.completedTimes = completedTimes;
     }
 }

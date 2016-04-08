@@ -10,6 +10,7 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -94,6 +95,15 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate) {
+        return where()
+                .isNotNull("completedAtDateTime")
+                .equalTo("recurrentQuest.id", recurrentQuest.getId())
+                .between("endDate", fromDate, toDate)
+                .count();
+    }
+
+    @Override
     public Observable<Quest> findPlannedQuestStartingAfter(Date date) {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
@@ -120,11 +130,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
         return fromRealm(where()
                 .beginGroup()
-                    .greaterThan("endDate", yesterday.getTime())
-                    .lessThan("endDate", tomorrow.getTime())
-                    .or()
-                    .greaterThan("completedAtDateTime", yesterday.getTime())
-                    .lessThan("completedAtDateTime", tomorrow.getTime())
+                .greaterThan("endDate", yesterday.getTime())
+                .lessThan("endDate", tomorrow.getTime())
+                .or()
+                .greaterThan("completedAtDateTime", yesterday.getTime())
+                .lessThan("completedAtDateTime", tomorrow.getTime())
                 .endGroup()
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }

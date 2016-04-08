@@ -102,4 +102,17 @@ public class DateUtils {
 
         return dates;
     }
+
+    public static Date getFirstDateOfWeek() {
+        Calendar cal = getTodayAtMidnight();
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        return cal.getTime();
+    }
+
+    public static Date getLastDateOfWeek() {
+        Calendar cal = getTodayAtMidnight();
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.add(Calendar.DAY_OF_YEAR, 6);
+        return cal.getTime();
+    }
 }

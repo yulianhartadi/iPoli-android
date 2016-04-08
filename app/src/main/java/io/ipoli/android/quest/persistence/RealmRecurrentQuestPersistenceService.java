@@ -33,6 +33,6 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
 
     @Override
     public Observable<List<RecurrentQuest>> findAll() {
-        return fromRealm(where().findAll());
+        return fromRealm(where().isNotNull("name").findAll());
     }
 }

@@ -13,18 +13,27 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
@@ -34,10 +43,10 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
     private final Context context;
 
-    private List<Quest> quests;
+    private List<RecurrentQuest> quests;
     private Bus eventBus;
 
-    public HabitsAdapter(Context context, List<Quest> quests, Bus eventBus) {
+    public HabitsAdapter(Context context, List<RecurrentQuest> quests, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.quests = quests;
@@ -54,16 +63,18 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         ViewHolder questHolder = (ViewHolder) holder;
 
-        final Quest q = quests.get(questHolder.getAdapterPosition());
+        final RecurrentQuest q = quests.get(questHolder.getAdapterPosition());
 
-        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
+//        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
 
         questHolder.name.setText(q.getName());
 
-        GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+        QuestContext questContext = RecurrentQuest.getContext(q);
 
-        questHolder.contextIndicatorImage.setImageResource(Quest.getContext(q).whiteImage);
+        GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, questContext.resLightColor));
+
+        questHolder.contextIndicatorImage.setImageResource(questContext.whiteImage);
 
         if (q.getDuration() > 0) {
             questHolder.duration.setVisibility(View.VISIBLE);
@@ -74,18 +85,58 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        for (int i = 0; i < 2; i++) {
-            View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
-            GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
-            progressViewBackground.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
-            questHolder.progressContainer.addView(progressView);
+        Recurrence recurrence = q.getRecurrence();
+        try {
+            Recur recur = new Recur(recurrence.getRrule());
+            Date nextDate = recur.getNextDate(new Date(recurrence.getDtstart()), new Date());
+            String nextText = "";
+            if (DateUtils.isToday(nextDate)) {
+                nextText = "Today";
+            } else if (DateUtils.isTomorrow(nextDate)) {
+                nextText = "Tomorrow";
+            } else {
+
+                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(nextDate);
+            }
+
+            if (q.getStartMinute() >= 0) {
+                Time time = Time.fromMinutesAfterMidnight(q.getStartMinute());
+                nextText += " at " + time;
+            }
+            questHolder.nextDateTime.setText(context.getString(R.string.habit_next_datetime, nextText));
+
+            Calendar c = DateUtils.getTodayAtMidnight();
+            c.setTime(recurrence.getDtstart());
+            c.set(Calendar.MILLISECOND, 0);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MINUTE, 0);
+            c.set(Calendar.HOUR_OF_DAY, 0);
+//            c.add(Calendar.DAY_OF_YEAR, -1);
+            int timesThisWeek = recur.getDates(new Date(DateUtils.getFirstDateOfWeek()), new Date(DateUtils.getFirstDateOfWeek()), new Date(DateUtils.getLastDateOfWeek()), Value.DATE).size();
+            questHolder.repeatFrequency.setText(timesThisWeek + " x this week");
+
+            int completedThisWeek = q.getCompletedTimes();
+            for (int i = 1; i <= completedThisWeek; i++) {
+                View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
+                GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
+                progressViewBackground.setColor(ContextCompat.getColor(context, questContext.resLightColor));
+                questHolder.progressContainer.addView(progressView);
+            }
+
+            for(int i = 1; i <= timesThisWeek - completedThisWeek; i ++ ) {
+                View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
+                GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
+
+                progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, questContext.resLightColor));
+                questHolder.progressContainer.addView(progressViewEmpty);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
-        View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
-        GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
-        progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
-        questHolder.progressContainer.addView(progressViewEmpty);
+
     }
 
     @Override
@@ -105,17 +156,17 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onItemDismissed(int position, int direction) {
-        Quest q = quests.get(position);
+        RecurrentQuest q = quests.get(position);
         quests.remove(position);
         notifyItemRemoved(position);
         if (direction == ItemTouchHelper.END) {
-            eventBus.post(new CompleteQuestRequestEvent(q));
+//            eventBus.post(new CompleteQuestRequestEvent(q));
         } else if (direction == ItemTouchHelper.START) {
-            eventBus.post(new ScheduleQuestForTodayEvent(q));
+//            eventBus.post(new ScheduleQuestForTodayEvent(q));
         }
     }
 
-    public void updateQuests(List<Quest> newQuests) {
+    public void updateQuests(List<RecurrentQuest> newQuests) {
         quests = newQuests;
         notifyDataSetChanged();
     }
@@ -136,6 +187,12 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Bind(R.id.progress_container)
         public ViewGroup progressContainer;
+
+        @Bind(R.id.quest_habit_next_datetime)
+        public TextView nextDateTime;
+
+        @Bind(R.id.quest_habit_repeat_frequency)
+        public TextView repeatFrequency;
 
         public ViewHolder(View v) {
             super(v);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import rx.Observable;
 
 /**
@@ -35,4 +36,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void delete(Quest quest);
 
     Observable<List<Quest>> findAllWhoNeedSyncWithRemote();
+
+    long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate);
 }

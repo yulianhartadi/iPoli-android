@@ -2,6 +2,7 @@ package io.ipoli.android.app.utils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Time {
@@ -38,8 +39,8 @@ public class Time {
 
     public static Time ago(int hours, int minutes) {
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.HOUR_OF_DAY, - hours);
-        c.add(Calendar.MINUTE, - minutes);
+        c.add(Calendar.HOUR_OF_DAY, -hours);
+        c.add(Calendar.MINUTE, -minutes);
         return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
 
@@ -101,5 +102,10 @@ public class Time {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.getDefault(), "%02d:%02d", getHours(), getMinutes());
     }
 }

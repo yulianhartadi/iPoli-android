@@ -8,11 +8,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.widget.Toast;
 
 import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,10 +27,9 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.QuestSnoozedEvent;
-import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 
 public class HabitsActivity extends BaseActivity {
     @Inject
@@ -43,6 +40,9 @@ public class HabitsActivity extends BaseActivity {
 
     @Bind(R.id.quest_list)
     RecyclerView questList;
+
+    @Inject
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -101,29 +101,11 @@ public class HabitsActivity extends BaseActivity {
         super.onPause();
     }
 
-    @Subscribe
-    public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
-        Quest q = e.quest;
-        Date due = new Date();
-        String toast = getString(R.string.quest_scheduled_for_today);
-        if (DateUtils.isToday(e.quest.getEndDate())) {
-            toast = getString(R.string.quest_scheduled_for_tomorrow);
-            due = DateUtils.getTomorrow();
-        }
-        q.setEndDate(due);
-        questPersistenceService.save(q);
-        updateQuests();
-        Toast.makeText(this, toast, Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe
-    public void onQuestSnoozed(QuestSnoozedEvent e) {
-        updateQuests();
-
-    }
-
     private void updateQuests() {
-        questPersistenceService.findAllPlanned().subscribe(quests -> {
+        recurrentQuestPersistenceService.findAll().subscribe(quests -> {
+            for(RecurrentQuest q : quests) {
+                q.setCompletedTimes((int) questPersistenceService.countCompletedQuests(q, DateUtils.getFirstDateOfWeek(), DateUtils.getLastDateOfWeek()));
+            }
             habitsAdapter.updateQuests(quests);
         });
 
