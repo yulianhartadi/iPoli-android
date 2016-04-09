@@ -83,7 +83,7 @@ public class RecurrentQuestViewModel {
             Time endTime = Time.addMinutes(startTime, duration);
             nextText += startTime + " - " + endTime;
         } else if (duration > 0) {
-            nextText += DurationFormatter.formatReadable(duration);
+            nextText += "for " + DurationFormatter.formatReadable(duration);
         } else if (startTime != null){
             nextText += startTime;
         }

@@ -160,9 +160,6 @@ public class InboxActivity extends BaseActivity {
                 QuestNotificationScheduler.stopAll(quest.getId(), InboxActivity.this);
                 questPersistenceService.delete(quest);
                 eventBus.post(new DeleteQuestEvent(quest));
-                if (inboxAdapter.getQuests().isEmpty()) {
-                    finish();
-                }
             }
         });
 

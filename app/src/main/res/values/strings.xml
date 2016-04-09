@@ -10,6 +10,7 @@
     <string name="invite_description">iPoli is private community of real life heroes doing epic quests! Request your invite to join them!</string>
     <string name="get_invite">GIVE ME INVITE</string>
     <string name="quest_removed">Quest removed</string>
+    <string name="habit_removed">Habit removed</string>
     <string name="default_assistant_name">iPoli</string>
     <string name="title_activity_quest_complete">Well done!</string>
     <string name="quest_complete_difficulty_question">How difficult was it?</string>

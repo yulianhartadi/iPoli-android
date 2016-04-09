@@ -21,7 +21,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.quest.events.DeleteRecurrentQuestEvent;
+import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
 import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
 
@@ -101,12 +101,17 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         viewModels.remove(position);
         notifyItemRemoved(position);
         if (direction == ItemTouchHelper.START) {
-            eventBus.post(new DeleteRecurrentQuestEvent(vm.getRecurrentQuest()));
+            eventBus.post(new DeleteRecurrentQuestRequestEvent(vm.getRecurrentQuest(), position));
         }
     }
 
     public void updateQuests(List<RecurrentQuestViewModel> newViewModels) {
         viewModels = newViewModels;
+        notifyDataSetChanged();
+    }
+
+    public void addQuest(int position, RecurrentQuestViewModel recurrentQuestViewModel) {
+        viewModels.add(position, recurrentQuestViewModel);
         notifyDataSetChanged();
     }
 
