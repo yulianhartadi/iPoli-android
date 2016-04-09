@@ -127,4 +127,8 @@ public class RecurrentQuestViewModel {
         return remainingCount + " more this week";
 
     }
+
+    public RecurrentQuest getRecurrentQuest() {
+        return recurrentQuest;
+    }
 }

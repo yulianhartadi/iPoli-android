@@ -81,11 +81,10 @@ public class HabitsActivity extends BaseActivity {
         habitsAdapter = new HabitsAdapter(this, new ArrayList<>(), eventBus);
         questList.setAdapter(habitsAdapter);
 
-        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+        int swipeFlags = ItemTouchHelper.START;
         ItemTouchCallback touchCallback = new ItemTouchCallback(habitsAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_green_500)));
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_blue_500)));
+        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_red_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
     }

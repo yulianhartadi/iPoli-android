@@ -140,7 +140,7 @@
 
 
     <LinearLayout
-        android:id="@+id/quest_schedule_for_today"
+        android:id="@+id/quest_habit_delete_container"
         android:layout_width="wrap_content"
         android:layout_height="72dp"
         android:layout_alignParentEnd="true"

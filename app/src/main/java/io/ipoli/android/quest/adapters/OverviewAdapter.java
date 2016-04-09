@@ -284,7 +284,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
-            itemView.findViewById(R.id.quest_schedule_for_today).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_habit_delete_container).setVisibility(iconVisibility);
             itemView.findViewById(R.id.quest_duration).setVisibility(durationVisibility);
         }
 

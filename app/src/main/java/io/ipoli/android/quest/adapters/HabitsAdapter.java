@@ -21,6 +21,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
+import io.ipoli.android.quest.events.DeleteRecurrentQuestEvent;
+import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
 import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
 
 /**
@@ -52,7 +54,7 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final RecurrentQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
-//        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
+        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowRecurrentQuestEvent(vm.getRecurrentQuest())));
 
         questHolder.name.setText(vm.getName());
 
@@ -60,7 +62,6 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
 
         questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
-
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -82,18 +83,11 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));
             questHolder.progressContainer.addView(progressViewEmpty);
         }
-
-
     }
 
     @Override
     public int getItemCount() {
         return viewModels.size();
-    }
-
-    public void removeQuest(int position) {
-        viewModels.remove(position);
-        notifyItemRemoved(position);
     }
 
     @Override
@@ -103,14 +97,12 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onItemDismissed(int position, int direction) {
-//        RecurrentQuest q = viewModels.get(position);
-//        viewModels.remove(position);
-//        notifyItemRemoved(position);
-//        if (direction == ItemTouchHelper.END) {
-////            eventBus.post(new CompleteQuestRequestEvent(q));
-//        } else if (direction == ItemTouchHelper.START) {
-////            eventBus.post(new ScheduleQuestForTodayEvent(q));
-//        }
+        RecurrentQuestViewModel vm = viewModels.get(position);
+        viewModels.remove(position);
+        notifyItemRemoved(position);
+        if (direction == ItemTouchHelper.START) {
+            eventBus.post(new DeleteRecurrentQuestEvent(vm.getRecurrentQuest()));
+        }
     }
 
     public void updateQuests(List<RecurrentQuestViewModel> newViewModels) {
@@ -157,51 +149,31 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public void onItemSwipeStart(int direction) {
             if (direction == ItemTouchHelper.START) {
                 showScheduleForToday();
-                hideQuestCompleteCheck();
-            } else if (direction == ItemTouchHelper.END) {
-                showQuestCompleteCheck();
-                hideScheduleForToday();
             }
         }
 
         private void showScheduleForToday() {
-            changeScheduleVisibility(View.VISIBLE, View.GONE);
-        }
-
-        private void showQuestCompleteCheck() {
-            changeCheckVisibility(View.VISIBLE, View.GONE);
+            changeScheduleVisibility(View.VISIBLE);
         }
 
         private void hideScheduleForToday() {
-            changeScheduleVisibility(View.GONE, View.VISIBLE);
+            changeScheduleVisibility(View.GONE);
         }
 
-        private void hideQuestCompleteCheck() {
-            changeCheckVisibility(View.GONE, View.VISIBLE);
-        }
-
-        private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
-            itemView.findViewById(R.id.quest_schedule_for_today).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_duration).setVisibility(durationVisibility);
-        }
-
-        private void changeCheckVisibility(int iconVisibility, int startTimeVisibility) {
-            itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_start_date_time_container).setVisibility(startTimeVisibility);
+        private void changeScheduleVisibility(int iconVisibility) {
+            itemView.findViewById(R.id.quest_habit_delete_container).setVisibility(iconVisibility);
         }
 
         @Override
         public void onItemSwipeStopped(int direction) {
             if (direction == ItemTouchHelper.START) {
                 hideScheduleForToday();
-            } else if (direction == ItemTouchHelper.END) {
-                hideQuestCompleteCheck();
             }
         }
 
         @Override
         public boolean isEndSwipeEnabled() {
-            return true;
+            return false;
         }
 
         @Override
