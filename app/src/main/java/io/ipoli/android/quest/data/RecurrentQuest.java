@@ -84,7 +84,10 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.startMinute = startMinute;
     }
 
-    public static Time getStartTime(Quest quest) {
+    public static Time getStartTime(RecurrentQuest quest) {
+        if(quest.getStartMinute() < 0) {
+            return null;
+        }
         return Time.fromMinutesAfterMidnight(quest.getStartMinute());
     }
 

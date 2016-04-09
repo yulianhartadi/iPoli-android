@@ -108,4 +108,8 @@ public class Time {
     public String toString() {
         return String.format(Locale.getDefault(), "%02d:%02d", getHours(), getMinutes());
     }
+
+    public static Time addMinutes(Time time, int minutes) {
+        return Time.fromMinutesAfterMidnight(time.minutes + minutes);
+    }
 }

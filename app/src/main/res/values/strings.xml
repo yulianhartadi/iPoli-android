@@ -42,7 +42,7 @@
     <string name="quest_timer_minutes">For %d minutes</string>
     <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
     <string name="tomorrow">tomorrow</string>
-    <string name="upcoming">upcoming</string>
+    <string name="next_7_days">next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
     <string name="title_activity_add_quest">Add new Quest</string>

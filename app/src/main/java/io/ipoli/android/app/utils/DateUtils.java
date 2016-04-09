@@ -115,4 +115,18 @@ public class DateUtils {
         cal.add(Calendar.DAY_OF_YEAR, 6);
         return cal.getTime();
     }
+
+    public static Date getFirstDateOfMonth() {
+        Calendar cal = getTodayAtMidnight();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        return cal.getTime();
+    }
+
+    public static Date getLastDateOfMonth() {
+        Calendar cal = getTodayAtMidnight();
+        cal.setTime(getFirstDateOfMonth());
+        cal.add(Calendar.MONTH, 1);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        return cal.getTime();
+    }
 }

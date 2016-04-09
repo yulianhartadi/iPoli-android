@@ -64,7 +64,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             items.add(headerIndices[1], R.string.tomorrow);
         }
         if (headerIndices[2] >= 0) {
-            items.add(headerIndices[2], R.string.upcoming);
+            items.add(headerIndices[2], R.string.next_7_days);
         }
     }
 
@@ -152,7 +152,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.startTime.setVisibility(View.VISIBLE);
                 questHolder.startTime.setText(StartTimeFormatter.format(Quest.getStartTime(q).toDate()));
             } else {
-                questHolder.startTime.setVisibility(View.INVISIBLE);
+                questHolder.startTime.setVisibility(View.GONE);
             }
 
             boolean isUpcoming = !DateUtils.isToday(q.getEndDate()) && !DateUtils.isTomorrow(q.getEndDate());
