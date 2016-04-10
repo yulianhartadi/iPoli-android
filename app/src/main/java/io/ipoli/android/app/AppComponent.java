@@ -11,13 +11,14 @@ import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
-import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.HabitsActivity;
-import io.ipoli.android.quest.activities.InboxActivity;
-import io.ipoli.android.quest.activities.OverviewActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
+import io.ipoli.android.quest.fragments.AddQuestFragment;
+import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.HabitsFragment;
+import io.ipoli.android.quest.fragments.InboxFragment;
+import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
@@ -45,8 +46,6 @@ public interface AppComponent {
 
     void inject(App app);
 
-    void inject(InboxActivity inboxActivity);
-
     void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
@@ -69,20 +68,22 @@ public interface AppComponent {
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 
-    void inject(CalendarDayActivity calendarDayActivity);
-
-    void inject(AddQuestActivity addQuestActivity);
-
     void inject(Tutorial tutorial);
 
     void inject(RemindStartQuestReceiver remindStartQuestReceiver);
 
-    void inject(OverviewActivity overviewActivity);
-
-    void inject(HabitsActivity habitsActivity);
-
     void inject(BaseActivity baseActivity);
 
     void inject(AppJobService appJobService);
+
+    void inject(CalendarDayFragment calendarDayFragment);
+
+    void inject(OverviewFragment overviewFragment);
+
+    void inject(AddQuestFragment addQuestFragment);
+
+    void inject(InboxFragment inboxFragment);
+
+    void inject(HabitsFragment habitsFragment);
 }
 

@@ -1,26 +1,30 @@
-package io.ipoli.android.quest.activities;
+package io.ipoli.android.quest.fragments;
+
 
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -33,17 +37,16 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
-import co.mobiwise.materialintro.shape.Focus;
-import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.App;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
@@ -52,23 +55,10 @@ import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
 
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 2/18/16.
- */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
-
+public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggestionsUpdatedListener {
     @Inject
     Bus eventBus;
-
-    @Bind(R.id.appbar)
-    AppBarLayout appBar;
-
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
 
     @Bind(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
@@ -84,7 +74,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private final PrettyTimeParser parser = new PrettyTimeParser();
 
     private QuestContext questContext;
-    private BottomBar bottomBar;
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
@@ -93,37 +82,47 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
+    private boolean isForToday;
+
+    public AddQuestFragment() {
+    }
+    public static AddQuestFragment newInstance(boolean isToday) {
+        AddQuestFragment fragment = new AddQuestFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY, isToday);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_quest);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        appComponent().inject(this);
+        if (getArguments() != null) {
+            isForToday = getArguments().getBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY);
+        }
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_add_quest, container, false);
+
+        ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_add_quest));
+
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         questText.addTextChangedListener(this);
         questText.requestFocus();
 
-        if (getIntent() != null && getIntent().getBooleanExtra(Constants.IS_TODAY_QUEST_EXTRA_KEY, false)) {
+        if (isForToday) {
             questText.setText(" " + getString(R.string.add_quest_today));
         }
-
-
         initUI();
-
-        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_container, savedInstanceState, BottomBarUtil.ADD_QUEST_TAB_INDEX);
-        initContextUI();
-        Tutorial.getInstance(this).addItem(
-                new TutorialItem.Builder(this)
-                        .setState(Tutorial.State.TUTORIAL_ADD_QUEST)
-                        .setTarget(questText)
-                        .setFocusType(Focus.NORMAL)
-                        .enableDotAnimation(false)
-                        .dismissOnTouch(true)
-                        .build());
-
+        initContextUI(view);
 
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
@@ -139,12 +138,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
+
+        return view;
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        bottomBar.onSaveInstanceState(outState);
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -160,55 +160,51 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void initUI() {
-        adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions(questText.getText().toString()));
+        adapter = new SuggestionsAdapter(getContext(), eventBus, suggestionsManager.getSuggestions(questText.getText().toString()));
         questText.setAdapter(adapter);
         questText.setThreshold(1);
     }
 
-    private void initContextUI() {
-        changeContext(QuestContext.PERSONAL);
+    private void initContextUI(View view) {
+        changeContext(QuestContext.PERSONAL, view);
 
         final QuestContext[] ctxs = QuestContext.values();
         for (int i = 0; i < contextContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) contextContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
+            drawable.setColor(ContextCompat.getColor(getContext(), ctxs[i].resLightColor));
 
             final QuestContext ctx = ctxs[i];
             iv.setOnClickListener(v -> {
-                removeSelectedContextCheck();
-                changeContext(ctx);
+                removeSelectedContextCheck(view);
+                changeContext(ctx, view);
             });
         }
     }
 
-    private void changeContext(QuestContext ctx) {
+    private void changeContext(QuestContext ctx, View view) {
         setBackgroundColors(ctx);
         questContext = ctx;
-        setSelectedContext();
+        setSelectedContext(view);
     }
 
-    private void setSelectedContext() {
-        getCurrentContextImageView().setImageResource(R.drawable.ic_done_white_24dp);
+    private void setSelectedContext(View view) {
+        getCurrentContextImageView(view).setImageResource(R.drawable.ic_done_white_24dp);
         setContextName();
     }
 
-    private void removeSelectedContextCheck() {
-        getCurrentContextImageView().setImageDrawable(null);
+    private void removeSelectedContextCheck(View view) {
+        getCurrentContextImageView(view).setImageDrawable(null);
     }
 
-    private ImageView getCurrentContextImageView() {
+    private ImageView getCurrentContextImageView(View view) {
         String ctxId = "quest_context_" + questContext.name().toLowerCase();
-        int ctxResId = getResources().getIdentifier(ctxId, "id", getPackageName());
-        return (ImageView) findViewById(ctxResId);
+        int ctxResId = getResources().getIdentifier(ctxId, "id", getActivity().getPackageName());
+        return (ImageView) view.findViewById(ctxResId);
     }
 
     private void setBackgroundColors(QuestContext ctx) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, ctx.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkColor));
-        bottomBar.mapColorForTab(BottomBarUtil.ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, ctx.resLightColor));
-        bottomBar.selectTabAtPosition(BottomBarUtil.ADD_QUEST_TAB_INDEX, false);
+        eventBus.post(new ColorLayoutEvent(ctx));
     }
 
     private void setContextName() {
@@ -216,16 +212,23 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_quest_menu, menu);
-        return true;
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(menu != null) {
+            menu.removeItem(R.id.action_feedback);
+            menu.removeItem(R.id.action_contact_us);
+        }
+        super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.add_quest_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
             case R.id.action_save:
                 saveQuest();
                 return true;
@@ -240,21 +243,21 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         if (qParser.isRecurrent(text)) {
             RecurrentQuest recurrentQuest = qParser.parseRecurrent(text);
             if (recurrentQuest == null) {
-                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
-            Toast.makeText(this, R.string.recurrent_quest_added, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.recurrent_quest_added, Toast.LENGTH_SHORT).show();
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
-                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
             Quest.setContext(q, questContext);
             eventBus.post(new NewQuestEvent(q));
-            Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -267,12 +270,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         } else {
             return false;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(0, R.anim.slide_down_interpolate);
     }
 
     @Override
@@ -340,8 +337,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void markText(Editable text, int startIdx, int endIdx, int colorRes) {
-        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(getContext(), colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Subscribe

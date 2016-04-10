@@ -3,7 +3,7 @@ package io.ipoli.android.quest.events;
 import java.util.Date;
 
 /**
- * Created by Naughty Spirit <hi@naughtyspirit.co>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/24/16.
  */
 public class DateSelectedEvent {

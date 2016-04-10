@@ -19,7 +19,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.CalendarDayActivity;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 
@@ -67,7 +66,7 @@ public class InviteOnlyActivity extends BaseActivity {
     }
 
     private void startMainActivity() {
-        startActivity(new Intent(this, CalendarDayActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

@@ -10,8 +10,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
-import io.ipoli.android.app.CalendarDayActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,7 +23,7 @@ public class PlanDayReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent planDayIntent = new Intent(context, CalendarDayActivity.class);
+        Intent planDayIntent = new Intent(context, MainActivity.class);
         planDayIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         planDayIntent.setAction(ACTION_REMIND_PLAN_DAY);
 

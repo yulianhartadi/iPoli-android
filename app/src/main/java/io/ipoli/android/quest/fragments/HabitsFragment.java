@@ -1,20 +1,22 @@
-package io.ipoli.android.quest.activities;
+package io.ipoli.android.quest.fragments;
+
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.roughike.bottombar.BottomBar;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -32,9 +34,8 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.R;
-import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
@@ -47,15 +48,12 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
 
-public class HabitsActivity extends BaseActivity {
+public class HabitsFragment extends Fragment {
+
     @Inject
     Bus eventBus;
 
-    @Bind(R.id.root_container)
     CoordinatorLayout rootContainer;
-
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
 
     @Bind(R.id.quest_list)
     RecyclerView questList;
@@ -67,43 +65,36 @@ public class HabitsActivity extends BaseActivity {
     QuestPersistenceService questPersistenceService;
 
     private HabitsAdapter habitsAdapter;
-    private BottomBar bottomBar;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_habits);
-        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.quest_list, savedInstanceState, BottomBarUtil.HABITS_TAB_INDEX);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_habits, container, false);
+        ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new java.util.Date()));
 
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
+        rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new java.util.Date()));
-        }
-
-        appComponent().inject(this);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        habitsAdapter = new HabitsAdapter(this, new ArrayList<>(), eventBus);
+        habitsAdapter = new HabitsAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(habitsAdapter);
 
         int swipeFlags = ItemTouchHelper.START;
         ItemTouchCallback touchCallback = new ItemTouchCallback(habitsAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.md_red_500)));
+        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
+        return view;
     }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        bottomBar.onSaveInstanceState(outState);
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override

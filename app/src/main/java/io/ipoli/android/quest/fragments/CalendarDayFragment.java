@@ -1,19 +1,21 @@
-package io.ipoli.android.app;
+package io.ipoli.android.quest.fragments;
+
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.roughike.bottombar.BottomBar;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -27,9 +29,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.BottomBarUtil;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
@@ -56,17 +58,9 @@ import io.ipoli.android.quest.ui.QuestCalendarEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import rx.Observable;
 
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 2/16/16.
- */
-public class CalendarDayActivity extends BaseActivity implements CalendarListener<QuestCalendarEvent> {
-
+public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarEvent> {
     @Inject
-    QuestPersistenceService questPersistenceService;
-
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
+    protected Bus eventBus;
 
     @Bind(R.id.unscheduled_quests)
     RecyclerView unscheduledQuestList;
@@ -76,6 +70,9 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     @Bind(R.id.calendar_container)
     CalendarLayout calendarContainer;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
@@ -93,32 +90,21 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         }
     };
 
-    private BottomBar bottomBar;
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar_day);
-        bottomBar = BottomBarUtil.getBottomBar(this, R.id.root_container, R.id.calendar_container, savedInstanceState, BottomBarUtil.CALENDAR_TAB_INDEX);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_calendar_day, container, false);
+        ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new Date()));
 
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new Date()));
-        }
-
-        appComponent().inject(this);
-
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         unscheduledQuestList.setLayoutManager(layoutManager);
 
         calendarContainer.setCalendarListener(this);
 
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(this, new ArrayList<>(), eventBus);
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
@@ -128,39 +114,13 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
 
-//        Tutorial.getInstance(this).addItem(
-//                new TutorialItem.Builder(this)
-//                        .setState(Tutorial.State.TUTORIAL_START_OVERVIEW)
-//                        .setTarget(((ViewGroup) tabLayout.getChildAt(0)).getChildAt(1))
-//                        .enableDotAnimation(false)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .build());
-//
-//        Tutorial.getInstance(this).addItem(
-//                new TutorialItem.Builder(this)
-//                        .setState(Tutorial.State.TUTORIAL_START_ADD_QUEST)
-//                        .setTarget(findViewById(R.id.add_quest))
-//                        .enableDotAnimation(true)
-//                        .performClick(true)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .build());
 
-//        RecurrentQuest rq = new RecurrentQuest("");
-//        rq.setRawText("Work every day");
-//        recurrentQuestPersistenceService.save(rq);
-//
-//        rq = new RecurrentQuest("");
-//        rq.setRawText("Smile every day");
-//        recurrentQuestPersistenceService.save(rq);
-
-
-
+        return view;
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        bottomBar.onSaveInstanceState(outState);
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Subscribe
@@ -182,14 +142,14 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
 
     @Subscribe
     public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(this, QuestActivity.class);
+        Intent i = new Intent(getContext(), QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivity(i);
     }
 
     @Subscribe
     public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
-        Intent i = new Intent(this, QuestCompleteActivity.class);
+        Intent i = new Intent(getContext(), QuestCompleteActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
@@ -205,7 +165,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
         quest.setCompletedAtDateTime(null);
         questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
-        Toast.makeText(this, "Quest undone", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Quest undone", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -213,7 +173,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
     }
 
@@ -229,7 +189,7 @@ public class CalendarDayActivity extends BaseActivity implements CalendarListene
     @Override
     public void onPause() {
         eventBus.unregister(this);
-        unregisterReceiver(tickReceiver);
+        getContext().unregisterReceiver(tickReceiver);
         super.onPause();
     }
 
