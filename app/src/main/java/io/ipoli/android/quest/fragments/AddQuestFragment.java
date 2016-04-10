@@ -19,7 +19,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -86,6 +88,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     public AddQuestFragment() {
     }
+
     public static AddQuestFragment newInstance(boolean isToday) {
         AddQuestFragment fragment = new AddQuestFragment();
         Bundle args = new Bundle();
@@ -101,6 +104,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             isForToday = getArguments().getBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY);
         }
         setHasOptionsMenu(true);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     @Override
@@ -112,10 +116,13 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         App.getAppComponent(getContext()).inject(this);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_add_quest));
 
+
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         questText.addTextChangedListener(this);
+
+        questText.setShowSoftInputOnFocus(true);
         questText.requestFocus();
 
         if (isForToday) {
@@ -142,7 +149,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         return view;
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
@@ -151,6 +159,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+        mgr.showSoftInput(questText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override
@@ -213,7 +223,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if(menu != null) {
+        if (menu != null) {
             menu.removeItem(R.id.action_feedback);
             menu.removeItem(R.id.action_contact_us);
         }

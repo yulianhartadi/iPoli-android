@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.roughike.bottombar.BottomBar;
@@ -61,7 +60,7 @@ public class MainActivity extends BaseActivity {
         bottomBar.setOnTabClickListener(new OnTabClickListener() {
             @Override
             public void onTabSelected(int position) {
-                colorLayout(QuestContext.LEARNING);
+                resetLayoutColors();
 
                 switch (position) {
                     case CALENDAR_TAB_INDEX:
@@ -94,12 +93,16 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+//        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+//        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+//        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+//        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+//        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
 
+    }
+
+    private void resetLayoutColors() {
+        colorLayout(QuestContext.LEARNING);
     }
 
     @Override
@@ -134,7 +137,7 @@ public class MainActivity extends BaseActivity {
         toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
-        View view = bottomBar.findViewById(R.id.bb_bottom_bar_item_container);
+        View view = bottomBar.findViewById(R.id.bb_bottom_bar_outer_container);
         view.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
     }
 

@@ -22,7 +22,6 @@
             android:imeOptions="actionDone"
             android:inputType="textNoSuggestions|textMultiLine">
 
-            <requestFocus />
         </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
 
     </android.support.design.widget.TextInputLayout>
