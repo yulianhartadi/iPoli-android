@@ -310,9 +310,12 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragEntered(DragEvent event) {
-                int[] loc = new int[2];
-                dragView.getLocationOnScreen(loc);
-                initialTouchHeight = (int) (event.getY() - loc[1]);
+                int[] dragViewLoc = new int[2];
+                dragView.getLocationOnScreen(dragViewLoc);
+                int[] calendarViewLoc = new int[2];
+                getLocationOnScreen(calendarViewLoc);
+                int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
+                initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
             }
 
             @Override

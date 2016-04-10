@@ -31,7 +31,7 @@
 
         <activity
             android:name=".quest.activities.QuestActivity"
-            android:parentActivityName=".app.CalendarDayActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -40,7 +40,7 @@
         <activity
             android:name=".assistant.PickAvatarActivity"
             android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".app.CalendarDayActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
