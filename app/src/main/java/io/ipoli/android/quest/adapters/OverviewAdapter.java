@@ -54,9 +54,15 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void setItems(List<Quest> quests) {
-        calculateHeaderIndices(quests);
+        List<Quest> visibleQuests = new ArrayList<>();
+        for (Quest q : quests) {
+            if (DateUtils.isToday(q.getEndDate()) || q.getRecurrentQuest() == null) {
+                visibleQuests.add(q);
+            }
+        }
+        calculateHeaderIndices(visibleQuests);
         items = new ArrayList<>();
-        items.addAll(quests);
+        items.addAll(visibleQuests);
         if (headerIndices[0] >= 0) {
             items.add(headerIndices[0], R.string.today);
         }

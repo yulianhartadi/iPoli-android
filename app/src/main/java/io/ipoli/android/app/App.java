@@ -205,7 +205,7 @@ public class App extends Application {
 
     @Subscribe
     public void onRecurrentQuestSaved(RecurrentQuestSavedEvent e) {
-//        eventBus.post(new ForceSyncRequestEvent());
+        eventBus.post(new ForceSyncRequestEvent());
     }
 
     @Subscribe
