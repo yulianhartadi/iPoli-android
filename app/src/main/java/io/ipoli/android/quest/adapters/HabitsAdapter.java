@@ -69,6 +69,8 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         questHolder.repeatFrequency.setText(vm.getRepeatText());
 
+        questHolder.progressContainer.removeAllViews();
+
         for (int i = 1; i <= vm.getCompletedCount(); i++) {
             View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
             GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
