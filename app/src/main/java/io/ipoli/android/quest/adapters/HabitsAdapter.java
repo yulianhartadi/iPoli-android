@@ -63,11 +63,12 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
 
-        LayoutInflater inflater = LayoutInflater.from(context);
 
         questHolder.nextDateTime.setText(vm.getNextText());
 
         questHolder.repeatFrequency.setText(vm.getRepeatText());
+
+        LayoutInflater inflater = LayoutInflater.from(context);
 
         for (int i = 1; i <= vm.getCompletedCount(); i++) {
             View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
@@ -117,7 +118,7 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_text)
+        @Bind(R.id.quest_name)
         public TextView name;
 
         @Bind(R.id.quest_context_indicator_background)
@@ -126,13 +127,13 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @Bind(R.id.quest_context_indicator_image)
         public ImageView contextIndicatorImage;
 
-        @Bind(R.id.progress_container)
+        @Bind(R.id.quest_progress_container)
         public ViewGroup progressContainer;
 
         @Bind(R.id.quest_habit_next_datetime)
         public TextView nextDateTime;
 
-        @Bind(R.id.quest_habit_repeat_frequency)
+        @Bind(R.id.quest_remaining)
         public TextView repeatFrequency;
 
         public ViewHolder(View v) {
@@ -166,7 +167,7 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         private void changeScheduleVisibility(int iconVisibility) {
-            itemView.findViewById(R.id.quest_habit_delete_container).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
         }
 
         @Override

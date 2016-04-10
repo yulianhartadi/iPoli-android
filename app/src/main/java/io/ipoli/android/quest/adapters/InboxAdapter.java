@@ -178,7 +178,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         }
 
         private void changeScheduleVisibility(int iconVisibility, int startTimeVisibility) {
-            itemView.findViewById(R.id.quest_habit_delete_container).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
             itemView.findViewById(R.id.quest_context_container).setVisibility(startTimeVisibility);
         }
 

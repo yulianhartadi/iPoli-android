@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,19 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -32,8 +42,10 @@ import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 public class OverviewFragment extends Fragment {
     @Inject
@@ -73,7 +85,8 @@ public class OverviewFragment extends Fragment {
         return view;
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
@@ -103,11 +116,60 @@ public class OverviewFragment extends Fragment {
         q.setEndDate(due);
         questPersistenceService.save(q);
         Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
+        updateQuests();
     }
 
     private void updateQuests() {
-        questPersistenceService.findAllPlanned().subscribe(quests -> {
-            overviewAdapter.updateQuests(quests);
+        Calendar endDate = DateUtils.getTodayAtMidnight();
+        endDate.add(Calendar.DAY_OF_YEAR, 7);
+        questPersistenceService.findPlannedUntil(endDate.getTime()).subscribe(quests -> {
+
+            List<QuestViewModel> viewModels = new ArrayList<>();
+            Map<String, List<Quest>> map = new HashMap<>();
+            List<Quest> recurrent = new ArrayList<>();
+            for (Quest q : quests) {
+                if (DateUtils.isToday(q.getEndDate()) && q.getRecurrentQuest() != null && !TextUtils.isEmpty(q.getRecurrentQuest().getRecurrence().getDailyRrule())) {
+                    recurrent.add(q);
+                } else {
+                    viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
+                }
+            }
+            for (Quest q : recurrent) {
+                String key = q.getRecurrentQuest().getId();
+                if (map.get(key) == null) {
+                    map.put(key, new ArrayList<>());
+                }
+                map.get(key).add(q);
+            }
+
+            for (String key : map.keySet()) {
+                Quest q = map.get(key).get(0);
+                RecurrentQuest rq = q.getRecurrentQuest();
+                try {
+                    Recur recur = new Recur(rq.getRecurrence().getDailyRrule());
+                    int repeatCount = recur.getCount();
+                    int remainingCount = map.get(key).size();
+                    viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Collections.sort(viewModels, new Comparator<QuestViewModel>() {
+                @Override
+                public int compare(QuestViewModel lhs, QuestViewModel rhs) {
+                    Quest lq = lhs.getQuest();
+                    Quest rq = rhs.getQuest();
+                    if (lq.getEndDate().before(rq.getEndDate())) {
+                        return -1;
+                    }
+                    if (lq.getEndDate().after(rq.getEndDate())) {
+                        return 1;
+                    }
+                    return lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute() ? 1 : -1;
+                }
+            });
+            overviewAdapter.updateQuests(viewModels);
         });
     }
 

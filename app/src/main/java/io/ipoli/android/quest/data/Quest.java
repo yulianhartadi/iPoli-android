@@ -141,6 +141,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public static Time getStartTime(Quest quest) {
+        if(quest.getStartMinute() < 0) {
+            return null;
+        }
         return Time.fromMinutesAfterMidnight(quest.getStartMinute());
     }
 
