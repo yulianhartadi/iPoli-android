@@ -121,7 +121,6 @@ public class HabitsFragment extends Fragment {
             }
             habitsAdapter.updateQuests(viewModels);
         });
-
     }
 
     @Nullable

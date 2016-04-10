@@ -71,11 +71,14 @@ public class AppJobService extends JobService {
 
     private Observable<Player> createNewPlayer() {
         Player defaultPlayer = new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-        return playerPersistenceService.save(defaultPlayer).concatMap(this::syncUser);
+        return playerPersistenceService.save(defaultPlayer, false).concatMap(this::syncUser);
     }
 
     Observable<List<Quest>> syncQuests(Player player) {
         return questPersistenceService.findAllWhoNeedSyncWithRemote().flatMap(quests -> {
+            if (quests.isEmpty()) {
+                return Observable.just(quests);
+            }
             JsonArray jsonQuests = new JsonArray();
             for (Quest q : quests) {
                 JsonObject qJson = (JsonObject) gson.toJsonTree(q);
@@ -113,10 +116,16 @@ public class AppJobService extends JobService {
     Observable<RecurrentQuest> syncRecurrentQuests(Player player) {
         return recurrentQuestPersistenceService.findAllWhoNeedSyncWithRemote().flatMapIterable(recurrentQuests -> recurrentQuests).flatMap(rq -> {
             if (TextUtils.isEmpty(rq.getRemoteId())) {
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("text", rq.getRawText()).param("user_id", player.getRemoteId()).build();
+                JsonObject data = new JsonObject();
+                JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
+                data.addProperty("text", qJson.get("raw_text").getAsString());
+                data.addProperty("context", qJson.get("context").getAsString());
+                data.addProperty("created_at", qJson.get("created_at").getAsString());
+                data.addProperty("updated_at", qJson.get("updated_at").getAsString());
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("user_id", player.getRemoteId()).build();
                 return apiService.createRecurrentQuest(requestBody).compose(applySchedulers()).flatMap(sq -> {
                     updateRecurrentQuest(sq, rq.getId(), rq.getRecurrence());
-                    return recurrentQuestPersistenceService.save(sq);
+                    return recurrentQuestPersistenceService.save(sq, false);
                 });
             } else {
                 JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
@@ -124,27 +133,26 @@ public class AppJobService extends JobService {
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getRemoteId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getRemoteId()).compose(applySchedulers()).flatMap(sq -> {
                     updateRecurrentQuest(sq, rq.getId(), rq.getRecurrence());
-                    return recurrentQuestPersistenceService.save(sq);
+                    return recurrentQuestPersistenceService.save(sq, false);
                 });
             }
         });
     }
 
-    private void updateRecurrentQuest(RecurrentQuest quest, String remoteId, Recurrence localRecurrence) {
-        if(localRecurrence != null) {
+    private void updateRecurrentQuest(RecurrentQuest recurrentQuest, String recurrentQuestLocalId, Recurrence localRecurrence) {
+        if (localRecurrence != null) {
             String localId = localRecurrence.getId();
-            quest.getRecurrence().setId(localId);
+            recurrentQuest.getRecurrence().setId(localId);
         }
-        quest.setRemoteId(quest.getId());
-        quest.setId(remoteId);
-        quest.setSyncedWithRemote();
+        recurrentQuest.setRemoteId(recurrentQuest.getId());
+        recurrentQuest.setId(recurrentQuestLocalId);
+        recurrentQuest.setSyncedWithRemote();
     }
 
     Observable<RecurrentQuest> getRecurrentQuests(Player player) {
         return apiService.getRecurrentQuests(player.getRemoteId())
                 .compose(applySchedulers()).flatMapIterable(recurrentQuests -> recurrentQuests)
                 .flatMap(sq -> recurrentQuestPersistenceService.findByRemoteId(sq.getId()).flatMap(rq -> {
-
                     if (rq != null && sq.getUpdatedAt().getTime() <= rq.getUpdatedAt().getTime()) {
                         return Observable.just(rq);
                     }
@@ -166,6 +174,12 @@ public class AppJobService extends JobService {
                     sq.setRemoteId(sq.getId());
                     sq.setId(id);
                     sq.setSyncedWithRemote();
+                    if (sq.getRecurrentQuest() != null) {
+                        return recurrentQuestPersistenceService.findByRemoteId(sq.getRecurrentQuest().getId()).flatMap(recurrentQuest -> {
+                            sq.setRecurrentQuest(recurrentQuest);
+                            return questPersistenceService.save(sq, false);
+                        });
+                    }
                     return questPersistenceService.save(sq, false);
                 }));
     }
@@ -174,9 +188,11 @@ public class AppJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
 
-        subscription = getPlayer().flatMap(player ->
-                Observable.merge(syncQuests(player), syncRecurrentQuests(player)).flatMap(o1 ->
-                        Observable.merge(getScheduleForAWeekAhead(player), getRecurrentQuests(player)))).subscribe(res -> {
+        subscription = getPlayer().flatMap(p -> Observable.concat(
+                syncQuests(p),
+                syncRecurrentQuests(p),
+                getRecurrentQuests(p),
+                getScheduleForAWeekAhead(p))).subscribe(res -> {
         }, throwable -> {
             Log.e("Observable", "Error", throwable);
             jobFinished(params, true);

@@ -16,4 +16,6 @@ public interface RecurrentQuestPersistenceService extends PersistenceService<Rec
     Observable<List<RecurrentQuest>> findAllWhoNeedSyncWithRemote();
     Observable<RecurrentQuest> findByRemoteId(String remoteId);
     Observable<List<RecurrentQuest>>findAllHabits();
+
+    void delete(RecurrentQuest recurrentQuest);
 }
