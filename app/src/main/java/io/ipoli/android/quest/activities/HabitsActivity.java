@@ -130,7 +130,6 @@ public class HabitsActivity extends BaseActivity {
             }
             habitsAdapter.updateQuests(viewModels);
         });
-
     }
 
     @Nullable

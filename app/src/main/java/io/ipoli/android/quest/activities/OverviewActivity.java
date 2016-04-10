@@ -69,7 +69,7 @@ public class OverviewActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        overviewAdapter = new OverviewAdapter(this, new ArrayList<Quest>(), eventBus);
+        overviewAdapter = new OverviewAdapter(this, new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;

@@ -40,4 +40,21 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
     public Observable<List<RecurrentQuest>> findAllHabits() {
         return fromRealm(where().isNotNull("name").isNotNull("recurrence.rrule").findAll());
     }
+
+    @Override
+    public void delete(RecurrentQuest recurrentQuest) {
+        if (recurrentQuest == null) {
+            return;
+        }
+        getRealm().beginTransaction();
+        RecurrentQuest realmQuest = where()
+                .equalTo("id", recurrentQuest.getId())
+                .findFirst();
+        if (realmQuest == null) {
+            getRealm().cancelTransaction();
+            return;
+        }
+        realmQuest.removeFromRealm();
+        getRealm().commitTransaction();
+    }
 }

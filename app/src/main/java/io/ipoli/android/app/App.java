@@ -94,11 +94,7 @@ public class App extends Application {
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
 
-//        eventBus.post(new ForceSyncRequestEvent());
-
-//        recurrentQuestPersistenceService.findAll().subscribe(recurrentQuests -> {
-//            Log.d("RecQuests", recurrentQuests.size() + " ");
-//        });
+        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
@@ -209,7 +205,7 @@ public class App extends Application {
 
     @Subscribe
     public void onRecurrentQuestSaved(RecurrentQuestSavedEvent e) {
-        eventBus.post(new ForceSyncRequestEvent());
+//        eventBus.post(new ForceSyncRequestEvent());
     }
 
     @Subscribe
