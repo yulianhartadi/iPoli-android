@@ -14,7 +14,7 @@ public class StartTimeSuggestionsProvider implements SuggestionsProvider {
 
     @Override
     public List<SuggestionDropDownItem> filter(String text) {
-        int icon = R.drawable.ic_alarm_black_18dp;
+        int icon = R.drawable.ic_clock_black_24dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "19:30", "at 19:30"));
         suggestions.add(new SuggestionDropDownItem(icon, "7 pm", "at 7 pm"));

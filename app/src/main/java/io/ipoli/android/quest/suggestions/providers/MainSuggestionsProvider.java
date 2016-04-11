@@ -35,7 +35,7 @@ public class MainSuggestionsProvider implements SuggestionsProvider {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_event_black_18dp, "on ...", "on"));
         }
         if (!usedTypes.contains(TextEntityType.START_TIME) && !usedTypes.contains(TextEntityType.TIMES_PER_DAY)) {
-            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_alarm_black_18dp, "at ...", "at"));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_clock_black_24dp, "at ...", "at"));
         }
         if (!usedTypes.contains(TextEntityType.DURATION)) {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_timer_black_18dp, "for ...", "for"));
