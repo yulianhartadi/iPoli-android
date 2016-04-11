@@ -48,7 +48,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public Observable<List<Quest>> findAllUncompleted() {
         return fromRealm(where()
-                .isNull("completedAtDateTime")
+                .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
 
@@ -57,7 +57,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         return fromRealm(where()
                 .isNull("endDate")
                 .isNull("actualStartDateTime")
-                .isNull("completedAtDateTime")
+                .isNull("completedAt")
                 .findAllSorted("createdAt", Sort.DESCENDING));
     }
 
@@ -72,7 +72,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         return fromRealm(where()
                 .greaterThan("endDate", yesterday.getTime())
                 .lessThan("endDate", tomorrow.getTime())
-                .isNull("completedAtDateTime")
+                .isNull("completedAt")
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
@@ -97,7 +97,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate) {
         return where()
-                .isNotNull("completedAtDateTime")
+                .isNotNull("completedAt")
                 .equalTo("recurrentQuest.id", recurrentQuest.getId())
                 .between("endDate", fromDate, toDate)
                 .count();
@@ -112,7 +112,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThan("endDate", yesterday.getTime())
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStartDateTime")
-                .isNull("completedAtDateTime")
+                .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING);
         if (quests.isEmpty()) {
             return Observable.just(null);
@@ -133,8 +133,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThan("endDate", yesterday.getTime())
                 .lessThan("endDate", tomorrow.getTime())
                 .or()
-                .greaterThan("completedAtDateTime", yesterday.getTime())
-                .lessThan("completedAtDateTime", tomorrow.getTime())
+                .greaterThan("completedAt", yesterday.getTime())
+                .lessThan("completedAt", tomorrow.getTime())
                 .endGroup()
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
@@ -142,8 +142,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public Observable<List<Quest>> findAllCompleted() {
         return fromRealm(where()
-                .isNotNull("completedAtDateTime")
-                .findAllSorted("completedAtDateTime", Sort.DESCENDING));
+                .isNotNull("completedAt")
+                .findAllSorted("completedAt", Sort.DESCENDING));
     }
 
     @Override
@@ -151,7 +151,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         return fromRealm(where()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
-                .isNull("completedAtDateTime")
+                .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
@@ -164,8 +164,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         tomorrow.add(Calendar.DAY_OF_YEAR, 1);
 
         return fromRealm(where()
-                .greaterThan("completedAtDateTime", yesterday.getTime())
-                .lessThan("completedAtDateTime", tomorrow.getTime())
+                .greaterThan("completedAt", yesterday.getTime())
+                .lessThan("completedAt", tomorrow.getTime())
                 .findAll());
     }
 }

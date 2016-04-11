@@ -96,7 +96,7 @@ public class QuestCompleteActivity extends BaseActivity {
             long startMillis = quest.getActualStartDateTime().getTime();
             quest.setActualDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
         }
-        quest.setCompletedAtDateTime(new Date());
+        quest.setCompletedAt(new Date());
 
         return questPersistenceService.save(quest);
 

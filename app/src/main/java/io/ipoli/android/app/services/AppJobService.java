@@ -74,7 +74,28 @@ public class AppJobService extends JobService {
         return playerPersistenceService.save(defaultPlayer, false).concatMap(this::syncUser);
     }
 
-    Observable<List<Quest>> syncQuests(Player player) {
+//    Observable<List<Quest>> syncQuests(Player player) {
+//        return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).concatMap(q -> {
+//            JsonObject qJson = (JsonObject) gson.toJsonTree(q);
+//            if (TextUtils.isEmpty(q.getRemoteId())) {
+//                String id = null;
+//                qJson.addProperty("id", id);
+//            } else {
+//                qJson.addProperty("id", q.getRemoteId());
+//            }
+//            if (q.getEndDate() != null) {
+//                qJson.addProperty("end_date", DateUtils.toDateString(q.getEndDate()));
+//            }
+//            if (q.getStartDate() != null) {
+//                qJson.addProperty("start_date", DateUtils.toDateString(q.getStartDate()));
+//            }
+//            RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getRemoteId()).build();
+//            return apiService.updateQuests(requestBody).compose(applySchedulers())
+//        });
+//    }
+
+
+    Observable<List<Quest>> syncQuests_old(Player player) {
         return questPersistenceService.findAllWhoNeedSyncWithRemote().flatMap(quests -> {
             if (quests.isEmpty()) {
                 return Observable.just(quests);
@@ -106,6 +127,12 @@ public class AppJobService extends JobService {
                             sq.setRemoteId(sq.getId());
                             sq.setId(q.getId());
                             sq.setSyncedWithRemote();
+                            if(sq.getRecurrentQuest() != null && q.getRecurrentQuest() != null) {
+                                RecurrentQuest srq = sq.getRecurrentQuest();
+                                RecurrentQuest rq = q.getRecurrentQuest();
+                                srq.setRemoteId(srq.getId());
+                                srq.setId(rq.getId());
+                            }
                             questsToSave.add(sq);
                         }
                         return questPersistenceService.saveAll(questsToSave, false);
@@ -190,7 +217,7 @@ public class AppJobService extends JobService {
 
         subscription = getPlayer().flatMap(p -> Observable.concat(
                 syncRecurrentQuests(p),
-//                syncQuests(p),
+                syncQuests(p),
                 getRecurrentQuests(p),
                 getScheduleForAWeekAhead(p))).subscribe(res -> {
         }, throwable -> {

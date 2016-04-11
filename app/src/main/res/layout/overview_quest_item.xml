@@ -60,13 +60,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <View
                 android:id="@+id/quest_running_indicator"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/ic_context_indicator"
-                android:layout_marginEnd="4dp"/>
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/ic_context_indicator" />
 
             <TextView
                 android:id="@+id/quest_name"
@@ -87,14 +88,14 @@
             <TextView
                 android:id="@+id/quest_schedule_text"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp" />
 
             <LinearLayout
                 android:id="@+id/quest_progress_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
                 android:orientation="horizontal" />
 
             <TextView

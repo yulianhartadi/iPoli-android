@@ -44,7 +44,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Required
     private Date updatedAt;
 
-    private Date completedAtDateTime;
+    private Date completedAt;
 
     private Integer startMinute;
     private Integer duration;
@@ -247,28 +247,28 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.actualDuration = actualDuration;
     }
 
-    public Date getCompletedAtDateTime() {
-        return completedAtDateTime;
+    public Date getCompletedAt() {
+        return completedAt;
     }
 
-    public void setCompletedAtDateTime(Date completedAtDateTime) {
-        this.completedAtDateTime = completedAtDateTime;
+    public void setCompletedAt(Date completedAt) {
+        this.completedAt = completedAt;
     }
 
     public static boolean isUnplanned(Quest quest) {
-        return quest.getEndDate() == null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
+        return quest.getEndDate() == null && quest.getActualStartDateTime() == null && quest.getCompletedAt() == null;
     }
 
     public static boolean isPlanned(Quest quest) {
-        return quest.getEndDate() != null && quest.getActualStartDateTime() == null && quest.getCompletedAtDateTime() == null;
+        return quest.getEndDate() != null && quest.getActualStartDateTime() == null && quest.getCompletedAt() == null;
     }
 
     public static boolean isStarted(Quest quest) {
-        return quest.getActualStartDateTime() != null && quest.getCompletedAtDateTime() == null;
+        return quest.getActualStartDateTime() != null && quest.getCompletedAt() == null;
     }
 
     public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAtDateTime() != null;
+        return quest.getCompletedAt() != null;
     }
 
     public static void setStartTime(Quest quest, Time time) {

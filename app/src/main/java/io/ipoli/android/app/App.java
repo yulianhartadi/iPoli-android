@@ -88,7 +88,7 @@ public class App extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int runCount = prefs.getInt(Constants.KEY_APP_RUN_COUNT, 0);
         if (runCount == 0) {
-            saveInitialQuests();
+//            saveInitialQuests();
         }
         SharedPreferences.Editor e = prefs.edit();
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);

@@ -149,7 +149,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         quest.setDifficulty(0);
         quest.setActualStartDateTime(null);
         quest.setActualDuration(0);
-        quest.setCompletedAtDateTime(null);
+        quest.setCompletedAt(null);
         questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
         Toast.makeText(getContext(), "Quest undone", Toast.LENGTH_SHORT).show();
@@ -277,11 +277,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                     // completed events should be added first since we don't want them to intercept clicks
                     // for incomplete events
 
-                    if (q.getCompletedAtDateTime() != null) {
+                    if (q.getCompletedAt() != null) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                         if (isNotScheduledForToday(q) || hasNoStartTime(q)) {
                             Calendar c = Calendar.getInstance();
-                            Date completedAt = q.getCompletedAtDateTime();
+                            Date completedAt = q.getCompletedAt();
                             c.setTime(completedAt);
                             c.add(Calendar.MINUTE, -event.getDuration());
                             // actual start time was yesterday, so yeah we do not include multi-day events

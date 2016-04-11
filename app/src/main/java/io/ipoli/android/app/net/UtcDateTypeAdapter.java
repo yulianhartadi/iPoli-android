@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
     private static final String ISO_8601_24H_FULL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
@@ -42,7 +43,8 @@ public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
     }
 
     private static String format(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT, Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatter.format(date);
     }
 

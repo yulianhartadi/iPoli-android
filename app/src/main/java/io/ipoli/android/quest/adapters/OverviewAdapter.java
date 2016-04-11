@@ -172,7 +172,13 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             questHolder.detailsContainer.setVisibility(View.VISIBLE);
-            questHolder.scheduleText.setText(vm.getScheduleText());
+
+            if (TextUtils.isEmpty(vm.getScheduleText())) {
+                questHolder.scheduleText.setVisibility(View.GONE);
+            } else {
+                questHolder.scheduleText.setVisibility(View.VISIBLE);
+                questHolder.scheduleText.setText(vm.getScheduleText());
+            }
             questHolder.remainingText.setText(vm.getRemainingText());
 
 
