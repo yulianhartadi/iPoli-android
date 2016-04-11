@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.ui;
 
+import android.text.TextUtils;
+
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.quest.data.Quest;
@@ -51,5 +53,9 @@ public class QuestCalendarEvent implements CalendarEvent {
 
     public Quest getQuest() {
         return quest;
+    }
+
+    public boolean isRecurrent() {
+        return quest.getRecurrentQuest() != null && !TextUtils.isEmpty(quest.getRecurrentQuest().getRecurrence().getRrule());
     }
 }

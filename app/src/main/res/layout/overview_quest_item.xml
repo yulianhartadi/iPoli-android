@@ -122,7 +122,7 @@
             android:layout_height="wrap_content" />
 
         <ImageView
-            android:id="@+id/quest_recurrent_icon"
+            android:id="@+id/quest_recurrent_indicator"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_gravity="center_horizontal"

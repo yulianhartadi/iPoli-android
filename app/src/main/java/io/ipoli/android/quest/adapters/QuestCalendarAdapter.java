@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -78,33 +77,22 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
 
         CheckBox checkBox = createCheckBox(q, v.getContext());
         detailsRoot.addView(checkBox, 0);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new ShowQuestEvent(q));
-            }
-        });
+        v.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
 
-        v.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                eventBus.post(new EditCalendarEventEvent(view));
-                return true;
-            }
+        v.setOnLongClickListener(view -> {
+            eventBus.post(new EditCalendarEventEvent(view));
+            return true;
         });
 
         if (Quest.isCompleted(q)) {
             checkBox.setChecked(true);
         }
 
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if (checked) {
-                    eventBus.post(new CompleteQuestRequestEvent(q));
-                } else {
-                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
-                }
+        checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
+            if (checked) {
+                eventBus.post(new CompleteQuestRequestEvent(q));
+            } else {
+                eventBus.post(new UndoCompletedQuestRequestEvent(q));
             }
         });
 
@@ -113,6 +101,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.END);
         }
+
+        v.findViewById(R.id.quest_recurrent_indicator).setVisibility(calendarEvent.isRecurrent() ? View.VISIBLE : View.GONE);
 
         return v;
     }
@@ -130,7 +120,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         );
         check.setScaleX(1.3f);
         check.setScaleY(1.3f);
-
         checkLP.setMarginEnd(px);
         checkLP.gravity = Gravity.CENTER_VERTICAL;
         check.setLayoutParams(checkLP);

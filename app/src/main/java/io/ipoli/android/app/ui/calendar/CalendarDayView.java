@@ -150,7 +150,7 @@ public class CalendarDayView extends FrameLayout {
 
         for (int i = 0; i < 10; i++) {
 
-            View habitLineContainer = inflater.inflate(R.layout.calendar_habit_item, timeRL, false);
+            View habitLineContainer = inflater.inflate(R.layout.calendar_habit_completed_item, timeRL, false);
             Random random = new Random();
             int rint = random.nextInt(6);
 

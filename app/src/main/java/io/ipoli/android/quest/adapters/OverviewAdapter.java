@@ -275,7 +275,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @Bind(R.id.quest_progress_container)
         public ViewGroup progressContainer;
 
-        @Bind(R.id.quest_recurrent_icon)
+        @Bind(R.id.quest_recurrent_indicator)
         public ImageView recurrentIcon;
 
         public QuestViewHolder(View v) {
