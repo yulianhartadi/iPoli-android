@@ -5,18 +5,17 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -24,13 +23,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
+import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -47,17 +45,18 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int[] headerIndices;
 
-    public OverviewAdapter(Context context, List<Quest> quests, Bus eventBus) {
+    public OverviewAdapter(Context context, List<QuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
-        setItems(quests);
+        setItems(viewModels);
     }
 
-    private void setItems(List<Quest> quests) {
-        List<Quest> visibleQuests = new ArrayList<>();
-        for (Quest q : quests) {
+    private void setItems(List<QuestViewModel> viewModels) {
+        List<QuestViewModel> visibleQuests = new ArrayList<>();
+        for (QuestViewModel vm : viewModels) {
+            Quest q = vm.getQuest();
             if (DateUtils.isToday(q.getEndDate()) || q.getRecurrentQuest() == null) {
-                visibleQuests.add(q);
+                visibleQuests.add(vm);
             }
         }
         calculateHeaderIndices(visibleQuests);
@@ -74,13 +73,14 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private void calculateHeaderIndices(List<Quest> quests) {
+    private void calculateHeaderIndices(List<QuestViewModel> quests) {
         headerIndices = new int[]{-1, -1, -1};
         List<Quest> todayQuests = new ArrayList<>();
         List<Quest> tomorrowQuests = new ArrayList<>();
         List<Quest> upcomingQuests = new ArrayList<>();
 
-        for (Quest q : quests) {
+        for (QuestViewModel vm : quests) {
+            Quest q = vm.getQuest();
             if (DateUtils.isToday(q.getEndDate())) {
                 todayQuests.add(q);
             } else if (DateUtils.isTomorrow(q.getEndDate())) {
@@ -135,49 +135,48 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             QuestViewHolder questHolder = (QuestViewHolder) holder;
 
-            final Quest q = (Quest) items.get(questHolder.getAdapterPosition());
+            final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
-            questHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    eventBus.post(new ShowQuestEvent(q));
-                }
-            });
+            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest())));
 
-            questHolder.name.setText(q.getName());
+            questHolder.name.setText(vm.getName());
 
-            GradientDrawable drawable = (GradientDrawable) questHolder.indicator.getBackground();
-            drawable.setColor(ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
+            GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
+            drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
 
-            if (Quest.isStarted(q)) {
-                Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
-                questHolder.indicator.startAnimation(blinkAnimation);
+            questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
+            questHolder.dueDate.setText(vm.getDueDateText());
+
+            String scheduleText = vm.getScheduleText();
+            if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(vm.getRemainingText())) {
+                questHolder.detailsContainer.setVisibility(View.GONE);
+                return;
             }
 
-            if (q.getStartMinute() >= 0) {
-                questHolder.startTime.setVisibility(View.VISIBLE);
-                questHolder.startTime.setText(StartTimeFormatter.format(Quest.getStartTime(q).toDate()));
-            } else {
-                questHolder.startTime.setVisibility(View.GONE);
+            questHolder.detailsContainer.setVisibility(View.VISIBLE);
+            questHolder.scheduleText.setText(vm.getScheduleText());
+            questHolder.remainingText.setText(vm.getRemainingText());
+
+            LayoutInflater inflater = LayoutInflater.from(context);
+            questHolder.progressContainer.removeAllViews();
+
+            if (vm.getRepeatCount() == 1) {
+                return;
             }
 
-            boolean isUpcoming = !DateUtils.isToday(q.getEndDate()) && !DateUtils.isTomorrow(q.getEndDate());
-            if (q.getEndDate() != null && isUpcoming) {
-                questHolder.dueDate.setVisibility(View.VISIBLE);
-                questHolder.dueDate.setText(DueDateFormatter.formatWithoutYear(q.getEndDate()));
-            } else {
-                questHolder.dueDate.setVisibility(View.GONE);
+            for (int i = 1; i <= vm.getCompletedCount(); i++) {
+                View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
+                GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
+                progressViewBackground.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+                questHolder.progressContainer.addView(progressView);
             }
 
-            if (q.getDuration() > 0) {
-                questHolder.duration.setVisibility(View.VISIBLE);
-                questHolder.duration.setText(DurationFormatter.format(context, q.getDuration()));
-            } else {
-                questHolder.duration.setVisibility(View.INVISIBLE);
-            }
+            for (int i = 1; i <= vm.getRemainingCount(); i++) {
+                View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
+                GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
-            if (new Random().nextFloat() < 0.5) {
-                questHolder.habitIndicatorsContainer.setVisibility(View.GONE);
+                progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));
+                questHolder.progressContainer.addView(progressViewEmpty);
             }
 
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
@@ -204,19 +203,21 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onItemDismissed(int position, int direction) {
-        Quest q = (Quest) items.get(position);
-        items.remove(position);
-        notifyItemRemoved(position);
+        QuestViewModel viewModel = (QuestViewModel) items.get(position);
+        if (viewModel.getRemainingCount() == 1) {
+            items.remove(position);
+            notifyItemRemoved(position);
+        }
         if (direction == ItemTouchHelper.END) {
-            eventBus.post(new CompleteQuestRequestEvent(q));
+            eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest()));
         } else if (direction == ItemTouchHelper.START) {
-            eventBus.post(new ScheduleQuestForTodayEvent(q));
+            eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest()));
         }
     }
 
-    public void updateQuests(List<Quest> newQuests) {
+    public void updateQuests(List<QuestViewModel> viewModels) {
         items.clear();
-        setItems(newQuests);
+        setItems(viewModels);
         notifyDataSetChanged();
     }
 
@@ -229,23 +230,29 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public static class QuestViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_text)
+        @Bind(R.id.quest_name)
         public TextView name;
 
-        @Bind(R.id.quest_start_time)
-        public TextView startTime;
+        @Bind(R.id.quest_context_indicator_background)
+        public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_duration)
-        public TextView duration;
+        @Bind(R.id.quest_context_indicator_image)
+        public ImageView contextIndicatorImage;
 
-        @Bind(R.id.quest_context_indicator)
-        public View indicator;
-
-        @Bind(R.id.quest_habit_indicators_container)
-        public View habitIndicatorsContainer;
+        @Bind(R.id.quest_schedule_text)
+        public TextView scheduleText;
 
         @Bind(R.id.quest_due_date)
         public TextView dueDate;
+
+        @Bind(R.id.quest_details_container)
+        public ViewGroup detailsContainer;
+
+        @Bind(R.id.quest_remaining)
+        public TextView remainingText;
+
+        @Bind(R.id.quest_progress_container)
+        public ViewGroup progressContainer;
 
         public QuestViewHolder(View v) {
             super(v);
@@ -290,13 +297,13 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
-            itemView.findViewById(R.id.quest_habit_delete_container).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_duration).setVisibility(durationVisibility);
+            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
+            itemView.findViewById(R.id.quest_due_date).setVisibility(durationVisibility);
         }
 
-        private void changeCheckVisibility(int iconVisibility, int startTimeVisibility) {
+        private void changeCheckVisibility(int iconVisibility, int contextIconVisibility) {
             itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_start_date_time_container).setVisibility(startTimeVisibility);
+            itemView.findViewById(R.id.quest_context_container).setVisibility(contextIconVisibility);
         }
 
         @Override

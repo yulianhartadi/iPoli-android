@@ -116,7 +116,7 @@
                 android:text="@string/edit_quest_duration_hint" />
 
             <Spinner
-                android:id="@+id/quest_duration"
+                android:id="@+id/quest_schedule_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

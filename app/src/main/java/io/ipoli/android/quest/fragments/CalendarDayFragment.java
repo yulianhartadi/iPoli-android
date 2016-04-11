@@ -39,8 +39,6 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -49,7 +47,6 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
@@ -138,20 +135,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         ViewGroup.LayoutParams layoutParams = unscheduledQuestList.getLayoutParams();
         layoutParams.height = unscheduledQuestsToShow * itemHeight;
         unscheduledQuestList.setLayoutParams(layoutParams);
-    }
-
-    @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(getContext(), QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
-    }
-
-    @Subscribe
-    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
-        Intent i = new Intent(getContext(), QuestCompleteActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
 
     @Subscribe

@@ -70,7 +70,7 @@ public class EditQuestActivity extends BaseActivity {
     @Bind(R.id.quest_text)
     EditText nameText;
 
-    @Bind(R.id.quest_duration)
+    @Bind(R.id.quest_schedule_text)
     Spinner questDuration;
 
     @Bind(R.id.quest_due_date)

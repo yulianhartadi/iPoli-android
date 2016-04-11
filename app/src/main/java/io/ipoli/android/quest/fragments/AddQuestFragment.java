@@ -253,6 +253,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         if (qParser.isRecurrent(text)) {
             RecurrentQuest recurrentQuest = qParser.parseRecurrent(text);
             if (recurrentQuest == null) {
+                resetQuestText();
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -262,6 +263,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
+                resetQuestText();
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -269,6 +271,14 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             eventBus.post(new NewQuestEvent(q));
             Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
+        resetQuestText();
+    }
+
+    private void resetQuestText() {
+        suggestionsManager.setSuggestionsUpdatedListener(null);
+        suggestionsManager = new SuggestionsManager(parser);
+        suggestionsManager.setSuggestionsUpdatedListener(this);
+        questText.setText("");
     }
 
     @OnEditorAction(R.id.quest_text)

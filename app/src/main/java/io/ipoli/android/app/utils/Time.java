@@ -13,6 +13,9 @@ public class Time {
     }
 
     public static Time fromMinutesAfterMidnight(int minutes) {
+        if(minutes < 0) {
+            return null;
+        }
         int h = (int) TimeUnit.MINUTES.toHours(minutes);
         int m = minutes - h * 60;
         return Time.at(h, m);

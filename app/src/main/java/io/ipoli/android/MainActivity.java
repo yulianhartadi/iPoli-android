@@ -1,5 +1,6 @@
 package io.ipoli.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
@@ -17,7 +18,11 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.receivers.PlanDayReceiver;
 import io.ipoli.android.app.receivers.ReviewDayReceiver;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
@@ -56,7 +61,6 @@ public class MainActivity extends BaseActivity {
         );
 
 
-
         bottomBar.setOnTabClickListener(new OnTabClickListener() {
             @Override
             public void onTabSelected(int position) {
@@ -93,12 +97,11 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-//        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-//        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-//        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-//        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-//        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-
+        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     private void resetLayoutColors() {
@@ -115,8 +118,8 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        if(getIntent() != null && (PlanDayReceiver.ACTION_REMIND_PLAN_DAY.equals(getIntent().getAction())
-            || ReviewDayReceiver.ACTION_REMIND_REVIEW_DAY.equals(getIntent().getAction()))) {
+        if (getIntent() != null && (PlanDayReceiver.ACTION_REMIND_PLAN_DAY.equals(getIntent().getAction())
+                || ReviewDayReceiver.ACTION_REMIND_REVIEW_DAY.equals(getIntent().getAction()))) {
             bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
         }
     }
@@ -139,6 +142,20 @@ public class MainActivity extends BaseActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
         View view = bottomBar.findViewById(R.id.bb_bottom_bar_outer_container);
         view.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+    }
+
+    @Subscribe
+    public void onShowQuestEvent(ShowQuestEvent e) {
+        Intent i = new Intent(this, QuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
+        Intent i = new Intent(this, QuestCompleteActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
 
 }

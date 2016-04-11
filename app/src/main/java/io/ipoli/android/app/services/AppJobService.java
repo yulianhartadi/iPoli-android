@@ -189,8 +189,8 @@ public class AppJobService extends JobService {
         App.getAppComponent(this).inject(this);
 
         subscription = getPlayer().flatMap(p -> Observable.concat(
-                syncQuests(p),
                 syncRecurrentQuests(p),
+//                syncQuests(p),
                 getRecurrentQuests(p),
                 getScheduleForAWeekAhead(p))).subscribe(res -> {
         }, throwable -> {
