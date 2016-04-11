@@ -24,11 +24,11 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -167,8 +167,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             stopTimer();
             finish();
         } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            questPersistenceService.findById(quest.getId());
-            initUI();
+            questPersistenceService.findById(quest.getId()).subscribe(q -> {
+                quest = q;
+                initUI();
+            });
         } else if (resultCode == Constants.RESULT_REMOVED) {
             finish();
         }

@@ -78,8 +78,12 @@ public class QuestViewModel {
         return remainingCount;
     }
 
+    public boolean isRecurrent() {
+        return repeatCount > 1;
+    }
+
     public String getRemainingText() {
-        if(repeatCount == 1) {
+        if (repeatCount == 1) {
             return "";
         }
         return String.format(Locale.getDefault(), "x%d more", remainingCount);
@@ -87,5 +91,9 @@ public class QuestViewModel {
 
     public int getRepeatCount() {
         return repeatCount;
+    }
+
+    public boolean isStarted() {
+        return Quest.isStarted(quest);
     }
 }

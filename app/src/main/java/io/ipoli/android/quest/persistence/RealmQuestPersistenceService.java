@@ -147,8 +147,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedUntil(Date endDate) {
+    public Observable<List<Quest>> findPlannedBetween(Date startDate, Date endDate) {
         return fromRealm(where()
+                .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAtDateTime")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));

@@ -54,17 +54,29 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="72dp"
-        android:layout_toStartOf="@+id/quest_due_date"
+        android:layout_toStartOf="@+id/quest_info_container"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/quest_name"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/md_dark_text_87"
-            android:textSize="16sp" />
+            android:layout_height="wrap_content">
+            <View
+                android:id="@+id/quest_running_indicator"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/ic_context_indicator"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/quest_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/md_dark_text_87"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/quest_details_container"
@@ -78,11 +90,11 @@
                 android:layout_height="wrap_content" />
 
             <LinearLayout
-                android:layout_marginStart="8dp"
                 android:id="@+id/quest_progress_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
                 android:orientation="horizontal" />
 
             <TextView
@@ -95,13 +107,30 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/quest_due_date"
+    <LinearLayout
+        android:id="@+id/quest_info_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/quest_content_container"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/quest_due_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/quest_recurrent_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_favorite_accent_24dp" />
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/quest_schedule_for_today_container"

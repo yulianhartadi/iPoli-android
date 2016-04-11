@@ -21,7 +21,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllUnplanned();
 
-    Observable<List<Quest>> findPlannedUntil(Date endDate);
+    Observable<List<Quest>> findPlannedBetween(Date startDate, Date endDate);
 
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 

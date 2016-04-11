@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -138,8 +140,18 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
             questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest())));
-
             questHolder.name.setText(vm.getName());
+
+            if (vm.isStarted()) {
+                GradientDrawable drawable = (GradientDrawable) questHolder.runningIndicator.getBackground();
+                drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+                Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
+                questHolder.runningIndicator.startAnimation(blinkAnimation);
+                questHolder.runningIndicator.setVisibility(View.VISIBLE);
+            } else {
+                questHolder.runningIndicator.setVisibility(View.GONE);
+            }
+
 
             GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
             drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
@@ -148,6 +160,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             questHolder.dueDate.setText(vm.getDueDateText());
 
             String scheduleText = vm.getScheduleText();
+
+            questHolder.progressContainer.removeAllViews();
+
+            int recurIconVisibility = vm.isRecurrent() ? View.VISIBLE : View.GONE;
+            questHolder.recurrentIcon.setVisibility(recurIconVisibility);
+
             if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(vm.getRemainingText())) {
                 questHolder.detailsContainer.setVisibility(View.GONE);
                 return;
@@ -157,12 +175,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             questHolder.scheduleText.setText(vm.getScheduleText());
             questHolder.remainingText.setText(vm.getRemainingText());
 
-            LayoutInflater inflater = LayoutInflater.from(context);
-            questHolder.progressContainer.removeAllViews();
 
-            if (vm.getRepeatCount() == 1) {
+            if (!vm.isRecurrent()) {
                 return;
             }
+
+            LayoutInflater inflater = LayoutInflater.from(context);
 
             for (int i = 1; i <= vm.getCompletedCount(); i++) {
                 View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
@@ -233,6 +251,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @Bind(R.id.quest_name)
         public TextView name;
 
+        @Bind(R.id.quest_running_indicator)
+        View runningIndicator;
+
         @Bind(R.id.quest_context_indicator_background)
         public View contextIndicatorBackground;
 
@@ -253,6 +274,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Bind(R.id.quest_progress_container)
         public ViewGroup progressContainer;
+
+        @Bind(R.id.quest_recurrent_icon)
+        public ImageView recurrentIcon;
 
         public QuestViewHolder(View v) {
             super(v);
@@ -298,7 +322,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
             itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_due_date).setVisibility(durationVisibility);
+            itemView.findViewById(R.id.quest_info_container).setVisibility(durationVisibility);
         }
 
         private void changeCheckVisibility(int iconVisibility, int contextIconVisibility) {
