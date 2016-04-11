@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,14 +29,14 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
-import io.ipoli.android.quest.ui.QuestCalendarEvent;
+import io.ipoli.android.quest.ui.QuestCalendarViewModel;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/17/16.
  */
-public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent> {
+public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewModel> {
 
     private static final HashMap<QuestContext, Integer> QUEST_CONTEXT_TO_CHECKBOX_STYLE = new HashMap<QuestContext, Integer>() {{
         put(QuestContext.LEARNING, R.style.LearningCheckbox);
@@ -46,25 +47,34 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         put(QuestContext.CHORES, R.style.ChoresCheckbox);
     }};
 
-    private List<QuestCalendarEvent> questCalendarEvents;
+    private List<QuestCalendarViewModel> questCalendarViewModels;
     private final Bus eventBus;
 
-    public QuestCalendarAdapter(List<QuestCalendarEvent> questCalendarEvents, Bus eventBus) {
-        this.questCalendarEvents = questCalendarEvents;
+    public QuestCalendarAdapter(List<QuestCalendarViewModel> questCalendarViewModels, Bus eventBus) {
+        this.questCalendarViewModels = questCalendarViewModels;
         this.eventBus = eventBus;
     }
 
     @Override
-    public List<QuestCalendarEvent> getEvents() {
-        return questCalendarEvents;
+    public List<QuestCalendarViewModel> getEvents() {
+        return questCalendarViewModels;
     }
 
     @Override
     public View getView(ViewGroup parent, int position) {
-        final QuestCalendarEvent calendarEvent = questCalendarEvents.get(position);
+        final QuestCalendarViewModel calendarEvent = questCalendarViewModels.get(position);
         final Quest q = calendarEvent.getQuest();
 
-        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_quest_item, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        if (calendarEvent.shouldDisplayAsIndicator()) {
+            View v = inflater.inflate(R.layout.calendar_habit_completed_item, parent, false);
+            ImageView indicatorView = (ImageView) v.findViewById(R.id.habit_indicator);
+            indicatorView.setImageResource(calendarEvent.getContextImage());
+            return v;
+        }
+
+        final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
         QuestContext ctx = Quest.getContext(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
@@ -135,7 +145,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     }
 
     @Override
-    public void onStartTimeUpdated(QuestCalendarEvent calendarEvent, int oldStartTime) {
+    public void onStartTimeUpdated(QuestCalendarViewModel calendarEvent, int oldStartTime) {
         if (canAddEvent(calendarEvent)) {
             eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         } else {
@@ -145,8 +155,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
     }
 
     @Override
-    public void updateEvents(List<QuestCalendarEvent> calendarEvents) {
-        this.questCalendarEvents = calendarEvents;
+    public void updateEvents(List<QuestCalendarViewModel> calendarEvents) {
+        this.questCalendarViewModels = calendarEvents;
         notifyDataSetChanged();
     }
 
@@ -162,15 +172,15 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarEvent
         background.setAlpha(0.12f);
     }
 
-    public void addEvent(QuestCalendarEvent calendarEvent) {
-        questCalendarEvents.add(calendarEvent);
+    public void addEvent(QuestCalendarViewModel calendarEvent) {
+        questCalendarViewModels.add(calendarEvent);
         notifyDataSetChanged();
     }
 
-    public boolean canAddEvent(QuestCalendarEvent calendarEvent) {
+    public boolean canAddEvent(QuestCalendarViewModel calendarEvent) {
         int newStartMin = calendarEvent.getStartMinute();
         int newEndMin = newStartMin + calendarEvent.getDuration();
-        for (QuestCalendarEvent e : getEvents()) {
+        for (QuestCalendarViewModel e : getEvents()) {
             if (e == calendarEvent) {
                 continue;
             }

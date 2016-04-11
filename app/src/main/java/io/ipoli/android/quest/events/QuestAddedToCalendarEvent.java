@@ -1,15 +1,15 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.ui.QuestCalendarEvent;
+import io.ipoli.android.quest.ui.QuestCalendarViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
 public class QuestAddedToCalendarEvent {
-    public final QuestCalendarEvent questCalendarEvent;
+    public final QuestCalendarViewModel questCalendarViewModel;
 
-    public QuestAddedToCalendarEvent(QuestCalendarEvent questCalendarEvent) {
-        this.questCalendarEvent = questCalendarEvent;
+    public QuestAddedToCalendarEvent(QuestCalendarViewModel questCalendarViewModel) {
+        this.questCalendarViewModel = questCalendarViewModel;
     }
 }

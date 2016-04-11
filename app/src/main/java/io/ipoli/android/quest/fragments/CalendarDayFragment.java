@@ -53,12 +53,12 @@ import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.ui.QuestCalendarEvent;
+import io.ipoli.android.quest.ui.QuestCalendarViewModel;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 import rx.Observable;
 
-public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarEvent> {
+public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
     @Inject
     protected Bus eventBus;
 
@@ -206,7 +206,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     public void onMoveQuestToCalendarRequest(MoveQuestToCalendarRequestEvent e) {
         movingQuestPosition = e.position;
         movingViewModel = e.viewModel;
-        CalendarEvent calendarEvent = new QuestCalendarEvent(e.viewModel.getQuest());
+        CalendarEvent calendarEvent = new QuestCalendarViewModel(e.viewModel.getQuest());
         calendarContainer.acceptNewEvent(calendarEvent);
         unscheduledQuestsAdapter.removeQuest(e.viewModel);
     }
@@ -218,7 +218,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
-        QuestCalendarEvent qce = e.questCalendarEvent;
+        QuestCalendarViewModel qce = e.questCalendarViewModel;
         Quest q = qce.getQuest();
         q.setStartMinute(qce.getStartMinute());
         questPersistenceService.save(q);
@@ -235,13 +235,13 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     }
 
     @Override
-    public void onUnableToAcceptNewEvent(QuestCalendarEvent calendarEvent) {
+    public void onUnableToAcceptNewEvent(QuestCalendarViewModel calendarEvent) {
         unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingViewModel);
         setUnscheduledQuestsHeight();
     }
 
     @Override
-    public void onAcceptEvent(QuestCalendarEvent calendarEvent) {
+    public void onAcceptEvent(QuestCalendarViewModel calendarEvent) {
         if (calendarAdapter.canAddEvent(calendarEvent)) {
             eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
             calendarAdapter.addEvent(calendarEvent);
@@ -269,16 +269,16 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         public Observable<Schedule> schedule() {
 
             return questPersistenceService.findAllForToday().flatMap(quests -> {
-                List<QuestCalendarEvent> calendarEvents = new ArrayList<>();
+                List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                 List<Quest> unscheduledQuests = new ArrayList<>();
-                List<QuestCalendarEvent> completedEvents = new ArrayList<>();
+                List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
                 for (Quest q : quests) {
 
                     // completed events should be added first since we don't want them to intercept clicks
                     // for incomplete events
 
                     if (q.getCompletedAtDateTime() != null) {
-                        QuestCalendarEvent event = new QuestCalendarEvent(q);
+                        QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                         if (isNotScheduledForToday(q) || hasNoStartTime(q)) {
                             Calendar c = Calendar.getInstance();
                             Date completedAt = q.getCompletedAtDateTime();
@@ -295,7 +295,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                         if (hasNoStartTime(q)) {
                             unscheduledQuests.add(q);
                         } else {
-                            calendarEvents.add(new QuestCalendarEvent(q));
+                            calendarEvents.add(new QuestCalendarViewModel(q));
                         }
                     }
                 }
@@ -315,9 +315,9 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     private class Schedule {
         private List<Quest> unscheduledQuests;
-        private List<QuestCalendarEvent> calendarEvents;
+        private List<QuestCalendarViewModel> calendarEvents;
 
-        private Schedule(List<Quest> unscheduledQuests, List<QuestCalendarEvent> calendarEvents) {
+        private Schedule(List<Quest> unscheduledQuests, List<QuestCalendarViewModel> calendarEvents) {
             this.unscheduledQuests = unscheduledQuests;
             this.calendarEvents = calendarEvents;
         }
@@ -326,7 +326,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             return unscheduledQuests;
         }
 
-        public List<QuestCalendarEvent> getCalendarEvents() {
+        public List<QuestCalendarViewModel> getCalendarEvents() {
             return calendarEvents;
         }
     }

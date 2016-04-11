@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
@@ -147,32 +145,6 @@ public class CalendarDayView extends FrameLayout {
         RelativeLayout.LayoutParams lPTime = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
         lPTime.topMargin = getCurrentTimeYPosition();
         timeRL.addView(timeLine, lPTime);
-
-        for (int i = 0; i < 10; i++) {
-
-            View habitLineContainer = inflater.inflate(R.layout.calendar_habit_completed_item, timeRL, false);
-            Random random = new Random();
-            int rint = random.nextInt(6);
-
-            ImageView v = (ImageView) habitLineContainer.findViewById(R.id.habit_indicator);
-            if (rint == 1) {
-                v.setImageResource(R.drawable.ic_context_work_red_24dp);
-            } else if (rint == 2) {
-                v.setImageResource(R.drawable.ic_context_learning_blue_24dp);
-            } else if (rint == 3) {
-                v.setImageResource(R.drawable.ic_context_personal_orange_24dp);
-            } else if (rint == 4) {
-                v.setImageResource(R.drawable.ic_context_fun_purple);
-            } else if (rint == 5) {
-                v.setImageResource(R.drawable.ic_context_chores_brown);
-            } else {
-                v.setImageResource(R.drawable.ic_context_wellness_green_24dp);
-            }
-
-            RelativeLayout.LayoutParams hLP = (RelativeLayout.LayoutParams) habitLineContainer.getLayoutParams();
-            hLP.topMargin = getCurrentTimeYPosition() + getHeightFor(i * new Random().nextInt(60));
-            timeRL.addView(habitLineContainer, hLP);
-        }
 
         return timeRL;
     }
