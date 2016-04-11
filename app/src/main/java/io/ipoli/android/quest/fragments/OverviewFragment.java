@@ -125,7 +125,6 @@ public class OverviewFragment extends Fragment {
         questPersistenceService.findPlannedBetween(DateUtils.getTodayAtMidnight().getTime(), endDate.getTime()).subscribe(quests -> {
 
             List<QuestViewModel> viewModels = new ArrayList<>();
-            Map<String, List<Quest>> map = new HashMap<>();
             List<Quest> recurrent = new ArrayList<>();
             for (Quest q : quests) {
                 if (DateUtils.isToday(q.getEndDate()) && q.getRecurrentQuest() != null && !TextUtils.isEmpty(q.getRecurrentQuest().getRecurrence().getDailyRrule())) {
@@ -134,6 +133,8 @@ public class OverviewFragment extends Fragment {
                     viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
                 }
             }
+
+            Map<String, List<Quest>> map = new HashMap<>();
             for (Quest q : recurrent) {
                 String key = q.getRecurrentQuest().getId();
                 if (map.get(key) == null) {

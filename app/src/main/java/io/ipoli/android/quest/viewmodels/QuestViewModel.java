@@ -89,10 +89,6 @@ public class QuestViewModel {
         return String.format(Locale.getDefault(), "x%d more", remainingCount);
     }
 
-    public int getRepeatCount() {
-        return repeatCount;
-    }
-
     public boolean isStarted() {
         return Quest.isStarted(quest);
     }

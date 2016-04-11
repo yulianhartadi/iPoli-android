@@ -121,7 +121,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllPlannedForToday() {
+    public Observable<List<Quest>> findAllForToday() {
         Calendar yesterday = DateUtils.getTodayAtMidnight();
         yesterday.add(Calendar.SECOND, -1);
 

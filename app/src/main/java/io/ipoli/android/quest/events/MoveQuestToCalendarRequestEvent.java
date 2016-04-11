@@ -1,15 +1,17 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
 public class MoveQuestToCalendarRequestEvent {
-    public final Quest quest;
+    public final UnscheduledQuestViewModel viewModel;
+    public final int position;
 
-    public MoveQuestToCalendarRequestEvent(Quest quest) {
-        this.quest = quest;
+    public MoveQuestToCalendarRequestEvent(UnscheduledQuestViewModel viewModel, int position) {
+        this.viewModel = viewModel;
+        this.position = position;
     }
 }

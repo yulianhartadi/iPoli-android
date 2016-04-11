@@ -31,7 +31,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<Quest> findPlannedQuestStartingAfter(Date date);
 
-    Observable<List<Quest>> findAllPlannedForToday();
+    Observable<List<Quest>> findAllForToday();
 
     void delete(Quest quest);
 
