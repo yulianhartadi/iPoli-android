@@ -5,9 +5,10 @@ package io.ipoli.android.app.net;
  * on 3/23/16.
  */
 public interface RemoteObject<T> {
-    void setRemoteId(String remoteId);
 
-    String getRemoteId();
+    void setId(String id);
+
+    String getId();
 
     void setNeedsSync();
 
@@ -16,4 +17,8 @@ public interface RemoteObject<T> {
     void setSyncedWithRemote();
 
     void markUpdated();
+
+    void setRemoteObject();
+
+    boolean isRemoteObject();
 }

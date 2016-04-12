@@ -52,6 +52,7 @@ import io.realm.RealmConfiguration;
 public class App extends Application {
 
     public static final int SYNC_JOB_ID = 1;
+
     private static AppComponent appComponent;
 
     @Inject

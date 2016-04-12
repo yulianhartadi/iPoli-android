@@ -23,6 +23,7 @@ public class Recurrence extends RealmObject {
     private String exdate;
     private Date dtstart;
     private Date dtend;
+
     @Required
     private Date createdAt;
 

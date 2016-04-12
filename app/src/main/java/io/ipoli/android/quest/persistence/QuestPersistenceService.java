@@ -15,8 +15,6 @@ import rx.Observable;
 public interface QuestPersistenceService extends PersistenceService<Quest> {
     Observable<Quest> findById(String id);
 
-    Observable<Quest> findByRemoteId(String remoteId);
-
     Observable<List<Quest>> findAllCompleted();
 
     Observable<List<Quest>> findAllUnplanned();

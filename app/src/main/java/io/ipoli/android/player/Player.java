@@ -1,10 +1,13 @@
 package io.ipoli.android.player;
 
+import java.util.Date;
 import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.utils.DateUtils;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -15,13 +18,18 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @PrimaryKey
     private String id;
     private int experience;
-
     private int level;
 
     private String avatar;
 
-    private String remoteId;
+    @Required
+    private Date createdAt;
+
+    @Required
+    private Date updatedAt;
+
     private boolean needsSyncWithRemote;
+    private boolean isRemoteObject;
 
     public Player() {
     }
@@ -32,6 +40,9 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.level = level;
         this.avatar = avatar;
         this.needsSyncWithRemote = true;
+        this.isRemoteObject = false;
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
     }
 
     public String getId() {
@@ -67,16 +78,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     }
 
     @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
-    }
-
-    @Override
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    @Override
     public void setNeedsSync() {
         needsSyncWithRemote = true;
     }
@@ -93,6 +94,33 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     @Override
     public void markUpdated() {
+        setNeedsSync();
+        setUpdatedAt(DateUtils.nowUTC());
+    }
 
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public void setRemoteObject() {
+        isRemoteObject = true;
+    }
+
+    @Override
+    public boolean isRemoteObject() {
+        return isRemoteObject;
     }
 }

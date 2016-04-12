@@ -11,12 +11,30 @@ import java.util.TimeZone;
 public class DateUtils {
 
     public static Calendar getTodayAtMidnight() {
-        Calendar c = Calendar.getInstance();
+        return getTodayAtMidnightWithTimeZone(TimeZone.getDefault());
+    }
+
+    public static Calendar getTodayAtMidnightUTC() {
+        return getTodayAtMidnightWithTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    private static Calendar getTodayAtMidnightWithTimeZone(TimeZone timeZone) {
+        Calendar c = Calendar.getInstance(timeZone);
         c.set(Calendar.MILLISECOND, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.HOUR_OF_DAY, 0);
         return c;
+    }
+
+    public static Date toDate(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.MILLISECOND, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        return c.getTime();
     }
 
     public static Date getNow() {
@@ -82,6 +100,10 @@ public class DateUtils {
         return toDateString(date, TimeZone.getDefault());
     }
 
+    public static String toDateStringUTC(Date date) {
+        return toDateString(date, TimeZone.getTimeZone("UTC"));
+    }
+
     public static String toDateString(Date date, TimeZone timeZone) {
         if (date == null) {
             return "";
@@ -95,7 +117,7 @@ public class DateUtils {
         List<String> dates = new ArrayList<>();
         Calendar c = Calendar.getInstance();
         dates.add(toDateString(c.getTime()));
-        for(int i = 1; i < 7; i++) {
+        for (int i = 1; i < 7; i++) {
             c.add(Calendar.DAY_OF_YEAR, 1);
             dates.add(toDateString(c.getTime()));
         }
@@ -128,5 +150,9 @@ public class DateUtils {
         cal.add(Calendar.MONTH, 1);
         cal.add(Calendar.DAY_OF_YEAR, -1);
         return cal.getTime();
+    }
+
+    public static Date nowUTC() {
+        return new Date(System.currentTimeMillis());
     }
 }

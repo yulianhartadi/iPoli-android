@@ -62,8 +62,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Integer actualDuration;
     private Date actualStartDateTime;
 
-    private String remoteId;
     private boolean needsSyncWithRemote;
+
+    private boolean isRemoteObject;
 
     public Quest() {
     }
@@ -141,7 +142,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public static Time getStartTime(Quest quest) {
-        if(quest.getStartMinute() < 0) {
+        if (quest.getStartMinute() < 0) {
             return null;
         }
         return Time.fromMinutesAfterMidnight(quest.getStartMinute());
@@ -164,10 +165,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.name = name;
         setEndDate(endDate);
         this.setStartMinute(-1);
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
         this.needsSyncWithRemote = true;
+        this.isRemoteObject = false;
     }
 
     public String getName() {
@@ -272,23 +274,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public static void setStartTime(Quest quest, Time time) {
-        if(time != null) {
+        if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());
         }
     }
 
     public int getStartMinute() {
         return startMinute != null ? startMinute : -1;
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
-    }
-
-    @Override
-    public String getRemoteId() {
-        return remoteId;
     }
 
     @Override
@@ -321,6 +313,16 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Override
     public void markUpdated() {
         setNeedsSync();
-        setUpdatedAt(new Date());
+        setUpdatedAt(DateUtils.nowUTC());
+    }
+
+    @Override
+    public void setRemoteObject() {
+        isRemoteObject = true;
+    }
+
+    @Override
+    public boolean isRemoteObject() {
+        return isRemoteObject;
     }
 }

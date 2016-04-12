@@ -18,4 +18,8 @@ public interface PersistenceService<T extends RealmObject> {
     Observable<List<T>> saveAll(List<T> objs);
 
     Observable<List<T>> saveAll(List<T> objs, boolean markUpdated);
+
+    void updateId(T obj, String newId);
+
+    Observable<T> findById(String id);
 }

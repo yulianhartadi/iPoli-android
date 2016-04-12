@@ -9,7 +9,6 @@ import android.widget.RadioGroup;
 
 import com.squareup.otto.Bus;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -20,6 +19,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Log;
 import io.ipoli.android.quest.data.Quest;
@@ -96,7 +96,7 @@ public class QuestCompleteActivity extends BaseActivity {
             long startMillis = quest.getActualStartDateTime().getTime();
             quest.setActualDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
         }
-        quest.setCompletedAt(new Date());
+        quest.setCompletedAt(DateUtils.nowUTC());
 
         return questPersistenceService.save(quest);
 

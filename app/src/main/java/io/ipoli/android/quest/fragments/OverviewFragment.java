@@ -122,7 +122,7 @@ public class OverviewFragment extends Fragment {
     private void updateQuests() {
         Calendar endDate = DateUtils.getTodayAtMidnight();
         endDate.add(Calendar.DAY_OF_YEAR, 7);
-        questPersistenceService.findPlannedBetween(DateUtils.getTodayAtMidnight().getTime(), endDate.getTime()).subscribe(quests -> {
+        questPersistenceService.findPlannedBetween(new Date(), endDate.getTime()).subscribe(quests -> {
 
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();

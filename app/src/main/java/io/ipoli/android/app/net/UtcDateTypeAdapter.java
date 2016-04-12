@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
@@ -50,7 +49,8 @@ public final class UtcDateTypeAdapter extends TypeAdapter<Date> {
 
     private static Date parse(String date) throws ParseException {
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT, Locale.getDefault());
+            SimpleDateFormat formatter = new SimpleDateFormat(ISO_8601_24H_FULL_FORMAT);
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             return formatter.parse(date);
         } catch (Exception fail) {
             String input = (date == null) ? null : ('"' + date + "'");

@@ -12,10 +12,9 @@ import rx.Observable;
  */
 public interface RecurrentQuestPersistenceService extends PersistenceService<RecurrentQuest> {
 
-    Observable<List<RecurrentQuest>> findAll();
     Observable<List<RecurrentQuest>> findAllWhoNeedSyncWithRemote();
-    Observable<RecurrentQuest> findByRemoteId(String remoteId);
-    Observable<List<RecurrentQuest>>findAllHabits();
+
+    Observable<List<RecurrentQuest>> findAllHabits();
 
     void delete(RecurrentQuest recurrentQuest);
 }

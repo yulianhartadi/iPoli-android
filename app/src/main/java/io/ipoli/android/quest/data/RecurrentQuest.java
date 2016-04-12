@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.realm.RealmList;
@@ -23,7 +24,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     @PrimaryKey
     private String id;
-
     private String rawText;
 
     private String name;
@@ -41,13 +41,14 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     private Date updatedAt;
 
     private Integer startMinute;
+
     private Integer duration;
-
     private RealmList<Reminder> reminders;
-    private Recurrence recurrence;
 
-    private String remoteId;
+    private Recurrence recurrence;
     private boolean needsSyncWithRemote;
+
+    private boolean isRemoteObject;
 
     public RecurrentQuest() {
     }
@@ -90,10 +91,11 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     public RecurrentQuest(String rawText) {
         this.id = UUID.randomUUID().toString();
         this.rawText = rawText;
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
         this.needsSyncWithRemote = true;
+        this.isRemoteObject = false;
     }
 
     public String getName() {
@@ -145,16 +147,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
-    }
-
-    @Override
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    @Override
     public void setNeedsSync() {
         needsSyncWithRemote = true;
     }
@@ -172,7 +164,17 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     @Override
     public void markUpdated() {
         setNeedsSync();
-        updatedAt = new Date();
+        updatedAt = DateUtils.nowUTC();
+    }
+
+    @Override
+    public void setRemoteObject() {
+        isRemoteObject = true;
+    }
+
+    @Override
+    public boolean isRemoteObject() {
+        return isRemoteObject;
     }
 
     public Date getUpdatedAt() {

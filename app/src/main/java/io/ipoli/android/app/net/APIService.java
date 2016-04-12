@@ -31,6 +31,9 @@ public interface APIService {
     @POST("quests")
     Observable<List<Quest>> updateQuests(@Body RequestBody data);
 
+    @POST("quests")
+    Observable<Quest> updateQuest(@Body RequestBody data);
+
     @POST("snippets")
     Observable<RecurrentQuest> createRecurrentQuest(@Body RequestBody data);
 
