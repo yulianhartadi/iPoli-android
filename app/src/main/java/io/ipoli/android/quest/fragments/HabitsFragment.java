@@ -20,9 +20,8 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.util.Dates;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -138,15 +137,18 @@ public class HabitsFragment extends Fragment {
                 to = DateUtils.getLastDateOfWeek();
             }
 
+
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
 
-            java.util.Date nextDate = Dates.getCalendarInstance(recur.getNextDate(new Date(recurrence.getDtstart()), new Date())).getTime();
+            java.util.Date yesterday = DateUtils.yesterdayUTC();
 
-            if (DateUtils.isToday(nextDate)) {
+            java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(yesterday));
+
+            if (DateUtils.isTodayUTC(nextDate)) {
                 int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, DateUtils.getTodayAtMidnight().getTime(), DateUtils.getTodayAtMidnight().getTime());
-                int timesPerDay = TextUtils.isEmpty(recurrence.getDailyRrule()) ? 1 : new Recur(recurrence.getDailyRrule()).getInterval();
+                int timesPerDay = TextUtils.isEmpty(recurrence.getDailyRrule()) ? 1 : new Recur(recurrence.getDailyRrule()).getCount();
                 if (completedForToday >= timesPerDay) {
-                    nextDate = recur.getNextDate(new Date(recurrence.getDtstart()), new Date(DateUtils.getTomorrow()));
+                    nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(DateUtils.nowUTC()));
                     if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {
                         nextDate = null;
                     }

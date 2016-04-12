@@ -193,7 +193,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public void setEndDate(Date endDate) {
-        this.endDate = DateUtils.getNormalizedDueDate(endDate);
+        this.endDate = DateUtils.getDate(endDate);
     }
 
     public String getId() {
@@ -279,6 +279,10 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         }
     }
 
+    public boolean isScheduledForToday() {
+        return DateUtils.isTodayUTC(getEndDate());
+    }
+
     public int getStartMinute() {
         return startMinute != null ? startMinute : -1;
     }
@@ -324,5 +328,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public boolean isScheduledForTomorrow() {
+        return DateUtils.isTomorrowUTC(getEndDate());
     }
 }

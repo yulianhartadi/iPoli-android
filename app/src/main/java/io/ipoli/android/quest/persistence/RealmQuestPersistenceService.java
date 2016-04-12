@@ -96,10 +96,16 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate) {
+
+        Calendar betweenEnd = Calendar.getInstance();
+        betweenEnd.setTime(DateUtils.toDate(toDate));
+        betweenEnd.add(Calendar.DAY_OF_YEAR, 1);
+        betweenEnd.add(Calendar.SECOND, -1);
+
         return where()
                 .isNotNull("completedAt")
                 .equalTo("recurrentQuest.id", recurrentQuest.getId())
-                .between("endDate", DateUtils.toDate(fromDate), DateUtils.toDate(toDate))
+                .between("endDate", DateUtils.toDate(fromDate), betweenEnd.getTime())
                 .count();
     }
 

@@ -58,12 +58,6 @@ public class DateUtils {
         return isSameDay(date, new Date());
     }
 
-    public static boolean isTomorrow(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        return isSameDay(date, c.getTime());
-    }
-
     public static boolean isBeforeToday(Date d) {
         if (d == null) {
             return false;
@@ -84,7 +78,7 @@ public class DateUtils {
         return c.getTime();
     }
 
-    public static Date getNormalizedDueDate(Date dueDate) {
+    public static Date getDate(Date dueDate) {
         if (dueDate == null) {
             return null;
         }
@@ -154,5 +148,43 @@ public class DateUtils {
 
     public static Date nowUTC() {
         return new Date(System.currentTimeMillis());
+    }
+
+    public static boolean isTodayUTC(Date date) {
+        return isSameDayUTC(date, new Date());
+    }
+
+    public static boolean isSameDayUTC(Date d1, Date d2) {
+        if (d1 == null || d2 == null) {
+            return false;
+        }
+
+        Calendar c1 = Calendar.getInstance();
+        c1.setTime(d1);
+        c1.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(d2);
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+                c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static boolean isTomorrowUTC(Date utcDate) {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        return isSameDayUTC(utcDate, c.getTime());
+    }
+
+    public static Date getTomorrowUTC() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        c.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return c.getTime();
+    }
+
+    public static Date yesterdayUTC() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, -1);
+        c.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return c.getTime();
     }
 }

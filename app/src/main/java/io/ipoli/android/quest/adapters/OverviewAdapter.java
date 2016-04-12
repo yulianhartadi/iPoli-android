@@ -57,7 +57,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         List<QuestViewModel> visibleQuests = new ArrayList<>();
         for (QuestViewModel vm : viewModels) {
             Quest q = vm.getQuest();
-            if (DateUtils.isToday(q.getEndDate()) || q.getRecurrentQuest() == null) {
+            if (q.isScheduledForToday() || q.getRecurrentQuest() == null) {
                 visibleQuests.add(vm);
             }
         }
@@ -83,9 +83,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         for (QuestViewModel vm : quests) {
             Quest q = vm.getQuest();
-            if (DateUtils.isToday(q.getEndDate())) {
+            if (q.isScheduledForToday()) {
                 todayQuests.add(q);
-            } else if (DateUtils.isTomorrow(q.getEndDate())) {
+            } else if (q.isScheduledForTomorrow()) {
                 tomorrowQuests.add(q);
             } else {
                 upcomingQuests.add(q);

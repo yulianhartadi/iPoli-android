@@ -107,13 +107,13 @@ public class OverviewFragment extends Fragment {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        Date due = new Date();
+        Date endDate = new Date();
         String toast = getString(R.string.quest_scheduled_for_today);
-        if (DateUtils.isToday(e.quest.getEndDate())) {
+        if (e.quest.isScheduledForToday()) {
             toast = getString(R.string.quest_scheduled_for_tomorrow);
-            due = DateUtils.getTomorrow();
+            endDate = DateUtils.getTomorrow();
         }
-        q.setEndDate(due);
+        q.setEndDate(endDate);
         questPersistenceService.save(q);
         Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
         updateQuests();
@@ -127,7 +127,7 @@ public class OverviewFragment extends Fragment {
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();
             for (Quest q : quests) {
-                if (DateUtils.isToday(q.getEndDate()) && q.getRecurrentQuest() != null && !TextUtils.isEmpty(q.getRecurrentQuest().getRecurrence().getDailyRrule())) {
+                if (q.isScheduledForToday() && q.getRecurrentQuest() != null && !TextUtils.isEmpty(q.getRecurrentQuest().getRecurrence().getDailyRrule())) {
                     recurrent.add(q);
                 } else {
                     viewModels.add(new QuestViewModel(getContext(), q, 1, 1));

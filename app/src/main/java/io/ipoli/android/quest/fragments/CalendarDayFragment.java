@@ -254,7 +254,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = e.quest;
-        if (!DateUtils.isToday(q.getEndDate())) {
+        if (!q.isScheduledForToday()) {
             return;
         }
         Time startTime = Quest.getStartTime(e.quest);
@@ -285,7 +285,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                             c.setTime(completedAt);
                             c.add(Calendar.MINUTE, -event.getDuration());
                             // actual start time was yesterday, so yeah we do not include multi-day events
-                            if (!DateUtils.isToday(c.getTime())) {
+                            if (!DateUtils.isTodayUTC(c.getTime())) {
                                 continue;
                             }
                             event.setStartMinute(Time.of(c.getTime()).toMinutesAfterMidnight());
@@ -309,7 +309,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         }
 
         private boolean isNotScheduledForToday(Quest q) {
-            return !DateUtils.isToday(q.getEndDate());
+            return !q.isScheduledForToday();
         }
     }
 
