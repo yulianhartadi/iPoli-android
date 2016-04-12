@@ -20,12 +20,15 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,7 +94,9 @@ public class HabitsFragment extends Fragment {
         helper.attachToRecyclerView(questList);
         return view;
     }
-    @Override public void onDestroyView() {
+
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
@@ -114,7 +119,7 @@ public class HabitsFragment extends Fragment {
             List<RecurrentQuestViewModel> viewModels = new ArrayList<>();
             for (RecurrentQuest rq : quests) {
                 RecurrentQuestViewModel vm = createViewModel(rq);
-                if(vm != null) {
+                if (vm != null) {
                     viewModels.add(vm);
                 }
             }
@@ -128,27 +133,27 @@ public class HabitsFragment extends Fragment {
             Recurrence recurrence = rq.getRecurrence();
             Recur recur = new Recur(recurrence.getRrule());
 
-            java.util.Date from, to;
+            LocalDate from, to;
             if (recur.getFrequency().equals(Recur.MONTHLY)) {
-                from = DateUtils.getFirstDateOfMonth();
-                to = DateUtils.getLastDateOfMonth();
+                from = LocalDate.now().dayOfMonth().withMinimumValue();
+                to = LocalDate.now().dayOfMonth().withMaximumValue();
             } else {
-                from = DateUtils.getFirstDateOfWeek();
-                to = DateUtils.getLastDateOfWeek();
+                from = LocalDate.now().dayOfWeek().withMinimumValue();
+                to = LocalDate.now().dayOfWeek().withMaximumValue();
             }
-
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
 
-            java.util.Date yesterday = DateUtils.yesterdayUTC();
+            Date todayStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
 
-            java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(yesterday));
+            java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(todayStartOfDay));
 
             if (DateUtils.isTodayUTC(nextDate)) {
-                int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, DateUtils.getTodayAtMidnight().getTime(), DateUtils.getTodayAtMidnight().getTime());
+                int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
                 int timesPerDay = TextUtils.isEmpty(recurrence.getDailyRrule()) ? 1 : new Recur(recurrence.getDailyRrule()).getCount();
                 if (completedForToday >= timesPerDay) {
-                    nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(DateUtils.nowUTC()));
+                    Date tomorrowStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).plusDays(1).toDate();
+                    nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(tomorrowStartOfDay));
                     if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {
                         nextDate = null;
                     }
@@ -182,7 +187,7 @@ public class HabitsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 RecurrentQuestViewModel vm = createViewModel(rq);
-                if(vm != null) {
+                if (vm != null) {
                     habitsAdapter.addQuest(e.position, vm);
                 }
                 snackbar.setCallback(null);

@@ -4,13 +4,15 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import io.ipoli.android.app.utils.DateUtils;
@@ -113,16 +115,11 @@ public class RecurrentQuestViewModel {
         if (recur.getFrequency().equals(Recur.MONTHLY)) {
             return 1;
         }
-        Calendar c = Calendar.getInstance();
-        c.setTime(DateUtils.getLastDateOfWeek());
-        c.add(Calendar.DAY_OF_YEAR, 1);
 
-        Calendar c1 = DateUtils.getTodayAtMidnight();
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(recurrentQuest.getRecurrence().getDtstart());
-        c1.set(Calendar.DAY_OF_YEAR, c2.get(Calendar.DAY_OF_YEAR));
-        c1.set(Calendar.YEAR, c2.get(Calendar.YEAR));
-        return recur.getDates(new Date(c1.getTime()), new Date(DateUtils.getFirstDateOfWeek()), new Date(c.getTime()), Value.DATE).size() * timesPerDay;
+        java.util.Date from = LocalDate.now().dayOfWeek().withMinimumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+        java.util.Date to = LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+
+        return recur.getDates(new DateTime(recurrentQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesPerDay;
     }
 
     public String getRepeatText() {

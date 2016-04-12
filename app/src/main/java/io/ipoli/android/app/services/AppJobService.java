@@ -75,12 +75,6 @@ public class AppJobService extends JobService {
                 String id = null;
                 qJson.addProperty("id", id);
             }
-            if (q.getEndDate() != null) {
-                qJson.addProperty("end_date", DateUtils.toDateStringUTC(q.getEndDate()));
-            }
-            if (q.getStartDate() != null) {
-                qJson.addProperty("start_date", DateUtils.toDateStringUTC(q.getStartDate()));
-            }
             RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getId()).build();
             return apiService.updateQuest(requestBody).compose(applySchedulers()).concatMap(sq -> {
                 if (!q.isRemoteObject()) {
@@ -177,10 +171,14 @@ public class AppJobService extends JobService {
                 syncQuests(p),
                 getRecurrentQuests(p),
                 getScheduleForAWeekAhead(p))).subscribe(res -> {
+            Log.d("RxJava", "OnNext " + res);
         }, throwable -> {
-            Log.e("Observable", "Error", throwable);
+            Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
-        }, () -> jobFinished(params, false));
+        }, () -> {
+            Log.d("RxJava", "Sync Job finished");
+            jobFinished(params, false);
+        });
         return true;
     }
 
@@ -201,9 +199,10 @@ public class AppJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+        Log.d("RxJava", "Stopping job" + params);
+//        if (subscription != null) {
+//            subscription.unsubscribe();
+//        }
         return false;
     }
 }

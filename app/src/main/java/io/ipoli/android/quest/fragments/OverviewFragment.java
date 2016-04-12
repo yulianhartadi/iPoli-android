@@ -18,13 +18,13 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -120,9 +120,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void updateQuests() {
-        Calendar endDate = DateUtils.getTodayAtMidnight();
-        endDate.add(Calendar.DAY_OF_YEAR, 7);
-        questPersistenceService.findPlannedBetween(new Date(), endDate.getTime()).subscribe(quests -> {
+        questPersistenceService.findPlannedBetween(new LocalDate(), new LocalDate().plusDays(7)).subscribe(quests -> {
 
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();

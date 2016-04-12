@@ -1,6 +1,5 @@
 package io.ipoli.android.app;
 
-import android.app.Application;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -9,9 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +51,7 @@ import io.realm.RealmConfiguration;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     public static final int SYNC_JOB_ID = 1;
 
@@ -74,6 +76,8 @@ public class App extends Application {
             return;
         }
 
+        JodaTimeAndroid.init(this);
+
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(0)
                 .build();
@@ -89,13 +93,16 @@ public class App extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int runCount = prefs.getInt(Constants.KEY_APP_RUN_COUNT, 0);
         if (runCount == 0) {
-//            saveInitialQuests();
+            saveInitialQuests();
+            eventBus.post(new ForceSyncRequestEvent());
+        } else {
+            eventBus.post(new SyncRequestEvent());
         }
+        eventBus.post(new ForceSyncRequestEvent());
         SharedPreferences.Editor e = prefs.edit();
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
 
-        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
@@ -142,12 +149,12 @@ public class App extends Application {
     }
 
     private void addTodayScheduledQuests(List<Quest> initialQuests) {
-        Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.getNow());
+        Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.now());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
         Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
         initialQuests.add(welcomeQuest);
 
-        Quest readQuest = new Quest("Read a book", DateUtils.getNow());
+        Quest readQuest = new Quest("Read a book", DateUtils.now());
         Quest.setContext(readQuest, QuestContext.LEARNING);
         readQuest.setDuration(60);
         Quest.setStartTime(readQuest, Time.afterHours(2));
@@ -211,16 +218,19 @@ public class App extends Application {
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
+        eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }
 
     @Subscribe
     public void onQuestsSaved(QuestsSavedEvent e) {
+        eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }
 
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
+        eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }
 
@@ -233,7 +243,6 @@ public class App extends Application {
     private void scheduleJob(JobInfo job) {
         JobScheduler jobScheduler = (JobScheduler)
                 getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(SYNC_JOB_ID);
         jobScheduler.schedule(job);
     }
 
@@ -248,6 +257,7 @@ public class App extends Application {
                         AppJobService.class.getName()));
         return builder.setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+//                .setPeriodic(TimeUnit.HOURS.toMillis(24))
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
     }
 

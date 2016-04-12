@@ -2,12 +2,12 @@ package io.ipoli.android.quest.persistence;
 
 import com.squareup.otto.Bus;
 
-import java.util.Calendar;
+import org.joda.time.LocalDate;
+
 import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
@@ -63,15 +63,15 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Observable<List<Quest>> findAllPlannedAndStartedToday() {
-        Calendar yesterday = DateUtils.getTodayAtMidnight();
-        yesterday.add(Calendar.SECOND, -1);
 
-        Calendar tomorrow = DateUtils.getTodayAtMidnight();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+        LocalDate today = LocalDate.now();
+
+        Date startOfToday = toUTCDateAtStartOfDay(today);
+        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
 
         return fromRealm(where()
-                .greaterThan("endDate", yesterday.getTime())
-                .lessThan("endDate", tomorrow.getTime())
+                .greaterThanOrEqualTo("endDate", startOfToday)
+                .lessThan("endDate", startOfTomorrow)
                 .isNull("completedAt")
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
@@ -95,28 +95,20 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate) {
-
-        Calendar betweenEnd = Calendar.getInstance();
-        betweenEnd.setTime(DateUtils.toDate(toDate));
-        betweenEnd.add(Calendar.DAY_OF_YEAR, 1);
-        betweenEnd.add(Calendar.SECOND, -1);
+    public long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate) {
 
         return where()
                 .isNotNull("completedAt")
                 .equalTo("recurrentQuest.id", recurrentQuest.getId())
-                .between("endDate", DateUtils.toDate(fromDate), betweenEnd.getTime())
+                .between("endDate", toUTCDateAtStartOfDay(fromDate), toUTCDateAtStartOfDay(toDate))
                 .count();
     }
 
     @Override
-    public Observable<Quest> findPlannedQuestStartingAfter(Date date) {
-        Calendar dayBefore = Calendar.getInstance();
-        dayBefore.setTime(DateUtils.toDate(date));
-        dayBefore.add(Calendar.SECOND, -1);
+    public Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate) {
 
         RealmResults<Quest> quests = where()
-                .greaterThan("endDate", dayBefore.getTime())
+                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(localDate))
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStartDateTime")
                 .isNull("completedAt")
@@ -129,19 +121,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Observable<List<Quest>> findAllForToday() {
-        Calendar yesterday = DateUtils.getTodayAtMidnightUTC();
-        yesterday.add(Calendar.SECOND, -1);
 
-        Calendar tomorrow = DateUtils.getTodayAtMidnightUTC();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+        LocalDate today = new LocalDate();
+
+        Date startOfToday = toUTCDateAtStartOfDay(today);
+        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
 
         return fromRealm(where()
                 .beginGroup()
-                .greaterThan("endDate", yesterday.getTime())
-                .lessThan("endDate", tomorrow.getTime())
+                .greaterThanOrEqualTo("endDate", startOfToday)
+                .lessThan("endDate", startOfTomorrow)
                 .or()
-                .greaterThan("completedAt", yesterday.getTime())
-                .lessThan("completedAt", tomorrow.getTime())
+                .greaterThan("completedAt", startOfToday)
+                .lessThan("completedAt", startOfTomorrow)
                 .endGroup()
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
@@ -154,25 +146,25 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedBetween(Date startDate, Date endDate) {
+    public Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate) {
         return fromRealm(where()
-                .greaterThanOrEqualTo("endDate", DateUtils.toDate(startDate))
-                .lessThan("endDate", DateUtils.toDate(endDate))
+                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
+                .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
                 .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
     @Override
     public Observable<List<Quest>> findAllCompletedToday() {
-        Calendar yesterday = DateUtils.getTodayAtMidnightUTC();
-        yesterday.add(Calendar.SECOND, -1);
 
-        Calendar tomorrow = DateUtils.getTodayAtMidnightUTC();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
+        LocalDate today = LocalDate.now();
+
+        Date startOfToday = toUTCDateAtStartOfDay(today);
+        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
 
         return fromRealm(where()
-                .greaterThan("completedAt", yesterday.getTime())
-                .lessThan("completedAt", tomorrow.getTime())
+                .greaterThanOrEqualTo("completedAt", startOfToday)
+                .lessThan("completedAt", startOfTomorrow)
                 .findAll());
     }
 }

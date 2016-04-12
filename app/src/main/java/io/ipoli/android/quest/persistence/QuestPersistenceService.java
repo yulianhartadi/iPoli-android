@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
+
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
@@ -19,7 +20,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllUnplanned();
 
-    Observable<List<Quest>> findPlannedBetween(Date startDate, Date endDate);
+    Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate);
 
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 
@@ -27,7 +28,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllCompletedToday();
 
-    Observable<Quest> findPlannedQuestStartingAfter(Date date);
+    Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
 
     Observable<List<Quest>> findAllForToday();
 
@@ -35,5 +36,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllWhoNeedSyncWithRemote();
 
-    long countCompletedQuests(RecurrentQuest recurrentQuest, Date fromDate, Date toDate);
+    long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);
 }

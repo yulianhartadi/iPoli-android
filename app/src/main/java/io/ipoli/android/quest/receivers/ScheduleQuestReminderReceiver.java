@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import org.joda.time.LocalDate;
+
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -34,7 +36,7 @@ public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         cancelScheduledReminder(context, alarm);
-        return questPersistenceService.findPlannedQuestStartingAfter(new Date()).flatMap(quest -> {
+        return questPersistenceService.findPlannedQuestStartingAfter(new LocalDate()).flatMap(quest -> {
             if (quest == null) {
                 return Observable.empty();
             }

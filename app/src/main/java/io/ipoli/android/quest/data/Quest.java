@@ -2,6 +2,9 @@ package io.ipoli.android.quest.data;
 
 import android.text.TextUtils;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -280,7 +283,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public boolean isScheduledForToday() {
-        return DateUtils.isTodayUTC(getEndDate());
+        return DateUtils.isTodayUTC(new LocalDate(getEndDate(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
     }
 
     public int getStartMinute() {
@@ -331,6 +334,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public boolean isScheduledForTomorrow() {
-        return DateUtils.isTomorrowUTC(getEndDate());
+        return DateUtils.isTomorrowUTC(new LocalDate(getEndDate(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
     }
 }

@@ -1,5 +1,8 @@
 package io.ipoli.android.app.utils;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,10 +17,6 @@ public class DateUtils {
         return getTodayAtMidnightWithTimeZone(TimeZone.getDefault());
     }
 
-    public static Calendar getTodayAtMidnightUTC() {
-        return getTodayAtMidnightWithTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
     private static Calendar getTodayAtMidnightWithTimeZone(TimeZone timeZone) {
         Calendar c = Calendar.getInstance(timeZone);
         c.set(Calendar.MILLISECOND, 0);
@@ -27,17 +26,7 @@ public class DateUtils {
         return c;
     }
 
-    public static Date toDate(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.set(Calendar.MILLISECOND, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        return c.getTime();
-    }
-
-    public static Date getNow() {
+    public static Date now() {
         return Calendar.getInstance().getTime();
     }
 
@@ -82,20 +71,11 @@ public class DateUtils {
         if (dueDate == null) {
             return null;
         }
-        Calendar c = Calendar.getInstance();
-        c.setTime(dueDate);
-        Calendar normalizedDueDate = getTodayAtMidnight();
-        normalizedDueDate.set(Calendar.DAY_OF_YEAR, c.get(Calendar.DAY_OF_YEAR));
-        normalizedDueDate.set(Calendar.YEAR, c.get(Calendar.YEAR));
-        return normalizedDueDate.getTime();
+        return new LocalDate(dueDate).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
     }
 
     public static String toDateString(Date date) {
         return toDateString(date, TimeZone.getDefault());
-    }
-
-    public static String toDateStringUTC(Date date) {
-        return toDateString(date, TimeZone.getTimeZone("UTC"));
     }
 
     public static String toDateString(Date date, TimeZone timeZone) {
@@ -119,72 +99,23 @@ public class DateUtils {
         return dates;
     }
 
-    public static Date getFirstDateOfWeek() {
-        Calendar cal = getTodayAtMidnight();
-        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-        return cal.getTime();
-    }
-
-    public static Date getLastDateOfWeek() {
-        Calendar cal = getTodayAtMidnight();
-        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-        cal.add(Calendar.DAY_OF_YEAR, 6);
-        return cal.getTime();
-    }
-
-    public static Date getFirstDateOfMonth() {
-        Calendar cal = getTodayAtMidnight();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        return cal.getTime();
-    }
-
-    public static Date getLastDateOfMonth() {
-        Calendar cal = getTodayAtMidnight();
-        cal.setTime(getFirstDateOfMonth());
-        cal.add(Calendar.MONTH, 1);
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        return cal.getTime();
-    }
-
     public static Date nowUTC() {
         return new Date(System.currentTimeMillis());
     }
 
+    public static boolean isTodayUTC(LocalDate localDate) {
+        return localDate.isEqual(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate());
+    }
+
+    public static boolean isTomorrowUTC(LocalDate localDate) {
+        return localDate.isEqual(new LocalDate().plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate());
+    }
+
     public static boolean isTodayUTC(Date date) {
-        return isSameDayUTC(date, new Date());
+        return isTodayUTC(new LocalDate(date, DateTimeZone.UTC));
     }
 
-    public static boolean isSameDayUTC(Date d1, Date d2) {
-        if (d1 == null || d2 == null) {
-            return false;
-        }
-
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(d1);
-        c1.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(d2);
-        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
-                c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
-    }
-
-    public static boolean isTomorrowUTC(Date utcDate) {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        return isSameDayUTC(utcDate, c.getTime());
-    }
-
-    public static Date getTomorrowUTC() {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        c.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return c.getTime();
-    }
-
-    public static Date yesterdayUTC() {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, -1);
-        c.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return c.getTime();
+    public static boolean isTomorrowUTC(Date date) {
+        return isTomorrowUTC(new LocalDate(date, DateTimeZone.UTC));
     }
 }

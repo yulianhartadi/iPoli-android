@@ -3,6 +3,7 @@ package io.ipoli.android.quest.ui.formatters;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -17,6 +18,7 @@ public class DueDateFormatter {
     }
 
     public static String formatWithoutYear(Date due) {
+        DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         return DATE_NO_YEAR_FORMAT.format(due);
     }
 }

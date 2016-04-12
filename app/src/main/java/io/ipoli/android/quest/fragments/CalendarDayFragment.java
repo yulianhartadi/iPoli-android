@@ -18,9 +18,10 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.DateTime;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -280,15 +281,12 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                     if (q.getCompletedAt() != null) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                         if (isNotScheduledForToday(q) || hasNoStartTime(q)) {
-                            Calendar c = Calendar.getInstance();
-                            Date completedAt = q.getCompletedAt();
-                            c.setTime(completedAt);
-                            c.add(Calendar.MINUTE, -event.getDuration());
+                            DateTime completedAt = new DateTime(q.getCompletedAt()).minusMinutes(event.getDuration());
                             // actual start time was yesterday, so yeah we do not include multi-day events
-                            if (!DateUtils.isTodayUTC(c.getTime())) {
+                            if (!DateUtils.isTodayUTC(completedAt.toLocalDate())) {
                                 continue;
                             }
-                            event.setStartMinute(Time.of(c.getTime()).toMinutesAfterMidnight());
+                            event.setStartMinute(Time.at(completedAt.getHourOfDay(), completedAt.getMinuteOfHour()).toMinutesAfterMidnight());
                         }
                         completedEvents.add(event);
                     } else {
