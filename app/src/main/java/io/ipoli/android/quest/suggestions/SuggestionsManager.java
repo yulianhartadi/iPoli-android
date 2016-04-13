@@ -112,9 +112,7 @@ public class SuggestionsManager {
                     int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
                     int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
                     parts.add(new ParsedPart(start, end, t, false));
-                } else {
-                    removeUsedType(t);
-                }
+                } 
             }
         }
         Collections.sort(parts, new Comparator<ParsedPart>() {
@@ -124,6 +122,30 @@ public class SuggestionsManager {
                 return lhs.startIdx < rhs.startIdx ? -1 : 1;
             }
         });
+
+        if(parsedPartsContainsType(TextEntityType.DUE_DATE, parts) && parsedPartsContainsType(TextEntityType.RECURRENT, parts)) {
+            ParsedPart dueDate = findParsedPartByType(TextEntityType.DUE_DATE, parts);
+            ParsedPart recurrent = findParsedPartByType(TextEntityType.RECURRENT, parts);
+            if(dueDate.startIdx < recurrent.startIdx) {
+                parts.remove(recurrent);
+                removeUsedType(TextEntityType.RECURRENT);
+            } else {
+                parts.remove(dueDate);
+                removeUsedType(TextEntityType.DUE_DATE);
+            }
+        }
+
+        if(parsedPartsContainsType(TextEntityType.START_TIME, parts) && parsedPartsContainsType(TextEntityType.TIMES_PER_DAY, parts)) {
+            ParsedPart startTime = findParsedPartByType(TextEntityType.START_TIME, parts);
+            ParsedPart timesPerDay = findParsedPartByType(TextEntityType.TIMES_PER_DAY, parts);
+            if(startTime.startIdx < timesPerDay.startIdx) {
+                parts.remove(timesPerDay);
+                removeUsedType(TextEntityType.TIMES_PER_DAY);
+            } else {
+                parts.remove(startTime);
+                removeUsedType(TextEntityType.START_TIME);
+            }
+        }
 
         return parts;
     }
@@ -195,15 +217,6 @@ public class SuggestionsManager {
         }
     }
 
-    private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
-        for (ParsedPart p : parsedParts) {
-            if (p.isPartial) {
-                return p;
-            }
-        }
-        return null;
-    }
-
     public void setSuggestionsUpdatedListener(OnSuggestionsUpdatedListener suggestionsUpdatedListener) {
         this.suggestionsUpdatedListener = suggestionsUpdatedListener;
     }
@@ -216,7 +229,38 @@ public class SuggestionsManager {
         return textSuggestionsProvider.get(currentType);
     }
 
-    public ParsedPart findNotPartialParsedPartContainingIdx(int index, List<ParsedPart> parsedParts) {
+    public TextEntityType getCurrentSuggestionsProviderType() {
+        return currentType;
+    }
+
+    private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
+        for (ParsedPart p : parsedParts) {
+            if (p.isPartial) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    private ParsedPart findParsedPartByType(TextEntityType type, List<ParsedPart> parsedParts) {
+        for (ParsedPart p : parsedParts) {
+            if (p.type == type) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    private boolean parsedPartsContainsType(TextEntityType type, List<ParsedPart> parsedParts) {
+        for (ParsedPart p : parsedParts) {
+            if (p.type == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ParsedPart findNotPartialParsedPartContainingIdx(int index, List<ParsedPart> parsedParts) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx <= index && index <= p.endIdx && !p.isPartial) {
                 return p;
@@ -225,11 +269,11 @@ public class SuggestionsManager {
         return null;
     }
 
-    public TextEntityType getCurrentSuggestionsProviderType() {
-        return currentType;
-    }
 
     private void addUsedType(TextEntityType type) {
+        if (type == TextEntityType.MAIN) {
+            return;
+        }
         usedTypes.add(type);
         ((MainSuggestionsProvider) textSuggestionsProvider.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
     }
