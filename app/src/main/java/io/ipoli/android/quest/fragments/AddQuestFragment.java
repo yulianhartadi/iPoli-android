@@ -199,7 +199,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     private void setSelectedContext(View view) {
-        getCurrentContextImageView(view).setImageResource(R.drawable.ic_done_white_24dp);
+        getCurrentContextImageView(view).setImageResource(questContext.whiteImage);
         setContextName();
     }
 

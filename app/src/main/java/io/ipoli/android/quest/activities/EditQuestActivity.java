@@ -185,7 +185,7 @@ public class EditQuestActivity extends BaseActivity {
     }
 
     private void setSelectedContext() {
-        getCurrentContextImageView().setImageResource(R.drawable.ic_done_white_24dp);
+        getCurrentContextImageView().setImageResource(Quest.getContext(quest).whiteImage);
         setContextName();
     }
 

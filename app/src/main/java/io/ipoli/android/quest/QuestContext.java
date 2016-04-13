@@ -14,7 +14,7 @@ public enum QuestContext {
     LEARNING(R.color.md_blue_50, R.color.md_blue_500, R.color.md_blue_700, R.color.md_blue_800, R.drawable.ic_context_learning_white_24dp, R.drawable.ic_context_learning_blue_24dp),
     WELLNESS(R.color.md_green_50, R.color.md_green_500, R.color.md_green_700, R.color.md_green_800, R.drawable.ic_context_wellness_white_24dp, R.drawable.ic_context_wellness_green_24dp),
     PERSONAL(R.color.md_orange_50, R.color.md_orange_500, R.color.md_orange_700, R.color.md_orange_800, R.drawable.ic_context_personal_white_24dp, R.drawable.ic_context_personal_orange_24dp),
-    WORK(R.color.md_red_50, R.color.md_red_500, R.color.md_red_700, R.color.md_red_800, R.drawable.ic_context_work_white_24dp, R.drawable.ic_context_work_red_24dp),
+    WORK(R.color.md_red_50, R.color.md_red_500, R.color.md_red_700, R.color.md_red_800, R.drawable.ic_context_work_white, R.drawable.ic_context_work_red),
     FUN(R.color.md_purple_50, R.color.md_purple_500, R.color.md_purple_700, R.color.md_purple_800, R.drawable.ic_context_fun_white, R.drawable.ic_context_fun_purple),
     CHORES(R.color.md_brown_50, R.color.md_brown_500, R.color.md_brown_700, R.color.md_brown_800, R.drawable.ic_context_chores_white, R.drawable.ic_context_chores_brown);
 
