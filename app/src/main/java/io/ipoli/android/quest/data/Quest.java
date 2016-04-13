@@ -4,8 +4,8 @@ import android.text.TextUtils;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -148,7 +148,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         if (quest.getStartMinute() < 0) {
             return null;
         }
-        return Time.fromMinutesAfterMidnight(quest.getStartMinute());
+        return Time.of(quest.getStartMinute());
     }
 
     public void setDifficulty(int difficulty) {
@@ -224,16 +224,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public static Date getStartDateTime(Quest quest) {
-        if (quest.getStartMinute() < 0) {
+        if (quest.getStartMinute() < 0 || quest.getEndDate() == null) {
             return null;
         }
-        Calendar startDateTime = Calendar.getInstance();
-        startDateTime.setTime(quest.getEndDate());
-        int h = (int) TimeUnit.MINUTES.toHours(quest.getStartMinute());
-        int min = quest.getStartMinute() - h * 60;
-        startDateTime.set(Calendar.HOUR_OF_DAY, h);
-        startDateTime.set(Calendar.MINUTE, min);
-        return startDateTime.getTime();
+        Time startTime = Time.of(quest.getStartMinute());
+        return new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
     }
 
     public Date getActualStartDateTime() {
@@ -258,14 +253,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setCompletedAt(Date completedAt) {
         this.completedAt = completedAt;
-    }
-
-    public static boolean isUnplanned(Quest quest) {
-        return quest.getEndDate() == null && quest.getActualStartDateTime() == null && quest.getCompletedAt() == null;
-    }
-
-    public static boolean isPlanned(Quest quest) {
-        return quest.getEndDate() != null && quest.getActualStartDateTime() == null && quest.getCompletedAt() == null;
     }
 
     public static boolean isStarted(Quest quest) {

@@ -12,12 +12,12 @@ public class Time {
         this.minutes = hours * 60 + minutes;
     }
 
-    public static Time fromMinutesAfterMidnight(int minutes) {
-        if(minutes < 0) {
+    public static Time of(int minutesAfterMidnight) {
+        if(minutesAfterMidnight < 0) {
             return null;
         }
-        int h = (int) TimeUnit.MINUTES.toHours(minutes);
-        int m = minutes - h * 60;
+        int h = (int) TimeUnit.MINUTES.toHours(minutesAfterMidnight);
+        int m = minutesAfterMidnight - h * 60;
         return Time.at(h, m);
     }
 
@@ -112,7 +112,7 @@ public class Time {
         return String.format(Locale.getDefault(), "%02d:%02d", getHours(), getMinutes());
     }
 
-    public static Time addMinutes(Time time, int minutes) {
-        return Time.fromMinutesAfterMidnight(time.minutes + minutes);
+    public static Time plusMinutes(Time time, int minutes) {
+        return Time.of(time.minutes + minutes);
     }
 }

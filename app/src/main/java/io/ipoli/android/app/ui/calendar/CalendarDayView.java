@@ -206,7 +206,7 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private int getYPositionFor(int minutesAfterMidnight) {
-        Time time = Time.fromMinutesAfterMidnight(minutesAfterMidnight);
+        Time time = Time.of(minutesAfterMidnight);
         return getYPositionFor(time.getHours(), time.getMinutes());
     }
 

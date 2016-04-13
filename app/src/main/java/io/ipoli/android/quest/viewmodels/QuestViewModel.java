@@ -60,7 +60,7 @@ public class QuestViewModel {
         int duration = quest.getDuration();
         Time startTime = Quest.getStartTime(quest);
         if (duration > 0 && startTime != null) {
-            Time endTime = Time.addMinutes(startTime, duration);
+            Time endTime = Time.plusMinutes(startTime, duration);
             return startTime + " - " + endTime;
         } else if (duration > 0) {
             return "for " + DurationFormatter.format(context, duration);

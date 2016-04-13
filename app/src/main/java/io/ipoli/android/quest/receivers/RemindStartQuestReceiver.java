@@ -19,6 +19,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.app.utils.IntentUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -67,7 +68,7 @@ public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
                 .setContentText("Ready to start?")
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(false)
-                .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(q.getStartMinute()))
+                .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(Time.of(q.getStartMinute()).toDate()))
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)

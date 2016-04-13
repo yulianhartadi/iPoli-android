@@ -15,9 +15,12 @@ import com.squareup.otto.Subscribe;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -53,7 +56,8 @@ import io.realm.RealmConfiguration;
  */
 public class App extends MultiDexApplication {
 
-    public static final int SYNC_JOB_ID = 1;
+    private static final int SYNC_JOB_ID = 1;
+    private static final int DAILY_SYNC_JOB_ID = 2;
 
     private static AppComponent appComponent;
 
@@ -84,7 +88,7 @@ public class App extends MultiDexApplication {
         Realm.setDefaultConfiguration(config);
 
         getAppComponent(this).inject(this);
-        resetDueDateForIncompleteQuests();
+        resetDueDateForIncompleteTodos();
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
@@ -95,14 +99,14 @@ public class App extends MultiDexApplication {
         if (runCount == 0) {
             saveInitialQuests();
             eventBus.post(new ForceSyncRequestEvent());
+        } else if (runCount == 1) {
+            scheduleJob(dailySyncJob());
         } else {
             eventBus.post(new SyncRequestEvent());
         }
-        eventBus.post(new ForceSyncRequestEvent());
         SharedPreferences.Editor e = prefs.edit();
         e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
         e.apply();
-
     }
 
     private void saveInitialQuests() {
@@ -167,9 +171,8 @@ public class App extends MultiDexApplication {
         initialQuests.add(callQuest);
     }
 
-    private void resetDueDateForIncompleteQuests() {
-        questPersistenceService.findAllUncompleted().flatMapIterable(q -> q)
-                .filter(q -> q.getEndDate() != null && DateUtils.isBeforeToday(q.getEndDate()))
+    private void resetDueDateForIncompleteTodos() {
+        questPersistenceService.findAllIncompleteTodosBefore(new LocalDate()).flatMapIterable(q -> q)
                 .flatMap(q -> {
                     q.setEndDate(null);
                     return questPersistenceService.save(q);
@@ -241,9 +244,12 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleJob(JobInfo job) {
-        JobScheduler jobScheduler = (JobScheduler)
+        getJobScheduler().schedule(job);
+    }
+
+    private JobScheduler getJobScheduler() {
+        return (JobScheduler)
                 getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(job);
     }
 
     @Subscribe
@@ -257,8 +263,16 @@ public class App extends MultiDexApplication {
                         AppJobService.class.getName()));
         return builder.setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-//                .setPeriodic(TimeUnit.HOURS.toMillis(24))
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
+    }
+
+    private JobInfo dailySyncJob() {
+        JobInfo.Builder builder = new JobInfo.Builder(DAILY_SYNC_JOB_ID,
+                new ComponentName(getPackageName(),
+                        AppJobService.class.getName()));
+        return builder.setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(TimeUnit.HOURS.toMillis(24)).build();
     }
 
     private void scheduleNextReminder() {
