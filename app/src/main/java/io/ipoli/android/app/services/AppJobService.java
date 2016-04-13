@@ -77,7 +77,7 @@ public class AppJobService extends JobService {
                 String id = null;
                 qJson.addProperty("id", id);
             }
-            RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getId()).build();
+            RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
             return apiService.updateQuest(requestBody).compose(applySchedulers()).concatMap(sq -> {
                 if (!q.isRemoteObject()) {
                     questPersistenceService.updateId(q, sq.getId());
@@ -94,7 +94,7 @@ public class AppJobService extends JobService {
             if (rq.isRemoteObject()) {
                 JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
                 qJson.addProperty("id", rq.getId());
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("user_id", player.getId()).build();
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getId()).compose(applySchedulers()).flatMap(sq -> {
                     updateRecurrentQuest(sq, rq, rq.getRecurrence());
                     return recurrentQuestPersistenceService.save(sq, false);
@@ -106,8 +106,8 @@ public class AppJobService extends JobService {
                 data.addProperty("context", qJson.get("context").getAsString());
                 data.addProperty("created_at", qJson.get("created_at").getAsString());
                 data.addProperty("updated_at", qJson.get("updated_at").getAsString());
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("user_id", player.getId()).build();
-                return apiService.createRecurrentQuest(requestBody).compose(applySchedulers()).flatMap(sq -> {
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
+                return apiService.createRecurrentQuestFromText(requestBody).compose(applySchedulers()).flatMap(sq -> {
                     updateRecurrentQuest(sq, rq, rq.getRecurrence());
                     return recurrentQuestPersistenceService.save(sq, false);
                 });
