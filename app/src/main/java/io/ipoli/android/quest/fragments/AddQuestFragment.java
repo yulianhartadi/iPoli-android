@@ -42,6 +42,7 @@ import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
@@ -369,7 +370,10 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         SuggestionsManager.TextTransformResult result = suggestionsManager.onSuggestionItemClick(text, suggestion, selectionIndex);
         setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
         if (suggestion.nextTextEntityType != null) {
-            suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType, "");
+            List<ParsedPart> parsedParts = suggestionsManager.parse(result.text, result.selectionIndex);
+            ParsedPart partialPart = suggestionsManager.findPartialPart(parsedParts);
+            String parsedText = partialPart == null ? "" : StringUtils.substring(result.text, partialPart.startIdx, partialPart.endIdx);
+            suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType, parsedText);
         }
     }
 

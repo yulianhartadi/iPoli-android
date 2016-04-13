@@ -27,7 +27,7 @@ import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.RecurrenceSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.StartTimeSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
-import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestiosProvider;
+import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestionsProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -57,7 +57,7 @@ public class SuggestionsManager {
         textSuggestionsProvider.put(TextEntityType.DURATION, new DurationSuggestionsProvider());
         textSuggestionsProvider.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider());
         textSuggestionsProvider.put(TextEntityType.RECURRENT, new RecurrenceSuggestionsProvider());
-        textSuggestionsProvider.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggestiosProvider());
+        textSuggestionsProvider.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggestionsProvider());
         textSuggestionsProvider.put(TextEntityType.RECURRENT_DAY_OF_WEEK, new DayOfWeekSuggestionsProvider());
         textSuggestionsProvider.put(TextEntityType.RECURRENT_DAY_OF_MONTH, new DayOfMonthSuggestionsProvider());
 
@@ -98,23 +98,39 @@ public class SuggestionsManager {
         for (TextEntityType t : orderedTextEntityTypes) {
             QuestTextMatcher mather = typeToMatcher.get(t);
             Match partialMatch = mather.partialMatch(text.substring(0, selectionIndex));
-            if (partialMatch != null && findPartialPart(parts) == null && !usedTypes.contains(t)) {
+            if (canBeUsedAsPartialMatch(t, partialMatch, parts)) {
                 int start = partialMatch.text.startsWith(" ") ? partialMatch.start + 1 : partialMatch.start;
                 int end = partialMatch.end;
-                parts.add(new ParsedPart(start, end, t, true));
+                ParsedPart currPartial = findPartialPart(parts);
+
+                if (shouldAddNewPartialPart(start, end, currPartial)) {
+                    parts.add(new ParsedPart(start, end, t, true));
+                }
+
+                if (isBetterMatch(start, end, currPartial)) {
+                    parts.remove(currPartial);
+                }
+
             } else {
                 Match match = typeToMatcher.get(t).match(text);
-                if (match != null) {
-                    if (t == TextEntityType.MAIN) {
-                        break;
-                    }
-                    addUsedType(t);
-                    int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
-                    int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
-                    parts.add(new ParsedPart(start, end, t, false));
-                } 
+                if (match == null) {
+                    removeUsedType(t);
+                    continue;
+                }
+                addUsedType(t);
+                int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
+                int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
+                parts.add(new ParsedPart(start, end, t, false));
             }
         }
+        sortPartsByStartIndex(parts);
+
+        removePartWhichIsCloserToEnd(TextEntityType.DUE_DATE, TextEntityType.RECURRENT, parts);
+        removePartWhichIsCloserToEnd(TextEntityType.START_TIME, TextEntityType.TIMES_PER_DAY, parts);
+        return parts;
+    }
+
+    private void sortPartsByStartIndex(List<ParsedPart> parts) {
         Collections.sort(parts, new Comparator<ParsedPart>() {
 
             @Override
@@ -122,32 +138,52 @@ public class SuggestionsManager {
                 return lhs.startIdx < rhs.startIdx ? -1 : 1;
             }
         });
+    }
 
-        if(parsedPartsContainsType(TextEntityType.DUE_DATE, parts) && parsedPartsContainsType(TextEntityType.RECURRENT, parts)) {
-            ParsedPart dueDate = findParsedPartByType(TextEntityType.DUE_DATE, parts);
-            ParsedPart recurrent = findParsedPartByType(TextEntityType.RECURRENT, parts);
-            if(dueDate.startIdx < recurrent.startIdx) {
-                parts.remove(recurrent);
-                removeUsedType(TextEntityType.RECURRENT);
+    private void removePartWhichIsCloserToEnd(TextEntityType type1, TextEntityType type2, List<ParsedPart> parts) {
+        if (parsedPartsContainsType(type1, parts) && parsedPartsContainsType(type2, parts)) {
+            ParsedPart part1 = findParsedPartByType(type1, parts);
+            ParsedPart part2 = findParsedPartByType(type2, parts);
+            if (part1.startIdx < part2.startIdx) {
+                parts.remove(part2);
+                removeUsedType(type2);
             } else {
-                parts.remove(dueDate);
-                removeUsedType(TextEntityType.DUE_DATE);
+                parts.remove(part1);
+                removeUsedType(type1);
             }
         }
+    }
 
-        if(parsedPartsContainsType(TextEntityType.START_TIME, parts) && parsedPartsContainsType(TextEntityType.TIMES_PER_DAY, parts)) {
-            ParsedPart startTime = findParsedPartByType(TextEntityType.START_TIME, parts);
-            ParsedPart timesPerDay = findParsedPartByType(TextEntityType.TIMES_PER_DAY, parts);
-            if(startTime.startIdx < timesPerDay.startIdx) {
-                parts.remove(timesPerDay);
-                removeUsedType(TextEntityType.TIMES_PER_DAY);
-            } else {
-                parts.remove(startTime);
-                removeUsedType(TextEntityType.START_TIME);
+
+    private boolean shouldAddNewPartialPart(int start, int end, ParsedPart currPartial) {
+        return hasNoPartialPart(currPartial) || isBetterMatch(start, end, currPartial);
+    }
+
+    private boolean isBetterMatch(int start, int end, ParsedPart currPartial) {
+        if (hasNoPartialPart(currPartial)) {
+            return true;
+        }
+        return currPartial.endIdx - currPartial.startIdx < end - start;
+    }
+
+    private boolean hasNoPartialPart(ParsedPart currPartial) {
+        return currPartial == null;
+    }
+
+    private boolean canBeUsedAsPartialMatch(TextEntityType t, Match partialMatch, List<ParsedPart> parts) {
+        return partialMatch != null && !usedTypes.contains(t) && doesNotIntersectWithParsedNotPartialPart(parts, partialMatch);
+    }
+
+    private boolean doesNotIntersectWithParsedNotPartialPart(List<ParsedPart> parts, Match partialMatch) {
+        for (ParsedPart p : parts) {
+            if (p.isPartial) {
+                continue;
+            }
+            if ((p.startIdx >= partialMatch.start && p.startIdx <= partialMatch.end) || (p.endIdx >= partialMatch.start && p.endIdx <= partialMatch.end)) {
+                return false;
             }
         }
-
-        return parts;
+        return true;
     }
 
     public TextTransformResult deleteText(String preDeleteText, int deleteStartIndex) {
@@ -233,7 +269,7 @@ public class SuggestionsManager {
         return currentType;
     }
 
-    private ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
+    public ParsedPart findPartialPart(List<ParsedPart> parsedParts) {
         for (ParsedPart p : parsedParts) {
             if (p.isPartial) {
                 return p;

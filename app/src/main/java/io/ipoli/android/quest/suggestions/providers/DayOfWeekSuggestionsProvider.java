@@ -15,7 +15,7 @@ public class DayOfWeekSuggestionsProvider implements SuggestionsProvider {
 
     @Override
     public List<SuggestionDropDownItem> filter(String text) {
-        int icon = R.drawable.ic_event_black_18dp;
+        int icon = R.drawable.ic_repeat_black_24dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         if(!text.contains("Mon")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Monday", "Mon", TextEntityType.RECURRENT_DAY_OF_WEEK, false));

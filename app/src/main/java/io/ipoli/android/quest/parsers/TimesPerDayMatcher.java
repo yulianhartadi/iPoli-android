@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * on 3/23/16.
  */
 public class TimesPerDayMatcher extends BaseMatcher<Integer> {
-    private static final String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
+    private static final String PATTERN = "(?:^|\\s)([2-7])\\stimes(?:\\sper\\sday)?(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Override
