@@ -24,7 +24,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 
-    Observable<List<Quest>> findAllIncompleteTodosBefore(LocalDate localDate);
+    Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate);
 
     Observable<List<Quest>> findAllCompletedToday();
 

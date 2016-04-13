@@ -173,7 +173,7 @@ public class App extends MultiDexApplication {
     }
 
     private void resetDueDateForIncompleteTodos() {
-        questPersistenceService.findAllIncompleteTodosBefore(new LocalDate()).flatMapIterable(q -> q)
+        questPersistenceService.findAllIncompleteBefore(new LocalDate()).flatMapIterable(q -> q)
                 .flatMap(q -> {
                     q.setEndDate(null);
                     return questPersistenceService.save(q);

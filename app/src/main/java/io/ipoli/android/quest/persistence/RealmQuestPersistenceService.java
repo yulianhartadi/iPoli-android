@@ -46,11 +46,10 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllIncompleteTodosBefore(LocalDate localDate) {
+    public Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate) {
         return fromRealm(where()
                 .isNull("completedAt")
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
-                .isNull("recurrentQuest")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
 
