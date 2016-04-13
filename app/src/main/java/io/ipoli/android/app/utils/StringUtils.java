@@ -13,4 +13,8 @@ public class StringUtils {
     public static String cutLength(String text, int startIdx, int lenToCut) {
         return text.substring(0, startIdx) + (startIdx + lenToCut >= text.length() ? "" : text.substring(startIdx + lenToCut));
     }
+
+    public static String substring(String text, int startIdx, int endIdx) {
+        return endIdx + 1 >= text.length() ? text.substring(startIdx) : text.substring(startIdx, endIdx + 1);
+    }
 }

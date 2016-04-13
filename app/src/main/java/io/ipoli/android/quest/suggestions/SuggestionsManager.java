@@ -37,7 +37,7 @@ public class SuggestionsManager {
 
     private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
     TextEntityType currentType;
-    Map<TextEntityType, SuggestionsProvider> textSuggesters = new HashMap<>();
+    Map<TextEntityType, SuggestionsProvider> textSuggestionsProvider = new HashMap<>();
     Set<TextEntityType> usedTypes = new HashSet<>();
     List<TextEntityType> orderedTextEntityTypes = new ArrayList<TextEntityType>() {{
         add(TextEntityType.DURATION);
@@ -46,20 +46,20 @@ public class SuggestionsManager {
         add(TextEntityType.TIMES_PER_DAY);
         add(TextEntityType.RECURRENT);
     }};
+    private List<SuggestionDropDownItem> currentSuggestions = new ArrayList<>();
 
     OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
     public SuggestionsManager(PrettyTimeParser parser) {
-        currentType = TextEntityType.MAIN;
 
-        textSuggesters.put(TextEntityType.MAIN, new MainSuggestionsProvider());
-        textSuggesters.put(TextEntityType.DUE_DATE, new DueDateSuggestionsProvider());
-        textSuggesters.put(TextEntityType.DURATION, new DurationSuggestionsProvider());
-        textSuggesters.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider());
-        textSuggesters.put(TextEntityType.RECURRENT, new RecurrenceSuggestionsProvider());
-        textSuggesters.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggestiosProvider());
-        textSuggesters.put(TextEntityType.RECURRENT_DAY_OF_WEEK, new DayOfWeekSuggestionsProvider());
-        textSuggesters.put(TextEntityType.RECURRENT_DAY_OF_MONTH, new DayOfMonthSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.MAIN, new MainSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.DUE_DATE, new DueDateSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.DURATION, new DurationSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.START_TIME, new StartTimeSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.RECURRENT, new RecurrenceSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.TIMES_PER_DAY, new TimesPerDayTextSuggestiosProvider());
+        textSuggestionsProvider.put(TextEntityType.RECURRENT_DAY_OF_WEEK, new DayOfWeekSuggestionsProvider());
+        textSuggestionsProvider.put(TextEntityType.RECURRENT_DAY_OF_MONTH, new DayOfMonthSuggestionsProvider());
 
         typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
             put(TextEntityType.DURATION, new DurationMatcher());
@@ -68,6 +68,7 @@ public class SuggestionsManager {
             put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceMatcher());
         }};
+        changeCurrentSuggestionsProvider(TextEntityType.MAIN, "");
     }
 
     public List<ParsedPart> onTextChange(String text, int selectionIndex) {
@@ -79,10 +80,12 @@ public class SuggestionsManager {
         ParsedPart partialPart = findPartialPart(parsedParts);
 
         TextEntityType newType = currentType;
+        String parsedTypeText = "";
         if (changeState) {
             newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
+            parsedTypeText = partialPart != null ? StringUtils.substring(text, partialPart.startIdx, partialPart.endIdx) : "";
         }
-        changeCurrentSuggestionsProvider(newType);
+        changeCurrentSuggestionsProvider(newType, parsedTypeText);
         return parsedParts;
     }
 
@@ -184,8 +187,9 @@ public class SuggestionsManager {
         return new TextTransformResult(start + appendText + end, (start + appendText).length());
     }
 
-    public void changeCurrentSuggestionsProvider(TextEntityType type) {
+    public void changeCurrentSuggestionsProvider(TextEntityType type, String parsedText) {
         currentType = type;
+        currentSuggestions = getCurrentSuggestionsProvider().filter(parsedText);
         if (suggestionsUpdatedListener != null) {
             suggestionsUpdatedListener.onSuggestionsUpdated();
         }
@@ -204,12 +208,12 @@ public class SuggestionsManager {
         this.suggestionsUpdatedListener = suggestionsUpdatedListener;
     }
 
-    public List<SuggestionDropDownItem> getSuggestions(String text) {
-        return getCurrentSuggester().filter(text);
+    public List<SuggestionDropDownItem> getSuggestions() {
+        return currentSuggestions;
     }
 
-    public SuggestionsProvider getCurrentSuggester() {
-        return textSuggesters.get(currentType);
+    public SuggestionsProvider getCurrentSuggestionsProvider() {
+        return textSuggestionsProvider.get(currentType);
     }
 
     public ParsedPart findNotPartialParsedPartContainingIdx(int index, List<ParsedPart> parsedParts) {
@@ -227,12 +231,12 @@ public class SuggestionsManager {
 
     private void addUsedType(TextEntityType type) {
         usedTypes.add(type);
-        ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
+        ((MainSuggestionsProvider) textSuggestionsProvider.get(TextEntityType.MAIN)).addUsedTextEntityType(type);
     }
 
     private void removeUsedType(TextEntityType type) {
         usedTypes.remove(type);
-        ((MainSuggestionsProvider) textSuggesters.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
+        ((MainSuggestionsProvider) textSuggestionsProvider.get(TextEntityType.MAIN)).removeUsedTextEntityType(type);
     }
 
     public class TextTransformResult {

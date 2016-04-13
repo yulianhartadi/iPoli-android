@@ -170,7 +170,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     private void initUI() {
-        adapter = new SuggestionsAdapter(getContext(), eventBus, suggestionsManager.getSuggestions(questText.getText().toString()));
+        adapter = new SuggestionsAdapter(getContext(), eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
         questText.setThreshold(1);
     }
@@ -369,7 +369,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         SuggestionsManager.TextTransformResult result = suggestionsManager.onSuggestionItemClick(text, suggestion, selectionIndex);
         setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
         if (suggestion.nextTextEntityType != null) {
-            suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType);
+            suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType, "");
         }
     }
 
@@ -383,7 +383,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @Override
     public void onSuggestionsUpdated() {
         if (adapter != null) {
-            adapter.setSuggestions(suggestionsManager.getSuggestions(questText.getText().toString()));
+            adapter.setSuggestions(suggestionsManager.getSuggestions());
         }
     }
 }
