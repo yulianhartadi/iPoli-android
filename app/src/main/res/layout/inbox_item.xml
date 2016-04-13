@@ -31,19 +31,33 @@
         android:layout_marginStart="16dp">
 
         <View
-            android:id="@+id/quest_context_indicator"
+            android:id="@+id/quest_context_indicator_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/ic_context_indicator" />
+            android:background="@drawable/ic_context_progress_indicator" />
 
-        <TextView
-            android:id="@+id/quest_context_icon"
-            style="@style/TextAppearance.AppCompat.Headline"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="@color/md_white"
-            android:textSize="18sp" />
+        <ImageView
+            android:id="@+id/quest_context_indicator_image"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY" />
+
+
+        <!--<View-->
+            <!--android:id="@+id/quest_context_indicator"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="@drawable/ic_context_indicator" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/quest_context_icon"-->
+            <!--style="@style/TextAppearance.AppCompat.Headline"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:gravity="center"-->
+            <!--android:textColor="@color/md_white"-->
+            <!--android:textSize="18sp" />-->
     </FrameLayout>
 
 

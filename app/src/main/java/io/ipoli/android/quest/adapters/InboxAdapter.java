@@ -8,8 +8,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -64,15 +63,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         });
 
         QuestContext ctx = Quest.getContext(q);
-        GradientDrawable drawable = (GradientDrawable) holder.contextIndicator.getBackground();
+        GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
 
-        if (Quest.isStarted(q)) {
-            Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
-            holder.contextIndicator.startAnimation(blinkAnimation);
-        }
-
-        holder.contextIcon.setText(ctx.name().substring(0, 1).toUpperCase());
+        holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
@@ -125,11 +119,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         TextView createdAt;
 
 
-        @Bind(R.id.quest_context_indicator)
-        View contextIndicator;
+        @Bind(R.id.quest_context_indicator_background)
+        public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_context_icon)
-        TextView contextIcon;
+        @Bind(R.id.quest_context_indicator_image)
+        public ImageView contextIndicatorImage;
 
         public ViewHolder(View v) {
             super(v);
