@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -24,7 +26,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import okhttp3.RequestBody;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -49,7 +50,8 @@ public class AppJobService extends JobService {
     @Inject
     Gson gson;
 
-    private Subscription subscription;
+    @Inject
+    Bus eventBus;
 
     private Observable<Player> getPlayer() {
         return playerPersistenceService.find().concatMap(player -> {
@@ -166,7 +168,7 @@ public class AppJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
 
-        subscription = getPlayer().flatMap(p -> Observable.concat(
+        getPlayer().flatMap(p -> Observable.concat(
                 syncRecurrentQuests(p),
                 syncQuests(p),
                 getRecurrentQuests(p),
@@ -176,6 +178,7 @@ public class AppJobService extends JobService {
             Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
         }, () -> {
+            eventBus.post(new SyncCompleteEvent());
             Log.d("RxJava", "Sync Job finished");
             jobFinished(params, false);
         });

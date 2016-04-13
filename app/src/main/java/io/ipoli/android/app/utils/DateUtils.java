@@ -104,11 +104,15 @@ public class DateUtils {
     }
 
     public static boolean isTodayUTC(LocalDate localDate) {
-        return localDate.isEqual(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate());
+        return localDate.isEqual(toStartOfDayUTC(new LocalDate()));
     }
 
     public static boolean isTomorrowUTC(LocalDate localDate) {
-        return localDate.isEqual(new LocalDate().plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate());
+        return localDate.isEqual(toStartOfDayUTC(new LocalDate().plusDays(1)));
+    }
+
+    private static LocalDate toStartOfDayUTC(LocalDate localDate) {
+        return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate();
     }
 
     public static boolean isTodayUTC(Date date) {

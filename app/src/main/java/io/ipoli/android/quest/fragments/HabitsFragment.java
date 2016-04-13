@@ -38,6 +38,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
@@ -196,5 +197,10 @@ public class HabitsFragment extends Fragment {
         });
 
         snackbar.show();
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        updateQuests();
     }
 }

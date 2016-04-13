@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -174,6 +175,11 @@ public class InboxFragment extends Fragment {
         Intent i = new Intent(getContext(), EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        updateQuests();
     }
 
 }

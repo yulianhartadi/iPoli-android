@@ -38,6 +38,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
@@ -116,6 +117,11 @@ public class OverviewFragment extends Fragment {
         q.setEndDate(endDate);
         questPersistenceService.save(q);
         Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
+        updateQuests();
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
         updateQuests();
     }
 

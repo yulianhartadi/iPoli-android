@@ -36,6 +36,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -188,7 +189,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
             }
 
-
             unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
             calendarAdapter.updateEvents(schedule.getCalendarEvents());
             setUnscheduledQuestsHeight();
@@ -263,6 +263,11 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             return;
         }
         calendarDayView.smoothScrollToTime(startTime);
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        updateSchedule();
     }
 
     private class CalendarScheduler {
