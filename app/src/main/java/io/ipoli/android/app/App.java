@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
 import com.squareup.otto.Bus;
@@ -258,21 +259,22 @@ public class App extends MultiDexApplication {
     }
 
     private JobInfo.Builder defaultSyncJob() {
-        JobInfo.Builder builder = new JobInfo.Builder(SYNC_JOB_ID,
-                new ComponentName(getPackageName(),
-                        AppJobService.class.getName()));
-        return builder.setPersisted(true)
+        return createJobBuilder(SYNC_JOB_ID).setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
     }
 
     private JobInfo dailySyncJob() {
-        JobInfo.Builder builder = new JobInfo.Builder(DAILY_SYNC_JOB_ID,
-                new ComponentName(getPackageName(),
-                        AppJobService.class.getName()));
-        return builder.setPersisted(true)
+        return createJobBuilder(DAILY_SYNC_JOB_ID).setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPeriodic(TimeUnit.HOURS.toMillis(24)).build();
+    }
+
+    @NonNull
+    private JobInfo.Builder createJobBuilder(int dailySyncJobId) {
+        return new JobInfo.Builder(dailySyncJobId,
+                new ComponentName(getPackageName(),
+                        AppJobService.class.getName()));
     }
 
     private void scheduleNextReminder() {
