@@ -54,9 +54,9 @@ public class MainActivity extends BaseActivity {
 
         bottomBar.setItems(
                 new BottomBarTab(R.drawable.ic_event_white_24dp, "Calendar"),
-                new BottomBarTab(R.drawable.ic_assignment_white_24dp, "Overview"),
+                new BottomBarTab(R.drawable.ic_format_list_bulleted_white_24dp, "Overview"),
                 new BottomBarTab(R.drawable.ic_add_white_24dp, "AddQuest"),
-                new BottomBarTab(R.drawable.ic_storage_white_24dp, "Inbox"),
+                new BottomBarTab(R.drawable.ic_drafts_white_24dp, "Inbox"),
                 new BottomBarTab(R.drawable.ic_favorite_white_24dp, "Habits")
         );
 
