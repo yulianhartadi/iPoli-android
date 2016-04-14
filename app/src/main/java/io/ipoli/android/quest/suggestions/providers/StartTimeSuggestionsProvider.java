@@ -26,7 +26,7 @@ public class StartTimeSuggestionsProvider implements SuggestionsProvider {
 
         int count = 24 * (60 / interval);
         for (int i = 1; i <= count; i++) {
-            allTimes.add(StartTimeFormatter.format(now.toDateTimeToday().toDate()));
+            allTimes.add(StartTimeFormatter.formatShort(now.toDateTimeToday().toDate()));
             now = now.plusMinutes(interval);
         }
     }
