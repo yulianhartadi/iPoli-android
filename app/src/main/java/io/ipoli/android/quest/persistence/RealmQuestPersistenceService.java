@@ -101,9 +101,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         List<Quest> questsToRemove = where().equalTo("recurrentQuest.id", recurrentQuestId).findAll();
         getRealm().beginTransaction();
         questsToRemove.clear();
-//        for (Quest q : questsToRemove) {
-//            q.removeFromRealm();
-//        }
         getRealm().commitTransaction();
     }
 
