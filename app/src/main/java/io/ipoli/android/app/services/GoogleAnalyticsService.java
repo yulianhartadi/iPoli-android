@@ -16,7 +16,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DateSelectedEvent;
-import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -82,12 +81,6 @@ public class GoogleAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         track(createEventBuilder("quest", "delete-request")
-                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
-    }
-
-    @Subscribe
-    public void onDeleteQuest(DeleteQuestEvent e) {
-        track(createEventBuilder("quest", "delete")
                 .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 

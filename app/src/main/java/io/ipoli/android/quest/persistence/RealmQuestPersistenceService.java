@@ -31,13 +31,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    protected void onObjectSaved(Quest obj) {
-        eventBus.post(new QuestSavedEvent(obj));
+    protected void onObjectSaved(Quest quest) {
+        eventBus.post(new QuestSavedEvent(quest));
     }
 
     @Override
-    protected void onObjectsSaved(List<Quest> objs) {
-        eventBus.post(new QuestsSavedEvent(objs));
+    protected void onObjectsSaved(List<Quest> quests) {
+        eventBus.post(new QuestsSavedEvent(quests));
     }
 
     @Override
@@ -82,9 +82,10 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         if (quest == null) {
             return;
         }
+        String id = quest.getId();
         getRealm().beginTransaction();
         Quest realmQuest = where()
-                .equalTo("id", quest.getId())
+                .equalTo("id", id)
                 .findFirst();
         if (realmQuest == null) {
             getRealm().cancelTransaction();
@@ -92,7 +93,18 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         }
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
-        eventBus.post(new QuestDeletedEvent());
+        eventBus.post(new QuestDeletedEvent(id));
+    }
+
+    @Override
+    public void deleteAllFromRecurrentQuest(String recurrentQuestId) {
+        List<Quest> questsToRemove = where().equalTo("recurrentQuest.id", recurrentQuestId).findAll();
+        getRealm().beginTransaction();
+        questsToRemove.clear();
+//        for (Quest q : questsToRemove) {
+//            q.removeFromRealm();
+//        }
+        getRealm().commitTransaction();
     }
 
     @Override

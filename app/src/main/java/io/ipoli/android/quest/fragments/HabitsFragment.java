@@ -44,7 +44,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RecurrentQuest;
-import io.ipoli.android.quest.events.DeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -179,8 +178,8 @@ public class HabitsFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-//                questPersistenceService.delete(quest);
-                eventBus.post(new DeleteRecurrentQuestEvent(rq));
+                questPersistenceService.deleteAllFromRecurrentQuest(rq.getId());
+                recurrentQuestPersistenceService.delete(rq);
             }
         });
 

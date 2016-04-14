@@ -260,7 +260,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             }
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
-            Toast.makeText(getContext(), R.string.recurrent_quest_added, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {

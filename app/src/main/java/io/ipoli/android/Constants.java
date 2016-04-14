@@ -19,12 +19,10 @@ public interface Constants {
     int QUEST_TIMER_NOTIFICATION_ID = 201;
     int QUEST_DONE_NOTIFICATION_ID = 202;
 
-    int COMPLETE_QUEST_DEFAULT_EXPERIENCE = 5;
     int DEFAULT_PLAYER_LEVEL = 0;
 
     int DEFAULT_PLAYER_EXPERIENCE = 5;
     int DEFAULT_SNOOZE_TIME_MINUTES = 10;
-    String DEFAULT_ASSISTANT_AVATAR = "avatar_12";
     String DEFAULT_PLAYER_AVATAR = "avatar_07";
     int INVITE_PLAYER_PROBABILITY = 50;
 
@@ -34,14 +32,14 @@ public interface Constants {
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String IS_TODAY_QUEST_EXTRA_KEY = "is_today_quest";
 
-    int[] BASE_XP_OUTCOMES = new int[]{5, 10, 15};
     int AVATAR_COUNT = 12;
     int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
     int RESULT_REMOVED = 100;
 
     String KEY_APP_RUN_COUNT = "RUN_COUNT";
+    String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
+    String KEY_REMOVED_RECURRENT_QUESTS = "REMOVED_RECURRENT_QUESTS";
+
     String IPOLI_EMAIL = "hi@ipoli.io";
-
-
 }

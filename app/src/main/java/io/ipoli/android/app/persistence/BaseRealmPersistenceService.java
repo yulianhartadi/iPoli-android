@@ -26,35 +26,35 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return getRealm().where(getRealmObjectClass());
     }
 
-    public Observable<T> save(T obj) {
-        return save(obj, true);
+    public Observable<T> save(T object) {
+        return save(object, true);
     }
 
-    public Observable<T> save(T obj, boolean markUpdated) {
+    public Observable<T> save(T object, boolean markUpdated) {
         if (markUpdated) {
-            obj.markUpdated();
+            object.markUpdated();
         }
         Realm realm = getRealm();
         realm.beginTransaction();
-        T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(obj));
+        T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(object));
         realm.commitTransaction();
         onObjectSaved(res);
         return Observable.just(res);
     }
 
-    public Observable<List<T>> saveAll(List<T> objs) {
-        return saveAll(objs, true);
+    public Observable<List<T>> saveAll(List<T> objects) {
+        return saveAll(objects, true);
     }
 
-    public Observable<List<T>> saveAll(List<T> objs, boolean markUpdated) {
+    public Observable<List<T>> saveAll(List<T> objects, boolean markUpdated) {
         if (markUpdated) {
-            for (T o : objs) {
+            for (T o : objects) {
                 o.markUpdated();
             }
         }
         Realm realm = getRealm();
         realm.beginTransaction();
-        List<T> res = realm.copyFromRealm(realm.copyToRealmOrUpdate(objs));
+        List<T> res = realm.copyFromRealm(realm.copyToRealmOrUpdate(objects));
         realm.commitTransaction();
         onObjectsSaved(res);
         return Observable.just(res);

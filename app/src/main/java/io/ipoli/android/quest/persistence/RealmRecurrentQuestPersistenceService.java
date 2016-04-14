@@ -7,6 +7,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import rx.Observable;
 
 /**
@@ -41,9 +42,10 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         if (recurrentQuest == null) {
             return;
         }
+        String id = recurrentQuest.getId();
         getRealm().beginTransaction();
         RecurrentQuest realmQuest = where()
-                .equalTo("id", recurrentQuest.getId())
+                .equalTo("id", id)
                 .findFirst();
         if (realmQuest == null) {
             getRealm().cancelTransaction();
@@ -51,5 +53,6 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         }
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
+        eventBus.post(new RecurrentQuestDeletedEvent(id));
     }
 }

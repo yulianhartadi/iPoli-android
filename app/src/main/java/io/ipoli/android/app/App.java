@@ -5,9 +5,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
@@ -20,7 +18,9 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -36,6 +36,7 @@ import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
@@ -47,6 +48,7 @@ import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
+import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -89,15 +91,18 @@ public class App extends MultiDexApplication {
         Realm.setDefaultConfiguration(config);
 
         getAppComponent(this).inject(this);
-        resetDueDateForIncompleteTodos();
+        resetEndDateForIncompleteQuests();
         registerServices();
         initPlanDayReminder();
         initReviewDayReminder();
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int runCount = prefs.getInt(Constants.KEY_APP_RUN_COUNT, 0);
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+
+        int runCount = localStorage.readInt(Constants.KEY_APP_RUN_COUNT, 0);
         if (runCount == 0) {
+            localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, new HashSet<>());
+            localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, new HashSet<>());
             saveInitialQuests();
             eventBus.post(new ForceSyncRequestEvent());
         } else if (runCount == 1) {
@@ -105,9 +110,9 @@ public class App extends MultiDexApplication {
         } else {
             eventBus.post(new SyncRequestEvent());
         }
-        SharedPreferences.Editor e = prefs.edit();
-        e.putInt(Constants.KEY_APP_RUN_COUNT, runCount + 1);
-        e.apply();
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
+        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
@@ -172,7 +177,7 @@ public class App extends MultiDexApplication {
         initialQuests.add(callQuest);
     }
 
-    private void resetDueDateForIncompleteTodos() {
+    private void resetEndDateForIncompleteQuests() {
         questPersistenceService.findAllIncompleteBefore(new LocalDate()).flatMapIterable(q -> q)
                 .flatMap(q -> {
                     q.setEndDate(null);
@@ -234,6 +239,20 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        removedQuests.add(e.id);
+        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
+        eventBus.post(new SyncRequestEvent());
+        scheduleNextReminder();
+    }
+
+    @Subscribe
+    public void onRecurrentQuestDeleted(RecurrentQuestDeletedEvent e) {
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS);
+        removedQuests.add(e.id);
+        localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, removedQuests);
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }

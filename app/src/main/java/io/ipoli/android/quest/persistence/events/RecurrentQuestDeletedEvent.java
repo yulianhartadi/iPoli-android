@@ -2,13 +2,13 @@ package io.ipoli.android.quest.persistence.events;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/21/16.
+ * on 4/15/16.
  */
-public class QuestDeletedEvent {
+public class RecurrentQuestDeletedEvent {
 
     public final String id;
 
-    public QuestDeletedEvent(String id) {
+    public RecurrentQuestDeletedEvent(String id) {
         this.id = id;
     }
 }

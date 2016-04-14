@@ -37,7 +37,6 @@ import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -146,7 +145,6 @@ public class InboxFragment extends Fragment {
                 super.onDismissed(snackbar, event);
                 QuestNotificationScheduler.stopAll(quest.getId(), getContext());
                 questPersistenceService.delete(quest);
-                eventBus.post(new DeleteQuestEvent(quest));
             }
         });
 

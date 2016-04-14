@@ -45,6 +45,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
@@ -230,20 +231,15 @@ public class EditQuestActivity extends BaseActivity {
                 return true;
             case R.id.action_remove:
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_remove_quest_title)).setMessage(getString(R.string.dialog_remove_quest_message)).create();
-                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        questPersistenceService.delete(quest);
-                        Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
-                        setResult(Constants.RESULT_REMOVED);
-                        finish();
-                    }
+                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), (dialogInterface, i) -> {
+                    QuestNotificationScheduler.stopAll(quest.getId(), EditQuestActivity.this);
+                    questPersistenceService.delete(quest);
+                    Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
+                    setResult(Constants.RESULT_REMOVED);
+                    finish();
                 });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
 
-                    }
                 });
                 d.show();
                 return true;
