@@ -19,25 +19,25 @@ public class DayOfWeekSuggestionsProvider implements SuggestionsProvider {
         text = text.toLowerCase();
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         if(!text.contains("mon")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Monday", "Mon", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Monday", "Mon", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("tue")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Tuesday", "Tue", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Tuesday", "Tue", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("wed")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Wednesday", "Wed", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Wednesday", "Wed", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("thur")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Thursday", "Thur", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Thursday", "Thur", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("fri")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Friday", "Fri", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Friday", "Fri", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("sat")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Saturday", "Sat", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Saturday", "Sat", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         if(!text.contains("sun")) {
-            suggestions.add(new SuggestionDropDownItem(icon, "Sunday", "Sun", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "Sunday", "Sun", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         return suggestions;
     }

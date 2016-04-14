@@ -20,8 +20,8 @@ public class RecurrenceSuggestionsProvider implements SuggestionsProvider {
         suggestions.add(new SuggestionDropDownItem(icon, "day", "every day"));
 
         if(text.length() <= "every ".length()) {
-            suggestions.add(new SuggestionDropDownItem(icon, "weekday...", "every", TextEntityType.RECURRENT_DAY_OF_WEEK));
-            suggestions.add(new SuggestionDropDownItem(icon, "month on...", "every", TextEntityType.RECURRENT_DAY_OF_MONTH));
+            suggestions.add(new SuggestionDropDownItem(icon, "weekday...", "every", TextEntityType.RECURRENT_DAY_OF_WEEK, true, false));
+            suggestions.add(new SuggestionDropDownItem(icon, "month on...", "every", TextEntityType.RECURRENT_DAY_OF_MONTH, true, false));
         }
         return suggestions;
     }

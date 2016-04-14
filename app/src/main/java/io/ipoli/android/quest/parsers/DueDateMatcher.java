@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
-import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -100,11 +99,6 @@ public class DueDateMatcher extends BaseMatcher<Date> {
     @Override
     public TextEntityType getTextEntityType() {
         return TextEntityType.DUE_DATE;
-    }
-
-    @Override
-    public SuggestionsProvider getSuggestionsProvider() {
-        return null;
     }
 
     @Override

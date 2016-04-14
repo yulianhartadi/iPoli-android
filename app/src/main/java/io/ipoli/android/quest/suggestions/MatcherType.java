@@ -5,5 +5,5 @@ package io.ipoli.android.quest.suggestions;
  * on 4/14/16.
  */
 public enum MatcherType {
-    DATE, TIME, DURATION
+    MAIN, DATE, TIME, DURATION
 }
