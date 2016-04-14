@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.suggestions;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -74,19 +73,13 @@ public class SuggestionsManager {
     }
 
     public List<ParsedPart> onTextChange(String text, int selectionIndex) {
-        return onTextChange(text, selectionIndex, true);
-    }
-
-    public List<ParsedPart> onTextChange(String text, int selectionIndex, boolean changeState) {
         List<ParsedPart> parsedParts = parse(text, selectionIndex);
         ParsedPart partialPart = findPartialPart(parsedParts);
 
         TextEntityType newType = currentType;
         String parsedTypeText = "";
-        if (changeState) {
-            newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
-            parsedTypeText = partialPart != null ? StringUtils.substring(text, partialPart.startIdx, partialPart.endIdx) : "";
-        }
+        newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
+        parsedTypeText = partialPart != null ? StringUtils.substring(text, partialPart.startIdx, partialPart.endIdx) : "";
         changeCurrentSuggestionsProvider(newType, parsedTypeText);
         return parsedParts;
     }
@@ -278,7 +271,6 @@ public class SuggestionsManager {
     }
 
     public void changeCurrentSuggestionsProvider(TextEntityType type, String parsedText) {
-        Log.d("Change provider", "from: " + currentType + " to: " + type);
         currentType = type;
         currentSuggestions = getCurrentSuggestionsProvider().filter(parsedText);
         if (suggestionsUpdatedListener != null) {
@@ -311,24 +303,6 @@ public class SuggestionsManager {
         return null;
     }
 
-    private ParsedPart findParsedPartByType(TextEntityType type, List<ParsedPart> parsedParts) {
-        for (ParsedPart p : parsedParts) {
-            if (p.type == type) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    private boolean parsedPartsContainsType(TextEntityType type, List<ParsedPart> parsedParts) {
-        for (ParsedPart p : parsedParts) {
-            if (p.type == type) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private ParsedPart findNotPartialParsedPartContainingIdx(int index, List<ParsedPart> parsedParts) {
         for (ParsedPart p : parsedParts) {
             if (p.startIdx <= index && index <= p.endIdx && !p.isPartial) {
@@ -344,13 +318,11 @@ public class SuggestionsManager {
         }
         usedMatcherTypesToUsedTextEntityType.put(type, textEntityType);
         ((MainSuggestionsProvider) typeToMatcher.get(TextEntityType.MAIN).getSuggestionsProvider()).addUsedMatcherType(type);
-        Log.d("AddUsedType", usedMatcherTypesToUsedTextEntityType.toString());
     }
 
     private void removeUsedType(MatcherType type) {
         usedMatcherTypesToUsedTextEntityType.remove(type);
         ((MainSuggestionsProvider) typeToMatcher.get(TextEntityType.MAIN).getSuggestionsProvider()).removeUsedMatcherType(type);
-        Log.d("RemoveUsedType", usedMatcherTypesToUsedTextEntityType.toString());
     }
 
     public class TextTransformResult {

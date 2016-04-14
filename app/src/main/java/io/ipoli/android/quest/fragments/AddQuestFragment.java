@@ -309,11 +309,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         switch (textWatcherState) {
             case FROM_DELETE:
-                List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx, false);
-                colorParsedParts(parsedParts);
-                break;
             case FROM_DROP_DOWN:
-                parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx);
+                List<ParsedPart> parsedParts = suggestionsManager.onTextChange(s.toString(), selectionStartIdx);
                 colorParsedParts(parsedParts);
                 break;
 
