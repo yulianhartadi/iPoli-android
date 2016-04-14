@@ -8,6 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.StartTimeSuggestionsProvider;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -20,6 +23,7 @@ public class StartTimeMatcher extends BaseMatcher<Integer> {
     private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     public StartTimeMatcher(PrettyTimeParser parser) {
+        super(new StartTimeSuggestionsProvider());
         this.parser = parser;
     }
 
@@ -42,6 +46,16 @@ public class StartTimeMatcher extends BaseMatcher<Integer> {
             }
         }
         return -1;
+    }
+
+    @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.TIME;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.START_TIME;
     }
 
     @Override

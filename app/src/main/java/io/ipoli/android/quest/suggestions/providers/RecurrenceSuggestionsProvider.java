@@ -18,8 +18,11 @@ public class RecurrenceSuggestionsProvider implements SuggestionsProvider {
         int icon = R.drawable.ic_repeat_black_24dp;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
         suggestions.add(new SuggestionDropDownItem(icon, "day", "every day"));
-        suggestions.add(new SuggestionDropDownItem(icon, "day of week", "every", TextEntityType.RECURRENT_DAY_OF_WEEK));
-        suggestions.add(new SuggestionDropDownItem(icon, "day of month", "every", TextEntityType.RECURRENT_DAY_OF_MONTH));
+
+        if(text.length() <= "every ".length()) {
+            suggestions.add(new SuggestionDropDownItem(icon, "weekday...", "every", TextEntityType.RECURRENT_DAY_OF_WEEK));
+            suggestions.add(new SuggestionDropDownItem(icon, "month on...", "every", TextEntityType.RECURRENT_DAY_OF_MONTH));
+        }
         return suggestions;
     }
 }

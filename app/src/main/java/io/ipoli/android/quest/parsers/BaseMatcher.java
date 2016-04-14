@@ -1,10 +1,18 @@
 package io.ipoli.android.quest.parsers;
 
+import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/4/16.
  */
 public abstract class BaseMatcher<R> implements QuestTextMatcher<R> {
+
+    protected SuggestionsProvider suggestionsProvider;
+
+    public BaseMatcher(SuggestionsProvider suggestionsProvider) {
+        this.suggestionsProvider = suggestionsProvider;
+    }
 
     @Override
     public Match partialMatch(String text) {
@@ -20,6 +28,11 @@ public abstract class BaseMatcher<R> implements QuestTextMatcher<R> {
             currText = firstSpaceIndex >= 0 ? currText.substring(firstSpaceIndex + 1) : "";
         }
         return null;
+    }
+
+    @Override
+    public SuggestionsProvider getSuggestionsProvider() {
+        return suggestionsProvider;
     }
 
     protected abstract boolean partiallyMatches(String text);

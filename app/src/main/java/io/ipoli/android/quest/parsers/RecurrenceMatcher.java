@@ -3,26 +3,33 @@ package io.ipoli.android.quest.parsers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.RecurrenceSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
+
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
 public class RecurrenceMatcher extends BaseMatcher<String> {
     private static final String EVERY_DAY_PATTERN = "(?:^|\\s)every\\sday(?:$|\\s)";
-    private static final String WEEKDAY_PATTERN = "(?:^|\\s)every((\\,\\s?|\\s|\\sand\\s|\\s\\&\\s)?(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun))+(?:$|\\s)";
-    private static final String ON_EVERY_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d{1,2})(st|nd|th|rd)?\\s(every|each)\\smonth(?:$|\\s)";
-    private static final String EVERY_OF_THE_MONTH_PATTERN = "(?:^|\\s)(every|each)\\s(\\d{1,2})(st|th|rd|nd)?\\sof\\sthe\\smonth(?:$|\\s)";
 
     private Pattern[] patterns = {
             Pattern.compile(EVERY_DAY_PATTERN, Pattern.CASE_INSENSITIVE),
-            Pattern.compile(WEEKDAY_PATTERN, Pattern.CASE_INSENSITIVE),
-            Pattern.compile(ON_EVERY_MONTH_PATTERN, Pattern.CASE_INSENSITIVE),
-            Pattern.compile(EVERY_OF_THE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE),
     };
+
+    public RecurrenceMatcher() {
+        this(new RecurrenceSuggestionsProvider());
+    }
+
+    protected RecurrenceMatcher(SuggestionsProvider suggestionsProvider) {
+        super(suggestionsProvider);
+    }
 
     @Override
     public Match match(String text) {
-        for (Pattern p : patterns) {
+        for (Pattern p : getPatterns()) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
                 return new Match(matcher.group(), matcher.start(), matcher.end() - 1);
@@ -33,7 +40,7 @@ public class RecurrenceMatcher extends BaseMatcher<String> {
 
     @Override
     public String parse(String text) {
-        for (Pattern p : patterns) {
+        for (Pattern p : getPatterns()) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
                 return matcher.group();
@@ -43,8 +50,18 @@ public class RecurrenceMatcher extends BaseMatcher<String> {
     }
 
     @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.DATE;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.RECURRENT;
+    }
+
+    @Override
     public boolean partiallyMatches(String text) {
-        for (Pattern p : patterns) {
+        for (Pattern p : getPatterns()) {
             Matcher matcher = p.matcher(text);
             matcher.matches();
             if(matcher.hitEnd()) {
@@ -52,5 +69,9 @@ public class RecurrenceMatcher extends BaseMatcher<String> {
             }
         }
         return false;
+    }
+
+    protected Pattern[] getPatterns() {
+        return patterns;
     }
 }

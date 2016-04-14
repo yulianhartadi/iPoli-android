@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
@@ -33,6 +38,7 @@ public class DueDateMatcher extends BaseMatcher<Date> {
     private final PrettyTimeParser parser;
 
     public DueDateMatcher(PrettyTimeParser parser) {
+        super(new DueDateSuggestionsProvider());
         this.parser = parser;
     }
 
@@ -83,6 +89,21 @@ public class DueDateMatcher extends BaseMatcher<Date> {
                 return dueResult.get(0);
             }
         }
+        return null;
+    }
+
+    @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.DATE;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.DUE_DATE;
+    }
+
+    @Override
+    public SuggestionsProvider getSuggestionsProvider() {
         return null;
     }
 

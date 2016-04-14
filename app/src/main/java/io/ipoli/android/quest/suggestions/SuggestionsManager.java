@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.suggestions;
 
+import android.util.Log;
+
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
@@ -16,6 +18,8 @@ import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
@@ -45,6 +49,8 @@ public class SuggestionsManager {
         add(TextEntityType.DUE_DATE);
         add(TextEntityType.TIMES_PER_DAY);
         add(TextEntityType.RECURRENT);
+        add(TextEntityType.RECURRENT_DAY_OF_WEEK);
+        add(TextEntityType.RECURRENT_DAY_OF_MONTH);
     }};
     private List<SuggestionDropDownItem> currentSuggestions = new ArrayList<>();
 
@@ -67,6 +73,8 @@ public class SuggestionsManager {
             put(TextEntityType.DUE_DATE, new DueDateMatcher(parser));
             put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceMatcher());
+            put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
+            put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
         }};
         changeCurrentSuggestionsProvider(TextEntityType.MAIN, "");
     }
@@ -246,6 +254,7 @@ public class SuggestionsManager {
     }
 
     public void changeCurrentSuggestionsProvider(TextEntityType type, String parsedText) {
+        Log.d("Change provider", "from: " + currentType + " to: " + type);
         currentType = type;
         currentSuggestions = getCurrentSuggestionsProvider().filter(parsedText);
         if (suggestionsUpdatedListener != null) {

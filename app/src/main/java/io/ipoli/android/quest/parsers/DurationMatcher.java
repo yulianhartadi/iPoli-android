@@ -6,6 +6,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.DurationSuggestionsProvider;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
@@ -14,6 +18,10 @@ public class DurationMatcher extends BaseMatcher<Integer> {
 
     private static final String DURATION_PATTERN = "(?:^|\\s)for (\\d{1,3})\\s?(hours|hour|h|minutes|minute|mins|min|m)(?: and (\\d{1,3})\\s?(minutes|minute|mins|min|m))?(?:$|\\s)";
     Pattern pattern = Pattern.compile(DURATION_PATTERN, Pattern.CASE_INSENSITIVE);
+
+    public DurationMatcher() {
+        super(new DurationSuggestionsProvider());
+    }
 
     @Override
     public Match match(String text) {
@@ -47,6 +55,16 @@ public class DurationMatcher extends BaseMatcher<Integer> {
             return duration;
         }
         return -1;
+    }
+
+    @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.DURATION;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.DURATION;
     }
 
     @Override

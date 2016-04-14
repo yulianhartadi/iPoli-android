@@ -3,6 +3,10 @@ package io.ipoli.android.quest.parsers;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestionsProvider;
+
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
@@ -10,6 +14,10 @@ import java.util.regex.Pattern;
 public class TimesPerDayMatcher extends BaseMatcher<Integer> {
     private static final String PATTERN = "(?:^|\\s)([2-7])\\stimes(?:\\sper\\sday)?(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
+
+    public TimesPerDayMatcher() {
+        super(new TimesPerDayTextSuggestionsProvider());
+    }
 
     @Override
     public Match match(String text) {
@@ -30,6 +38,16 @@ public class TimesPerDayMatcher extends BaseMatcher<Integer> {
             }
         }
         return -1;
+    }
+
+    @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.TIME;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.TIMES_PER_DAY;
     }
 
     @Override

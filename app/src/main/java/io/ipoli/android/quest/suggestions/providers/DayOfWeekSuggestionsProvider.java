@@ -12,30 +12,31 @@ import io.ipoli.android.quest.suggestions.TextEntityType;
  * on 4/6/16.
  */
 public class DayOfWeekSuggestionsProvider implements SuggestionsProvider {
+    private static final int icon = R.drawable.ic_repeat_black_24dp;
 
     @Override
     public List<SuggestionDropDownItem> filter(String text) {
-        int icon = R.drawable.ic_repeat_black_24dp;
+        text = text.toLowerCase();
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
-        if(!text.contains("Mon")) {
+        if(!text.contains("mon")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Monday", "Mon", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Tue")) {
+        if(!text.contains("tue")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Tuesday", "Tue", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Wed")) {
+        if(!text.contains("wed")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Wednesday", "Wed", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Thur")) {
+        if(!text.contains("thur")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Thursday", "Thur", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Fri")) {
+        if(!text.contains("fri")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Friday", "Fri", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Sat")) {
+        if(!text.contains("sat")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Saturday", "Sat", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
-        if(!text.contains("Sun")) {
+        if(!text.contains("sun")) {
             suggestions.add(new SuggestionDropDownItem(icon, "Sunday", "Sun", TextEntityType.RECURRENT_DAY_OF_WEEK, false));
         }
         return suggestions;
