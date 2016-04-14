@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.suggestions;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
@@ -69,7 +70,6 @@ public class SuggestionsManager {
             matcherTypeToTextEntityTypes.get(mt).add(et);
         }
 
-
         changeCurrentSuggestionsProvider(TextEntityType.MAIN, "");
     }
 
@@ -97,34 +97,14 @@ public class SuggestionsManager {
 
     public List<ParsedPart> parse(String text, int selectionIndex) {
         List<ParsedPart> parts = new ArrayList<>();
+        parsePreviouslyMatchedParts(text, parts);
+        parseNewParts(text, selectionIndex, parts);
+        sortPartsByStartIndex(parts);
+        return parts;
+    }
 
-        List<MatcherType> matcherTypesToRemove = new ArrayList<>();
-        for (MatcherType matcherType : usedMatcherTypesToUsedTextEntityType.keySet()) {
-            TextEntityType textEntityType = usedMatcherTypesToUsedTextEntityType.get(matcherType);
-            QuestTextMatcher matcher = typeToMatcher.get(textEntityType);
-            Match match = matcher.match(text);
-            if (match == null) {
-                matcherTypesToRemove.add(matcherType);
-            } else {
-                int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
-                int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
-                parts.add(new ParsedPart(start, end, textEntityType, false));
-            }
-        }
-
-        for (MatcherType t : matcherTypesToRemove) {
-            usedMatcherTypesToUsedTextEntityType.remove(t);
-        }
-
-        Set<TextEntityType> unusedTextEntityTypes = new TreeSet<>(Arrays.asList(TextEntityType.values()));
-
-        unusedTextEntityTypes.remove(TextEntityType.MAIN);
-
-        for (MatcherType mt : usedMatcherTypesToUsedTextEntityType.keySet()) {
-            unusedTextEntityTypes.removeAll(matcherTypeToTextEntityTypes.get(mt));
-        }
-
-        for (TextEntityType t : unusedTextEntityTypes) {
+    private void parseNewParts(String text, int selectionIndex, List<ParsedPart> parts) {
+        for (TextEntityType t : getUnusedTextEntityTypes()) {
             QuestTextMatcher matcher = typeToMatcher.get(t);
             Match partialMatch = matcher.partialMatch(text.substring(0, selectionIndex));
             if (canBeUsedAsPartialMatch(partialMatch, parts)) {
@@ -153,8 +133,38 @@ public class SuggestionsManager {
                 parts.add(new ParsedPart(start, end, t, false));
             }
         }
-        sortPartsByStartIndex(parts);
-        return parts;
+    }
+
+    private void parsePreviouslyMatchedParts(String text, List<ParsedPart> parts) {
+        List<MatcherType> matcherTypesToRemove = new ArrayList<>();
+        for (MatcherType matcherType : usedMatcherTypesToUsedTextEntityType.keySet()) {
+            TextEntityType textEntityType = usedMatcherTypesToUsedTextEntityType.get(matcherType);
+            QuestTextMatcher matcher = typeToMatcher.get(textEntityType);
+            Match match = matcher.match(text);
+            if (match == null) {
+                matcherTypesToRemove.add(matcherType);
+            } else {
+                int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
+                int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
+                parts.add(new ParsedPart(start, end, textEntityType, false));
+            }
+        }
+
+        for (MatcherType t : matcherTypesToRemove) {
+            usedMatcherTypesToUsedTextEntityType.remove(t);
+        }
+    }
+
+    @NonNull
+    private Set<TextEntityType> getUnusedTextEntityTypes() {
+        Set<TextEntityType> unusedTextEntityTypes = new TreeSet<>(Arrays.asList(TextEntityType.values()));
+
+        unusedTextEntityTypes.remove(TextEntityType.MAIN);
+
+        for (MatcherType mt : usedMatcherTypesToUsedTextEntityType.keySet()) {
+            unusedTextEntityTypes.removeAll(matcherTypeToTextEntityTypes.get(mt));
+        }
+        return unusedTextEntityTypes;
     }
 
     private MatcherType getMatcherType(TextEntityType textEntityType) {
