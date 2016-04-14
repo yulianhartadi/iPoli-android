@@ -18,26 +18,21 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class DueDateSuggestionsProvider implements SuggestionsProvider {
-    private static final int icon = R.drawable.ic_event_black_18dp;
-
+public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
     private final List<String> daysOfMonth = new ArrayList<>();
     private final List<String> months = new ArrayList<>();
-
-    private List<SuggestionDropDownItem> defaultSuggestionItems = new ArrayList<>();
-
     private static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Avg", "Sep", "Oct", "Nov", "Dec"};
 
     public DueDateSuggestionsProvider() {
         SimpleDateFormat dayMonthFormatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
         String after3days = dayMonthFormatter.format(LocalDate.now().plusDays(3).toDate());
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "today"));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "tomorrow"));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "after 2 days"));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, after3days, "on " + after3days));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "this Friday"));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "next Monday"));
-        defaultSuggestionItems.add(new SuggestionDropDownItem(icon, "in 2 months"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "today"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "tomorrow"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "after 2 days"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), after3days, getMatchingStartWord() + after3days));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "this Friday"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "next Monday"));
+        defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "in 2 months"));
 
         int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         for (int i = today; i <= 31; i++) {
@@ -55,21 +50,28 @@ public class DueDateSuggestionsProvider implements SuggestionsProvider {
     }
 
     @Override
-    public List<SuggestionDropDownItem> filter(String text) {
-        if ("on ".contains(text.toLowerCase())) {
-            return defaultSuggestionItems;
-        }
+    protected List<String> getSuggestions() {
+        return new ArrayList<>();
+    }
 
-        if (text.toLowerCase().startsWith("on ")) {
-            text = text.replaceFirst("on\\s", "");
-        }
+    @Override
+    protected int getIcon() {
+        return R.drawable.ic_event_black_18dp;
+    }
 
+    @Override
+    protected String getMatchingStartWord() {
+        return "on ";
+    }
+
+    @Override
+    protected List<SuggestionDropDownItem> applyFilters(String text) {
         List<SuggestionDropDownItem> items = new ArrayList<>();
 
         if ("today".startsWith(text) || "tomorrow".startsWith(text)) {
             for (String t : new String[]{"today", "tomorrow"}) {
                 if (t.startsWith(text.toLowerCase())) {
-                    items.add(new SuggestionDropDownItem(icon, t));
+                    items.add(new SuggestionDropDownItem(getIcon(), t));
                 }
             }
             return items;
@@ -83,7 +85,7 @@ public class DueDateSuggestionsProvider implements SuggestionsProvider {
                     for (String day : daysOfMonth) {
                         if ((day + " ").startsWith(text.toLowerCase())) {
                             String visibleText = day + " " + month;
-                            items.add(new SuggestionDropDownItem(icon, visibleText, "on " + visibleText));
+                            items.add(new SuggestionDropDownItem(getIcon(), visibleText, getMatchingStartWord() + visibleText));
                         }
                     }
                 }
@@ -94,7 +96,7 @@ public class DueDateSuggestionsProvider implements SuggestionsProvider {
                 for(String m : months) {
                     if(m.toLowerCase().startsWith(monthPart.toLowerCase())) {
                         String visibleText = startPart + " " + m;
-                        items.add(new SuggestionDropDownItem(icon, visibleText, "on " + visibleText));
+                        items.add(new SuggestionDropDownItem(getIcon(), visibleText, getMatchingStartWord() + visibleText));
                     }
                 }
             }
@@ -102,5 +104,4 @@ public class DueDateSuggestionsProvider implements SuggestionsProvider {
 
         return items;
     }
-
 }
