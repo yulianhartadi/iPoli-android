@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.suggestions;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -76,10 +77,9 @@ public class SuggestionsManager {
         List<ParsedPart> parsedParts = parse(text, selectionIndex);
         ParsedPart partialPart = findPartialPart(parsedParts);
 
-        TextEntityType newType = currentType;
-        String parsedTypeText = "";
-        newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
-        parsedTypeText = partialPart != null ? StringUtils.substring(text, partialPart.startIdx, partialPart.endIdx) : "";
+        TextEntityType newType = partialPart != null ? partialPart.type : TextEntityType.MAIN;
+        String parsedTypeText = partialPart != null ? StringUtils.substring(text, partialPart.startIdx, partialPart.endIdx) : "";
+        Log.d("ParsedTypeText", parsedTypeText);
         changeCurrentSuggestionsProvider(newType, parsedTypeText);
         return parsedParts;
     }

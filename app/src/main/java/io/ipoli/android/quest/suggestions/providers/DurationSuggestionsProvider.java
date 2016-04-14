@@ -16,10 +16,17 @@ public class DurationSuggestionsProvider implements SuggestionsProvider {
 
     @Override
     public List<SuggestionDropDownItem> filter(String text) {
-        if(text.toLowerCase().startsWith("for ")) {
+        List<SuggestionDropDownItem> suggestionItems = new ArrayList<>();
+        if ("for ".contains(text.toLowerCase())) {
+            for (String s : suggestions) {
+                suggestionItems.add(new SuggestionDropDownItem(icon, s, "for " + s));
+            }
+            return suggestionItems;
+        }
+
+        if (text.toLowerCase().startsWith("for ")) {
             text = text.replaceFirst("for\\s", "");
         }
-        List<SuggestionDropDownItem> suggestionItems = new ArrayList<>();
         for (String s : suggestions) {
             if (s.startsWith(text)) {
                 suggestionItems.add(new SuggestionDropDownItem(icon, s, "for " + s));
