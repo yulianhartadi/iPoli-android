@@ -28,7 +28,7 @@ public class DurationSuggestionsProvider implements SuggestionsProvider {
             text = text.replaceFirst("for\\s", "");
         }
         for (String s : suggestions) {
-            if (s.startsWith(text)) {
+            if (s.startsWith(text.toLowerCase())) {
                 suggestionItems.add(new SuggestionDropDownItem(icon, s, "for " + s));
             }
         }
