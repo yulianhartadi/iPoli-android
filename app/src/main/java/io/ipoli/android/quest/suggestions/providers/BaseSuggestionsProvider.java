@@ -35,7 +35,7 @@ public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
             return defaultSuggestionItems;
         }
 
-        if (text.toLowerCase().startsWith(getMatchingStartWord())) {
+        if (text.toLowerCase().startsWith(getMatchingStartWord().toLowerCase())) {
             text = text.replaceFirst(getMatchingStartWord(), "");
         }
 
@@ -45,7 +45,7 @@ public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
     protected List<SuggestionDropDownItem> applyFilters(String text) {
         List<SuggestionDropDownItem> suggestionItems = new ArrayList<>();
         for(String s: suggestions) {
-            if(s.startsWith(text)) {
+            if(s.toLowerCase().startsWith(text.toLowerCase())) {
                 suggestionItems.add(new SuggestionDropDownItem(getIcon(), s, getMatchingStartWord() + s));
             }
         }
