@@ -6,10 +6,13 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
@@ -31,6 +34,7 @@ import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
  */
 public class SuggestionsManager {
 
+    private final Map<MatcherType, List<TextEntityType>> matcherTypeToTextEntityTypes;
     private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
 
     TextEntityType currentType;
@@ -53,6 +57,18 @@ public class SuggestionsManager {
             put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
         }};
+
+        matcherTypeToTextEntityTypes = new HashMap<>();
+
+        for (QuestTextMatcher matcher : typeToMatcher.values()) {
+            MatcherType mt = matcher.getMatcherType();
+            TextEntityType et = matcher.getTextEntityType();
+            if (!matcherTypeToTextEntityTypes.containsKey(mt)) {
+                matcherTypeToTextEntityTypes.put(mt, new ArrayList<>());
+            }
+            matcherTypeToTextEntityTypes.get(mt).add(et);
+        }
+
 
         changeCurrentSuggestionsProvider(TextEntityType.MAIN, "");
     }
@@ -83,11 +99,11 @@ public class SuggestionsManager {
         List<ParsedPart> parts = new ArrayList<>();
 
         List<MatcherType> matcherTypesToRemove = new ArrayList<>();
-        for(MatcherType matcherType : usedMatcherTypesToUsedTextEntityType.keySet()) {
+        for (MatcherType matcherType : usedMatcherTypesToUsedTextEntityType.keySet()) {
             TextEntityType textEntityType = usedMatcherTypesToUsedTextEntityType.get(matcherType);
             QuestTextMatcher matcher = typeToMatcher.get(textEntityType);
             Match match = matcher.match(text);
-            if(match == null) {
+            if (match == null) {
                 matcherTypesToRemove.add(matcherType);
             } else {
                 int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
@@ -96,27 +112,16 @@ public class SuggestionsManager {
             }
         }
 
-        for(MatcherType t : matcherTypesToRemove) {
+        for (MatcherType t : matcherTypesToRemove) {
             usedMatcherTypesToUsedTextEntityType.remove(t);
         }
 
-        List<TextEntityType> unusedTextEntityTypes = new ArrayList<>();
-        for(MatcherType t : MatcherType.values()) {
-            if(usedMatcherTypesToUsedTextEntityType.containsKey(t)) {
-                continue;
-            }
-            if(t == MatcherType.DATE) {
-                unusedTextEntityTypes.add(TextEntityType.DUE_DATE);
-                unusedTextEntityTypes.add(TextEntityType.RECURRENT);
-                unusedTextEntityTypes.add(TextEntityType.RECURRENT_DAY_OF_MONTH);
-                unusedTextEntityTypes.add(TextEntityType.RECURRENT_DAY_OF_WEEK);
-            } else if(t == MatcherType.TIME) {
-                unusedTextEntityTypes.add(TextEntityType.START_TIME);
-                unusedTextEntityTypes.add(TextEntityType.TIMES_PER_DAY);
-            } else if(t == MatcherType.DURATION) {
-                unusedTextEntityTypes.add(TextEntityType.DURATION);
-            }
+        Set<TextEntityType> unusedTextEntityTypes = new TreeSet<>(Arrays.asList(TextEntityType.values()));
 
+        unusedTextEntityTypes.remove(TextEntityType.MAIN);
+
+        for (MatcherType mt : usedMatcherTypesToUsedTextEntityType.keySet()) {
+            unusedTextEntityTypes.removeAll(matcherTypeToTextEntityTypes.get(mt));
         }
 
         for (TextEntityType t : unusedTextEntityTypes) {
@@ -148,44 +153,6 @@ public class SuggestionsManager {
                 parts.add(new ParsedPart(start, end, t, false));
             }
         }
-
-
-//        for (TextEntityType t : orderedTextEntityTypes) {
-//            QuestTextMatcher matcher = typeToMatcher.get(t);
-//            Match partialMatch = matcher.partialMatch(text.substring(0, selectionIndex));
-//            if (canBeUsedAsPartialMatch(matcher.getMatcherType(), partialMatch, parts)) {
-//                int start = partialMatch.text.startsWith(" ") ? partialMatch.start + 1 : partialMatch.start;
-//                int end = partialMatch.end;
-//                ParsedPart currPartial = findPartialPart(parts);
-//
-//                if (shouldAddNewPartialPart(start, end, currPartial)) {
-//                    parts.add(new ParsedPart(start, end, t, true));
-//                }
-//
-//                if (isBetterMatch(start, end, currPartial)) {
-//                    parts.remove(currPartial);
-//                }
-//
-//            } else {
-//
-//                Match match = typeToMatcher.get(t).match(text);
-//                if (match == null) {
-//                    continue;
-//                }
-//                if (usedMatcherTypesToUsedTextEntityType.containsKey(matcher.getMatcherType())) {
-//                    TextEntityType textEntityType = usedMatcherTypesToUsedTextEntityType.get(matcher.getMatcherType());
-//                    if (matcher.getTextEntityType() != textEntityType) {
-//                        continue;
-//                    }
-//                }
-//
-//
-//                addUsedType(getMatcherType(t), t);
-//                int start = match.text.startsWith(" ") ? match.start + 1 : match.start;
-//                int end = match.text.endsWith(" ") ? match.end - 1 : match.end;
-//                parts.add(new ParsedPart(start, end, t, false));
-//            }
-//        }
         sortPartsByStartIndex(parts);
         return parts;
     }
