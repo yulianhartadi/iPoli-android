@@ -39,6 +39,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
@@ -111,8 +112,6 @@ public class App extends MultiDexApplication {
             eventBus.post(new SyncRequestEvent());
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-
-        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
@@ -239,6 +238,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
+        QuestNotificationScheduler.stopAll(e.id, this);
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
         removedQuests.add(e.id);

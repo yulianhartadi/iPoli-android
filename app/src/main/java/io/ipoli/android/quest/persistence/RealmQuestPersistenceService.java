@@ -99,9 +99,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public void deleteAllFromRecurrentQuest(String recurrentQuestId) {
         List<Quest> questsToRemove = where().equalTo("recurrentQuest.id", recurrentQuestId).findAll();
+        List<String> ids = Observable.from(questsToRemove).map(Quest::getId).toList().toBlocking().first();
         getRealm().beginTransaction();
         questsToRemove.clear();
         getRealm().commitTransaction();
+        for (String id : ids) {
+            eventBus.post(new QuestDeletedEvent(id));
+        }
     }
 
     @Override

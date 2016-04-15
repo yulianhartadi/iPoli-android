@@ -232,7 +232,6 @@ public class EditQuestActivity extends BaseActivity {
             case R.id.action_remove:
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_remove_quest_title)).setMessage(getString(R.string.dialog_remove_quest_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), (dialogInterface, i) -> {
-                    QuestNotificationScheduler.stopAll(quest.getId(), EditQuestActivity.this);
                     questPersistenceService.delete(quest);
                     Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
                     setResult(Constants.RESULT_REMOVED);

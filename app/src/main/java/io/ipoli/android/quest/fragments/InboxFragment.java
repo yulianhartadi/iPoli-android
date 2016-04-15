@@ -143,7 +143,6 @@ public class InboxFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                QuestNotificationScheduler.stopAll(quest.getId(), getContext());
                 questPersistenceService.delete(quest);
             }
         });
