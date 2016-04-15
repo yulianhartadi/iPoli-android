@@ -82,6 +82,7 @@ public class App extends MultiDexApplication {
             return;
         }
 
+
         JodaTimeAndroid.init(this);
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
@@ -107,7 +108,10 @@ public class App extends MultiDexApplication {
         } else {
             eventBus.post(new SyncRequestEvent());
         }
+
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
+//        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
@@ -115,8 +119,8 @@ public class App extends MultiDexApplication {
 
         addTomorrowQuests(quests);
         addTodayUnscheduledQuests(quests);
-        addTodayScheduledQuests(quests);
         addInboxQuests(quests);
+        addTodayScheduledQuests(quests);
 
         questPersistenceService.saveAll(quests);
     }
@@ -154,11 +158,6 @@ public class App extends MultiDexApplication {
     }
 
     private void addTodayScheduledQuests(List<Quest> initialQuests) {
-        Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.now());
-        Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
-        initialQuests.add(welcomeQuest);
-
         Quest readQuest = new Quest("Read a book", DateUtils.now());
         Quest.setContext(readQuest, QuestContext.LEARNING);
         readQuest.setDuration(60);
@@ -170,6 +169,11 @@ public class App extends MultiDexApplication {
         Quest.setStartTime(callQuest, Time.at(19, 30));
         callQuest.setDuration(15);
         initialQuests.add(callQuest);
+
+        Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.now());
+        Quest.setContext(welcomeQuest, QuestContext.FUN);
+        Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
+        initialQuests.add(welcomeQuest);
     }
 
     private void resetEndDateForIncompleteQuests() {

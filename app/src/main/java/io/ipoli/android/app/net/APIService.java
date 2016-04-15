@@ -33,7 +33,7 @@ public interface APIService {
     Observable<Quest> updateQuest(@Body RequestBody data);
 
     @DELETE("quests/{quest_id}")
-    Observable<Object> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
+    Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
 
     @POST("snippets")
     Observable<RecurrentQuest> createRecurrentQuestFromText(@Body RequestBody data);
@@ -45,5 +45,5 @@ public interface APIService {
     Observable<List<RecurrentQuest>> getRecurrentQuests(@Query("player_id") String playerId);
 
     @DELETE("recurrent-quests/{quest_id}")
-    Observable<Object> deleteRecurrentQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
+    Observable<Void> deleteRecurrentQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
 }
