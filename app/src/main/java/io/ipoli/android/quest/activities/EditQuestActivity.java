@@ -42,10 +42,10 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
@@ -114,6 +114,8 @@ public class EditQuestActivity extends BaseActivity {
             quest = q;
             initUI();
         });
+
+        eventBus.post(new ScreenShownEvent("edit_quest"));
     }
 
     private void initUI() {

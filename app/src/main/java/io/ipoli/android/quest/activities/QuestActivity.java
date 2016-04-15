@@ -24,11 +24,13 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -104,6 +106,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             }
         });
 
+        eventBus.post(new ScreenShownEvent("quest"));
     }
 
     private void initUI() {
@@ -220,6 +223,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_edit)
     public void onEditTap(View v) {
+        eventBus.post(new EditQuestRequestEvent(quest, "quest"));
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);

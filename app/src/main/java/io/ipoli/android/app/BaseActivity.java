@@ -13,8 +13,8 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.events.ContactUsClickEvent;
-import io.ipoli.android.app.events.FeedbackClickEvent;
+import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 
 /**
@@ -67,11 +67,11 @@ public class BaseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_feedback:
-                eventBus.post(new FeedbackClickEvent());
+                eventBus.post(new FeedbackTapEvent());
                 EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
                 break;
             case R.id.action_contact_us:
-                eventBus.post(new ContactUsClickEvent());
+                eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
                 break;
         }

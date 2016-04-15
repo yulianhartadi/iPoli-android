@@ -58,7 +58,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q));
+                eventBus.post(new EditQuestRequestEvent(q, "inbox"));
             }
         });
 

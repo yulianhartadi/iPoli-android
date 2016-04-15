@@ -100,7 +100,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
-                eventBus.post(new CompleteQuestRequestEvent(q));
+                eventBus.post(new CompleteQuestRequestEvent(q, "calendar_day_view"));
             } else {
                 eventBus.post(new UndoCompletedQuestRequestEvent(q));
             }

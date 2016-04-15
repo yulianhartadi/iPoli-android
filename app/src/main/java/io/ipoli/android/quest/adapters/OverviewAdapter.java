@@ -24,7 +24,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -233,7 +232,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             notifyItemRemoved(position);
         }
         if (direction == ItemTouchHelper.END) {
-            eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest()));
+            eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest(), "overview"));
         } else if (direction == ItemTouchHelper.START) {
             eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest()));
         }

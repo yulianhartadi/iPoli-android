@@ -52,6 +52,7 @@ import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
+import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -127,7 +128,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest()));
+        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), "calendar_unscheduled_section"));
         unscheduledQuestsAdapter.removeQuest(e.viewModel);
         setUnscheduledQuestsHeight();
     }
@@ -204,6 +205,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onMoveQuestToCalendarRequest(MoveQuestToCalendarRequestEvent e) {
+        eventBus.post(new UnscheduledQuestDraggedEvent(e.viewModel.getQuest()));
         movingQuestPosition = e.position;
         movingViewModel = e.viewModel;
         CalendarEvent calendarEvent = new QuestCalendarViewModel(e.viewModel.getQuest());

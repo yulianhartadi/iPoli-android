@@ -8,8 +8,12 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class CompleteQuestRequestEvent {
     public final Quest quest;
+    public final String source;
 
-    public CompleteQuestRequestEvent(Quest quest) {
+
+
+    public CompleteQuestRequestEvent(Quest quest, String source) {
         this.quest = quest;
+        this.source = source;
     }
 }

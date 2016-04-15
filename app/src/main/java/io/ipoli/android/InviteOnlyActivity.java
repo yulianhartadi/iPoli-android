@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,7 +20,9 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
+import io.ipoli.android.app.events.PlayerTappedInviteLogoEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 
 public class InviteOnlyActivity extends BaseActivity {
@@ -54,6 +57,8 @@ public class InviteOnlyActivity extends BaseActivity {
         editor.putBoolean("is_invited", isInvited);
         editor.apply();
 
+        eventBus.post(new InvitationScreenRequestedAutomaticInviteEvent(isInvited));
+
         if (isInvited) {
             startMainActivity();
             return;
@@ -62,7 +67,7 @@ public class InviteOnlyActivity extends BaseActivity {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(getResources().getColor(R.color.md_blue_700));
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.md_blue_700));
     }
 
     private void startMainActivity() {
@@ -81,7 +86,7 @@ public class InviteOnlyActivity extends BaseActivity {
         if(Build.VERSION.SDK_INT < 21) {
             return;
         }
-        eventBus.post(new PlayerRequestedInviteEvent());
+        eventBus.post(new PlayerTappedInviteLogoEvent());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("is_invited", true);
         editor.apply();

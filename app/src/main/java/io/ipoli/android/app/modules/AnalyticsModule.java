@@ -2,8 +2,7 @@ package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
+import com.flurry.android.FlurryAgent;
 
 import javax.inject.Singleton;
 
@@ -12,7 +11,7 @@ import dagger.Provides;
 import io.ipoli.android.AnalyticsConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.GoogleAnalyticsService;
+import io.ipoli.android.app.services.FlurryAnalyticsService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,12 +23,12 @@ public class AnalyticsModule {
     @Provides
     @Singleton
     public AnalyticsService provideAnalyticsService(Context context) {
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
-        analytics.setDryRun(BuildConfig.DEBUG);
-        Tracker tracker = analytics.newTracker(AnalyticsConstants.TRACKING_CODE);
-        tracker.enableExceptionReporting(true);
-        tracker.enableAutoActivityTracking(true);
-        tracker.enableAdvertisingIdCollection(true);
-        return new GoogleAnalyticsService(tracker);
+        if(!BuildConfig.DEBUG) {
+            new FlurryAgent.Builder()
+                    .withLogEnabled(false)
+                    .build(context, AnalyticsConstants.FLURRY_KEY);
+        }
+
+        return new FlurryAnalyticsService();
     }
 }

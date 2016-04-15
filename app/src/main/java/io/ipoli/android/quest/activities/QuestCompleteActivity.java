@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Log;
@@ -59,6 +60,8 @@ public class QuestCompleteActivity extends BaseActivity {
         questPersistenceService.findById(questId).subscribe(q -> {
             quest = q;
         });
+
+        eventBus.post(new ScreenShownEvent("quest_complete"));
     }
 
     @OnClick(R.id.quest_complete_done)

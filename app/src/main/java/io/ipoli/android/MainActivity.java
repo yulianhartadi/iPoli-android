@@ -15,6 +15,7 @@ import com.squareup.otto.Subscribe;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
@@ -62,32 +63,39 @@ public class MainActivity extends BaseActivity {
         bottomBar.setOnTabClickListener(new OnTabClickListener() {
             @Override
             public void onTabSelected(int position) {
+                String screenName = "";
                 resetLayoutColors();
 
                 switch (position) {
                     case CALENDAR_TAB_INDEX:
+                        screenName = "calendar";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new CalendarDayFragment()).commit();
                         break;
                     case OVERVIEW_TAB_INDEX:
+                        screenName = "overview";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new OverviewFragment()).commit();
                         break;
                     case ADD_QUEST_TAB_INDEX:
+                        screenName = "add_quest";
                         boolean isForToday = currentSelectedPosition == CALENDAR_TAB_INDEX;
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, AddQuestFragment.newInstance(isForToday)).commit();
                         break;
                     case INBOX_TAB_INDEX:
+                        screenName = "inbox";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new InboxFragment()).commit();
                         break;
                     case HABITS_TAB_INDEX:
+                        screenName = "habits";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new HabitsFragment()).commit();
                         break;
                 }
                 currentSelectedPosition = position;
+                eventBus.post(new ScreenShownEvent(screenName));
             }
 
             @Override

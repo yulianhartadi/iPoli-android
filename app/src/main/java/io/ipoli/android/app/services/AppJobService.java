@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.RemotePlayerCreatedEvent;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
@@ -227,6 +228,7 @@ public class AppJobService extends JobService {
             playerPersistenceService.updateId(p, sp.getId());
             sp.setSyncedWithRemote();
             sp.setRemoteObject();
+            eventBus.post(new RemotePlayerCreatedEvent(sp.getId()));
             return playerPersistenceService.save(sp, false);
         });
     }
