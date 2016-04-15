@@ -33,8 +33,10 @@ public interface Constants {
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
 
     int RESULT_REMOVED = 100;
+
     String KEY_APP_RUN_COUNT = "RUN_COUNT";
     String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
+    String KEY_PLAYER_ID = "PLAYER_ID";
 
     String KEY_REMOVED_RECURRENT_QUESTS = "REMOVED_RECURRENT_QUESTS";
     String IPOLI_EMAIL = "hi@ipoli.io";

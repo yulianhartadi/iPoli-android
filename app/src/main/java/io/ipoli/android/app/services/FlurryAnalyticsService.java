@@ -11,8 +11,8 @@ import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
 import io.ipoli.android.app.events.InviteLogoTappedEvent;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.app.events.RemotePlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -22,7 +22,7 @@ import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
@@ -79,8 +79,9 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
 
     @Subscribe
-    public void onRemotePlayerCreated(RemotePlayerCreatedEvent e) {
-        FlurryAgent.setUserId(e.playerId);
+    public void onPlayerCreated(PlayerCreatedEvent e) {
+        FlurryAgent.setUserId(e.id);
+        log("player_created");
     }
 
     @Subscribe
@@ -104,7 +105,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewQuest(NewQuestEvent e) {
+    public void onNewQuestAdded(NewQuestAddedEvent e) {
         log("quest_created", EventParams.create()
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
@@ -153,12 +154,12 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onFeedbackClick(FeedbackTapEvent e) {
+    public void onFeedbackTap(FeedbackTapEvent e) {
         log("feedback_tapped");
     }
 
     @Subscribe
-    public void onContactUsClick(ContactUsTapEvent e) {
+    public void onContactUsTap(ContactUsTapEvent e) {
         log("contact_us_tapped");
     }
 

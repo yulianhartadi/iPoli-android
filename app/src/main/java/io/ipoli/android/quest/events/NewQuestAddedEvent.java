@@ -6,10 +6,10 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class NewQuestEvent {
+public class NewQuestAddedEvent {
     public final Quest quest;
 
-    public NewQuestEvent(Quest quest) {
+    public NewQuestAddedEvent(Quest quest) {
         this.quest = quest;
     }
 }

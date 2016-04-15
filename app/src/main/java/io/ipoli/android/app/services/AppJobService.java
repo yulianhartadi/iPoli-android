@@ -4,17 +4,20 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.otto.Bus;
 
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.RemotePlayerCreatedEvent;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
@@ -91,21 +94,7 @@ public class AppJobService extends JobService {
             if (player == null) {
                 return createNewPlayer();
             }
-            if (player.needsSyncWithRemote()) {
-                return syncPlayer(player);
-            }
             return Observable.just(player);
-        });
-    }
-
-    private Observable<Player> syncPlayer(Player p) {
-        RequestBody requestBody = new JsonRequestBodyBuilder().param("uid", p.getId()).param("provider", AuthProvider.ANONYMOUS).build();
-        return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
-            playerPersistenceService.updateId(p, sp.getId());
-            sp.setSyncedWithRemote();
-            sp.setRemoteObject();
-            eventBus.post(new RemotePlayerCreatedEvent(sp.getId()));
-            return playerPersistenceService.save(sp, false);
         });
     }
 
@@ -135,9 +124,33 @@ public class AppJobService extends JobService {
                         }));
     }
 
+    private Observable<String> getAdvertisingId() {
+        return Observable.defer(() -> {
+            try {
+                AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+                return Observable.just(idInfo.getId());
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG) {
+                    return Observable.just(UUID.randomUUID().toString());
+                }
+                return Observable.error(e);
+            }
+        }).compose(applyAPISchedulers());
+    }
+
     private Observable<Player> createNewPlayer() {
-        Player defaultPlayer = new Player(Constants.DEFAULT_PLAYER_EXPERIENCE, Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-        return playerPersistenceService.save(defaultPlayer, false).concatMap(this::syncPlayer);
+        return getAdvertisingId().flatMap(advertisingId -> {
+            RequestBody requestBody = new JsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
+            return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
+                LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+                localStorage.saveString(Constants.KEY_PLAYER_ID, sp.getId());
+                eventBus.post(new PlayerCreatedEvent(sp.getId()));
+                sp.setSyncedWithRemote();
+                sp.setRemoteObject();
+                sp.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
+                return playerPersistenceService.save(sp, false);
+            });
+        });
     }
 
     private Observable<Quest> syncQuests(Player player) {

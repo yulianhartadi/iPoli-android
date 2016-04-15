@@ -42,6 +42,7 @@ import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
@@ -51,7 +52,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
@@ -265,7 +266,11 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             }
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
-            Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+            if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
@@ -274,7 +279,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 return;
             }
             Quest.setContext(q, questContext);
-            eventBus.post(new NewQuestEvent(q));
+            eventBus.post(new NewQuestAddedEvent(q));
             Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
         resetQuestText();

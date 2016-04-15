@@ -39,7 +39,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -82,7 +82,6 @@ public class App extends MultiDexApplication {
             return;
         }
 
-
         JodaTimeAndroid.init(this);
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
@@ -102,12 +101,9 @@ public class App extends MultiDexApplication {
             localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, new HashSet<>());
             localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, new HashSet<>());
             saveInitialQuests();
-            eventBus.post(new ForceSyncRequestEvent());
-        } else if (runCount == 1) {
             scheduleJob(dailySyncJob());
-        } else {
-            eventBus.post(new SyncRequestEvent());
         }
+        eventBus.post(new ForceSyncRequestEvent());
 
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
 
@@ -200,7 +196,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onNewQuest(NewQuestEvent e) {
+    public void onNewQuest(NewQuestAddedEvent e) {
         questPersistenceService.save(e.quest);
     }
 
@@ -276,6 +272,7 @@ public class App extends MultiDexApplication {
     private JobInfo dailySyncJob() {
         return createJobBuilder(DAILY_SYNC_JOB_ID).setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setRequiresDeviceIdle(true)
                 .setPeriodic(TimeUnit.HOURS.toMillis(24)).build();
     }
 

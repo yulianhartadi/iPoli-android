@@ -26,16 +26,12 @@ public class LocalStorage {
     }
 
     public void saveInt(String key, int value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(key, value);
-        editor.apply();
+        editor().putInt(key, value).apply();
     }
 
     public void saveStringSet(String key, Set<String> values) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
-        editor.putString(key, gson.toJson(values));
-        editor.apply();
+        editor().putString(key, gson.toJson(values)).apply();
     }
 
     public Set<String> readStringSet(String key) {
@@ -58,5 +54,17 @@ public class LocalStorage {
         int value = readInt(key);
         value++;
         saveInt(key, value);
+    }
+
+    public void saveString(String key, String value) {
+        editor().putString(key, value).apply();
+    }
+
+    private SharedPreferences.Editor editor() {
+        return sharedPreferences.edit();
+    }
+
+    public String readString(String key) {
+        return sharedPreferences.getString(key, "");
     }
 }
