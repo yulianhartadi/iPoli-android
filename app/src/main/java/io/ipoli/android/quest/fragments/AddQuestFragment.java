@@ -42,6 +42,7 @@ import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
@@ -260,7 +261,11 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             }
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
-            Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+            if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+            }
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {

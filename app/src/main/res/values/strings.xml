@@ -123,7 +123,6 @@
     </string-array>
     <string name="title_activity_main">MainActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="save">Save</string>
+    <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
 </resources>
