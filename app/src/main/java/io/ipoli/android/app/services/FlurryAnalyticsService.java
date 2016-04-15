@@ -10,9 +10,9 @@ import java.util.Map;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.PlayerTappedInviteLogoEvent;
-import io.ipoli.android.app.events.RemotePlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
@@ -68,8 +68,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
 
     @Subscribe
-    public void onRemotePlayerCreated(RemotePlayerCreatedEvent e) {
-        FlurryAgent.setUserId(e.playerId);
+    public void onPlayerCreated(PlayerCreatedEvent e) {
+        FlurryAgent.setUserId(e.id);
     }
 
     @Subscribe

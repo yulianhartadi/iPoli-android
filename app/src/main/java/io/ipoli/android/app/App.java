@@ -82,7 +82,6 @@ public class App extends MultiDexApplication {
             return;
         }
 
-
         JodaTimeAndroid.init(this);
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
