@@ -60,8 +60,6 @@
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
-    <string name="remind_plan_day_message">What will you get done by the end of the day?</string>
-    <string name="remind_plan_day_title">New day ahead</string>
 
 
     <string name="tutorial_calendar_quest"> You can long press and drag quest in the calendar to reschedule it.</string>
@@ -82,8 +80,6 @@
     <string name="contact_us_email_subject">Hi</string>
     <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
-    <string name="review_day_title">Day in review</string>
-    <string name="review_day_text">Ready to review your day?</string>
     <string name="habit_added">Habit added</string>
     <string name="habit_next_datetime">Next: %s</string>
 

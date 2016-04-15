@@ -63,20 +63,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".app.receivers.PlanDayReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.REMIND_PLAN_DAY" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".app.receivers.ReviewDayReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.REMIND_REVIEW_DAY" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".quest.receivers.ScheduleQuestReminderReceiver"
             android:exported="false">
             <intent-filter>

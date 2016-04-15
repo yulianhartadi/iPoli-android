@@ -4,10 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import io.ipoli.android.Constants;
-import io.ipoli.android.app.jobs.RemindPlanDayJob;
-import io.ipoli.android.app.jobs.RemindReviewDayJob;
-import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,17 +14,6 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        initRemindPlanDayJob(context);
-        initRemindReviewDayJob(context);
-    }
-
-    private void initRemindPlanDayJob(Context context) {
-        Time time = Time.at(Constants.DEFAULT_PLAN_DAY_TIME);
-        new RemindPlanDayJob(context, time).schedule();
-    }
-
-    private void initRemindReviewDayJob(Context context) {
-        Time time = Time.at(Constants.DEFAULT_REVIEW_DAY_TIME);
-        new RemindReviewDayJob(context, time).schedule();
+        context.sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
     }
 }

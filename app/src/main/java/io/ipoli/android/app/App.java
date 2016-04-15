@@ -28,8 +28,6 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
-import io.ipoli.android.app.jobs.RemindPlanDayJob;
-import io.ipoli.android.app.jobs.RemindReviewDayJob;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.net.APIService;
@@ -94,8 +92,6 @@ public class App extends MultiDexApplication {
         getAppComponent(this).inject(this);
         resetEndDateForIncompleteQuests();
         registerServices();
-        initPlanDayReminder();
-        initReviewDayReminder();
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
@@ -187,16 +183,6 @@ public class App extends MultiDexApplication {
     private void registerServices() {
         eventBus.register(analyticsService);
         eventBus.register(this);
-    }
-
-    private void initPlanDayReminder() {
-        Time time = Time.at(Constants.DEFAULT_PLAN_DAY_TIME);
-        new RemindPlanDayJob(this, time).schedule();
-    }
-
-    private void initReviewDayReminder() {
-        Time time = Time.at(Constants.DEFAULT_REVIEW_DAY_TIME);
-        new RemindReviewDayJob(this, time).schedule();
     }
 
     public static AppComponent getAppComponent(Context context) {

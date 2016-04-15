@@ -15,8 +15,6 @@ import com.squareup.otto.Subscribe;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.app.receivers.PlanDayReceiver;
-import io.ipoli.android.app.receivers.ReviewDayReceiver;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
@@ -118,10 +116,6 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        if (getIntent() != null && (PlanDayReceiver.ACTION_REMIND_PLAN_DAY.equals(getIntent().getAction())
-                || ReviewDayReceiver.ACTION_REMIND_REVIEW_DAY.equals(getIntent().getAction()))) {
-            bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
-        }
     }
 
     @Override
