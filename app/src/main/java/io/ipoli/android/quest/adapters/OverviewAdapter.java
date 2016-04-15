@@ -138,7 +138,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
-            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), "calendar")));
+            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), "overview")));
             questHolder.name.setText(vm.getName());
 
             if (vm.isStarted()) {
@@ -214,11 +214,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return items.size();
     }
 
-    public void removeQuest(int position) {
-        items.remove(position);
-        notifyItemRemoved(position);
-    }
-
     @Override
     public void onItemMoved(int fromPosition, int toPosition) {
 
@@ -234,7 +229,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (direction == ItemTouchHelper.END) {
             eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest(), "overview"));
         } else if (direction == ItemTouchHelper.START) {
-            eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest()));
+            eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest(), "overview"));
         }
     }
 

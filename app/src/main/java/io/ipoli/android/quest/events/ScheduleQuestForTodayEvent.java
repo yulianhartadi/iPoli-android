@@ -8,8 +8,10 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class ScheduleQuestForTodayEvent {
     public final Quest quest;
+    public final String source;
 
-    public ScheduleQuestForTodayEvent(Quest quest) {
+    public ScheduleQuestForTodayEvent(Quest quest, String source) {
         this.quest = quest;
+        this.source = source;
     }
 }

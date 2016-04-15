@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,7 +49,14 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
+import io.ipoli.android.quest.events.UpdateQuestContextEvent;
+import io.ipoli.android.quest.events.UpdateQuestDurationEvent;
+import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
+import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
+import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
@@ -130,6 +138,12 @@ public class EditQuestActivity extends BaseActivity {
         }
         durationSuggestions.addAll(createAutoSuggestions(qDurationTxt));
         questDuration.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, durationSuggestions));
+        questDuration.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                eventBus.post(new UpdateQuestDurationEvent(quest));
+            }
+        });
 
         setStartTimeText(Quest.getStartTime(quest));
         setDueDateText(quest.getEndDate());
@@ -176,6 +190,7 @@ public class EditQuestActivity extends BaseActivity {
                 public void onClick(View v) {
                     removeSelectedContextCheck();
                     changeContext(ctx);
+                    eventBus.post(new UpdateQuestContextEvent(quest, ctx));
                 }
             });
         }
@@ -232,6 +247,7 @@ public class EditQuestActivity extends BaseActivity {
                 finish();
                 return true;
             case R.id.action_remove:
+                eventBus.post(new DeleteQuestRequestedEvent(quest, "edit_quest"));
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_remove_quest_title)).setMessage(getString(R.string.dialog_remove_quest_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), (dialogInterface, i) -> {
                     questPersistenceService.delete(quest);
@@ -240,7 +256,7 @@ public class EditQuestActivity extends BaseActivity {
                     finish();
                 });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-
+                    eventBus.post(new UndoDeleteQuestEvent(quest, "edit_quest"));
                 });
                 d.show();
                 return true;
@@ -257,12 +273,14 @@ public class EditQuestActivity extends BaseActivity {
 
     @OnClick(R.id.quest_due_date)
     public void onDueDateClick(Button button) {
+        eventBus.post(new UpdateQuestEndDateRequestEvent(quest));
         DialogFragment f = new DatePickerFragment();
         f.show(this.getSupportFragmentManager(), "datePicker");
     }
 
     @OnClick(R.id.quest_start_time)
     public void onStartTimeClick(Button button) {
+        eventBus.post(new UpdateQuestStartTimeRequestEvent(quest));
         DialogFragment f = new TimePickerFragment();
         f.show(this.getSupportFragmentManager(), "timePicker");
     }
@@ -281,6 +299,7 @@ public class EditQuestActivity extends BaseActivity {
         quest.setEndDate((Date) dueDateBtn.getTag());
         Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
         questPersistenceService.save(quest);
+        eventBus.post(new QuestUpdatedEvent(quest));
     }
 
     @Subscribe

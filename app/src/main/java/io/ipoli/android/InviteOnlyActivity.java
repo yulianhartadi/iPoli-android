@@ -22,7 +22,7 @@ import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.app.events.PlayerTappedInviteLogoEvent;
+import io.ipoli.android.app.events.InviteLogoTappedEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 
 public class InviteOnlyActivity extends BaseActivity {
@@ -86,7 +86,7 @@ public class InviteOnlyActivity extends BaseActivity {
         if(Build.VERSION.SDK_INT < 21) {
             return;
         }
-        eventBus.post(new PlayerTappedInviteLogoEvent());
+        eventBus.post(new InviteLogoTappedEvent());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("is_invited", true);
         editor.apply();

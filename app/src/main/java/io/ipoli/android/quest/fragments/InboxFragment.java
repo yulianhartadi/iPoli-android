@@ -33,11 +33,11 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -132,6 +132,7 @@ public class InboxFragment extends Fragment {
 
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
+        eventBus.post(new DeleteQuestRequestedEvent(e.quest, "inbox"));
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,
@@ -152,7 +153,7 @@ public class InboxFragment extends Fragment {
             public void onClick(View view) {
                 inboxAdapter.addQuest(e.position, quest);
                 snackbar.setCallback(null);
-                eventBus.post(new UndoDeleteQuestEvent(quest));
+                eventBus.post(new UndoDeleteQuestEvent(quest, "inbox"));
             }
         });
 

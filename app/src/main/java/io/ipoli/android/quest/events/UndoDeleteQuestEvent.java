@@ -8,8 +8,10 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class UndoDeleteQuestEvent {
     public final Quest quest;
+    public final String source;
 
-    public UndoDeleteQuestEvent(Quest quest) {
+    public UndoDeleteQuestEvent(Quest quest, String source) {
         this.quest = quest;
+        this.source = source;
     }
 }

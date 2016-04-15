@@ -10,27 +10,38 @@ import java.util.Map;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
+import io.ipoli.android.app.events.InviteLogoTappedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
-import io.ipoli.android.app.events.PlayerTappedInviteLogoEvent;
 import io.ipoli.android.app.events.RemotePlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.DateSelectedEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
+import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
+import io.ipoli.android.quest.events.DoneQuestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
-import io.ipoli.android.quest.events.QuestsPlannedEvent;
+import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
-import io.ipoli.android.quest.events.TimeSelectedEvent;
+import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
+import io.ipoli.android.quest.events.UpdateQuestContextEvent;
+import io.ipoli.android.quest.events.UpdateQuestDurationEvent;
+import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
+import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
+import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
+import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import io.ipoli.android.tutorial.events.ShowTutorialItemEvent;
 
 /**
@@ -83,7 +94,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onPlayerTappedLogo(PlayerTappedInviteLogoEvent e) {
+    public void onInviteLogoTapped(InviteLogoTappedEvent e) {
         log("invite_logo_tapped");
     }
 
@@ -94,64 +105,51 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        log("quest_created", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-            put("raw_text", e.quest.getRawText());
-        }});
+        log("quest_created", EventParams.create()
+                .add("id", e.quest.getId())
+                .add("name", e.quest.getName())
+                .add("raw_text", e.quest.getRawText()));
     }
 
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
-        log("edit_quest_requested", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-            put("source", e.source);
-        }});
+        log("edit_quest_requested", e.quest.getId(), e.quest.getName(), e.source);
     }
 
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
-        log("complete_quest_request", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-            put("source", e.source);
-        }});
+        log("complete_quest_request", e.quest.getId(), e.quest.getName(), e.source);
     }
 
 
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
-        log("undo_completed_quest", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-        }});
+        log("undo_completed_quest", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onCompleteQuest(CompleteQuestEvent e) {
+        log("quest_completed", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
     public void onQuestSnoozed(QuestSnoozedEvent e) {
-        log("quest_snoozed", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-        }});
+        log("quest_snoozed", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
     public void onUnscheduledQuestDragged(UnscheduledQuestDraggedEvent e) {
-        log("unscheduled_quest_dragged", new HashMap<String, String>() {{
-            put("id", e.quest.getId());
-            put("name", e.quest.getName());
-        }});
+        log("unscheduled_quest_dragged", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
     public void onQuestDragged(QuestDraggedEvent e) {
-        log("quest_dragged", EventParams.of("id", e.quest.getId()).add("name", e.quest.getName()));
+        log("quest_dragged", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
-    public void onShowQuest(ShowQuestEvent e){
-        log("quest_shown", EventParams.of("id", e.quest.getId()).add("name", e.quest.getName()));
+    public void onShowQuest(ShowQuestEvent e) {
+        log("quest_shown", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
@@ -165,61 +163,105 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onQuestUpdated(QuestUpdatedEvent e) {
-//        track(createEventBuilder("quest", "edit")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
+        log("schedule_quest_for_today", e.quest.getId(), e.quest.getName(), e.source);
     }
-
 
     @Subscribe
-    public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
-//        track(createEventBuilder("quest", "delete-request")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    public void onDeleteQuestRequested(DeleteQuestRequestedEvent e) {
+        log("delete_quest_requested", e.quest.getId(), e.quest.getName(), e.source);
     }
 
+    @Subscribe
+    public void onQuestDeleted(QuestDeletedEvent e) {
+        log("quest_deleted", EventParams.of("id", e.id));
+    }
 
     @Subscribe
     public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
-//        track(createEventBuilder("quest", "undo-delete")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+        log("undo_delete_quest", e.quest.getId(), e.quest.getName(), e.source);
     }
 
     @Subscribe
-    public void onTimeSelected(TimeSelectedEvent e) {
-//        trackUIEvent("quest", "time-selected");
+    public void onShowRecurrentQuest(ShowRecurrentQuestEvent e) {
+        log("show_recurrent_quest_request", e.recurrentQuest.getId(), e.recurrentQuest.getName());
     }
 
     @Subscribe
-    public void onDateSelected(DateSelectedEvent e) {
-//        trackUIEvent("quest", "date-selected");
+    public void onDeleteRecurrentQuestRequest(DeleteRecurrentQuestRequestEvent e) {
+        log("delete_recurrent_quest_requested", e.recurrentQuest.getId(), e.recurrentQuest.getName());
     }
 
     @Subscribe
-    public void onQuestsPlanned(QuestsPlannedEvent e) {
-//        List<String> questNames = new ArrayList<>();
-//        for (Quest q : e.quests) {
-//            questNames.add(q.getName());
-//        }
-//        track(createEventBuilder("quest", "planned")
-//                .setCustomDimension(QUESTS_DIMENSION_INDEX, TextUtils.join("\n", questNames)));
+    public void onUndoDeleteRecurrentQuest(UndoDeleteRecurrentQuestEvent e) {
+        log("undo_delete_recurrent_quest", e.recurrentQuest.getId(), e.recurrentQuest.getName());
+    }
+
+    @Subscribe
+    public void onUndoDeleteRecurrentQuest(RecurrentQuestDeletedEvent e) {
+        log("undo_delete_recurrent_quest", EventParams.of("id", e.id));
     }
 
     @Subscribe
     public void onStartQuest(StartQuestEvent e) {
-//        track(createEventBuilder("quest", "start")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+        log("start_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
     public void onStopQuest(StopQuestEvent e) {
-//        track(createEventBuilder("quest", "stop")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+        log("stop_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
-    public void onCompleteQuest(CompleteQuestEvent e) {
-//        track(createEventBuilder("quest", "complete")
-//                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
+    public void onDoneQuest(DoneQuestEvent e) {
+        log("done_quest", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onUpdateQuestEndDateRequest(UpdateQuestEndDateRequestEvent e) {
+        log("update_quest_end_date_request", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onUpdateQuestStartTimeRequest(UpdateQuestStartTimeRequestEvent e) {
+        log("update_quest_start_time_request", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onUpdateQuestDuration(UpdateQuestDurationEvent e) {
+        log("update_quest_duration", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onUpdateQuestContext(UpdateQuestContextEvent e) {
+        log("updated_quest_context", EventParams.create()
+                .add("id", e.quest.getId())
+                .add("name", e.quest.getName())
+                .add("context", e.questContext.name()));
+    }
+
+    @Subscribe
+    public void onQuestUpdated(QuestUpdatedEvent e) {
+        log("quest_updated", e.quest.getId(), e.quest.getName());
+    }
+
+    @Subscribe
+    public void onSuggestionItemTap(SuggestionItemTapEvent e) {
+        log("suggestion_item_tap", EventParams.create()
+                .add("suggestion_text", e.suggestionText)
+                .add("current_text", e.currentText));
+    }
+
+    @Subscribe
+    public void onNewQuestContextChanged(NewQuestContextChangedEvent e) {
+        log("new_quest_context_changed", EventParams.of("context", e.questContext.name()));
+    }
+
+    @Subscribe
+    public void onNewQuestSaved(NewQuestSavedEvent e) {
+        log("new_quest_saved", EventParams.create()
+                .add("text", e.text)
+                .add("source", e.source));
     }
 
     @Subscribe
@@ -236,5 +278,18 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     private FlurryEventRecordStatus log(String eventName, EventParams eventParams) {
         return FlurryAgent.logEvent(eventName, eventParams.getParams());
+    }
+
+    private FlurryEventRecordStatus log(String eventName, String id, String name) {
+        return log(eventName, EventParams.create()
+                .add("id", id)
+                .add("name", name));
+    }
+
+    private FlurryEventRecordStatus log(String eventName, String id, String name, String source) {
+        return log(eventName, EventParams.create()
+                .add("id", id)
+                .add("name", name)
+                .add("source", source));
     }
 }

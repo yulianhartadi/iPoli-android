@@ -50,9 +50,12 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
+import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
+import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -189,6 +192,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             iv.setOnClickListener(v -> {
                 removeSelectedContextCheck(view);
                 changeContext(ctx, view);
+                eventBus.post(new NewQuestContextChangedEvent(ctx));
             });
         }
     }
@@ -242,6 +246,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         switch (item.getItemId()) {
             case R.id.action_save:
                 saveQuest();
+                eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "toolbar"));
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -287,6 +292,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
             saveQuest();
+            eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "keyboard"));
             return true;
         } else {
             return false;
@@ -363,6 +369,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public void onAdapterItemClick(SuggestionAdapterItemClickEvent e) {
         SuggestionDropDownItem suggestion = e.suggestionItem;
         String text = questText.getText().toString();
+        eventBus.post(new SuggestionItemTapEvent(suggestion.visibleText, text));
         int selectionIndex = questText.getSelectionStart();
         SuggestionsManager.TextTransformResult result = suggestionsManager.onSuggestionItemClick(text, suggestion, selectionIndex);
         setTransformedText(result, TextWatcherState.FROM_DROP_DOWN);
