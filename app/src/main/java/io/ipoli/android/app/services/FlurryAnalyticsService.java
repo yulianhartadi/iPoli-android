@@ -1,9 +1,11 @@
 package io.ipoli.android.app.services;
 
 import com.flurry.android.FlurryAgent;
+import com.flurry.android.FlurryEventRecordStatus;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
@@ -19,9 +21,11 @@ import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.QuestsPlannedEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.StartQuestEvent;
 import io.ipoli.android.quest.events.StopQuestEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
@@ -33,7 +37,36 @@ import io.ipoli.android.tutorial.events.ShowTutorialItemEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
+
+class EventParams {
+    private Map<String, String> params = new HashMap<>();
+
+    private EventParams() {
+    }
+
+    public static EventParams create() {
+        return new EventParams();
+    }
+
+    public static EventParams of(String key, String value) {
+        EventParams eventParams = new EventParams();
+        eventParams.params.put(key, value);
+        return eventParams;
+    }
+
+    public EventParams add(String key, String value) {
+        params.put(key, value);
+        return this;
+    }
+
+    public Map<String, String> getParams() {
+        return params;
+    }
+}
+
 public class FlurryAnalyticsService implements AnalyticsService {
+
+
     @Subscribe
     public void onRemotePlayerCreated(RemotePlayerCreatedEvent e) {
         FlurryAgent.setUserId(e.playerId);
@@ -41,31 +74,27 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onInvitationScreenRequestAutomaticInviteEvent(InvitationScreenRequestedAutomaticInviteEvent e) {
-        FlurryAgent.logEvent("invitation_screen_requested_invite", new HashMap<String, String>() {{
-            put("is_invite_received", e.isInviteReceived + "");
-        }});
+        log("invitation_screen_requested_invite", EventParams.of("is_invite_received", e.isInviteReceived + ""));
     }
 
     @Subscribe
     public void onPlayerRequestedInvite(PlayerRequestedInviteEvent e) {
-        FlurryAgent.logEvent("invite_requested");
+        log("invite_requested");
     }
 
     @Subscribe
     public void onPlayerTappedLogo(PlayerTappedInviteLogoEvent e) {
-        FlurryAgent.logEvent("invite_logo_tapped");
+        log("invite_logo_tapped");
     }
 
     @Subscribe
     public void onScreenShown(ScreenShownEvent e) {
-        FlurryAgent.logEvent("screen_shown", new HashMap<String, String>() {{
-            put("name", e.screenName);
-        }});
+        log("screen_shown", EventParams.of("name", e.screenName));
     }
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        FlurryAgent.logEvent("quest_created", new HashMap<String, String>(){{
+        log("quest_created", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
             put("raw_text", e.quest.getRawText());
@@ -74,26 +103,26 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
-        FlurryAgent.logEvent("edit_quest_requested", new HashMap<String, String>(){{
+        log("edit_quest_requested", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
             put("source", e.source);
         }});
     }
-
 
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
-        FlurryAgent.logEvent("complete_quest_request", new HashMap<String, String>(){{
+        log("complete_quest_request", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
             put("source", e.source);
         }});
     }
 
+
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
-        FlurryAgent.logEvent("undo_completed_quest", new HashMap<String, String>(){{
+        log("undo_completed_quest", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
         }});
@@ -101,7 +130,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onQuestSnoozed(QuestSnoozedEvent e) {
-        FlurryAgent.logEvent("quest_snoozed", new HashMap<String, String>(){{
+        log("quest_snoozed", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
         }});
@@ -109,22 +138,31 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onUnscheduledQuestDragged(UnscheduledQuestDraggedEvent e) {
-        FlurryAgent.logEvent("unscheduled_quest_dragged", new HashMap<String, String>(){{
+        log("unscheduled_quest_dragged", new HashMap<String, String>() {{
             put("id", e.quest.getId());
             put("name", e.quest.getName());
         }});
     }
 
     @Subscribe
+    public void onQuestDragged(QuestDraggedEvent e) {
+        log("quest_dragged", EventParams.of("id", e.quest.getId()).add("name", e.quest.getName()));
+    }
+
+    @Subscribe
+    public void onShowQuest(ShowQuestEvent e){
+        log("quest_shown", EventParams.of("id", e.quest.getId()).add("name", e.quest.getName()));
+    }
+
+    @Subscribe
     public void onFeedbackClick(FeedbackTapEvent e) {
-        FlurryAgent.logEvent("feedback_tapped");
+        log("feedback_tapped");
     }
 
     @Subscribe
     public void onContactUsClick(ContactUsTapEvent e) {
-        FlurryAgent.logEvent("contact_us_tapped");
+        log("contact_us_tapped");
     }
-
 
     @Subscribe
     public void onQuestUpdated(QuestUpdatedEvent e) {
@@ -133,12 +171,12 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
 
-
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
 //        track(createEventBuilder("quest", "delete-request")
 //                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
+
 
     @Subscribe
     public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
@@ -184,9 +222,19 @@ public class FlurryAnalyticsService implements AnalyticsService {
 //                .setCustomDimension(NAME_DIMENSION_INDEX, e.quest.getName()));
     }
 
-
-
     @Subscribe
     public void onShowTutorialItem(ShowTutorialItemEvent e) {
+    }
+
+    private FlurryEventRecordStatus log(String eventName) {
+        return FlurryAgent.logEvent(eventName);
+    }
+
+    private FlurryEventRecordStatus log(String eventName, HashMap<String, String> params) {
+        return FlurryAgent.logEvent(eventName, params);
+    }
+
+    private FlurryEventRecordStatus log(String eventName, EventParams eventParams) {
+        return FlurryAgent.logEvent(eventName, eventParams.getParams());
     }
 }

@@ -87,10 +87,12 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         CheckBox checkBox = createCheckBox(q, v.getContext());
         detailsRoot.addView(checkBox, 0);
-        v.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(q)));
+        v.setOnClickListener(view -> {
+            eventBus.post(new ShowQuestEvent(q, "calendar"));
+        });
 
         v.setOnLongClickListener(view -> {
-            eventBus.post(new EditCalendarEventEvent(view));
+            eventBus.post(new EditCalendarEventEvent(view, q));
             return true;
         });
 

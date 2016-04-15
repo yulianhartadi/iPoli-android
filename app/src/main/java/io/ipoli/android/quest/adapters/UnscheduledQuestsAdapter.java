@@ -50,7 +50,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final UnscheduledQuestViewModel vm = viewModels.get(position);
-        holder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest())));
+        holder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), "calendar")));
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));

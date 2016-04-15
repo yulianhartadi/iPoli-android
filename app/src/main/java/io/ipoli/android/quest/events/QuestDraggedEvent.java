@@ -4,14 +4,12 @@ import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 2/19/16.
+ * on 4/15/16.
  */
-public class ShowQuestEvent {
+public class QuestDraggedEvent {
     public final Quest quest;
-    public final String source;
 
-    public ShowQuestEvent(Quest quest, String source) {
+    public QuestDraggedEvent(Quest quest) {
         this.quest = quest;
-        this.source = source;
     }
 }

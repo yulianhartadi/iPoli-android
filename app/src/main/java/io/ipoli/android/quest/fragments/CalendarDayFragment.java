@@ -50,6 +50,7 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
+import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
@@ -215,6 +216,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onEditCalendarEvent(EditCalendarEventEvent e) {
+        eventBus.post(new QuestDraggedEvent(e.quest));
         calendarContainer.editView(e.calendarEventView);
     }
 

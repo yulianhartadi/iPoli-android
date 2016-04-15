@@ -138,7 +138,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
-            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest())));
+            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), "calendar")));
             questHolder.name.setText(vm.getName());
 
             if (vm.isStarted()) {
