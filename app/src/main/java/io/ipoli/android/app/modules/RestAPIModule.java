@@ -12,11 +12,13 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -52,6 +54,7 @@ public class RestAPIModule {
     @Singleton
     public Gson provideGson() {
         return new GsonBuilder()
+                .setDateFormat(Constants.API_DATETIME_ISO_8601_FORMAT)
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override
                     public boolean shouldSkipField(FieldAttributes f) {
@@ -83,10 +86,12 @@ public class RestAPIModule {
     @Provides
     @Singleton
     public OkHttpClient provideHttpClient() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         return new OkHttpClient.Builder().addInterceptor(chain -> {
             Request request = chain.request();
             request = request.newBuilder().addHeader("Content-Type", "application/json").build();
-            return chain.proceed(request);
-        }).build();
+            return chain.proceed(chain.request());
+        }).addInterceptor(logging).build();
     }
 }
