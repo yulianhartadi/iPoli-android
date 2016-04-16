@@ -9,7 +9,7 @@ import io.ipoli.android.quest.suggestions.providers.DayOfMonthSuggestionsProvide
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class RecurrenceDayOfMonthMatcher extends RecurrenceMatcher {
+public class RecurrenceDayOfMonthMatcher extends RecurrenceEveryDayMatcher {
     private static final String ON_EVERY_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d{1,2})(st|nd|th|rd)?\\s(every|each)\\smonth(?:$|\\s)";
     private static final String EVERY_OF_THE_MONTH_PATTERN = "(?:^|\\s)(every|each)\\s(\\d{1,2})(st|th|rd|nd)?\\sof\\sthe\\smonth(?:$|\\s)";
 

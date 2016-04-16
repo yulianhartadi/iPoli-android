@@ -12,18 +12,18 @@ import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class RecurrenceMatcher extends BaseMatcher<String> {
+public class RecurrenceEveryDayMatcher extends BaseMatcher<String> {
     private static final String EVERY_DAY_PATTERN = "(?:^|\\s)every\\sday(?:$|\\s)";
 
     private Pattern[] patterns = {
             Pattern.compile(EVERY_DAY_PATTERN, Pattern.CASE_INSENSITIVE),
     };
 
-    public RecurrenceMatcher() {
+    public RecurrenceEveryDayMatcher() {
         this(new RecurrenceSuggestionsProvider());
     }
 
-    protected RecurrenceMatcher(SuggestionsProvider suggestionsProvider) {
+    protected RecurrenceEveryDayMatcher(SuggestionsProvider suggestionsProvider) {
         super(suggestionsProvider);
     }
 
