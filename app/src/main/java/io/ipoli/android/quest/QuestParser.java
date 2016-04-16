@@ -39,7 +39,6 @@ public class QuestParser {
 
         String rawText = text;
 
-
         Match durationMatch = durationMatcher.match(text);
         String matchedDurationText = durationMatch != null ? durationMatch.text : "";
         int duration = durationMatcher.parse(text);

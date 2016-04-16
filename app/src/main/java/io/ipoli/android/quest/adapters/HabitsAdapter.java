@@ -3,6 +3,7 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.Space;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -70,6 +71,12 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         questHolder.progressContainer.removeAllViews();
 
+        if (vm.getTotalCount() == 0) {
+            questHolder.progressSpace.setVisibility(View.GONE);
+        } else {
+            questHolder.progressSpace.setVisibility(View.VISIBLE);
+        }
+
         LayoutInflater inflater = LayoutInflater.from(context);
         for (int i = 1; i <= vm.getCompletedDailyCount(); i++) {
             View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
@@ -136,6 +143,9 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Bind(R.id.quest_remaining)
         public TextView repeatFrequency;
+
+        @Bind(R.id.quest_progress_space)
+        public Space progressSpace;
 
         public ViewHolder(View v) {
             super(v);
