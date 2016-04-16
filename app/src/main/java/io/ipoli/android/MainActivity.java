@@ -2,14 +2,14 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.BottomBarTab;
-import com.roughike.bottombar.OnTabClickListener;
+import com.roughike.bottombar.OnMenuTabClickListener;
 import com.squareup.otto.Subscribe;
 
 import butterknife.Bind;
@@ -34,7 +34,9 @@ public class MainActivity extends BaseActivity {
     public static final int ADD_QUEST_TAB_INDEX = 2;
     public static final int INBOX_TAB_INDEX = 3;
     public static final int HABITS_TAB_INDEX = 4;
-    private int currentSelectedPosition = 0;
+
+    @IdRes
+    private int currentSelectedItem = 0;
 
     private BottomBar bottomBar;
 
@@ -48,66 +50,70 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+
         bottomBar = BottomBar.attachShy((CoordinatorLayout) findViewById(R.id.root_container),
                 findViewById(R.id.content_container), savedInstanceState);
-
-        bottomBar.setItems(
-                new BottomBarTab(R.drawable.ic_event_white_24dp, "Calendar"),
-                new BottomBarTab(R.drawable.ic_format_list_bulleted_white_24dp, "Overview"),
-                new BottomBarTab(R.drawable.ic_add_white_24dp, "AddQuest"),
-                new BottomBarTab(R.drawable.ic_drafts_white_24dp, "Inbox"),
-                new BottomBarTab(R.drawable.ic_favorite_white_24dp, "Habits")
-        );
-
-
-        bottomBar.setOnTabClickListener(new OnTabClickListener() {
+        bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
             @Override
-            public void onTabSelected(int position) {
+            public void onMenuTabSelected(@IdRes int menuItemId) {
                 String screenName = "";
                 resetLayoutColors();
 
-                switch (position) {
-                    case CALENDAR_TAB_INDEX:
+                switch (menuItemId) {
+                    case R.id.calendar:
                         screenName = "calendar";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new CalendarDayFragment()).commit();
                         break;
-                    case OVERVIEW_TAB_INDEX:
+                    case R.id.overview:
                         screenName = "overview";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new OverviewFragment()).commit();
                         break;
-                    case ADD_QUEST_TAB_INDEX:
+                    case R.id.add_quest:
                         screenName = "add_quest";
-                        boolean isForToday = currentSelectedPosition == CALENDAR_TAB_INDEX;
+                        boolean isForToday = currentSelectedItem == R.id.calendar;
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, AddQuestFragment.newInstance(isForToday)).commit();
                         break;
-                    case INBOX_TAB_INDEX:
+                    case R.id.inbox:
                         screenName = "inbox";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new InboxFragment()).commit();
                         break;
-                    case HABITS_TAB_INDEX:
+                    case R.id.habits:
                         screenName = "habits";
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.content_container, new HabitsFragment()).commit();
                         break;
                 }
-                currentSelectedPosition = position;
+                currentSelectedItem = menuItemId;
                 eventBus.post(new ScreenShownEvent(screenName));
             }
 
             @Override
-            public void onTabReSelected(int position) {
+            public void onMenuTabReSelected(@IdRes int menuItemId) {
+
             }
         });
+
 
         bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
         bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
         bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
         bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
         bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
+
+//                Tutorial.getInstance(this).addItem(
+//                new TutorialItem.Builder(this)
+//                        .setState(Tutorial.State.TUTORIAL_WELCOME)
+//                        .setTarget(bottomBar.findViewById(R.id.calendar))
+//                        .setFocusType(Focus.ALL)
+//                        .setTargetPadding(-30)
+//                        .enableDotAnimation(false)
+//                        .dismissOnTouch(true)
+//                        .build());
+
     }
 
     private void resetLayoutColors() {
