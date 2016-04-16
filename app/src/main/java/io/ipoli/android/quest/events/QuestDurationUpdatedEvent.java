@@ -6,10 +6,10 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/16/16.
  */
-public class DoneQuestEvent {
+public class QuestDurationUpdatedEvent {
     public final Quest quest;
 
-    public DoneQuestEvent(Quest quest) {
+    public QuestDurationUpdatedEvent(Quest quest) {
         this.quest = quest;
     }
 }

@@ -15,11 +15,11 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
-import io.ipoli.android.quest.events.DoneQuestEvent;
+import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
@@ -30,14 +30,14 @@ import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
-import io.ipoli.android.quest.events.StartQuestEvent;
-import io.ipoli.android.quest.events.StopQuestEvent;
+import io.ipoli.android.quest.events.StartQuestTapEvent;
+import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
-import io.ipoli.android.quest.events.UpdateQuestContextEvent;
-import io.ipoli.android.quest.events.UpdateQuestDurationEvent;
+import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
+import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -129,7 +129,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onCompleteQuest(CompleteQuestEvent e) {
+    public void onQuestCompleted(QuestCompletedEvent e) {
         log("quest_completed", e.quest.getId(), e.quest.getName());
     }
 
@@ -204,17 +204,17 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onStartQuest(StartQuestEvent e) {
+    public void onStartQuestTap(StartQuestTapEvent e) {
         log("start_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
-    public void onStopQuest(StopQuestEvent e) {
+    public void onStopQuestTap(StopQuestTapEvent e) {
         log("stop_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
-    public void onDoneQuest(DoneQuestEvent e) {
+    public void onDoneQuestTap(DoneQuestTapEvent e) {
         log("done_quest", e.quest.getId(), e.quest.getName());
     }
 
@@ -229,12 +229,12 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onUpdateQuestDuration(UpdateQuestDurationEvent e) {
+    public void onQuestDurationUpdated(QuestDurationUpdatedEvent e) {
         log("update_quest_duration", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
-    public void onUpdateQuestContext(UpdateQuestContextEvent e) {
+    public void onQuestContextUpdated(QuestContextUpdatedEvent e) {
         log("updated_quest_context", EventParams.create()
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())

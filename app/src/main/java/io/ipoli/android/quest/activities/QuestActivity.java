@@ -30,10 +30,10 @@ import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DoneQuestEvent;
+import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.StartQuestEvent;
-import io.ipoli.android.quest.events.StopQuestEvent;
+import io.ipoli.android.quest.events.StartQuestTapEvent;
+import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -202,14 +202,14 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
         if (isTimerRunning) {
-            eventBus.post(new StopQuestEvent(quest));
+            eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
             new StopQuestCommand(quest, questPersistenceService, this).execute();
             resetTimerUI();
             timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
             edit.setVisibility(View.VISIBLE);
         } else {
-            eventBus.post(new StartQuestEvent(quest));
+            eventBus.post(new StartQuestTapEvent(quest));
             new StartQuestCommand(this, questPersistenceService, quest).execute();
             startTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
@@ -219,7 +219,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_done)
     public void onDoneTap(View v) {
-        eventBus.post(new DoneQuestEvent(quest));
+        eventBus.post(new DoneQuestTapEvent(quest));
         stopTimer();
         QuestNotificationScheduler.stopAll(quest.getId(), this);
         Intent i = new Intent(this, QuestCompleteActivity.class);

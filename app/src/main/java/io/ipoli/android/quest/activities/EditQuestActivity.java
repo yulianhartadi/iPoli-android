@@ -50,8 +50,8 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
-import io.ipoli.android.quest.events.UpdateQuestContextEvent;
-import io.ipoli.android.quest.events.UpdateQuestDurationEvent;
+import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
+import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
@@ -141,7 +141,7 @@ public class EditQuestActivity extends BaseActivity {
         questDuration.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                eventBus.post(new UpdateQuestDurationEvent(quest));
+                eventBus.post(new QuestDurationUpdatedEvent(quest));
             }
         });
 
@@ -190,7 +190,7 @@ public class EditQuestActivity extends BaseActivity {
                 public void onClick(View v) {
                     removeSelectedContextCheck();
                     changeContext(ctx);
-                    eventBus.post(new UpdateQuestContextEvent(quest, ctx));
+                    eventBus.post(new QuestContextUpdatedEvent(quest, ctx));
                 }
             });
         }

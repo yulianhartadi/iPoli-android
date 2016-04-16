@@ -24,7 +24,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Log;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompleteQuestEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;
 
@@ -68,7 +68,7 @@ public class QuestCompleteActivity extends BaseActivity {
     public void onDoneTap(View v) {
         saveQuest().subscribe(q -> {
             QuestNotificationScheduler.stopAll(q.getId(), this);
-            eventBus.post(new CompleteQuestEvent(q));
+            eventBus.post(new QuestCompletedEvent(q));
             setResult(RESULT_OK);
             finish();
         });

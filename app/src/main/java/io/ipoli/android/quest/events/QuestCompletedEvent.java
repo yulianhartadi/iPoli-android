@@ -3,13 +3,13 @@ package io.ipoli.android.quest.events;
 import io.ipoli.android.quest.data.Quest;
 
 /**
- * Created by Polina Zhelyazkova <polina@ipoli.io>
- * on 4/16/16.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 1/10/16.
  */
-public class UpdateQuestDurationEvent {
+public class QuestCompletedEvent {
     public final Quest quest;
 
-    public UpdateQuestDurationEvent(Quest quest) {
+    public QuestCompletedEvent(Quest quest) {
         this.quest = quest;
     }
 }
