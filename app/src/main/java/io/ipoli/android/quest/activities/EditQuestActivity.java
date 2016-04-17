@@ -52,10 +52,10 @@ import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
-import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -79,7 +79,7 @@ public class EditQuestActivity extends BaseActivity {
     @Bind(R.id.quest_text)
     EditText nameText;
 
-    @Bind(R.id.quest_schedule_text)
+    @Bind(R.id.quest_duration)
     Spinner questDuration;
 
     @Bind(R.id.quest_due_date)
@@ -138,13 +138,18 @@ public class EditQuestActivity extends BaseActivity {
         }
         durationSuggestions.addAll(createAutoSuggestions(qDurationTxt));
         questDuration.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, durationSuggestions));
-        questDuration.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        questDuration.setSelection(0, false);
+        questDuration.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                eventBus.post(new QuestDurationUpdatedEvent(quest));
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                eventBus.post(new QuestDurationUpdatedEvent(quest, questDuration.getSelectedItem().toString()));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
-
         setStartTimeText(Quest.getStartTime(quest));
         setDueDateText(quest.getEndDate());
 

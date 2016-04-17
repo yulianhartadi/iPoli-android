@@ -36,8 +36,10 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AddTutorialItemEvent;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -47,6 +49,8 @@ import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 
 public class OverviewFragment extends Fragment {
     @Inject
@@ -83,6 +87,13 @@ public class OverviewFragment extends Fragment {
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
 
+        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
+                .setState(Tutorial.State.TUTORIAL_OVERVIEW_SWIPE)
+                .setTarget(questList)
+                .setFocusType(Focus.MINIMUM)
+                .enableDotAnimation(false)
+                .dismissOnTouch(true)
+                .build()));
         return view;
     }
 

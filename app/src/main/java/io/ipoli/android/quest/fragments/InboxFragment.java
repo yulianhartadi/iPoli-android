@@ -4,6 +4,7 @@ package io.ipoli.android.quest.fragments;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -27,9 +28,11 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AddTutorialItemEvent;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -42,6 +45,8 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 import rx.Observable;
 
 public class InboxFragment extends Fragment {
@@ -83,21 +88,25 @@ public class InboxFragment extends Fragment {
         });
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
 
     private void addTutorialItem() {
-//        Tutorial.getInstance(this).addItem(
-//                new TutorialItem.Builder(this)
-//                        .setState(Tutorial.State.TUTORIAL_INBOX_SWIPE)
-//                        .setTarget(questList)
-//                        .setFocusType(Focus.ALL)
-//                        .setTargetPadding(-30)
-//                        .enableDotAnimation(false)
-//                        .dismissOnTouch(true)
-//                        .build());
+        new Handler().post(() -> {
+            View target = questList.findViewHolderForAdapterPosition(0) != null ?
+                    questList.findViewHolderForAdapterPosition(0).itemView : null;
+            eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
+                    .setState(Tutorial.State.TUTORIAL_INBOX_SWIPE)
+                    .setTarget(target)
+                    .setFocusType(Focus.NORMAL)
+                    .enableDotAnimation(false)
+                    .dismissOnTouch(true)
+                    .performClick(false)
+                    .build()));
+        });
     }
 
     private void initQuestList(List<Quest> quests) {

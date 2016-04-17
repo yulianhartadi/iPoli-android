@@ -69,9 +69,13 @@
     <string name="tutorial_start_overview">Use this tab to see overview of your quests</string>
     <string name="tutorial_overview_swipe">Swipe quest left to complete it or swipe it right to reschedule it</string>
     <string name="tutorial_start_add_quest">It\'s time to add your first quest</string>
-    <string name="tutorial_add_quest">Write your quest in everyday language. Buttons will help you.</string>
+    <string name="tutorial_add_quest">Write your quest in everyday language. Suggestions will help you.</string>
+    <string name="tutorial_change_context">Change the context of your quests</string>
+    <string name="tutorial_save_quest">Save your quest</string>
     <string name="tutorial_start_inbox">Manage your unscheduled quests from the inbox</string>
     <string name="tutorial_inbox_swipe">Swipe quest left to schedule it for today or swipe it right to delete it</string>
+    <string name="tutorial_start_habits">Manage your habits from this tab</string>
+    <string name="tutorial_habits_swipe">Swipe quest to the right if you don\'t like it anymore</string>
     <string name="tutorial_view_feedback">Help us improve iPoli by sharing your valuable opinion with us. Let\'s get things done!</string>
 
     <string name="add_quest_today">today</string>
@@ -125,4 +129,5 @@
 
     <string name="save">Save</string>
     <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
+
 </resources>

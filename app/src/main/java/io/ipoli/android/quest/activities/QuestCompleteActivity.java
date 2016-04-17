@@ -21,10 +21,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Log;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.QuestDifficultyChangedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;
 
@@ -59,9 +61,18 @@ public class QuestCompleteActivity extends BaseActivity {
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId).subscribe(q -> {
             quest = q;
+            addDifficultyChangeListener();
         });
 
+
         eventBus.post(new ScreenShownEvent("quest_complete"));
+    }
+
+    private void addDifficultyChangeListener() {
+        difficultyGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            String d = Difficulty.values()[getDifficulty()].name();
+            eventBus.post(new QuestDifficultyChangedEvent(quest, d));
+        });
     }
 
     @OnClick(R.id.quest_complete_done)

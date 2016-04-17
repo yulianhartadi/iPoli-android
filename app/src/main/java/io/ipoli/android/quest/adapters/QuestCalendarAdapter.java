@@ -130,6 +130,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
                 marginEndDP,
                 context.getResources().getDisplayMetrics()
         );
+        check.setId(R.id.quest_check);
         check.setScaleX(1.3f);
         check.setScaleY(1.3f);
         checkLP.setMarginEnd(px);

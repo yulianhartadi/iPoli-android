@@ -15,16 +15,19 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
+import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
+import io.ipoli.android.quest.events.QuestDifficultyChangedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -36,8 +39,6 @@ import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
-import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
-import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -230,7 +231,10 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onQuestDurationUpdated(QuestDurationUpdatedEvent e) {
-        log("update_quest_duration", e.quest.getId(), e.quest.getName());
+        log("update_quest_duration", EventParams.create()
+                .add("id", e.quest.getId())
+                .add("name", e.quest.getName())
+                .add("duration", e.duration));
     }
 
     @Subscribe
@@ -266,7 +270,16 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
+    public void onQuestDifficultyChanged(QuestDifficultyChangedEvent e) {
+        log("quest_difficulty_changed", EventParams.create()
+                .add("id", e.quest.getId())
+                .add("name", e.quest.getName())
+                .add("difficulty", e.difficulty));
+    }
+
+    @Subscribe
     public void onShowTutorialItem(ShowTutorialItemEvent e) {
+        log("tutorial_item_shown", EventParams.of("state", e.state));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

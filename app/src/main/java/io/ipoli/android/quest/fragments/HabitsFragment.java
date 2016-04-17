@@ -3,6 +3,7 @@ package io.ipoli.android.quest.fragments;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -36,8 +37,10 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AddTutorialItemEvent;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -49,6 +52,8 @@ import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
+import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialItem;
 
 public class HabitsFragment extends Fragment {
 
@@ -92,6 +97,9 @@ public class HabitsFragment extends Fragment {
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
+
+        addTutorialItem();
+
         return view;
     }
 
@@ -113,6 +121,21 @@ public class HabitsFragment extends Fragment {
         eventBus.unregister(this);
         super.onPause();
     }
+
+    private void addTutorialItem() {
+        new Handler().post(() -> {
+            View target = questList.findViewHolderForAdapterPosition(0) != null ?
+                    questList.findViewHolderForAdapterPosition(0).itemView : null;
+            eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
+                    .setState(Tutorial.State.TUTORIAL_HABITS_SWIPE)
+                    .setTarget(target)
+                    .setFocusType(Focus.NORMAL)
+                    .enableDotAnimation(false)
+                    .dismissOnTouch(true)
+                    .build()));
+        });
+    }
+
 
     private void updateQuests() {
         recurrentQuestPersistenceService.findAllHabits().subscribe(quests -> {

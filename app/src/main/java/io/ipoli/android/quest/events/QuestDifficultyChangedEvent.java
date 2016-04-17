@@ -4,14 +4,14 @@ import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
- * on 4/16/16.
+ * on 4/17/16.
  */
-public class QuestDurationUpdatedEvent {
+public class QuestDifficultyChangedEvent {
     public final Quest quest;
-    public final String duration;
+    public final String difficulty;
 
-    public QuestDurationUpdatedEvent(Quest quest, String duration) {
+    public QuestDifficultyChangedEvent(Quest quest, String difficulty) {
         this.quest = quest;
-        this.duration = duration;
+        this.difficulty = difficulty;
     }
 }

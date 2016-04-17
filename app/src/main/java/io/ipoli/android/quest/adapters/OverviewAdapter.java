@@ -260,7 +260,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @Bind(R.id.quest_context_indicator_image)
         public ImageView contextIndicatorImage;
 
-        @Bind(R.id.quest_schedule_text)
+        @Bind(R.id.quest_duration)
         public TextView scheduleText;
 
         @Bind(R.id.quest_due_date)

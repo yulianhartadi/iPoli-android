@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import co.mobiwise.materialintro.MaterialIntroConfiguration;
-import co.mobiwise.materialintro.animation.MaterialIntroListener;
 import co.mobiwise.materialintro.view.MaterialIntroView;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -56,14 +55,18 @@ public class Tutorial {
         TUTORIAL_WELCOME(R.string.tutorial_welcome, 0),
         TUTORIAL_CALENDAR_DRAG_QUEST(R.string.tutorial_calendar_quest, 0),
         TUTORIAL_CALENDAR_COMPLETE_QUEST(R.string.tutorial_calendar_complete_quest, 0),
-        TUTORIAL_CALENDAR_UNSCHEDULE_QUESTS(R.string.tutorial_calendar_unscheduled_quests, 4000),
+        TUTORIAL_CALENDAR_UNSCHEDULED_QUESTS(R.string.tutorial_calendar_unscheduled_quests, 4000),
         TUTORIAL_START_OVERVIEW(R.string.tutorial_start_overview, 2500),
         TUTORIAL_OVERVIEW_SWIPE(R.string.tutorial_overview_swipe, 0),
         TUTORIAL_START_ADD_QUEST(R.string.tutorial_start_add_quest, 2500),
         TUTORIAL_ADD_QUEST(R.string.tutorial_add_quest, 0),
-        TUTORIAL_START_INBOX(R.string.tutorial_start_inbox, 0),
+        TUTORIAL_CHANGE_CONTEXT(R.string.tutorial_change_context, 3000),
+        TUTORIAL_SAVE_NEW_QUEST(R.string.tutorial_save_quest, 0),
+        TUTORIAL_START_INBOX(R.string.tutorial_start_inbox, 1000),
         TUTORIAL_INBOX_SWIPE(R.string.tutorial_inbox_swipe, 0),
-        TUTORIAL_VIEW_FEEDBACK(R.string.tutorial_view_feedback, 0);
+        TUTORIAL_START_HABITS(R.string.tutorial_start_habits, 2500),
+        TUTORIAL_HABITS_SWIPE(R.string.tutorial_habits_swipe, 0),
+        TUTORIAL_VIEW_FEEDBACK(R.string.tutorial_view_feedback, 2500);
 
         @StringRes
         private int textRes;
@@ -134,14 +137,11 @@ public class Tutorial {
                 .setInfoText(context.getResources().getString(item.getState().textRes))
                 .setUsageId(item.getState().name()) //THIS SHOULD BE UNIQUE ID
                 .setDelayMillis(item.getState().delayMillis)
-                .setListener(new MaterialIntroListener() {
-                    @Override
-                    public void onUserClicked(String s) {
-                        isTutorialVisible = false;
-                        lastCompletedStep = item.getState().getStep();
-                        saveCompletedStep();
-                        show();
-                    }
+                .setListener(s -> {
+                    isTutorialVisible = false;
+                    lastCompletedStep = item.getState().getStep();
+                    saveCompletedStep();
+                    show();
                 });
     }
 
