@@ -22,7 +22,7 @@ import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
-import io.ipoli.android.quest.parsers.RecurrenceMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
@@ -53,7 +53,7 @@ public class SuggestionsManager {
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
             put(TextEntityType.DUE_DATE, new DueDateMatcher(parser));
             put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
-            put(TextEntityType.RECURRENT, new RecurrenceMatcher());
+            put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
         }};

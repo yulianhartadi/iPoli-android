@@ -9,7 +9,10 @@ import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.Match;
-import io.ipoli.android.quest.parsers.RecurrenceMatcher;
+import io.ipoli.android.quest.parsers.QuestTextMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
+import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
 
@@ -22,7 +25,9 @@ public class QuestParser {
     private final DueDateMatcher dueDateMatcher;
     private final StartTimeMatcher startTimeMatcher;
     private final DurationMatcher durationMatcher = new DurationMatcher();
-    private final RecurrenceMatcher recurrenceMatcher = new RecurrenceMatcher();
+    private final RecurrenceEveryDayMatcher everyDayMatcher = new RecurrenceEveryDayMatcher();
+    private final RecurrenceDayOfWeekMatcher dayOfWeekMatcher = new RecurrenceDayOfWeekMatcher();
+    private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
     private final TimesPerDayMatcher timesPerDayMatcher = new TimesPerDayMatcher();
 
     public QuestParser(PrettyTimeParser timeParser) {
@@ -67,25 +72,11 @@ public class QuestParser {
 
         String rawText = text;
 
-        Match durationMatch = durationMatcher.match(text);
-        String matchedDurationText = durationMatch != null ? durationMatch.text : "";
-        text = text.replace(matchedDurationText.trim(), "");
-
-        Match startTimeMatch = startTimeMatcher.match(text);
-        String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
-        text = text.replace(matchedStartTimeText.trim(), "");
-
-        Match dueDateMatch = dueDateMatcher.match(text);
-        String matchedDueDateText = dueDateMatch != null ? dueDateMatch.text : "";
-        text = text.replace(matchedDueDateText.trim(), "");
-
-        Match recurrentMatch = recurrenceMatcher.match(text);
-        String matchedRecurrenceText = recurrentMatch != null ? recurrentMatch.text : "";
-        text = text.replace(matchedRecurrenceText.trim(), "");
-
-        Match timesPerDayMatch = timesPerDayMatcher.match(text);
-        String matchedTimesPerDayText = timesPerDayMatch != null ? timesPerDayMatch.text : "";
-        text = text.replace(matchedTimesPerDayText.trim(), "");
+        for (QuestTextMatcher matcher : new QuestTextMatcher[]{durationMatcher, startTimeMatcher, dueDateMatcher, everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
+            Match match = matcher.match(text);
+            String matchedText = match != null ? match.text : "";
+            text = text.replace(matchedText.trim(), "");
+        }
 
         String name = text.trim();
 
@@ -97,6 +88,11 @@ public class QuestParser {
     }
 
     public boolean isRecurrent(String text) {
-        return recurrenceMatcher.match(text) != null || timesPerDayMatcher.match(text) != null;
+        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
+            if (matcher.match(text) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }
