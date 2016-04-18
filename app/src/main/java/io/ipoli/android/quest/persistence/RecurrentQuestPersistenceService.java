@@ -12,8 +12,6 @@ import rx.Observable;
  */
 public interface RecurrentQuestPersistenceService extends PersistenceService<RecurrentQuest> {
 
-    Observable<List<RecurrentQuest>> findAllWhoNeedSyncWithRemote();
-
     Observable<List<RecurrentQuest>> findAllHabits();
 
     void delete(RecurrentQuest recurrentQuest);

@@ -29,6 +29,14 @@ public class LocalStorage {
         editor().putInt(key, value).apply();
     }
 
+    public void saveLong(String key, long value) {
+        editor().putLong(key, value).apply();
+    }
+
+    public long readLong(String key) {
+        return sharedPreferences.getLong(key, 0);
+    }
+
     public void saveStringSet(String key, Set<String> values) {
         Gson gson = new Gson();
         editor().putString(key, gson.toJson(values)).apply();

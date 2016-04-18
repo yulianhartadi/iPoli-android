@@ -46,9 +46,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     private RealmList<Reminder> reminders;
 
     private Recurrence recurrence;
-    private boolean needsSyncWithRemote;
-
-    private boolean isRemoteObject;
 
     public RecurrentQuest() {
     }
@@ -94,8 +91,6 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
-        this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
     }
 
     public String getName() {
@@ -147,34 +142,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        this.needsSyncWithRemote = false;
-    }
-
-    @Override
     public void markUpdated() {
-        setNeedsSync();
         updatedAt = DateUtils.nowUTC();
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public Date getUpdatedAt() {

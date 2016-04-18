@@ -34,8 +34,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void delete(Quest quest);
 
-    Observable<List<Quest>> findAllWhoNeedSyncWithRemote();
-
     void deleteAllFromRecurrentQuest(String recurrentQuestId);
 
     long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);

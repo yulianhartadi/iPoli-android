@@ -54,7 +54,7 @@ public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
                 .setContentIntent(getPendingIntent(context, q.getId()))
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setWhen(q.getActualStartDateTime().getTime())
+                .setWhen(q.getActualStart().getTime())
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)

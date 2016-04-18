@@ -51,7 +51,7 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
     private void showQuestTimerNotification(Quest q) {
         int duration = q.getDuration();
 
-        long startTime = q.getActualStartDateTime().getTime();
+        long startTime = q.getActualStart().getTime();
         long now = System.currentTimeMillis();
         long elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(now) - TimeUnit.MILLISECONDS.toSeconds(startTime);
         int elapsedMinutes = Math.round(elapsedSeconds / 60.0f);
@@ -76,7 +76,7 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
                 .setContentInfo(elapsedMinutes + " m")
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setWhen(q.getActualStartDateTime().getTime())
+                .setWhen(q.getActualStart().getTime())
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

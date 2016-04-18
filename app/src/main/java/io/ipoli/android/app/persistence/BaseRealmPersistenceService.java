@@ -64,8 +64,8 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return fromRealm(where().equalTo("id", id).findFirst());
     }
 
-    public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
-        return fromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
+    public Observable<List<T>> findAllModifiedAfter(Date dateTime) {
+        return fromRealm(where().greaterThan("updatedAt", dateTime).findAll());
     }
 
     protected void onObjectSaved(T obj) {

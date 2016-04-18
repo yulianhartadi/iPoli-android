@@ -32,14 +32,14 @@ public class StartQuestCommand {
     public void execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
-        quest.setActualStartDateTime(DateUtils.nowUTC());
+        quest.setActualStart(DateUtils.nowUTC());
         questPersistenceService.save(quest).subscribe(q -> {
             scheduleNextQuestReminder(context);
             stopOtherRunningQuests(quest);
 
             if (quest.getDuration() > 0) {
                 long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-                long showDoneAtMillis = quest.getActualStartDateTime().getTime() + durationMillis;
+                long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
                 QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
             }
         });
@@ -51,7 +51,7 @@ public class StartQuestCommand {
         questPersistenceService.findAllPlannedAndStartedToday().subscribe(quests -> {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                    cq.setActualStartDateTime(null);
+                    cq.setActualStart(null);
                     questPersistenceService.save(cq);
                 }
             }
