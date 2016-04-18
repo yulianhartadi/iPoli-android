@@ -157,16 +157,20 @@ public class AppJobService extends JobService {
         return questPersistenceService.findAllModifiedAfter(lastSyncDateTime).concatMapIterable(quests -> quests).concatMap(q -> {
             JsonObject qJson = (JsonObject) gson.toJsonTree(q);
             if (isLocalOnly(q, lastSyncDateTime)) {
-                String id = null;
-                qJson.addProperty("id", id);
-            }
-            RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
-            return apiService.updateQuest(requestBody).compose(applyAPISchedulers()).concatMap(sq -> {
-                if (isLocalOnly(q, lastSyncDateTime)) {
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
+                return apiService.createQuest(requestBody).compose(applyAPISchedulers()).concatMap(sq -> {
                     questPersistenceService.updateId(q, sq.getId());
-                }
-                return questPersistenceService.save(sq, false);
-            });
+                    return questPersistenceService.save(sq, false);
+                });
+            } else {
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
+                return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers()).concatMap(sq -> {
+                    if (isLocalOnly(q, lastSyncDateTime)) {
+                        questPersistenceService.updateId(q, sq.getId());
+                    }
+                    return questPersistenceService.save(sq, false);
+                });
+            }
         });
     }
 

@@ -10,7 +10,6 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -30,7 +29,10 @@ public interface APIService {
     Observable<Player> createPlayer(@Body RequestBody request);
 
     @POST("quests")
-    Observable<Quest> updateQuest(@Body RequestBody data);
+    Observable<Quest> createQuest(@Body RequestBody data);
+
+    @POST("quests/{quest_id}")
+    Observable<Quest> updateQuest(@Body RequestBody data, @Path("quest_id") String questId);
 
     @DELETE("quests/{quest_id}")
     Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
@@ -38,7 +40,7 @@ public interface APIService {
     @POST("snippets")
     Observable<RecurrentQuest> createRecurrentQuestFromText(@Body RequestBody data);
 
-    @PUT("recurrent-quests/{quest_id}")
+    @POST("recurrent-quests/{quest_id}")
     Observable<RecurrentQuest> updateRecurrentQuest(@Body RequestBody data, @Path("quest_id") String questId);
 
     @GET("recurrent-quests")
