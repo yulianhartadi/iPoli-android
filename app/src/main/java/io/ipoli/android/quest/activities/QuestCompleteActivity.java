@@ -9,8 +9,6 @@ import android.widget.RadioGroup;
 
 import com.squareup.otto.Bus;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import butterknife.Bind;
@@ -21,6 +19,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Difficulty;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Log;
@@ -105,12 +104,8 @@ public class QuestCompleteActivity extends BaseActivity {
         }
         quest.setDifficulty(getDifficulty() + 1);
 
-        if (quest.getActualStartDateTime() != null) {
-            long nowMillis = System.currentTimeMillis();
-            long startMillis = quest.getActualStartDateTime().getTime();
-            quest.setActualDuration((int) TimeUnit.MILLISECONDS.toMinutes(nowMillis - startMillis));
-        }
         quest.setCompletedAt(DateUtils.nowUTC());
+        quest.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
 
         return questPersistenceService.save(quest);
 

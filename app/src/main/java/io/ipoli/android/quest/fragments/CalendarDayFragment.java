@@ -149,10 +149,10 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         Quest quest = e.quest;
         // @TODO remove old logs
         quest.getLogs().clear();
-        quest.setDifficulty(0);
-        quest.setActualStartDateTime(null);
-        quest.setActualDuration(0);
+        quest.setDifficulty(null);
+        quest.setActualStart(null);
         quest.setCompletedAt(null);
+        quest.setCompletedAtMinute(null);
         questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
         Toast.makeText(getContext(), "Quest undone", Toast.LENGTH_SHORT).show();
@@ -294,7 +294,9 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                             if (!DateUtils.isTodayUTC(completedAt.toLocalDate())) {
                                 continue;
                             }
-                            event.setStartMinute(Time.at(completedAt.getHourOfDay(), completedAt.getMinuteOfHour()).toMinutesAfterMidnight());
+                            int actualDuration = Time.of(new Date(q.getCompletedAt().getTime() - q.getActualStart().getTime())).toMinutesAfterMidnight();
+                            int actualStartMinute = Math.max(q.getCompletedAtMinute() - actualDuration, 0);
+                            event.setStartMinute(actualStartMinute);
                         }
                         completedEvents.add(event);
                     } else {

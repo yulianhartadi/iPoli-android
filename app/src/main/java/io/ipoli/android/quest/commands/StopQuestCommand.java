@@ -23,7 +23,7 @@ public class StopQuestCommand {
     }
 
     public void execute() {
-        quest.setActualStartDateTime(null);
+        quest.setActualStart(null);
         questPersistenceService.save(quest);
         QuestNotificationScheduler.stopAll(quest.getId(), context);
     }
