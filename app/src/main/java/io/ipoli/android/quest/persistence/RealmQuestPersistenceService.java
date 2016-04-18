@@ -57,7 +57,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public Observable<List<Quest>> findAllUnplanned() {
         return fromRealm(where()
                 .isNull("endDate")
-                .isNull("actualStartDateTime")
+                .isNull("actualStart")
                 .isNull("completedAt")
                 .findAllSorted("createdAt", Sort.DESCENDING));
     }
@@ -124,7 +124,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         RealmResults<Quest> quests = where()
                 .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(localDate))
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
-                .isNull("actualStartDateTime")
+                .isNull("actualStart")
                 .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING);
         if (quests.isEmpty()) {
