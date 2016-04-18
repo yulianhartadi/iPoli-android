@@ -27,6 +27,7 @@ import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity {
     public static final int CALENDAR_TAB_INDEX = 0;
@@ -51,8 +52,15 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        startTutorial();
+
         initBottomBar(savedInstanceState);
 
+    }
+
+    public void startTutorial(){
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
     }
 
     private void initBottomBar(Bundle savedInstanceState) {

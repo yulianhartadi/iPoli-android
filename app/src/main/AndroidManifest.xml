@@ -26,9 +26,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.iPoli"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli" />
         <activity
             android:name=".quest.activities.QuestActivity"
             android:parentActivityName=".MainActivity"
@@ -55,6 +54,9 @@
         <activity
             android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_edit_quest"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
 
         <receiver android:name=".app.receivers.BootCompleteReceiver">
