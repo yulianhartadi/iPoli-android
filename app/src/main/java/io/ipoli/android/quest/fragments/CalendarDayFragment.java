@@ -32,11 +32,9 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.AddTutorialItemEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
@@ -62,8 +60,6 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.QuestCalendarViewModel;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
 import rx.Observable;
 
 public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
@@ -168,41 +164,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
-
-        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_WELCOME)
-                .setTarget(calendarDayView)
-                .setFocusType(Focus.ALL)
-                .performClick(false)
-                .dismissOnTouch(true)
-                .enableDotAnimation(false)
-                .setTargetPadding(-120)
-                .build()));
-
-        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_CALENDAR_DRAG_QUEST)
-                .setTarget(calendarDayView)
-                .setFocusType(Focus.ALL)
-                .performClick(false)
-                .setTargetPadding(-120)
-                .build()));
-
-        View questView = calendarDayView.getView("iPoli");
-        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_CALENDAR_COMPLETE_QUEST)
-                .setTarget(questView == null ? null : questView.findViewById(R.id.quest_check))
-                .setFocusType(Focus.MINIMUM)
-                .enableDotAnimation(false)
-                .build()));
-
-        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_CALENDAR_UNSCHEDULED_QUESTS)
-                .setTarget(unscheduledQuestsAdapter.getItemCount() > 0 ? unscheduledQuestList : null)
-                .setFocusType(Focus.NORMAL)
-                .enableDotAnimation(false)
-                .dismissOnTouch(true)
-                .build()));
-
     }
 
     private void updateSchedule() {

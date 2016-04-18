@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -40,11 +39,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
-import co.mobiwise.materialintro.shape.Focus;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.AddTutorialItemEvent;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
@@ -65,8 +62,6 @@ import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
-import io.ipoli.android.tutorial.Tutorial;
-import io.ipoli.android.tutorial.TutorialItem;
 
 public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggestionsUpdatedListener {
     @Inject
@@ -156,14 +151,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             }
         });
 
-        eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                .setState(Tutorial.State.TUTORIAL_ADD_QUEST)
-                .setTarget(questText)
-                .setFocusType(Focus.NORMAL)
-                .enableDotAnimation(false)
-                .dismissOnTouch(true)
-                .build()));
-
         return view;
     }
 
@@ -203,15 +190,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             drawable.setColor(ContextCompat.getColor(getContext(), ctxs[i].resLightColor));
 
             final QuestContext ctx = ctxs[i];
-            if (ctx == QuestContext.WELLNESS) {
-                eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                        .setState(Tutorial.State.TUTORIAL_CHANGE_CONTEXT)
-                        .setTarget(iv)
-                        .setFocusType(Focus.NORMAL)
-                        .enableDotAnimation(true)
-                        .dismissOnTouch(true)
-                        .build()));
-            }
             iv.setOnClickListener(v -> {
                 removeSelectedContextCheck(view);
                 changeContext(ctx, view);
@@ -261,15 +239,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.add_quest_menu, menu);
-        new Handler().post(() -> {
-            View saveButton = getActivity().findViewById(R.id.action_save);
-            eventBus.post(new AddTutorialItemEvent(new TutorialItem.Builder(getActivity())
-                    .setTarget(saveButton)
-                    .setFocusType(Focus.MINIMUM)
-                    .enableDotAnimation(false)
-                    .setState(Tutorial.State.TUTORIAL_SAVE_NEW_QUEST)
-                    .build()));
-        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 
