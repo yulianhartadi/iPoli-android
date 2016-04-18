@@ -103,7 +103,7 @@ public class App extends MultiDexApplication {
             saveInitialQuests();
             scheduleJob(dailySyncJob());
         }
-//        eventBus.post(new ForceSyncRequestEvent());
+        eventBus.post(new ForceSyncRequestEvent());
 
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
 
