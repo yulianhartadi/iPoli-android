@@ -1,5 +1,6 @@
 package io.ipoli.android.app.persistence;
 
+import java.util.Date;
 import java.util.List;
 
 import io.realm.RealmObject;
@@ -18,6 +19,8 @@ public interface PersistenceService<T extends RealmObject> {
     Observable<List<T>> saveAll(List<T> objs);
 
     Observable<List<T>> saveAll(List<T> objs, boolean markUpdated);
+
+    public Observable<List<T>> findAllModifiedAfter(Date dateTime);
 
     void updateId(T obj, String newId);
 

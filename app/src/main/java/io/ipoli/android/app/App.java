@@ -106,8 +106,6 @@ public class App extends MultiDexApplication {
         eventBus.post(new ForceSyncRequestEvent());
 
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-
-//        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {
