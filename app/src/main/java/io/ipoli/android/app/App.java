@@ -131,8 +131,13 @@ public class App extends MultiDexApplication {
 
     private void addRecurrentQuests() {
         List<RecurrentQuest> recurrentQuests = new ArrayList<>();
-        recurrentQuests.add(new RecurrentQuest("Drink one glass of water 3 times per day every day"));
-        recurrentQuests.add(new RecurrentQuest("Say 3 things you are grateful for every day"));
+        RecurrentQuest rq1 = new RecurrentQuest("Drink one glass of water 3 times per day every day");
+        RecurrentQuest.setContext(rq1, QuestContext.WELLNESS);
+        recurrentQuests.add(rq1);
+
+        RecurrentQuest rq2 = new RecurrentQuest("Say 3 things I'm are grateful for every day");
+        RecurrentQuest.setContext(rq2, QuestContext.PERSONAL);
+        recurrentQuests.add(rq2);
         recurrentQuestPersistenceService.saveAll(recurrentQuests);
     }
 
