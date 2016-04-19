@@ -91,9 +91,6 @@ public class App extends MultiDexApplication {
         Realm.setDefaultConfiguration(config);
 
         getAppComponent(this).inject(this);
-        resetEndDateForIncompleteQuests();
-        registerServices();
-        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
 
@@ -110,6 +107,10 @@ public class App extends MultiDexApplication {
             scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
         }
+
+        resetEndDateForIncompleteQuests();
+        registerServices();
+        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
 
         eventBus.post(new ForceSyncRequestEvent());
     }
