@@ -40,6 +40,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
@@ -124,6 +125,15 @@ public class App extends MultiDexApplication {
         addTodayScheduledQuests(quests);
 
         questPersistenceService.saveAll(quests);
+
+        addRecurrentQuests();
+    }
+
+    private void addRecurrentQuests() {
+        List<RecurrentQuest> recurrentQuests = new ArrayList<>();
+        recurrentQuests.add(new RecurrentQuest("Drink one glass of water 3 times per day every day"));
+        recurrentQuests.add(new RecurrentQuest("Say 3 things you are grateful for every day"));
+        recurrentQuestPersistenceService.saveAll(recurrentQuests);
     }
 
     private void addTodayUnscheduledQuests(List<Quest> initialQuests) {
