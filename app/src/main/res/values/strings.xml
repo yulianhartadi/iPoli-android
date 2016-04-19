@@ -113,5 +113,17 @@
     <string name="save">Save</string>
     <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
     <string name="show_tutorial">Tutorial</string>
+    <string name="tutorial_welcome_title">Welcome to iPoli</string>
+    <string name="tutorial_welcome_desc">I\'m your smart assistant. Your daily tasks are now called quests. Be a hero and complete them!</string>
+    <string name="tutorial_calendar_title">Easily Schedule Your Day</string>
+    <string name="tutorial_calendar_desc">Simply touch, hold and drag a quest to schedule or reschedule it</string>
+    <string name="tutorial_overview_title">Review Your Weekly Schedule</string>
+    <string name="tutorial_overview_desc">Swipe a quest to the right to complete it or to the left to schedule it for today</string>
+    <string name="tutorial_add_quest_title">Quickly Add with Smart Assist</string>
+    <string name="tutorial_add_quest_desc">Use everyday language and autocomplete to create your quests in a flash</string>
+    <string name="tutorial_inbox_title">Collect Unscheduled Quests in Inbox</string>
+    <string name="tutorial_inbox_desc">Swipe a quest to the right to schedule it for today or to the left to delete it</string>
+    <string name="tutorial_habits_title">Stick to Your Important Habits</string>
+    <string name="tutorial_habits_desc">Track your weekly progress. Swipe a habit to the left to delete it.</string>
 
 </resources>
