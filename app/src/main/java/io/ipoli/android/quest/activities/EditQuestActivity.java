@@ -151,7 +151,7 @@ public class EditQuestActivity extends BaseActivity {
             }
         });
         setStartTimeText(Quest.getStartTime(quest));
-        setDueDateText(quest.getEndDate());
+        setDueDateText(DateUtils.UTCToLocalDate(quest.getEndDate()));
 
         initContextUI();
     }
@@ -190,13 +190,10 @@ public class EditQuestActivity extends BaseActivity {
             drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
 
             final QuestContext ctx = ctxs[i];
-            iv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    removeSelectedContextCheck();
-                    changeContext(ctx);
-                    eventBus.post(new QuestContextUpdatedEvent(quest, ctx));
-                }
+            iv.setOnClickListener(v -> {
+                removeSelectedContextCheck();
+                changeContext(ctx);
+                eventBus.post(new QuestContextUpdatedEvent(quest, ctx));
             });
         }
     }

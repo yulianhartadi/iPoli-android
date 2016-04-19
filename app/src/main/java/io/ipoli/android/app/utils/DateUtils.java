@@ -1,5 +1,6 @@
 package io.ipoli.android.app.utils;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
@@ -121,5 +122,9 @@ public class DateUtils {
 
     public static boolean isTomorrowUTC(Date date) {
         return isTomorrowUTC(new LocalDate(date, DateTimeZone.UTC));
+    }
+
+    public static Date UTCToLocalDate(Date date) {
+        return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
     }
 }
