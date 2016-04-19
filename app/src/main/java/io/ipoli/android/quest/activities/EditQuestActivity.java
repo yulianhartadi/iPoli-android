@@ -31,6 +31,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -276,7 +277,10 @@ public class EditQuestActivity extends BaseActivity {
     @OnClick(R.id.quest_due_date)
     public void onDueDateClick(Button button) {
         eventBus.post(new UpdateQuestEndDateRequestEvent(quest));
-        DialogFragment f = new DatePickerFragment();
+        Date dueDate = (Date) dueDateBtn.getTag();
+        Calendar c = Calendar.getInstance();
+        c.setTime(dueDate);
+        DialogFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
         f.show(this.getSupportFragmentManager(), "datePicker");
     }
 
