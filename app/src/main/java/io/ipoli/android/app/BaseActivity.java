@@ -1,12 +1,11 @@
 package io.ipoli.android.app;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.squareup.otto.Bus;
 
@@ -16,6 +15,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
+import io.ipoli.android.tutorial.TutorialActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -39,27 +39,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                View feedbackView = findViewById(R.id.action_feedback);
-//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
-//                        .setTarget(inboxButton)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .enableDotAnimation(false)
-//                        .setState(Tutorial.State.TUTORIAL_START_INBOX)
-//                        .build());
-//                Tutorial.getInstance(MainActivity.this).addItem(new TutorialItem.Builder(MainActivity.this)
-//                        .setTarget(feedbackView)
-//                        .setFocusType(Focus.MINIMUM)
-//                        .enableDotAnimation(false)
-//                        .performClick(false)
-//                        .dismissOnTouch(true)
-//                        .setState(Tutorial.State.TUTORIAL_VIEW_FEEDBACK)
-//                        .build());
-            }
-        });
-
         return true;
     }
 
@@ -74,7 +53,16 @@ public class BaseActivity extends AppCompatActivity {
                 eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
                 break;
+            case R.id.action_show_tutorial:
+                startTutorial();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    protected void startTutorial() {
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
+    }
+
 }

@@ -16,6 +16,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
@@ -27,7 +28,6 @@ import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
-import io.ipoli.android.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity {
     public static final int CALENDAR_TAB_INDEX = 0;
@@ -35,7 +35,6 @@ public class MainActivity extends BaseActivity {
     public static final int ADD_QUEST_TAB_INDEX = 2;
     public static final int INBOX_TAB_INDEX = 3;
     public static final int HABITS_TAB_INDEX = 4;
-    private static final int TUTORIAL_REQUEST_CODE = 1234;
 
     @IdRes
     private int currentSelectedItem = 0;
@@ -52,15 +51,14 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        startTutorial();
+        LocalStorage localStorage = LocalStorage.of(this);
+        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+            startTutorial();
+        }
 
         initBottomBar(savedInstanceState);
 
-    }
-
-    public void startTutorial(){
-        Intent intent = new Intent(this, TutorialActivity.class);
-        startActivity(intent);
     }
 
     private void initBottomBar(Bundle savedInstanceState) {

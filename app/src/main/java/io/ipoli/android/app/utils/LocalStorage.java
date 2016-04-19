@@ -75,4 +75,13 @@ public class LocalStorage {
     public String readString(String key) {
         return sharedPreferences.getString(key, "");
     }
+
+    public boolean readBool(String key, boolean defaultValue) {
+        return sharedPreferences.getBoolean(key, defaultValue);
+    }
+
+    public void saveBool(String key, boolean value) {
+        editor().putBoolean(key, value).apply();
+    }
+
 }

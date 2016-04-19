@@ -249,10 +249,10 @@ public class EditQuestActivity extends BaseActivity {
                 onBackButton();
                 finish();
                 return true;
-            case R.id.action_remove:
+            case R.id.action_delete:
                 eventBus.post(new DeleteQuestRequestedEvent(quest, "edit_quest"));
-                AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_remove_quest_title)).setMessage(getString(R.string.dialog_remove_quest_message)).create();
-                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.remove_it), (dialogInterface, i) -> {
+                AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
+                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     questPersistenceService.delete(quest);
                     Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
                     setResult(Constants.RESULT_REMOVED);

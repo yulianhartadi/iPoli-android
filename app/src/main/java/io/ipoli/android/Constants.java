@@ -40,4 +40,5 @@ public interface Constants {
 
     String KEY_LAST_SYNC_MILLIS = "LAST_SYNC_MILLIS";
     String IPOLI_EMAIL = "hi@ipoli.io";
+    String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 }

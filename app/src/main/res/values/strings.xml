@@ -49,10 +49,10 @@
     <string name="title_activity_add_quest">Add new Quest</string>
     <string name="quest_added">Quest added</string>
     <string name="unknown_choice">don\'t know</string>
-    <string name="remove">remove</string>
-    <string name="remove_it">REMOVE IT</string>
-    <string name="dialog_remove_quest_title">Remove quest</string>
-    <string name="dialog_remove_quest_message">Sure you want to remove this awesome quest?</string>
+    <string name="delete">delete</string>
+    <string name="delete_it">DELETE IT</string>
+    <string name="dialog_delete_quest_title">Delete quest</string>
+    <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
     <string name="inbox">Inbox</string>
     <string name="feedback">Feedback</string>
     <string name="contact_us">Contact us</string>
@@ -60,23 +60,6 @@
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
-
-
-    <string name="tutorial_calendar_quest"> You can long press and drag quest in the calendar to reschedule it.</string>
-    <string name="tutorial_calendar_complete_quest">When you are ready check it to complete it</string>
-    <string name="tutorial_calendar_unscheduled_quests">These are your todo\'s for today. You can long press and drag them to the calendar.</string>
-    <string name="tutorial_welcome">Welcome to iPoli - your personal sidekick :)</string>
-    <string name="tutorial_start_overview">Use this tab to see overview of your quests</string>
-    <string name="tutorial_overview_swipe">Swipe quest left to complete it or swipe it right to reschedule it</string>
-    <string name="tutorial_start_add_quest">It\'s time to add your first quest</string>
-    <string name="tutorial_add_quest">Write your quest in everyday language. Suggestions will help you.</string>
-    <string name="tutorial_change_context">Change the context of your quests</string>
-    <string name="tutorial_save_quest">Save your quest</string>
-    <string name="tutorial_start_inbox">Manage your unscheduled quests from the inbox</string>
-    <string name="tutorial_inbox_swipe">Swipe quest left to schedule it for today or swipe it right to delete it</string>
-    <string name="tutorial_start_habits">Manage your habits from this tab</string>
-    <string name="tutorial_habits_swipe">Swipe quest to the right if you don\'t like it anymore</string>
-    <string name="tutorial_view_feedback">Help us improve iPoli by sharing your valuable opinion with us. Let\'s get things done!</string>
 
     <string name="add_quest_today">today</string>
 
@@ -129,8 +112,6 @@
 
     <string name="save">Save</string>
     <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="show_tutorial">Tutorial</string>
 
 </resources>
