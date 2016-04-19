@@ -19,7 +19,10 @@ public class Reminder extends RealmObject {
     private String description;
 
     @Required
-    private Date showAt;
+    private Integer startMinute;
+
+    @Required
+    private Date startDate;
 
     @Required
     private Date createdAt;
@@ -55,12 +58,20 @@ public class Reminder extends RealmObject {
         this.description = description;
     }
 
-    public Date getShowAt() {
-        return showAt;
+    public Integer getStartMinute() {
+        return startMinute;
     }
 
-    public void setShowAt(Date showAt) {
-        this.showAt = showAt;
+    public void setStartMinute(Integer startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getCreatedAt() {
