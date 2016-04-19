@@ -25,13 +25,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
-import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
@@ -193,7 +193,7 @@ public class App extends MultiDexApplication {
         if (appComponent == null) {
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(context))
-                    .restAPIModule(new RestAPIModule(APIService.API_ENDPOINT))
+                    .restAPIModule(new RestAPIModule(APIConstants.API_ENDPOINT))
                     .build();
         }
         return appComponent;

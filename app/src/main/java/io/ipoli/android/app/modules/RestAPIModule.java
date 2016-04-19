@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.APIConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
@@ -99,6 +100,7 @@ public class RestAPIModule {
             Date lastSyncDateTime = new Date(localStorage.readLong(Constants.KEY_LAST_SYNC_MILLIS));
             Request request = chain.request().newBuilder()
                     .addHeader("Content-Type", "application/json")
+                    .addHeader("X-Api-Key", APIConstants.API_KEY)
                     .addHeader("If-Modified-Since", createModifiedSinceFormatter().format(lastSyncDateTime))
                     .build();
             return chain.proceed(request);

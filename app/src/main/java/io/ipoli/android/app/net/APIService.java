@@ -20,8 +20,6 @@ import rx.Observable;
  */
 public interface APIService {
 
-    String API_ENDPOINT = "http://10.0.3.2:8080/v1/";
-
     @GET("schedules/{date}")
     Observable<List<Quest>> getSchedule(@Path("date") String date, @Query("player_id") String playerId);
 
