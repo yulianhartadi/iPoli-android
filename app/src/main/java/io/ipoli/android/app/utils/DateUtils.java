@@ -125,6 +125,9 @@ public class DateUtils {
     }
 
     public static Date UTCToLocalDate(Date date) {
+        if(date == null) {
+            return null;
+        }
         return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
     }
 }
