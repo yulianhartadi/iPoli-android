@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.APIConstants;
+import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
@@ -95,7 +96,7 @@ public class RestAPIModule {
     public OkHttpClient provideHttpClient(Context context) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return new OkHttpClient.Builder().addInterceptor(chain -> {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(chain -> {
             LocalStorage localStorage = LocalStorage.of(context);
             Date lastSyncDateTime = new Date(localStorage.readLong(Constants.KEY_LAST_SYNC_MILLIS));
             Request request = chain.request().newBuilder()
@@ -104,7 +105,11 @@ public class RestAPIModule {
                     .addHeader("If-Modified-Since", createModifiedSinceFormatter().format(lastSyncDateTime))
                     .build();
             return chain.proceed(request);
-        }).addInterceptor(logging).build();
+        });
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(logging);
+        }
+        return builder.build();
     }
 
     @NonNull
