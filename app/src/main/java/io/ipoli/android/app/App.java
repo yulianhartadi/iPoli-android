@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
@@ -85,7 +86,7 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
-                .schemaVersion(0)
+                .schemaVersion(BuildConfig.VERSION_CODE)
                 .build();
         Realm.setDefaultConfiguration(config);
 
@@ -97,15 +98,20 @@ public class App extends MultiDexApplication {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
 
         int runCount = localStorage.readInt(Constants.KEY_APP_RUN_COUNT, 0);
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
         if (runCount == 0) {
             localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, new HashSet<>());
             localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, new HashSet<>());
             saveInitialQuests();
-            scheduleJob(dailySyncJob());
         }
-        eventBus.post(new ForceSyncRequestEvent());
 
-        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if (versionCode != BuildConfig.VERSION_CODE) {
+            scheduleJob(dailySyncJob());
+            localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
+        }
+
+        eventBus.post(new ForceSyncRequestEvent());
     }
 
     private void saveInitialQuests() {

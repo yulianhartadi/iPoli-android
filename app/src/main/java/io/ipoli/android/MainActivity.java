@@ -50,11 +50,11 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-//        LocalStorage localStorage = LocalStorage.of(this);
-//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+        LocalStorage localStorage = LocalStorage.of(this);
+        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
-//        }
+        }
 
         initBottomBar(savedInstanceState);
 
