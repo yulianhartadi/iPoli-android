@@ -43,6 +43,7 @@ import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
+import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 
@@ -276,6 +277,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
                 .add("difficulty", e.difficulty));
+    }
+
+    @Subscribe
+    public void onShowTutorial(ShowTutorialEvent e) {
+        log("show_tutorial");
     }
 
     @Subscribe

@@ -29,12 +29,12 @@ public class TutorialActivity extends AppIntro2 {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        addSlide(TutorialFragment.newInstance("Welcome to iPoli", "I'm your smart assistant. Your daily tasks are now called quests. Be a hero and complete them!", R.drawable.welcome_tutorial, false));
-        addSlide(TutorialFragment.newInstance("Easily Schedule Your Day", "Simply touch, hold and drag a quest to schedule or reschedule it", R.drawable.calendar_tutorial));
-        addSlide(TutorialFragment.newInstance("Review Your Weekly Schedule", "Swipe a quest to the right to complete it or to the left to schedule it for today", R.drawable.overview_tutorial));
-        addSlide(TutorialFragment.newInstance("Quickly Add with Smart Assist", "Use everyday language and autocomplete to create your quests in a flash", R.drawable.add_quest_tutorial));
-        addSlide(TutorialFragment.newInstance("Collect Unscheduled Quests in Inbox", "Swipe a quest to the right to schedule it for today or to the left to delete it", R.drawable.inbox_tutorial));
-        addSlide(TutorialFragment.newInstance("Stick to Your Important Habits", "Track your weekly progress. Swipe a habit to the left to delete it.", R.drawable.habits_tutorial));
+        addSlide(TutorialFragment.newInstance("Welcome to iPoli", "I'm your smart assistant. Your daily tasks are now called quests. Be a hero and complete them!", R.drawable.tutorial_welcome, false));
+        addSlide(TutorialFragment.newInstance("Easily Schedule Your Day", "Simply touch, hold and drag a quest to schedule or reschedule it", R.drawable.tutorial_calendar));
+        addSlide(TutorialFragment.newInstance("Review Your Weekly Schedule", "Swipe a quest to the right to complete it or to the left to schedule it for today", R.drawable.tutorial_overview));
+        addSlide(TutorialFragment.newInstance("Quickly Add with Smart Assist", "Use everyday language and autocomplete to create your quests in a flash", R.drawable.tutorial_add_quest));
+        addSlide(TutorialFragment.newInstance("Collect Unscheduled Quests in Inbox", "Swipe a quest to the right to schedule it for today or to the left to delete it", R.drawable.tutorial_inbox));
+        addSlide(TutorialFragment.newInstance("Stick to Your Important Habits", "Track your weekly progress. Swipe a habit to the left to delete it.", R.drawable.tutorial_habits));
 
         int[] colors = new int[]{R.color.md_indigo_500, R.color.md_blue_500, R.color.md_green_500, R.color.md_orange_500,
                 R.color.md_deep_purple_500, R.color.md_teal_500};

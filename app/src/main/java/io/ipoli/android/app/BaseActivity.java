@@ -16,6 +16,7 @@ import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.tutorial.TutorialActivity;
+import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -54,6 +55,7 @@ public class BaseActivity extends AppCompatActivity {
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
                 break;
             case R.id.action_show_tutorial:
+                eventBus.post(new ShowTutorialEvent());
                 startTutorial();
                 break;
         }

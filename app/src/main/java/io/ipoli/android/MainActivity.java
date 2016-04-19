@@ -16,7 +16,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
@@ -51,11 +50,11 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        LocalStorage localStorage = LocalStorage.of(this);
-        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+//        LocalStorage localStorage = LocalStorage.of(this);
+//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
-        }
+//        }
 
         initBottomBar(savedInstanceState);
 
