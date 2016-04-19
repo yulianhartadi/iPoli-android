@@ -1,8 +1,8 @@
 package io.ipoli.android.app.persistence;
 
-import java.util.Date;
 import java.util.List;
 
+import io.ipoli.android.app.net.RemoteObject;
 import io.realm.RealmObject;
 import rx.Observable;
 
@@ -10,17 +10,17 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/30/16.
  */
-public interface PersistenceService<T extends RealmObject> {
+public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<T> save(T obj);
 
-    Observable<T> save(T obj, boolean markUpdated);
-
     Observable<List<T>> saveAll(List<T> objs);
 
-    Observable<List<T>> saveAll(List<T> objs, boolean markUpdated);
+    Observable<T> saveRemoteObject(T object);
 
-    public Observable<List<T>> findAllModifiedAfter(Date dateTime);
+    Observable<List<T>> saveRemoteObjects(List<T> objects);
+
+    Observable<List<T>> findAllWhoNeedSyncWithRemote();
 
     void updateId(T obj, String newId);
 

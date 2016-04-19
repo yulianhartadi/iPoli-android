@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.otto.Bus;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,20 +63,17 @@ public class AppJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
-        long syncStartTime = System.currentTimeMillis();
-        Date lastSyncDateTime = new Date(LocalStorage.of(getApplicationContext()).readLong(Constants.KEY_LAST_SYNC_MILLIS));
         getPlayer().flatMap(p -> Observable.concat(
                 syncRemovedRecurrentQuests(p),
                 syncRemovedQuests(p),
-                syncRecurrentQuests(p, lastSyncDateTime),
-                syncQuests(p, lastSyncDateTime),
-                getRecurrentQuests(p, lastSyncDateTime),
-                getScheduleForAWeekAhead(p, lastSyncDateTime)
+                syncRecurrentQuests(p),
+                syncQuests(p),
+                getRecurrentQuests(p),
+                getScheduleForAWeekAhead(p)
         )).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
             Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
         }, () -> {
-            LocalStorage.of(getApplicationContext()).saveLong(Constants.KEY_LAST_SYNC_MILLIS, syncStartTime);
             eventBus.post(new SyncCompleteEvent());
             Log.d("RxJava", "Sync Job finished");
             jobFinished(params, false);
@@ -147,36 +143,32 @@ public class AppJobService extends JobService {
                 LocalStorage localStorage = LocalStorage.of(getApplicationContext());
                 localStorage.saveString(Constants.KEY_PLAYER_ID, sp.getId());
                 eventBus.post(new PlayerCreatedEvent(sp.getId()));
+                sp.setSyncedWithRemote();
+                sp.setRemoteObject();
                 sp.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
-                return playerPersistenceService.save(sp, false);
+                return playerPersistenceService.saveRemoteObject(sp);
             });
         });
     }
 
-    private Observable<Quest> syncQuests(Player player, Date lastSyncDateTime) {
-        return questPersistenceService.findAllModifiedAfter(lastSyncDateTime).concatMapIterable(quests -> quests).concatMap(q -> {
+    private Observable<Quest> syncQuests(Player player) {
+        return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).concatMap(q -> {
             JsonObject qJson = (JsonObject) gson.toJsonTree(q);
-            if (isLocalOnly(q, lastSyncDateTime)) {
+            if (isLocalOnly(q)) {
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
-                return apiService.createQuest(requestBody).compose(applyAPISchedulers()).concatMap(sq -> {
-                    questPersistenceService.updateId(q, sq.getId());
-                    return questPersistenceService.save(sq, false);
-                });
+                return apiService.createQuest(requestBody).compose(applyAPISchedulers())
+                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
             } else {
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
-                return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers()).concatMap(sq -> {
-                    if (isLocalOnly(q, lastSyncDateTime)) {
-                        questPersistenceService.updateId(q, sq.getId());
-                    }
-                    return questPersistenceService.save(sq, false);
-                });
+                return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers())
+                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
             }
         });
     }
 
-    private Observable<RecurrentQuest> syncRecurrentQuests(Player player, Date lastSyncDateTime) {
-        return recurrentQuestPersistenceService.findAllModifiedAfter(lastSyncDateTime).flatMapIterable(recurrentQuests -> recurrentQuests).flatMap(rq -> {
-            if (isLocalOnly(rq, lastSyncDateTime)) {
+    private Observable<RecurrentQuest> syncRecurrentQuests(Player player) {
+        return recurrentQuestPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(recurrentQuests -> recurrentQuests).concatMap(rq -> {
+            if (isLocalOnly(rq)) {
                 JsonObject data = new JsonObject();
                 JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
                 data.addProperty("text", qJson.get("raw_text").getAsString());
@@ -184,45 +176,50 @@ public class AppJobService extends JobService {
                 data.addProperty("created_at", qJson.get("created_at").getAsString());
                 data.addProperty("updated_at", qJson.get("updated_at").getAsString());
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
-                return apiService.createRecurrentQuestFromText(requestBody).compose(applyAPISchedulers()).flatMap(sq -> {
-                    updateRecurrentQuest(sq, rq, lastSyncDateTime);
-                    return recurrentQuestPersistenceService.save(sq, false);
-                });
+                return apiService.createRecurrentQuestFromText(requestBody).compose(applyAPISchedulers())
+                        .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             } else {
                 JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
                 qJson.addProperty("id", rq.getId());
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
-                return apiService.updateRecurrentQuest(requestBody, rq.getId()).compose(applyAPISchedulers()).flatMap(sq -> {
-                    updateRecurrentQuest(sq, rq, lastSyncDateTime);
-                    return recurrentQuestPersistenceService.save(sq, false);
-                });
+                return apiService.updateRecurrentQuest(requestBody, rq.getId()).compose(applyAPISchedulers())
+                        .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             }
         });
     }
 
-    private void updateRecurrentQuest(RecurrentQuest serverQuest, RecurrentQuest localQuest, Date lastSyncDateTime) {
-        if (isLocalOnly(localQuest, lastSyncDateTime)) {
-            recurrentQuestPersistenceService.updateId(localQuest, serverQuest.getId());
+    private Quest updateQuest(Quest serverQuest, Quest localQuest) {
+        if (localQuest != null && isLocalOnly(localQuest)) {
+            questPersistenceService.updateId(localQuest, serverQuest.getId());
         }
+        serverQuest.setSyncedWithRemote();
+        serverQuest.setRemoteObject();
+        return serverQuest;
     }
 
-    private Observable<RecurrentQuest> getRecurrentQuests(Player player, Date lastSyncDateTime) {
+    private RecurrentQuest updateRecurrentQuest(RecurrentQuest serverQuest, RecurrentQuest localQuest) {
+        if (localQuest != null && isLocalOnly(localQuest)) {
+            recurrentQuestPersistenceService.updateId(localQuest, serverQuest.getId());
+        }
+        serverQuest.setSyncedWithRemote();
+        serverQuest.setRemoteObject();
+        return serverQuest;
+    }
+
+    private Observable<RecurrentQuest> getRecurrentQuests(Player player) {
         return apiService.getRecurrentQuests(player.getId())
-                .compose(applyAPISchedulers()).flatMapIterable(recurrentQuests -> recurrentQuests)
-                .flatMap(sq -> recurrentQuestPersistenceService.findById(sq.getId()).flatMap(rq -> {
+                .compose(applyAPISchedulers()).concatMapIterable(recurrentQuests -> recurrentQuests)
+                .concatMap(sq -> recurrentQuestPersistenceService.findById(sq.getId()).concatMap(rq -> {
                     if (rq != null && sq.getUpdatedAt().getTime() <= rq.getUpdatedAt().getTime()) {
                         return Observable.just(rq);
                     }
 
-                    if (rq == null) {
-                        return recurrentQuestPersistenceService.save(sq, false);
-                    }
-                    updateRecurrentQuest(sq, rq, lastSyncDateTime);
-                    return recurrentQuestPersistenceService.save(sq, false);
+                    updateRecurrentQuest(sq, rq);
+                    return recurrentQuestPersistenceService.saveRemoteObject(sq);
                 }));
     }
 
-    private Observable<Quest> getScheduleForAWeekAhead(Player player, Date lastModifiedDate) {
+    private Observable<Quest> getScheduleForAWeekAhead(Player player) {
         return Observable.just(DateUtils.getNext7Days()).concatMapIterable(dates -> dates)
                 .concatMap(date -> apiService.getSchedule(date, player.getId()).compose(applyAPISchedulers())).concatMapIterable(quests -> quests)
                 .concatMap(sq -> questPersistenceService.findById(sq.getId()).concatMap(q -> {
@@ -230,11 +227,14 @@ public class AppJobService extends JobService {
                         return Observable.just(q);
                     }
 
-                    if (q != null && isLocalOnly(q, lastModifiedDate)) {
+                    if (q != null && isLocalOnly(q)) {
                         questPersistenceService.updateId(q, sq.getId());
                     }
 
-                    return questPersistenceService.save(sq, false);
+                    sq.setSyncedWithRemote();
+                    sq.setRemoteObject();
+
+                    return questPersistenceService.saveRemoteObject(sq);
                 }));
     }
 
@@ -243,7 +243,7 @@ public class AppJobService extends JobService {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private boolean isLocalOnly(RemoteObject remoteObject, Date lastModifiedDate) {
-        return remoteObject.getCreatedAt().compareTo(lastModifiedDate) != -1;
+    private boolean isLocalOnly(RemoteObject remoteObject) {
+        return !remoteObject.isRemoteObject();
     }
 }

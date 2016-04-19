@@ -1,7 +1,6 @@
 package io.ipoli.android.app.modules;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -9,9 +8,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import javax.inject.Singleton;
 
@@ -22,7 +19,6 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -97,12 +93,9 @@ public class RestAPIModule {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(chain -> {
-            LocalStorage localStorage = LocalStorage.of(context);
-            Date lastSyncDateTime = new Date(localStorage.readLong(Constants.KEY_LAST_SYNC_MILLIS));
             Request request = chain.request().newBuilder()
                     .addHeader("Content-Type", "application/json")
                     .addHeader("X-Api-Key", APIConstants.API_KEY)
-                    .addHeader("If-Modified-Since", createModifiedSinceFormatter().format(lastSyncDateTime))
                     .build();
             return chain.proceed(request);
         });
@@ -110,12 +103,5 @@ public class RestAPIModule {
             builder.addInterceptor(logging);
         }
         return builder.build();
-    }
-
-    @NonNull
-    private SimpleDateFormat createModifiedSinceFormatter() {
-        SimpleDateFormat formatter = new SimpleDateFormat(Constants.MODIFIED_SINCE_FORMAT);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return formatter;
     }
 }

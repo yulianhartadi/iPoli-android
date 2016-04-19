@@ -1,7 +1,5 @@
 package io.ipoli.android.app.net;
 
-import java.util.Date;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/23/16.
@@ -14,5 +12,9 @@ public interface RemoteObject<T> {
 
     void markUpdated();
 
-    Date getCreatedAt();
+    void setNeedsSync();
+    boolean needsSyncWithRemote();
+    void setSyncedWithRemote();
+    void setRemoteObject();
+    boolean isRemoteObject();
 }

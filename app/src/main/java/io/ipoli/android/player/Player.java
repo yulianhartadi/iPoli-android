@@ -19,14 +19,15 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     private String id;
     private int experience;
     private int level;
-
     private String avatar;
-
     @Required
     private Date createdAt;
 
     @Required
     private Date updatedAt;
+
+    private boolean needsSyncWithRemote;
+    private boolean isRemoteObject;
 
     public Player() {
     }
@@ -38,6 +39,8 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.avatar = avatar;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
+        this.needsSyncWithRemote = true;
+        this.isRemoteObject = false;
     }
 
     public String getId() {
@@ -91,5 +94,30 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    @Override
+    public void setNeedsSync() {
+        needsSyncWithRemote = true;
+    }
+
+    @Override
+    public boolean needsSyncWithRemote() {
+        return needsSyncWithRemote;
+    }
+
+    @Override
+    public void setSyncedWithRemote() {
+        needsSyncWithRemote = false;
+    }
+
+    @Override
+    public void setRemoteObject() {
+        isRemoteObject = true;
+    }
+
+    @Override
+    public boolean isRemoteObject() {
+        return isRemoteObject;
     }
 }

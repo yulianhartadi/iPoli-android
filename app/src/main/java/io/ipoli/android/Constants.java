@@ -39,7 +39,6 @@ public interface Constants {
     String KEY_PLAYER_ID = "PLAYER_ID";
     String KEY_REMOVED_RECURRENT_QUESTS = "REMOVED_RECURRENT_QUESTS";
 
-    String KEY_LAST_SYNC_MILLIS = "LAST_SYNC_MILLIS";
     String IPOLI_EMAIL = "hi@ipoli.io";
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 }

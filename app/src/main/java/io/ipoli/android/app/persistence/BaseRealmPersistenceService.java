@@ -27,13 +27,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     public Observable<T> save(T object) {
-        return save(object, true);
-    }
-
-    public Observable<T> save(T object, boolean markUpdated) {
-        if (markUpdated) {
-            object.markUpdated();
-        }
+        object.markUpdated();
         Realm realm = getRealm();
         realm.beginTransaction();
         T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(object));
@@ -42,15 +36,17 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return Observable.just(res);
     }
 
-    public Observable<List<T>> saveAll(List<T> objects) {
-        return saveAll(objects, true);
+    public Observable<T> saveRemoteObject(T object) {
+        Realm realm = getRealm();
+        realm.beginTransaction();
+        T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(object));
+        realm.commitTransaction();
+        return Observable.just(res);
     }
 
-    public Observable<List<T>> saveAll(List<T> objects, boolean markUpdated) {
-        if (markUpdated) {
-            for (T o : objects) {
-                o.markUpdated();
-            }
+    public Observable<List<T>> saveAll(List<T> objects) {
+        for (T o : objects) {
+            o.markUpdated();
         }
         Realm realm = getRealm();
         realm.beginTransaction();
@@ -60,12 +56,20 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return Observable.just(res);
     }
 
+    public Observable<List<T>> saveRemoteObjects(List<T> objects) {
+        Realm realm = getRealm();
+        realm.beginTransaction();
+        List<T> res = realm.copyFromRealm(realm.copyToRealmOrUpdate(objects));
+        realm.commitTransaction();
+        return Observable.just(res);
+    }
+
     public Observable<T> findById(String id) {
         return fromRealm(where().equalTo("id", id).findFirst());
     }
 
-    public Observable<List<T>> findAllModifiedAfter(Date dateTime) {
-        return fromRealm(where().greaterThan("updatedAt", dateTime).findAll());
+    public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
+        return fromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
     }
 
     protected void onObjectSaved(T obj) {

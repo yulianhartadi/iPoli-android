@@ -66,6 +66,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Date actualStart;
 
+    private boolean needsSyncWithRemote;
+    private boolean isRemoteObject;
+
     public Quest() {
     }
 
@@ -168,6 +171,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
+        this.needsSyncWithRemote = true;
+        this.isRemoteObject = false;
     }
 
     public String getName() {
@@ -287,6 +292,31 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Override
     public void markUpdated() {
         setUpdatedAt(DateUtils.nowUTC());
+    }
+
+    @Override
+    public void setNeedsSync() {
+        needsSyncWithRemote = true;
+    }
+
+    @Override
+    public boolean needsSyncWithRemote() {
+        return needsSyncWithRemote;
+    }
+
+    @Override
+    public void setSyncedWithRemote() {
+        needsSyncWithRemote = false;
+    }
+
+    @Override
+    public void setRemoteObject() {
+        isRemoteObject = true;
+    }
+
+    @Override
+    public boolean isRemoteObject() {
+        return isRemoteObject;
     }
 
     public boolean isScheduledForTomorrow() {

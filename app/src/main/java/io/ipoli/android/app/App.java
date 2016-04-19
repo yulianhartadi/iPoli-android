@@ -103,16 +103,15 @@ public class App extends MultiDexApplication {
             saveInitialQuests();
         }
 
+        resetEndDateForIncompleteQuests();
+        registerServices();
+        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
         }
-
-        resetEndDateForIncompleteQuests();
-        registerServices();
-        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
-
         eventBus.post(new ForceSyncRequestEvent());
     }
 
@@ -124,7 +123,7 @@ public class App extends MultiDexApplication {
         addInboxQuests(quests);
         addTodayScheduledQuests(quests);
 
-        questPersistenceService.saveAll(quests);
+        questPersistenceService.saveRemoteObjects(quests);
 
         addRecurrentQuests();
     }
@@ -138,7 +137,7 @@ public class App extends MultiDexApplication {
         RecurrentQuest rq2 = new RecurrentQuest("Say 3 things I'm are grateful for every day");
         RecurrentQuest.setContext(rq2, QuestContext.PERSONAL);
         recurrentQuests.add(rq2);
-        recurrentQuestPersistenceService.saveAll(recurrentQuests);
+        recurrentQuestPersistenceService.saveRemoteObjects(recurrentQuests);
     }
 
     private void addTodayUnscheduledQuests(List<Quest> initialQuests) {
