@@ -3,7 +3,6 @@ package io.ipoli.android.app.ui.calendar;
 import android.content.ClipData;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,6 +15,7 @@ import java.util.Calendar;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
 
 /**
@@ -86,6 +86,9 @@ public class CalendarLayout extends RelativeLayout {
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
+        View recurrentIndicator = dragView.findViewById(R.id.quest_recurrent_indicator);
+        recurrentIndicator.setVisibility(calendarEvent.isRecurrent() ? VISIBLE : GONE);
+
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {
@@ -129,9 +132,7 @@ public class CalendarLayout extends RelativeLayout {
                     Calendar c = Calendar.getInstance();
                     int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                     int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
-                    c.set(Calendar.HOUR_OF_DAY, hours);
-                    c.set(Calendar.MINUTE, minutes);
-                    calendarEvent.setStartTime(c.getTime());
+                    calendarEvent.setStartMinute(Time.at(hours, minutes).toMinutesAfterMidnight());
 
                     if (calendarListener != null) {
                         calendarListener.onAcceptEvent(calendarEvent);
@@ -188,7 +189,7 @@ public class CalendarLayout extends RelativeLayout {
     private OnDragListener dragListener = new OnDragListener() {
 
         @Override
-        public boolean onDrag(View _, DragEvent event) {
+        public boolean onDrag(View v, DragEvent event) {
 
             if (dragStrategy == null) {
                 return false;

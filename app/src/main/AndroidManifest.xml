@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="io.ipoli.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".app.App"
@@ -19,70 +19,41 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".quest.activities.InboxActivity"
-            android:label="@string/title_activity_inbox"
-            android:parentActivityName=".app.MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
-        </activity>
-
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli" />
         <activity
             android:name=".quest.activities.QuestActivity"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".assistant.PickAvatarActivity"
             android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
-
-        <activity
-            android:name=".quest.activities.AddQuestActivity"
-            android:label="@string/title_activity_add_quest"
-            android:parentActivityName=".app.MainActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible|adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.ipoli.android.app.MainActivity" />
-        </activity>
-
-        <activity
-            android:name=".quest.activities.QuestCompleteActivity"
-            android:label="@string/title_activity_quest_complete"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity" />
-
-        <activity
-            android:name=".player.LevelUpActivity"
-            android:label="@string/title_activity_level_up"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity" />
-
         <activity
             android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_edit_quest"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
 
         <receiver android:name=".app.receivers.BootCompleteReceiver">
@@ -90,23 +61,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name=".app.receivers.PlanDayReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.REMIND_PLAN_DAY" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".app.receivers.ReviewDayReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.REMIND_REVIEW_DAY" />
-            </intent-filter>
-        </receiver>
-
         <receiver
             android:name=".quest.receivers.ScheduleQuestReminderReceiver"
             android:exported="false">
@@ -114,7 +68,6 @@
                 <action android:name="io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDER" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".quest.receivers.SnoozeQuestReceiver"
             android:exported="false">
@@ -122,7 +75,6 @@
                 <action android:name="io.ipoli.android.intent.action.SNOOZE_QUEST" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".quest.receivers.ShowDoneQuestNotificationReceiver"
             android:exported="false">
@@ -130,7 +82,6 @@
                 <action android:name="io.ipoli.android.intent.action.SHOW_DONE_QUEST_NOTIFICATION" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".quest.receivers.StartQuestTimerReceiver"
             android:exported="false">
@@ -138,7 +89,6 @@
                 <action android:name="io.ipoli.android.intent.action.SHOW_QUEST_TIMER" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".quest.receivers.RemindStartQuestReceiver"
             android:exported="false">
@@ -147,26 +97,14 @@
             </intent-filter>
         </receiver>
 
-        <!-- Analytics ! -->
-
         <service
-            android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false" />
-
-        <receiver
-            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
-
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+            android:name=".app.services.AppJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
 
     </application>
 

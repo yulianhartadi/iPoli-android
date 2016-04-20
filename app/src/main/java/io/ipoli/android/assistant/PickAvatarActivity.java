@@ -40,7 +40,7 @@ public class PickAvatarActivity extends BaseActivity {
         for (int i = Constants.AVATAR_COUNT; i >= 1; i--) {
             avatars.add(String.format(Locale.getDefault(), "avatar_%02d", i));
         }
-        avatarList.setAdapter(new AvatarAdapter(this, avatars, eventBus));
+        avatarList.setAdapter(new AvatarAdapter(this, avatars));
     }
 
     @Override

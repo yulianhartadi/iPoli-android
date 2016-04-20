@@ -4,21 +4,20 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.ipoli.android.InviteOnlyActivity;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
-import io.ipoli.android.app.modules.AssistantModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
-import io.ipoli.android.app.modules.PlayerModule;
-import io.ipoli.android.app.ui.PlayerBarLayout;
+import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
-import io.ipoli.android.player.LevelUpActivity;
-import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.InboxActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.activities.QuestCompleteActivity;
+import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.HabitsFragment;
+import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
@@ -27,7 +26,7 @@ import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.tutorial.Tutorial;
+import io.ipoli.android.tutorial.TutorialActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -40,25 +39,16 @@ import io.ipoli.android.tutorial.Tutorial;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
-                AssistantModule.class,
-                PlayerModule.class
+                RestAPIModule.class
         }
 )
 public interface AppComponent {
 
     void inject(App app);
 
-    void inject(InboxActivity inboxActivity);
-
-    void inject(PlayerBarLayout playerBarLayout);
-
     void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
-
-    void inject(QuestCompleteActivity questCompleteActivity);
-
-    void inject(LevelUpActivity levelUpActivity);
 
     void inject(EditQuestActivity editQuestActivity);
 
@@ -76,16 +66,24 @@ public interface AppComponent {
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 
+    void inject(RemindStartQuestReceiver remindStartQuestReceiver);
+
+    void inject(BaseActivity baseActivity);
+
     void inject(MainActivity mainActivity);
+
+    void inject(AppJobService appJobService);
 
     void inject(CalendarDayFragment calendarDayFragment);
 
     void inject(OverviewFragment overviewFragment);
 
-    void inject(AddQuestActivity addQuestActivity);
+    void inject(AddQuestFragment addQuestFragment);
 
-    void inject(Tutorial tutorial);
+    void inject(InboxFragment inboxFragment);
 
-    void inject(RemindStartQuestReceiver remindStartQuestReceiver);
+    void inject(HabitsFragment habitsFragment);
+
+    void inject(TutorialActivity tutorialActivity);
 }
 

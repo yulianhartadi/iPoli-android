@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/calendar"
+        android:icon="@drawable/ic_event_white_24dp"
+        android:title="Calendar" />
+    <item
+        android:id="@+id/overview"
+        android:icon="@drawable/ic_format_list_bulleted_white_24dp"
+        android:title="Overview" />
+    <item
+        android:id="@+id/add_quest"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:title="AddQuest" />
+    <item
+        android:id="@+id/inbox"
+        android:icon="@drawable/ic_drafts_white_24dp"
+        android:title="Inbox" />
+    <item
+        android:id="@+id/habits"
+        android:icon="@drawable/ic_favorite_white_24dp"
+        android:title="Habits" />
+</menu>

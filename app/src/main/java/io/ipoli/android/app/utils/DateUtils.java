@@ -1,12 +1,25 @@
 package io.ipoli.android.app.utils;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateUtils {
 
     public static Calendar getTodayAtMidnight() {
-        Calendar c = Calendar.getInstance();
+        return getTodayAtMidnightWithTimeZone(TimeZone.getDefault());
+    }
+
+    private static Calendar getTodayAtMidnightWithTimeZone(TimeZone timeZone) {
+        Calendar c = Calendar.getInstance(timeZone);
         c.set(Calendar.MILLISECOND, 0);
         c.set(Calendar.SECOND, 0);
         c.set(Calendar.MINUTE, 0);
@@ -14,7 +27,7 @@ public class DateUtils {
         return c;
     }
 
-    public static Date getNow() {
+    public static Date now() {
         return Calendar.getInstance().getTime();
     }
 
@@ -35,12 +48,6 @@ public class DateUtils {
         return isSameDay(date, new Date());
     }
 
-    public static boolean isTomorrow(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        return isSameDay(date, c.getTime());
-    }
-
     public static boolean isBeforeToday(Date d) {
         if (d == null) {
             return false;
@@ -55,36 +62,72 @@ public class DateUtils {
         return c.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR);
     }
 
-    public static Date getNormalizedStartTime(Date startTime) {
-        if (startTime == null) {
-            return null;
-        }
-        Calendar sc = Calendar.getInstance();
-        sc.setTime(startTime);
-
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(0);
-        c.set(Calendar.HOUR_OF_DAY, sc.get(Calendar.HOUR_OF_DAY));
-        c.set(Calendar.MINUTE, sc.get(Calendar.MINUTE));
-        return c.getTime();
-    }
-
-
     public static Date getTomorrow() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, 1);
         return c.getTime();
     }
 
-    public static Date getNormalizedDueDate(Date dueDate) {
+    public static Date getDate(Date dueDate) {
         if (dueDate == null) {
             return null;
         }
+        return new LocalDate(dueDate).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+    }
+
+    public static String toDateString(Date date) {
+        return toDateString(date, TimeZone.getDefault());
+    }
+
+    public static String toDateString(Date date, TimeZone timeZone) {
+        if (date == null) {
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        formatter.setTimeZone(timeZone);
+        return formatter.format(date);
+    }
+
+    public static List<String> getNext7Days() {
+        List<String> dates = new ArrayList<>();
         Calendar c = Calendar.getInstance();
-        c.setTime(dueDate);
-        Calendar normalizedDueDate = getTodayAtMidnight();
-        normalizedDueDate.set(Calendar.DAY_OF_YEAR, c.get(Calendar.DAY_OF_YEAR));
-        normalizedDueDate.set(Calendar.YEAR, c.get(Calendar.YEAR));
-        return normalizedDueDate.getTime();
+        dates.add(toDateString(c.getTime()));
+        for (int i = 1; i < 7; i++) {
+            c.add(Calendar.DAY_OF_YEAR, 1);
+            dates.add(toDateString(c.getTime()));
+        }
+
+        return dates;
+    }
+
+    public static Date nowUTC() {
+        return new Date(System.currentTimeMillis());
+    }
+
+    public static boolean isTodayUTC(LocalDate localDate) {
+        return localDate.isEqual(toStartOfDayUTC(new LocalDate()));
+    }
+
+    public static boolean isTomorrowUTC(LocalDate localDate) {
+        return localDate.isEqual(toStartOfDayUTC(new LocalDate().plusDays(1)));
+    }
+
+    private static LocalDate toStartOfDayUTC(LocalDate localDate) {
+        return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate();
+    }
+
+    public static boolean isTodayUTC(Date date) {
+        return isTodayUTC(new LocalDate(date, DateTimeZone.UTC));
+    }
+
+    public static boolean isTomorrowUTC(Date date) {
+        return isTomorrowUTC(new LocalDate(date, DateTimeZone.UTC));
+    }
+
+    public static Date UTCToLocalDate(Date date) {
+        if(date == null) {
+            return null;
+        }
+        return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
     }
 }

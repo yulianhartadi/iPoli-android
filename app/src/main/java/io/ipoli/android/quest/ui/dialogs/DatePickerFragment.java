@@ -22,6 +22,11 @@ import io.ipoli.android.quest.events.DateSelectedEvent;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
 
+    private static final String YEAR = "year";
+    private static final String MONTH = "month";
+    private static final String DAY = "day";
+
+
     @Inject
     Bus eventBus;
 
@@ -29,13 +34,32 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         App.getAppComponent(getActivity()).inject(this);
     }
 
-    @Override
-    @NonNull
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public static DatePickerFragment newInstance() {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
+        return newInstance(year, month, day);
+    }
+
+    public static DatePickerFragment newInstance(int year, int month, int day) {
+        DatePickerFragment fragment = new DatePickerFragment();
+        Bundle args = new Bundle();
+        args.putInt(YEAR, year);
+        args.putInt(MONTH, month);
+        args.putInt(DAY, day);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    @NonNull
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        Bundle args = getArguments();
+        int year = args.getInt(YEAR);
+        int month = args.getInt(MONTH);
+        int day = args.getInt(DAY);
 
         DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, year, month, day);
         dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getString(R.string.unknown_choice), this);

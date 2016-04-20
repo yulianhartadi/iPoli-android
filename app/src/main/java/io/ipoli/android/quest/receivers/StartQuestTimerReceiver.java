@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,19 +13,22 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/2/16.
  */
-public class StartQuestTimerReceiver extends BroadcastReceiver {
+public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
 
     public static final String ACTION_SHOW_QUEST_TIMER = "io.ipoli.android.intent.action.SHOW_QUEST_TIMER";
 
@@ -36,19 +38,21 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
         this.context = context;
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Quest q = questPersistenceService.findById(questId);
-        showQuestTimerNotification(q);
+        return questPersistenceService.findById(questId).flatMap(q -> {
+            showQuestTimerNotification(q);
+            return Observable.empty();
+        });
     }
 
     private void showQuestTimerNotification(Quest q) {
         int duration = q.getDuration();
 
-        long startTime = q.getActualStartDateTime().getTime();
+        long startTime = q.getActualStart().getTime();
         long now = System.currentTimeMillis();
         long elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(now) - TimeUnit.MILLISECONDS.toSeconds(startTime);
         int elapsedMinutes = Math.round(elapsedSeconds / 60.0f);
@@ -56,8 +60,8 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = getNotificationBuilder(q, elapsedMinutes);
         builder.setContentText("Are you focused?");
         builder.setContentIntent(getContentIntent(q.getId()));
-        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
-        builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_DONE));
+        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getCancelPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
+        builder.addAction(R.drawable.ic_done_24dp, "Done", getDonePendingIntent(q.getId(), MainActivity.ACTION_QUEST_DONE));
         if (duration > 0) {
             builder.setContentText("For " + DurationFormatter.format(context, duration));
         }
@@ -73,7 +77,7 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
                 .setContentInfo(elapsedMinutes + " m")
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setWhen(q.getActualStartDateTime().getTime())
+                .setWhen(q.getActualStart().getTime())
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -88,11 +92,19 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
         return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, context);
     }
 
-    private PendingIntent getPendingIntent(String questId, String action) {
+    private PendingIntent getCancelPendingIntent(String questId, String action) {
         Intent intent = new Intent(context, QuestActivity.class);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.setAction(action);
 
         return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, context);
+    }
+
+    private PendingIntent getDonePendingIntent(String questId, String action) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(action);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

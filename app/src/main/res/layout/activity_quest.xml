@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/quest_details_content"
+    android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_blue_800">
 
     <RelativeLayout
-        android:id="@+id/root_container"
+        android:id="@+id/quest_details_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -55,7 +55,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        app:layout_anchor="@id/root_container"
+        app:layout_anchor="@id/quest_details_container"
         app:layout_anchorGravity="bottom">
 
 

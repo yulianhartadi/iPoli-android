@@ -3,7 +3,7 @@ package io.ipoli.android.quest.ui.formatters;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/28/16.
  */
 public class TimerFormatter {

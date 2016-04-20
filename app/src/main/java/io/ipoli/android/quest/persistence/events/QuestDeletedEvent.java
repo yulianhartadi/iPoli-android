@@ -5,4 +5,10 @@ package io.ipoli.android.quest.persistence.events;
  * on 1/21/16.
  */
 public class QuestDeletedEvent {
+
+    public final String id;
+
+    public QuestDeletedEvent(String id) {
+        this.id = id;
+    }
 }

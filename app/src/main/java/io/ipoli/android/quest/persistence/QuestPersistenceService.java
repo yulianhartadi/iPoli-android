@@ -1,34 +1,40 @@
 package io.ipoli.android.quest.persistence;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
+
 import java.util.List;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.persistence.PersistenceService;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RecurrentQuest;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public interface QuestPersistenceService {
-    Quest findById(String id);
+public interface QuestPersistenceService extends PersistenceService<Quest> {
+    Observable<Quest> findById(String id);
 
-    List<Quest> findAllCompleted();
+    Observable<List<Quest>> findAllCompleted();
 
-    List<Quest> findAllUnplanned();
+    Observable<List<Quest>> findAllUnplanned();
 
-    List<Quest> findAllPlanned();
+    Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate);
 
-    List<Quest> findAllPlannedAndStartedToday();
+    Observable<List<Quest>> findAllPlannedAndStartedToday();
 
-    List<Quest> findAllUncompleted();
+    Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate);
 
-    List<Quest> findAllCompletedToday();
+    Observable<List<Quest>> findAllCompletedToday();
 
-    Quest findPlannedQuestStartingAfter(Date date);
+    Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
 
-    Quest save(Quest quest);
-
-    List<Quest> saveAll(List<Quest> quests);
+    Observable<List<Quest>> findAllForToday();
 
     void delete(Quest quest);
+
+    void deleteAllFromRecurrentQuest(String recurrentQuestId);
+
+    long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);
 }

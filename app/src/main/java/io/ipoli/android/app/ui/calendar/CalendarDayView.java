@@ -1,8 +1,6 @@
 package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -148,6 +145,7 @@ public class CalendarDayView extends FrameLayout {
         RelativeLayout.LayoutParams lPTime = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
         lPTime.topMargin = getCurrentTimeYPosition();
         timeRL.addView(timeLine, lPTime);
+
         return timeRL;
     }
 
@@ -167,9 +165,7 @@ public class CalendarDayView extends FrameLayout {
     <E extends CalendarEvent> void addEvent(E calendarEvent, int position) {
         final View eventView = adapter.getView(eventsContainer, position);
         RelativeLayout.LayoutParams qlp = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
-        Calendar c = Calendar.getInstance();
-        c.setTime(calendarEvent.getStartTime());
-        qlp.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+        qlp.topMargin = getYPositionFor(calendarEvent.getStartMinute());
         qlp.height = getHeightFor(calendarEvent.getDuration());
         eventsContainer.addView(eventView, qlp);
         eventViewToCalendarEvent.put(eventView, calendarEvent);
@@ -209,6 +205,11 @@ public class CalendarDayView extends FrameLayout {
         return y;
     }
 
+    private int getYPositionFor(int minutesAfterMidnight) {
+        Time time = Time.of(minutesAfterMidnight);
+        return getYPositionFor(time.getHours(), time.getMinutes());
+    }
+
     int getHeightFor(int duration) {
         return (int) getMinutesHeight(duration);
     }
@@ -231,36 +232,34 @@ public class CalendarDayView extends FrameLayout {
     private int getRelativeY(int y) {
         int offsets[] = new int[2];
         getLocationOnScreen(offsets);
-        return Math.max(0, scrollView.getScrollY() + y - offsets[1]);
+        return getRelativeY(y, offsets[1]);
+    }
+
+    private int getRelativeY(int y, int yOffset) {
+        return Math.max(0, scrollView.getScrollY() + y - yOffset);
     }
 
     public void scrollToNow() {
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                Calendar c = Calendar.getInstance();
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                hour = Math.max(0, hour - TOP_PADDING_HOURS);
-                if (hour == 0) {
-                    scrollView.scrollTo(scrollView.getScrollX(), 0);
-                } else {
-                    int minutes = c.get(Calendar.MINUTE);
-                    scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
-                }
+        scrollView.post(() -> {
+            Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            hour = Math.max(0, hour - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.scrollTo(scrollView.getScrollX(), 0);
+            } else {
+                int minutes = c.get(Calendar.MINUTE);
+                scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
             }
         });
     }
 
     public void smoothScrollToTime(final Time time) {
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
-                if (hour == 0) {
-                    scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
-                } else {
-                    scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
-                }
+        scrollView.post(() -> {
+            int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+            } else {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
             }
         });
     }
@@ -268,12 +267,6 @@ public class CalendarDayView extends FrameLayout {
     public void removeAllEvents() {
         eventsContainer.removeAllViews();
         eventViewToCalendarEvent.clear();
-    }
-
-    private Point getTouchPositionFromDragEvent(DragEvent event) {
-        Rect rItem = new Rect();
-        getGlobalVisibleRect(rItem);
-        return new Point(rItem.left + Math.round(event.getX()), rItem.top + Math.round(event.getY()));
     }
 
     DragStrategy getEditViewDragStrategy(final View dragView) {
@@ -289,14 +282,18 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragEntered(DragEvent event) {
-                initialTouchHeight = getTouchPositionFromDragEvent(event).y - ViewUtils.getViewRawTop(dragView);
+                int[] dragViewLoc = new int[2];
+                dragView.getLocationOnScreen(dragViewLoc);
+                int[] calendarViewLoc = new int[2];
+                getLocationOnScreen(calendarViewLoc);
+                int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
+                initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
             }
 
             @Override
             public void onDragMoved(DragEvent event) {
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
-                int touchY = getTouchPositionFromDragEvent(event).y;
-                layoutParams.topMargin = getRelativeY(touchY - initialTouchHeight);
+                layoutParams.topMargin = getRelativeY((int) (event.getY() - initialTouchHeight), getTop());
                 dragView.setLayoutParams(layoutParams);
             }
 
@@ -309,11 +306,8 @@ public class CalendarDayView extends FrameLayout {
                 layoutParams.topMargin = getYPositionFor(h, m);
                 dragView.setLayoutParams(layoutParams);
                 CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
-                Date oldStartTime = calendarEvent.getStartTime();
-                Calendar c = Calendar.getInstance();
-                c.set(Calendar.HOUR_OF_DAY, h);
-                c.set(Calendar.MINUTE, m);
-                calendarEvent.setStartTime(c.getTime());
+                int oldStartTime = calendarEvent.getStartMinute();
+                calendarEvent.setStartMinute(Time.at(h, m).toMinutesAfterMidnight());
                 adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
                 adapter.onDragEnded(dragView);
             }
@@ -336,12 +330,7 @@ public class CalendarDayView extends FrameLayout {
                 final int scrollYDelta = isOnTopEdge ? -getHeightFor(minutes) : getHeightFor(minutes);
                 layoutParams.topMargin = topMargin;
                 dragView.setLayoutParams(layoutParams);
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.smoothScrollBy(0, scrollYDelta);
-                    }
-                });
+                scrollView.post(() -> scrollView.smoothScrollBy(0, scrollYDelta));
 
             }
 
@@ -350,25 +339,11 @@ public class CalendarDayView extends FrameLayout {
                 if (!hasDropped) {
                     RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
                     CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
-                    Date startTime = calendarEvent.getStartTime();
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(startTime);
-                    layoutParams.topMargin = getYPositionFor(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
+                    layoutParams.topMargin = getYPositionFor(calendarEvent.getStartMinute());
                     dragView.setLayoutParams(layoutParams);
                     adapter.onDragEnded(dragView);
                 }
             }
         };
-
-    }
-
-    public View getView(String eventName) {
-        for (View v : eventViewToCalendarEvent.keySet()) {
-            CalendarEvent e = eventViewToCalendarEvent.get(v);
-            if (e.getName().contains(eventName)) {
-                return v;
-            }
-        }
-        return null;
     }
 }

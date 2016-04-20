@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -18,16 +17,19 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
+import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/17/16.
  */
-public class RemindStartQuestReceiver extends BroadcastReceiver {
+public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
 
     public static final String ACTION_REMIND_START_QUEST = "io.ipoli.android.intent.action.REMIND_START_QUEST";
 
@@ -35,13 +37,20 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Quest q = questPersistenceService.findById(questId);
-        if (q == null) {
-            return;
-        }
+        return questPersistenceService.findById(questId).flatMap(q -> {
+            if (q == null) {
+                return Observable.empty();
+            }
+            showNotification(context, questId, q);
+            return Observable.empty();
+        });
+
+    }
+
+    private void showNotification(Context context, String questId, Quest q) {
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
         remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
@@ -59,7 +68,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 .setContentText("Ready to start?")
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(false)
-                .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(q.getStartTime()))
+                .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(Time.of(q.getStartMinute()).toDate()))
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)
@@ -72,6 +81,8 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
     }
+
+
 
 
     private PendingIntent getStartPendingIntent(String questId, Context context) {

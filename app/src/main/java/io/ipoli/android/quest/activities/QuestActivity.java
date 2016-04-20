@@ -24,11 +24,17 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DoneQuestTapEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.StartQuestTapEvent;
+import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -38,11 +44,10 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
  */
 public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener {
 
-    public static final String ACTION_QUEST_DONE = "io.ipoli.android.intent.action.QUEST_DONE";
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
     public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
 
-    @Bind(R.id.quest_details_content)
+    @Bind(R.id.root_container)
     CoordinatorLayout rootContainer;
 
     @Bind(R.id.quest_details_progress)
@@ -84,24 +89,21 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         appComponent().inject(this);
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        quest = questPersistenceService.findById(questId);
+        questPersistenceService.findById(questId).subscribe(q -> {
+            quest = q;
+            initUI();
 
-        initUI();
+            Intent intent = getIntent();
+            String action = intent.getAction();
 
-        Intent intent = getIntent();
-        String action = intent.getAction();
+            if (ACTION_QUEST_CANCELED.equals(action)) {
+                new StopQuestCommand(quest, questPersistenceService, this).execute();
+            } else if (ACTION_START_QUEST.equals(action)) {
+                new StartQuestCommand(this, questPersistenceService, quest).execute();
+            }
+        });
 
-        if (ACTION_QUEST_CANCELED.equals(action)) {
-            new StopQuestCommand(quest, questPersistenceService, this).execute();
-        } else if (ACTION_QUEST_DONE.equals(action)) {
-            QuestNotificationScheduler.stopTimer(questId, this);
-            QuestNotificationScheduler.stopDone(questId, this);
-            Intent i = new Intent(this, QuestCompleteActivity.class);
-            i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
-            startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
-        } else if (ACTION_START_QUEST.equals(action)) {
-            new StartQuestCommand(this, questPersistenceService, quest).execute();
-        }
+        eventBus.post(new ScreenShownEvent("quest"));
     }
 
     private void initUI() {
@@ -135,7 +137,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     protected void onResume() {
         QuestNotificationScheduler.stopTimer(quest.getId(), this);
         if (Quest.isStarted(quest)) {
-            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStartDateTime().getTime());
+            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
             edit.setVisibility(View.GONE);
@@ -150,9 +152,9 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             return;
         }
         stopTimer();
-        long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStartDateTime().getTime());
+        long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStart().getTime());
         boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
-        if (isOverdue || ACTION_QUEST_DONE.equals(getIntent().getAction())) {
+        if (isOverdue) {
             return;
         }
         QuestNotificationScheduler.scheduleUpdateTimer(quest.getId(), this);
@@ -161,12 +163,11 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if ((resultCode == RESULT_OK || resultCode == RESULT_CANCELED) && requestCode == Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE) {
-            stopTimer();
-            finish();
-        } else if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            quest = questPersistenceService.findById(quest.getId());
-            initUI();
+        if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
+            questPersistenceService.findById(quest.getId()).subscribe(q -> {
+                quest = q;
+                initUI();
+            });
         } else if (resultCode == Constants.RESULT_REMOVED) {
             finish();
         }
@@ -192,12 +193,14 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
         if (isTimerRunning) {
+            eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
             new StopQuestCommand(quest, questPersistenceService, this).execute();
             resetTimerUI();
             timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
             edit.setVisibility(View.VISIBLE);
         } else {
+            eventBus.post(new StartQuestTapEvent(quest));
             new StartQuestCommand(this, questPersistenceService, quest).execute();
             startTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
@@ -207,15 +210,15 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_done)
     public void onDoneTap(View v) {
+        eventBus.post(new DoneQuestTapEvent(quest));
         stopTimer();
-        QuestNotificationScheduler.stopAll(quest.getId(), this);
-        Intent i = new Intent(this, QuestCompleteActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
-        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+        eventBus.post(new CompleteQuestRequestEvent(quest, "quest"));
+        finish();
     }
 
     @OnClick(R.id.quest_details_edit)
     public void onEditTap(View v) {
+        eventBus.post(new EditQuestRequestEvent(quest, "quest"));
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
@@ -223,7 +226,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     public void onChronometerTick(Chronometer chronometer) {
-        long nowMillis = quest.getActualStartDateTime().getTime() + TimeUnit.SECONDS.toMillis(elapsedSeconds);
+        long nowMillis = quest.getActualStart().getTime() + TimeUnit.SECONDS.toMillis(elapsedSeconds);
         long questDurationSeconds = TimeUnit.MINUTES.toSeconds(quest.getDuration());
 
         timerProgress.setProgress((int) getTimerProgress(elapsedSeconds));
@@ -245,12 +248,12 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     }
 
     private void showCountDownTime(long nowMillis) {
-        long endTimeMillis = quest.getActualStartDateTime().getTime() + TimeUnit.MINUTES.toMillis(quest.getDuration());
+        long endTimeMillis = quest.getActualStart().getTime() + TimeUnit.MINUTES.toMillis(quest.getDuration());
         timer.setText(TimerFormatter.format(endTimeMillis - nowMillis));
     }
 
     private void showCountUpTime(long nowMillis) {
-        long timerMillis = nowMillis - quest.getActualStartDateTime().getTime();
+        long timerMillis = nowMillis - quest.getActualStart().getTime();
         timer.setText(TimerFormatter.format(timerMillis));
     }
 

@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -8,8 +8,10 @@ import io.ipoli.android.quest.Quest;
  */
 public class ShowQuestEvent {
     public final Quest quest;
+    public final String source;
 
-    public ShowQuestEvent(Quest quest) {
+    public ShowQuestEvent(Quest quest, String source) {
         this.quest = quest;
+        this.source = source;
     }
 }

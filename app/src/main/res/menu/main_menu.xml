@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_inbox"
-        android:icon="@drawable/ic_storage_white_24dp"
-        android:title="@string/inbox"
-        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_feedback"
         android:title="@string/feedback"
-        android:icon="@drawable/ic_feedback_white_24dp"
+        android:icon="@drawable/ic_comment_white_24dp"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_contact_us"
         android:title="@string/contact_us"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_show_tutorial"
+        android:title="@string/show_tutorial"
         app:showAsAction="never" />
 
 </menu>

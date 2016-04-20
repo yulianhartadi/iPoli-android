@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.otto.Bus;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +19,12 @@ import io.ipoli.android.app.utils.ResourceUtils;
  */
 public class AvatarAdapter extends RecyclerView.Adapter {
     private final List<Integer> avatars;
-    private final Bus eventBus;
 
-    public AvatarAdapter(Context context, List<String> avatars, Bus eventBus) {
+    public AvatarAdapter(Context context, List<String> avatars) {
         this.avatars = new ArrayList<>();
         for (String a : avatars) {
             this.avatars.add(ResourceUtils.extractDrawableResource(context, a));
         }
-        this.eventBus = eventBus;
     }
 
     @Override

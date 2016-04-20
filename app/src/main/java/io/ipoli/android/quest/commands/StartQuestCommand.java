@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationManagerCompat;
 
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
@@ -33,27 +32,31 @@ public class StartQuestCommand {
     public void execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
-        quest.setActualStartDateTime(new Date());
-        quest = questPersistenceService.save(quest);
-        scheduleNextQuestReminder(context);
-        stopOtherRunningQuests(quest);
+        quest.setActualStart(DateUtils.nowUTC());
+        questPersistenceService.save(quest).subscribe(q -> {
+            scheduleNextQuestReminder(context);
+            stopOtherRunningQuests(quest);
 
-        if (quest.getDuration() > 0) {
-            long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-            long showDoneAtMillis = quest.getActualStartDateTime().getTime() + durationMillis;
-            QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
-        }
+            if (quest.getDuration() > 0) {
+                long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
+                long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
+                QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
+            }
+        });
     }
 
 
     private void stopOtherRunningQuests(Quest q) {
-        List<Quest> quests = questPersistenceService.findAllPlannedAndStartedToday();
-        for (Quest cq : quests) {
-            if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                cq.setActualStartDateTime(null);
-                questPersistenceService.save(cq);
+
+        questPersistenceService.findAllPlannedAndStartedToday().subscribe(quests -> {
+            for (Quest cq : quests) {
+                if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
+                    cq.setActualStart(null);
+                    questPersistenceService.save(cq);
+                }
             }
-        }
+        });
+
     }
 
     private void scheduleNextQuestReminder(Context context) {

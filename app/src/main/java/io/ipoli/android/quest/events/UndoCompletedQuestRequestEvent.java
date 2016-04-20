@@ -1,9 +1,9 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.Quest;
+import io.ipoli.android.quest.data.Quest;
 
 /**
- * Created by Polina Zhelyazkova <poly_vjk@abv.bg>
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/17/16.
  */
 public class UndoCompletedQuestRequestEvent {

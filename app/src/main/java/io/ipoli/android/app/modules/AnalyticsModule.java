@@ -1,9 +1,9 @@
 package io.ipoli.android.app.modules;
 
 import android.content.Context;
+import android.text.TextUtils;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.Tracker;
+import com.flurry.android.FlurryAgent;
 
 import javax.inject.Singleton;
 
@@ -11,8 +11,10 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.AnalyticsConstants;
 import io.ipoli.android.BuildConfig;
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.GoogleAnalyticsService;
+import io.ipoli.android.app.services.FlurryAnalyticsService;
+import io.ipoli.android.app.utils.LocalStorage;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,12 +26,22 @@ public class AnalyticsModule {
     @Provides
     @Singleton
     public AnalyticsService provideAnalyticsService(Context context) {
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
-        analytics.setDryRun(BuildConfig.DEBUG);
-        Tracker tracker = analytics.newTracker(AnalyticsConstants.TRACKING_CODE);
-        tracker.enableExceptionReporting(true);
-        tracker.enableAutoActivityTracking(true);
-        tracker.enableAdvertisingIdCollection(true);
-        return new GoogleAnalyticsService(tracker);
+        if (!BuildConfig.DEBUG) {
+
+            String playerId = LocalStorage.of(context).readString(Constants.KEY_PLAYER_ID);
+            if (!TextUtils.isEmpty(playerId)) {
+                FlurryAgent.setUserId(playerId);
+            }
+
+            new FlurryAgent.Builder()
+                    .withLogEnabled(false)
+                    .build(context, AnalyticsConstants.FLURRY_KEY);
+        } else {
+            new FlurryAgent.Builder()
+                    .withLogEnabled(true)
+                    .build(context, "42");
+        }
+
+        return new FlurryAnalyticsService();
     }
 }

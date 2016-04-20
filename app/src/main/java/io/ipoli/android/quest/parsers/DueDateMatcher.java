@@ -8,18 +8,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.quest.suggestions.MatcherType;
+import io.ipoli.android.quest.suggestions.TextEntityType;
+import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class DueDateMatcher implements QuestTextMatcher<Date> {
+public class DueDateMatcher extends BaseMatcher<Date> {
 
-    private static final String DUE_TODAY_TOMORROW_PATTERN = "today|tomorrow";
-    private static final String DUE_MONTH_PATTERN = "(\\son)?\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}";
-    private static final String DUE_AFTER_IN_PATTERN = "(after|in)\\s\\w+\\s(day|week|month|year)s?";
-    private static final String DUE_FROM_NOW_PATTERN = "\\w+\\s(day|week|month|year)s?\\sfrom\\snow";
-    private static final String DUE_THIS_NEXT_PATTERN = "(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)";
-    private static final String DUE_THIS_MONTH_PATTERN = "on\\s?(\\d{1,2})\\s?(st|th)$";
+    private static final String DUE_TODAY_TOMORROW_PATTERN = "(?:^|\\s)(today|tomorrow)(?:$|\\s)";
+    private static final String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th|nd|rd)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
+    private static final String DUE_AFTER_IN_PATTERN = "(?:^|\\s)(after|in)\\s(\\d{1,2}|one|two|three)\\s(day|week|month|year)s?(?:$|\\s)";
+    private static final String DUE_FROM_NOW_PATTERN = "(?:^|\\s)(\\d{1,2}|one|two|three)\\s(day|week|month|year)s?\\sfrom\\snow(?:$|\\s)";
+    private static final String DUE_THIS_NEXT_PATTERN = "(?:^|\\s)(this|next)\\s(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thur|Fri|Sat|Sun)(?:$|\\s)";
+    private static final String DUE_THIS_MONTH_PATTERN = "(?:^|\\s)on\\s?(\\d{1,2})\\s?(st|th|nd|rd)(?:$|\\s)";
 
     private static final Pattern[] dueDatePatterns = {
             Pattern.compile(DUE_TODAY_TOMORROW_PATTERN, Pattern.CASE_INSENSITIVE),
@@ -33,11 +37,12 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
     private final PrettyTimeParser parser;
 
     public DueDateMatcher(PrettyTimeParser parser) {
+        super(new DueDateSuggestionsProvider());
         this.parser = parser;
     }
 
     @Override
-    public String match(String text) {
+    public Match match(String text) {
 
         Matcher tmm = dueThisMonthPattern.matcher(text);
         if (tmm.find()) {
@@ -45,18 +50,18 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
             Calendar c = Calendar.getInstance();
             int maxDaysInMoth = c.getActualMaximum(Calendar.DAY_OF_MONTH);
             if (day > maxDaysInMoth) {
-                return "";
+                return null;
             }
-            return tmm.group();
+            return new Match(tmm.group(), tmm.start(), tmm.end() - 1);
         }
 
         for (Pattern p : dueDatePatterns) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
-                return matcher.group();
+                return new Match(matcher.group(), matcher.start(), matcher.end() - 1);
             }
         }
-        return "";
+        return null;
     }
 
     @Override
@@ -84,6 +89,34 @@ public class DueDateMatcher implements QuestTextMatcher<Date> {
             }
         }
         return null;
+    }
+
+    @Override
+    public MatcherType getMatcherType() {
+        return MatcherType.DATE;
+    }
+
+    @Override
+    public TextEntityType getTextEntityType() {
+        return TextEntityType.DUE_DATE;
+    }
+
+    @Override
+    public boolean partiallyMatches(String text) {
+        Matcher tmm = dueThisMonthPattern.matcher(text);
+        tmm.matches();
+        if(tmm.hitEnd()) {
+            return true;
+        }
+
+        for (Pattern p : dueDatePatterns) {
+            Matcher matcher = p.matcher(text);
+            matcher.matches();
+            if(matcher.hitEnd()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
