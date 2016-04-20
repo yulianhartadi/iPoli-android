@@ -18,10 +18,12 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
@@ -165,4 +167,12 @@ public class MainActivity extends BaseActivity {
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
     }
+
+    @Subscribe
+    public void onEditQuestRequest(EditQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
 }

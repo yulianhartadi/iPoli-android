@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.fragments;
 
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -27,18 +26,15 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
-import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -154,13 +150,6 @@ public class InboxFragment extends Fragment {
         q.setEndDate(new Date());
         questPersistenceService.save(q);
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe
-    public void onEditQuestRequest(EditQuestRequestEvent e) {
-        Intent i = new Intent(getContext(), EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
     }
 
     @Subscribe
