@@ -267,7 +267,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     private Time getStartTimeFromCompletedAtTime(Quest q) {
         Time startTime;
-        int duration = q.repeatsPerDayAndHasShortDuration() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+        int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         startTime = Time.of(q.getCompletedAtMinute() - duration);
         return startTime;
     }

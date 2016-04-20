@@ -20,4 +20,5 @@ public interface CalendarEvent {
 
     String getName();
 
+    boolean shouldDisplayAsIndicator();
 }

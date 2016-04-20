@@ -333,9 +333,10 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return DateUtils.isTomorrowUTC(new LocalDate(getEndDate(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
     }
 
-    public boolean repeatsPerDayAndHasShortDuration() {
+    public boolean isIndicator() {
+        boolean isCompleted = getCompletedAt() != null;
         boolean repeatsPerDay = getRecurrentQuest() != null && !TextUtils.isEmpty(getRecurrentQuest().getRecurrence().getDailyRrule());
         boolean hasShortOrNoDuration = getDuration() < 15;
-        return repeatsPerDay && hasShortOrNoDuration;
+        return isCompleted && repeatsPerDay && hasShortOrNoDuration;
     }
 }
