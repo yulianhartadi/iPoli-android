@@ -187,9 +187,9 @@ public class App extends MultiDexApplication {
         callQuest.setDuration(15);
         initialQuests.add(callQuest);
 
-        Quest welcomeQuest = new Quest("Get to know iPoli", DateUtils.now());
+        Quest welcomeQuest = new Quest("Play my favorite game", DateUtils.now());
         Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.minutesAgo(15));
+        Quest.setStartTime(welcomeQuest, Time.afterMinutes(5));
         initialQuests.add(welcomeQuest);
     }
 

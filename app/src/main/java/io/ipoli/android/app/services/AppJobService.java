@@ -140,12 +140,12 @@ public class AppJobService extends JobService {
         return getAdvertisingId().flatMap(advertisingId -> {
             RequestBody requestBody = new JsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
             return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
-                LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-                localStorage.saveString(Constants.KEY_PLAYER_ID, sp.getId());
-                eventBus.post(new PlayerCreatedEvent(sp.getId()));
                 sp.setSyncedWithRemote();
                 sp.setRemoteObject();
                 sp.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
+                LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+                localStorage.saveString(Constants.KEY_PLAYER_ID, sp.getId());
+                eventBus.post(new PlayerCreatedEvent(sp.getId()));
                 return playerPersistenceService.saveRemoteObject(sp);
             });
         });
