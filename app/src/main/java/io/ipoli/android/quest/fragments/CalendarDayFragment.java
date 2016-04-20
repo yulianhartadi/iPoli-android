@@ -128,6 +128,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
+        calendarDayView.scrollToNow();
         eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), "calendar_unscheduled_section"));
     }
 
@@ -250,6 +251,14 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         setUnscheduledQuestsHeight();
     }
 
+    public void scrollToQuest(Quest quest) {
+        Time startTime = Quest.getStartTime(quest);
+        if (startTime == null) {
+            startTime = getStartTimeFromCompletedAtTime(quest);
+        }
+        calendarDayView.smoothScrollToTime(startTime);
+    }
+
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = e.quest;
@@ -257,11 +266,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             return;
         }
         updateSchedule();
-        Time startTime = Quest.getStartTime(e.quest);
-        if (startTime == null) {
-            startTime = getStartTimeFromCompletedAtTime(q);
-        }
-        calendarDayView.smoothScrollToTime(startTime);
     }
 
     private Time getStartTimeFromCompletedAtTime(Quest q) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -56,6 +57,8 @@ public class MainActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
+    Fragment currentFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,30 +89,30 @@ public class MainActivity extends BaseActivity {
                 switch (menuItemId) {
                     case R.id.calendar:
                         screenName = "calendar";
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_container, new CalendarDayFragment()).commit();
+                        currentFragment = new CalendarDayFragment();
                         break;
                     case R.id.overview:
                         screenName = "overview";
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_container, new OverviewFragment()).commit();
+                        currentFragment = new OverviewFragment();
                         break;
                     case R.id.add_quest:
                         screenName = "add_quest";
                         boolean isForToday = currentSelectedItem == R.id.calendar;
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_container, AddQuestFragment.newInstance(isForToday)).commit();
+                        currentFragment = AddQuestFragment.newInstance(isForToday);
                         break;
                     case R.id.inbox:
                         screenName = "inbox";
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_container, new InboxFragment()).commit();
+                        currentFragment = new InboxFragment();
                         break;
                     case R.id.habits:
                         screenName = "habits";
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.content_container, new HabitsFragment()).commit();
+                        currentFragment = new HabitsFragment();
                         break;
+                }
+
+                if(currentFragment != null) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.content_container, currentFragment).commit();
                 }
                 currentSelectedItem = menuItemId;
                 eventBus.post(new ScreenShownEvent(screenName));
@@ -147,8 +150,8 @@ public class MainActivity extends BaseActivity {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
                 bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
+                eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
             });
         }
     }
@@ -188,6 +191,9 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
+        if(currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source.equals("notification")) {
+            ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
+        }
         bottomBar.post(() -> Snackbar
                 .make(findViewById(R.id.root_container),
                         R.string.quest_complete,
