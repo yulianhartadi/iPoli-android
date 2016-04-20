@@ -66,6 +66,7 @@ public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
         Intent i = new Intent(context, MainActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         i.setAction(MainActivity.ACTION_QUEST_DONE);
+        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

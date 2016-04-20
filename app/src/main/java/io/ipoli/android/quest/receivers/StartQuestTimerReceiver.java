@@ -104,6 +104,7 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.setAction(action);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

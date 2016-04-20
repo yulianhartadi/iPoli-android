@@ -143,7 +143,11 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+    }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         if (getIntent() != null && ACTION_QUEST_DONE.equals(getIntent().getAction())) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             questPersistenceService.findById(questId).subscribe(quest -> {
