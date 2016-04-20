@@ -125,5 +125,6 @@
     <string name="tutorial_inbox_desc">Swipe a quest to the right to schedule it for today or to the left to delete it</string>
     <string name="tutorial_habits_title">Stick to Your Important Habits</string>
     <string name="tutorial_habits_desc">Track your weekly progress. Swipe a habit to the left to delete it.</string>
+    <string name="quest_undone">Quest undone</string>
 
 </resources>

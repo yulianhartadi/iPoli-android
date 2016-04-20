@@ -24,7 +24,6 @@ import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
-import io.ipoli.android.quest.events.QuestDifficultyChangedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
@@ -262,14 +261,6 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("new_quest_saved", EventParams.create()
                 .add("text", e.text)
                 .add("source", e.source));
-    }
-
-    @Subscribe
-    public void onQuestDifficultyChanged(QuestDifficultyChangedEvent e) {
-        log("quest_difficulty_changed", EventParams.create()
-                .add("id", e.quest.getId())
-                .add("name", e.quest.getName())
-                .add("difficulty", e.difficulty));
     }
 
     @Subscribe

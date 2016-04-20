@@ -146,8 +146,7 @@ public class MainActivity extends BaseActivity {
         if (getIntent() != null && ACTION_QUEST_DONE.equals(getIntent().getAction())) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                QuestNotificationScheduler.stopTimer(questId, this);
-                QuestNotificationScheduler.stopDone(questId, this);
+                QuestNotificationScheduler.stopAll(questId, this);
                 eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
                 bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
             });
@@ -194,7 +193,7 @@ public class MainActivity extends BaseActivity {
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Snackbar
                 .make(findViewById(R.id.root_container),
-                        "Quest undone",
+                        R.string.quest_undone,
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
