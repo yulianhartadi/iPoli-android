@@ -182,11 +182,11 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        Snackbar
+        bottomBar.post(() -> Snackbar
                 .make(findViewById(R.id.root_container),
                         R.string.quest_complete,
                         Snackbar.LENGTH_SHORT)
-                .show();
+                .show());
     }
 
     @Subscribe
