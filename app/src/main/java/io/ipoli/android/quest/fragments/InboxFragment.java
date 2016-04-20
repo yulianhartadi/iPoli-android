@@ -132,13 +132,10 @@ public class InboxFragment extends Fragment {
             }
         });
 
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                inboxAdapter.addQuest(e.position, quest);
-                snackbar.setCallback(null);
-                eventBus.post(new UndoDeleteQuestEvent(quest, "inbox"));
-            }
+        snackbar.setAction(R.string.undo, view -> {
+            inboxAdapter.addQuest(e.position, quest);
+            snackbar.setCallback(null);
+            eventBus.post(new UndoDeleteQuestEvent(quest, "inbox"));
         });
 
         snackbar.show();

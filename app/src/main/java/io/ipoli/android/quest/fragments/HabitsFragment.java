@@ -184,16 +184,13 @@ public class HabitsFragment extends Fragment {
             }
         });
 
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RecurrentQuestViewModel vm = createViewModel(rq);
-                if (vm != null) {
-                    habitsAdapter.addQuest(e.position, vm);
-                }
-                snackbar.setCallback(null);
-                eventBus.post(new UndoDeleteRecurrentQuestEvent(rq));
+        snackbar.setAction(R.string.undo, view -> {
+            RecurrentQuestViewModel vm = createViewModel(rq);
+            if (vm != null) {
+                habitsAdapter.addQuest(e.position, vm);
             }
+            snackbar.setCallback(null);
+            eventBus.post(new UndoDeleteRecurrentQuestEvent(rq));
         });
 
         snackbar.show();
