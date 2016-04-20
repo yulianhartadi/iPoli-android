@@ -16,6 +16,8 @@ public interface CalendarEvent {
     @ColorRes
     int getBackgroundColor();
 
+    boolean isRecurrent();
+
     String getName();
 
 }

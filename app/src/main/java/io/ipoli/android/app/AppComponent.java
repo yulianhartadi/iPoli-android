@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.ipoli.android.InviteOnlyActivity;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
@@ -13,7 +14,6 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
@@ -50,8 +50,6 @@ public interface AppComponent {
 
     void inject(InviteOnlyActivity inviteOnlyActivity);
 
-    void inject(QuestCompleteActivity questCompleteActivity);
-
     void inject(EditQuestActivity editQuestActivity);
 
     void inject(DatePickerFragment datePickerFragment);
@@ -71,6 +69,8 @@ public interface AppComponent {
     void inject(RemindStartQuestReceiver remindStartQuestReceiver);
 
     void inject(BaseActivity baseActivity);
+
+    void inject(MainActivity mainActivity);
 
     void inject(AppJobService appJobService);
 

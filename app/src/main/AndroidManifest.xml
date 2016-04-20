@@ -47,11 +47,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".quest.activities.QuestCompleteActivity"
-            android:label="@string/title_activity_quest_complete"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity" />
-        <activity
             android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_edit_quest"
             android:screenOrientation="portrait" />

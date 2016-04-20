@@ -11,6 +11,7 @@ import android.support.v7.app.NotificationCompat;
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
@@ -64,9 +65,9 @@ public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
     }
 
     private PendingIntent getPendingIntent(Context context, String questId) {
-        Intent i = new Intent(context, QuestActivity.class);
+        Intent i = new Intent(context, MainActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        i.setAction(QuestActivity.ACTION_QUEST_DONE);
+        i.setAction(MainActivity.ACTION_QUEST_DONE);
         return ActivityIntentFactory.createWithParentStack(QuestActivity.class, i, context);
     }
 

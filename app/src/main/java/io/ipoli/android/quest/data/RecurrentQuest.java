@@ -47,6 +47,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     private Recurrence recurrence;
 
+    private String source;
+
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
@@ -165,6 +167,14 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     public void setRecurrence(Recurrence recurrence) {
         this.recurrence = recurrence;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

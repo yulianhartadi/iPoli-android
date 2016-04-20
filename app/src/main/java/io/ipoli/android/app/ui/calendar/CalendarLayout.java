@@ -86,6 +86,9 @@ public class CalendarLayout extends RelativeLayout {
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
+        View recurrentIndicator = dragView.findViewById(R.id.quest_recurrent_indicator);
+        recurrentIndicator.setVisibility(calendarEvent.isRecurrent() ? VISIBLE : GONE);
+
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {

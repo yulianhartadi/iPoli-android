@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -155,7 +154,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         quest.setCompletedAtMinute(null);
         questPersistenceService.save(quest);
         eventBus.post(new UndoCompletedQuestEvent(quest));
-        Toast.makeText(getContext(), "Quest undone", Toast.LENGTH_SHORT).show();
     }
 
     @Override
