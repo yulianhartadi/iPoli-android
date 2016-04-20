@@ -244,7 +244,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     public void onAcceptEvent(QuestCalendarViewModel calendarEvent) {
         if (calendarAdapter.canAddEvent(calendarEvent)) {
             eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
-            calendarAdapter.addEvent(calendarEvent);
         } else {
             unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingViewModel);
         }
