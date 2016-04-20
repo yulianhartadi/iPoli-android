@@ -175,6 +175,7 @@ public class AppJobService extends JobService {
                 data.addProperty("context", qJson.get("context").getAsString());
                 data.addProperty("created_at", qJson.get("created_at").getAsString());
                 data.addProperty("updated_at", qJson.get("updated_at").getAsString());
+                data.addProperty("source", qJson.get("source").getAsString());
                 RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
                 return apiService.createRecurrentQuestFromText(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
