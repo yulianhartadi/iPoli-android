@@ -68,9 +68,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     }
 
     public boolean shouldDisplayAsIndicator() {
-        boolean hasTimesPerDay = quest.getRecurrentQuest() != null && !TextUtils.isEmpty(quest.getRecurrentQuest().getRecurrence().getDailyRrule());
-        boolean hasShortOrNoDuration = quest.getDuration() < 15;
-        return hasTimesPerDay && hasShortOrNoDuration;
+        return quest.repeatsPerDayAndHasShortDuration();
     }
 
     @DrawableRes

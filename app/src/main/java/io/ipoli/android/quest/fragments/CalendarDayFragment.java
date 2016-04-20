@@ -129,8 +129,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), "calendar_unscheduled_section"));
-        unscheduledQuestsAdapter.removeQuest(e.viewModel);
-        setUnscheduledQuestsHeight();
     }
 
     private void setUnscheduledQuestsHeight() {
@@ -259,11 +257,19 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         if (!q.isScheduledForToday()) {
             return;
         }
+        updateSchedule();
         Time startTime = Quest.getStartTime(e.quest);
         if (startTime == null) {
-            return;
+            startTime = getStartTimeFromCompletedAtTime(q);
         }
         calendarDayView.smoothScrollToTime(startTime);
+    }
+
+    private Time getStartTimeFromCompletedAtTime(Quest q) {
+        Time startTime;
+        int duration = q.repeatsPerDayAndHasShortDuration() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+        startTime = Time.of(q.getCompletedAtMinute() - duration);
+        return startTime;
     }
 
     @Subscribe
@@ -292,9 +298,8 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
                             if (!DateUtils.isTodayUTC(completedAt.toLocalDate())) {
                                 continue;
                             }
-                            int actualDuration = Time.of(new Date(q.getCompletedAt().getTime() - q.getActualStart().getTime())).toMinutesAfterMidnight();
-                            int actualStartMinute = Math.max(q.getCompletedAtMinute() - actualDuration, 0);
-                            event.setStartMinute(actualStartMinute);
+
+                            event.setStartMinute(getStartTimeFromCompletedAtTime(q).toMinutesAfterMidnight());
                         }
                         completedEvents.add(event);
                     } else {
