@@ -23,9 +23,11 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
@@ -197,4 +199,12 @@ public class MainActivity extends BaseActivity {
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
+
+    @Subscribe
+    public void onEditQuestRequest(EditQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
 }

@@ -26,6 +26,7 @@ import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
@@ -88,7 +89,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         CheckBox checkBox = createCheckBox(q, v.getContext());
         detailsRoot.addView(checkBox, 0);
         v.setOnClickListener(view -> {
-            eventBus.post(new ShowQuestEvent(q, "calendar"));
+            if(Quest.isCompleted(q)) {
+                eventBus.post(new EditQuestRequestEvent(q, "calendar"));
+            } else {
+                eventBus.post(new ShowQuestEvent(q, "calendar"));
+            }
         });
 
         v.setOnLongClickListener(view -> {
