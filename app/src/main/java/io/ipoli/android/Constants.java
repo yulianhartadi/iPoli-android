@@ -38,4 +38,5 @@ public interface Constants {
 
     String IPOLI_EMAIL = "hi@ipoli.io";
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
+    String API_RESOURCE_SOURCE = "ipoli-android";
 }

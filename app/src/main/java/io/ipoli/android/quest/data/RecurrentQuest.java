@@ -98,6 +98,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.context = QuestContext.PERSONAL.name();
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
+        this.source = Constants.API_RESOURCE_SOURCE;
     }
 
     public String getName() {

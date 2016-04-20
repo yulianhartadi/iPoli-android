@@ -175,6 +175,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.context = QuestContext.PERSONAL.name();
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
+        this.source = Constants.API_RESOURCE_SOURCE;
     }
 
     public String getName() {
