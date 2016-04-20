@@ -21,12 +21,10 @@ import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 public class QuestNotificationScheduler {
 
     public static void scheduleUpdateTimer(String questId, Context context) {
-        Intent intent = getQuestTimerIntent(questId, context);
-        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, intent);
+        Intent intent = getQuestTimerIntent(questId);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.setRepeating(AlarmManager.RTC_WAKEUP, TimeUnit.MINUTES.toMillis(1),
-                TimeUnit.MINUTES.toMillis(1), pendingIntent);
-        context.sendBroadcast(intent);
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+                TimeUnit.MINUTES.toMillis(1), IntentUtils.getBroadcastPendingIntent(context, intent));
     }
 
     public static void stopTimer(String questId, Context context) {
@@ -35,7 +33,7 @@ public class QuestNotificationScheduler {
     }
 
     @NonNull
-    private static Intent getQuestTimerIntent(String questId, Context context) {
+    private static Intent getQuestTimerIntent(String questId) {
         Intent intent = new Intent(StartQuestTimerReceiver.ACTION_SHOW_QUEST_TIMER);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return intent;
@@ -43,7 +41,7 @@ public class QuestNotificationScheduler {
 
     private static void cancelUpdateTimerIntent(String questId, Context context) {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(IntentUtils.getBroadcastPendingIntent(context, getQuestTimerIntent(questId, context)));
+        alarm.cancel(IntentUtils.getBroadcastPendingIntent(context, getQuestTimerIntent(questId)));
     }
 
     private static void dismissTimerNotification(Context context) {

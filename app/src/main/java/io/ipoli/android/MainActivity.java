@@ -22,7 +22,6 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
@@ -148,7 +147,6 @@ public class MainActivity extends BaseActivity {
         if (getIntent() != null && ACTION_QUEST_DONE.equals(getIntent().getAction())) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                QuestNotificationScheduler.stopAll(questId, this);
                 eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
                 bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
             });
