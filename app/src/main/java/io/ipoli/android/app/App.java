@@ -136,7 +136,7 @@ public class App extends MultiDexApplication {
         RecurrentQuest.setContext(rq1, QuestContext.WELLNESS);
         recurrentQuests.add(rq1);
 
-        RecurrentQuest rq2 = new RecurrentQuest("Say 3 things I'm are grateful for every day");
+        RecurrentQuest rq2 = new RecurrentQuest("Say 3 things I'm grateful for every day");
         RecurrentQuest.setContext(rq2, QuestContext.PERSONAL);
         recurrentQuests.add(rq2);
         recurrentQuestPersistenceService.saveRemoteObjects(recurrentQuests);
