@@ -41,8 +41,10 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
@@ -212,6 +214,17 @@ public class App extends MultiDexApplication {
                     .build();
         }
         return appComponent;
+    }
+
+    @Subscribe
+    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
+        Quest q = e.quest;
+        QuestNotificationScheduler.stopAll(q.getId(), this);
+        q.setCompletedAt(DateUtils.nowUTC());
+        q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+        questPersistenceService.save(q).subscribe(quest -> {
+            eventBus.post(new QuestCompletedEvent(quest, e.source));
+        });
     }
 
     @Subscribe

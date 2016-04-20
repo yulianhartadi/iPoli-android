@@ -269,16 +269,6 @@ public class CalendarDayView extends FrameLayout {
         eventViewToCalendarEvent.clear();
     }
 
-    public View getView(String eventName) {
-        for (View v : eventViewToCalendarEvent.keySet()) {
-            CalendarEvent e = eventViewToCalendarEvent.get(v);
-            if (e.getName().contains(eventName)) {
-                return v;
-            }
-        }
-        return null;
-    }
-
     DragStrategy getEditViewDragStrategy(final View dragView) {
         return new DragStrategy() {
             public boolean hasDropped;

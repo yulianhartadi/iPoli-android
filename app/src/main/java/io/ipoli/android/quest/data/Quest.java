@@ -66,6 +66,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Date actualStart;
 
+    private String source;
+
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
@@ -287,6 +289,14 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setTags(RealmList<Tag> tags) {
         this.tags = tags;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

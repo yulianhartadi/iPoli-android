@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -12,24 +13,29 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 import com.squareup.otto.Subscribe;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.activities.QuestCompleteActivity;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class MainActivity extends BaseActivity {
     public static final int CALENDAR_TAB_INDEX = 0;
@@ -37,6 +43,8 @@ public class MainActivity extends BaseActivity {
     public static final int ADD_QUEST_TAB_INDEX = 2;
     public static final int INBOX_TAB_INDEX = 3;
     public static final int HABITS_TAB_INDEX = 4;
+
+    public static final String ACTION_QUEST_DONE = "io.ipoli.android.intent.action.QUEST_DONE";
 
     @IdRes
     private int currentSelectedItem = 0;
@@ -46,10 +54,14 @@ public class MainActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        appComponent().inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
@@ -132,6 +144,16 @@ public class MainActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+
+        if (getIntent() != null && ACTION_QUEST_DONE.equals(getIntent().getAction())) {
+            String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+            questPersistenceService.findById(questId).subscribe(quest -> {
+                QuestNotificationScheduler.stopTimer(questId, this);
+                QuestNotificationScheduler.stopDone(questId, this);
+                eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
+                bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
+            });
+        }
     }
 
     @Override
@@ -162,10 +184,21 @@ public class MainActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
-        Intent i = new Intent(this, QuestCompleteActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivityForResult(i, Constants.COMPLETE_QUEST_RESULT_REQUEST_CODE);
+    public void onQuestCompleted(QuestCompletedEvent e) {
+        Snackbar
+                .make(findViewById(R.id.root_container),
+                        R.string.quest_complete,
+                        Snackbar.LENGTH_SHORT)
+                .show();
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
+        Snackbar
+                .make(findViewById(R.id.root_container),
+                        "Quest undone",
+                        Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Subscribe

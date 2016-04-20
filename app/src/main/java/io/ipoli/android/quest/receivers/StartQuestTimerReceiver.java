@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
@@ -59,8 +60,8 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
         NotificationCompat.Builder builder = getNotificationBuilder(q, elapsedMinutes);
         builder.setContentText("Are you focused?");
         builder.setContentIntent(getContentIntent(q.getId()));
-        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
-        builder.addAction(R.drawable.ic_done_24dp, "Done", getPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_DONE));
+        builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getCancelPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
+        builder.addAction(R.drawable.ic_done_24dp, "Done", getDonePendingIntent(q.getId(), MainActivity.ACTION_QUEST_DONE));
         if (duration > 0) {
             builder.setContentText("For " + DurationFormatter.format(context, duration));
         }
@@ -91,11 +92,18 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
         return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, context);
     }
 
-    private PendingIntent getPendingIntent(String questId, String action) {
+    private PendingIntent getCancelPendingIntent(String questId, String action) {
         Intent intent = new Intent(context, QuestActivity.class);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.setAction(action);
 
         return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, context);
+    }
+
+    private PendingIntent getDonePendingIntent(String questId, String action) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(action);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

@@ -7,9 +7,6 @@ package io.ipoli.android;
 public interface Constants {
 
     String API_DATETIME_ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    String MODIFIED_SINCE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss 'GMT'";
-
-    int COMPLETE_QUEST_RESULT_REQUEST_CODE = 10;
 
     int EDIT_QUEST_RESULT_REQUEST_CODE = 11;
     int REMIND_START_QUEST_NOTIFICATION_ID = 103;

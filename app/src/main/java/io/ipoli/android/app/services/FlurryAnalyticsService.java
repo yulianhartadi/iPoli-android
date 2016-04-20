@@ -15,7 +15,6 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
@@ -121,19 +120,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
-        log("complete_quest_request", e.quest.getId(), e.quest.getName(), e.source);
-    }
-
-
-    @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         log("undo_completed_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        log("quest_completed", e.quest.getId(), e.quest.getName());
+        log("quest_completed", e.quest.getId(), e.quest.getName(), e.source);
     }
 
     @Subscribe
