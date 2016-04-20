@@ -180,9 +180,7 @@ public class AppJobService extends JobService {
                 return apiService.createRecurrentQuestFromText(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             } else {
-                JsonObject qJson = (JsonObject) gson.toJsonTree(rq);
-                qJson.addProperty("id", rq.getId());
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
+                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", gson.toJsonTree(rq)).param("player_id", player.getId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getId()).compose(applyAPISchedulers())
                         .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             }
