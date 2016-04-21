@@ -45,6 +45,8 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # Libraries used
 
+* Otto
+* Realm
 * PrettyTime
 * Butterknife
 * Dagger2
