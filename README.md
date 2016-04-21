@@ -6,6 +6,10 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # How does it look like?
 
+<img src="./github/screens/welcome.png" width="250px"/>
+<img src="./github/screens/calendar.png" width="250px"/>
+<img src="./github/screens/overview.png" width="250px"/>
+
 # How to run it locally?
 
 1. Clone this repo
@@ -18,7 +22,6 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
     String API_KEY = "test";
   }
   ```
-  
 4. Create AnalyticsConstants.java file and fill it with
 
   ```java
@@ -26,7 +29,6 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
     String FLURRY_KEY = "123456";
   }
   ```
-  
 5. Run on your favorite device/emulator
 
 # Main features so far
