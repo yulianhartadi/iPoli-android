@@ -10,6 +10,12 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 <img src="./github/screens/calendar.png" width="250px"/>
 <img src="./github/screens/overview.png" width="250px"/>
 
+# Can I just install it?
+
+Yep, you are in luck!
+
+<a href="https://play.google.com/store/apps/details?id=io.ipoli.android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80" width="250"/></a>
+
 # How to run it locally?
 
 1. Clone this repo
