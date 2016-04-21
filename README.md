@@ -11,18 +11,22 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 1. Clone this repo
 2. Import in Android Studio
 3. Create APIConstants.java file and fill it with
+
   ```java
   public interface APIConstants {
     String API_ENDPOINT = "http://example.com/";
     String API_KEY = "test";
   }
   ```
+  
 4. Create AnalyticsConstants.java file and fill it with
+
   ```java
   public interface AnalyticsConstants {
     String FLURRY_KEY = "123456";
   }
   ```
+  
 5. Run on your favorite device/emulator
 
 # Main features so far
