@@ -20,6 +20,10 @@ Yep, you are in luck!
 
 <a href="https://play.google.com/store/apps/details?id=io.ipoli.android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80" width="250"/></a>
 
+# Have a question or just want to get in touch?
+
+Join the community on [Slack](https://slofile.com/slack/productivityhackers) or write us at [hi@ipoli.io](mailto:hi@ipoli.io)
+
 # How to run it locally?
 
 1. Clone this repo
