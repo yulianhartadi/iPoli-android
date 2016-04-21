@@ -1,1 +1,1 @@
-# Welcome to iPoli
+# ![iPoli](github/logo.png)
