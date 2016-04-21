@@ -10,6 +10,10 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 <img src="./github/screens/calendar.png" width="250px"/>
 <img src="./github/screens/overview.png" width="250px"/>
 
+# Want to watch it in action?
+
+[![iPoli in action](http://img.youtube.com/vi/6WzlAs-cDSk/0.jpg)](http://www.youtube.com/watch?v=6WzlAs-cDSk "iPoli: Smart Calendar & To Do List Android app")
+
 # Can I just install it?
 
 Yep, you are in luck!
