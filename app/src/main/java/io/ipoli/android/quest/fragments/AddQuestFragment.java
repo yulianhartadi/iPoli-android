@@ -247,8 +247,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                saveQuest();
                 eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "toolbar"));
+                saveQuest();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -297,8 +297,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            saveQuest();
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "keyboard"));
+            saveQuest();
             return true;
         } else {
             return false;
