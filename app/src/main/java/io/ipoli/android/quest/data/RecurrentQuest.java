@@ -55,7 +55,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     public RecurrentQuest() {
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
@@ -79,12 +79,12 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         return duration != null ? duration : 0;
     }
 
-    public void setStartMinute(int startMinute) {
+    public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
     }
 
     public static Time getStartTime(RecurrentQuest quest) {
-        if(quest.getStartMinute() < 0) {
+        if (quest.getStartMinute() < 0) {
             return null;
         }
         return Time.of(quest.getStartMinute());
@@ -142,7 +142,11 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     }
 
     public static void setStartTime(RecurrentQuest quest, Time time) {
-        quest.setStartMinute(time.toMinutesAfterMidnight());
+        if (time != null) {
+            quest.setStartMinute(time.toMinutesAfterMidnight());
+        } else {
+            quest.setStartMinute(null);
+        }
     }
 
     public int getStartMinute() {
