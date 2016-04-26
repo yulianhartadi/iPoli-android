@@ -290,7 +290,9 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         suggestionsManager.setSuggestionsUpdatedListener(null);
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
+        questText.removeTextChangedListener(this);
         questText.setText("");
+        questText.addTextChangedListener(this);
     }
 
     @OnEditorAction(R.id.quest_text)
