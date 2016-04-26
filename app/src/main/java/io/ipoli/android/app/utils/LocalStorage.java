@@ -3,11 +3,13 @@ package io.ipoli.android.app.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,6 +46,9 @@ public class LocalStorage {
 
     public Set<String> readStringSet(String key) {
         String json = sharedPreferences.getString(key, "");
+        if(TextUtils.isEmpty(json)) {
+            return new HashSet<>();
+        }
         Gson gson = new Gson();
         Type listOfTestObject = new TypeToken<Set<String>>() {
         }.getType();

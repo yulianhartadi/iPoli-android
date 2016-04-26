@@ -17,7 +17,6 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -100,8 +99,6 @@ public class App extends MultiDexApplication {
         int runCount = localStorage.readInt(Constants.KEY_APP_RUN_COUNT, 0);
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
         if (runCount == 0) {
-            localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, new HashSet<>());
-            localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, new HashSet<>());
             saveInitialQuests();
         }
 
