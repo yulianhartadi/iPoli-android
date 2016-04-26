@@ -1,7 +1,5 @@
 package io.ipoli.android.app.modules;
 
-import android.content.Context;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.FieldNamingPolicy;
@@ -89,7 +87,7 @@ public class RestAPIModule {
 
     @Provides
     @Singleton
-    public OkHttpClient provideHttpClient(Context context) {
+    public OkHttpClient provideHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(chain -> {
