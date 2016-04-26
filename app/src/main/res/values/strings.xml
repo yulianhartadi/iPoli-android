@@ -126,5 +126,10 @@
     <string name="tutorial_habits_title">Stick to Your Important Habits</string>
     <string name="tutorial_habits_desc">Track your weekly progress. Swipe a habit to the left to delete it.</string>
     <string name="quest_undone">Quest undone</string>
+    <string name="bottom_bar_calendar_title">Calendar</string>
+    <string name="bottom_bar_overview_title">Overview</string>
+    <string name="bottom_bar_new_title">New</string>
+    <string name="bottom_bar_inbox_title">Inbox</string>
+    <string name="bottom_bar_habits_title">Habits</string>
 
 </resources>

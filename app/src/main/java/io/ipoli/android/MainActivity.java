@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -151,7 +152,7 @@ public class MainActivity extends BaseActivity {
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
                 bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
-                eventBus.post(new CompleteQuestRequestEvent(quest, "notification"));
+                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
             });
         }
     }

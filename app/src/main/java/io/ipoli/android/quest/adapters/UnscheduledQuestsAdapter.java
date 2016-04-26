@@ -19,6 +19,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -50,7 +51,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final UnscheduledQuestViewModel vm = viewModels.get(position);
-        holder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), "unscheduled_calendar_section")));
+        holder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION)));
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));

@@ -22,6 +22,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
@@ -90,9 +91,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         detailsRoot.addView(checkBox, 0);
         v.setOnClickListener(view -> {
             if(Quest.isCompleted(q)) {
-                eventBus.post(new EditQuestRequestEvent(q, "calendar"));
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR));
             } else {
-                eventBus.post(new ShowQuestEvent(q, "calendar"));
+                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
             }
         });
 
@@ -107,7 +108,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
-                eventBus.post(new CompleteQuestRequestEvent(q, "calendar_day_view"));
+                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
             } else {
                 eventBus.post(new UndoCompletedQuestRequestEvent(q));
             }

@@ -44,6 +44,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
@@ -250,7 +251,7 @@ public class EditQuestActivity extends BaseActivity {
                 finish();
                 return true;
             case R.id.action_delete:
-                eventBus.post(new DeleteQuestRequestedEvent(quest, "edit_quest"));
+                eventBus.post(new DeleteQuestRequestedEvent(quest, EventSource.EDIT_QUEST));
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     questPersistenceService.delete(quest);
@@ -259,7 +260,7 @@ public class EditQuestActivity extends BaseActivity {
                     finish();
                 });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                    eventBus.post(new UndoDeleteQuestEvent(quest, "edit_quest"));
+                    eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
                 });
                 d.show();
                 return true;
