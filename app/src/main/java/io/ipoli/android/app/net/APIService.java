@@ -7,8 +7,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -32,8 +32,8 @@ public interface APIService {
     @POST("quests/{quest_id}")
     Observable<Quest> updateQuest(@Body RequestBody data, @Path("quest_id") String questId);
 
-    @DELETE("quests/{quest_id}")
-    Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
+    @HTTP(method = "DELETE", path = "quests/{quest_id}", hasBody = true)
+    Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId, @Body RequestBody emptyBody);
 
     @POST("snippets")
     Observable<RecurrentQuest> createRecurrentQuestFromText(@Body RequestBody data);
@@ -44,6 +44,6 @@ public interface APIService {
     @GET("recurrent-quests")
     Observable<List<RecurrentQuest>> getRecurrentQuests(@Query("player_id") String playerId);
 
-    @DELETE("recurrent-quests/{quest_id}")
-    Observable<Void> deleteRecurrentQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
+    @HTTP(method = "DELETE", path = "quests/{quest_id}", hasBody = true)
+    Observable<Void> deleteRecurrentQuest(@Path("quest_id") String questId, @Query("player_id") String playerId, @Body RequestBody emptyBody);
 }

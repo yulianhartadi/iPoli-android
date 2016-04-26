@@ -5,7 +5,6 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
@@ -32,6 +31,7 @@ import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
@@ -79,12 +79,12 @@ public class App extends MultiDexApplication {
     @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
+    @Inject
+    APIService apiService;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Build.VERSION.SDK_INT < 21) {
-            return;
-        }
 
         JodaTimeAndroid.init(this);
 

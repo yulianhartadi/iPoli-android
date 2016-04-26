@@ -2,7 +2,6 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -21,8 +20,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.InvitationScreenRequestedAutomaticInviteEvent;
-import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.InviteLogoTappedEvent;
+import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 
 public class InviteOnlyActivity extends BaseActivity {
@@ -38,10 +37,6 @@ public class InviteOnlyActivity extends BaseActivity {
         appComponent().inject(this);
         setContentView(R.layout.activity_invite_only);
         ButterKnife.bind(this);
-
-        if(Build.VERSION.SDK_INT < 21) {
-            return;
-        }
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean("is_invited", false)) {
@@ -83,9 +78,6 @@ public class InviteOnlyActivity extends BaseActivity {
 
     @OnClick(R.id.invite_logo_image)
     public void onLogoClick(View view) {
-        if(Build.VERSION.SDK_INT < 21) {
-            return;
-        }
         eventBus.post(new InviteLogoTappedEvent());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("is_invited", true);

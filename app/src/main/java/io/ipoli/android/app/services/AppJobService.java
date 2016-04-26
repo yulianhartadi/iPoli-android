@@ -99,7 +99,7 @@ public class AppJobService extends JobService {
     private Observable<Void> syncRemovedRecurrentQuests(Player player) {
         return Observable.just(LocalStorage.of(getApplicationContext()).readStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS))
                 .concatMapIterable(ids -> ids)
-                .concatMap(id -> apiService.deleteRecurrentQuest(id, player.getId()).compose(applyAPISchedulers())
+                .concatMap(id -> apiService.deleteRecurrentQuest(id, player.getId(), new JsonRequestBodyBuilder().build()).compose(applyAPISchedulers())
                         .concatMap(res -> {
                             LocalStorage localStorage = LocalStorage.of(getApplicationContext());
                             Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS);
@@ -112,7 +112,7 @@ public class AppJobService extends JobService {
     private Observable<Void> syncRemovedQuests(Player player) {
         return Observable.just(LocalStorage.of(getApplicationContext()).readStringSet(Constants.KEY_REMOVED_QUESTS))
                 .concatMapIterable(ids -> ids)
-                .concatMap(id -> apiService.deleteQuest(id, player.getId()).compose(applyAPISchedulers())
+                .concatMap(id -> apiService.deleteQuest(id, player.getId(), new JsonRequestBodyBuilder().build()).compose(applyAPISchedulers())
                         .concatMap(res -> {
                             LocalStorage localStorage = LocalStorage.of(getApplicationContext());
                             Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
