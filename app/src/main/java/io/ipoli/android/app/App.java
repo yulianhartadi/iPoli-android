@@ -207,7 +207,7 @@ public class App extends MultiDexApplication {
         if (appComponent == null) {
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(context))
-                    .restAPIModule(new RestAPIModule(APIConstants.API_ENDPOINT))
+                    .restAPIModule(new RestAPIModule(BuildConfig.DEBUG ? APIConstants.DEV_ENDPOINT : APIConstants.API_ENDPOINT))
                     .build();
         }
         return appComponent;
