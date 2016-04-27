@@ -16,9 +16,10 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.PickHabitsFragment;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
@@ -28,9 +29,13 @@ public class TutorialActivity extends AppIntro2 {
     Bus eventBus;
 
     @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     private PickHabitsFragment pickHabitsFragment;
+    private PickQuestsFragment pickQuestsFragment;
 
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
@@ -45,6 +50,8 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_habits_title), getString(R.string.tutorial_habits_desc), R.drawable.tutorial_habits));
+        pickQuestsFragment = new PickQuestsFragment();
+        addSlide(pickQuestsFragment);
         pickHabitsFragment = new PickHabitsFragment();
         addSlide(pickHabitsFragment);
 
@@ -55,6 +62,7 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_orange_500,
                 R.color.md_deep_purple_500,
                 R.color.md_teal_500,
+                R.color.md_blue_500,
                 R.color.md_blue_500
         };
         ArrayList<Integer> c = new ArrayList<>();
@@ -67,6 +75,8 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void onDonePressed() {
+        List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
+        questPersistenceService.saveRemoteObjects(selectedQuests);
         List<RecurrentQuest> selectedHabits = pickHabitsFragment.getSelectedHabits();
         recurrentQuestPersistenceService.saveRemoteObjects(selectedHabits);
         eventBus.post(new ForceSyncRequestEvent());

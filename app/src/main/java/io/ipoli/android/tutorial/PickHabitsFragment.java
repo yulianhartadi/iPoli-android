@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.tutorial;
 
 
 import android.os.Bundle;
@@ -27,7 +27,7 @@ public class PickHabitsFragment extends Fragment {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.habits_list)
+    @Bind(R.id.quests_list)
     RecyclerView habitsList;
 
     private PickHabitsAdapter pickHabitsAdapter;
@@ -36,9 +36,9 @@ public class PickHabitsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_pick_habits, container, false);
+        View v = inflater.inflate(R.layout.fragment_pick_quests, container, false);
         ButterKnife.bind(this, v);
-        toolbar.setTitle("Pick Initial Habits");
+        toolbar.setTitle("Pick Habits to start with");
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         habitsList.setLayoutManager(layoutManager);

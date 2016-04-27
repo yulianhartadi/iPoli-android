@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.tutorial;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,7 +42,7 @@ public class PickHabitsAdapter extends RecyclerView.Adapter<PickHabitsAdapter.Vi
     @Override
     public PickHabitsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                            int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pick_habit_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pick_quest_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -60,14 +59,11 @@ public class PickHabitsAdapter extends RecyclerView.Adapter<PickHabitsAdapter.Vi
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(false);
-        holder.check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    selectedRecurrentQuests.add(rq);
-                } else {
-                    selectedRecurrentQuests.remove(rq);
-                }
+        holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                selectedRecurrentQuests.add(rq);
+            } else {
+                selectedRecurrentQuests.remove(rq);
             }
         });
     }
