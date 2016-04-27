@@ -10,17 +10,27 @@ import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.PickHabitsFragment;
+import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 
 public class TutorialActivity extends AppIntro2 {
     @Inject
     Bus eventBus;
+
+    @Inject
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+
+    private PickHabitsFragment pickHabitsFragment;
 
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
@@ -35,6 +45,8 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_habits_title), getString(R.string.tutorial_habits_desc), R.drawable.tutorial_habits));
+        pickHabitsFragment = new PickHabitsFragment();
+        addSlide(pickHabitsFragment);
 
         int[] colors = new int[]{
                 R.color.md_indigo_500,
@@ -42,7 +54,9 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_green_500,
                 R.color.md_orange_500,
                 R.color.md_deep_purple_500,
-                R.color.md_teal_500};
+                R.color.md_teal_500,
+                R.color.md_blue_500
+        };
         ArrayList<Integer> c = new ArrayList<>();
         for (int color : colors) {
             c.add(ContextCompat.getColor(this, color));
@@ -53,6 +67,9 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void onDonePressed() {
+        List<RecurrentQuest> selectedHabits = pickHabitsFragment.getSelectedHabits();
+        recurrentQuestPersistenceService.saveRemoteObjects(selectedHabits);
+        eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());
         finish();
     }

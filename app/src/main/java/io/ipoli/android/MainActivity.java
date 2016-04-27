@@ -69,10 +69,10 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         LocalStorage localStorage = LocalStorage.of(this);
-        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
-        }
+//        }
 
         initBottomBar(savedInstanceState);
 
