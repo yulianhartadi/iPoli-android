@@ -304,6 +304,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     @Override
     public void markUpdated() {
+        setNeedsSync();
         setUpdatedAt(DateUtils.nowUTC());
     }
 

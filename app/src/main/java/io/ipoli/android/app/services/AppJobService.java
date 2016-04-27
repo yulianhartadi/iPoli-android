@@ -18,7 +18,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
-import io.ipoli.android.app.net.APIService;
+import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.net.RemoteObject;
@@ -52,7 +52,7 @@ public class AppJobService extends JobService {
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Inject
-    APIService apiService;
+    iPoliAPIService apiService;
 
     @Inject
     Gson gson;

@@ -18,7 +18,7 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/23/16.
  */
-public interface APIService {
+public interface iPoliAPIService {
 
     @GET("schedules/{date}")
     Observable<List<Quest>> getSchedule(@Path("date") String date, @Query("player_id") String playerId);

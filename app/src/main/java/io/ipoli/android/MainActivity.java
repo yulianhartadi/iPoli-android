@@ -74,7 +74,6 @@ public class MainActivity extends BaseActivity {
         }
 
         initBottomBar(savedInstanceState);
-
     }
 
     private void initBottomBar(Bundle savedInstanceState) {

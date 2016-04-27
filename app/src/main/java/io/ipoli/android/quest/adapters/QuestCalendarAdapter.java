@@ -28,10 +28,12 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
+import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
-import io.ipoli.android.quest.ui.QuestCalendarViewModel;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
+import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -68,13 +70,46 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        if (calendarEvent.shouldDisplayAsIndicator()) {
-            View v = inflater.inflate(R.layout.calendar_habit_completed_item, parent, false);
-            ImageView indicatorView = (ImageView) v.findViewById(R.id.habit_indicator);
-            indicatorView.setImageResource(calendarEvent.getContextImage());
-            return v;
+        if (calendarEvent.shouldDisplayAsSuggestion()) {
+            return createSuggestion(parent, calendarEvent, inflater);
         }
+        if (calendarEvent.shouldDisplayAsIndicator()) {
+            return createIndicator(parent, calendarEvent, inflater);
+        }
+        return createQuest(parent, calendarEvent, q, inflater);
+    }
 
+    @NonNull
+    private View createSuggestion(ViewGroup parent, final QuestCalendarViewModel calendarEvent, LayoutInflater inflater) {
+        View v = inflater.inflate(R.layout.calendar_suggestion_item, parent, false);
+        TextView suggestionName = (TextView) v.findViewById(R.id.quest_suggestion_text);
+        suggestionName.setText(calendarEvent.getName());
+        v.findViewById(R.id.quest_suggestion_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventBus.post(new RescheduleQuestEvent(calendarEvent));
+            }
+        });
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventBus.post(new SuggestionAcceptedEvent(calendarEvent));
+
+            }
+        });
+        return v;
+    }
+
+    @NonNull
+    private View createIndicator(ViewGroup parent, QuestCalendarViewModel calendarEvent, LayoutInflater inflater) {
+        View v = inflater.inflate(R.layout.calendar_habit_completed_item, parent, false);
+        ImageView indicatorView = (ImageView) v.findViewById(R.id.habit_indicator);
+        indicatorView.setImageResource(calendarEvent.getContextImage());
+        return v;
+    }
+
+    @NonNull
+    private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
         QuestContext ctx = Quest.getContext(q);
@@ -89,7 +124,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         CheckBox checkBox = createCheckBox(q, v.getContext());
         detailsRoot.addView(checkBox, 0);
         v.setOnClickListener(view -> {
-            if(Quest.isCompleted(q)) {
+            if (Quest.isCompleted(q)) {
                 eventBus.post(new EditQuestRequestEvent(q, "calendar"));
             } else {
                 eventBus.post(new ShowQuestEvent(q, "calendar"));
@@ -182,6 +217,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     public void addEvent(QuestCalendarViewModel calendarEvent) {
         questCalendarViewModels.add(calendarEvent);
+        notifyDataSetChanged();
+    }
+
+    public void removeEvent(QuestCalendarViewModel calendarEvent) {
+        questCalendarViewModels.remove(calendarEvent);
         notifyDataSetChanged();
     }
 

@@ -155,7 +155,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     @Override
     public void markUpdated() {
-        updatedAt = DateUtils.nowUTC();
+        setNeedsSync();
+        setUpdatedAt(DateUtils.nowUTC());
     }
 
     public Date getUpdatedAt() {
