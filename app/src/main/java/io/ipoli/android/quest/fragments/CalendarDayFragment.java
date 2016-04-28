@@ -48,6 +48,7 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
+import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
@@ -292,6 +293,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             event.setDuration(Math.max(15, q.getDuration()));
             calendarAdapter.addEvent(event);
         }, (throwable) -> {
+            eventBus.post(new SuggestionsUnavailableEvent(q));
             eventBus.post(new HideLoaderEvent());
             Toast.makeText(getContext(), "Unable to find slots, try later", Toast.LENGTH_SHORT).show();
         }, () -> {
@@ -302,7 +304,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        QuestCalendarViewModel viewModel = e.viewModel;
+        QuestCalendarViewModel viewModel = e.calendarEvent;
         Slot slot = viewModel.nextSlot();
         calendarDayView.smoothScrollToTime(Time.of(slot.startMinute));
         viewModel.setStartMinute(slot.startMinute);

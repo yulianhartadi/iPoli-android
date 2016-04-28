@@ -7,9 +7,9 @@ import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
  * on 4/27/16.
  */
 public class RescheduleQuestEvent {
-    public final QuestCalendarViewModel viewModel;
+    public final QuestCalendarViewModel calendarEvent;
 
-    public RescheduleQuestEvent(QuestCalendarViewModel viewModel) {
-        this.viewModel = viewModel;
+    public RescheduleQuestEvent(QuestCalendarViewModel calendarEvent) {
+        this.calendarEvent = calendarEvent;
     }
 }

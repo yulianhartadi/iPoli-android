@@ -37,5 +37,4 @@ public class JsonRequestBodyBuilder {
         return RequestBody.create(MediaType.parse("application/json"), gson.toJson(params));
     }
 
-
 }
