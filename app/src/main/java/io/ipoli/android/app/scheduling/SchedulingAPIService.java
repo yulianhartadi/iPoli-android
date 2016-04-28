@@ -6,6 +6,7 @@ import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -15,5 +16,5 @@ import rx.Observable;
 public interface SchedulingAPIService {
 
     @POST("slots")
-    Observable<List<Slot>> findSlots(@Body FindSlotsRequest findSlotsRequest);
+    Observable<List<Slot>> findSlots(@Body FindSlotsRequest findSlotsRequest, @Query("limit") int limit);
 }

@@ -256,7 +256,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     }
 
     @Subscribe
-    public void onSmartQuestRequest(ScheduleQuestRequestEvent e) {
+    public void onScheduleQuestRequest(ScheduleQuestRequestEvent e) {
         UnscheduledQuestViewModel vm = e.viewModel;
         Quest q = vm.getQuest();
         List<Task> scheduledTasks = new ArrayList<>();
@@ -267,31 +267,32 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         Task taskToSchedule = new Task(Math.max(q.getDuration(), 15), q.getContext());
         FindSlotsRequest request = new FindSlotsRequest(scheduledTasks, taskToSchedule);
 
-        schedulingAPIService.findSlots(request).compose(applyAPISchedulers()).subscribe(slots -> {
+        schedulingAPIService.findSlots(request, Constants.SUGGESTED_SLOTS_COUNT).compose(applyAPISchedulers()).subscribe(slots -> {
             if (slots.isEmpty()) {
                 Toast.makeText(getContext(), "No slots available", Toast.LENGTH_SHORT);
                 return;
             }
             unscheduledQuestsAdapter.removeQuest(vm);
             setUnscheduledQuestsHeight();
-            Slot mostProbableSlot = slots.get(0);
-            calendarDayView.smoothScrollToTime(Time.of(mostProbableSlot.startMinute));
+            Slot slot = slots.get(0);
+            calendarDayView.smoothScrollToTime(Time.of(slot.startMinute));
             QuestCalendarViewModel event = new QuestCalendarViewModel(q, slots);
-            event.setStartMinute(mostProbableSlot.startMinute);
+            event.setStartMinute(slot.startMinute);
             event.setDuration(Math.max(15, q.getDuration()));
             calendarAdapter.addEvent(event);
-        }, Throwable::printStackTrace, () -> {
+        }, (throwable) -> {
+            Toast.makeText(getContext(), "Unable to find slots, try later", Toast.LENGTH_SHORT).show();
+        }, () -> {
         });
     }
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
         QuestCalendarViewModel viewModel = e.viewModel;
-        calendarAdapter.removeEvent(viewModel);
         Slot slot = viewModel.nextSlot();
         calendarDayView.smoothScrollToTime(Time.of(slot.startMinute));
         viewModel.setStartMinute(slot.startMinute);
-        calendarAdapter.addEvent(viewModel);
+        calendarAdapter.notifyDataSetChanged();
     }
 
     @Subscribe

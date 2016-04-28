@@ -28,10 +28,6 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
-    }
-
     packagingOptions {
         exclude 'META-INF/services/javax.annotation.processing.Processor'
     }
@@ -41,6 +37,8 @@ android {
     }
 
     dexOptions {
+        incremental true
+        maxProcessCount 4
         javaMaxHeapSize "4g"
     }
 

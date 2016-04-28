@@ -1,14 +1,10 @@
 <resources>
     <string name="app_name">iPoli</string>
-    <string name="title_activity_invite">iPoli</string>
     <string name="title_activity_quest_list">Today</string>
     <string name="title_activity_inbox">Inbox</string>
     <string name="title_activity_pick_avatar">Pick avatar</string>
     <string name="title_activity_edit_quest">Edit quest</string>
     <string name="player_level">Level %d</string>
-    <string name="invite_welcome_text">Ready to have epic life?</string>
-    <string name="invite_description">iPoli is private community of real life heroes doing epic quests! Request your invite to join them!</string>
-    <string name="get_invite">GIVE ME INVITE</string>
     <string name="quest_removed">Quest removed</string>
     <string name="habit_removed">Habit removed</string>
     <string name="default_assistant_name">iPoli</string>
@@ -108,7 +104,7 @@
         <item>3 hours</item>
         <item>4 hours</item>
     </string-array>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">iPoli</string>
 
     <string name="save">Save</string>
     <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
