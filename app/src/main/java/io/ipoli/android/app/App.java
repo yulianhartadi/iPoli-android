@@ -85,6 +85,9 @@ public class App extends MultiDexApplication {
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
+                .migration((realm, oldVersion, newVersion) -> {
+
+                })
                 .build();
         Realm.setDefaultConfiguration(config);
 
