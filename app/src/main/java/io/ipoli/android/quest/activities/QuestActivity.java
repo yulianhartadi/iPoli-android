@@ -24,6 +24,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -212,13 +213,13 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public void onDoneTap(View v) {
         eventBus.post(new DoneQuestTapEvent(quest));
         stopTimer();
-        eventBus.post(new CompleteQuestRequestEvent(quest, "quest"));
+        eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
         finish();
     }
 
     @OnClick(R.id.quest_details_edit)
     public void onEditTap(View v) {
-        eventBus.post(new EditQuestRequestEvent(quest, "quest"));
+        eventBus.post(new EditQuestRequestEvent(quest, EventSource.QUEST));
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);

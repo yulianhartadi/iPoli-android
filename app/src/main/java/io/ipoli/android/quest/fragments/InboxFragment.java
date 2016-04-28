@@ -28,6 +28,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -116,7 +117,7 @@ public class InboxFragment extends Fragment {
 
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
-        eventBus.post(new DeleteQuestRequestedEvent(e.quest, "inbox"));
+        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,
@@ -135,7 +136,7 @@ public class InboxFragment extends Fragment {
         snackbar.setAction(R.string.undo, view -> {
             inboxAdapter.addQuest(e.position, quest);
             snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteQuestEvent(quest, "inbox"));
+            eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.INBOX));
         });
 
         snackbar.show();

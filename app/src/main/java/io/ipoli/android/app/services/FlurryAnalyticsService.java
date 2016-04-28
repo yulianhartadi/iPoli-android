@@ -115,7 +115,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
-        log("edit_quest_requested", e.quest.getId(), e.quest.getName(), e.source);
+        log("edit_quest_requested", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -125,7 +125,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        log("quest_completed", e.quest.getId(), e.quest.getName(), e.source);
+        log("quest_completed", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -160,12 +160,12 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
-        log("schedule_quest_for_today", e.quest.getId(), e.quest.getName(), e.source);
+        log("schedule_quest_for_today", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
     public void onDeleteQuestRequested(DeleteQuestRequestedEvent e) {
-        log("delete_quest_requested", e.quest.getId(), e.quest.getName(), e.source);
+        log("delete_quest_requested", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -175,7 +175,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
-        log("undo_delete_quest", e.quest.getId(), e.quest.getName(), e.source);
+        log("undo_delete_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -260,7 +260,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     public void onNewQuestSaved(NewQuestSavedEvent e) {
         log("new_quest_saved", EventParams.create()
                 .add("text", e.text)
-                .add("source", e.source));
+                .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe

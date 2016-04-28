@@ -35,6 +35,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
@@ -143,7 +144,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         calendarDayView.scrollToNow();
-        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), "calendar_unscheduled_section"));
+        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
     }
 
     private void setUnscheduledQuestsHeight() {

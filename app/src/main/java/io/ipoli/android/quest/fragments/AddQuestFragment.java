@@ -42,6 +42,7 @@ import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
@@ -247,7 +248,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "toolbar"));
+                eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
                 saveQuest();
                 return true;
         }
@@ -299,7 +300,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), "keyboard"));
+            eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.KEYBOARD));
             saveQuest();
             return true;
         } else {

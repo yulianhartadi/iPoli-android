@@ -20,6 +20,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.quest.QuestContext;
@@ -60,7 +61,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q, "inbox"));
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
             }
         });
 
@@ -97,7 +98,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         if (direction == ItemTouchHelper.START) {
             eventBus.post(new DeleteQuestRequestEvent(q, position));
         } else if (direction == ItemTouchHelper.END) {
-            eventBus.post(new ScheduleQuestForTodayEvent(q, "inbox"));
+            eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
         }
     }
 
