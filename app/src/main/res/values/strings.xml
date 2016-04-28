@@ -111,8 +111,8 @@
     <string name="show_tutorial">Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
     <string name="tutorial_welcome_desc">I\'m your smart assistant. Your daily tasks are now called quests. Be a hero and complete them! You are free to accept or refuse the challenge!</string>
-    <string name="tutorial_calendar_title">Easily Schedule Your Day</string>
-    <string name="tutorial_calendar_desc">Simply touch, hold and drag a quest to schedule or reschedule it</string>
+    <string name="tutorial_calendar_title">Smartly Schedule Your Day</string>
+    <string name="tutorial_calendar_desc">Touch, hold and drag a quest to schedule it. Or use smart scheduling by tapping the arrow!</string>
     <string name="tutorial_overview_title">Review Your Weekly Schedule</string>
     <string name="tutorial_overview_desc">Swipe a quest to the right to complete it or to the left to schedule it for today</string>
     <string name="tutorial_add_quest_title">Quickly Add with Smart Assist</string>

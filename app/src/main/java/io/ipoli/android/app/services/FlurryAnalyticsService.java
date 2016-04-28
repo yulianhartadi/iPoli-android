@@ -15,6 +15,7 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
@@ -337,6 +338,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     public void onSuggestionsUnavailable(SuggestionsUnavailableEvent e) {
         Quest q = e.quest;
         log("suggestions_unavailable", q.getId(), q.getName());
+    }
+
+    @Subscribe
+    public void onVersionUpdated(VersionUpdatedEvent e) {
+        log("version_updated", EventParams.create()
+                .add("old_version", String.valueOf(e.oldVersion))
+                .add("new_version", String.valueOf(e.newVersion)));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
