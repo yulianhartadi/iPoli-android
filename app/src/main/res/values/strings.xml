@@ -110,7 +110,7 @@
     <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
     <string name="show_tutorial">Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
-    <string name="tutorial_welcome_desc">I\'m your smart assistant. Your daily tasks are now called quests. Be a hero and complete them!</string>
+    <string name="tutorial_welcome_desc">I\'m your smart assistant. Your daily tasks are now called quests. Be a hero and complete them! You are free to accept or refuse the challenge!</string>
     <string name="tutorial_calendar_title">Easily Schedule Your Day</string>
     <string name="tutorial_calendar_desc">Simply touch, hold and drag a quest to schedule or reschedule it</string>
     <string name="tutorial_overview_title">Review Your Weekly Schedule</string>
