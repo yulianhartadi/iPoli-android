@@ -9,6 +9,7 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -82,5 +83,7 @@ public interface AppComponent {
     void inject(HabitsFragment habitsFragment);
 
     void inject(TutorialActivity tutorialActivity);
+
+    void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 }
 
