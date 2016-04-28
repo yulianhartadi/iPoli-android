@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         this(quest, new ArrayList<>());
     }
 
-    public QuestCalendarViewModel(Quest quest, List<Slot> suggestedSlots) {
+    public QuestCalendarViewModel(Quest quest, @NonNull List<Slot> suggestedSlots) {
         this.quest = quest;
         this.suggestedSlots = suggestedSlots;
         this.currentSlot = 0;
