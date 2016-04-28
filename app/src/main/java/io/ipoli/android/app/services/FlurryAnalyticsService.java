@@ -15,6 +15,8 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerRequestedInviteEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
@@ -28,11 +30,14 @@ import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
+import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
+import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
+import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
@@ -308,6 +313,30 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("predefined_habit_deselected", EventParams.create()
                 .add("raw_text", e.rawText)
                 .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onScheduleQuestRequest(ScheduleQuestRequestEvent e) {
+        Quest q = e.viewModel.getQuest();
+        log("schedule_quest_request", q.getId(), q.getName());
+    }
+
+    @Subscribe
+    public void onRescheduleQuest(RescheduleQuestEvent e) {
+        Quest q = e.calendarEvent.getQuest();
+        log("reschedule_quest", q.getId(), q.getName());
+    }
+
+    @Subscribe
+    public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
+        Quest q = e.calendarEvent.getQuest();
+        log("reschedule_quest", q.getId(), q.getName());
+    }
+
+    @Subscribe
+    public void onSuggestionsUnavailable(SuggestionsUnavailableEvent e) {
+        Quest q = e.quest;
+        log("suggestions_unavailable", q.getId(), q.getName());
     }
 
     private FlurryEventRecordStatus log(String eventName) {

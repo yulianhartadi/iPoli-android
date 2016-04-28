@@ -17,7 +17,6 @@ public interface Constants {
     int DEFAULT_SNOOZE_TIME_MINUTES = 10;
 
     String DEFAULT_PLAYER_AVATAR = "avatar_07";
-    int INVITE_PLAYER_PROBABILITY = 50;
 
     int QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30;
     int MAX_QUEST_DURATION_HOURS = 4;
@@ -39,4 +38,5 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
     String API_RESOURCE_SOURCE = "ipoli-android";
+    int SUGGESTED_SLOTS_COUNT = 7;
 }

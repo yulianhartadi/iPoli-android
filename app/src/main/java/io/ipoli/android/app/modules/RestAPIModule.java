@@ -15,8 +15,9 @@ import dagger.Provides;
 import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.APIService;
+import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
+import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,28 +35,43 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class RestAPIModule {
 
-    private final String baseApiUrl;
+    private final String ipoliAPIBaseUrl;
+    private final String schedulingAPIBaseUrl;
 
-    public RestAPIModule(String baseApiUrl) {
-        this.baseApiUrl = baseApiUrl;
+    public RestAPIModule(String ipoliAPIBaseUrl, String schedulingAPIBaseUrl) {
+        this.ipoliAPIBaseUrl = ipoliAPIBaseUrl;
+        this.schedulingAPIBaseUrl = schedulingAPIBaseUrl;
     }
 
     @Provides
     @Singleton
-    public APIService provideApiService(Converter.Factory jsonFactory, CallAdapter.Factory callAdapterFactory, OkHttpClient client) {
+    public iPoliAPIService provideApiService(Converter.Factory jsonFactory, CallAdapter.Factory callAdapterFactory, OkHttpClient client) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseApiUrl)
+                .baseUrl(ipoliAPIBaseUrl)
                 .addConverterFactory(jsonFactory)
                 .addCallAdapterFactory(callAdapterFactory)
                 .client(client)
                 .build();
-        return retrofit.create(APIService.class);
+        return retrofit.create(iPoliAPIService.class);
+    }
+
+    @Provides
+    @Singleton
+    public SchedulingAPIService provideSchedulingApiService(Converter.Factory jsonFactory, CallAdapter.Factory callAdapterFactory, OkHttpClient client) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(schedulingAPIBaseUrl)
+                .addConverterFactory(jsonFactory)
+                .addCallAdapterFactory(callAdapterFactory)
+                .client(client)
+                .build();
+        return retrofit.create(SchedulingAPIService.class);
     }
 
     @Provides
     @Singleton
     public Gson provideGson() {
         return new GsonBuilder()
+                .serializeNulls()
                 .setDateFormat(Constants.API_DATETIME_ISO_8601_FORMAT)
                 .setExclusionStrategies(new ExclusionStrategy() {
                     @Override

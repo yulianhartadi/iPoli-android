@@ -2,6 +2,7 @@ package io.ipoli.android.app.services;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -18,10 +19,10 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
-import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -52,7 +53,7 @@ public class AppJobService extends JobService {
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Inject
-    APIService apiService;
+    iPoliAPIService apiService;
 
     @Inject
     Gson gson;
@@ -138,7 +139,7 @@ public class AppJobService extends JobService {
 
     private Observable<Player> createNewPlayer() {
         return getAdvertisingId().flatMap(advertisingId -> {
-            RequestBody requestBody = new JsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
+            RequestBody requestBody = createJsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
             return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
                 sp.setSyncedWithRemote();
                 sp.setRemoteObject();
@@ -153,17 +154,21 @@ public class AppJobService extends JobService {
 
     private Observable<Quest> syncQuests(Player player) {
         return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).concatMap(q -> {
-            JsonObject qJson = (JsonObject) gson.toJsonTree(q);
             if (isLocalOnly(q)) {
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.createQuest(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
             } else {
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", qJson).param("player_id", player.getId()).build();
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers())
                         .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
             }
         });
+    }
+
+    @NonNull
+    private JsonRequestBodyBuilder createJsonRequestBodyBuilder() {
+        return new JsonRequestBodyBuilder(getApplicationContext());
     }
 
     private Observable<RecurrentQuest> syncRecurrentQuests(Player player) {
@@ -176,11 +181,11 @@ public class AppJobService extends JobService {
                 data.addProperty("created_at", qJson.get("created_at").getAsString());
                 data.addProperty("updated_at", qJson.get("updated_at").getAsString());
                 data.addProperty("source", qJson.get("source").getAsString());
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
                 return apiService.createRecurrentQuestFromText(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             } else {
-                RequestBody requestBody = new JsonRequestBodyBuilder().param("data", gson.toJsonTree(rq)).param("player_id", player.getId()).build();
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("data", rq).param("player_id", player.getId()).build();
                 return apiService.updateRecurrentQuest(requestBody, rq.getId()).compose(applyAPISchedulers())
                         .concatMap(sq -> recurrentQuestPersistenceService.saveRemoteObject(updateRecurrentQuest(sq, rq)));
             }

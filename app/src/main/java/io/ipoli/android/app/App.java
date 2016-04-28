@@ -27,7 +27,6 @@ import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
-import io.ipoli.android.app.net.APIService;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
@@ -73,9 +72,6 @@ public class App extends MultiDexApplication {
     @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
-    @Inject
-    APIService apiService;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -84,6 +80,9 @@ public class App extends MultiDexApplication {
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
+                .migration((realm, oldVersion, newVersion) -> {
+
+                })
                 .build();
         Realm.setDefaultConfiguration(config);
 
@@ -117,9 +116,12 @@ public class App extends MultiDexApplication {
 
     public static AppComponent getAppComponent(Context context) {
         if (appComponent == null) {
+            String ipoliApiBaseUrl = BuildConfig.DEBUG ? APIConstants.DEV_IPOLI_ENDPOINT : APIConstants.PROD_IPOLI_ENDPOINT;
+            String schedulingApiBaseUrl = BuildConfig.DEBUG ? APIConstants.DEV_SCHEDULING_ENDPOINT : APIConstants.PROD_SCHEDULING_ENDPOINT;
+
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(context))
-                    .restAPIModule(new RestAPIModule(BuildConfig.DEBUG ? APIConstants.DEV_ENDPOINT : APIConstants.API_ENDPOINT))
+                    .restAPIModule(new RestAPIModule(ipoliApiBaseUrl, schedulingApiBaseUrl))
                     .build();
         }
         return appComponent;

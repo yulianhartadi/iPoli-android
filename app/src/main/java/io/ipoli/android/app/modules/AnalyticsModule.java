@@ -35,11 +35,11 @@ public class AnalyticsModule {
 
             new FlurryAgent.Builder()
                     .withLogEnabled(false)
-                    .build(context, AnalyticsConstants.FLURRY_KEY);
+                    .build(context, AnalyticsConstants.PROD_FLURRY_KEY);
         } else {
             new FlurryAgent.Builder()
                     .withLogEnabled(true)
-                    .build(context, "42");
+                    .build(context, AnalyticsConstants.DEV_FLURRY_KEY);
         }
 
         return new FlurryAnalyticsService();

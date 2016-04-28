@@ -75,15 +75,15 @@ public class DateUtils {
         return new LocalDate(dueDate).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
     }
 
-    public static String toDateString(Date date) {
-        return toDateString(date, TimeZone.getDefault());
+    public static String toDateStringUSFormat(Date date) {
+        return toDateStringUSFormat(date, TimeZone.getDefault());
     }
 
-    public static String toDateString(Date date, TimeZone timeZone) {
+    public static String toDateStringUSFormat(Date date, TimeZone timeZone) {
         if (date == null) {
             return "";
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         formatter.setTimeZone(timeZone);
         return formatter.format(date);
     }
@@ -91,10 +91,10 @@ public class DateUtils {
     public static List<String> getNext7Days() {
         List<String> dates = new ArrayList<>();
         Calendar c = Calendar.getInstance();
-        dates.add(toDateString(c.getTime()));
+        dates.add(toDateStringUSFormat(c.getTime()));
         for (int i = 1; i < 7; i++) {
             c.add(Calendar.DAY_OF_YEAR, 1);
-            dates.add(toDateString(c.getTime()));
+            dates.add(toDateStringUSFormat(c.getTime()));
         }
 
         return dates;

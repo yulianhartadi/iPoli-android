@@ -14,21 +14,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.iPoli">
         <activity
-            android:name=".InviteOnlyActivity"
-            android:label="@string/title_activity_invite"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli" />
+            android:theme="@style/Theme.iPoli">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".quest.activities.QuestActivity"
             android:parentActivityName=".MainActivity"

@@ -2,10 +2,11 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_white"
     android:fitsSystemWindows="true"
-    android:id="@+id/root_container"
     tools:context="io.ipoli.android.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -25,12 +26,13 @@
 
     <RelativeLayout
         android:id="@+id/content_container"
-        android:background="@color/md_white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </RelativeLayout>
+
+    <include layout="@layout/loading_indicator" />
 
 
 </android.support.design.widget.CoordinatorLayout>

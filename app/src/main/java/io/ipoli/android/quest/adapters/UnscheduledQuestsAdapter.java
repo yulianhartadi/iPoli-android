@@ -23,6 +23,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**
@@ -74,6 +75,10 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
             }
         });
+
+        holder.schedule.setOnClickListener(v -> {
+            eventBus.post(new ScheduleQuestRequestEvent(vm));
+        });
     }
 
     @Override
@@ -88,6 +93,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
     public void removeQuest(UnscheduledQuestViewModel viewModel) {
         int position = viewModels.indexOf(viewModel);
+        if (viewModel.getRemainingCount() > 1) {
+            viewModel.decreaseRemainingCount();
+            notifyItemChanged(position);
+            return;
+        }
         viewModels.remove(viewModel);
         notifyItemRemoved(position);
     }
@@ -96,7 +106,6 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         this.viewModels = viewModels;
         notifyDataSetChanged();
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.quest_check)
@@ -107,6 +116,9 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
         @Bind(R.id.quest_context_indicator)
         View indicator;
+
+        @Bind(R.id.quest_schedule)
+        View schedule;
 
         public ViewHolder(View v) {
             super(v);

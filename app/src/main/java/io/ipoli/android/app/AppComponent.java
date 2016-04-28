@@ -3,13 +3,13 @@ package io.ipoli.android.app;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.ipoli.android.InviteOnlyActivity;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -50,8 +50,6 @@ public interface AppComponent {
 
     void inject(PickAvatarActivity pickAvatarActivity);
 
-    void inject(InviteOnlyActivity inviteOnlyActivity);
-
     void inject(EditQuestActivity editQuestActivity);
 
     void inject(DatePickerFragment datePickerFragment);
@@ -91,5 +89,7 @@ public interface AppComponent {
     void inject(PickHabitsFragment pickHabitsFragment);
 
     void inject(PickQuestsFragment pickQuestsFragment);
+
+    void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 }
 

@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.ui.QuestCalendarViewModel;
+import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
