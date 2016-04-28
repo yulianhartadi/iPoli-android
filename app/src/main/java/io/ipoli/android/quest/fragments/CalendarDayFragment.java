@@ -46,6 +46,8 @@ import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
+import io.ipoli.android.app.ui.events.HideLoaderEvent;
+import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
@@ -69,8 +71,10 @@ import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
     @Inject
@@ -99,6 +103,8 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     private UnscheduledQuestViewModel movingViewModel;
     private UnscheduledQuestsAdapter unscheduledQuestsAdapter;
     private QuestCalendarAdapter calendarAdapter;
+
+    private CompositeSubscription findSlotsSubscriptions;
 
     BroadcastReceiver tickReceiver = new BroadcastReceiver() {
         @Override
@@ -176,6 +182,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         eventBus.register(this);
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         updateSchedule();
+        findSlotsSubscriptions = new CompositeSubscription();
     }
 
     private void updateSchedule() {
@@ -212,6 +219,8 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     @Override
     public void onPause() {
         eventBus.unregister(this);
+        findSlotsSubscriptions.unsubscribe();
+        eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
         super.onPause();
     }
@@ -268,7 +277,8 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         Task taskToSchedule = new Task(Math.max(q.getDuration(), 15), q.getContext());
         FindSlotsRequest request = new FindSlotsRequest(scheduledTasks, taskToSchedule);
 
-        schedulingAPIService.findSlots(request, Constants.SUGGESTED_SLOTS_COUNT).compose(applyAPISchedulers()).subscribe(slots -> {
+        eventBus.post(new ShowLoaderEvent(getString(R.string.find_slots_loading_message)));
+        Subscription subscription = schedulingAPIService.findSlots(request, Constants.SUGGESTED_SLOTS_COUNT).compose(applyAPISchedulers()).subscribe(slots -> {
             if (slots.isEmpty()) {
                 Toast.makeText(getContext(), "No slots available", Toast.LENGTH_SHORT);
                 return;
@@ -282,9 +292,12 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             event.setDuration(Math.max(15, q.getDuration()));
             calendarAdapter.addEvent(event);
         }, (throwable) -> {
+            eventBus.post(new HideLoaderEvent());
             Toast.makeText(getContext(), "Unable to find slots, try later", Toast.LENGTH_SHORT).show();
         }, () -> {
+            eventBus.post(new HideLoaderEvent());
         });
+        findSlotsSubscriptions.add(subscription);
     }
 
     @Subscribe

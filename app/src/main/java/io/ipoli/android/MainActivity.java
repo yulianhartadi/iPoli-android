@@ -8,7 +8,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
@@ -22,6 +25,8 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.ui.events.HideLoaderEvent;
+import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -55,6 +60,18 @@ public class MainActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    @Bind(R.id.content_container)
+    View contentContainer;
+
+    @Bind(R.id.loading_container)
+    View loadingContainer;
+
+    @Bind(R.id.loading_indicator)
+    ProgressBar loadingIndicator;
+
+    @Bind(R.id.loading_message)
+    TextView loadingMessage;
+
     @Inject
     QuestPersistenceService questPersistenceService;
 
@@ -67,6 +84,10 @@ public class MainActivity extends BaseActivity {
         appComponent().inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        loadingIndicator.getIndeterminateDrawable().setColorFilter(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -110,7 +131,7 @@ public class MainActivity extends BaseActivity {
                         break;
                 }
 
-                if(currentFragment != null) {
+                if (currentFragment != null) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.content_container, currentFragment).commit();
                 }
@@ -191,7 +212,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if(currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
+        if (currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
             ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
         }
         bottomBar.post(() -> Snackbar
@@ -217,4 +238,20 @@ public class MainActivity extends BaseActivity {
         startActivity(i);
     }
 
+    @Subscribe
+    public void onShowLoader(ShowLoaderEvent e) {
+        if(!TextUtils.isEmpty(e.message)) {
+            loadingMessage.setText(e.message);
+        } else {
+            loadingMessage.setText(R.string.loading_message);
+        }
+        loadingContainer.setVisibility(View.VISIBLE);
+        contentContainer.setVisibility(View.GONE);
+    }
+
+    @Subscribe
+    public void onHideLoader(HideLoaderEvent e) {
+        loadingContainer.setVisibility(View.GONE);
+        contentContainer.setVisibility(View.VISIBLE);
+    }
 }

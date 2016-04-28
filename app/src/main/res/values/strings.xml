@@ -127,5 +127,7 @@
     <string name="bottom_bar_new_title">New</string>
     <string name="bottom_bar_inbox_title">Inbox</string>
     <string name="bottom_bar_habits_title">Habits</string>
+    <string name="loading_message">Looking for a cracker…</string>
+    <string name="find_slots_loading_message">Finding the perfect time…</string>
 
 </resources>
