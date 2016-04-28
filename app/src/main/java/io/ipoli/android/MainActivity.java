@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if(currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source.equals("notification")) {
+        if(currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
             ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
         }
         bottomBar.post(() -> Snackbar
