@@ -41,6 +41,10 @@ import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
+import io.ipoli.android.tutorial.events.PredefinedHabitDeselectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
@@ -276,6 +280,34 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onTutorialSkipped(TutorialSkippedEvent e) {
         log("tutorial_skipped");
+    }
+
+    @Subscribe
+    public void onPredefinedQuestSelectedEvent(PredefinedQuestSelectedEvent e) {
+        log("predefined_quest_selected", EventParams.create()
+                .add("name", e.name)
+                .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onPredefinedQuestDeselectedEvent(PredefinedQuestDeselectedEvent e) {
+        log("predefined_quest_deselected", EventParams.create()
+                .add("name", e.name)
+                .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onPredefinedHabitSelectedEvent(PredefinedHabitSelectedEvent e) {
+        log("predefined_habit_selected", EventParams.create()
+                .add("raw_text", e.rawText)
+                .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onPredefinedHabitDeselectedEvent(PredefinedHabitDeselectedEvent e) {
+        log("predefined_habit_deselected", EventParams.create()
+                .add("raw_text", e.rawText)
+                .add("source", e.source.name().toLowerCase()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

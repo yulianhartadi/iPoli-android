@@ -131,5 +131,7 @@
     <string name="bottom_bar_new_title">New</string>
     <string name="bottom_bar_inbox_title">Inbox</string>
     <string name="bottom_bar_habits_title">Habits</string>
+    <string name="title_pick_initial_habits">Pick a few Habits to start with</string>
+    <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
 
 </resources>

@@ -16,5 +16,6 @@ public enum EventSource {
     EDIT_QUEST,
     NOTIFICATION,
     TOOLBAR,
-    KEYBOARD
+    KEYBOARD,
+    TUTORIAL
 }

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.github.paolorotolo.appintro.AppIntro2;
@@ -23,6 +24,9 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
+import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
+import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
+import io.ipoli.android.tutorial.fragments.TutorialFragment;
 
 public class TutorialActivity extends AppIntro2 {
     @Inject
@@ -46,10 +50,10 @@ public class TutorialActivity extends AppIntro2 {
 
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title), getString(R.string.tutorial_welcome_desc), R.drawable.tutorial_welcome, false));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_calendar_title), getString(R.string.tutorial_calendar_desc), R.drawable.tutorial_calendar));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_overview_title), getString(R.string.tutorial_overview_desc), R.drawable.tutorial_overview));
+//        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_overview_title), getString(R.string.tutorial_overview_desc), R.drawable.tutorial_overview));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_habits_title), getString(R.string.tutorial_habits_desc), R.drawable.tutorial_habits));
+//        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_habits_title), getString(R.string.tutorial_habits_desc), R.drawable.tutorial_habits));
         pickQuestsFragment = new PickQuestsFragment();
         addSlide(pickQuestsFragment);
         pickHabitsFragment = new PickHabitsFragment();
@@ -58,10 +62,10 @@ public class TutorialActivity extends AppIntro2 {
         int[] colors = new int[]{
                 R.color.md_indigo_500,
                 R.color.md_blue_500,
-                R.color.md_green_500,
+//                R.color.md_green_500,
                 R.color.md_orange_500,
                 R.color.md_deep_purple_500,
-                R.color.md_teal_500,
+//                R.color.md_teal_500,
                 R.color.md_blue_500,
                 R.color.md_blue_500
         };
@@ -77,7 +81,7 @@ public class TutorialActivity extends AppIntro2 {
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         questPersistenceService.saveRemoteObjects(selectedQuests);
-        List<RecurrentQuest> selectedHabits = pickHabitsFragment.getSelectedHabits();
+        List<RecurrentQuest> selectedHabits = pickHabitsFragment.getSelectedQuests();
         recurrentQuestPersistenceService.saveRemoteObjects(selectedHabits);
         eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());
