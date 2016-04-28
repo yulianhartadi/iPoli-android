@@ -11,7 +11,7 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class UnscheduledQuestViewModel {
     private final Quest quest;
-    private final int remainingCount;
+    private int remainingCount;
 
     public UnscheduledQuestViewModel(Quest quest, int remainingCount) {
         this.quest = quest;
@@ -41,5 +41,13 @@ public class UnscheduledQuestViewModel {
             return name;
         }
         return name + " (x" + remainingCount + ")";
+    }
+
+    public int getRemainingCount() {
+        return remainingCount;
+    }
+
+    public void decreaseRemainingCount() {
+        remainingCount--;
     }
 }

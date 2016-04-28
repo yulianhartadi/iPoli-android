@@ -79,6 +79,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     @Override
     public void markUpdated() {
+        setNeedsSync();
         setUpdatedAt(DateUtils.nowUTC());
     }
 
