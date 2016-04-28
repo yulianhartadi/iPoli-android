@@ -1,4 +1,4 @@
-package io.ipoli.android.tutorial;
+package io.ipoli.android.tutorial.fragments;
 
 
 import android.graphics.Color;

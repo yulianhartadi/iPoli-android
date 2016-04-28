@@ -15,9 +15,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.LocalDate;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -35,10 +32,8 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
@@ -94,13 +89,6 @@ public class App extends MultiDexApplication {
         getAppComponent(this).inject(this);
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-
-        int runCount = localStorage.readInt(Constants.KEY_APP_RUN_COUNT, 0);
-        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-        if (runCount == 0) {
-            saveInitialQuests();
-        }
-
         resetEndDateForIncompleteQuests();
         registerServices();
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
@@ -111,82 +99,6 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
         }
         eventBus.post(new ForceSyncRequestEvent());
-    }
-
-    private void saveInitialQuests() {
-        List<Quest> quests = new ArrayList<>();
-
-        addTomorrowQuests(quests);
-        addTodayUnscheduledQuests(quests);
-        addInboxQuests(quests);
-        addTodayScheduledQuests(quests);
-
-        questPersistenceService.saveRemoteObjects(quests);
-
-        addRecurrentQuests();
-    }
-
-    private void addRecurrentQuests() {
-        List<RecurrentQuest> recurrentQuests = new ArrayList<>();
-        RecurrentQuest rq1 = new RecurrentQuest("Drink one glass of water 3 times per day every day");
-        RecurrentQuest.setContext(rq1, QuestContext.WELLNESS);
-        recurrentQuests.add(rq1);
-
-        RecurrentQuest rq2 = new RecurrentQuest("Say 3 things I'm grateful for every day");
-        RecurrentQuest.setContext(rq2, QuestContext.PERSONAL);
-        recurrentQuests.add(rq2);
-        recurrentQuestPersistenceService.saveRemoteObjects(recurrentQuests);
-    }
-
-    private void addTodayUnscheduledQuests(List<Quest> initialQuests) {
-        Quest trashQuest = new Quest("Throw away the trash", new Date());
-        Quest.setContext(trashQuest, QuestContext.CHORES);
-        initialQuests.add(trashQuest);
-    }
-
-    private void addTomorrowQuests(List<Quest> initialQuests) {
-        Date tomorrow = DateUtils.getTomorrow();
-
-        Quest gymQuest = new Quest("Go to the gym", tomorrow);
-        Quest.setContext(gymQuest, QuestContext.WELLNESS);
-        Quest.setStartTime(gymQuest, Time.now());
-        gymQuest.setDuration(60);
-        initialQuests.add(gymQuest);
-
-        Quest brushQuest = new Quest("Brush your teeth", tomorrow);
-        Quest.setContext(brushQuest, QuestContext.WELLNESS);
-        Quest.setStartTime(brushQuest, Time.atHours(10));
-
-        initialQuests.add(brushQuest);
-    }
-
-    private void addInboxQuests(List<Quest> initialQuests) {
-        Quest defrostQuest = new Quest("Defrost the freezer");
-        Quest.setContext(defrostQuest, QuestContext.CHORES);
-        initialQuests.add(defrostQuest);
-
-        Quest dentistQuest = new Quest("Go to the dentist");
-        Quest.setContext(dentistQuest, QuestContext.PERSONAL);
-        initialQuests.add(dentistQuest);
-    }
-
-    private void addTodayScheduledQuests(List<Quest> initialQuests) {
-        Quest readQuest = new Quest("Read a book", DateUtils.now());
-        Quest.setContext(readQuest, QuestContext.LEARNING);
-        readQuest.setDuration(60);
-        Quest.setStartTime(readQuest, Time.afterHours(2));
-        initialQuests.add(readQuest);
-
-        Quest callQuest = new Quest("Call mom & dad", new Date());
-        Quest.setContext(callQuest, QuestContext.PERSONAL);
-        Quest.setStartTime(callQuest, Time.at(19, 30));
-        callQuest.setDuration(15);
-        initialQuests.add(callQuest);
-
-        Quest welcomeQuest = new Quest("Play my favorite game", DateUtils.now());
-        Quest.setContext(welcomeQuest, QuestContext.FUN);
-        Quest.setStartTime(welcomeQuest, Time.afterMinutes(5));
-        initialQuests.add(welcomeQuest);
     }
 
     private void resetEndDateForIncompleteQuests() {
