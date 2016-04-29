@@ -131,5 +131,6 @@
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
     <string name="find_slots_loading_message">Finding the perfect time…</string>
+    <string name="share">share</string>
 
 </resources>

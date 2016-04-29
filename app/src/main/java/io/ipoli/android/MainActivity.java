@@ -35,6 +35,7 @@ import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarDayFragment;
@@ -215,11 +216,18 @@ public class MainActivity extends BaseActivity {
         if (currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
             ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
         }
-        bottomBar.post(() -> Snackbar
-                .make(findViewById(R.id.root_container),
-                        R.string.quest_complete,
-                        Snackbar.LENGTH_SHORT)
-                .show());
+        bottomBar.post(() -> {
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(R.id.root_container),
+                            R.string.quest_complete,
+                            Snackbar.LENGTH_SHORT);
+
+            snackbar.setAction(R.string.share, view -> {
+                eventBus.post(new ShareQuestEvent(e.quest));
+            });
+
+            snackbar.show();
+        });
     }
 
     @Subscribe
@@ -240,7 +248,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onShowLoader(ShowLoaderEvent e) {
-        if(!TextUtils.isEmpty(e.message)) {
+        if (!TextUtils.isEmpty(e.message)) {
             loadingMessage.setText(e.message);
         } else {
             loadingMessage.setText(R.string.loading_message);
@@ -254,4 +262,12 @@ public class MainActivity extends BaseActivity {
         loadingContainer.setVisibility(View.GONE);
         contentContainer.setVisibility(View.VISIBLE);
     }
+
+    @Subscribe
+    public void onShareQuest(ShareQuestEvent e) {
+       ShareDialog.show(this, e.quest.getName());
+    }
+
+
+
 }
