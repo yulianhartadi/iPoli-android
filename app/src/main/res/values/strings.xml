@@ -52,6 +52,7 @@
     <string name="inbox">Inbox</string>
     <string name="feedback">Feedback</string>
     <string name="contact_us">Contact us</string>
+    <string name="yesterday_calendar_format">\'Yesterday - \'EEE, d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
     <string name="tomorrow_calendar_format">\'Tomorrow - \'EEE, d MMM</string>
     <string name="calendar_format">EEEE, d MMM</string>

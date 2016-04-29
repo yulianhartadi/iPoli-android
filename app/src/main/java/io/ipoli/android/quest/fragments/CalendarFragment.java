@@ -96,14 +96,16 @@ public class CalendarFragment extends Fragment {
     }
 
     private int getToolbarText(LocalDate date) {
-        int text = R.string.calendar_format;
+        if (date.isEqual(new LocalDate().minusDays(1))) {
+            return R.string.yesterday_calendar_format;
+        }
         if (date.isEqual(new LocalDate())) {
-            text = R.string.today_calendar_format;
+            return R.string.today_calendar_format;
         }
         if (date.isEqual(new LocalDate().plusDays(1))) {
-            text = R.string.tomorrow_calendar_format;
+            return R.string.tomorrow_calendar_format;
         }
-        return text;
+        return R.string.calendar_format;
     }
 
     public void scrollToTodayQuest(Quest quest) {
