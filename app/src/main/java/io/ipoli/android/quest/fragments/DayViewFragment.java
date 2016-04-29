@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,13 +18,11 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -66,7 +63,6 @@ import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
@@ -77,7 +73,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class CalendarDayFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
+public class DayViewFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
+
+    public static final String CURRENT_DATE = "current_date";
+
     @Inject
     protected Bus eventBus;
 
@@ -92,9 +91,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Inject
     QuestPersistenceService questPersistenceService;
-
-    @Inject
-    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Inject
     SchedulingAPIService schedulingAPIService;
@@ -113,16 +109,35 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
             calendarDayView.onMinuteChanged();
         }
     };
+    private LocalDate currentDate;
+
+    public static DayViewFragment newInstance(LocalDate date) {
+        DayViewFragment fragment = new DayViewFragment();
+        Bundle args = new Bundle();
+        args.putLong(CURRENT_DATE, date.toDate().getTime());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            currentDate = new LocalDate(getArguments().getLong(CURRENT_DATE));
+        } else {
+            currentDate = new LocalDate();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_calendar_day, container, false);
 
-        ButterKnife.bind(this, view);
+        View view = inflater.inflate(R.layout.fragment_day_view, container, false);
+
         App.getAppComponent(getContext()).inject(this);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new Date()));
-
+        ButterKnife.bind(this, view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         unscheduledQuestList.setLayoutManager(layoutManager);
@@ -133,7 +148,6 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
-
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
@@ -178,12 +192,28 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isResumed()) {
+            return;
+        }
+
+        if (isVisibleToUser) {
+            eventBus.register(this);
+        } else {
+            eventBus.unregister(this);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        eventBus.register(this);
+        if(getUserVisibleHint()) {
+            eventBus.register(this);
+        }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        updateSchedule();
         findSlotsSubscriptions = new CompositeSubscription();
+        updateSchedule();
     }
 
     private void updateSchedule() {
@@ -219,10 +249,12 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        eventBus.unregister(this);
         findSlotsSubscriptions.unsubscribe();
         eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
+        if(getUserVisibleHint()) {
+            eventBus.unregister(this);
+        }
         super.onPause();
     }
 
@@ -336,21 +368,21 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
         setUnscheduledQuestsHeight();
     }
 
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = e.quest;
+        if (!q.isScheduledFor(currentDate)) {
+            return;
+        }
+        updateSchedule();
+    }
+
     public void scrollToQuest(Quest quest) {
         Time startTime = Quest.getStartTime(quest);
         if (startTime == null) {
             startTime = getStartTimeFromCompletedAtTime(quest);
         }
         calendarDayView.smoothScrollToTime(startTime);
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = e.quest;
-        if (!q.isScheduledForToday()) {
-            return;
-        }
-        updateSchedule();
     }
 
     private Time getStartTimeFromCompletedAtTime(Quest q) {
@@ -369,7 +401,7 @@ public class CalendarDayFragment extends Fragment implements CalendarListener<Qu
 
         public Observable<Schedule> schedule() {
 
-            return questPersistenceService.findAllForToday().flatMap(quests -> {
+            return questPersistenceService.findAllForDate(currentDate).flatMap(quests -> {
                 List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                 List<Quest> unscheduledQuests = new ArrayList<>();
                 List<QuestCalendarViewModel> completedEvents = new ArrayList<>();

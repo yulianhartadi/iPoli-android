@@ -15,7 +15,8 @@ import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
-import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.CalendarFragment;
+import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
@@ -74,7 +75,7 @@ public interface AppComponent {
 
     void inject(AppJobService appJobService);
 
-    void inject(CalendarDayFragment calendarDayFragment);
+    void inject(DayViewFragment dayViewFragment);
 
     void inject(OverviewFragment overviewFragment);
 
@@ -91,5 +92,7 @@ public interface AppComponent {
     void inject(PickQuestsFragment pickQuestsFragment);
 
     void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
+
+    void inject(CalendarFragment calendarFragment);
 }
 

@@ -75,7 +75,7 @@ public class HabitsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_habits, container, false);
         ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(new SimpleDateFormat(getString(R.string.today_date_format), Locale.getDefault()).format(new java.util.Date()));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new java.util.Date()));
 
         rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
 

@@ -37,7 +37,7 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
-import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity {
                 switch (menuItemId) {
                     case R.id.calendar:
                         screenName = "calendar";
-                        currentFragment = new CalendarDayFragment();
+                        currentFragment = new CalendarFragment();
                         break;
                     case R.id.overview:
                         screenName = "overview";
@@ -212,8 +212,8 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if (currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
-            ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
+        if (currentFragment != null && currentFragment instanceof CalendarFragment && e.source == EventSource.NOTIFICATION) {
+            ((CalendarFragment) currentFragment).scrollToTodayQuest(e.quest);
         }
         bottomBar.post(() -> Snackbar
                 .make(findViewById(R.id.root_container),

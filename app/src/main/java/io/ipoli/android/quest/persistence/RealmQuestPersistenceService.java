@@ -115,6 +115,22 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public Observable<List<Quest>> findAllForDate(LocalDate currentDate) {
+        Date startDate = toUTCDateAtStartOfDay(currentDate);
+        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
+
+        return fromRealm(where()
+                .beginGroup()
+                .greaterThanOrEqualTo("endDate", startDate)
+                .lessThan("endDate", endDate)
+                .or()
+                .greaterThan("completedAt", startDate)
+                .lessThan("completedAt", endDate)
+                .endGroup()
+                .findAllSorted("startMinute", Sort.ASCENDING));
+    }
+
+    @Override
     public Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate) {
 
         RealmResults<Quest> quests = where()
@@ -130,51 +146,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllForToday() {
-
-        LocalDate today = new LocalDate();
-
-        Date startOfToday = toUTCDateAtStartOfDay(today);
-        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
-
-        return fromRealm(where()
-                .beginGroup()
-                .greaterThanOrEqualTo("endDate", startOfToday)
-                .lessThan("endDate", startOfTomorrow)
-                .or()
-                .greaterThan("completedAt", startOfToday)
-                .lessThan("completedAt", startOfTomorrow)
-                .endGroup()
-                .findAllSorted("startMinute", Sort.ASCENDING));
-    }
-
-    @Override
-    public Observable<List<Quest>> findAllCompleted() {
-        return fromRealm(where()
-                .isNotNull("completedAt")
-                .findAllSorted("completedAt", Sort.DESCENDING));
-    }
-
-    @Override
     public Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate) {
         return fromRealm(where()
                 .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
                 .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
                 .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
-    }
-
-    @Override
-    public Observable<List<Quest>> findAllCompletedToday() {
-
-        LocalDate today = LocalDate.now();
-
-        Date startOfToday = toUTCDateAtStartOfDay(today);
-        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
-
-        return fromRealm(where()
-                .greaterThanOrEqualTo("completedAt", startOfToday)
-                .lessThan("completedAt", startOfTomorrow)
-                .findAll());
     }
 }
