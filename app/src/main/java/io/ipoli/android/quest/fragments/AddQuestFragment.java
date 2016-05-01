@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -43,6 +42,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
@@ -120,8 +120,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
         ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_add_quest));
-
 
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
@@ -151,6 +149,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
+
+        eventBus.post(new NewTitleEvent(getString(R.string.title_activity_add_quest)));
 
         return view;
     }

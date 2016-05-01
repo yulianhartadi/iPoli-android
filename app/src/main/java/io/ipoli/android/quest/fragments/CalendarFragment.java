@@ -5,21 +5,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -28,14 +33,17 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class CalendarFragment extends Fragment {
 
-    public static final int TODAY_POSITION = 49;
+    public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
 
     @Bind(R.id.calendar_pager)
     ViewPager calendarPager;
 
+    @Inject
+    Bus eventBus;
+
     private FragmentStatePagerAdapter adapter;
-    private LocalDate currentDate;
+    private LocalDate currentMidDate;
 
     @Nullable
     @Override
@@ -45,20 +53,19 @@ public class CalendarFragment extends Fragment {
         ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        currentDate = new LocalDate();
+        currentMidDate = new LocalDate();
 
         adapter = new FragmentStatePagerAdapter(getChildFragmentManager()) {
 
             @Override
             public Fragment getItem(int position) {
-                return DayViewFragment.newInstance(currentDate.plusDays(position - TODAY_POSITION));
+                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION));
             }
 
             @Override
             public int getCount() {
                 return MAX_VISIBLE_DAYS;
             }
-
         };
 
         calendarPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -69,12 +76,9 @@ public class CalendarFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-                if (actionBar != null) {
-                    LocalDate date = currentDate.plusDays(position - TODAY_POSITION);
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
-                    actionBar.setTitle(simpleDateFormat.format(date.toDate()));
-                }
+                LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
+                changeTitle(date);
+                eventBus.post(new CurrentDayChangedEvent(date, CurrentDayChangedEvent.Source.SWIPE));
             }
 
             @Override
@@ -83,16 +87,28 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault());
-            actionBar.setTitle(simpleDateFormat.format(currentDate.toDate()));
-        }
 
         calendarPager.setAdapter(adapter);
-        calendarPager.setCurrentItem(TODAY_POSITION);
+        calendarPager.setCurrentItem(MID_POSITION);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    private void changeTitle(LocalDate date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
+        eventBus.post(new NewTitleEvent(simpleDateFormat.format(date.toDate())));
     }
 
     private int getToolbarText(LocalDate date) {
@@ -109,8 +125,21 @@ public class CalendarFragment extends Fragment {
     }
 
     public void scrollToTodayQuest(Quest quest) {
-        currentDate = new LocalDate();
-        calendarPager.setCurrentItem(TODAY_POSITION);
+        currentMidDate = new LocalDate();
+        calendarPager.setCurrentItem(MID_POSITION);
         ((DayViewFragment) adapter.getItem(calendarPager.getCurrentItem())).scrollToQuest(quest);
+    }
+
+    @Subscribe
+    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
+
+        if (e.source == CurrentDayChangedEvent.Source.SWIPE) {
+            return;
+        }
+
+        currentMidDate = e.date;
+        changeTitle(currentMidDate);
+        calendarPager.setAdapter(adapter);
+        calendarPager.setCurrentItem(MID_POSITION);
     }
 }
