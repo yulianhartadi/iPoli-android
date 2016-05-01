@@ -164,17 +164,11 @@ public class CalendarLayout extends RelativeLayout {
 
         }.init(dragView, calendarEvent);
 
-        setDragStrategy(dragStrategy);
-
-        dragView.startDrag(ClipData.newPlainText("", ""),
-                new DummyDragShadowBuilder(),
-                dragView,
-                0
-        );
+        dragView(dragView, dragStrategy);
 
     }
 
-    public void setDragStrategy(DragStrategy dragStrategy) {
+    private void setDragStrategy(DragStrategy dragStrategy) {
         this.dragStrategy = dragStrategy;
     }
 
@@ -219,6 +213,7 @@ public class CalendarLayout extends RelativeLayout {
 
                 case DragEvent.ACTION_DRAG_ENDED:
                     dragStrategy.onDragEnded();
+                    dragStrategy = null;
                     break;
 
                 default:
@@ -230,7 +225,11 @@ public class CalendarLayout extends RelativeLayout {
 
 
     public void editView(View calendarEventView) {
-        setDragStrategy(calendarDayView.getEditViewDragStrategy(calendarEventView));
+        dragView(calendarEventView, calendarDayView.getEditViewDragStrategy(calendarEventView));
+    }
+
+    private void dragView(View calendarEventView, DragStrategy dragStrategy) {
+        setDragStrategy(dragStrategy);
         calendarEventView.startDrag(ClipData.newPlainText("", ""),
                 new DummyDragShadowBuilder(),
                 calendarEventView,
