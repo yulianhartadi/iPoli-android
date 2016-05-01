@@ -22,7 +22,7 @@
     <string name="quest_complete">Quest complete</string>
     <string name="start_time_default">Start time</string>
     <string name="due_date_default">Due date</string>
-    <string name="today">today</string>
+    <string name="today">Today</string>
     <string name="edit_quest_duration_hint">How long will it take?</string>
     <string name="edit_quest_start_time_hint">When should it start?</string>
     <string name="edit_quest_due_date_hint">When will you do it?</string>

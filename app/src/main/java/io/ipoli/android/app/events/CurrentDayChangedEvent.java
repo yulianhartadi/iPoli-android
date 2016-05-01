@@ -15,5 +15,5 @@ public class CurrentDayChangedEvent {
         this.source = source;
     }
 
-    public enum Source {SWIPE, CALENDAR}
+    public enum Source {SWIPE, MENU, CALENDAR}
 }

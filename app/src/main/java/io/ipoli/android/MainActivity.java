@@ -111,9 +111,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        loadingIndicator.getIndeterminateDrawable().setColorFilter(
-                ContextCompat.getColor(this, R.color.colorPrimary),
-                android.graphics.PorterDuff.Mode.SRC_IN);
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -124,8 +121,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         initBottomBar(savedInstanceState);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault());
         toolbarTitle.setText(simpleDateFormat.format(new Date()));
-        toolbarCalendar.setTag(new Date());
+        toolbarCalendar.setCurrentDate(new Date());
         toolbarCalendar.setListener(this);
+
+        loadingIndicator.getIndeterminateDrawable().setColorFilter(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
@@ -312,8 +313,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-        if(e.source == CurrentDayChangedEvent.Source.SWIPE) {
-            toolbarCalendar.setCurrentDate(e.date.toDate());
+        if(e.source == CurrentDayChangedEvent.Source.CALENDAR) {
+            return;
         }
+        toolbarCalendar.setCurrentDate(e.date.toDate());
     }
 }
