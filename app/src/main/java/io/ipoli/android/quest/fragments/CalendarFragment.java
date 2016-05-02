@@ -58,18 +58,7 @@ public class CalendarFragment extends Fragment {
 
         currentMidDate = new LocalDate();
 
-        adapter = new FragmentStatePagerAdapter(getChildFragmentManager()) {
-
-            @Override
-            public Fragment getItem(int position) {
-                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION));
-            }
-
-            @Override
-            public int getCount() {
-                return MAX_VISIBLE_DAYS;
-            }
-        };
+        adapter = createAdapter();
 
         calendarPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -160,7 +149,25 @@ public class CalendarFragment extends Fragment {
 
         currentMidDate = e.date;
         changeTitle(currentMidDate);
+
+        adapter = createAdapter();
+
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
+    }
+
+    private FragmentStatePagerAdapter createAdapter() {
+        return new FragmentStatePagerAdapter(getChildFragmentManager()) {
+
+            @Override
+            public Fragment getItem(int position) {
+                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION));
+            }
+
+            @Override
+            public int getCount() {
+                return MAX_VISIBLE_DAYS;
+            }
+        };
     }
 }

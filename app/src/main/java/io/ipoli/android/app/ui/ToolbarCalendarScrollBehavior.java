@@ -5,6 +5,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,6 +18,11 @@ public class ToolbarCalendarScrollBehavior extends AppBarLayout.Behavior {
 
     @Override
     public boolean onInterceptTouchEvent(CoordinatorLayout parent, AppBarLayout child, MotionEvent ev) {
+        return false;
+    }
+
+    @Override
+    public boolean onStartNestedScroll(CoordinatorLayout parent, AppBarLayout child, View directTargetChild, View target, int nestedScrollAxes) {
         return false;
     }
 }
