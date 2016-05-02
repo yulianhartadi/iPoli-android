@@ -42,7 +42,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
@@ -86,7 +85,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
 
-    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
+
+    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
@@ -149,8 +149,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
-
-        eventBus.post(new NewTitleEvent(getString(R.string.title_activity_add_quest)));
 
         return view;
     }

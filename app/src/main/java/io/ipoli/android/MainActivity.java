@@ -20,8 +20,6 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -54,7 +52,7 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, CompactCalendarView.CompactCalendarViewListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int CALENDAR_TAB_INDEX = 0;
     public static final int OVERVIEW_TAB_INDEX = 1;
     public static final int ADD_QUEST_TAB_INDEX = 2;
@@ -123,10 +121,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
 
         initBottomBar(savedInstanceState);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault());
-        toolbarTitle.setText(simpleDateFormat.format(new Date()));
         toolbarCalendar.setCurrentDate(new Date());
-        toolbarCalendar.setListener(this);
+
 
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
                 ContextCompat.getColor(this, R.color.colorPrimary),
@@ -141,38 +137,49 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 toolbarExpandContainer.setOnClickListener(null);
                 appBar.setExpanded(false, false);
                 appBar.setTag(false);
+                calendarIndicator.setVisibility(View.GONE);
                 String screenName = "";
                 resetLayoutColors();
 
                 switch (menuItemId) {
                     case R.id.calendar:
+                        calendarIndicator.setVisibility(View.VISIBLE);
                         toolbarExpandContainer.setOnClickListener(MainActivity.this);
                         screenName = "calendar";
-                        currentFragment = new CalendarFragment();
+                        CalendarFragment calendarFragment = new CalendarFragment();
+                        toolbarCalendar.setListener(calendarFragment);
+                        currentFragment = calendarFragment;
+                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                         break;
                     case R.id.overview:
                         screenName = "overview";
                         currentFragment = new OverviewFragment();
+                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                         break;
                     case R.id.add_quest:
                         screenName = "add_quest";
                         boolean isForToday = currentSelectedItem == R.id.calendar;
                         currentFragment = AddQuestFragment.newInstance(isForToday);
+                        toolbarTitle.setText(R.string.title_activity_add_quest);
                         break;
                     case R.id.inbox:
                         screenName = "inbox";
                         currentFragment = new InboxFragment();
+                        toolbarTitle.setText(R.string.title_activity_inbox);
                         break;
                     case R.id.habits:
                         screenName = "habits";
                         currentFragment = new HabitsFragment();
+                        toolbarTitle.setText(R.string.title_fragment_habits);
                         break;
                 }
 
-                if (currentFragment != null) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_container, currentFragment).commit();
+
+                if (currentFragment == null) {
+                    return;
                 }
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_container, currentFragment).commit();
                 currentSelectedItem = menuItemId;
                 eventBus.post(new ScreenShownEvent(screenName));
             }
@@ -305,16 +312,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
         appBar.setExpanded(!isExpanded, true);
         appBar.setTag(!isExpanded);
-    }
-
-    @Override
-    public void onDayClick(Date dateClicked) {
-        eventBus.post(new CurrentDayChangedEvent(new LocalDate(dateClicked), CurrentDayChangedEvent.Source.CALENDAR));
-    }
-
-    @Override
-    public void onMonthScroll(Date firstDayOfNewMonth) {
-        eventBus.post(new CurrentDayChangedEvent(new LocalDate(firstDayOfNewMonth), CurrentDayChangedEvent.Source.CALENDAR));
     }
 
     @Subscribe

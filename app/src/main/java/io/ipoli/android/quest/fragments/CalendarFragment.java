@@ -12,12 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -34,7 +36,7 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/29/16.
  */
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment implements CompactCalendarView.CompactCalendarViewListener {
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
@@ -169,5 +171,15 @@ public class CalendarFragment extends Fragment {
                 return MAX_VISIBLE_DAYS;
             }
         };
+    }
+
+    @Override
+    public void onDayClick(Date dateClicked) {
+        eventBus.post(new CurrentDayChangedEvent(new LocalDate(dateClicked), CurrentDayChangedEvent.Source.CALENDAR));
+    }
+
+    @Override
+    public void onMonthScroll(Date firstDayOfNewMonth) {
+        eventBus.post(new CurrentDayChangedEvent(new LocalDate(firstDayOfNewMonth), CurrentDayChangedEvent.Source.CALENDAR));
     }
 }
