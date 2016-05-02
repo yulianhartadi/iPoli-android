@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -93,6 +94,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Bind(R.id.toolbar_calendar)
     CompactCalendarView toolbarCalendar;
+
+    @Bind(R.id.toolbar_calendar_indicator)
+    ImageView calendarIndicator;
 
     @Bind(R.id.appbar)
     AppBarLayout appBar;
@@ -296,7 +300,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onClick(View v) {
+
         boolean isExpanded = (boolean) appBar.getTag();
+        calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
         appBar.setExpanded(!isExpanded, true);
         appBar.setTag(!isExpanded);
     }
@@ -313,7 +319,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-        if(e.source == CurrentDayChangedEvent.Source.CALENDAR) {
+        if (e.source == CurrentDayChangedEvent.Source.CALENDAR) {
             return;
         }
         toolbarCalendar.setCurrentDate(e.date.toDate());

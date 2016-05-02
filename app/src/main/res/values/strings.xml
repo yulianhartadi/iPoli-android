@@ -52,9 +52,9 @@
     <string name="inbox">Inbox</string>
     <string name="feedback">Feedback</string>
     <string name="contact_us">Contact us</string>
-    <string name="yesterday_calendar_format">\'Yesterday - \'EEE, d MMM</string>
+    <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
-    <string name="tomorrow_calendar_format">\'Tomorrow - \'EEE, d MMM</string>
+    <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
     <string name="calendar_format">EEEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
