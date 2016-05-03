@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -86,7 +85,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
 
-    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
+
+    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
@@ -120,8 +120,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
         ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_add_quest));
-
 
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);

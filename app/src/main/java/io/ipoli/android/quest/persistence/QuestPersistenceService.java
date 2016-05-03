@@ -16,8 +16,6 @@ import rx.Observable;
 public interface QuestPersistenceService extends PersistenceService<Quest> {
     Observable<Quest> findById(String id);
 
-    Observable<List<Quest>> findAllCompleted();
-
     Observable<List<Quest>> findAllUnplanned();
 
     Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate);
@@ -26,15 +24,13 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate);
 
-    Observable<List<Quest>> findAllCompletedToday();
-
     Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
-
-    Observable<List<Quest>> findAllForToday();
 
     void delete(Quest quest);
 
     void deleteAllFromRecurrentQuest(String recurrentQuestId);
 
     long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);
+
+    Observable<List<Quest>> findAllForDate(LocalDate currentDate);
 }

@@ -3,6 +3,7 @@ package io.ipoli.android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -10,22 +11,30 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 import com.squareup.otto.Subscribe;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
+import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
@@ -37,13 +46,13 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
-import io.ipoli.android.quest.fragments.CalendarDayFragment;
+import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int CALENDAR_TAB_INDEX = 0;
     public static final int OVERVIEW_TAB_INDEX = 1;
     public static final int ADD_QUEST_TAB_INDEX = 2;
@@ -56,6 +65,9 @@ public class MainActivity extends BaseActivity {
     private int currentSelectedItem = 0;
 
     private BottomBar bottomBar;
+
+    @Bind(R.id.root_container)
+    CoordinatorLayout rootContainer;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -72,6 +84,21 @@ public class MainActivity extends BaseActivity {
     @Bind(R.id.loading_message)
     TextView loadingMessage;
 
+    @Bind(R.id.toolbar_title)
+    TextView toolbarTitle;
+
+    @Bind(R.id.toolbar_expand_container)
+    View toolbarExpandContainer;
+
+    @Bind(R.id.toolbar_calendar)
+    CompactCalendarView toolbarCalendar;
+
+    @Bind(R.id.toolbar_calendar_indicator)
+    ImageView calendarIndicator;
+
+    @Bind(R.id.appbar)
+    AppBarLayout appBar;
+
     @Inject
     QuestPersistenceService questPersistenceService;
 
@@ -84,10 +111,8 @@ public class MainActivity extends BaseActivity {
         appComponent().inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        loadingIndicator.getIndeterminateDrawable().setColorFilter(
-                ContextCompat.getColor(this, R.color.colorPrimary),
-                android.graphics.PorterDuff.Mode.SRC_IN);
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -96,45 +121,65 @@ public class MainActivity extends BaseActivity {
         }
 
         initBottomBar(savedInstanceState);
+        toolbarCalendar.setCurrentDate(new Date());
+
+
+        loadingIndicator.getIndeterminateDrawable().setColorFilter(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
-        bottomBar = BottomBar.attachShy((CoordinatorLayout) findViewById(R.id.root_container),
-                findViewById(R.id.content_container), savedInstanceState);
+        bottomBar = BottomBar.attachShy(rootContainer, contentContainer, savedInstanceState);
         bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
             @Override
             public void onMenuTabSelected(@IdRes int menuItemId) {
+                toolbarExpandContainer.setOnClickListener(null);
+                appBar.setExpanded(false, false);
+                appBar.setTag(false);
+                calendarIndicator.setVisibility(View.GONE);
                 String screenName = "";
                 resetLayoutColors();
 
                 switch (menuItemId) {
                     case R.id.calendar:
+                        calendarIndicator.setVisibility(View.VISIBLE);
+                        toolbarExpandContainer.setOnClickListener(MainActivity.this);
                         screenName = "calendar";
-                        currentFragment = new CalendarDayFragment();
+                        CalendarFragment calendarFragment = new CalendarFragment();
+                        toolbarCalendar.setListener(calendarFragment);
+                        currentFragment = calendarFragment;
+                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                         break;
                     case R.id.overview:
                         screenName = "overview";
                         currentFragment = new OverviewFragment();
+                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                         break;
                     case R.id.add_quest:
                         screenName = "add_quest";
                         boolean isForToday = currentSelectedItem == R.id.calendar;
                         currentFragment = AddQuestFragment.newInstance(isForToday);
+                        toolbarTitle.setText(R.string.title_activity_add_quest);
                         break;
                     case R.id.inbox:
                         screenName = "inbox";
                         currentFragment = new InboxFragment();
+                        toolbarTitle.setText(R.string.title_activity_inbox);
                         break;
                     case R.id.habits:
                         screenName = "habits";
                         currentFragment = new HabitsFragment();
+                        toolbarTitle.setText(R.string.title_fragment_habits);
                         break;
                 }
 
-                if (currentFragment != null) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.content_container, currentFragment).commit();
+
+                if (currentFragment == null) {
+                    return;
                 }
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_container, currentFragment).commit();
                 currentSelectedItem = menuItemId;
                 eventBus.post(new ScreenShownEvent(screenName));
             }
@@ -212,11 +257,11 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if (currentFragment != null && currentFragment instanceof CalendarDayFragment && e.source == EventSource.NOTIFICATION) {
-            ((CalendarDayFragment) currentFragment).scrollToQuest(e.quest);
+        if (currentFragment != null && currentFragment instanceof CalendarFragment && e.source == EventSource.NOTIFICATION) {
+            ((CalendarFragment) currentFragment).scrollToTodayQuest(e.quest);
         }
         bottomBar.post(() -> Snackbar
-                .make(findViewById(R.id.root_container),
+                .make(rootContainer,
                         R.string.quest_complete,
                         Snackbar.LENGTH_SHORT)
                 .show());
@@ -225,7 +270,7 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Snackbar
-                .make(findViewById(R.id.root_container),
+                .make(rootContainer,
                         R.string.quest_undone,
                         Snackbar.LENGTH_SHORT)
                 .show();
@@ -240,7 +285,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onShowLoader(ShowLoaderEvent e) {
-        if(!TextUtils.isEmpty(e.message)) {
+        if (!TextUtils.isEmpty(e.message)) {
             loadingMessage.setText(e.message);
         } else {
             loadingMessage.setText(R.string.loading_message);
@@ -253,5 +298,27 @@ public class MainActivity extends BaseActivity {
     public void onHideLoader(HideLoaderEvent e) {
         loadingContainer.setVisibility(View.GONE);
         contentContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Subscribe
+    public void onNewTitle(NewTitleEvent e) {
+        toolbarTitle.setText(e.text);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        boolean isExpanded = (boolean) appBar.getTag();
+        calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+        appBar.setExpanded(!isExpanded, true);
+        appBar.setTag(!isExpanded);
+    }
+
+    @Subscribe
+    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
+        if (e.source == CurrentDayChangedEvent.Source.CALENDAR) {
+            return;
+        }
+        toolbarCalendar.setCurrentDate(e.date.toDate());
     }
 }

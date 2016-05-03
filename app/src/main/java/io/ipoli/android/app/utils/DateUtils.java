@@ -48,20 +48,6 @@ public class DateUtils {
         return isSameDay(date, new Date());
     }
 
-    public static boolean isBeforeToday(Date d) {
-        if (d == null) {
-            return false;
-        }
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(d);
-        Calendar today = Calendar.getInstance();
-        if (c.get(Calendar.YEAR) < today.get(Calendar.YEAR)) {
-            return true;
-        }
-        return c.get(Calendar.DAY_OF_YEAR) < today.get(Calendar.DAY_OF_YEAR);
-    }
-
     public static Date getTomorrow() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, 1);
