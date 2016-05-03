@@ -48,7 +48,7 @@ public class PickHabitsFragment extends BasePickQuestsFragment<RecurrentQuest> {
         addViewModel("Set today's goals every Mon Tue Wed Thur and Fri at 9:00", QuestContext.PERSONAL, true);
         addViewModel("Exercise every Mon Wed and Fri", QuestContext.WELLNESS);
         addViewModel("Walk the dog every day", QuestContext.FUN);
-        addViewModel("Be mindful for 15 min", QuestContext.WELLNESS);
+        addViewModel("Be mindful for 15 min every day", QuestContext.WELLNESS);
         addViewModel("Review my day every Mon Tue Wed Thur and Fri at 22:00", QuestContext.PERSONAL, true);
         addViewModel("Learn new language every day", QuestContext.LEARNING);
         addViewModel("Drink water 6 times per day every day", QuestContext.WELLNESS);
