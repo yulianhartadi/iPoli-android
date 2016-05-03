@@ -72,13 +72,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private void inviteFriend() {
-        String appLinkUrl = Constants.FACEBOOK_APP_LINK;
-        String previewImageUrl = Constants.FACEBOOK_INVITE_IMAGE_URL;
-
         if (AppInviteDialog.canShow()) {
             AppInviteContent content = new AppInviteContent.Builder()
-                    .setApplinkUrl(appLinkUrl)
-                    .setPreviewImageUrl(previewImageUrl)
+                    .setApplinkUrl(Constants.FACEBOOK_APP_LINK)
+                    .setPreviewImageUrl(Constants.FACEBOOK_INVITE_IMAGE_URL)
                     .build();
             AppInviteDialog.show(this, content);
         } else {

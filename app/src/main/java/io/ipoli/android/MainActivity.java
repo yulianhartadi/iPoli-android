@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.facebook.CallbackManager;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
@@ -106,7 +105,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     QuestPersistenceService questPersistenceService;
 
     Fragment currentFragment;
-    private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
