@@ -21,4 +21,10 @@
         android:title="@string/show_tutorial"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_invite_friend"
+        android:menuCategory="secondary"
+        android:title="@string/invite_friend"
+        app:showAsAction="never" />
+
 </menu>

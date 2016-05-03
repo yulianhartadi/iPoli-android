@@ -151,7 +151,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         ImageView share = (ImageView) v.findViewById(R.id.quest_share);
         share.setVisibility(Quest.isCompleted(q) ? View.VISIBLE : View.GONE);
         share.setOnClickListener(v1 -> {
-            eventBus.post(new ShareQuestEvent(q));
+            eventBus.post(new ShareQuestEvent(q, EventSource.CALENDAR_DAY_VIEW));
         });
 
         return v;

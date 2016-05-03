@@ -139,4 +139,6 @@
     <string name="share">share</string>
 
     <string name="facebook_app_id">1609232436065758</string>
+    <string name="invite_friend">Invite friend</string>
+    <string name="show_invite_failed">Oops, please, try again later!</string>
 </resources>

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
@@ -52,7 +53,6 @@ import io.ipoli.android.quest.fragments.HabitsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import retrofit2.http.HEAD;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int CALENDAR_TAB_INDEX = 0;
@@ -105,6 +105,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     QuestPersistenceService questPersistenceService;
 
     Fragment currentFragment;
+    private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +115,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -269,7 +269,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             Snackbar.LENGTH_SHORT);
 
             snackbar.setAction(R.string.share, view -> {
-                eventBus.post(new ShareQuestEvent(e.quest));
+                eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
             });
 
             snackbar.show();
@@ -311,10 +311,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
-       ShareDialog.show(this, e.quest.getName());
+       ShareQuestDialog.show(this, e.quest, eventBus);
     }
-
-
 
     public void onNewTitle(NewTitleEvent e) {
         toolbarTitle.setText(e.text);
