@@ -6,14 +6,19 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
+import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -58,8 +63,24 @@ public class BaseActivity extends AppCompatActivity {
                 eventBus.post(new ShowTutorialEvent());
                 startTutorial();
                 break;
+            case R.id.action_invite_friend:
+                eventBus.post(new InviteFriendEvent());
+                inviteFriend();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void inviteFriend() {
+        if (AppInviteDialog.canShow()) {
+            AppInviteContent content = new AppInviteContent.Builder()
+                    .setApplinkUrl(Constants.FACEBOOK_APP_LINK)
+                    .setPreviewImageUrl(Constants.FACEBOOK_INVITE_IMAGE_URL)
+                    .build();
+            AppInviteDialog.show(this, content);
+        } else {
+            Toast.makeText(this, R.string.show_invite_failed, Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void startTutorial() {

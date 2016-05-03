@@ -30,6 +30,7 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
+import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
@@ -146,6 +147,12 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         }
 
         v.findViewById(R.id.quest_recurrent_indicator).setVisibility(calendarEvent.isRecurrent() ? View.VISIBLE : View.GONE);
+
+        ImageView share = (ImageView) v.findViewById(R.id.quest_share);
+        share.setVisibility(Quest.isCompleted(q) ? View.VISIBLE : View.GONE);
+        share.setOnClickListener(v1 -> {
+            eventBus.post(new ShareQuestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+        });
 
         return v;
     }

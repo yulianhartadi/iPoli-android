@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
+import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -78,6 +79,7 @@ public class App extends MultiDexApplication {
         super.onCreate();
 
         JodaTimeAndroid.init(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)

@@ -10,7 +10,9 @@ import java.util.Map;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
+import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -33,6 +35,7 @@ import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
+import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
@@ -329,6 +332,24 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("version_updated", EventParams.create()
                 .add("old_version", String.valueOf(e.oldVersion))
                 .add("new_version", String.valueOf(e.newVersion)));
+    }
+
+    @Subscribe
+    public void onShareQuestTapped(ShareQuestEvent e) {
+        log("share_quest_tapped", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
+    }
+
+    @Subscribe
+    public void onQuestShareProviderPicked(QuestShareProviderPickedEvent e) {
+        log("quest_share_provider_picked", EventParams.create()
+                .add("id", e.quest.getId())
+                .add("name", e.quest.getName())
+                .add("provider", e.provider));
+    }
+
+    @Subscribe
+    public void onInviteFriendTapped(InviteFriendEvent e) {
+        log("invite_friend_tapped");
     }
 
     @Subscribe

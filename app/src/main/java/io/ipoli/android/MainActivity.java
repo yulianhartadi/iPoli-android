@@ -45,6 +45,7 @@ import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
@@ -113,7 +114,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -261,11 +261,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (currentFragment != null && currentFragment instanceof CalendarFragment && e.source == EventSource.NOTIFICATION) {
             ((CalendarFragment) currentFragment).scrollToTodayQuest(e.quest);
         }
-        bottomBar.post(() -> Snackbar
-                .make(rootContainer,
-                        R.string.quest_complete,
-                        Snackbar.LENGTH_SHORT)
-                .show());
+        bottomBar.post(() -> {
+            Snackbar snackbar = Snackbar
+                    .make(rootContainer,
+                            R.string.quest_complete,
+                            Snackbar.LENGTH_SHORT);
+
+            snackbar.setAction(R.string.share, view -> {
+                eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
+            });
+
+            snackbar.show();
+        });
     }
 
     @Subscribe
@@ -302,6 +309,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Subscribe
+    public void onShareQuest(ShareQuestEvent e) {
+       ShareQuestDialog.show(this, e.quest, eventBus);
+    }
+
     public void onNewTitle(NewTitleEvent e) {
         toolbarTitle.setText(e.text);
     }
