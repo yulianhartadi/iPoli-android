@@ -48,8 +48,8 @@
 
             <ImageView
                 android:id="@+id/quest_recurrent_indicator"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_favorite_accent_24dp" />
@@ -57,8 +57,8 @@
 
             <ImageView
                 android:id="@+id/quest_share"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:scaleType="fitXY"

@@ -22,7 +22,7 @@
     <string name="quest_complete">Quest complete</string>
     <string name="start_time_default">Start time</string>
     <string name="due_date_default">Due date</string>
-    <string name="today">today</string>
+    <string name="today">Today</string>
     <string name="edit_quest_duration_hint">How long will it take?</string>
     <string name="edit_quest_start_time_hint">When should it start?</string>
     <string name="edit_quest_due_date_hint">When will you do it?</string>
@@ -52,7 +52,10 @@
     <string name="inbox">Inbox</string>
     <string name="feedback">Feedback</string>
     <string name="contact_us">Contact us</string>
-    <string name="today_date_format">\'Today - \'EEE, d MMM</string>
+    <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
+    <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
+    <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
+    <string name="calendar_format">EEEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
@@ -131,8 +134,9 @@
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
     <string name="find_slots_loading_message">Finding the perfect time…</string>
+    <string name="title_fragment_habits">Habits</string>
+
     <string name="share">share</string>
 
     <string name="facebook_app_id">1609232436065758</string>
-
 </resources>

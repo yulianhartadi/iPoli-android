@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
@@ -62,9 +63,10 @@ public class ShareDialog {
                 Log.d("Share", "facebook");
 
                 ShareLinkContent content = new ShareLinkContent.Builder()
-//                        .setContentUrl(Uri.parse("https://play.google.com/store/apps/details?id=io.ipoli.android"))
+                        .setContentUrl(Uri.parse("http://www.ipoli.io/"))
                         .setContentTitle("Success")
                         .setContentDescription("I run 10km")
+                        .setImageUrl(Uri.parse("http://www.ipoli.io/images/ipoli/1.png"))
                         .build();
 
                 com.facebook.share.widget.ShareDialog sd =new com.facebook.share.widget.ShareDialog((Activity) context);

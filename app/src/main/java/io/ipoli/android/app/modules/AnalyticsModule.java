@@ -32,14 +32,12 @@ public class AnalyticsModule {
             if (!TextUtils.isEmpty(playerId)) {
                 FlurryAgent.setUserId(playerId);
             }
-
-            new FlurryAgent.Builder()
-                    .withLogEnabled(false)
-                    .build(context, AnalyticsConstants.PROD_FLURRY_KEY);
+            FlurryAgent.setLogEnabled(false);
+            FlurryAgent.init(context, AnalyticsConstants.PROD_FLURRY_KEY);
         } else {
-            new FlurryAgent.Builder()
-                    .withLogEnabled(true)
-                    .build(context, AnalyticsConstants.DEV_FLURRY_KEY);
+            FlurryAgent.setLogEnabled(true);
+            FlurryAgent.setCaptureUncaughtExceptions(false);
+            FlurryAgent.init(context, AnalyticsConstants.DEV_FLURRY_KEY);
         }
 
         return new FlurryAnalyticsService();

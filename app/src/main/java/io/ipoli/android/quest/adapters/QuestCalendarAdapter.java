@@ -86,19 +86,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         View v = inflater.inflate(R.layout.calendar_suggestion_item, parent, false);
         TextView suggestionName = (TextView) v.findViewById(R.id.quest_suggestion_text);
         suggestionName.setText(calendarEvent.getName());
-        v.findViewById(R.id.quest_suggestion_next).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventBus.post(new RescheduleQuestEvent(calendarEvent));
-            }
-        });
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventBus.post(new SuggestionAcceptedEvent(calendarEvent));
-
-            }
-        });
+        v.findViewById(R.id.quest_suggestion_next).setOnClickListener(v1 -> eventBus.post(new RescheduleQuestEvent(calendarEvent)));
+        v.setOnClickListener(v1 -> eventBus.post(new SuggestionAcceptedEvent(calendarEvent)));
         return v;
     }
 
