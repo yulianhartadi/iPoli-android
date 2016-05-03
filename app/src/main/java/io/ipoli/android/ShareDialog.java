@@ -1,10 +1,13 @@
 package io.ipoli.android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+
+import com.facebook.share.model.ShareLinkContent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,20 @@ public class ShareDialog {
             ShareApp shareApp = adapter.getItem(item);
             if (shareApp.packageName.startsWith("com.facebook.katana")) {
                 Log.d("Share", "facebook");
+
+                ShareLinkContent content = new ShareLinkContent.Builder()
+//                        .setContentUrl(Uri.parse("https://play.google.com/store/apps/details?id=io.ipoli.android"))
+                        .setContentTitle("Success")
+                        .setContentDescription("I run 10km")
+                        .build();
+
+                com.facebook.share.widget.ShareDialog sd =new com.facebook.share.widget.ShareDialog((Activity) context);
+                sd.show(content, com.facebook.share.widget.ShareDialog.Mode.AUTOMATIC);
+
+//                ShareDialog shareDialog = new ShareDialog(content);
+//                shareDialog.show(context, com.facebook.share.widget.ShareDialog.Mode.AUTOMATIC);
+
+
             } else {
                 Log.d("Share", "other");
                 i.setPackage(shareApp.packageName);
