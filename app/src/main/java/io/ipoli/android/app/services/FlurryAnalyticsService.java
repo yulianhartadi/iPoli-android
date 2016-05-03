@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
+import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
@@ -327,6 +329,17 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("version_updated", EventParams.create()
                 .add("old_version", String.valueOf(e.oldVersion))
                 .add("new_version", String.valueOf(e.newVersion)));
+    }
+
+    @Subscribe
+    public void onToolbarCalendarTap(ToolbarCalendarTapEvent e) {
+        log("toolbar_calendar_tap", EventParams.of("is_expanded", String.valueOf(e.isExpanded)));
+    }
+
+    @Subscribe
+    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
+        log("current_day_changed", EventParams.of("new_day", e.date.toString())
+                .add("source", e.source.toString()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
