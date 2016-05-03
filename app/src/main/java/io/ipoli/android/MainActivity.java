@@ -37,6 +37,7 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
+import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -320,11 +321,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
         boolean isExpanded = (boolean) appBar.getTag();
         calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
         appBar.setExpanded(!isExpanded, true);
         appBar.setTag(!isExpanded);
+        eventBus.post(new ToolbarCalendarTapEvent(!isExpanded));
     }
 
     @Subscribe
