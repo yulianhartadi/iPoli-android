@@ -313,6 +313,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
        ShareQuestDialog.show(this, e.quest, eventBus);
     }
 
+    @Subscribe
     public void onNewTitle(NewTitleEvent e) {
         toolbarTitle.setText(e.text);
     }
