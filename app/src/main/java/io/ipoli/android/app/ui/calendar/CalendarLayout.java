@@ -89,6 +89,9 @@ public class CalendarLayout extends RelativeLayout {
         View recurrentIndicator = dragView.findViewById(R.id.quest_recurrent_indicator);
         recurrentIndicator.setVisibility(calendarEvent.isRecurrent() ? VISIBLE : GONE);
 
+        View shareButton = dragView.findViewById(R.id.quest_share);
+        shareButton.setVisibility(GONE);
+
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {
