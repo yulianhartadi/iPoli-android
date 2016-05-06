@@ -6,13 +6,13 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # How does it look like?
 
-<img src="./github/screens/welcome.png" width="250px"/>
-<img src="./github/screens/calendar.png" width="250px"/>
-<img src="./github/screens/overview.png" width="250px"/>
+<img src="./github/screens/welcome.png" width="280px"/>
+<img src="./github/screens/calendar.png" width="280px"/>
+<img src="./github/screens/overview.png" width="280px"/>
 
 # Want to watch it in action?
 
-[![iPoli in action](http://img.youtube.com/vi/6WzlAs-cDSk/0.jpg)](http://www.youtube.com/watch?v=6WzlAs-cDSk "iPoli: Smart Calendar & To Do List Android app")
+[![iPoli in action](http://img.youtube.com/vi/PTUseDG5g2g/0.jpg)](http://www.youtube.com/watch?v=PTUseDG5g2g "iPoli: Smart Calendar & To Do List Android app")
 
 # Can I just install it?
 
@@ -32,7 +32,10 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 
   ```java
   public interface APIConstants {
-    String API_ENDPOINT = "http://example.com/";
+    String DEV_IPOLI_ENDPOINT = "http://10.0.3.2/v1/";
+    String PROD_IPOLI_ENDPOINT = "http://10.0.3.2/v1/";
+    String DEV_SCHEDULING_ENDPOINT = "http://10.0.3.2/v1/";
+    String PROD_SCHEDULING_ENDPOINT = "http://10.0.3.2/v1/";
     String API_KEY = "test";
   }
   ```
@@ -40,7 +43,8 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 
   ```java
   public interface AnalyticsConstants {
-    String FLURRY_KEY = "123456";
+    String PROD_FLURRY_KEY = "123456";
+    String DEV_FLURRY_KEY = "42";
   }
   ```
 5. Run on your favorite device/emulator
