@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -20,10 +21,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**
@@ -35,11 +39,13 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     private Context context;
     private List<UnscheduledQuestViewModel> viewModels;
     private final Bus eventBus;
+    private final Time.RelativeTime relativeTime;
 
-    public UnscheduledQuestsAdapter(Context context, List<UnscheduledQuestViewModel> viewModels, Bus eventBus) {
+    public UnscheduledQuestsAdapter(Context context, List<UnscheduledQuestViewModel> viewModels, Bus eventBus, Time.RelativeTime relativeTime) {
         this.context = context;
         this.viewModels = viewModels;
         this.eventBus = eventBus;
+        this.relativeTime = relativeTime;
     }
 
     @Override
@@ -52,7 +58,17 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final UnscheduledQuestViewModel vm = viewModels.get(position);
-        holder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION)));
+        Quest q = vm.getQuest();
+        holder.itemView.setOnClickListener(view -> {
+            if (relativeTime == Time.RelativeTime.PRESENT) {
+                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            } else if (relativeTime == Time.RelativeTime.FUTURE && !q.isHabit()) {
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            } else if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
+                Toast.makeText(holder.itemView.getContext(), R.string.cannot_edit_future_habits, Toast.LENGTH_SHORT).show();
+            }
+
+        });
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
@@ -70,11 +86,16 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(false);
-        holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if (checked) {
-                eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
-            }
-        });
+        if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
+            holder.check.setClickable(false);
+        } else {
+            holder.check.setClickable(true);
+            holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (checked) {
+                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
+                }
+            });
+        }
 
         holder.schedule.setOnClickListener(v -> {
             eventBus.post(new ScheduleQuestRequestEvent(vm));

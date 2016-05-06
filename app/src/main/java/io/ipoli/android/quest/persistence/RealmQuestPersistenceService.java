@@ -46,9 +46,10 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate) {
+    public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
         return fromRealm(where()
                 .isNull("completedAt")
+                .isNull("recurrentQuest")
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
@@ -124,9 +125,31 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .or()
-                .greaterThan("completedAt", startDate)
+                .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .endGroup()
+                .findAllSorted("startMinute", Sort.ASCENDING));
+    }
+
+    @Override
+    public Observable<List<Quest>> findAllCompletedForDate(LocalDate currentDate) {
+        Date startDate = toUTCDateAtStartOfDay(currentDate);
+        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
+        return fromRealm(where()
+                .greaterThanOrEqualTo("completedAt", startDate)
+                .lessThan("completedAt", endDate)
+                .findAllSorted("startMinute", Sort.ASCENDING));
+    }
+
+    @Override
+    public Observable<List<Quest>> findAllIncompleteForDate(LocalDate currentDate) {
+        Date startDate = toUTCDateAtStartOfDay(currentDate);
+        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
+
+        return fromRealm(where()
+                .greaterThanOrEqualTo("endDate", startDate)
+                .lessThan("endDate", endDate)
+                .isNull("completedAt")
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 

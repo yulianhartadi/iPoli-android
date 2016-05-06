@@ -255,7 +255,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public void setCompletedAt(Date completedAt) {
-        this.completedAt = completedAt;
+        this.completedAt = DateUtils.getDate(completedAt);
     }
 
     public static boolean isStarted(Quest quest) {
@@ -350,5 +350,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         boolean repeatsPerDay = getRecurrentQuest() != null && !TextUtils.isEmpty(getRecurrentQuest().getRecurrence().getDailyRrule());
         boolean hasShortOrNoDuration = getDuration() < 15;
         return isCompleted && repeatsPerDay && hasShortOrNoDuration;
+    }
+
+    public boolean isHabit() {
+        return getRecurrentQuest() != null;
     }
 }

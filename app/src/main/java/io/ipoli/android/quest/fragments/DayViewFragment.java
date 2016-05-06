@@ -20,6 +20,7 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,15 +143,27 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
         calendarContainer.setCalendarListener(this);
 
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
+        Time.RelativeTime relativeTime = Time.RelativeTime.PRESENT;
+        if (currentDate.isBefore(new LocalDate())) {
+            relativeTime = Time.RelativeTime.PAST;
+        } else if (currentDate.isAfter(new LocalDate())) {
+            relativeTime = Time.RelativeTime.FUTURE;
+        }
+
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus, relativeTime);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
-        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
+        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus, relativeTime);
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.scrollToNow();
 
+        if(relativeTime == Time.RelativeTime.PRESENT) {
+            calendarDayView.showTimeLine();
+        } else {
+            calendarDayView.hideTimeLine();
+        }
         return view;
     }
 
@@ -397,6 +410,36 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
         public Observable<Schedule> schedule() {
 
+            if (currentDate.isBefore(new LocalDate())) {
+                return questPersistenceService.findAllCompletedForDate(currentDate).flatMap(quests -> {
+                    List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+                    for (Quest q : quests) {
+                        QuestCalendarViewModel event = new QuestCalendarViewModel(q);
+                        if (hasNoStartTime(q)) {
+                            event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
+                        }
+                        calendarEvents.add(event);
+                    }
+                    return Observable.just(new Schedule(new ArrayList<>(), calendarEvents));
+                });
+            }
+
+            if(currentDate.isAfter(new LocalDate())) {
+                return questPersistenceService.findAllIncompleteForDate(currentDate).flatMap(quests -> {
+                    List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+                    List<Quest> unscheduledQuests = new ArrayList<>();
+                    for (Quest q : quests) {
+                        if (hasNoStartTime(q)) {
+                           unscheduledQuests.add(q);
+                        } else {
+                            QuestCalendarViewModel event = new QuestCalendarViewModel(q);
+                            calendarEvents.add(event);
+                        }
+                    }
+                    return Observable.just(new Schedule(unscheduledQuests, calendarEvents));
+                });
+            }
+
             return questPersistenceService.findAllForDate(currentDate).flatMap(quests -> {
                 List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                 List<Quest> unscheduledQuests = new ArrayList<>();
@@ -408,9 +451,10 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
                     if (q.getCompletedAt() != null) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                        if (hasNoStartTime(q)) {
+                        if (hasNoStartTime(q) || new Date().before(q.getEndDate())) {
                             event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
                         }
+
                         completedEvents.add(event);
                     } else if (hasNoStartTime(q)) {
                         unscheduledQuests.add(q);

@@ -22,7 +22,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 
-    Observable<List<Quest>> findAllIncompleteBefore(LocalDate localDate);
+    Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate);
 
     Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
 
@@ -33,4 +33,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);
 
     Observable<List<Quest>> findAllForDate(LocalDate currentDate);
+
+    Observable<List<Quest>> findAllCompletedForDate(LocalDate currentDate);
+
+    Observable<List<Quest>> findAllIncompleteForDate(LocalDate currentDate);
 }

@@ -29,8 +29,10 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -181,5 +183,12 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
     @Override
     public void onMonthScroll(Date firstDayOfNewMonth) {
         eventBus.post(new CurrentDayChangedEvent(new LocalDate(firstDayOfNewMonth), CurrentDayChangedEvent.Source.CALENDAR));
+    }
+
+    @Subscribe
+    public void onQuestCompleted(QuestCompletedEvent e) {
+        if (e.quest.getEndDate().after(new Date()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
+            eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
+        }
     }
 }

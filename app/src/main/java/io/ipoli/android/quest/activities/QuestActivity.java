@@ -143,6 +143,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
             edit.setVisibility(View.GONE);
         }
+
+        if(quest.isHabit()) {
+            edit.setVisibility(View.GONE);
+        }
         super.onResume();
     }
 

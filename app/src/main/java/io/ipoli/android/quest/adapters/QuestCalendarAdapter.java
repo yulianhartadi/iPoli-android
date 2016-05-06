@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -24,6 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -54,11 +56,14 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     private List<QuestCalendarViewModel> questCalendarViewModels;
     private final Bus eventBus;
+    private final Time.RelativeTime relativeTime;
 
-    public QuestCalendarAdapter(List<QuestCalendarViewModel> questCalendarViewModels, Bus eventBus) {
+    public QuestCalendarAdapter(List<QuestCalendarViewModel> questCalendarViewModels, Bus eventBus, Time.RelativeTime relativeTime) {
         this.questCalendarViewModels = questCalendarViewModels;
         this.eventBus = eventBus;
+        this.relativeTime = relativeTime;
     }
+
 
     @Override
     public List<QuestCalendarViewModel> getEvents() {
@@ -116,10 +121,16 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         detailsRoot.addView(checkBox, 0);
         v.setOnClickListener(view -> {
 
-            if(Quest.isCompleted(q)) {
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR));
+            if (!Quest.isCompleted(q)) {
+                if (relativeTime == Time.RelativeTime.PRESENT) {
+                    eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
+                } else if (relativeTime == Time.RelativeTime.FUTURE && !q.isHabit()) {
+                    eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR));
+                } else if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
+                    Toast.makeText(v.getContext(), R.string.cannot_edit_future_habits, Toast.LENGTH_SHORT).show();
+                }
             } else {
-                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
+                Toast.makeText(v.getContext(), R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -132,13 +143,18 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             checkBox.setChecked(true);
         }
 
-        checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if (checked) {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
-            } else {
-                eventBus.post(new UndoCompletedQuestRequestEvent(q));
-            }
-        });
+        if (relativeTime == Time.RelativeTime.PAST || (relativeTime == Time.RelativeTime.FUTURE && q.isHabit())) {
+            checkBox.setClickable(false);
+        } else {
+            checkBox.setClickable(true);
+            checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (checked) {
+                    eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                } else {
+                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
+                }
+            });
+        }
 
         if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);

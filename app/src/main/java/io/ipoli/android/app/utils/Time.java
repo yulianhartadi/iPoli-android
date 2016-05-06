@@ -6,6 +6,11 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Time {
+
+    public enum RelativeTime {
+        PAST, PRESENT, FUTURE;
+    }
+
     private final int minutes;
 
     private Time(int hours, int minutes) {

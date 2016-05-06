@@ -346,4 +346,12 @@ public class CalendarDayView extends FrameLayout {
             }
         };
     }
+
+    public void showTimeLine() {
+        timeLine.setVisibility(VISIBLE);
+    }
+
+    public void hideTimeLine() {
+        timeLine.setVisibility(GONE);
+    }
 }

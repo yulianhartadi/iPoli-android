@@ -17,6 +17,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.joda.time.LocalDate;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,6 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -107,16 +107,16 @@ public class App extends MultiDexApplication {
     }
 
     private void resetEndDateForIncompleteQuests() {
-        questPersistenceService.findAllIncompleteBefore(new LocalDate()).flatMapIterable(q -> q)
-                .flatMap(q -> {
-                    if (q.isStarted()) {
-                        q.setEndDate(new Date());
-                        q.setStartMinute(0);
-                    } else {
-                        q.setEndDate(null);
-                    }
-                    return questPersistenceService.save(q);
-                });
+        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).toBlocking().first();
+        for(Quest q : quests) {
+            if (q.isStarted()) {
+                q.setEndDate(new Date());
+                q.setStartMinute(0);
+            } else {
+                q.setEndDate(null);
+            }
+            questPersistenceService.save(q);
+        }
     }
 
     private void registerServices() {
@@ -141,7 +141,7 @@ public class App extends MultiDexApplication {
     public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
         QuestNotificationScheduler.stopAll(q.getId(), this);
-        q.setCompletedAt(DateUtils.nowUTC());
+        q.setCompletedAt(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         questPersistenceService.save(q).subscribe(quest -> {
             eventBus.post(new QuestCompletedEvent(quest, e.source));
