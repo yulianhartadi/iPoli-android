@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -47,7 +45,6 @@ import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
@@ -209,7 +206,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     @Override
     public void onResume() {
         super.onResume();
-        if(getUserVisibleHint()) {
+        if (getUserVisibleHint()) {
             eventBus.register(this);
         }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
@@ -253,7 +250,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         findSlotsSubscriptions.unsubscribe();
         eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
-        if(getUserVisibleHint()) {
+        if (getUserVisibleHint()) {
             eventBus.unregister(this);
         }
         super.onPause();
@@ -381,16 +378,14 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     public void scrollToQuest(Quest quest) {
         Time startTime = Quest.getStartTime(quest);
         if (startTime == null) {
-            startTime = getStartTimeFromCompletedAtTime(quest);
+            startTime = getStartTimeForUnscheduledQuest(quest);
         }
         calendarDayView.smoothScrollToTime(startTime);
     }
 
-    private Time getStartTimeFromCompletedAtTime(Quest q) {
-        Time startTime;
+    private Time getStartTimeForUnscheduledQuest(Quest q) {
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
-        startTime = Time.of(q.getCompletedAtMinute() - duration);
-        return startTime;
+        return Time.of(q.getCompletedAtMinute() - duration);
     }
 
     @Subscribe
@@ -413,22 +408,14 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
                     if (q.getCompletedAt() != null) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                        if (isNotScheduledForToday(q) || hasNoStartTime(q)) {
-                            DateTime completedAt = new DateTime(q.getCompletedAt()).minusMinutes(event.getDuration());
-                            // actual start time was yesterday, so yeah we do not include multi-day events
-                            if (!DateUtils.isTodayUTC(completedAt.toLocalDate())) {
-                                continue;
-                            }
-
-                            event.setStartMinute(getStartTimeFromCompletedAtTime(q).toMinutesAfterMidnight());
+                        if (hasNoStartTime(q)) {
+                            event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
                         }
                         completedEvents.add(event);
+                    } else if (hasNoStartTime(q)) {
+                        unscheduledQuests.add(q);
                     } else {
-                        if (hasNoStartTime(q)) {
-                            unscheduledQuests.add(q);
-                        } else {
-                            calendarEvents.add(new QuestCalendarViewModel(q));
-                        }
+                        calendarEvents.add(new QuestCalendarViewModel(q));
                     }
                 }
                 calendarEvents.addAll(0, completedEvents);
@@ -438,10 +425,6 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
         private boolean hasNoStartTime(Quest q) {
             return q.getStartMinute() < 0;
-        }
-
-        private boolean isNotScheduledForToday(Quest q) {
-            return !q.isScheduledForToday();
         }
     }
 

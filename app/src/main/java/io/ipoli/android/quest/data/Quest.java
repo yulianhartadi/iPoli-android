@@ -337,6 +337,10 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return isRemoteObject;
     }
 
+    public boolean isStarted() {
+        return actualStart != null && completedAt == null;
+    }
+
     public boolean isScheduledForTomorrow() {
         return DateUtils.isTomorrowUTC(new LocalDate(getEndDate(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
     }

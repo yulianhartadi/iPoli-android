@@ -16,6 +16,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.LocalDate;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -108,7 +109,12 @@ public class App extends MultiDexApplication {
     private void resetEndDateForIncompleteQuests() {
         questPersistenceService.findAllIncompleteBefore(new LocalDate()).flatMapIterable(q -> q)
                 .flatMap(q -> {
-                    q.setEndDate(null);
+                    if (q.isStarted()) {
+                        q.setEndDate(new Date());
+                        q.setStartMinute(0);
+                    } else {
+                        q.setEndDate(null);
+                    }
                     return questPersistenceService.save(q);
                 });
     }
