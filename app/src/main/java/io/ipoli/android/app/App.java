@@ -2,9 +2,11 @@ package io.ipoli.android.app;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
@@ -26,6 +28,7 @@ import javax.inject.Inject;
 import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -75,6 +78,14 @@ public class App extends MultiDexApplication {
     @Inject
     RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
+    BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
+            resetEndDateForIncompleteQuests();
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -104,11 +115,13 @@ public class App extends MultiDexApplication {
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
         eventBus.post(new ForceSyncRequestEvent());
+
+        getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
     }
 
     private void resetEndDateForIncompleteQuests() {
         List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).toBlocking().first();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             if (q.isStarted()) {
                 q.setEndDate(new Date());
                 q.setStartMinute(0);
