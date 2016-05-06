@@ -29,8 +29,12 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,6 +48,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
@@ -278,11 +283,32 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
+            if (isQuestForThePast(q)) {
+                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
+                Calendar c = Calendar.getInstance();
+                c.setTime(completedAt);
+
+                int completedAtMinute = Time.now().toMinutesAfterMidnight();
+                if(hasStartTime(q)) {
+                    completedAtMinute = q.getStartMinute();
+                }
+                c.add(Calendar.MINUTE, completedAtMinute);
+                q.setCompletedAt(c.getTime());
+                q.setCompletedAtMinute(completedAtMinute);
+            }
             Quest.setContext(q, questContext);
             eventBus.post(new NewQuestAddedEvent(q));
             Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
         resetQuestText();
+    }
+
+    private boolean hasStartTime(Quest q) {
+        return q.getStartMinute() >= 0;
+    }
+
+    private boolean isQuestForThePast(Quest q) {
+        return q.getEndDate() != null && new LocalDate(q.getEndDate(), DateTimeZone.UTC).isBefore(new LocalDate());
     }
 
     private void resetQuestText() {

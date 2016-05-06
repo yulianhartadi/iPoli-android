@@ -255,7 +255,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public void setCompletedAt(Date completedAt) {
-        this.completedAt = DateUtils.getDate(completedAt);
+        DateTimeZone tz = DateTimeZone.getDefault();
+        this.completedAt = new Date(tz.convertLocalToUTC(completedAt.getTime(), false));
     }
 
     public static boolean isStarted(Quest quest) {
