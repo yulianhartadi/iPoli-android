@@ -243,7 +243,14 @@ public class CalendarDayView extends FrameLayout {
     }
 
     public void smoothScrollToTime(final Time time) {
-        int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+
+        int currentVisibleHour = ((LinearLayoutManager) hourCellContainer.getLayoutManager()).findFirstVisibleItemPosition();
+        int hour = time.getHours();
+        if (currentVisibleHour < hour) {
+            hour = Math.min(HOURS_IN_A_DAY - 1, hour + (int) Math.floor(HOURS_PER_SCREEN / 2.0d));
+        } else {
+            hour = Math.max(0, hour - TOP_PADDING_HOURS);
+        }
         hourCellContainer.smoothScrollToPosition(hour);
     }
 
