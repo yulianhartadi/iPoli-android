@@ -131,7 +131,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
-        bottomBar = BottomBar.attachShy(rootContainer, contentContainer, savedInstanceState);
+        bottomBar = BottomBar.attach(this, savedInstanceState);
+        bottomBar.noTopOffset();
         bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
             @Override
             public void onMenuTabSelected(@IdRes int menuItemId) {
@@ -155,7 +156,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     case R.id.overview:
                         screenName = "overview";
                         currentFragment = new OverviewFragment();
-                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+                        toolbarTitle.setText(R.string.overview_title);
                         break;
                     case R.id.add_quest:
                         screenName = "add_quest";
@@ -258,9 +259,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if (currentFragment != null && currentFragment instanceof CalendarFragment && e.source == EventSource.NOTIFICATION) {
-            ((CalendarFragment) currentFragment).scrollToTodayQuest(e.quest);
-        }
         bottomBar.post(() -> {
             Snackbar snackbar = Snackbar
                     .make(rootContainer,
@@ -310,7 +308,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
-       ShareQuestDialog.show(this, e.quest, eventBus);
+        ShareQuestDialog.show(this, e.quest, eventBus);
     }
 
     @Subscribe

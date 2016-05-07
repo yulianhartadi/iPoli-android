@@ -155,7 +155,6 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         changeTitle(currentMidDate);
 
         adapter = createAdapter();
-
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
     }
