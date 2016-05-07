@@ -175,8 +175,8 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        calendarDayView.scrollToNow();
         eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+        calendarDayView.scrollToNow();
     }
 
     private void setUnscheduledQuestsHeight() {
@@ -386,14 +386,6 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
             return;
         }
         updateSchedule();
-    }
-
-    public void scrollToQuest(Quest quest) {
-        Time startTime = Quest.getStartTime(quest);
-        if (startTime == null) {
-            startTime = getStartTimeForUnscheduledQuest(quest);
-        }
-        calendarDayView.smoothScrollToTime(startTime);
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {

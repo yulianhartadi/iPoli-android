@@ -33,6 +33,7 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
@@ -331,5 +332,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             return;
         }
         toolbarCalendar.setCurrentDate(e.date.toDate());
+    }
+
+    @Subscribe
+    public void onCloseToolbarCalendar(CloseToolbarCalendarEvent e) {
+        boolean isExpanded = (boolean) appBar.getTag();
+        if (isExpanded) {
+            calendarIndicator.animate().rotation(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
+            appBar.setExpanded(false, true);
+        }
+        appBar.setTag(false);
     }
 }

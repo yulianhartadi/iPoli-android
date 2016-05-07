@@ -30,8 +30,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 
 /**
@@ -83,7 +83,6 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
             }
         });
 
-
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
 
@@ -102,6 +101,7 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         int id = item.getItemId();
         if (id == R.id.action_today) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.MENU));
+            eventBus.post(new CloseToolbarCalendarEvent());
             return true;
         }
 
@@ -138,12 +138,6 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         return R.string.calendar_format;
     }
 
-    public void scrollToTodayQuest(Quest quest) {
-        currentMidDate = new LocalDate();
-        calendarPager.setCurrentItem(MID_POSITION);
-        ((DayViewFragment) adapter.getItem(calendarPager.getCurrentItem())).scrollToQuest(quest);
-    }
-
     @Subscribe
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
 
@@ -153,10 +147,8 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
 
         currentMidDate = e.date;
         changeTitle(currentMidDate);
-
-        adapter = createAdapter();
-        calendarPager.setAdapter(adapter);
-        calendarPager.setCurrentItem(MID_POSITION);
+        adapter.notifyDataSetChanged();
+        calendarPager.setCurrentItem(MID_POSITION, false);
     }
 
     private FragmentStatePagerAdapter createAdapter() {
@@ -171,12 +163,18 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
             public int getCount() {
                 return MAX_VISIBLE_DAYS;
             }
+
+            @Override
+            public int getItemPosition(Object object) {
+                return POSITION_NONE;
+            }
         };
     }
 
     @Override
     public void onDayClick(Date dateClicked) {
         eventBus.post(new CurrentDayChangedEvent(new LocalDate(dateClicked), CurrentDayChangedEvent.Source.CALENDAR));
+        eventBus.post(new CloseToolbarCalendarEvent());
     }
 
     @Override

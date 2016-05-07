@@ -2,7 +2,9 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -11,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
@@ -34,16 +37,17 @@ public class CalendarDayView extends FrameLayout {
 
     public static final int HOURS_PER_SCREEN = 5;
     public static final int HOURS_IN_A_DAY = 24;
-    public static final int TOP_PADDING_HOURS = (int) Math.floor(HOURS_PER_SCREEN / 2.0f);
+    public static final int TOP_PADDING_HOURS = 1;
 
     private float minuteHeight;
     private RelativeLayout eventsContainer;
     private int hourHeight;
-    public NestedScrollView scrollView;
     private View timeLine;
 
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
+    private RecyclerView hourCellContainer;
+    private RelativeLayout timelineContainer;
 
     public CalendarDayView(Context context) {
         super(context);
@@ -81,56 +85,48 @@ public class CalendarDayView extends FrameLayout {
 
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        FrameLayout mainContainer = initMainContainer(context);
-        mainContainer.addView(initHourCellsContainer(context, inflater));
-        mainContainer.addView(initTimeLineContainer(context, inflater));
-        mainContainer.addView(initEventsContainer(context));
+        hourCellContainer = initHourCellsContainer(context);
+        hourCellContainer.addOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
-        addView(initScrollView(context, mainContainer));
-    }
-
-    private NestedScrollView initScrollView(Context context, FrameLayout mainContainer) {
-        scrollView = new CalendarScrollView(context);
-        scrollView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrollView.setVerticalScrollBarEnabled(true);
-        scrollView.addView(mainContainer);
-        return scrollView;
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int yOffset = hourCellContainer.computeVerticalScrollOffset();
+                timelineContainer.scrollTo(0, yOffset);
+                eventsContainer.scrollTo(0, yOffset);
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+        addView(hourCellContainer);
+        timelineContainer = initTimeLineContainer(context, inflater);
+        addView(timelineContainer);
+        eventsContainer = initEventsContainer(context);
+        addView(eventsContainer);
     }
 
     @NonNull
-    private FrameLayout initMainContainer(Context context) {
-        FrameLayout mainContainer = new FrameLayout(context);
-        mainContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        return mainContainer;
-    }
+    private RecyclerView initHourCellsContainer(Context context) {
 
-    @NonNull
-    private LinearLayout initHourCellsContainer(Context context, LayoutInflater inflater) {
-        LinearLayout hourCellsContainer = new LinearLayout(context);
-        hourCellsContainer.setOrientation(LinearLayout.VERTICAL);
-        hourCellsContainer.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        RecyclerView recyclerView = new RecyclerView(context);
+        recyclerView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
 
+        List<String> hours = new ArrayList<>();
         for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            hourCellsContainer.addView(initHourCell(i, hourCellsContainer, inflater));
+            hours.add(String.format(Locale.getDefault(), "%02d:00", i));
         }
-        return hourCellsContainer;
-    }
-
-    @NonNull
-    private View initHourCell(int hour, LinearLayout hourCellsContainer, LayoutInflater inflater) {
-        View hourCell = inflater.inflate(R.layout.calendar_hour_cell, hourCellsContainer, false);
-        if (hour > 0) {
-            TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
-            tv.setText(String.format(Locale.getDefault(), "%02d:00", hour));
-        }
-        ViewGroup.LayoutParams hcp = hourCell.getLayoutParams();
-        hcp.height = hourHeight;
-        hourCell.setLayoutParams(hcp);
-        return hourCell;
+        recyclerView.setAdapter(new HourCellAdapter(hours));
+        recyclerView.setHasFixedSize(true);
+        return recyclerView;
     }
 
     private RelativeLayout initEventsContainer(Context context) {
-        eventsContainer = new RelativeLayout(context);
+        RelativeLayout eventsContainer = new RelativeLayout(context);
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
     }
@@ -236,32 +232,19 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private int getRelativeY(int y, int yOffset) {
-        return Math.max(0, scrollView.getScrollY() + y - yOffset);
+        return Math.max(0, hourCellContainer.computeVerticalScrollOffset() + y - yOffset);
     }
 
     public void scrollToNow() {
-        scrollView.post(() -> {
-            Calendar c = Calendar.getInstance();
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            hour = Math.max(0, hour - TOP_PADDING_HOURS);
-            if (hour == 0) {
-                scrollView.scrollTo(scrollView.getScrollX(), 0);
-            } else {
-                int minutes = c.get(Calendar.MINUTE);
-                scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
-            }
-        });
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        hour = Math.max(0, hour - TOP_PADDING_HOURS);
+        hourCellContainer.scrollToPosition(hour);
     }
 
     public void smoothScrollToTime(final Time time) {
-        scrollView.post(() -> {
-            int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
-            if (hour == 0) {
-                scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
-            } else {
-                scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
-            }
-        });
+        int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+        hourCellContainer.smoothScrollToPosition(hour);
     }
 
     public void removeAllEvents() {
@@ -314,9 +297,6 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragExited(DragEvent event) {
-                if (scrollView.getChildCount() < 1) {
-                    return;
-                }
                 scrollCalendarAndDragViewByMinutes(event, 60);
             }
 
@@ -326,11 +306,11 @@ public class CalendarDayView extends FrameLayout {
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
                 int topMargin = isOnTopEdge ?
                         Math.max(0, layoutParams.topMargin - getHeightFor(minutes)) :
-                        Math.min(scrollView.getChildAt(0).getHeight() - dragView.getHeight(), layoutParams.topMargin + getHeightFor(minutes));
+                        Math.min(getHeight() - dragView.getHeight(), layoutParams.topMargin + getHeightFor(minutes));
                 final int scrollYDelta = isOnTopEdge ? -getHeightFor(minutes) : getHeightFor(minutes);
                 layoutParams.topMargin = topMargin;
                 dragView.setLayoutParams(layoutParams);
-                scrollView.post(() -> scrollView.smoothScrollBy(0, scrollYDelta));
+                hourCellContainer.post(() -> hourCellContainer.smoothScrollBy(0, scrollYDelta));
 
             }
 
@@ -353,5 +333,47 @@ public class CalendarDayView extends FrameLayout {
 
     public void hideTimeLine() {
         timeLine.setVisibility(GONE);
+    }
+
+    public class HourCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final List<String> hours;
+
+        public HourCellAdapter(List<String> hours) {
+            this.hours = hours;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                          int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View view = inflater.inflate(R.layout.calendar_hour_cell, parent, false);
+            ViewGroup.LayoutParams hcp = view.getLayoutParams();
+            hcp.height = hourHeight;
+            view.setLayoutParams(hcp);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+            ViewHolder vh = (ViewHolder) holder;
+            String text = hours.get(vh.getAdapterPosition());
+            vh.timeLabel.setText(text);
+        }
+
+        @Override
+        public int getItemCount() {
+            return hours.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            @Bind(R.id.time_label)
+            TextView timeLabel;
+
+            public ViewHolder(View v) {
+                super(v);
+                ButterKnife.bind(this, v);
+            }
+        }
     }
 }
