@@ -4,11 +4,17 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -16,11 +22,15 @@ import com.squareup.otto.Subscribe;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.Minutes;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -54,6 +64,10 @@ import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import me.everything.providers.android.calendar.Calendar;
+import me.everything.providers.android.calendar.CalendarProvider;
+import me.everything.providers.android.calendar.Event;
+import me.everything.providers.core.Data;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -117,6 +131,122 @@ public class App extends MultiDexApplication {
         eventBus.post(new ForceSyncRequestEvent());
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
+
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                    .detectDiskReads()
+//                    .detectDiskWrites()
+//                    .detectNetwork()   // or .detectAll() for all detectable problems
+//                    .penaltyLog()
+//                    .build());
+//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                    .detectLeakedSqlLiteObjects()
+//                    .detectLeakedClosableObjects()
+//                    .penaltyLog()
+//                    .penaltyDeath()
+//                    .build());
+//        }
+
+        syncCalendar();
+    }
+
+    private void syncCalendar() {
+        CalendarProvider provider = new CalendarProvider(getApplicationContext());
+        List<Calendar> calendars = provider.getCalendars().getList();
+
+        String[] columns = new String[]{
+                CalendarContract.Events._ID,
+                CalendarContract.Events.TITLE,
+                CalendarContract.Events.DURATION,
+                CalendarContract.Events.DESCRIPTION,
+                CalendarContract.Events.DTSTART,
+                CalendarContract.Events.DTEND,
+                CalendarContract.Events.RRULE,
+                CalendarContract.Events.RDATE,
+                CalendarContract.Events.EVENT_TIMEZONE,
+                CalendarContract.Events.EVENT_END_TIMEZONE,
+                CalendarContract.Events.ORIGINAL_ID,
+                CalendarContract.Events.ORIGINAL_SYNC_ID
+        };
+
+//        for (Calendar calendar : calendars) {
+        Data<Event> events = provider.getEvents(1);
+        Cursor cursor = events.getCursor();
+//        cursor.moveToNext();
+//        Event e = events.fromCursor(cursor);
+//        Data<Instance> instances = provider.getInstances(e.id, 0, System.currentTimeMillis());
+
+//            events.fromCursor(events.getCursor(), columns);
+
+
+        while (cursor.moveToNext()) {
+            Event e = events.fromCursor(cursor, columns);
+//            if (!TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate)) {
+            Quest q = new Quest(e.title);
+            DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
+            DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
+            q.setId(String.valueOf(e.id));
+//                Duration dur = new Duration();
+//                dur.setValue(e.duration);
+
+            q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
+            q.setStartMinute(startDateTime.getMinuteOfDay());
+            q.setEndDate(startDateTime.toLocalDate().toDate());
+            q.setSource("google-calendar");
+//                Log.d("CalendarSyncEvent", e.title + " " + new Date(e.dTStart) + " " + e.eventTimeZone + " endtz: " + e.eventEndTimeZone);
+//                Log.d("CalendarSyncEvent", " " + q.getId());
+            Log.d("CalendarSyncEvent", " " + q.getName());
+            Log.d("CalendarSyncEvent", " " + e.rRule);
+            Log.d("CalendarSyncEvent", " " + e.id);
+            Log.d("CalendarSyncEvent", " " + e.originalId);
+            Log.d("CalendarSyncEvent", " " + e.dTStart);
+            Log.d("CalendarSyncEvent", " " + e.duration);
+//                Log.d("CalendarSyncEvent", " " + q.getStartMinute());
+//                Log.d("CalendarSyncEvent", " " + q.getEndDate());
+//                Log.d("CalendarSyncEvent", " " + q.getDuration());
+//                Log.d("CalendarSyncEvent", " " + e.duration);
+//                Log.d("CalendarSyncEvent", " " + TimeUnit.MILLISECONDS.toMinutes(dur.getDuration().getTime(new Date(0)).getTime()));
+//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getHours());
+//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getDays());
+//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getSeconds());
+//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getWeeks());
+//                Log.d("CalendarSyncEvent", " " + startDateTime);
+//                Log.d("CalendarSyncEvent", " " + endDateTime);
+//            }
+//                T t = Entity.create(mCursor, mCls);
+//                data.add(t);
+        }
+
+//        }
+
+
+        long calID = 1;
+        long startMillis;
+        long endMillis;
+        java.util.Calendar beginTime = java.util.Calendar.getInstance();
+        beginTime.add(java.util.Calendar.HOUR_OF_DAY, -5);
+
+//        beginTime.set(2016, 5, 8, 7, 30);
+        startMillis = beginTime.getTimeInMillis();
+        java.util.Calendar endTime = java.util.Calendar.getInstance();
+        endTime.add(java.util.Calendar.HOUR_OF_DAY, -3);
+//        endTime.add(java.util.Calendar.HOUR_OF_DAY, 3);
+//        endTime.set(2016, 5, 8, 8, 45);
+        endMillis = endTime.getTimeInMillis();
+
+        ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, startMillis);
+        values.put(CalendarContract.Events.DTEND, endMillis);
+        values.put(CalendarContract.Events.TITLE, "Jazzercise");
+        values.put(CalendarContract.Events.DESCRIPTION, "Group workout");
+        values.put(CalendarContract.Events.CALENDAR_ID, calID);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+
+        long eventID = Long.parseLong(uri.getLastPathSegment());
+        Log.d("CalendarSyncEventId", " " + eventID);
+// get the event ID that is the last element in the Uri
     }
 
     private void resetEndDateForIncompleteQuests() {
