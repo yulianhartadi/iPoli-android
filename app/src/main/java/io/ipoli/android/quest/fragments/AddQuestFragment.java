@@ -39,9 +39,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
+import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -72,13 +73,13 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @Inject
     Bus eventBus;
 
-    @Bind(R.id.quest_text)
+    @BindView(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
 
-    @Bind(R.id.quest_context_name)
+    @BindView(R.id.quest_context_name)
     TextView contextName;
 
-    @Bind(R.id.quest_context_container)
+    @BindView(R.id.quest_context_container)
     LinearLayout contextContainer;
 
     private BaseSuggestionsAdapter adapter;
@@ -89,6 +90,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
+    private Unbinder unbinder;
 
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
@@ -123,7 +125,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_quest, container, false);
 
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
         suggestionsManager = new SuggestionsManager(parser);
@@ -161,7 +163,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @Override

@@ -19,7 +19,7 @@ import com.squareup.otto.Bus;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
@@ -249,34 +249,34 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public static class QuestViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_name)
+        @BindView(R.id.quest_name)
         public TextView name;
 
-        @Bind(R.id.quest_running_indicator)
+        @BindView(R.id.quest_running_indicator)
         View runningIndicator;
 
-        @Bind(R.id.quest_context_indicator_background)
+        @BindView(R.id.quest_context_indicator_background)
         public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_context_indicator_image)
+        @BindView(R.id.quest_context_indicator_image)
         public ImageView contextIndicatorImage;
 
-        @Bind(R.id.quest_duration)
+        @BindView(R.id.quest_duration)
         public TextView scheduleText;
 
-        @Bind(R.id.quest_due_date)
+        @BindView(R.id.quest_due_date)
         public TextView dueDate;
 
-        @Bind(R.id.quest_details_container)
+        @BindView(R.id.quest_details_container)
         public ViewGroup detailsContainer;
 
-        @Bind(R.id.quest_remaining)
+        @BindView(R.id.quest_remaining)
         public TextView remainingText;
 
-        @Bind(R.id.quest_progress_container)
+        @BindView(R.id.quest_progress_container)
         public ViewGroup progressContainer;
 
-        @Bind(R.id.quest_recurrent_indicator)
+        @BindView(R.id.quest_recurrent_indicator)
         public ImageView recurrentIcon;
 
         public QuestViewHolder(View v) {

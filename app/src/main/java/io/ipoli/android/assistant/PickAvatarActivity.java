@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
@@ -20,7 +20,7 @@ import io.ipoli.android.app.BaseActivity;
 
 public class PickAvatarActivity extends BaseActivity {
 
-    @Bind(R.id.avatar_list)
+    @BindView(R.id.avatar_list)
     RecyclerView avatarList;
 
     @Inject

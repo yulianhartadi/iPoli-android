@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
@@ -374,7 +374,7 @@ public class CalendarDayView extends FrameLayout {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
-            @Bind(R.id.time_label)
+            @BindView(R.id.time_label)
             TextView timeLabel;
 
             public ViewHolder(View v) {

@@ -31,8 +31,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
@@ -54,7 +55,7 @@ public class HabitsFragment extends Fragment {
 
     CoordinatorLayout rootContainer;
 
-    @Bind(R.id.quest_list)
+    @BindView(R.id.quest_list)
     RecyclerView questList;
 
     @Inject
@@ -64,13 +65,14 @@ public class HabitsFragment extends Fragment {
     QuestPersistenceService questPersistenceService;
 
     private HabitsAdapter habitsAdapter;
+    private Unbinder unbinder;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_habits, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
         rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
@@ -95,7 +97,7 @@ public class HabitsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @Override

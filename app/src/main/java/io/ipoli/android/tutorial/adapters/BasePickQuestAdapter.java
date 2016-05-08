@@ -16,7 +16,7 @@ import com.squareup.otto.Bus;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.QuestContext;
@@ -26,7 +26,7 @@ import io.ipoli.android.tutorial.PickQuestViewModel;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public abstract class BasePickQuestAdapter<T> extends  RecyclerView.Adapter<BasePickQuestAdapter.ViewHolder>{
+public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BasePickQuestAdapter.ViewHolder> {
     protected Context context;
     protected final Bus evenBus;
     protected List<PickQuestViewModel<T>> viewModels;
@@ -64,7 +64,7 @@ public abstract class BasePickQuestAdapter<T> extends  RecyclerView.Adapter<Base
             } else {
                 vm.deselect();
                 sendQuestDeselectEvent(holder.getAdapterPosition());
-                
+
             }
         });
         holder.itemView.setOnClickListener(view -> {
@@ -82,8 +82,8 @@ public abstract class BasePickQuestAdapter<T> extends  RecyclerView.Adapter<Base
 
     public List<T> getSelectedQuests() {
         List<T> selectedQuests = new ArrayList<>();
-        for(PickQuestViewModel vm : viewModels) {
-            if(vm.isSelected()) {
+        for (PickQuestViewModel vm : viewModels) {
+            if (vm.isSelected()) {
                 selectedQuests.add((T) vm.getQuest());
             }
         }
@@ -96,16 +96,16 @@ public abstract class BasePickQuestAdapter<T> extends  RecyclerView.Adapter<Base
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.quest_check)
+        @BindView(R.id.quest_check)
         CheckBox check;
 
-        @Bind(R.id.quest_text)
+        @BindView(R.id.quest_text)
         TextView name;
 
-        @Bind(R.id.quest_context_indicator_background)
+        @BindView(R.id.quest_context_indicator_background)
         public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_context_indicator_image)
+        @BindView(R.id.quest_context_indicator_image)
         public ImageView contextIndicatorImage;
 
         public ViewHolder(View v) {

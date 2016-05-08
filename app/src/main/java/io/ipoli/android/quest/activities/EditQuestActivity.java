@@ -38,7 +38,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
@@ -69,31 +69,31 @@ import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 public class EditQuestActivity extends BaseActivity {
 
-    @Bind(R.id.edit_quest_container)
+    @BindView(R.id.edit_quest_container)
     CoordinatorLayout rootContainer;
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout appBar;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.quest_text)
+    @BindView(R.id.quest_text)
     EditText nameText;
 
-    @Bind(R.id.quest_duration)
+    @BindView(R.id.quest_duration)
     Spinner questDuration;
 
-    @Bind(R.id.quest_due_date)
+    @BindView(R.id.quest_due_date)
     Button dueDateBtn;
 
-    @Bind(R.id.quest_start_time)
+    @BindView(R.id.quest_start_time)
     Button startTimeBtn;
 
-    @Bind(R.id.quest_context_name)
+    @BindView(R.id.quest_context_name)
     TextView contextName;
 
-    @Bind(R.id.quest_context_container)
+    @BindView(R.id.quest_context_container)
     LinearLayout contextContainer;
 
     @Inject

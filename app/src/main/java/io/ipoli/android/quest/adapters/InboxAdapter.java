@@ -17,7 +17,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
@@ -115,17 +115,17 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
-        @Bind(R.id.quest_text)
+        @BindView(R.id.quest_text)
         TextView name;
 
-        @Bind(R.id.quest_created_at)
+        @BindView(R.id.quest_created_at)
         TextView createdAt;
 
 
-        @Bind(R.id.quest_context_indicator_background)
+        @BindView(R.id.quest_context_indicator_background)
         public View contextIndicatorBackground;
 
-        @Bind(R.id.quest_context_indicator_image)
+        @BindView(R.id.quest_context_indicator_image)
         public ImageView contextIndicatorImage;
 
         public ViewHolder(View v) {

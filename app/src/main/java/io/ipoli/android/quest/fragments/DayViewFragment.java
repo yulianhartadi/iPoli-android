@@ -27,8 +27,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -79,13 +80,13 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     @Inject
     protected Bus eventBus;
 
-    @Bind(R.id.unscheduled_quests)
+    @BindView(R.id.unscheduled_quests)
     RecyclerView unscheduledQuestList;
 
-    @Bind(R.id.calendar)
+    @BindView(R.id.calendar)
     CalendarDayView calendarDayView;
 
-    @Bind(R.id.calendar_container)
+    @BindView(R.id.calendar_container)
     CalendarLayout calendarContainer;
 
     @Inject
@@ -109,6 +110,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         }
     };
     private LocalDate currentDate;
+    private Unbinder unbinder;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -136,7 +138,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         View view = inflater.inflate(R.layout.fragment_day_view, container, false);
 
         App.getAppComponent(getContext()).inject(this);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         unscheduledQuestList.setLayoutManager(layoutManager);
@@ -159,7 +161,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.scrollToNow();
 
-        if(relativeTime == Time.RelativeTime.PRESENT) {
+        if (relativeTime == Time.RelativeTime.PRESENT) {
             calendarDayView.showTimeLine();
         } else {
             calendarDayView.hideTimeLine();
@@ -170,7 +172,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @Subscribe
@@ -416,13 +418,13 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
                 });
             }
 
-            if(currentDate.isAfter(new LocalDate())) {
+            if (currentDate.isAfter(new LocalDate())) {
                 return questPersistenceService.findAllIncompleteForDate(currentDate).flatMap(quests -> {
                     List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                     List<Quest> unscheduledQuests = new ArrayList<>();
                     for (Quest q : quests) {
                         if (hasNoStartTime(q)) {
-                           unscheduledQuests.add(q);
+                            unscheduledQuests.add(q);
                         } else {
                             QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                             calendarEvents.add(event);

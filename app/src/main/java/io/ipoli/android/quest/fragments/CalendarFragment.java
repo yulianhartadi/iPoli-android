@@ -24,7 +24,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -43,7 +43,7 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
 
-    @Bind(R.id.calendar_pager)
+    @BindView(R.id.calendar_pager)
     ViewPager calendarPager;
 
     @Inject

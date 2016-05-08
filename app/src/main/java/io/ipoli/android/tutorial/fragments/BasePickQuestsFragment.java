@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.tutorial.PickQuestViewModel;
@@ -25,10 +25,10 @@ import io.ipoli.android.tutorial.adapters.BasePickQuestAdapter;
  */
 public abstract class BasePickQuestsFragment<T> extends Fragment {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.quests_list)
+    @BindView(R.id.quests_list)
     RecyclerView questList;
 
     protected BasePickQuestAdapter<T> pickQuestsAdapter;

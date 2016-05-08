@@ -26,7 +26,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
@@ -69,37 +69,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private BottomBar bottomBar;
 
-    @Bind(R.id.root_container)
+    @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.content_container)
+    @BindView(R.id.content_container)
     View contentContainer;
 
-    @Bind(R.id.loading_container)
+    @BindView(R.id.loading_container)
     View loadingContainer;
 
-    @Bind(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     ProgressBar loadingIndicator;
 
-    @Bind(R.id.loading_message)
+    @BindView(R.id.loading_message)
     TextView loadingMessage;
 
-    @Bind(R.id.toolbar_title)
+    @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
 
-    @Bind(R.id.toolbar_expand_container)
+    @BindView(R.id.toolbar_expand_container)
     View toolbarExpandContainer;
 
-    @Bind(R.id.toolbar_calendar)
+    @BindView(R.id.toolbar_calendar)
     CompactCalendarView toolbarCalendar;
 
-    @Bind(R.id.toolbar_calendar_indicator)
+    @BindView(R.id.toolbar_calendar_indicator)
     ImageView calendarIndicator;
 
-    @Bind(R.id.appbar)
+    @BindView(R.id.appbar)
     AppBarLayout appBar;
 
     @Inject

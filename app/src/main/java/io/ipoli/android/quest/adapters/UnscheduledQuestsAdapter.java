@@ -17,7 +17,7 @@ import com.squareup.otto.Bus;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
@@ -129,16 +129,16 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.quest_check)
+        @BindView(R.id.quest_check)
         CheckBox check;
 
-        @Bind(R.id.quest_text)
+        @BindView(R.id.quest_text)
         TextView name;
 
-        @Bind(R.id.quest_context_indicator)
+        @BindView(R.id.quest_context_indicator)
         View indicator;
 
-        @Bind(R.id.quest_schedule)
+        @BindView(R.id.quest_schedule)
         View schedule;
 
         public ViewHolder(View v) {

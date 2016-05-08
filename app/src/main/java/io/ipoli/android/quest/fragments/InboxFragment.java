@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -24,8 +23,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
@@ -48,22 +48,22 @@ public class InboxFragment extends Fragment {
 
     CoordinatorLayout rootContainer;
 
-    @Bind(R.id.quest_list)
+    @BindView(R.id.quest_list)
     RecyclerView questList;
 
     @Inject
     QuestPersistenceService questPersistenceService;
 
     private InboxAdapter inboxAdapter;
+    private Unbinder unbinder;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_inbox, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_activity_inbox));
 
         rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -74,15 +74,13 @@ public class InboxFragment extends Fragment {
     }
 
     private void updateQuests() {
-        getAllUnplanned().subscribe(quests -> {
-            initQuestList(quests);
-        });
+        getAllUnplanned().subscribe(this::initQuestList);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     private void initQuestList(List<Quest> quests) {

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
@@ -48,22 +48,22 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
     public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
 
-    @Bind(R.id.root_container)
+    @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
-    @Bind(R.id.quest_details_progress)
+    @BindView(R.id.quest_details_progress)
     ProgressBar timerProgress;
 
-    @Bind(R.id.quest_details_timer)
+    @BindView(R.id.quest_details_timer)
     FloatingActionButton timerButton;
 
-    @Bind(R.id.quest_details_time)
+    @BindView(R.id.quest_details_time)
     Chronometer timer;
 
-    @Bind(R.id.quest_details_name)
+    @BindView(R.id.quest_details_name)
     TextView name;
 
-    @Bind(R.id.quest_details_edit)
+    @BindView(R.id.quest_details_edit)
     ImageButton edit;
 
     @Inject
