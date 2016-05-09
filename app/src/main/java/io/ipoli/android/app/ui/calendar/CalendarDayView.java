@@ -304,21 +304,6 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragExited(DragEvent event) {
-                scrollCalendarAndDragViewByMinutes(event, 60);
-            }
-
-            private void scrollCalendarAndDragViewByMinutes(DragEvent event, int minutes) {
-                float midY = getY() + (getHeight() / 2);
-                boolean isOnTopEdge = event.getY() < midY;
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
-                int topMargin = isOnTopEdge ?
-                        Math.max(0, layoutParams.topMargin - getHeightFor(minutes)) :
-                        Math.min(getHeight() - dragView.getHeight(), layoutParams.topMargin + getHeightFor(minutes));
-                final int scrollYDelta = isOnTopEdge ? -getHeightFor(minutes) : getHeightFor(minutes);
-                layoutParams.topMargin = topMargin;
-                dragView.setLayoutParams(layoutParams);
-                hourCellContainer.post(() -> hourCellContainer.smoothScrollBy(0, scrollYDelta));
-
             }
 
             @Override
