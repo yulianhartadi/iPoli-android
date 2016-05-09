@@ -27,7 +27,6 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
-    String IS_TODAY_QUEST_EXTRA_KEY = "is_today_quest";
     int AVATAR_COUNT = 12;
     int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
 
