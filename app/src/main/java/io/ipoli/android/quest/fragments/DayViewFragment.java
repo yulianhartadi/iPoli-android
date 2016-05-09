@@ -39,7 +39,6 @@ import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
 import io.ipoli.android.app.scheduling.dto.Task;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -296,11 +295,6 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     }
 
     @Subscribe
-    public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
-        updateSchedule();
-    }
-
-    @Subscribe
     public void onQuestSnoozed(QuestSnoozedEvent e) {
         updateSchedule();
     }
@@ -341,9 +335,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
             eventBus.post(new SuggestionsUnavailableEvent(q));
             eventBus.post(new HideLoaderEvent());
             Toast.makeText(getContext(), "Unable to find slots, try later", Toast.LENGTH_SHORT).show();
-        }, () -> {
-            eventBus.post(new HideLoaderEvent());
-        });
+        }, () -> eventBus.post(new HideLoaderEvent()));
         findSlotsSubscriptions.add(subscription);
     }
 
@@ -393,11 +385,6 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     private Time getStartTimeForUnscheduledQuest(Quest q) {
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         return Time.of(q.getCompletedAtMinute() - duration);
-    }
-
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        updateSchedule();
     }
 
     private class CalendarScheduler {

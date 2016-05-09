@@ -257,9 +257,9 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
             if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
-                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_LONG).show();
             }
         } else {
             Quest q = qParser.parse(text);

@@ -43,4 +43,5 @@ public interface Constants {
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
     String API_RESOURCE_SOURCE = "ipoli-android";
     int SUGGESTED_SLOTS_COUNT = 7;
+    int MINIMUM_DELAY_SYNC_MINUTES = 5;
 }
