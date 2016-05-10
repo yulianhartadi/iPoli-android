@@ -4,17 +4,14 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -26,11 +23,12 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -50,6 +48,8 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
@@ -179,74 +179,44 @@ public class App extends MultiDexApplication {
 //            events.fromCursor(events.getCursor(), columns);
 
 
+        List<Quest> quests = new ArrayList<>();
+        List<RecurrentQuest> habits = new ArrayList<>();
+        List<String> exceptionQuests = new ArrayList<>();
+
         while (cursor.moveToNext()) {
             Event e = events.fromCursor(cursor, columns);
-//            if (!TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate)) {
-            Quest q = new Quest(e.title);
-            DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-            DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
-            q.setId(String.valueOf(e.id));
-//                Duration dur = new Duration();
-//                dur.setValue(e.duration);
+            if (TextUtils.isEmpty(e.rRule) && TextUtils.isEmpty(e.rDate)) {
+                Quest q = new Quest(e.title);
+                DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
+                DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
+                q.setId(String.valueOf(e.id));//???
+                q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
+                q.setStartMinute(startDateTime.getMinuteOfDay());
+                q.setEndDate(startDateTime.toLocalDate().toDate());
+                q.setSource("google-calendar");
+                if (e.originalId != null) {
+                    exceptionQuests.add(String.valueOf(e.id));
+                } else {
+                    quests.add(q);
+                }
 
-            q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
-            q.setStartMinute(startDateTime.getMinuteOfDay());
-            q.setEndDate(startDateTime.toLocalDate().toDate());
-            q.setSource("google-calendar");
-//                Log.d("CalendarSyncEvent", e.title + " " + new Date(e.dTStart) + " " + e.eventTimeZone + " endtz: " + e.eventEndTimeZone);
-//                Log.d("CalendarSyncEvent", " " + q.getId());
-            Log.d("CalendarSyncEvent", " " + q.getName());
-            Log.d("CalendarSyncEvent", " " + e.rRule);
-            Log.d("CalendarSyncEvent", " " + e.id);
-            Log.d("CalendarSyncEvent", " " + e.originalId);
-            Log.d("CalendarSyncEvent", " " + e.dTStart);
-            Log.d("CalendarSyncEvent", " " + e.duration);
-//                Log.d("CalendarSyncEvent", " " + q.getStartMinute());
-//                Log.d("CalendarSyncEvent", " " + q.getEndDate());
-//                Log.d("CalendarSyncEvent", " " + q.getDuration());
-//                Log.d("CalendarSyncEvent", " " + e.duration);
-//                Log.d("CalendarSyncEvent", " " + TimeUnit.MILLISECONDS.toMinutes(dur.getDuration().getTime(new Date(0)).getTime()));
-//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getHours());
-//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getDays());
-//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getSeconds());
-//                Log.d("CalendarSyncEvent", " " + dur.getDuration().getWeeks());
-//                Log.d("CalendarSyncEvent", " " + startDateTime);
-//                Log.d("CalendarSyncEvent", " " + endDateTime);
-//            }
-//                T t = Entity.create(mCursor, mCls);
-//                data.add(t);
+            } else {
+                RecurrentQuest recurrentQuest = new RecurrentQuest(e.title);
+                recurrentQuest.setName(e.title);
+                recurrentQuest.setSource("google-calendar");
+                DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
+                recurrentQuest.setStartMinute(startDateTime.getMinuteOfDay());
+                Dur dur = new Dur(e.duration);
+                recurrentQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
+
+                Recurrence recurrence = new Recurrence();
+                recurrence.setRrule(e.rRule);
+                recurrence.setRdate(e.rDate);
+                //TODO handle dtstart & dtend
+                habits.add(recurrentQuest);
+            }
+
         }
-
-//        }
-
-
-        long calID = 1;
-        long startMillis;
-        long endMillis;
-        java.util.Calendar beginTime = java.util.Calendar.getInstance();
-        beginTime.add(java.util.Calendar.HOUR_OF_DAY, -5);
-
-//        beginTime.set(2016, 5, 8, 7, 30);
-        startMillis = beginTime.getTimeInMillis();
-        java.util.Calendar endTime = java.util.Calendar.getInstance();
-        endTime.add(java.util.Calendar.HOUR_OF_DAY, -3);
-//        endTime.add(java.util.Calendar.HOUR_OF_DAY, 3);
-//        endTime.set(2016, 5, 8, 8, 45);
-        endMillis = endTime.getTimeInMillis();
-
-        ContentResolver cr = getContentResolver();
-        ContentValues values = new ContentValues();
-        values.put(CalendarContract.Events.DTSTART, startMillis);
-        values.put(CalendarContract.Events.DTEND, endMillis);
-        values.put(CalendarContract.Events.TITLE, "Jazzercise");
-        values.put(CalendarContract.Events.DESCRIPTION, "Group workout");
-        values.put(CalendarContract.Events.CALENDAR_ID, calID);
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
-        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-
-        long eventID = Long.parseLong(uri.getLastPathSegment());
-        Log.d("CalendarSyncEventId", " " + eventID);
-// get the event ID that is the last element in the Uri
     }
 
     private void resetEndDateForIncompleteQuests() {
