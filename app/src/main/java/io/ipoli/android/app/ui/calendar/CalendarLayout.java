@@ -22,7 +22,7 @@ import io.ipoli.android.app.utils.ViewUtils;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/16/16.
  */
-public class CalendarLayout extends RelativeLayout {
+public class CalendarLayout extends LinearLayout {
     private float y;
     private CalendarListener calendarListener;
     private CalendarDayView calendarDayView;
