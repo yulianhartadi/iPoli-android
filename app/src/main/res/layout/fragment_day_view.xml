@@ -1,25 +1,30 @@
 <io.ipoli.android.app.ui.calendar.CalendarLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/calendar_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/unscheduled_quests"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/md_white" />
-
-    <View
-        android:id="@+id/unscheduled_quests_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?attr/colorPrimary" />
-
-    <io.ipoli.android.app.ui.calendar.CalendarDayView
-        android:id="@+id/calendar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/md_white" />
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/unscheduled_quests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_white" />
+
+        <View
+            android:id="@+id/unscheduled_quests_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorPrimary" />
+
+        <io.ipoli.android.app.ui.calendar.CalendarDayView
+            android:id="@+id/calendar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/md_white" />
+    </LinearLayout>
 
 </io.ipoli.android.app.ui.calendar.CalendarLayout>

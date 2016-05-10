@@ -7,6 +7,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ import io.ipoli.android.app.utils.ViewUtils;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/16/16.
  */
-public class CalendarLayout extends LinearLayout {
+public class CalendarLayout extends FrameLayout {
     private float y;
     private CalendarListener calendarListener;
     private CalendarDayView calendarDayView;
@@ -76,7 +77,7 @@ public class CalendarLayout extends LinearLayout {
 
         View dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
         dragView.setBackgroundResource(calendarEvent.getBackgroundColor());
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
+        CalendarLayout.LayoutParams params = (CalendarLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
         params.topMargin = (int) y - params.height / 2;
         dragView.setLayoutParams(params);
