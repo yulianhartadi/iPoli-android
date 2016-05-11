@@ -1,5 +1,10 @@
 package io.ipoli.android.app.services.readers;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
@@ -25,15 +30,23 @@ import rx.schedulers.Schedulers;
 public class AndroidCalendarHabitListReader implements ListReader<RecurrentQuest> {
 
     private final Set<String> habitIds;
+    private final Context context;
     private final CalendarProvider calendarProvider;
 
-    public AndroidCalendarHabitListReader(CalendarProvider calendarProvider, LocalStorage localStorage) {
+    public AndroidCalendarHabitListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage) {
+        this.context = context;
         this.calendarProvider = calendarProvider;
         this.habitIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
     }
 
     @Override
     public Observable<RecurrentQuest> read() {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return Observable.empty();
+        }
+
         return Observable.just(habitIds).concatMapIterable(habitIds -> habitIds).concatMap(habitId -> {
             Event e = calendarProvider.getEvent(Integer.valueOf(habitId));
             RecurrentQuest recurrentQuest = new RecurrentQuest("");

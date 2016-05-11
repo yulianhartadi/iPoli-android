@@ -1,5 +1,6 @@
 package io.ipoli.android.app;
 
+import android.Manifest;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -7,11 +8,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.provider.CalendarContract;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.text.TextUtils;
+import android.support.v4.content.ContextCompat;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -19,13 +19,8 @@ import com.squareup.otto.Subscribe;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.Minutes;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -50,8 +45,6 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
@@ -66,10 +59,6 @@ import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import me.everything.providers.android.calendar.Calendar;
-import me.everything.providers.android.calendar.CalendarProvider;
-import me.everything.providers.android.calendar.Event;
-import me.everything.providers.core.Data;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -150,76 +139,6 @@ public class App extends MultiDexApplication {
 //                    .build());
 //        }
 
-//        syncCalendar();
-    }
-
-    private void syncCalendar() {
-        CalendarProvider provider = new CalendarProvider(getApplicationContext());
-        List<Calendar> calendars = provider.getCalendars().getList();
-
-        String[] columns = new String[]{
-                CalendarContract.Events._ID,
-                CalendarContract.Events.TITLE,
-                CalendarContract.Events.DURATION,
-                CalendarContract.Events.DESCRIPTION,
-                CalendarContract.Events.DTSTART,
-                CalendarContract.Events.DTEND,
-                CalendarContract.Events.RRULE,
-                CalendarContract.Events.RDATE,
-                CalendarContract.Events.EVENT_TIMEZONE,
-                CalendarContract.Events.EVENT_END_TIMEZONE,
-                CalendarContract.Events.ORIGINAL_ID,
-                CalendarContract.Events.ORIGINAL_SYNC_ID
-        };
-
-//        for (Calendar calendar : calendars) {
-        Data<Event> events = provider.getEvents(1);
-        Cursor cursor = events.getCursor();
-//        cursor.moveToNext();
-//        Event e = events.fromCursor(cursor);
-//        Data<Instance> instances = provider.getInstances(e.id, 0, System.currentTimeMillis());
-
-//            events.fromCursor(events.getCursor(), columns);
-
-
-        List<Quest> quests = new ArrayList<>();
-        List<RecurrentQuest> habits = new ArrayList<>();
-        List<String> exceptionQuests = new ArrayList<>();
-
-        while (cursor.moveToNext()) {
-            Event e = events.fromCursor(cursor, columns);
-            if (TextUtils.isEmpty(e.rRule) && TextUtils.isEmpty(e.rDate)) {
-                Quest q = new Quest(e.title);
-                DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-                DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
-                q.setId(String.valueOf(e.id));//???
-                q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
-                q.setStartMinute(startDateTime.getMinuteOfDay());
-                q.setEndDate(startDateTime.toLocalDate().toDate());
-                q.setSource("google-calendar");
-                if (e.originalId != null) {
-                    exceptionQuests.add(String.valueOf(e.id));
-                } else {
-                    quests.add(q);
-                }
-
-            } else {
-                RecurrentQuest recurrentQuest = new RecurrentQuest(e.title);
-                recurrentQuest.setName(e.title);
-                recurrentQuest.setSource("google-calendar");
-                DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-                recurrentQuest.setStartMinute(startDateTime.getMinuteOfDay());
-                Dur dur = new Dur(e.duration);
-                recurrentQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
-
-                Recurrence recurrence = new Recurrence();
-                recurrence.setRrule(e.rRule);
-                recurrence.setRdate(e.rDate);
-                //TODO handle dtstart & dtend
-                habits.add(recurrentQuest);
-            }
-
-        }
     }
 
     private void resetEndDateForIncompleteQuests() {
@@ -359,6 +278,11 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
         localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, new HashSet<>());

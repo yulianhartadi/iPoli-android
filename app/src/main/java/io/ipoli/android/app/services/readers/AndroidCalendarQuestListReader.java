@@ -1,5 +1,10 @@
 package io.ipoli.android.app.services.readers;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
@@ -23,10 +28,12 @@ import rx.schedulers.Schedulers;
 public class AndroidCalendarQuestListReader implements ListReader<Quest> {
 
     private final Set<String> questIds;
+    private final Context context;
     private final CalendarProvider calendarProvider;
     private final RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
-    public AndroidCalendarQuestListReader(CalendarProvider calendarProvider, LocalStorage localStorage, RecurrentQuestPersistenceService recurrentQuestPersistenceService) {
+    public AndroidCalendarQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage, RecurrentQuestPersistenceService recurrentQuestPersistenceService) {
+        this.context = context;
         this.calendarProvider = calendarProvider;
         this.recurrentQuestPersistenceService = recurrentQuestPersistenceService;
         this.questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
@@ -34,6 +41,12 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
 
     @Override
     public Observable<Quest> read() {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return Observable.empty();
+        }
+
         return Observable.just(questIds).concatMapIterable(questIds -> questIds).concatMap(questId -> {
             Event e = calendarProvider.getEvent(Integer.valueOf(questId));
             Quest q = new Quest(e.title);

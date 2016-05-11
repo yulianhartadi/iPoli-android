@@ -1,8 +1,11 @@
 package io.ipoli.android.app.services;
 
+import android.Manifest;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -11,7 +14,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.otto.Bus;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -111,6 +113,12 @@ public class AppJobService extends JobService {
     }
 
     private Observable<Void> syncCalendars(LocalStorage localStorage) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return Observable.empty();
+        }
+
         return Observable.just(localStorage.readStringSet(Constants.KEY_CALENDARS_TO_SYNC)).concatMapIterable(calendarIds -> calendarIds)
                 .concatMap(calendarId -> {
                     Set<String> questKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
@@ -188,7 +196,7 @@ public class AppJobService extends JobService {
 
     private Observable<Quest> syncQuests(Player player, LocalStorage localStorage) {
         ListReader<Quest> realmReader = new RealmQuestListReader(questPersistenceService);
-        ListReader<Quest> androidCalendarReader = new AndroidCalendarQuestListReader(new CalendarProvider(getApplicationContext()), localStorage, recurrentQuestPersistenceService);
+        ListReader<Quest> androidCalendarReader = new AndroidCalendarQuestListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage, recurrentQuestPersistenceService);
 
         return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).concatMap(q -> {
             if (isLocalOnly(q)) {
@@ -210,7 +218,7 @@ public class AppJobService extends JobService {
 
     private Observable<RecurrentQuest> syncRecurrentQuests(Player player, LocalStorage localStorage) {
         ListReader<RecurrentQuest> realmReader = new RealmHabitListReader(recurrentQuestPersistenceService);
-        ListReader<RecurrentQuest> androidCalendarReader = new AndroidCalendarHabitListReader(new CalendarProvider(getApplicationContext()), localStorage);
+        ListReader<RecurrentQuest> androidCalendarReader = new AndroidCalendarHabitListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage);
 
         return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(rq -> {
             if (isLocalOnly(rq)) {

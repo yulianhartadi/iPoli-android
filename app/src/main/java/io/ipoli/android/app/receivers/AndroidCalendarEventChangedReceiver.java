@@ -1,9 +1,12 @@
 package io.ipoli.android.app.receivers;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.CalendarContract;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -38,6 +41,12 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
 
     @Override
     protected Observable<Void> doOnReceive(Context context, Intent intent) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            return Observable.empty();
+        }
+
         App.getAppComponent(context).inject(this);
 
         Log.d("CalendarReceiver", "EventChangedReceiver");
