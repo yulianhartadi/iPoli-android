@@ -36,12 +36,6 @@ android {
         abortOnError false
     }
 
-    dexOptions {
-        incremental true
-        maxProcessCount 4
-        javaMaxHeapSize "4g"
-    }
-
 }
 
 dependencies {
