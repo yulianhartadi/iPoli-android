@@ -75,4 +75,9 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         getRealm().commitTransaction();
         eventBus.post(new RecurrentQuestDeletedEvent(realmQuest.getId()));
     }
+
+    @Override
+    public Observable<RecurrentQuest> findByExternalSourceMappingId(String source, String sourceId) {
+        return fromRealm(where().equalTo("externalSourceMapping." + source, sourceId).findFirst());
+    }
 }

@@ -27,6 +27,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +45,7 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -353,5 +355,13 @@ public class App extends MultiDexApplication {
 
     private void scheduleNextReminder() {
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
+        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, new HashSet<>());
+        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, new HashSet<>());
     }
 }
