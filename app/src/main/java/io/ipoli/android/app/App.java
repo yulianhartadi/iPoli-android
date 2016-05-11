@@ -331,6 +331,7 @@ public class App extends MultiDexApplication {
 
     private JobInfo.Builder defaultSyncJob() {
         return createJobBuilder(SYNC_JOB_ID).setPersisted(true)
+                .setMinimumLatency(TimeUnit.MINUTES.toMillis(Constants.MINIMUM_DELAY_SYNC_MINUTES))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
     }

@@ -43,7 +43,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
@@ -97,25 +96,12 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
-    private boolean isForToday;
-
     public AddQuestFragment() {
-    }
-
-    public static AddQuestFragment newInstance(boolean isToday) {
-        AddQuestFragment fragment = new AddQuestFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY, isToday);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            isForToday = getArguments().getBoolean(Constants.IS_TODAY_QUEST_EXTRA_KEY);
-        }
         setHasOptionsMenu(true);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
@@ -135,10 +121,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
         questText.setShowSoftInputOnFocus(true);
         questText.requestFocus();
-
-        if (isForToday) {
-            questText.setText(" " + getString(R.string.add_quest_today));
-        }
+        
         initUI();
         initContextUI(view);
 
@@ -274,9 +257,9 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             recurrentQuest.setContext(questContext.name());
             eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
             if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
-                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_LONG).show();
             }
         } else {
             Quest q = qParser.parse(text);
@@ -291,7 +274,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 c.setTime(completedAt);
 
                 int completedAtMinute = Time.now().toMinutesAfterMidnight();
-                if(hasStartTime(q)) {
+                if (hasStartTime(q)) {
                     completedAtMinute = q.getStartMinute();
                 }
                 c.add(Calendar.MINUTE, completedAtMinute);

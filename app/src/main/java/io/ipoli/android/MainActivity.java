@@ -161,8 +161,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         break;
                     case R.id.add_quest:
                         screenName = "add_quest";
-                        boolean isForToday = currentSelectedItem == R.id.calendar;
-                        currentFragment = AddQuestFragment.newInstance(isForToday);
+                        currentFragment = new AddQuestFragment();
                         toolbarTitle.setText(R.string.title_activity_add_quest);
                         break;
                     case R.id.inbox:

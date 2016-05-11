@@ -27,7 +27,6 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
-    String IS_TODAY_QUEST_EXTRA_KEY = "is_today_quest";
     int AVATAR_COUNT = 12;
     int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
 
@@ -44,4 +43,5 @@ public interface Constants {
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
     String API_RESOURCE_SOURCE = "ipoli-android";
     int SUGGESTED_SLOTS_COUNT = 7;
+    int MINIMUM_DELAY_SYNC_MINUTES = 5;
 }
