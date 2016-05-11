@@ -133,6 +133,6 @@ public class TutorialActivity extends AppIntro2 {
             }
         }
         localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarIds);
-        localStorage.saveStringSet(Constants.KEY_SELECTED_GOOGLE_CALENDARS, calendarIds);
+        localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
     }
 }
