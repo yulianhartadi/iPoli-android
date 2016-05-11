@@ -1,33 +1,61 @@
 package io.ipoli.android.app.receivers;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.CalendarContract;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
+import io.ipoli.android.Constants;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/8/16.
  */
-public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
+public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver {
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected Observable<Void> doOnReceive(Context context, Intent intent) {
+        App.getAppComponent(context).inject(this);
+
         Log.d("CalendarReceiver", "EventChangedReceiver");
+
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
-        Data<Event> events = provider.getDirtyEvents(1);
-        Cursor cursor = events.getCursor();
+        LocalStorage localStorage = LocalStorage.of(context);
+        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_GOOGLE_CALENDARS);
+
+        for (String cid : calendarIds) {
+            List<Event> events = provider.getDeletedEvents(Integer.valueOf(cid)).getList();
+            deleteEvents(events);
+        }
+
+
+        Data<Event> eventsToUpdate = provider.getDirtyEvents(1);
+        Cursor cursor = eventsToUpdate.getCursor();
 
         String[] columns = new String[]{
                 CalendarContract.Events._ID,
@@ -45,7 +73,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         };
 
         while (cursor.moveToNext()) {
-            Event e = events.fromCursor(cursor, columns);
+            Event e = eventsToUpdate.fromCursor(cursor, columns);
 //            if (!TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate)) {
             Quest q = new Quest(e.title);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
@@ -81,6 +109,20 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 //                T t = Entity.create(mCursor, mCls);
 //                data.add(t);
         }
+        return null;
+    }
 
+    private void deleteEvents(List<Event> events) {
+        for(Event e : events) {
+            if(isRecurrentAndroidCalendarEvent(e)) {
+                recurrentQuestPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
+            } else {
+                questPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
+            }
+        }
+    }
+
+    private boolean isRecurrentAndroidCalendarEvent(Event e) {
+        return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 }

@@ -26,11 +26,12 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
-import io.ipoli.android.tutorial.events.SyncWithGoogleCalendarEvent;
+import io.ipoli.android.tutorial.events.SyncGoogleCalendarEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
+import io.ipoli.android.tutorial.fragments.SyncGoogleCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -59,6 +60,7 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_calendar_title), getString(R.string.tutorial_calendar_desc), R.drawable.tutorial_calendar));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
+        addSlide(new SyncGoogleCalendarFragment());
         pickQuestsFragment = new PickQuestsFragment();
         addSlide(pickQuestsFragment);
         pickHabitsFragment = new PickHabitsFragment();
@@ -120,7 +122,7 @@ public class TutorialActivity extends AppIntro2 {
     }
 
     @Subscribe
-    public void onSyncWithGoogleCalendar(SyncWithGoogleCalendarEvent e) {
+    public void onSyncWithGoogleCalendar(SyncGoogleCalendarEvent e) {
         CalendarProvider provider = new CalendarProvider(this);
         List<Calendar> calendars = provider.getCalendars().getList();
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());

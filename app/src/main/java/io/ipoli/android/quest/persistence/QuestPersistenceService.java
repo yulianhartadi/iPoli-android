@@ -28,6 +28,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void delete(Quest quest);
 
+    void deleteByExternalSourceMappingId(String source, String sourceId);
+
     void deleteAllFromRecurrentQuest(String recurrentQuestId);
 
     long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate);

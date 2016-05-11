@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
+import android.text.TextUtils;
+
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -54,5 +56,23 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new RecurrentQuestDeletedEvent(id));
+    }
+
+    @Override
+    public void deleteByExternalSourceMappingId(String source, String sourceId) {
+        if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
+            return;
+        }
+        getRealm().beginTransaction();
+        RecurrentQuest realmQuest = where()
+                .equalTo("externalSourceMapping." + source, sourceId)
+                .findFirst();
+        if (realmQuest == null) {
+            getRealm().cancelTransaction();
+            return;
+        }
+        realmQuest.removeFromRealm();
+        getRealm().commitTransaction();
+        eventBus.post(new RecurrentQuestDeletedEvent(realmQuest.getId()));
     }
 }

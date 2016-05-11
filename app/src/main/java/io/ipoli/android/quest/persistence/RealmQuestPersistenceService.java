@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
+import android.text.TextUtils;
+
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -95,6 +97,24 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new QuestDeletedEvent(id));
+    }
+
+    @Override
+    public void deleteByExternalSourceMappingId(String source, String sourceId) {
+        if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
+            return;
+        }
+        getRealm().beginTransaction();
+        Quest realmQuest = where()
+                .equalTo("externalSourceMapping." + source, sourceId)
+                .findFirst();
+        if (realmQuest == null) {
+            getRealm().cancelTransaction();
+            return;
+        }
+        realmQuest.removeFromRealm();
+        getRealm().commitTransaction();
+        eventBus.post(new QuestDeletedEvent(realmQuest.getId()));
     }
 
     @Override

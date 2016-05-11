@@ -15,4 +15,6 @@ public interface RecurrentQuestPersistenceService extends PersistenceService<Rec
     Observable<List<RecurrentQuest>> findAllHabits();
 
     void delete(RecurrentQuest recurrentQuest);
+
+    void deleteByExternalSourceMappingId(String source, String sourceId);
 }

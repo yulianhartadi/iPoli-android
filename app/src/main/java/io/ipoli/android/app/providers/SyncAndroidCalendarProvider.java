@@ -19,7 +19,15 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     public Data<Event> getDirtyEvents(long calendarId) {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
-                + CalendarContract.Events.DIRTY + "= ?";
+                + CalendarContract.Events.DIRTY + "= ? AND "
+                + CalendarContract.Events.DELETED + "= ?";
+        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1), String.valueOf(0)};
+        return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
+    }
+
+    public Data<Event> getDeletedEvents(long calendarId) {
+        String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
+                + CalendarContract.Events.DELETED + "= ?";
         String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1)};
         return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
     }

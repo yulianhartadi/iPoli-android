@@ -14,10 +14,6 @@ import android.widget.TextView;
 
 import io.ipoli.android.R;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TutorialFragment extends Fragment {
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
