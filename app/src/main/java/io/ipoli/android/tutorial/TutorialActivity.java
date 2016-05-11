@@ -8,24 +8,32 @@ import android.view.WindowManager;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import io.ipoli.android.tutorial.events.SyncWithGoogleCalendarEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
+import me.everything.providers.android.calendar.Calendar;
+import me.everything.providers.android.calendar.CalendarProvider;
 
 public class TutorialActivity extends AppIntro2 {
     @Inject
@@ -97,5 +105,32 @@ public class TutorialActivity extends AppIntro2 {
     public void onBackPressed() {
         eventBus.post(new TutorialSkippedEvent());
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onSyncWithGoogleCalendar(SyncWithGoogleCalendarEvent e) {
+        CalendarProvider provider = new CalendarProvider(this);
+        List<Calendar> calendars = provider.getCalendars().getList();
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> calendarIds = new HashSet<>();
+        for (Calendar c : calendars) {
+            if (c.visible) {
+                calendarIds.add(String.valueOf(c.id));
+            }
+        }
+        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarIds);
+        localStorage.saveStringSet(Constants.KEY_SELECTED_GOOGLE_CALENDARS, calendarIds);
     }
 }

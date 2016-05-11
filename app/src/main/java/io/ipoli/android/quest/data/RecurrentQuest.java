@@ -52,6 +52,8 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
+    private ExternalSourceMapping externalSourceMapping;
+
     public RecurrentQuest() {
     }
 
@@ -206,5 +208,13 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public ExternalSourceMapping getExternalSourceMapping() {
+        return externalSourceMapping;
+    }
+
+    public void setExternalSourceMapping(ExternalSourceMapping externalSourceMapping) {
+        this.externalSourceMapping = externalSourceMapping;
     }
 }
