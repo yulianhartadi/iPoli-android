@@ -3,6 +3,7 @@ package io.ipoli.android.app.services;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -10,6 +11,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.otto.Bus;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ import io.ipoli.android.app.net.AuthProvider;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.net.iPoliAPIService;
+import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -32,6 +36,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import me.everything.providers.android.calendar.Event;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -64,7 +69,9 @@ public class AppJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         getPlayer().flatMap(p -> Observable.concat(
+                syncCalendars(localStorage),
                 syncRemovedRecurrentQuests(p),
                 syncRemovedQuests(p),
                 syncRecurrentQuests(p),
@@ -95,6 +102,27 @@ public class AppJobService extends JobService {
             }
             return Observable.just(player);
         });
+    }
+
+    private Observable<Void> syncCalendars(LocalStorage localStorage) {
+        return Observable.just(localStorage.readStringSet(Constants.KEY_CALENDARS_TO_SYNC)).concatMapIterable(calendarIds -> calendarIds)
+                .concatMap(calendarId -> {
+                    Set<String> questKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
+                    Set<String> habitsKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
+                    SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(getApplicationContext());
+                    List<Event> events = provider.getEvents(Integer.valueOf(calendarId)).getList();
+                    for (Event e : events) {
+                        if (isRecurrentAndroidCalendarEvent(e)) {
+                            habitsKeys.add(String.valueOf(e.id));
+                        } else {
+                            questKeys.add(String.valueOf(e.id));
+                        }
+                    }
+                    localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questKeys);
+                    localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, habitsKeys);
+                    localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
+                    return Observable.<Void>empty();
+                }).compose(applyAPISchedulers());
     }
 
     private Observable<Void> syncRemovedRecurrentQuests(Player player) {
@@ -249,5 +277,9 @@ public class AppJobService extends JobService {
 
     private boolean isLocalOnly(RemoteObject remoteObject) {
         return !remoteObject.isRemoteObject();
+    }
+
+    private boolean isRecurrentAndroidCalendarEvent(Event e) {
+        return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 }
