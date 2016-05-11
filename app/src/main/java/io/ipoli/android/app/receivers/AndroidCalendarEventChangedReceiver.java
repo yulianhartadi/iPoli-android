@@ -2,9 +2,12 @@ package io.ipoli.android.app.receivers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.provider.CalendarContract;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +20,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
+import me.everything.providers.core.Data;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -43,29 +47,59 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
 
         return Observable.defer(() -> {
+
             for (String cid : calendarIds) {
                 int calendarId = Integer.valueOf(cid);
-                List<Event> deletedEvents = provider.getDeletedEvents(calendarId).getList();
-                deleteEvents(deletedEvents);
-                List<Event> dirtyEvents = provider.getDirtyEvents(calendarId).getList();
-                markEventsForUpdate(dirtyEvents, localStorage);
+                processDeletedEvents(calendarId, provider);
+                addDirtyEvents(provider, localStorage, calendarId);
             }
             return Observable.<Void>empty();
         }).compose(applyAndroidSchedulers());
     }
 
+    private void processDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider) {
+        Data<Event> deletedEventsData = provider.getDeletedEvents(calendarId);
+        Cursor deletedEventsCursor = deletedEventsData.getCursor();
+        List<Event> deletedEvents = new ArrayList<>();
+        while (deletedEventsCursor.moveToNext()) {
+            Event e = deletedEventsData.fromCursor(deletedEventsCursor, CalendarContract.Events._ID,
+                    CalendarContract.Events.RRULE,
+                    CalendarContract.Events.RDATE);
+            deletedEvents.add(e);
+        }
+        deletedEventsCursor.close();
+        deleteEvents(deletedEvents);
+    }
+
+    private void addDirtyEvents(SyncAndroidCalendarProvider provider, LocalStorage localStorage, int calendarId) {
+        Data<Event> dirtyEventsData = provider.getDirtyEvents(calendarId);
+        Cursor dirtyEventsCursor = dirtyEventsData.getCursor();
+        List<Event> dirtyEvents = new ArrayList<>();
+
+        while (dirtyEventsCursor.moveToNext()) {
+            Event e = dirtyEventsData.fromCursor(dirtyEventsCursor, CalendarContract.Events._ID,
+                    CalendarContract.Events.RRULE,
+                    CalendarContract.Events.RDATE);
+            dirtyEvents.add(e);
+        }
+
+        dirtyEventsCursor.close();
+
+        markEventsForUpdate(dirtyEvents, localStorage);
+    }
+
     private void markEventsForUpdate(List<Event> dirtyEvents, LocalStorage localStorage) {
-        Set<String> habitKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
-        Set<String> questKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
+        Set<String> habitIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
+        Set<String> questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
         for (Event e : dirtyEvents) {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                habitKeys.add(String.valueOf(e.id));
+                habitIds.add(String.valueOf(e.id));
             } else {
-                questKeys.add(String.valueOf(e.id));
+                questIds.add(String.valueOf(e.id));
             }
         }
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, habitKeys);
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questKeys);
+        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, habitIds);
+        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questIds);
     }
 
     private void deleteEvents(List<Event> events) {
