@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.data;
 
 import java.util.Date;
-import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
@@ -33,13 +32,15 @@ public class ExternalSourceMapping extends RealmObject implements RemoteObject<E
     public ExternalSourceMapping() {
     }
 
-    public ExternalSourceMapping(String googleCalendar) {
-        this.id = UUID.randomUUID().toString();
-        this.googleCalendar = googleCalendar;
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
-        this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
+
+    public static ExternalSourceMapping fromGoogleCalendar(long eventId) {
+        ExternalSourceMapping sourceMapping = new ExternalSourceMapping();
+        sourceMapping.createdAt = DateUtils.nowUTC();
+        sourceMapping.updatedAt = DateUtils.nowUTC();
+        sourceMapping.needsSyncWithRemote = true;
+        sourceMapping.isRemoteObject = false;
+        sourceMapping.googleCalendar = String.valueOf(eventId);
+        return sourceMapping;
     }
 
     @Override

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.quest.data.ExternalSourceMapping;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RecurrentQuest;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -49,18 +50,19 @@ public class AndroidCalendarHabitListReader implements ListReader<RecurrentQuest
 
         return Observable.just(habitIds).concatMapIterable(habitIds -> habitIds).concatMap(habitId -> {
             Event e = calendarProvider.getEvent(Integer.valueOf(habitId));
-            RecurrentQuest recurrentQuest = new RecurrentQuest("");
-            recurrentQuest.setName(e.title);
-            recurrentQuest.setSource("google-calendar");
+            RecurrentQuest habit = new RecurrentQuest("");
+            habit.setName(e.title);
+            habit.setSource("google-calendar");
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-            recurrentQuest.setStartMinute(startDateTime.getMinuteOfDay());
+            habit.setStartMinute(startDateTime.getMinuteOfDay());
             Dur dur = new Dur(e.duration);
-            recurrentQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
+            habit.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
             Recurrence recurrence = new Recurrence();
             recurrence.setRrule(e.rRule);
             recurrence.setRdate(e.rDate);
-            recurrentQuest.setRecurrence(recurrence);
-            return Observable.just(recurrentQuest);
+            habit.setRecurrence(recurrence);
+            habit.setExternalSourceMapping(ExternalSourceMapping.fromGoogleCalendar(e.id));
+            return Observable.just(habit);
         }).compose(applyAPISchedulers());
     }
 

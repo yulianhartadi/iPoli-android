@@ -198,8 +198,9 @@ public class AppJobService extends JobService {
         ListReader<Quest> realmReader = new RealmQuestListReader(questPersistenceService);
         ListReader<Quest> androidCalendarReader = new AndroidCalendarQuestListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage, recurrentQuestPersistenceService);
 
-        return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).concatMap(q -> {
+        return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(q -> {
             if (isLocalOnly(q)) {
+                q.setId(null);
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.createQuest(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));

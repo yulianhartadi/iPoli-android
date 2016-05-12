@@ -13,6 +13,7 @@ import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.quest.data.ExternalSourceMapping;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -56,6 +57,7 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             q.setStartMinute(startDateTime.getMinuteOfDay());
             q.setEndDate(startDateTime.toLocalDate().toDate());
             q.setSource("google-calendar");
+            q.setExternalSourceMapping(ExternalSourceMapping.fromGoogleCalendar(e.id));
             if (e.originalId != null) {
                 return recurrentQuestPersistenceService.findByExternalSourceMappingId("googleCalendar", e.originalId).flatMap(recurrentQuest -> {
                     q.setRecurrentQuest(recurrentQuest);
