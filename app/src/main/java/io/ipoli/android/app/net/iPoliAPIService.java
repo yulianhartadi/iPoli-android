@@ -38,12 +38,15 @@ public interface iPoliAPIService {
     @POST("snippets")
     Observable<Habit> createHabitFromText(@Body RequestBody data);
 
-    @POST("habits/{quest_id}")
-    Observable<Habit> updateHabit(@Body RequestBody data, @Path("quest_id") String questId);
+    @POST("habits")
+    Observable<Habit> createHabit(@Body RequestBody data);
+
+    @POST("habits/{habit_id}")
+    Observable<Habit> updateHabit(@Body RequestBody data, @Path("habit_id") String habitId);
 
     @GET("habits")
     Observable<List<Habit>> getHabits(@Query("player_id") String playerId);
 
-    @DELETE("habits/{quest_id}")
-    Observable<Void> deleteHabit(@Path("quest_id") String questId, @Query("player_id") String playerId);
+    @DELETE("habits/{habit_id}")
+    Observable<Void> deleteHabit(@Path("habit_id") String habitId, @Query("player_id") String playerId);
 }

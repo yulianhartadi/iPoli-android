@@ -222,7 +222,7 @@ public class AppJobService extends JobService {
         ListReader<Habit> androidCalendarReader = new AndroidCalendarHabitListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage);
 
         return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(habit -> {
-            if (isLocalOnly(habit)) {
+            if (isLocalOnly(habit) && habit.getExternalSourceMapping() == null) {
                 JsonObject data = new JsonObject();
                 JsonObject qJson = (JsonObject) gson.toJsonTree(habit);
                 // @TODO look into server side for raw_text
@@ -233,6 +233,10 @@ public class AppJobService extends JobService {
                 data.addProperty("source", qJson.get("source").getAsString());
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
                 return apiService.createHabitFromText(requestBody).compose(applyAPISchedulers())
+                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)));
+            } else if (isLocalOnly(habit)) {
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
+                return apiService.createHabit(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)));
             } else {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
