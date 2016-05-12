@@ -12,7 +12,6 @@ import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
@@ -50,8 +49,6 @@ import io.ipoli.android.tutorial.fragments.SyncGoogleCalendarFragment;
 public interface AppComponent {
 
     void inject(App app);
-
-    void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(EditQuestActivity editQuestActivity);
 

@@ -22,6 +22,7 @@ import io.realm.annotations.Required;
  */
 public class RecurrentQuest extends RealmObject implements RemoteObject<RecurrentQuest> {
 
+    @Required
     @PrimaryKey
     private String id;
     private String rawText;

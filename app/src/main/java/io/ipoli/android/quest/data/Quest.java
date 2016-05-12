@@ -27,6 +27,7 @@ import io.realm.annotations.Required;
  */
 public class Quest extends RealmObject implements RemoteObject<Quest> {
 
+    @Required
     @PrimaryKey
     private String id;
 

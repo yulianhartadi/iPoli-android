@@ -13,6 +13,7 @@ import io.realm.annotations.Required;
  */
 public class Log extends RealmObject {
 
+    @Required
     @PrimaryKey
     private String id;
 

@@ -12,6 +12,7 @@ import io.realm.annotations.Required;
  */
 public class Reminder extends RealmObject {
 
+    @Required
     @PrimaryKey
     private String id;
 

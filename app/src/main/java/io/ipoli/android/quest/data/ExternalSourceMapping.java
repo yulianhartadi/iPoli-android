@@ -15,6 +15,7 @@ import io.realm.annotations.Required;
  */
 public class ExternalSourceMapping extends RealmObject implements RemoteObject<ExternalSourceMapping> {
 
+    @Required
     @PrimaryKey
     private String id;
 

@@ -12,6 +12,7 @@ import io.realm.annotations.Required;
  */
 public class Tag extends RealmObject {
 
+    @Required
     @PrimaryKey
     private String name;
 
