@@ -1,22 +1,22 @@
 package io.ipoli.android.app.services.readers;
 
-import io.ipoli.android.quest.data.RecurrentQuest;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/11/16.
  */
-public class RealmHabitListReader implements ListReader<RecurrentQuest> {
+public class RealmHabitListReader implements ListReader<Habit> {
 
-    private final RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    private final HabitPersistenceService habitPersistenceService;
 
-    public RealmHabitListReader(RecurrentQuestPersistenceService recurrentQuestPersistenceService) {
-        this.recurrentQuestPersistenceService = recurrentQuestPersistenceService;
+    public RealmHabitListReader(HabitPersistenceService habitPersistenceService) {
+        this.habitPersistenceService = habitPersistenceService;
     }
 
-    public Observable<RecurrentQuest> read() {
-        return recurrentQuestPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(recurrentQuests -> recurrentQuests);
+    public Observable<Habit> read() {
+        return habitPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(recurrentQuests -> recurrentQuests);
     }
 }

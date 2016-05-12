@@ -22,9 +22,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
-import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
-import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
+import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
+import io.ipoli.android.quest.events.ShowHabitEvent;
+import io.ipoli.android.quest.viewmodels.HabitViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -33,10 +33,10 @@ import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
 public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
     private final Context context;
 
-    private List<RecurrentQuestViewModel> viewModels;
+    private List<HabitViewModel> viewModels;
     private Bus eventBus;
 
-    public HabitsAdapter(Context context, List<RecurrentQuestViewModel> viewModels, Bus eventBus) {
+    public HabitsAdapter(Context context, List<HabitViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
@@ -53,9 +53,9 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         ViewHolder questHolder = (ViewHolder) holder;
 
-        final RecurrentQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
+        final HabitViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
-        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowRecurrentQuestEvent(vm.getRecurrentQuest())));
+        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowHabitEvent(vm.getHabit())));
 
         questHolder.name.setText(vm.getName());
 
@@ -106,21 +106,21 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onItemDismissed(int position, int direction) {
-        RecurrentQuestViewModel vm = viewModels.get(position);
+        HabitViewModel vm = viewModels.get(position);
         viewModels.remove(position);
         notifyItemRemoved(position);
         if (direction == ItemTouchHelper.START) {
-            eventBus.post(new DeleteRecurrentQuestRequestEvent(vm.getRecurrentQuest(), position));
+            eventBus.post(new DeleteHabitRequestEvent(vm.getHabit(), position));
         }
     }
 
-    public void updateQuests(List<RecurrentQuestViewModel> newViewModels) {
+    public void updateQuests(List<HabitViewModel> newViewModels) {
         viewModels = newViewModels;
         notifyDataSetChanged();
     }
 
-    public void addQuest(int position, RecurrentQuestViewModel recurrentQuestViewModel) {
-        viewModels.add(position, recurrentQuestViewModel);
+    public void addQuest(int position, HabitViewModel habitViewModel) {
+        viewModels.add(position, habitViewModel);
         notifyDataSetChanged();
     }
 

@@ -235,11 +235,11 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
             Map<String, List<Quest>> map = new HashMap<>();
             for (Quest q : schedule.getUnscheduledQuests()) {
-                if (q.getRecurrentQuest() == null) {
+                if (q.getHabit() == null) {
                     unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
                     continue;
                 }
-                String key = q.getRecurrentQuest().getId();
+                String key = q.getHabit().getId();
                 if (map.get(key) == null) {
                     map.put(key, new ArrayList<>());
                 }

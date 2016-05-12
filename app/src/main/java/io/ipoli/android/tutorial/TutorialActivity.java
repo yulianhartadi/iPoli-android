@@ -18,9 +18,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
@@ -36,7 +36,7 @@ public class TutorialActivity extends AppIntro2 {
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    HabitPersistenceService habitPersistenceService;
 
     private PickHabitsFragment pickHabitsFragment;
     private PickQuestsFragment pickQuestsFragment;
@@ -78,8 +78,8 @@ public class TutorialActivity extends AppIntro2 {
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         questPersistenceService.saveRemoteObjects(selectedQuests);
-        List<RecurrentQuest> selectedHabits = pickHabitsFragment.getSelectedQuests();
-        recurrentQuestPersistenceService.saveRemoteObjects(selectedHabits);
+        List<Habit> selectedHabits = pickHabitsFragment.getSelectedQuests();
+        habitPersistenceService.saveRemoteObjects(selectedHabits);
         eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());
         finish();

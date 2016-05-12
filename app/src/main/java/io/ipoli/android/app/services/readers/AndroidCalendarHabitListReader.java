@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.ExternalSourceMapping;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
@@ -28,7 +28,7 @@ import rx.schedulers.Schedulers;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/11/16.
  */
-public class AndroidCalendarHabitListReader implements ListReader<RecurrentQuest> {
+public class AndroidCalendarHabitListReader implements ListReader<Habit> {
 
     private final Set<String> habitIds;
     private final Context context;
@@ -41,7 +41,7 @@ public class AndroidCalendarHabitListReader implements ListReader<RecurrentQuest
     }
 
     @Override
-    public Observable<RecurrentQuest> read() {
+    public Observable<Habit> read() {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -50,7 +50,7 @@ public class AndroidCalendarHabitListReader implements ListReader<RecurrentQuest
 
         return Observable.just(habitIds).concatMapIterable(habitIds -> habitIds).concatMap(habitId -> {
             Event e = calendarProvider.getEvent(Integer.valueOf(habitId));
-            RecurrentQuest habit = new RecurrentQuest("");
+            Habit habit = new Habit("");
             habit.setName(e.title);
             habit.setSource("google-calendar");
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));

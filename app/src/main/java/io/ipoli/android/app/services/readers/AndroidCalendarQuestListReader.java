@@ -15,7 +15,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.ExternalSourceMapping;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
@@ -31,12 +31,12 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
     private final Set<String> questIds;
     private final Context context;
     private final CalendarProvider calendarProvider;
-    private final RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    private final HabitPersistenceService habitPersistenceService;
 
-    public AndroidCalendarQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage, RecurrentQuestPersistenceService recurrentQuestPersistenceService) {
+    public AndroidCalendarQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage, HabitPersistenceService habitPersistenceService) {
         this.context = context;
         this.calendarProvider = calendarProvider;
-        this.recurrentQuestPersistenceService = recurrentQuestPersistenceService;
+        this.habitPersistenceService = habitPersistenceService;
         this.questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
     }
 
@@ -59,8 +59,8 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             q.setSource("google-calendar");
             q.setExternalSourceMapping(ExternalSourceMapping.fromGoogleCalendar(e.id));
             if (e.originalId != null) {
-                return recurrentQuestPersistenceService.findByExternalSourceMappingId("googleCalendar", e.originalId).flatMap(recurrentQuest -> {
-                    q.setRecurrentQuest(recurrentQuest);
+                return habitPersistenceService.findByExternalSourceMappingId("googleCalendar", e.originalId).flatMap(recurrentQuest -> {
+                    q.setHabit(recurrentQuest);
                     return Observable.just(q);
                 });
             } else {

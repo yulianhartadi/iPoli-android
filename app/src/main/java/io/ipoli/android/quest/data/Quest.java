@@ -54,7 +54,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Date startDate;
 
     private Date endDate;
-    private RecurrentQuest recurrentQuest;
+    private Habit habit;
 
     private RealmList<Log> logs;
 
@@ -109,12 +109,12 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.startMinute = startMinute;
     }
 
-    public RecurrentQuest getRecurrentQuest() {
-        return recurrentQuest;
+    public Habit getHabit() {
+        return habit;
     }
 
-    public void setRecurrentQuest(RecurrentQuest recurrentQuest) {
-        this.recurrentQuest = recurrentQuest;
+    public void setHabit(Habit habit) {
+        this.habit = habit;
     }
 
     public boolean isAllDay() {
@@ -355,13 +355,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public boolean isIndicator() {
         boolean isCompleted = getCompletedAt() != null;
-        boolean repeatsPerDay = getRecurrentQuest() != null && !TextUtils.isEmpty(getRecurrentQuest().getRecurrence().getDailyRrule());
+        boolean repeatsPerDay = getHabit() != null && !TextUtils.isEmpty(getHabit().getRecurrence().getDailyRrule());
         boolean hasShortOrNoDuration = getDuration() < 15;
         return isCompleted && repeatsPerDay && hasShortOrNoDuration;
     }
 
     public boolean isHabit() {
-        return getRecurrentQuest() != null;
+        return getHabit() != null;
     }
 
     public ExternalSourceMapping getExternalSourceMapping() {

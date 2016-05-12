@@ -7,46 +7,46 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.quest.data.RecurrentQuest;
-import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
+import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.events.HabitSavedEvent;
+import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/31/16.
  */
-public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceService<RecurrentQuest> implements RecurrentQuestPersistenceService {
+public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Habit> implements HabitPersistenceService {
 
     private final Bus eventBus;
 
-    public RealmRecurrentQuestPersistenceService(Bus eventBus) {
+    public RealmHabitPersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
     }
 
     @Override
-    protected void onObjectSaved(RecurrentQuest obj) {
-        eventBus.post(new RecurrentQuestSavedEvent(obj));
+    protected void onObjectSaved(Habit obj) {
+        eventBus.post(new HabitSavedEvent(obj));
     }
 
     @Override
-    protected Class<RecurrentQuest> getRealmObjectClass() {
-        return RecurrentQuest.class;
+    protected Class<Habit> getRealmObjectClass() {
+        return Habit.class;
     }
 
     @Override
-    public Observable<List<RecurrentQuest>> findAllHabits() {
+    public Observable<List<Habit>> findAllHabits() {
         return fromRealm(where().isNotNull("name").isNotNull("recurrence.rrule").findAll());
     }
 
     @Override
-    public void delete(RecurrentQuest recurrentQuest) {
-        if (recurrentQuest == null) {
+    public void delete(Habit habit) {
+        if (habit == null) {
             return;
         }
-        String id = recurrentQuest.getId();
+        String id = habit.getId();
         getRealm().beginTransaction();
-        RecurrentQuest realmQuest = where()
+        Habit realmQuest = where()
                 .equalTo("id", id)
                 .findFirst();
         if (realmQuest == null) {
@@ -55,7 +55,7 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         }
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
-        eventBus.post(new RecurrentQuestDeletedEvent(id));
+        eventBus.post(new HabitDeletedEvent(id));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
             return;
         }
         getRealm().beginTransaction();
-        RecurrentQuest realmQuest = where()
+        Habit realmQuest = where()
                 .equalTo("externalSourceMapping." + source, sourceId)
                 .findFirst();
         if (realmQuest == null) {
@@ -73,11 +73,11 @@ public class RealmRecurrentQuestPersistenceService extends BaseRealmPersistenceS
         }
         realmQuest.removeFromRealm();
         getRealm().commitTransaction();
-        eventBus.post(new RecurrentQuestDeletedEvent(realmQuest.getId()));
+        eventBus.post(new HabitDeletedEvent(realmQuest.getId()));
     }
 
     @Override
-    public Observable<RecurrentQuest> findByExternalSourceMappingId(String source, String sourceId) {
+    public Observable<Habit> findByExternalSourceMappingId(String source, String sourceId) {
         return fromRealm(where().equalTo("externalSourceMapping." + source, sourceId).findFirst());
     }
 }

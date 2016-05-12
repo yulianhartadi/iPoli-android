@@ -20,7 +20,7 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
-import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
@@ -37,18 +37,18 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.events.ShowRecurrentQuestEvent;
+import io.ipoli.android.quest.events.ShowHabitEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
-import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
+import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
+import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.tutorial.events.PredefinedHabitDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
@@ -176,22 +176,22 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onShowRecurrentQuest(ShowRecurrentQuestEvent e) {
-        log("show_recurrent_quest_request", e.recurrentQuest.getId(), e.recurrentQuest.getName());
+    public void onShowRecurrentQuest(ShowHabitEvent e) {
+        log("show_recurrent_quest_request", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onDeleteRecurrentQuestRequest(DeleteRecurrentQuestRequestEvent e) {
-        log("delete_recurrent_quest_requested", e.recurrentQuest.getId(), e.recurrentQuest.getName());
+    public void onDeleteRecurrentQuestRequest(DeleteHabitRequestEvent e) {
+        log("delete_recurrent_quest_requested", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteRecurrentQuest(UndoDeleteRecurrentQuestEvent e) {
-        log("undo_delete_recurrent_quest", e.recurrentQuest.getId(), e.recurrentQuest.getName());
+    public void onUndoDeleteRecurrentQuest(UndoDeleteHabitEvent e) {
+        log("undo_delete_recurrent_quest", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteRecurrentQuest(RecurrentQuestDeletedEvent e) {
+    public void onUndoDeleteRecurrentQuest(HabitDeletedEvent e) {
         log("undo_delete_recurrent_quest", EventParams.of("id", e.id));
     }
 

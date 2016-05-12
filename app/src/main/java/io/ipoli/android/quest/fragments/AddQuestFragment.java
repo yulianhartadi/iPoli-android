@@ -53,13 +53,13 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
-import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
+import io.ipoli.android.quest.events.NewHabitEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
@@ -248,14 +248,14 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
         QuestParser qParser = new QuestParser(parser);
         if (qParser.isRecurrent(text)) {
-            RecurrentQuest recurrentQuest = qParser.parseRecurrent(text);
-            if (recurrentQuest == null) {
+            Habit habit = qParser.parseRecurrent(text);
+            if (habit == null) {
                 resetQuestText();
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
-            recurrentQuest.setContext(questContext.name());
-            eventBus.post(new NewRecurrentQuestEvent(recurrentQuest));
+            habit.setContext(questContext.name());
+            eventBus.post(new NewHabitEvent(habit));
             if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
                 Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_LONG).show();
             } else {

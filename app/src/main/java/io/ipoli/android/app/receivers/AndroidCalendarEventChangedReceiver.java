@@ -21,7 +21,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
 import rx.Observable;
@@ -37,7 +37,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    HabitPersistenceService habitPersistenceService;
 
     @Override
     protected Observable<Void> doOnReceive(Context context, Intent intent) {
@@ -114,7 +114,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     private void deleteEvents(List<Event> events) {
         for (Event e : events) {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                recurrentQuestPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
+                habitPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
             } else {
                 questPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
             }

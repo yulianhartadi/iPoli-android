@@ -12,7 +12,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -51,7 +51,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
         return fromRealm(where()
                 .isNull("completedAt")
-                .isNull("recurrentQuest")
+                .isNull("habit")
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
@@ -118,19 +118,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public void deleteAllFromRecurrentQuest(String recurrentQuestId) {
-        List<Quest> questsToRemove = where().equalTo("recurrentQuest.id", recurrentQuestId).findAll();
+    public void deleteAllFromHabit(String habitId) {
+        List<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
         getRealm().beginTransaction();
         questsToRemove.clear();
         getRealm().commitTransaction();
     }
 
     @Override
-    public long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate) {
+    public long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate) {
 
         return where()
                 .isNotNull("completedAt")
-                .equalTo("recurrentQuest.id", recurrentQuest.getId())
+                .equalTo("habit.id", habit.getId())
                 .between("endDate", toUTCDateAtStartOfDay(fromDate), toUTCDateAtStartOfDay(toDate))
                 .count();
     }

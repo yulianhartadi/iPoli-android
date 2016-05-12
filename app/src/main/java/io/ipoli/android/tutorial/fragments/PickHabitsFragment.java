@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickHabitsAdapter;
 
@@ -21,7 +21,7 @@ import io.ipoli.android.tutorial.adapters.PickHabitsAdapter;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickHabitsFragment extends BasePickQuestsFragment<RecurrentQuest> {
+public class PickHabitsFragment extends BasePickQuestsFragment<Habit> {
     @Inject
     Bus eventBus;
 
@@ -68,8 +68,8 @@ public class PickHabitsFragment extends BasePickQuestsFragment<RecurrentQuest> {
     }
 
     private void addViewModel(String text, QuestContext context, boolean isSelected) {
-        RecurrentQuest rq = new RecurrentQuest(text);
-        RecurrentQuest.setContext(rq, context);
+        Habit rq = new Habit(text);
+        Habit.setContext(rq, context);
         viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
     }
 }
