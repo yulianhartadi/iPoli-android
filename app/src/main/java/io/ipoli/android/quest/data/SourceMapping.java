@@ -12,13 +12,13 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/11/16.
  */
-public class ExternalSourceMapping extends RealmObject implements RemoteObject<ExternalSourceMapping> {
+public class SourceMapping extends RealmObject implements RemoteObject<SourceMapping> {
 
     @Required
     @PrimaryKey
     private String id;
 
-    private String googleCalendar;
+    private String androidCalendar;
 
     @Required
     private Date createdAt;
@@ -29,17 +29,17 @@ public class ExternalSourceMapping extends RealmObject implements RemoteObject<E
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
-    public ExternalSourceMapping() {
+    public SourceMapping() {
     }
 
 
-    public static ExternalSourceMapping fromGoogleCalendar(long eventId) {
-        ExternalSourceMapping sourceMapping = new ExternalSourceMapping();
+    public static SourceMapping fromGoogleCalendar(long eventId) {
+        SourceMapping sourceMapping = new SourceMapping();
         sourceMapping.createdAt = DateUtils.nowUTC();
         sourceMapping.updatedAt = DateUtils.nowUTC();
         sourceMapping.needsSyncWithRemote = true;
         sourceMapping.isRemoteObject = false;
-        sourceMapping.googleCalendar = String.valueOf(eventId);
+        sourceMapping.androidCalendar = String.valueOf(eventId);
         return sourceMapping;
     }
 
@@ -100,11 +100,11 @@ public class ExternalSourceMapping extends RealmObject implements RemoteObject<E
         this.createdAt = createdAt;
     }
 
-    public String getGoogleCalendar() {
-        return googleCalendar;
+    public String getAndroidCalendar() {
+        return androidCalendar;
     }
 
-    public void setGoogleCalendar(String googleCalendar) {
-        this.googleCalendar = googleCalendar;
+    public void setAndroidCalendar(long googleCalendar) {
+        this.androidCalendar = String.valueOf(googleCalendar);
     }
 }

@@ -17,15 +17,15 @@ import javax.inject.Inject;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
-import io.ipoli.android.tutorial.fragments.SyncGoogleCalendarFragment;
+import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 
 public class TutorialActivity extends AppIntro2 {
@@ -52,7 +52,7 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_calendar_title), getString(R.string.tutorial_calendar_desc), R.drawable.tutorial_calendar));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
-        addSlide(new SyncGoogleCalendarFragment());
+        addSlide(new SyncAndroidCalendarFragment());
         pickQuestsFragment = new PickQuestsFragment();
         addSlide(pickQuestsFragment);
         pickHabitsFragment = new PickHabitsFragment();
@@ -77,9 +77,13 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
-        questPersistenceService.saveRemoteObjects(selectedQuests);
+        if (!selectedQuests.isEmpty()) {
+            questPersistenceService.saveRemoteObjects(selectedQuests);
+        }
         List<Habit> selectedHabits = pickHabitsFragment.getSelectedQuests();
-        habitPersistenceService.saveRemoteObjects(selectedHabits);
+        if (!selectedHabits.isEmpty()) {
+            habitPersistenceService.saveRemoteObjects(selectedHabits);
+        }
         eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());
         finish();

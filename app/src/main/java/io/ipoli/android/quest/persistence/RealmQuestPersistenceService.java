@@ -94,25 +94,25 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
             getRealm().cancelTransaction();
             return;
         }
-        realmQuest.removeFromRealm();
+        realmQuest.deleteFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new QuestDeletedEvent(id));
     }
 
     @Override
-    public void deleteByExternalSourceMappingId(String source, String sourceId) {
+    public void deleteBySourceMappingId(String source, String sourceId) {
         if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
             return;
         }
         getRealm().beginTransaction();
         Quest realmQuest = where()
-                .equalTo("externalSourceMapping." + source, sourceId)
+                .equalTo("sourceMapping." + source, sourceId)
                 .findFirst();
         if (realmQuest == null) {
             getRealm().cancelTransaction();
             return;
         }
-        realmQuest.removeFromRealm();
+        realmQuest.deleteFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new QuestDeletedEvent(realmQuest.getId()));
     }

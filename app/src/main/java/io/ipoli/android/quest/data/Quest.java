@@ -72,7 +72,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
-    private ExternalSourceMapping externalSourceMapping;
+    private SourceMapping sourceMapping;
 
     public Quest() {
     }
@@ -364,11 +364,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return getHabit() != null;
     }
 
-    public ExternalSourceMapping getExternalSourceMapping() {
-        return externalSourceMapping;
+    public SourceMapping getSourceMapping() {
+        return sourceMapping;
     }
 
-    public void setExternalSourceMapping(ExternalSourceMapping externalSourceMapping) {
-        this.externalSourceMapping = externalSourceMapping;
+    public void setSourceMapping(SourceMapping sourceMapping) {
+        this.sourceMapping = sourceMapping;
     }
 }

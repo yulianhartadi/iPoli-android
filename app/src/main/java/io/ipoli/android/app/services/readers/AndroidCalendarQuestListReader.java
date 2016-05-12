@@ -13,8 +13,8 @@ import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.data.ExternalSourceMapping;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -51,15 +51,16 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
         return Observable.just(questIds).concatMapIterable(questIds -> questIds).concatMap(questId -> {
             Event e = calendarProvider.getEvent(Integer.valueOf(questId));
             Quest q = new Quest(e.title);
+            q.setId(null);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
             q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
             q.setStartMinute(startDateTime.getMinuteOfDay());
             q.setEndDate(startDateTime.toLocalDate().toDate());
-            q.setSource("google-calendar");
-            q.setExternalSourceMapping(ExternalSourceMapping.fromGoogleCalendar(e.id));
+            q.setSource("android-calendar");
+            q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
             if (e.originalId != null) {
-                return habitPersistenceService.findByExternalSourceMappingId("googleCalendar", e.originalId).flatMap(recurrentQuest -> {
+                return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(recurrentQuest -> {
                     q.setHabit(recurrentQuest);
                     return Observable.just(q);
                 });

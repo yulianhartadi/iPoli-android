@@ -28,7 +28,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void delete(Quest quest);
 
-    void deleteByExternalSourceMappingId(String source, String sourceId);
+    void deleteBySourceMappingId(String source, String sourceId);
 
     void deleteAllFromHabit(String habitId);
 

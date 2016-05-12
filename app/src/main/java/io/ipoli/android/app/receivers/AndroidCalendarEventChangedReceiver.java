@@ -114,9 +114,9 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     private void deleteEvents(List<Event> events) {
         for (Event e : events) {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                habitPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
+                habitPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
             } else {
-                questPersistenceService.deleteByExternalSourceMappingId("googleCalendar", String.valueOf(e.id));
+                questPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
             }
         }
     }

@@ -30,7 +30,6 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
-import io.ipoli.android.tutorial.fragments.SyncGoogleCalendarFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -93,8 +92,6 @@ public interface AppComponent {
     void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 
     void inject(CalendarFragment calendarFragment);
-
-    void inject(SyncGoogleCalendarFragment syncGoogleCalendarFragment);
 
     void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
 }

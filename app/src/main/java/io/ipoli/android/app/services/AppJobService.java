@@ -200,7 +200,6 @@ public class AppJobService extends JobService {
 
         return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(q -> {
             if (isLocalOnly(q)) {
-                q.setId(null);
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.createQuest(requestBody).compose(applyAPISchedulers())
                         .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
@@ -222,7 +221,7 @@ public class AppJobService extends JobService {
         ListReader<Habit> androidCalendarReader = new AndroidCalendarHabitListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage);
 
         return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(habit -> {
-            if (isLocalOnly(habit) && habit.getExternalSourceMapping() == null) {
+            if (isLocalOnly(habit) && habit.getSourceMapping() == null) {
                 JsonObject data = new JsonObject();
                 JsonObject qJson = (JsonObject) gson.toJsonTree(habit);
                 // @TODO look into server side for raw_text
@@ -247,7 +246,7 @@ public class AppJobService extends JobService {
     }
 
     private Quest updateQuest(Quest serverQuest, Quest localQuest) {
-        if (localQuest != null && isLocalOnly(localQuest)) {
+        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
             questPersistenceService.updateId(localQuest, serverQuest.getId());
         }
         serverQuest.setSyncedWithRemote();
@@ -256,7 +255,7 @@ public class AppJobService extends JobService {
     }
 
     private Habit updateHabit(Habit serverQuest, Habit localQuest) {
-        if (localQuest != null && isLocalOnly(localQuest)) {
+        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
             habitPersistenceService.updateId(localQuest, serverQuest.getId());
         }
         serverQuest.setSyncedWithRemote();

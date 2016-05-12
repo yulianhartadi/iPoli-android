@@ -12,28 +12,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.LocalStorage;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 
-public class SyncGoogleCalendarFragment extends Fragment {
-    private static final int READ_CAlENDAR_REQUEST_CODE = 100;
-    @Inject
-    Bus eventBus;
+public class SyncAndroidCalendarFragment extends Fragment {
+    private static final int READ_CALENDAR_REQUEST_CODE = 100;
 
     private Unbinder unbinder;
 
@@ -42,7 +35,6 @@ public class SyncGoogleCalendarFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sync_google_calendar, container, false);
         unbinder = ButterKnife.bind(this, v);
-        App.getAppComponent(getContext()).inject(this);
         return v;
     }
 
@@ -54,9 +46,9 @@ public class SyncGoogleCalendarFragment extends Fragment {
 
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.READ_CALENDAR},
-                    READ_CAlENDAR_REQUEST_CODE);
+                    READ_CALENDAR_REQUEST_CODE);
         } else {
-            syncWithGoogleCalendar();
+            syncWithCalendar();
         }
     }
 
@@ -68,15 +60,15 @@ public class SyncGoogleCalendarFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == READ_CAlENDAR_REQUEST_CODE) {
+        if (requestCode == READ_CALENDAR_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                syncWithGoogleCalendar();
+                syncWithCalendar();
             }
         }
     }
 
-    private void syncWithGoogleCalendar() {
+    private void syncWithCalendar() {
         CalendarProvider provider = new CalendarProvider(getContext());
         List<Calendar> calendars = provider.getCalendars().getList();
         LocalStorage localStorage = LocalStorage.of(getContext());

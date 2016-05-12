@@ -53,31 +53,31 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
             getRealm().cancelTransaction();
             return;
         }
-        realmQuest.removeFromRealm();
+        realmQuest.deleteFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new HabitDeletedEvent(id));
     }
 
     @Override
-    public void deleteByExternalSourceMappingId(String source, String sourceId) {
+    public void deleteBySourceMappingId(String source, String sourceId) {
         if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
             return;
         }
         getRealm().beginTransaction();
         Habit realmQuest = where()
-                .equalTo("externalSourceMapping." + source, sourceId)
+                .equalTo("sourceMapping." + source, sourceId)
                 .findFirst();
         if (realmQuest == null) {
             getRealm().cancelTransaction();
             return;
         }
-        realmQuest.removeFromRealm();
+        realmQuest.deleteFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new HabitDeletedEvent(realmQuest.getId()));
     }
 
     @Override
     public Observable<Habit> findByExternalSourceMappingId(String source, String sourceId) {
-        return fromRealm(where().equalTo("externalSourceMapping." + source, sourceId).findFirst());
+        return fromRealm(where().equalTo("sourceMapping." + source, sourceId).findFirst());
     }
 }

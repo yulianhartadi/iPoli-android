@@ -53,7 +53,7 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
-    private ExternalSourceMapping externalSourceMapping;
+    private SourceMapping sourceMapping;
 
     public Habit() {
     }
@@ -211,11 +211,11 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
         return isRemoteObject;
     }
 
-    public ExternalSourceMapping getExternalSourceMapping() {
-        return externalSourceMapping;
+    public SourceMapping getSourceMapping() {
+        return sourceMapping;
     }
 
-    public void setExternalSourceMapping(ExternalSourceMapping externalSourceMapping) {
-        this.externalSourceMapping = externalSourceMapping;
+    public void setSourceMapping(SourceMapping sourceMapping) {
+        this.sourceMapping = sourceMapping;
     }
 }

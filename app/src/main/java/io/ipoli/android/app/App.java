@@ -22,7 +22,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.joda.time.LocalDate;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -46,16 +45,16 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestAddedEvent;
-import io.ipoli.android.quest.events.NewHabitEvent;
-import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.HabitSavedEvent;
+import io.ipoli.android.quest.events.NewHabitEvent;
+import io.ipoli.android.quest.events.NewQuestAddedEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
-import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -283,9 +282,9 @@ public class App extends MultiDexApplication {
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, new HashSet<>());
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, new HashSet<>());
+//        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+//        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
+//        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, new HashSet<>());
+//        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, new HashSet<>());
     }
 }

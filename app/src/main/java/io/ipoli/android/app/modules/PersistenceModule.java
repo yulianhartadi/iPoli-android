@@ -24,7 +24,7 @@ public class PersistenceModule {
     }
 
     @Provides
-    public HabitPersistenceService provideRecurrentQuestPersistenceService(Bus eventBus) {
+    public HabitPersistenceService provideHabitPersistenceService(Bus eventBus) {
         return new RealmHabitPersistenceService(eventBus);
     }
 
