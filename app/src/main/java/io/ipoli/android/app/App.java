@@ -1,6 +1,5 @@
 package io.ipoli.android.app;
 
-import android.Manifest;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -8,10 +7,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.support.v4.content.ContextCompat;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -39,7 +36,6 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -119,7 +115,10 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        eventBus.post(new ForceSyncRequestEvent());
+        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
+            eventBus.post(new ForceSyncRequestEvent());
+        }
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
 
@@ -247,7 +246,10 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onForceSyncRequest(ForceSyncRequestEvent e) {
-        scheduleJob(defaultSyncJob().setOverrideDeadline(1).build());
+        scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
+                        setOverrideDeadline(1).build());
     }
 
     private JobInfo.Builder defaultSyncJob() {
@@ -273,18 +275,5 @@ public class App extends MultiDexApplication {
 
     private void scheduleNextReminder() {
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
-    }
-
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.READ_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-//        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-//        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, new HashSet<>());
-//        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, new HashSet<>());
-//        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, new HashSet<>());
     }
 }

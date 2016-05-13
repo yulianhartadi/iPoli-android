@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.squareup.otto.Bus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,10 +20,11 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
 import rx.Observable;
@@ -38,6 +41,9 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
 
     @Inject
     HabitPersistenceService habitPersistenceService;
+
+    @Inject
+    Bus eventBus;
 
     @Override
     protected Observable<Void> doOnReceive(Context context, Intent intent) {
@@ -62,6 +68,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
                 processDeletedEvents(calendarId, provider);
                 addDirtyEvents(provider, localStorage, calendarId);
             }
+            eventBus.post(new SyncRequestEvent());
             return Observable.<Void>empty();
         }).compose(applyAndroidSchedulers());
     }

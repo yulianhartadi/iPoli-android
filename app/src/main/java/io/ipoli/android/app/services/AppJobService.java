@@ -41,6 +41,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -79,13 +80,13 @@ public class AppJobService extends JobService {
         App.getAppComponent(this).inject(this);
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         getPlayer().flatMap(p -> Observable.concat(
-                syncCalendars(localStorage),
-                syncRemovedHabits(p),
-                syncRemovedQuests(p),
-                syncHabits(p, localStorage),
-                syncQuests(p, localStorage),
-                getHabits(p),
-                getScheduleForAWeekAhead(p)
+                Observable.defer(() -> syncCalendars(localStorage)),
+                Observable.defer(() -> syncRemovedHabits(p)),
+                Observable.defer(() -> syncRemovedQuests(p)),
+                Observable.defer(() -> syncHabits(p, localStorage)),
+                Observable.defer(() -> syncQuests(p, localStorage)),
+                Observable.defer(() -> getHabits(p)),
+                Observable.defer(() -> getScheduleForAWeekAhead(p))
         )).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
             Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
@@ -119,7 +120,8 @@ public class AppJobService extends JobService {
             return Observable.empty();
         }
 
-        return Observable.just(localStorage.readStringSet(Constants.KEY_CALENDARS_TO_SYNC)).concatMapIterable(calendarIds -> calendarIds)
+        Set<String> calendarsToSync = localStorage.readStringSet(Constants.KEY_CALENDARS_TO_SYNC);
+        return Observable.just(calendarsToSync).concatMapIterable(calendarIds -> calendarIds)
                 .concatMap(calendarId -> {
                     Set<String> questKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
                     Set<String> habitKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
@@ -134,7 +136,8 @@ public class AppJobService extends JobService {
                     }
                     localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questKeys);
                     localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, habitKeys);
-
+                    calendarsToSync.remove(calendarId);
+                    localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarsToSync);
                     return Observable.<Void>empty();
                 }).compose(applyAPISchedulers());
     }
@@ -194,7 +197,7 @@ public class AppJobService extends JobService {
         });
     }
 
-    private Observable<Quest> syncQuests(Player player, LocalStorage localStorage) {
+    private Observable<Void> syncQuests(Player player, LocalStorage localStorage) {
         ListReader<Quest> realmReader = new RealmQuestListReader(questPersistenceService);
         ListReader<Quest> androidCalendarReader = new AndroidCalendarQuestListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage, habitPersistenceService);
 
@@ -202,11 +205,13 @@ public class AppJobService extends JobService {
             if (isLocalOnly(q)) {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.createQuest(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
+                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)))
+                        .concatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
             } else {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers())
-                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)));
+                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)))
+                        .concatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
             }
         });
     }
@@ -216,7 +221,18 @@ public class AppJobService extends JobService {
         return new JsonRequestBodyBuilder(getApplicationContext());
     }
 
-    private Observable<Habit> syncHabits(Player player, LocalStorage localStorage) {
+    private Observable<Void> deleteSyncedAndroidCalendarEvent(SourceMapping sourceMapping, LocalStorage localStorage, String setKey) {
+        if (sourceMapping != null && !TextUtils.isEmpty(sourceMapping.getAndroidCalendar())) {
+            String eventId = sourceMapping.getAndroidCalendar();
+            Set<String> questsToUpdate = localStorage.readStringSet(setKey);
+            questsToUpdate.remove(eventId);
+            localStorage.saveStringSet(setKey, questsToUpdate);
+        }
+
+        return Observable.empty();
+    }
+
+    private Observable<Void> syncHabits(Player player, LocalStorage localStorage) {
         ListReader<Habit> realmReader = new RealmHabitListReader(habitPersistenceService);
         ListReader<Habit> androidCalendarReader = new AndroidCalendarHabitListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage);
 
@@ -232,15 +248,19 @@ public class AppJobService extends JobService {
                 data.addProperty("source", qJson.get("source").getAsString());
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
                 return apiService.createHabitFromText(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)));
+                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
+                        .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
+
             } else if (isLocalOnly(habit)) {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
                 return apiService.createHabit(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)));
+                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
+                        .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
             } else {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
                 return apiService.updateHabit(requestBody, habit.getId()).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)));
+                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
+                        .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
             }
         });
     }
