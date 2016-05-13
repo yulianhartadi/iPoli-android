@@ -19,7 +19,7 @@
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="Sync all your events in one place"
+        android:text="Import All Your Habits &amp; ToDos"
         android:textColor="@android:color/white" />
 
     <LinearLayout
@@ -49,7 +49,7 @@
             android:id="@+id/sync_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_vertical"
             android:checked="true"
             android:textColor="@color/md_white"
             android:text="Sync with my calendars" />

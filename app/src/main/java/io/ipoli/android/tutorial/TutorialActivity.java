@@ -63,7 +63,7 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_blue_500,
                 R.color.md_orange_500,
                 R.color.md_deep_purple_500,
-                R.color.md_blue_500,
+                R.color.md_green_500,
                 R.color.md_blue_500,
                 R.color.md_blue_500
         };
