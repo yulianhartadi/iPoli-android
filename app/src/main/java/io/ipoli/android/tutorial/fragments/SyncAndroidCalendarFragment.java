@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
@@ -38,8 +37,9 @@ public class SyncAndroidCalendarFragment extends Fragment {
         return v;
     }
 
-    @OnClick(R.id.sync_calendar)
-    public void onSyncCalendar(View v) {
+    @Override
+    public void onResume() {
+        super.onResume();
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
