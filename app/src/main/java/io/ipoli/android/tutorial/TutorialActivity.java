@@ -1,8 +1,12 @@
 package io.ipoli.android.tutorial;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.WindowManager;
 
@@ -14,9 +18,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
@@ -29,6 +35,8 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 
 public class TutorialActivity extends AppIntro2 {
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
+
     @Inject
     Bus eventBus;
 
@@ -40,6 +48,9 @@ public class TutorialActivity extends AppIntro2 {
 
     private PickHabitsFragment pickHabitsFragment;
     private PickQuestsFragment pickQuestsFragment;
+    private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
+
+    private int previousSlide = -1;
 
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
@@ -52,7 +63,8 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_calendar_title), getString(R.string.tutorial_calendar_desc), R.drawable.tutorial_calendar));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
-        addSlide(new SyncAndroidCalendarFragment());
+        syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
+        addSlide(syncAndroidCalendarFragment);
         pickQuestsFragment = new PickQuestsFragment();
         addSlide(pickQuestsFragment);
         pickHabitsFragment = new PickHabitsFragment();
@@ -96,7 +108,10 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void onSlideChanged() {
-
+        if(previousSlide == SYNC_CALENDAR_SLIDE_INDEX && syncAndroidCalendarFragment.isSyncCalendarChecked()) {
+            checkCalendarForPermission();
+        }
+        previousSlide = pager.getCurrentItem();
     }
 
     @Override
@@ -115,6 +130,29 @@ public class TutorialActivity extends AppIntro2 {
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    private void checkCalendarForPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CALENDAR},
+                    Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
+        } else {
+            eventBus.post(new SyncCalendarRequestEvent());
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                eventBus.post(new SyncCalendarRequestEvent());
+            }
+        }
     }
 
 }

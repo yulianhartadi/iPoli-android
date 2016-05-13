@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -19,6 +20,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.joda.time.LocalDate;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -54,6 +57,8 @@ import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import me.everything.providers.android.calendar.Calendar;
+import me.everything.providers.android.calendar.CalendarProvider;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -275,5 +280,20 @@ public class App extends MultiDexApplication {
 
     private void scheduleNextReminder() {
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+    }
+
+    @Subscribe
+    public void onSyncWithCalendarRequest(SyncCalendarRequestEvent e) {
+        CalendarProvider provider = new CalendarProvider(this);
+        List<Calendar> calendars = provider.getCalendars().getList();
+        LocalStorage localStorage = LocalStorage.of(this);
+        Set<String> calendarIds = new HashSet<>();
+        for (Calendar c : calendars) {
+            if (c.visible) {
+                calendarIds.add(String.valueOf(c.id));
+            }
+        }
+        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarIds);
+        localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
     }
 }

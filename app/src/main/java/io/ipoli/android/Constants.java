@@ -50,4 +50,6 @@ public interface Constants {
     String API_RESOURCE_SOURCE = "ipoli-android";
     int SUGGESTED_SLOTS_COUNT = 7;
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
+
+    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
 }

@@ -27,4 +27,10 @@
         android:title="@string/invite_friend"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_sync_android_calendar"
+        android:menuCategory="secondary"
+        android:title="@string/sync_android_calendars"
+        app:showAsAction="never" />
+
 </menu>
