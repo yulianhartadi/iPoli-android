@@ -50,6 +50,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Integer startMinute;
 
+    private String preferredStartTime;
+    private Boolean flexibleStartTime;
+
     private Integer duration;
     private Date startDate;
 
@@ -69,8 +72,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private String source;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private Boolean needsSyncWithRemote;
+    private Boolean isRemoteObject;
 
     private SourceMapping sourceMapping;
 
@@ -176,6 +179,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
+        this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;

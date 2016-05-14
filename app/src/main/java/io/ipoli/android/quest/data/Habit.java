@@ -43,6 +43,9 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
 
     private Integer startMinute;
 
+    private String preferredStartTime;
+    private Boolean flexibleStartTime;
+
     private Integer duration;
     private RealmList<Reminder> reminders;
 
@@ -99,6 +102,7 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
+        this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
