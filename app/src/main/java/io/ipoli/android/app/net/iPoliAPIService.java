@@ -20,8 +20,8 @@ import rx.Observable;
  */
 public interface iPoliAPIService {
 
-    @GET("schedules/{date}")
-    Observable<List<Quest>> getSchedule(@Path("date") String date, @Query("player_id") String playerId);
+    @GET("journeys/{date}")
+    Observable<List<Quest>> getJourney(@Path("date") String date, @Query("player_id") String playerId);
 
     @POST("players")
     Observable<Player> createPlayer(@Body RequestBody request);
