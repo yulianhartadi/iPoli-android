@@ -7,6 +7,7 @@ import com.squareup.otto.Subscribe;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.FeedbackTapEvent;
@@ -14,13 +15,14 @@ import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
@@ -36,24 +38,25 @@ import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowHabitEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
+import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
-import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
+import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.tutorial.events.PredefinedHabitDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 
@@ -361,6 +364,23 @@ public class FlurryAnalyticsService implements AnalyticsService {
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
         log("current_day_changed", EventParams.of("new_day", e.date.toString())
                 .add("source", e.source.toString()));
+    }
+
+    @Subscribe
+    public void onSynCalendarCheckTapped(SyncCalendarCheckTappedEvent e) {
+        log("sync_calendar_check_tapped", EventParams.of("is_checked", String.valueOf(e.isChecked)));
+    }
+
+    @Subscribe
+    public void onSyncCalendarRequest(SyncCalendarRequestEvent e) {
+        log("sync_calendar_request", EventParams.of("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onCalendarPermissionResponse(CalendarPermissionResponseEvent e) {
+        log("calendar_permission_response", EventParams.create()
+        .add("response", e.response.name().toLowerCase())
+        .add("source", e.source.name().toLowerCase()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

@@ -21,7 +21,9 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.utils.EmailUtils;
@@ -106,7 +108,7 @@ public class BaseActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.READ_CALENDAR},
                     Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
         } else {
-            eventBus.post(new SyncCalendarRequestEvent());
+            eventBus.post(new SyncCalendarRequestEvent(EventSource.OPTIONS_MENU));
         }
     }
 
@@ -115,7 +117,11 @@ public class BaseActivity extends AppCompatActivity {
         if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                eventBus.post(new SyncCalendarRequestEvent());
+                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
+                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
+            } else if(grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
             }
         }
     }
