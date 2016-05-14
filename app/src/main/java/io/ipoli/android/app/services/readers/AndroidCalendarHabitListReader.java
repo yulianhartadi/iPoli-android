@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.SourceMapping;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
@@ -53,7 +53,7 @@ public class AndroidCalendarHabitListReader implements ListReader<Habit> {
             Habit habit = new Habit("");
             habit.setId(null);
             habit.setName(e.title);
-            habit.setSource("android-calendar");
+            habit.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             habit.setAllDay(e.allDay);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             habit.setStartMinute(startDateTime.getMinuteOfDay());

@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
 
+import java.util.Date;
 import java.util.Set;
 
 import io.ipoli.android.Constants;
@@ -56,13 +57,15 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
             q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
             q.setStartMinute(startDateTime.getMinuteOfDay());
-            q.setEndDate(startDateTime.toLocalDate().toDate());
-            q.setSource("android-calendar");
+            q.setStartDate(startDateTime.toLocalDate().toDate());
+            q.setEndDate(endDateTime.toLocalDate().toDate());
+            q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
             q.setAllDay(e.allDay);
+            q.setCompletedAt(new Date(e.dTend));
             if (e.originalId != null) {
-                return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(recurrentQuest -> {
-                    q.setHabit(recurrentQuest);
+                return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(habit -> {
+                    q.setHabit(habit);
                     return Observable.just(q);
                 });
             } else {

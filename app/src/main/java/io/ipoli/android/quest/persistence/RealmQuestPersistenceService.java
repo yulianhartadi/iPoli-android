@@ -52,6 +52,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         return fromRealm(where()
                 .isNull("completedAt")
                 .isNull("habit")
+                .equalTo("allDay", false)
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }

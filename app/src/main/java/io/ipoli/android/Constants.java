@@ -52,4 +52,5 @@ public interface Constants {
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
 
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
+    String SOURCE_ANDROID_CALENDAR = "android-calendar";
 }
