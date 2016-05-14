@@ -120,9 +120,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public void deleteAllFromHabit(String habitId) {
-        List<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
+        RealmResults<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
         getRealm().beginTransaction();
-        questsToRemove.clear();
+        questsToRemove.deleteAllFromRealm();
         getRealm().commitTransaction();
     }
 
