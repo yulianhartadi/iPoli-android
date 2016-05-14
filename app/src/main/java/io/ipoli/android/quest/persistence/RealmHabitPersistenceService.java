@@ -35,8 +35,8 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
     }
 
     @Override
-    public Observable<List<Habit>> findAllHabits() {
-        return fromRealm(where().isNotNull("name").isNotNull("recurrence.rrule").findAll());
+    public Observable<List<Habit>> findAllNonAllDayHabits() {
+        return fromRealm(where().isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAll());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
 
     @Override
     public void deleteBySourceMappingId(String source, String sourceId) {
-        if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
+        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
             return;
         }
         getRealm().beginTransaction();

@@ -114,7 +114,7 @@ public class HabitsFragment extends Fragment {
     }
 
     private void updateQuests() {
-        habitPersistenceService.findAllHabits().subscribe(quests -> {
+        habitPersistenceService.findAllNonAllDayHabits().subscribe(quests -> {
             List<HabitViewModel> viewModels = new ArrayList<>();
             for (Habit rq : quests) {
                 HabitViewModel vm = createViewModel(rq);

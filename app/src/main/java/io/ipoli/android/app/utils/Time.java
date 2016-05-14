@@ -7,23 +7,27 @@ import java.util.concurrent.TimeUnit;
 
 public class Time {
 
+    private static final int MINUTES_IN_A_DAY = 24 * 60;
+
     public enum RelativeTime {
         PAST, PRESENT, FUTURE;
     }
 
     private final int minutes;
 
+    private Time(int minutesAfterMidnight) {
+        if (minutesAfterMidnight < 0) {
+            throw new IllegalArgumentException("Minutes must be >= 0");
+        }
+        this.minutes = minutesAfterMidnight % MINUTES_IN_A_DAY;
+    }
+
     private Time(int hours, int minutes) {
-        this.minutes = hours * 60 + minutes;
+        this(hours * 60 + minutes);
     }
 
     public static Time of(int minutesAfterMidnight) {
-        if(minutesAfterMidnight < 0) {
-            return null;
-        }
-        int h = (int) TimeUnit.MINUTES.toHours(minutesAfterMidnight);
-        int m = minutesAfterMidnight - h * 60;
-        return Time.at(h, m);
+        return new Time(minutesAfterMidnight);
     }
 
     public static Time at(String timeString) {

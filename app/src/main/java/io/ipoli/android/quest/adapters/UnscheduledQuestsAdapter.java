@@ -11,7 +11,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -24,7 +23,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -60,14 +58,9 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         final UnscheduledQuestViewModel vm = viewModels.get(position);
         Quest q = vm.getQuest();
         holder.itemView.setOnClickListener(view -> {
-            if (relativeTime == Time.RelativeTime.PRESENT) {
+            if (relativeTime == Time.RelativeTime.PRESENT || relativeTime == Time.RelativeTime.FUTURE) {
                 eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-            } else if (relativeTime == Time.RelativeTime.FUTURE && !q.isHabit()) {
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-            } else if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
-                Toast.makeText(holder.itemView.getContext(), R.string.cannot_edit_future_habits, Toast.LENGTH_SHORT).show();
             }
-
         });
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
@@ -86,17 +79,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(false);
-        if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
-            holder.check.setClickable(false);
-        } else {
-            holder.check.setClickable(true);
-            holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
-                if (checked) {
-                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
-                }
-            });
-        }
-
+        holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
+            if (checked) {
+                eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
+            }
+        });
         holder.schedule.setOnClickListener(v -> {
             eventBus.post(new ScheduleQuestRequestEvent(vm));
         });
