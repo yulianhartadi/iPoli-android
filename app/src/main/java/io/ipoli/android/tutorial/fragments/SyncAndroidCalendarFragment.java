@@ -8,12 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 
 public class SyncAndroidCalendarFragment extends Fragment {
+    @Inject
+    Bus eventBus;
 
     @BindView(R.id.sync_calendar)
     CheckBox syncCheckBox;
@@ -24,7 +32,10 @@ public class SyncAndroidCalendarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sync_google_calendar, container, false);
+        App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, v);
+        syncCheckBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                eventBus.post(new SyncCalendarCheckTappedEvent(isChecked)));
         return v;
     }
 
