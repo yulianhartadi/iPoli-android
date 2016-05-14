@@ -86,7 +86,7 @@ public class AppJobService extends JobService {
                 Observable.defer(() -> syncHabits(p, localStorage)),
                 Observable.defer(() -> syncQuests(p, localStorage)),
                 Observable.defer(() -> getHabits(p)),
-                Observable.defer(() -> getScheduleForAWeekAhead(p))
+                Observable.defer(() -> getJourneysForAWeekAhead(p))
         )).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
             Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
@@ -296,9 +296,9 @@ public class AppJobService extends JobService {
                 }));
     }
 
-    private Observable<Quest> getScheduleForAWeekAhead(Player player) {
+    private Observable<Quest> getJourneysForAWeekAhead(Player player) {
         return Observable.just(DateUtils.getNext7Days()).concatMapIterable(dates -> dates)
-                .concatMap(date -> apiService.getSchedule(date, player.getId()).compose(applyAPISchedulers())).concatMapIterable(quests -> quests)
+                .concatMap(date -> apiService.getJourney(date, player.getId()).compose(applyAPISchedulers())).concatMapIterable(quests -> quests)
                 .concatMap(sq -> questPersistenceService.findById(sq.getId()).concatMap(q -> {
                     if (q != null && sq.getUpdatedAt().getTime() <= q.getUpdatedAt().getTime()) {
                         return Observable.just(q);
