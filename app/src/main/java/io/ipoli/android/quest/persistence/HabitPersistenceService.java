@@ -12,7 +12,7 @@ import rx.Observable;
  */
 public interface HabitPersistenceService extends PersistenceService<Habit> {
 
-    Observable<List<Habit>> findAllHabits();
+    Observable<List<Habit>> findAllNonAllDayHabits();
 
     void delete(Habit habit);
 
