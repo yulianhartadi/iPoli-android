@@ -39,6 +39,7 @@ import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
 import io.ipoli.android.app.scheduling.dto.Task;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -229,6 +230,9 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     }
 
     private void updateSchedule() {
+        if (calendarContainer.isInEditMode()) {
+            return;
+        }
         new CalendarScheduler().schedule().subscribe(schedule -> {
 
             List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
@@ -379,6 +383,11 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         if (!q.isScheduledFor(currentDate)) {
             return;
         }
+        updateSchedule();
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
         updateSchedule();
     }
 

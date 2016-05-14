@@ -240,4 +240,8 @@ public class CalendarLayout extends FrameLayout {
                 0
         );
     }
+
+    public boolean isInEditMode() {
+        return dragStrategy != null;
+    }
 }
