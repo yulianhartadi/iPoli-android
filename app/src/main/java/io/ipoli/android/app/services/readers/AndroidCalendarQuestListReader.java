@@ -59,6 +59,7 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             q.setEndDate(startDateTime.toLocalDate().toDate());
             q.setSource("android-calendar");
             q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
+            q.setAllDay(e.allDay);
             if (e.originalId != null) {
                 return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(recurrentQuest -> {
                     q.setHabit(recurrentQuest);

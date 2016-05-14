@@ -54,6 +54,7 @@ public class AndroidCalendarHabitListReader implements ListReader<Habit> {
             habit.setId(null);
             habit.setName(e.title);
             habit.setSource("android-calendar");
+            habit.setAllDay(e.allDay);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             habit.setStartMinute(startDateTime.getMinuteOfDay());
             Dur dur = new Dur(e.duration);

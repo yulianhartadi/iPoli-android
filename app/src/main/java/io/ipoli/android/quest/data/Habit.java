@@ -31,7 +31,7 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
 
     private String context;
 
-    private boolean isAllDay;
+    private boolean allDay;
 
     private Integer priority;
 
@@ -217,5 +217,13 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
 
     public void setSourceMapping(SourceMapping sourceMapping) {
         this.sourceMapping = sourceMapping;
+    }
+
+    public boolean isAllDay() {
+        return allDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        this.allDay = allDay;
     }
 }

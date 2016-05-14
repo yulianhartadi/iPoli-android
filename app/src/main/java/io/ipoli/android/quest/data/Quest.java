@@ -38,7 +38,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private String context;
 
-    private boolean isAllDay;
+    private boolean allDay;
 
     private Integer priority;
 
@@ -118,11 +118,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public boolean isAllDay() {
-        return isAllDay;
+        return allDay;
     }
 
     public void setAllDay(boolean allDay) {
-        isAllDay = allDay;
+        this.allDay = allDay;
     }
 
     public int getPriority() {
