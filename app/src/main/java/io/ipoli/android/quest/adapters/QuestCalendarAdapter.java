@@ -29,7 +29,6 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
@@ -119,15 +118,46 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         CheckBox checkBox = createCheckBox(q, v.getContext());
         detailsRoot.addView(checkBox, 0);
+
+//        GestureDetectorCompat detector = new GestureDetectorCompat(parent.getContext(), new GestureDetector.SimpleOnGestureListener() {
+//
+//            @Override
+//            public boolean onDown(MotionEvent e) {
+//                return true;
+//            }
+//
+////            @Override
+////            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+////                Log.d("QuestCalendarScroll", "Scrolling quest in calendar");
+////                return false;
+////            }
+//
+//            @Override
+//            public void onLongPress(MotionEvent e) {
+//                eventBus.post(new EditCalendarEventEvent(v, q));
+//            }
+//
+//            @Override
+//            public boolean onSingleTapUp(MotionEvent e) {
+//                if (!Quest.isCompleted(q)) {
+//                    if (relativeTime == Time.RelativeTime.PRESENT || relativeTime == Time.RelativeTime.FUTURE) {
+//                        eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
+//                    }
+//                } else {
+//                    Toast.makeText(v.getContext(), R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
+//                }
+//                return true;
+//            }
+//        });
+//        detector.setIsLongpressEnabled(true);
+//
+//        v.setOnTouchListener((v1, event) -> detector.onTouchEvent(event));
+
         v.setOnClickListener(view -> {
 
             if (!Quest.isCompleted(q)) {
-                if (relativeTime == Time.RelativeTime.PRESENT) {
+                if (relativeTime == Time.RelativeTime.PRESENT || relativeTime == Time.RelativeTime.FUTURE) {
                     eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
-                } else if (relativeTime == Time.RelativeTime.FUTURE && !q.isHabit()) {
-                    eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR));
-                } else if (relativeTime == Time.RelativeTime.FUTURE && q.isHabit()) {
-                    Toast.makeText(v.getContext(), R.string.cannot_edit_future_habits, Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(v.getContext(), R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();

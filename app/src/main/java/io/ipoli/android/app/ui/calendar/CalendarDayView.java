@@ -2,14 +2,18 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -126,7 +130,116 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private RelativeLayout initEventsContainer(Context context) {
-        RelativeLayout eventsContainer = new RelativeLayout(context);
+        RelativeLayout eventsContainer = new RelativeLayout(context) {
+
+            public float lastY;
+            public int yDiff;
+            public boolean mIsScrolling;
+
+
+            private float mDownY;
+
+//            ...
+
+
+//            mTouchSlop = vc.getScaledTouchSlop();
+
+//            @Override
+//            public boolean dispatchTouchEvent(MotionEvent ev) {
+//                Log.d("DispatchActionEvent", "MOVE? " + (ev.getAction() == MotionEvent.ACTION_MOVE));
+////                if (ev.getAction() == MotionEvent.ACTION_UP) {
+////                    return super.dispatchTouchEvent(ev);
+////                }
+////                if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+//
+//                super.dispatchTouchEvent(ev);
+//                return false;
+////                }
+////                return super.dispatchTouchEvent(ev);
+//            }
+
+            @Override
+            public boolean onInterceptTouchEvent(MotionEvent ev) {
+        /*
+         * This method JUST determines whether we want to intercept the motion.
+         * If we return true, onTouchEvent will be called and we do the actual
+         * scrolling there.
+         */
+                ViewConfiguration vc = ViewConfiguration.get(context);
+                int mTouchSlop = vc.getScaledTouchSlop();
+
+                final int action = MotionEventCompat.getActionMasked(ev);
+
+                // Always handle the case of the touch gesture being complete.
+                if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+                    // Release the scroll.
+                    mIsScrolling = false;
+                    return false; // Do not intercept touch event, let the child handle it
+                }
+                Log.d("ActionIntercept", action + " " + " scrolling: " + mIsScrolling);
+                switch (action) {
+
+
+                    case MotionEvent.ACTION_DOWN:
+                        mDownY = ev.getRawY();
+                        lastY = ev.getRawY();
+                        mIsScrolling = false;
+                        return false;
+
+                    case MotionEvent.ACTION_MOVE: {
+//                        lastY = ev.getRawY();
+                        if (mIsScrolling) {
+                            Log.d("ActionIntercept", "Move already scrolling");
+                            // We're currently scrolling, so yes, intercept the
+                            // touch event!
+                            return true;
+                        }
+
+                        // If the user has dragged her finger horizontally more than
+                        // the touch slop, start the scroll
+
+                        // left as an exercise for the reader
+                        yDiff = calculateDistanceY(ev);
+
+                        // Touch slop should be calculated using ViewConfiguration
+                        // constants.
+                        if (yDiff > mTouchSlop) {
+                            // Start scrolling!
+                            mIsScrolling = true;
+                            Log.d("ActionIntercept", "Scrolling now!");
+                            return true;
+                        }
+                        break;
+                    }
+//                    ...
+                }
+
+                // In general, we don't want to intercept touch events. They should be
+                // handled by the child view.
+                return false;
+            }
+
+            @Override
+            public boolean onTouchEvent(MotionEvent ev) {
+                // Here we actually handle the touch event (e.g. if the action is ACTION_MOVE,
+                // scroll this container).
+                // This method will only be called if the touch event was intercepted in
+                // onInterceptTouchEvent
+//                ...
+                if (mIsScrolling) {
+                    hourCellContainer.scrollBy(0, (int) (lastY - ev.getRawY()));
+                    Log.d("ActionIntercept", "On Touch " + mIsScrolling);
+                    lastY = ev.getRawY();
+                    return true;
+                }
+                return false;
+            }
+
+            private int calculateDistanceY(MotionEvent ev) {
+                return (int) (Math.abs(ev.getRawY() - mDownY));
+            }
+        };
+//        eventsContainer.scroll
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
     }
@@ -318,6 +431,7 @@ public class CalendarDayView extends FrameLayout {
             }
         };
     }
+
 
     public void showTimeLine() {
         timeLine.setVisibility(VISIBLE);

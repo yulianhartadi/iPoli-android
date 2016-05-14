@@ -140,7 +140,6 @@
     <string name="facebook_app_id">1609232436065758</string>
     <string name="invite_friend">Invite friend</string>
     <string name="show_invite_failed">Oops, please, try again later!</string>
-    <string name="cannot_edit_future_habits">Future habits cannot be edited</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="overview_title">Next 7 Days</string>
     <string name="sync_android_calendars">Import calendars</string>
