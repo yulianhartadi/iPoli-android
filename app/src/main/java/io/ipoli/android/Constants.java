@@ -11,7 +11,7 @@ public interface Constants {
     String SHARE_URL = "http://bit.ly/ipoli-android";
     String TWITTER_USERNAME = "@iPoliHQ";
 
-    String API_DATETIME_ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    String API_DATETIME_ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
 
     int EDIT_QUEST_RESULT_REQUEST_CODE = 11;
     int REMIND_START_QUEST_NOTIFICATION_ID = 103;
