@@ -151,26 +151,20 @@ public class CalendarDayView extends FrameLayout {
                 if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
                     isScrolling = false;
                     return false;
-                }
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        downY = ev.getRawY();
-                        lastYPosition = ev.getRawY();
-                        isScrolling = false;
-                        return false;
+                } else if (action == MotionEvent.ACTION_DOWN) {
+                    downY = ev.getRawY();
+                    lastYPosition = ev.getRawY();
+                    isScrolling = false;
+                } else if (action == MotionEvent.ACTION_MOVE) {
+                    if (isScrolling) {
+                        return true;
+                    }
 
-                    case MotionEvent.ACTION_MOVE: {
-                        if (isScrolling) {
-                            return true;
-                        }
+                    yDistance = calculateAbsDistanceY(ev, downY);
 
-                        yDistance = calculateAbsDistanceY(ev, downY);
-
-                        if (yDistance > touchSlop) {
-                            isScrolling = true;
-                            return true;
-                        }
-                        break;
+                    if (yDistance > touchSlop) {
+                        isScrolling = true;
+                        return true;
                     }
                 }
                 return false;
@@ -179,12 +173,11 @@ public class CalendarDayView extends FrameLayout {
             @Override
             public boolean onTouchEvent(MotionEvent ev) {
                 final int action = MotionEventCompat.getActionMasked(ev);
-                switch (action) {
-                    case MotionEvent.ACTION_MOVE:
-                        int yScroll = (int) (lastYPosition - ev.getRawY());
-                        hourCellContainer.scrollBy(0, yScroll);
-                        lastYPosition = ev.getRawY();
-                        return true;
+                if (action == MotionEvent.ACTION_MOVE) {
+                    int yScroll = (int) (lastYPosition - ev.getRawY());
+                    hourCellContainer.scrollBy(0, yScroll);
+                    lastYPosition = ev.getRawY();
+                    return true;
                 }
 
                 return super.onTouchEvent(ev);
