@@ -12,8 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.Calendar;
-
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
@@ -28,6 +26,7 @@ public class CalendarLayout extends FrameLayout {
     private CalendarListener calendarListener;
     private CalendarDayView calendarDayView;
     private LayoutInflater inflater;
+    private boolean isInEditMode = false;
 
     private DragStrategy dragStrategy;
 
@@ -125,6 +124,7 @@ public class CalendarLayout extends FrameLayout {
 
             @Override
             public void onDragDropped(DragEvent event) {
+                isInEditMode = false;
                 hasDropped = true;
                 CalendarDayView calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
                 if (event.getY() <= calendarDayView.getTop() || event.getY() > calendarDayView.getBottom()) {
@@ -133,7 +133,6 @@ public class CalendarLayout extends FrameLayout {
                         calendarListener.onUnableToAcceptNewEvent(calendarEvent);
                     }
                 } else {
-                    Calendar c = Calendar.getInstance();
                     int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                     int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
                     calendarEvent.setStartMinute(Time.at(hours, minutes).toMinutesAfterMidnight());
@@ -168,6 +167,7 @@ public class CalendarLayout extends FrameLayout {
 
         }.init(dragView, calendarEvent);
 
+        isInEditMode = true;
         dragView(dragView, dragStrategy);
 
     }
@@ -242,6 +242,6 @@ public class CalendarLayout extends FrameLayout {
     }
 
     public boolean isInEditMode() {
-        return dragStrategy != null;
+        return isInEditMode;
     }
 }
