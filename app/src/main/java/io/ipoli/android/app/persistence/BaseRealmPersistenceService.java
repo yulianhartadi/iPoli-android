@@ -118,26 +118,33 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         if (obj == null) {
             return Observable.empty();
         }
+        String id = obj.getId();
+        Realm realm = getRealm();
+        T realmObj = realm.where(getRealmObjectClass())
+                .equalTo("id", id)
+                .findFirst();
+
+        if (realmObj == null) {
+            realm.close();
+            return Observable.empty();
+        }
+
         return Observable.create(subscriber -> {
-            String id = obj.getId();
-            Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm -> {
-                T realmObj = backgroundRealm.where(getRealmObjectClass())
-                        .equalTo("id", id)
-                        .findFirst();
-                if (realmObj == null) {
-                    return;
-                }
-                realmObj.deleteFromRealm();
-            }, () -> {
-                subscriber.onNext(id);
-                subscriber.onCompleted();
-                onObjectDeleted(id);
-                realm.close();
-            }, error -> {
-                subscriber.onError(error);
-                realm.close();
-            });
+                        T objToDelete = backgroundRealm.where(getRealmObjectClass())
+                                .equalTo("id", id)
+                                .findFirst();
+                        objToDelete.deleteFromRealm();
+                    },
+                    () -> {
+                        subscriber.onNext(id);
+                        subscriber.onCompleted();
+                        onObjectDeleted(id);
+                        realm.close();
+                    }, error -> {
+                        subscriber.onError(error);
+                        realm.close();
+                    });
         });
     }
 

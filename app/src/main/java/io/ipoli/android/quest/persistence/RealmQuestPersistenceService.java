@@ -15,6 +15,7 @@ import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -82,29 +83,60 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
 
     @Override
-    public void deleteBySourceMappingId(String source, String sourceId) {
+    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
         if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return;
+            return Observable.empty();
         }
-        getRealm().beginTransaction();
-        Quest realmQuest = where()
+
+        Realm realm = getRealm();
+
+        Quest realmQuest = realm.where(getRealmObjectClass())
                 .equalTo("sourceMapping." + source, sourceId)
                 .findFirst();
+
         if (realmQuest == null) {
-            getRealm().cancelTransaction();
-            return;
+            realm.close();
+            return Observable.empty();
         }
-        realmQuest.deleteFromRealm();
-        getRealm().commitTransaction();
-        eventBus.post(new QuestDeletedEvent(realmQuest.getId()));
+
+        final String questId = realmQuest.getId();
+
+        return Observable.create(subscriber -> {
+            realm.executeTransactionAsync(backgroundRealm -> {
+                        Quest questToDelete = backgroundRealm.where(getRealmObjectClass())
+                                .equalTo("sourceMapping." + source, sourceId)
+                                .findFirst();
+                        questToDelete.deleteFromRealm();
+                    },
+                    () -> {
+                        subscriber.onNext(questId);
+                        subscriber.onCompleted();
+                        onObjectDeleted(questId);
+                        realm.close();
+                    }, error -> {
+                        subscriber.onError(error);
+                        realm.close();
+                    });
+        });
+
     }
 
     @Override
-    public void deleteAllFromHabit(String habitId) {
-        RealmResults<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
-        getRealm().beginTransaction();
-        questsToRemove.deleteAllFromRealm();
-        getRealm().commitTransaction();
+    public Observable<Void> deleteAllFromHabit(String habitId) {
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm -> {
+                RealmResults<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
+                questsToRemove.deleteAllFromRealm();
+            }, () -> {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+                realm.close();
+            }, error -> {
+                subscriber.onError(error);
+                realm.close();
+            });
+        });
     }
 
     @Override

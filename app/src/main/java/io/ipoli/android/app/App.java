@@ -151,7 +151,7 @@ public class App extends MultiDexApplication {
             } else {
                 q.setEndDate(null);
             }
-            questPersistenceService.save(q);
+            questPersistenceService.save(q).subscribe();
         }
     }
 

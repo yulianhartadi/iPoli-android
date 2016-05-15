@@ -10,6 +10,7 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.events.HabitSavedEvent;
 import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
+import io.realm.Realm;
 import rx.Observable;
 
 /**
@@ -45,21 +46,39 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
     }
 
     @Override
-    public void deleteBySourceMappingId(String source, String sourceId) {
+    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
+
         if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return;
+            return Observable.empty();
         }
-        getRealm().beginTransaction();
-        Habit realmQuest = where()
+        Realm realm = getRealm();
+        Habit realmQuest = realm.where(getRealmObjectClass())
                 .equalTo("sourceMapping." + source, sourceId)
                 .findFirst();
+
         if (realmQuest == null) {
-            getRealm().cancelTransaction();
-            return;
+            realm.close();
+            return Observable.empty();
         }
-        realmQuest.deleteFromRealm();
-        getRealm().commitTransaction();
-        eventBus.post(new HabitDeletedEvent(realmQuest.getId()));
+
+        final String habitId = realmQuest.getId();
+
+        return Observable.create(subscriber -> {
+            realm.executeTransactionAsync(backgroundRealm -> {
+                Habit habitToDelete = backgroundRealm.where(getRealmObjectClass())
+                        .equalTo("sourceMapping." + source, sourceId)
+                        .findFirst();
+                habitToDelete.deleteFromRealm();
+            }, () -> {
+                subscriber.onNext(habitId);
+                subscriber.onCompleted();
+                onObjectDeleted(habitId);
+                realm.close();
+            }, error -> {
+                subscriber.onError(error);
+                realm.close();
+            });
+        });
     }
 
     @Override

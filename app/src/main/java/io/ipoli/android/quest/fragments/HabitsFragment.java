@@ -177,7 +177,7 @@ public class HabitsFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.deleteAllFromHabit(habit.getId());
+                questPersistenceService.deleteAllFromHabit(habit.getId()).subscribe();
                 habitPersistenceService.delete(habit).subscribe();
             }
         });
