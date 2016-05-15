@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -53,7 +52,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -188,27 +186,21 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestAddedEvent e) {
-        questPersistenceService.save(e.quest);
+        questPersistenceService.save(e.quest).subscribe();
     }
 
     @Subscribe
-    public void onNewRecurrentQuest(NewHabitEvent e) {
-        habitPersistenceService.save(e.habit);
+    public void onNewHabit(NewHabitEvent e) {
+        habitPersistenceService.save(e.habit).subscribe();
     }
 
     @Subscribe
-    public void onRecurrentQuestSaved(HabitSavedEvent e) {
+    public void onHabitSaved(HabitSavedEvent e) {
         eventBus.post(new ForceSyncRequestEvent());
     }
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        eventBus.post(new SyncRequestEvent());
-        scheduleNextReminder();
-    }
-
-    @Subscribe
-    public void onQuestsSaved(QuestsSavedEvent e) {
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }
@@ -225,7 +217,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onRecurrentQuestDeleted(HabitDeletedEvent e) {
+    public void onHabitDeleted(HabitDeletedEvent e) {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_HABITS);
         removedQuests.add(e.id);

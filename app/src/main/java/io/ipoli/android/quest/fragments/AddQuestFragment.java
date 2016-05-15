@@ -56,12 +56,13 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
+import io.ipoli.android.quest.events.NewHabitEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
-import io.ipoli.android.quest.events.NewHabitEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -121,7 +122,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
         questText.setShowSoftInputOnFocus(true);
         questText.requestFocus();
-        
+
         initUI();
         initContextUI(view);
 
@@ -247,8 +248,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         String text = questText.getText().toString().trim();
 
         QuestParser qParser = new QuestParser(parser);
-        if (qParser.isRecurrent(text)) {
-            Habit habit = qParser.parseRecurrent(text);
+        if (qParser.isHabit(text)) {
+            Habit habit = qParser.parseHabit(text);
             if (habit == null) {
                 resetQuestText();
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
@@ -283,9 +284,13 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             }
             Quest.setContext(q, questContext);
             eventBus.post(new NewQuestAddedEvent(q));
-            Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
         }
         resetQuestText();
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 
     private boolean hasStartTime(Quest q) {

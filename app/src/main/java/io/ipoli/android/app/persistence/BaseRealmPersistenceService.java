@@ -28,7 +28,24 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     public Observable<T> save(T object) {
         object.markUpdated();
-        return saveRemoteObject(object);
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm ->
+                            backgroundRealm.copyToRealmOrUpdate(object),
+                    () -> {
+                        subscriber.onNext(object);
+                        subscriber.onCompleted();
+                        onObjectSaved(object);
+                        realm.close();
+                    }, error -> {
+                        subscriber.onError(error);
+                        realm.close();
+                    });
+        });
+    }
+
+    protected void onObjectSaved(T object) {
+
     }
 
     public Observable<T> saveRemoteObject(T object) {
@@ -115,12 +132,17 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
             }, () -> {
                 subscriber.onNext(id);
                 subscriber.onCompleted();
+                onObjectDeleted(id);
                 realm.close();
             }, error -> {
                 subscriber.onError(error);
                 realm.close();
             });
         });
+    }
+
+    protected void onObjectDeleted(String id) {
+
     }
 
     protected Observable<List<T>> fromRealm(List<T> objs) {

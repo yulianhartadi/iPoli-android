@@ -8,6 +8,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.events.HabitSavedEvent;
 import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import rx.Observable;
 
@@ -26,6 +27,16 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
     @Override
     protected Class<Habit> getRealmObjectClass() {
         return Habit.class;
+    }
+
+    @Override
+    protected void onObjectSaved(Habit object) {
+        eventBus.post(new HabitSavedEvent(object));
+    }
+
+    @Override
+    protected void onObjectDeleted(String id) {
+        eventBus.post(new HabitDeletedEvent(id));
     }
 
     @Override

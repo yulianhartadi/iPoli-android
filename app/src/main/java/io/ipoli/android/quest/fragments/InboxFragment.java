@@ -127,7 +127,7 @@ public class InboxFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.delete(quest);
+                questPersistenceService.delete(quest).subscribe();
             }
         });
 
@@ -144,8 +144,10 @@ public class InboxFragment extends Fragment {
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         q.setEndDate(new Date());
-        questPersistenceService.save(q);
-        Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
+        questPersistenceService.save(q).subscribe(quest -> {
+            Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     @Subscribe

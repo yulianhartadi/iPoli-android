@@ -14,6 +14,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -46,6 +47,16 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    protected void onObjectSaved(Quest object) {
+        eventBus.post(new QuestSavedEvent(object));
+    }
+
+    @Override
+    protected void onObjectDeleted(String id) {
+        eventBus.post(new QuestDeletedEvent(id));
+    }
+
+    @Override
     public Observable<List<Quest>> findAllUnplanned() {
         return fromRealm(where()
                 .isNull("endDate")
@@ -70,10 +81,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
 
-
     @Override
     public void deleteBySourceMappingId(String source, String sourceId) {
-        if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
+        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
             return;
         }
         getRealm().beginTransaction();
