@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -130,116 +129,72 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private RelativeLayout initEventsContainer(Context context) {
+
+        ViewConfiguration vc = ViewConfiguration.get(context);
+        final int touchSlop = vc.getScaledTouchSlop();
+
         RelativeLayout eventsContainer = new RelativeLayout(context) {
 
-            public float lastY;
-            public int yDiff;
-            public boolean mIsScrolling;
+            // Intercept scroll events and pass them to the hour cell container
 
+            public float lastYPosition;
+            public int yDistance;
+            public boolean isScrolling;
 
-            private float mDownY;
-
-//            ...
-
-
-//            mTouchSlop = vc.getScaledTouchSlop();
-
-//            @Override
-//            public boolean dispatchTouchEvent(MotionEvent ev) {
-//                Log.d("DispatchActionEvent", "MOVE? " + (ev.getAction() == MotionEvent.ACTION_MOVE));
-////                if (ev.getAction() == MotionEvent.ACTION_UP) {
-////                    return super.dispatchTouchEvent(ev);
-////                }
-////                if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-//
-//                super.dispatchTouchEvent(ev);
-//                return false;
-////                }
-////                return super.dispatchTouchEvent(ev);
-//            }
+            private float downY;
 
             @Override
             public boolean onInterceptTouchEvent(MotionEvent ev) {
-        /*
-         * This method JUST determines whether we want to intercept the motion.
-         * If we return true, onTouchEvent will be called and we do the actual
-         * scrolling there.
-         */
-                ViewConfiguration vc = ViewConfiguration.get(context);
-                int mTouchSlop = vc.getScaledTouchSlop();
 
                 final int action = MotionEventCompat.getActionMasked(ev);
 
-                // Always handle the case of the touch gesture being complete.
                 if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-                    // Release the scroll.
-                    mIsScrolling = false;
-                    return false; // Do not intercept touch event, let the child handle it
+                    isScrolling = false;
+                    return false;
                 }
-                Log.d("ActionIntercept", action + " " + " scrolling: " + mIsScrolling);
                 switch (action) {
-
-
                     case MotionEvent.ACTION_DOWN:
-                        mDownY = ev.getRawY();
-                        lastY = ev.getRawY();
-                        mIsScrolling = false;
+                        downY = ev.getRawY();
+                        lastYPosition = ev.getRawY();
+                        isScrolling = false;
                         return false;
 
                     case MotionEvent.ACTION_MOVE: {
-//                        lastY = ev.getRawY();
-                        if (mIsScrolling) {
-                            Log.d("ActionIntercept", "Move already scrolling");
-                            // We're currently scrolling, so yes, intercept the
-                            // touch event!
+                        if (isScrolling) {
                             return true;
                         }
 
-                        // If the user has dragged her finger horizontally more than
-                        // the touch slop, start the scroll
+                        yDistance = calculateAbsDistanceY(ev, downY);
 
-                        // left as an exercise for the reader
-                        yDiff = calculateDistanceY(ev);
-
-                        // Touch slop should be calculated using ViewConfiguration
-                        // constants.
-                        if (yDiff > mTouchSlop) {
-                            // Start scrolling!
-                            mIsScrolling = true;
-                            Log.d("ActionIntercept", "Scrolling now!");
+                        if (yDistance > touchSlop) {
+                            isScrolling = true;
                             return true;
                         }
                         break;
                     }
-//                    ...
                 }
-
-                // In general, we don't want to intercept touch events. They should be
-                // handled by the child view.
                 return false;
             }
 
             @Override
             public boolean onTouchEvent(MotionEvent ev) {
-                // Here we actually handle the touch event (e.g. if the action is ACTION_MOVE,
-                // scroll this container).
-                // This method will only be called if the touch event was intercepted in
-                // onInterceptTouchEvent
-//                ...
-                if (mIsScrolling) {
-                    hourCellContainer.scrollBy(0, (int) (lastY - ev.getRawY()));
-                    Log.d("ActionIntercept", "On Touch " + mIsScrolling);
-                    lastY = ev.getRawY();
-                    return true;
+                final int action = MotionEventCompat.getActionMasked(ev);
+                switch (action) {
+                    case MotionEvent.ACTION_MOVE:
+                        int yScroll = (int) (lastYPosition - ev.getRawY());
+                        hourCellContainer.scrollBy(0, yScroll);
+                        lastYPosition = ev.getRawY();
+                        return true;
                 }
-                return false;
+
+                return super.onTouchEvent(ev);
             }
 
-            private int calculateDistanceY(MotionEvent ev) {
-                return (int) (Math.abs(ev.getRawY() - mDownY));
+            private int calculateAbsDistanceY(MotionEvent ev, float yPosition) {
+                return (int) (Math.abs(ev.getRawY() - yPosition));
             }
         };
-//        eventsContainer.scroll
+
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
     }
