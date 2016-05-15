@@ -26,8 +26,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
 
-    void delete(Quest quest);
-
     void deleteBySourceMappingId(String source, String sourceId);
 
     void deleteAllFromHabit(String habitId);

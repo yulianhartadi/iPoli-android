@@ -68,7 +68,7 @@ public class QuestParser {
         return q;
     }
 
-    public Habit parseRecurrent(String text) {
+    public Habit parseHabit(String text) {
 
         String rawText = text;
 
@@ -87,7 +87,7 @@ public class QuestParser {
         return new Habit(rawText);
     }
 
-    public boolean isRecurrent(String text) {
+    public boolean isHabit(String text) {
         for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
             if (matcher.match(text) != null) {
                 return true;

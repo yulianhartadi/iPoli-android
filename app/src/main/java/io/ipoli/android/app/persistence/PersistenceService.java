@@ -14,15 +14,15 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<T> save(T obj);
 
-    Observable<List<T>> saveAll(List<T> objs);
-
     Observable<T> saveRemoteObject(T object);
 
     Observable<List<T>> saveRemoteObjects(List<T> objects);
 
     Observable<List<T>> findAllWhoNeedSyncWithRemote();
 
-    void updateId(T obj, String newId);
+    Observable<Void> updateId(T obj, String newId);
 
     Observable<T> findById(String id);
+
+    Observable<String> delete(T obj);
 }

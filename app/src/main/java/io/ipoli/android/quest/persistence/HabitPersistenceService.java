@@ -14,8 +14,6 @@ public interface HabitPersistenceService extends PersistenceService<Habit> {
 
     Observable<List<Habit>> findAllNonAllDayHabits();
 
-    void delete(Habit habit);
-
     void deleteBySourceMappingId(String source, String sourceId);
 
     Observable<Habit> findByExternalSourceMappingId(String source, String sourceId);

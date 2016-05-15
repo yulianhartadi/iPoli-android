@@ -205,12 +205,14 @@ public class AppJobService extends JobService {
             if (isLocalOnly(q)) {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.createQuest(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)))
+                        .concatMap(sq -> updateQuest(sq, q))
+                        .concatMap(updatedQuest -> questPersistenceService.saveRemoteObject(updatedQuest))
                         .concatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
             } else {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", q).param("player_id", player.getId()).build();
                 return apiService.updateQuest(requestBody, q.getId()).compose(applyAPISchedulers())
-                        .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, q)))
+                        .concatMap(sq -> updateQuest(sq, q))
+                        .concatMap(updatedQuest -> questPersistenceService.saveRemoteObject(updatedQuest))
                         .concatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
             }
         });
@@ -248,39 +250,45 @@ public class AppJobService extends JobService {
                 data.addProperty("source", qJson.get("source").getAsString());
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", data).param("player_id", player.getId()).build();
                 return apiService.createHabitFromText(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
+                        .concatMap(sq -> updateHabit(sq, habit))
+                        .concatMap(updatedHabit -> habitPersistenceService.saveRemoteObject(updatedHabit))
                         .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
 
             } else if (isLocalOnly(habit)) {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
                 return apiService.createHabit(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
-                        .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
+                        .concatMap(sq -> updateHabit(sq, habit))
+                        .concatMap(updatedHabit -> habitPersistenceService.saveRemoteObject(updatedHabit)
+                                .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE)));
             } else {
                 RequestBody requestBody = createJsonRequestBodyBuilder().param("data", habit).param("player_id", player.getId()).build();
                 return apiService.updateHabit(requestBody, habit.getId()).compose(applyAPISchedulers())
-                        .concatMap(sq -> habitPersistenceService.saveRemoteObject(updateHabit(sq, habit)))
+                        .concatMap(sq -> updateHabit(sq, habit))
+                        .concatMap(updatedHabit -> habitPersistenceService.saveRemoteObject(updatedHabit))
                         .concatMap(savedHabit -> deleteSyncedAndroidCalendarEvent(savedHabit.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE));
             }
         });
     }
 
-    private Quest updateQuest(Quest serverQuest, Quest localQuest) {
-        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
-            questPersistenceService.updateId(localQuest, serverQuest.getId());
-        }
+    private Observable<Quest> updateQuest(Quest serverQuest, Quest localQuest) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteObject();
-        return serverQuest;
+        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
+            questPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
+                    Observable.just(serverQuest));
+        }
+
+        return Observable.just(serverQuest);
     }
 
-    private Habit updateHabit(Habit serverQuest, Habit localQuest) {
-        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
-            habitPersistenceService.updateId(localQuest, serverQuest.getId());
-        }
+    private Observable<Habit> updateHabit(Habit serverQuest, Habit localQuest) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteObject();
-        return serverQuest;
+        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
+            return habitPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
+                    Observable.just(serverQuest));
+        }
+        return Observable.just(serverQuest);
     }
 
     private Observable<Habit> getHabits(Player player) {
@@ -290,9 +298,7 @@ public class AppJobService extends JobService {
                     if (habit != null && sq.getUpdatedAt().getTime() <= habit.getUpdatedAt().getTime()) {
                         return Observable.just(habit);
                     }
-
-                    updateHabit(sq, habit);
-                    return habitPersistenceService.saveRemoteObject(sq);
+                    return updateHabit(sq, habit).flatMap(h -> habitPersistenceService.saveRemoteObject(h));
                 }));
     }
 
@@ -304,13 +310,12 @@ public class AppJobService extends JobService {
                         return Observable.just(q);
                     }
 
-                    if (q != null && isLocalOnly(q)) {
-                        questPersistenceService.updateId(q, sq.getId());
-                    }
-
                     sq.setSyncedWithRemote();
                     sq.setRemoteObject();
 
+                    if (q != null && isLocalOnly(q)) {
+                        return questPersistenceService.updateId(q, sq.getId()).flatMap(aVoid -> questPersistenceService.saveRemoteObject(sq));
+                    }
                     return questPersistenceService.saveRemoteObject(sq);
                 }));
     }

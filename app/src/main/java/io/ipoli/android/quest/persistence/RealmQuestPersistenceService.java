@@ -11,11 +11,9 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
@@ -30,16 +28,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     public RealmQuestPersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
-    }
-
-    @Override
-    protected void onObjectSaved(Quest quest) {
-        eventBus.post(new QuestSavedEvent(quest));
-    }
-
-    @Override
-    protected void onObjectsSaved(List<Quest> quests) {
-        eventBus.post(new QuestsSavedEvent(quests));
     }
 
     @Override
@@ -81,24 +69,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
-    @Override
-    public void delete(Quest quest) {
-        if (quest == null) {
-            return;
-        }
-        String id = quest.getId();
-        getRealm().beginTransaction();
-        Quest realmQuest = where()
-                .equalTo("id", id)
-                .findFirst();
-        if (realmQuest == null) {
-            getRealm().cancelTransaction();
-            return;
-        }
-        realmQuest.deleteFromRealm();
-        getRealm().commitTransaction();
-        eventBus.post(new QuestDeletedEvent(id));
-    }
+
 
     @Override
     public void deleteBySourceMappingId(String source, String sourceId) {

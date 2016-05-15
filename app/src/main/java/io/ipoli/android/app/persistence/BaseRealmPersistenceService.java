@@ -28,40 +28,39 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     public Observable<T> save(T object) {
         object.markUpdated();
-        Realm realm = getRealm();
-        realm.beginTransaction();
-        T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(object));
-        realm.commitTransaction();
-        onObjectSaved(res);
-        return Observable.just(res);
+        return saveRemoteObject(object);
     }
 
     public Observable<T> saveRemoteObject(T object) {
-        Realm realm = getRealm();
-        realm.beginTransaction();
-        T res = realm.copyFromRealm(realm.copyToRealmOrUpdate(object));
-        realm.commitTransaction();
-        return Observable.just(res);
-    }
-
-    public Observable<List<T>> saveAll(List<T> objects) {
-        for (T o : objects) {
-            o.markUpdated();
-        }
-        Realm realm = getRealm();
-        realm.beginTransaction();
-        List<T> res = realm.copyFromRealm(realm.copyToRealmOrUpdate(objects));
-        realm.commitTransaction();
-        onObjectsSaved(res);
-        return Observable.just(res);
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm ->
+                            backgroundRealm.copyToRealmOrUpdate(object),
+                    () -> {
+                        subscriber.onNext(object);
+                        subscriber.onCompleted();
+                        realm.close();
+                    }, error -> {
+                        subscriber.onError(error);
+                        realm.close();
+                    });
+        });
     }
 
     public Observable<List<T>> saveRemoteObjects(List<T> objects) {
-        Realm realm = getRealm();
-        realm.beginTransaction();
-        List<T> res = realm.copyFromRealm(realm.copyToRealmOrUpdate(objects));
-        realm.commitTransaction();
-        return Observable.just(res);
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm ->
+                            backgroundRealm.copyToRealmOrUpdate(objects),
+                    () -> {
+                        subscriber.onNext(objects);
+                        subscriber.onCompleted();
+                        realm.close();
+                    }, error -> {
+                        subscriber.onError(error);
+                        realm.close();
+                    });
+        });
     }
 
     public Observable<T> findById(String id) {
@@ -70,12 +69,6 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
         return fromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
-    }
-
-    protected void onObjectSaved(T obj) {
-    }
-
-    protected void onObjectsSaved(List<T> objs) {
     }
 
     protected abstract Class<T> getRealmObjectClass();
@@ -87,12 +80,47 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return Observable.just(getRealm().copyFromRealm(obj));
     }
 
-    public void updateId(T obj, String newId) {
-        Realm realm = getRealm();
-        realm.beginTransaction();
-        T realmObj = realm.copyToRealmOrUpdate(obj);
-        realmObj.setId(newId);
-        realm.commitTransaction();
+    public Observable<Void> updateId(T obj, String newId) {
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(realm1 -> {
+                T realmObj = realm1.copyToRealmOrUpdate(obj);
+                realmObj.setId(newId);
+            }, () -> {
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+                realm.close();
+            }, error -> {
+                subscriber.onError(error);
+                realm.close();
+            });
+        });
+    }
+
+    public Observable<String> delete(T obj) {
+        if (obj == null) {
+            return Observable.empty();
+        }
+        return Observable.create(subscriber -> {
+            String id = obj.getId();
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm -> {
+                T realmObj = backgroundRealm.where(getRealmObjectClass())
+                        .equalTo("id", id)
+                        .findFirst();
+                if (realmObj == null) {
+                    return;
+                }
+                realmObj.deleteFromRealm();
+            }, () -> {
+                subscriber.onNext(id);
+                subscriber.onCompleted();
+                realm.close();
+            }, error -> {
+                subscriber.onError(error);
+                realm.close();
+            });
+        });
     }
 
     protected Observable<List<T>> fromRealm(List<T> objs) {
