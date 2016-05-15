@@ -435,7 +435,6 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
                 List<Quest> unscheduledQuests = new ArrayList<>();
                 List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
                 for (Quest q : quests) {
-
                     // completed events should be added first since we don't want them to intercept clicks
                     // for incomplete events
 

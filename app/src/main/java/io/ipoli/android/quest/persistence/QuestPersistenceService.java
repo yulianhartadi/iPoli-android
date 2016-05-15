@@ -7,6 +7,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**

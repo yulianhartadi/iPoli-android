@@ -154,15 +154,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
 
-        return fromRealm(where()
-                .beginGroup()
+        return new FindAllQuery(where -> where.beginGroup()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .or()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .endGroup()
-                .findAllSorted("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING)).execute();
     }
 
     @Override

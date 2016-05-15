@@ -10,6 +10,7 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**
@@ -159,4 +160,28 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     protected Realm getRealm() {
         return Realm.getDefaultInstance();
     }
+
+    public interface FindAllQueryBuilder<T extends RealmObject & RemoteObject> {
+        RealmResults<T> buildQuery(RealmQuery<T> where);
+    }
+
+    public class FindAllQuery {
+
+        private FindAllQueryBuilder<T> queryBuilder;
+
+        public FindAllQuery(FindAllQueryBuilder<T> queryBuilder) {
+            this.queryBuilder = queryBuilder;
+        }
+
+        public Observable<List<T>> execute() {
+            try (Realm realm = getRealm()) {
+                return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
+                        .asObservable()
+                        .filter(RealmResults::isLoaded)
+                        .map(realm::copyFromRealm);
+            }
+        }
+    }
+
+
 }
