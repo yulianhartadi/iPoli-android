@@ -12,6 +12,7 @@ import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -20,31 +21,33 @@ import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 public class StartQuestCommand {
 
     private Context context;
+    private final String questId;
     private QuestPersistenceService questPersistenceService;
-    private Quest quest;
 
-    public StartQuestCommand(Context context, QuestPersistenceService questPersistenceService, Quest quest) {
+    public StartQuestCommand(Context context, String questId, QuestPersistenceService questPersistenceService) {
         this.context = context;
+        this.questId = questId;
         this.questPersistenceService = questPersistenceService;
-        this.quest = quest;
     }
 
-    public void execute() {
+    public Observable<Quest> execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
-        quest.setActualStart(DateUtils.nowUTC());
-        questPersistenceService.save(quest).subscribe(q -> {
-            scheduleNextQuestReminder(context);
-            stopOtherRunningQuests(quest);
+        return questPersistenceService.findById(questId).flatMap(quest -> {
+            quest.setActualStart(DateUtils.nowUTC());
+            return questPersistenceService.save(quest).flatMap(q -> {
+                scheduleNextQuestReminder(context);
+                stopOtherRunningQuests(quest);
 
-            if (quest.getDuration() > 0) {
-                long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-                long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
-                QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
-            }
+                if (quest.getDuration() > 0) {
+                    long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
+                    long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
+                    QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
+                }
+                return Observable.just(q);
+            });
         });
     }
-
 
     private void stopOtherRunningQuests(Quest q) {
 
@@ -56,7 +59,6 @@ public class StartQuestCommand {
                 }
             }
         });
-
     }
 
     private void scheduleNextQuestReminder(Context context) {

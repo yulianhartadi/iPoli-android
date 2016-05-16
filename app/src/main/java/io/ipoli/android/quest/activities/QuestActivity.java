@@ -38,6 +38,7 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -77,6 +78,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     private boolean isTimerRunning;
     private int elapsedSeconds;
+    private String questId;
+    private boolean afterOnCreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,21 +92,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         ButterKnife.bind(this);
         appComponent().inject(this);
 
-        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        questPersistenceService.findById(questId).subscribe(q -> {
-            quest = q;
-            initUI();
-
-            Intent intent = getIntent();
-            String action = intent.getAction();
-
-            if (ACTION_QUEST_CANCELED.equals(action)) {
-                new StopQuestCommand(quest, questPersistenceService, this).execute();
-            } else if (ACTION_START_QUEST.equals(action)) {
-                new StartQuestCommand(this, questPersistenceService, quest).execute();
-            }
-        });
-
+        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        afterOnCreate = true;
         eventBus.post(new ScreenShownEvent("quest"));
     }
 
@@ -129,25 +119,45 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         long totalTime = questHasDuration ?
                 TimeUnit.MINUTES.toMillis(quest.getDuration()) :
                 TimeUnit.MINUTES.toMillis(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
-
         timerProgress.setMax((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
         timerProgress.setSecondaryProgress((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
     }
 
     @Override
     protected void onResume() {
-        QuestNotificationScheduler.stopTimer(quest.getId(), this);
-        if (Quest.isStarted(quest)) {
-            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
-            resumeTimer();
-            timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-            edit.setVisibility(View.GONE);
-        }
-
-        if(quest.isHabit()) {
-            edit.setVisibility(View.GONE);
-        }
         super.onResume();
+        Observable<Quest> questObservable = null;
+        if (afterOnCreate) {
+            afterOnCreate = false;
+            String action = getIntent().getAction();
+            if (ACTION_QUEST_CANCELED.equals(action)) {
+                questObservable = new StopQuestCommand(this, questId, questPersistenceService).execute();
+            } else if (ACTION_START_QUEST.equals(action)) {
+                questObservable = new StartQuestCommand(this, questId, questPersistenceService).execute();
+            }
+        }
+        if (questObservable == null) {
+            questObservable = questPersistenceService.findById(questId);
+        }
+        onQuestFound(questObservable);
+    }
+
+    private void onQuestFound(Observable<Quest> questObservable) {
+        QuestNotificationScheduler.stopTimer(questId, this);
+        questObservable.subscribe(q -> {
+            this.quest = q;
+            initUI();
+            if (Quest.isStarted(quest)) {
+                elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
+                resumeTimer();
+                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
+                edit.setVisibility(View.GONE);
+            }
+
+            if (quest.isHabit()) {
+                edit.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -162,14 +172,14 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (isOverdue) {
             return;
         }
-        QuestNotificationScheduler.scheduleUpdateTimer(quest.getId(), this);
+        QuestNotificationScheduler.scheduleUpdateTimer(questId, this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            questPersistenceService.findById(quest.getId()).subscribe(q -> {
+            questPersistenceService.findById(questId).subscribe(q -> {
                 quest = q;
                 initUI();
             });
@@ -200,16 +210,20 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (isTimerRunning) {
             eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
-            new StopQuestCommand(quest, questPersistenceService, this).execute();
-            resetTimerUI();
-            timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
-            edit.setVisibility(View.VISIBLE);
+            new StopQuestCommand(this, questId, questPersistenceService).execute().subscribe(q -> {
+                quest = q;
+                resetTimerUI();
+                timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
+                edit.setVisibility(View.VISIBLE);
+            });
         } else {
             eventBus.post(new StartQuestTapEvent(quest));
-            new StartQuestCommand(this, questPersistenceService, quest).execute();
-            startTimer();
-            timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-            edit.setVisibility(View.GONE);
+            new StartQuestCommand(this, questId, questPersistenceService).execute().subscribe(q -> {
+                quest = q;
+                startTimer();
+                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
+                edit.setVisibility(View.GONE);
+            });
         }
     }
 
@@ -225,7 +239,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public void onEditTap(View v) {
         eventBus.post(new EditQuestRequestEvent(quest, EventSource.QUEST));
         Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }
 
@@ -261,7 +275,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         long timerMillis = nowMillis - quest.getActualStart().getTime();
         timer.setText(TimerFormatter.format(timerMillis));
     }
-
 
     private boolean isOverdue(long questDurationSeconds) {
         return questDurationSeconds < elapsedSeconds;
