@@ -113,32 +113,32 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
         String id = obj.getId();
         Realm realm = getRealm();
-        T realmObj = realm.where(getRealmObjectClass())
-                .equalTo("id", id)
-                .findFirst();
 
-        if (realmObj == null) {
-            realm.close();
-            return Observable.empty();
-        }
-
-        return Observable.create(subscriber -> {
-            realm.executeTransactionAsync(backgroundRealm -> {
-                        T objToDelete = backgroundRealm.where(getRealmObjectClass())
-                                .equalTo("id", id)
-                                .findFirst();
-                        objToDelete.deleteFromRealm();
-                    },
-                    () -> {
-                        subscriber.onNext(id);
-                        subscriber.onCompleted();
-                        onObjectDeleted(id);
-                        realm.close();
-                    }, error -> {
-                        subscriber.onError(error);
-                        realm.close();
-                    });
+        return findById(id).flatMap(realmObj -> {
+            if (realmObj == null) {
+                realm.close();
+                return Observable.empty();
+            }
+            return Observable.create(subscriber -> {
+                realm.executeTransactionAsync(backgroundRealm -> {
+                            T objToDelete = backgroundRealm.where(getRealmObjectClass())
+                                    .equalTo("id", id)
+                                    .findFirst();
+                            objToDelete.deleteFromRealm();
+                        },
+                        () -> {
+                            subscriber.onNext(id);
+                            subscriber.onCompleted();
+                            onObjectDeleted(id);
+                            realm.close();
+                        }, error -> {
+                            subscriber.onError(error);
+                            realm.close();
+                        });
+            });
         });
+
+
     }
 
     protected void onObjectDeleted(String id) {

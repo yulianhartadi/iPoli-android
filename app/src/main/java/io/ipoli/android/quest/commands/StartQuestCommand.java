@@ -20,32 +20,30 @@ import rx.Observable;
  */
 public class StartQuestCommand {
 
-    private Context context;
-    private final String questId;
-    private QuestPersistenceService questPersistenceService;
+    private final Context context;
+    private final Quest quest;
+    private final QuestPersistenceService questPersistenceService;
 
-    public StartQuestCommand(Context context, String questId, QuestPersistenceService questPersistenceService) {
+    public StartQuestCommand(Context context, Quest quest, QuestPersistenceService questPersistenceService) {
         this.context = context;
-        this.questId = questId;
+        this.quest = quest;
         this.questPersistenceService = questPersistenceService;
     }
 
     public Observable<Quest> execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
-        return questPersistenceService.findById(questId).flatMap(quest -> {
-            quest.setActualStart(DateUtils.nowUTC());
-            return questPersistenceService.save(quest).flatMap(q -> {
-                scheduleNextQuestReminder(context);
-                stopOtherRunningQuests(quest);
+        quest.setActualStart(DateUtils.nowUTC());
+        return questPersistenceService.save(quest).flatMap(q -> {
+            scheduleNextQuestReminder(context);
+            stopOtherRunningQuests(quest);
 
-                if (quest.getDuration() > 0) {
-                    long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-                    long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
-                    QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
-                }
-                return Observable.just(q);
-            });
+            if (quest.getDuration() > 0) {
+                long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
+                long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
+                QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
+            }
+            return Observable.just(q);
         });
     }
 

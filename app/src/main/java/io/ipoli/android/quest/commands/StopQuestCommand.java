@@ -14,22 +14,20 @@ import rx.Observable;
 public class StopQuestCommand {
 
     private Context context;
-    private String questId;
+    private Quest quest;
     private QuestPersistenceService questPersistenceService;
 
-    public StopQuestCommand(Context context, String questId, QuestPersistenceService questPersistenceService) {
+    public StopQuestCommand(Context context, Quest quest, QuestPersistenceService questPersistenceService) {
         this.context = context;
-        this.questId = questId;
+        this.quest = quest;
         this.questPersistenceService = questPersistenceService;
     }
 
     public Observable<Quest> execute() {
-        return questPersistenceService.findById(questId).flatMap(quest -> {
-            quest.setActualStart(null);
-            return questPersistenceService.save(quest).flatMap(q -> {
-                QuestNotificationScheduler.stopAll(q.getId(), context);
-                return Observable.just(q);
-            });
+        quest.setActualStart(null);
+        return questPersistenceService.save(quest).flatMap(q -> {
+            QuestNotificationScheduler.stopAll(q.getId(), context);
+            return Observable.just(q);
         });
     }
 }

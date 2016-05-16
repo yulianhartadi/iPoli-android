@@ -126,20 +126,23 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onResume() {
         super.onResume();
-        Observable<Quest> questObservable = null;
-        if (afterOnCreate) {
-            afterOnCreate = false;
-            String action = getIntent().getAction();
-            if (ACTION_QUEST_CANCELED.equals(action)) {
-                questObservable = new StopQuestCommand(this, questId, questPersistenceService).execute();
-            } else if (ACTION_START_QUEST.equals(action)) {
-                questObservable = new StartQuestCommand(this, questId, questPersistenceService).execute();
+        questPersistenceService.findById(questId).subscribe(q -> {
+            Observable<Quest> questObservable = null;
+            if (afterOnCreate) {
+                afterOnCreate = false;
+                String action = getIntent().getAction();
+                if (ACTION_QUEST_CANCELED.equals(action)) {
+                    questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
+                } else if (ACTION_START_QUEST.equals(action)) {
+                    questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
+                }
             }
-        }
-        if (questObservable == null) {
-            questObservable = questPersistenceService.findById(questId);
-        }
-        onQuestFound(questObservable);
+            if (questObservable == null) {
+                questObservable = Observable.just(q);
+            }
+            onQuestFound(questObservable);
+        });
+
     }
 
     private void onQuestFound(Observable<Quest> questObservable) {
@@ -210,7 +213,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (isTimerRunning) {
             eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
-            new StopQuestCommand(this, questId, questPersistenceService).execute().subscribe(q -> {
+            new StopQuestCommand(this, quest, questPersistenceService).execute().subscribe(q -> {
                 quest = q;
                 resetTimerUI();
                 timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
@@ -218,7 +221,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             });
         } else {
             eventBus.post(new StartQuestTapEvent(quest));
-            new StartQuestCommand(this, questId, questPersistenceService).execute().subscribe(q -> {
+            new StartQuestCommand(this, quest, questPersistenceService).execute().subscribe(q -> {
                 quest = q;
                 startTimer();
                 timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
