@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
@@ -57,12 +59,15 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
             q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
             q.setStartMinute(startDateTime.getMinuteOfDay());
+
             q.setStartDate(startDateTime.toLocalDate().toDate());
             q.setEndDate(endDateTime.toLocalDate().toDate());
             q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
             q.setAllDay(e.allDay);
             q.setCompletedAt(new Date(e.dTend));
+            q.setCompletedAtMinute(Time.of(q.getCompletedAt()).toMinutesAfterMidnight());
+            Log.d("CalendarQuest", q.getStartMinute() + " " + q.getDuration() + " " + q.getCompletedAt() + " " + q.getCompletedAtMinute());
             if (e.originalId != null) {
                 return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(habit -> {
                     q.setHabit(habit);

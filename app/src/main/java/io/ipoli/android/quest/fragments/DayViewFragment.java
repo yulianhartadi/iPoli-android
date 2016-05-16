@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -392,8 +393,9 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
+        Log.d("CalendarQuest", "Unscheduled: " + q.getName() + " " + q.getStartMinute() + " " + q.getDuration() + " " + q.getCompletedAt() + " " + q.getCompletedAtMinute());
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
-        return Time.of(q.getCompletedAtMinute() - duration);
+        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private class CalendarScheduler {
