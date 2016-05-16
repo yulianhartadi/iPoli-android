@@ -8,7 +8,7 @@ import java.util.List;
 
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.events.PredefinedHabitDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
@@ -17,10 +17,10 @@ import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickHabitsAdapter extends BasePickQuestAdapter<RecurrentQuest> {
+public class PickHabitsAdapter extends BasePickQuestAdapter<Habit> {
 
 
-    public PickHabitsAdapter(Context context, Bus eventBus, List<PickQuestViewModel<RecurrentQuest>> viewModels) {
+    public PickHabitsAdapter(Context context, Bus eventBus, List<PickQuestViewModel<Habit>> viewModels) {
         super(context, eventBus, viewModels);
     }
 
@@ -36,6 +36,6 @@ public class PickHabitsAdapter extends BasePickQuestAdapter<RecurrentQuest> {
 
     @Override
     protected QuestContext getQuestContext(int adapterPosition) {
-        return RecurrentQuest.getContext(viewModels.get(adapterPosition).getQuest());
+        return Habit.getContext(viewModels.get(adapterPosition).getQuest());
     }
 }

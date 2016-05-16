@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
+import android.text.TextUtils;
+
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -10,7 +12,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
@@ -49,7 +51,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
         return fromRealm(where()
                 .isNull("completedAt")
-                .isNull("recurrentQuest")
+                .isNull("habit")
+                .equalTo("allDay", false)
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
     }
@@ -92,25 +95,43 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
             getRealm().cancelTransaction();
             return;
         }
-        realmQuest.removeFromRealm();
+        realmQuest.deleteFromRealm();
         getRealm().commitTransaction();
         eventBus.post(new QuestDeletedEvent(id));
     }
 
     @Override
-    public void deleteAllFromRecurrentQuest(String recurrentQuestId) {
-        List<Quest> questsToRemove = where().equalTo("recurrentQuest.id", recurrentQuestId).findAll();
+    public void deleteBySourceMappingId(String source, String sourceId) {
+        if(TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
+            return;
+        }
         getRealm().beginTransaction();
-        questsToRemove.clear();
+        Quest realmQuest = where()
+                .equalTo("sourceMapping." + source, sourceId)
+                .findFirst();
+        if (realmQuest == null) {
+            getRealm().cancelTransaction();
+            return;
+        }
+        realmQuest.deleteFromRealm();
+        getRealm().commitTransaction();
+        eventBus.post(new QuestDeletedEvent(realmQuest.getId()));
+    }
+
+    @Override
+    public void deleteAllFromHabit(String habitId) {
+        RealmResults<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
+        getRealm().beginTransaction();
+        questsToRemove.deleteAllFromRealm();
         getRealm().commitTransaction();
     }
 
     @Override
-    public long countCompletedQuests(RecurrentQuest recurrentQuest, LocalDate fromDate, LocalDate toDate) {
+    public long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate) {
 
         return where()
                 .isNotNull("completedAt")
-                .equalTo("recurrentQuest.id", recurrentQuest.getId())
+                .equalTo("habit.id", habit.getId())
                 .between("endDate", toUTCDateAtStartOfDay(fromDate), toUTCDateAtStartOfDay(toDate))
                 .count();
     }

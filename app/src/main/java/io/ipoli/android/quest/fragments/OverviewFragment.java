@@ -40,8 +40,8 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
@@ -130,7 +130,7 @@ public class OverviewFragment extends Fragment {
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();
             for (Quest q : quests) {
-                if (q.isScheduledForToday() && q.getRecurrentQuest() != null && !TextUtils.isEmpty(q.getRecurrentQuest().getRecurrence().getDailyRrule())) {
+                if (q.isScheduledForToday() && q.getHabit() != null && !TextUtils.isEmpty(q.getHabit().getRecurrence().getDailyRrule())) {
                     recurrent.add(q);
                 } else {
                     viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
@@ -139,7 +139,7 @@ public class OverviewFragment extends Fragment {
 
             Map<String, List<Quest>> map = new HashMap<>();
             for (Quest q : recurrent) {
-                String key = q.getRecurrentQuest().getId();
+                String key = q.getHabit().getId();
                 if (map.get(key) == null) {
                     map.put(key, new ArrayList<>());
                 }
@@ -148,7 +148,7 @@ public class OverviewFragment extends Fragment {
 
             for (String key : map.keySet()) {
                 Quest q = map.get(key).get(0);
-                RecurrentQuest rq = q.getRecurrentQuest();
+                Habit rq = q.getHabit();
                 try {
                     Recur recur = new Recur(rq.getRecurrence().getDailyRrule());
                     int repeatCount = recur.getCount();

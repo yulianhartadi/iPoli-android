@@ -9,8 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -47,16 +47,16 @@ public class LocalStorage {
     public Set<String> readStringSet(String key) {
         String json = sharedPreferences.getString(key, "");
         if(TextUtils.isEmpty(json)) {
-            return new HashSet<>();
+            return new CopyOnWriteArraySet<>();
         }
         Gson gson = new Gson();
-        Type listOfTestObject = new TypeToken<Set<String>>() {
+        Type listOfTestObject = new TypeToken<CopyOnWriteArraySet<String>>() {
         }.getType();
         return gson.fromJson(json, listOfTestObject);
     }
 
     public int readInt(String key) {
-        return sharedPreferences.getInt(key, 0);
+        return readInt(key, 0);
     }
 
     public int readInt(String key, int defaultValue) {

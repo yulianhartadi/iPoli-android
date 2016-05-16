@@ -15,6 +15,7 @@ import io.realm.annotations.Required;
  */
 public class Player extends RealmObject implements RemoteObject<Player> {
 
+    @Required
     @PrimaryKey
     private String id;
     private Integer experience;

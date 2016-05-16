@@ -1,8 +1,13 @@
 package io.ipoli.android.app;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,12 +21,15 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -67,6 +75,9 @@ public class BaseActivity extends AppCompatActivity {
                 eventBus.post(new InviteFriendEvent());
                 inviteFriend();
                 break;
+            case R.id.action_sync_android_calendar:
+                checkForCalendarPermission();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -88,4 +99,30 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void checkForCalendarPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CALENDAR},
+                    Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
+        } else {
+            eventBus.post(new SyncCalendarRequestEvent(EventSource.OPTIONS_MENU));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
+                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
+            } else if(grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
+            }
+        }
+    }
 }

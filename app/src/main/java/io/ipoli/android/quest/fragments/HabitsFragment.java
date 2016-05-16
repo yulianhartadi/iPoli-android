@@ -41,12 +41,12 @@ import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.RecurrentQuest;
-import io.ipoli.android.quest.events.DeleteRecurrentQuestRequestEvent;
-import io.ipoli.android.quest.events.UndoDeleteRecurrentQuestEvent;
+import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
+import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
-import io.ipoli.android.quest.viewmodels.RecurrentQuestViewModel;
+import io.ipoli.android.quest.viewmodels.HabitViewModel;
 
 public class HabitsFragment extends Fragment {
 
@@ -59,7 +59,7 @@ public class HabitsFragment extends Fragment {
     RecyclerView questList;
 
     @Inject
-    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    HabitPersistenceService habitPersistenceService;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -114,10 +114,10 @@ public class HabitsFragment extends Fragment {
     }
 
     private void updateQuests() {
-        recurrentQuestPersistenceService.findAllHabits().subscribe(quests -> {
-            List<RecurrentQuestViewModel> viewModels = new ArrayList<>();
-            for (RecurrentQuest rq : quests) {
-                RecurrentQuestViewModel vm = createViewModel(rq);
+        habitPersistenceService.findAllNonAllDayHabits().subscribe(quests -> {
+            List<HabitViewModel> viewModels = new ArrayList<>();
+            for (Habit rq : quests) {
+                HabitViewModel vm = createViewModel(rq);
                 if (vm != null) {
                     viewModels.add(vm);
                 }
@@ -127,7 +127,7 @@ public class HabitsFragment extends Fragment {
     }
 
     @Nullable
-    private RecurrentQuestViewModel createViewModel(RecurrentQuest rq) {
+    private HabitViewModel createViewModel(Habit rq) {
         try {
             Recurrence recurrence = rq.getRecurrence();
             Recur recur = new Recur(recurrence.getRrule());
@@ -158,37 +158,37 @@ public class HabitsFragment extends Fragment {
                     }
                 }
             }
-            return new RecurrentQuestViewModel(rq, completedCount, recur, nextDate);
+            return new HabitViewModel(rq, completedCount, recur, nextDate);
         } catch (ParseException e) {
             return null;
         }
     }
 
     @Subscribe
-    public void onRecurrentQuestDeleteRequest(final DeleteRecurrentQuestRequestEvent e) {
+    public void onHabitDeleteRequest(final DeleteHabitRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.habit_removed,
                         Snackbar.LENGTH_LONG);
 
-        final RecurrentQuest rq = e.recurrentQuest;
+        final Habit rq = e.habit;
 
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.deleteAllFromRecurrentQuest(rq.getId());
-                recurrentQuestPersistenceService.delete(rq);
+                questPersistenceService.deleteAllFromHabit(rq.getId());
+                habitPersistenceService.delete(rq);
             }
         });
 
         snackbar.setAction(R.string.undo, view -> {
-            RecurrentQuestViewModel vm = createViewModel(rq);
+            HabitViewModel vm = createViewModel(rq);
             if (vm != null) {
                 habitsAdapter.addQuest(e.position, vm);
             }
             snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteRecurrentQuestEvent(rq));
+            eventBus.post(new UndoDeleteHabitEvent(rq));
         });
 
         snackbar.show();

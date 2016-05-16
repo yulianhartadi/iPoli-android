@@ -19,6 +19,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.joda.time.LocalDate;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -41,19 +43,21 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.HabitSavedEvent;
+import io.ipoli.android.quest.events.NewHabitEvent;
 import io.ipoli.android.quest.events.NewQuestAddedEvent;
-import io.ipoli.android.quest.events.NewRecurrentQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.events.RecurrentQuestSavedEvent;
+import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RecurrentQuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
-import io.ipoli.android.quest.persistence.events.RecurrentQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import me.everything.providers.android.calendar.Calendar;
+import me.everything.providers.android.calendar.CalendarProvider;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -76,7 +80,7 @@ public class App extends MultiDexApplication {
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    RecurrentQuestPersistenceService recurrentQuestPersistenceService;
+    HabitPersistenceService habitPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -95,9 +99,10 @@ public class App extends MultiDexApplication {
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
-                .migration((realm, oldVersion, newVersion) -> {
-
-                })
+                .deleteRealmIfMigrationNeeded()
+//                .migration((realm, oldVersion, newVersion) -> {
+//
+//                })
                 .build();
         Realm.setDefaultConfiguration(config);
 
@@ -114,9 +119,28 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        eventBus.post(new ForceSyncRequestEvent());
+        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
+            eventBus.post(new ForceSyncRequestEvent());
+        }
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
+
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                    .detectDiskReads()
+//                    .detectDiskWrites()
+//                    .detectNetwork()   // or .detectAll() for all detectable problems
+//                    .penaltyLog()
+//                    .build());
+//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                    .detectLeakedSqlLiteObjects()
+//                    .detectLeakedClosableObjects()
+//                    .penaltyLog()
+//                    .penaltyDeath()
+//                    .build());
+//        }
+
     }
 
     private void resetEndDateForIncompleteQuests() {
@@ -167,12 +191,12 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onNewRecurrentQuest(NewRecurrentQuestEvent e) {
-        recurrentQuestPersistenceService.save(e.recurrentQuest);
+    public void onNewHabitQuest(NewHabitEvent e) {
+        habitPersistenceService.save(e.habit);
     }
 
     @Subscribe
-    public void onRecurrentQuestSaved(RecurrentQuestSavedEvent e) {
+    public void onHabitSaved(HabitSavedEvent e) {
         eventBus.post(new ForceSyncRequestEvent());
     }
 
@@ -200,11 +224,11 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onRecurrentQuestDeleted(RecurrentQuestDeletedEvent e) {
+    public void onHabitDeleted(HabitDeletedEvent e) {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS);
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_HABITS);
         removedQuests.add(e.id);
-        localStorage.saveStringSet(Constants.KEY_REMOVED_RECURRENT_QUESTS, removedQuests);
+        localStorage.saveStringSet(Constants.KEY_REMOVED_HABITS, removedQuests);
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }
@@ -226,7 +250,10 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onForceSyncRequest(ForceSyncRequestEvent e) {
-        scheduleJob(defaultSyncJob().setOverrideDeadline(1).build());
+        scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
+                        setOverrideDeadline(1).build());
     }
 
     private JobInfo.Builder defaultSyncJob() {
@@ -252,5 +279,20 @@ public class App extends MultiDexApplication {
 
     private void scheduleNextReminder() {
         sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+    }
+
+    @Subscribe
+    public void onSyncWithCalendarRequest(SyncCalendarRequestEvent e) {
+        CalendarProvider provider = new CalendarProvider(this);
+        List<Calendar> calendars = provider.getCalendars().getList();
+        LocalStorage localStorage = LocalStorage.of(this);
+        Set<String> calendarIds = new HashSet<>();
+        for (Calendar c : calendars) {
+            if (c.visible) {
+                calendarIds.add(String.valueOf(c.id));
+            }
+        }
+        localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarIds);
+        localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
     }
 }

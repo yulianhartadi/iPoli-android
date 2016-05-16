@@ -20,8 +20,9 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class RecurrentQuest extends RealmObject implements RemoteObject<RecurrentQuest> {
+public class Habit extends RealmObject implements RemoteObject<Habit> {
 
+    @Required
     @PrimaryKey
     private String id;
     private String rawText;
@@ -30,7 +31,7 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     private String context;
 
-    private boolean isAllDay;
+    private boolean allDay;
 
     private Integer priority;
 
@@ -42,6 +43,9 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
 
     private Integer startMinute;
 
+    private String preferredStartTime;
+    private Boolean flexibleStartTime;
+
     private Integer duration;
     private RealmList<Reminder> reminders;
 
@@ -52,7 +56,9 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     private boolean needsSyncWithRemote;
     private boolean isRemoteObject;
 
-    public RecurrentQuest() {
+    private SourceMapping sourceMapping;
+
+    public Habit() {
     }
 
     public void setDuration(Integer duration) {
@@ -83,19 +89,20 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.startMinute = startMinute;
     }
 
-    public static Time getStartTime(RecurrentQuest quest) {
+    public static Time getStartTime(Habit quest) {
         if (quest.getStartMinute() < 0) {
             return null;
         }
         return Time.of(quest.getStartMinute());
     }
 
-    public RecurrentQuest(String rawText) {
+    public Habit(String rawText) {
         this.id = UUID.randomUUID().toString();
         this.rawText = rawText;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
+        this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
@@ -133,15 +140,15 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
         this.context = context;
     }
 
-    public static QuestContext getContext(RecurrentQuest quest) {
+    public static QuestContext getContext(Habit quest) {
         return QuestContext.valueOf(quest.getContext());
     }
 
-    public static void setContext(RecurrentQuest quest, QuestContext context) {
+    public static void setContext(Habit quest, QuestContext context) {
         quest.setContext(context.name());
     }
 
-    public static void setStartTime(RecurrentQuest quest, Time time) {
+    public static void setStartTime(Habit quest, Time time) {
         if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());
         } else {
@@ -206,5 +213,21 @@ public class RecurrentQuest extends RealmObject implements RemoteObject<Recurren
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public SourceMapping getSourceMapping() {
+        return sourceMapping;
+    }
+
+    public void setSourceMapping(SourceMapping sourceMapping) {
+        this.sourceMapping = sourceMapping;
+    }
+
+    public boolean isAllDay() {
+        return allDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        this.allDay = allDay;
     }
 }

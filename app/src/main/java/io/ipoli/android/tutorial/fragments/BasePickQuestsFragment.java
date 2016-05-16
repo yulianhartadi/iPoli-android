@@ -15,6 +15,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.BasePickQuestAdapter;
@@ -33,12 +34,13 @@ public abstract class BasePickQuestsFragment<T> extends Fragment {
 
     protected BasePickQuestAdapter<T> pickQuestsAdapter;
     protected List<PickQuestViewModel<T>> viewModels = new ArrayList<>();
-    
+    private Unbinder unbinder;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_pick_quests, container, false);
-        ButterKnife.bind(this, v);
+        unbinder = ButterKnife.bind(this, v);
         toolbar.setTitle(getTitleRes());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -60,5 +62,11 @@ public abstract class BasePickQuestsFragment<T> extends Fragment {
 
     public List<T> getSelectedQuests() {
         return pickQuestsAdapter.getSelectedQuests();
+    }
+
+    @Override
+    public void onDestroy() {
+        unbinder.unbind();
+        super.onDestroy();
     }
 }

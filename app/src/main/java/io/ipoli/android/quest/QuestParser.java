@@ -4,8 +4,8 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.Date;
 
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RecurrentQuest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.Match;
@@ -68,7 +68,7 @@ public class QuestParser {
         return q;
     }
 
-    public RecurrentQuest parseRecurrent(String text) {
+    public Habit parseRecurrent(String text) {
 
         String rawText = text;
 
@@ -84,7 +84,7 @@ public class QuestParser {
             return null;
         }
 
-        return new RecurrentQuest(rawText);
+        return new Habit(rawText);
     }
 
     public boolean isRecurrent(String text) {

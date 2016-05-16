@@ -13,6 +13,7 @@ import io.realm.annotations.Required;
  */
 public class Recurrence extends RealmObject {
 
+    @Required
     @PrimaryKey
     private String id;
 

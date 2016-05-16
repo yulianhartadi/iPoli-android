@@ -2,6 +2,7 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
@@ -9,7 +10,9 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -126,7 +129,65 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private RelativeLayout initEventsContainer(Context context) {
-        RelativeLayout eventsContainer = new RelativeLayout(context);
+
+        ViewConfiguration vc = ViewConfiguration.get(context);
+        final int touchSlop = vc.getScaledTouchSlop();
+
+        RelativeLayout eventsContainer = new RelativeLayout(context) {
+
+            // Intercept scroll events and pass them to the hour cell container
+
+            public float lastYPosition;
+            public int yDistance;
+            public boolean isScrolling;
+
+            private float downY;
+
+            @Override
+            public boolean onInterceptTouchEvent(MotionEvent ev) {
+
+                final int action = MotionEventCompat.getActionMasked(ev);
+
+                if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+                    isScrolling = false;
+                    return false;
+                } else if (action == MotionEvent.ACTION_DOWN) {
+                    downY = ev.getRawY();
+                    lastYPosition = ev.getRawY();
+                    isScrolling = false;
+                } else if (action == MotionEvent.ACTION_MOVE) {
+                    if (isScrolling) {
+                        return true;
+                    }
+
+                    yDistance = calculateAbsDistanceY(ev, downY);
+
+                    if (yDistance > touchSlop) {
+                        isScrolling = true;
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onTouchEvent(MotionEvent ev) {
+                final int action = MotionEventCompat.getActionMasked(ev);
+                if (action == MotionEvent.ACTION_MOVE) {
+                    int yScroll = (int) (lastYPosition - ev.getRawY());
+                    hourCellContainer.scrollBy(0, yScroll);
+                    lastYPosition = ev.getRawY();
+                    return true;
+                }
+
+                return super.onTouchEvent(ev);
+            }
+
+            private int calculateAbsDistanceY(MotionEvent ev, float yPosition) {
+                return (int) (Math.abs(ev.getRawY() - yPosition));
+            }
+        };
+
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
     }

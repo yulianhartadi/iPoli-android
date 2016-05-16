@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:name=".app.App"
@@ -38,16 +40,6 @@
             android:name=".quest.activities.QuestActivity"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".assistant.PickAvatarActivity"
-            android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -110,6 +102,17 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="io.ipoli.android.intent.action.REMIND_START_QUEST" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".app.receivers.AndroidCalendarEventChangedReceiver"
+            android:priority="999">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+
+                <data android:scheme="content" />
+                <data android:host="com.android.calendar" />
             </intent-filter>
         </receiver>
 

@@ -1,6 +1,8 @@
 
 package io.ipoli.android.app.net;
 
+import android.util.Log;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -40,6 +42,7 @@ public final class UtcDateTypeAdapter implements JsonSerializer<Date>, JsonDeser
         try {
             return parse(json.getAsString());
         } catch (ParseException e) {
+            Log.e("UtcDateTypeAdapter", e.getMessage());
             return null;
         }
     }

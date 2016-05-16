@@ -10,8 +10,8 @@ import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
+import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.assistant.PickAvatarActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
@@ -30,6 +30,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
+import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,8 +49,6 @@ import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 public interface AppComponent {
 
     void inject(App app);
-
-    void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(EditQuestActivity editQuestActivity);
 
@@ -94,5 +93,9 @@ public interface AppComponent {
     void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 
     void inject(CalendarFragment calendarFragment);
+
+    void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
+
+    void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
 }
 
