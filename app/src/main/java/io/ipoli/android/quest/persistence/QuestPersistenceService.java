@@ -7,7 +7,6 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
-import io.realm.RealmResults;
 import rx.Observable;
 
 /**
@@ -25,7 +24,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate);
 
-    Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
+    Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate);
 
     Observable<String> deleteBySourceMappingId(String source, String sourceId);
 

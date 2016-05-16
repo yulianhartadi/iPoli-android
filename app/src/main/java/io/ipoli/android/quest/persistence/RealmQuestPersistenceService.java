@@ -39,12 +39,12 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
-        return fromRealm(where()
+        return findAll(where -> where
                 .isNull("completedAt")
                 .isNull("habit")
                 .equalTo("allDay", false)
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
-                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING, "createdAt", Sort.DESCENDING));
+                .findAllSortedAsync(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
     }
 
     @Override
@@ -59,11 +59,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Observable<List<Quest>> findAllUnplanned() {
-        return fromRealm(where()
+        return findAll(where -> where
                 .isNull("endDate")
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSorted("createdAt", Sort.DESCENDING));
+                .findAllSortedAsync("createdAt", Sort.DESCENDING));
     }
 
     @Override
@@ -74,11 +74,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         Date startOfToday = toUTCDateAtStartOfDay(today);
         Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
 
-        return fromRealm(where()
+        return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", startOfToday)
                 .lessThan("endDate", startOfTomorrow)
                 .isNull("completedAt")
-                .findAllSorted("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING));
     }
 
 
@@ -183,30 +183,26 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
-                .findAllSorted("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING));
     }
 
     @Override
-    public Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate) {
+    public Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate) {
 
-        RealmResults<Quest> quests = where()
+        return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(localDate))
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING);
-        if (quests.isEmpty()) {
-            return Observable.just(null);
-        }
-        return fromRealm(quests.first());
+                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
     @Override
     public Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate) {
-        return fromRealm(where()
+        return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
                 .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
                 .isNull("completedAt")
-                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 }

@@ -11,6 +11,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 
 /**
@@ -91,13 +92,6 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     protected abstract Class<T> getRealmObjectClass();
 
-    protected Observable<T> fromRealm(T obj) {
-        if (obj == null) {
-            return Observable.just(null);
-        }
-        return Observable.just(getRealm().copyFromRealm(obj));
-    }
-
     public Observable<Void> updateId(T obj, String newId) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
@@ -153,10 +147,6 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     }
 
-    protected Observable<List<T>> fromRealm(List<T> objs) {
-        return Observable.just(getRealm().copyFromRealm(objs));
-    }
-
     protected Realm getRealm() {
         return Realm.getDefaultInstance();
     }
@@ -186,12 +176,16 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
 
         public Observable<List<T>> execute() {
-            try (Realm realm = getRealm()) {
-                return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
-                        .asObservable()
-                        .filter(RealmResults::isLoaded)
-                        .map(realm::copyFromRealm);
-            }
+            Realm realm = getRealm();
+            return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
+                    .asObservable()
+                    .filter(RealmResults::isLoaded)
+                    .first()
+                    .map(results -> {
+                        List<T> res = realm.copyFromRealm(results);
+                        realm.close();
+                        return res;
+                    });
         }
     }
 
@@ -204,19 +198,23 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
 
         public Observable<T> execute() {
-            try (Realm realm = getRealm()) {
-                return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
-                        .asObservable()
-                        .filter(T::isLoaded)
-                        .map(realmObject -> {
-                            if (!realmObject.isValid()) {
-                                return null;
-                            }
-                            return realm.copyFromRealm((T) realmObject);
-                        });
-            }
+            Realm realm = getRealm();
+            return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
+                    .asObservable()
+                    .filter(T::isLoaded)
+                    .first()
+                    .map(realmObject -> {
+                        if (!realmObject.isValid()) {
+                            realm.close();
+                            return null;
+                        }
+                        T res = realm.copyFromRealm((T) realmObject);
+                        realm.close();
+                        return res;
+                    });
         }
     }
+
 
 
 }

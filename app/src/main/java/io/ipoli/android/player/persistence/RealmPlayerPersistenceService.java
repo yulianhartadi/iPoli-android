@@ -2,6 +2,7 @@ package io.ipoli.android.player.persistence;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.player.Player;
+import io.realm.RealmQuery;
 import rx.Observable;
 
 /**
@@ -12,7 +13,7 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
 
     @Override
     public Observable<Player> find() {
-        return fromRealm(where().findFirst());
+        return find(RealmQuery::findFirstAsync);
     }
 
     @Override

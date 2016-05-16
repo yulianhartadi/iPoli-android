@@ -110,7 +110,7 @@ public class App extends MultiDexApplication {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         resetEndDateForIncompleteQuests();
         registerServices();
-        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+        scheduleNextReminder();
 
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
@@ -142,16 +142,17 @@ public class App extends MultiDexApplication {
     }
 
     private void resetEndDateForIncompleteQuests() {
-        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).toBlocking().first();
-        for (Quest q : quests) {
-            if (q.isStarted()) {
-                q.setEndDate(new Date());
-                q.setStartMinute(0);
-            } else {
-                q.setEndDate(null);
+        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).subscribe(quests -> {
+            for (Quest q : quests) {
+                if (q.isStarted()) {
+                    q.setEndDate(new Date());
+                    q.setStartMinute(0);
+                } else {
+                    q.setEndDate(null);
+                }
+                questPersistenceService.save(q).subscribe();
             }
-            questPersistenceService.save(q).subscribe();
-        }
+        });
     }
 
     private void registerServices() {

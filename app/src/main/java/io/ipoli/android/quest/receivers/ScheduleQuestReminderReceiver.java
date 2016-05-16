@@ -36,11 +36,12 @@ public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         cancelScheduledReminder(context, alarm);
-        return questPersistenceService.findPlannedQuestStartingAfter(new LocalDate()).flatMap(quest -> {
-            if (quest == null) {
+
+        return questPersistenceService.findPlannedQuestsStartingAfter(new LocalDate()).flatMap(quests -> {
+            if (quests.isEmpty()) {
                 return Observable.empty();
             }
-            scheduleNextReminder(context, alarm, quest);
+            scheduleNextReminder(context, alarm, quests.get(0));
             return Observable.empty();
         });
     }

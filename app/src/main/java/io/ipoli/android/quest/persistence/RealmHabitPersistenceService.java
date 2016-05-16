@@ -42,7 +42,7 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
 
     @Override
     public Observable<List<Habit>> findAllNonAllDayHabits() {
-        return fromRealm(where().isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAll());
+        return findAll(where -> where.isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAllAsync());
     }
 
     @Override
@@ -83,6 +83,6 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
 
     @Override
     public Observable<Habit> findByExternalSourceMappingId(String source, String sourceId) {
-        return fromRealm(where().equalTo("sourceMapping." + source, sourceId).findFirst());
+        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync());
     }
 }
