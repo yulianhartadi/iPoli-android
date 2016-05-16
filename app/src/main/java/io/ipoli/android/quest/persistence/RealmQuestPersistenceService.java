@@ -90,35 +90,32 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
         Realm realm = getRealm();
 
-        Quest realmQuest = realm.where(getRealmObjectClass())
-                .equalTo("sourceMapping." + source, sourceId)
-                .findFirst();
+        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmQuest -> {
+            if (realmQuest == null) {
+                realm.close();
+                return Observable.empty();
+            }
 
-        if (realmQuest == null) {
-            realm.close();
-            return Observable.empty();
-        }
+            final String questId = realmQuest.getId();
 
-        final String questId = realmQuest.getId();
-
-        return Observable.create(subscriber -> {
-            realm.executeTransactionAsync(backgroundRealm -> {
-                        Quest questToDelete = backgroundRealm.where(getRealmObjectClass())
-                                .equalTo("sourceMapping." + source, sourceId)
-                                .findFirst();
-                        questToDelete.deleteFromRealm();
-                    },
-                    () -> {
-                        subscriber.onNext(questId);
-                        subscriber.onCompleted();
-                        onObjectDeleted(questId);
-                        realm.close();
-                    }, error -> {
-                        subscriber.onError(error);
-                        realm.close();
-                    });
+            return Observable.create(subscriber -> {
+                realm.executeTransactionAsync(backgroundRealm -> {
+                            Quest questToDelete = backgroundRealm.where(getRealmObjectClass())
+                                    .equalTo("sourceMapping." + source, sourceId)
+                                    .findFirst();
+                            questToDelete.deleteFromRealm();
+                        },
+                        () -> {
+                            subscriber.onNext(questId);
+                            subscriber.onCompleted();
+                            onObjectDeleted(questId);
+                            realm.close();
+                        }, error -> {
+                            subscriber.onError(error);
+                            realm.close();
+                        });
+            });
         });
-
     }
 
     @Override

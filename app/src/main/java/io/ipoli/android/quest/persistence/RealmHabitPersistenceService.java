@@ -51,32 +51,32 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
         if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
             return Observable.empty();
         }
+
         Realm realm = getRealm();
-        Habit realmQuest = realm.where(getRealmObjectClass())
-                .equalTo("sourceMapping." + source, sourceId)
-                .findFirst();
 
-        if (realmQuest == null) {
-            realm.close();
-            return Observable.empty();
-        }
-
-        final String habitId = realmQuest.getId();
-
-        return Observable.create(subscriber -> {
-            realm.executeTransactionAsync(backgroundRealm -> {
-                Habit habitToDelete = backgroundRealm.where(getRealmObjectClass())
-                        .equalTo("sourceMapping." + source, sourceId)
-                        .findFirst();
-                habitToDelete.deleteFromRealm();
-            }, () -> {
-                subscriber.onNext(habitId);
-                subscriber.onCompleted();
-                onObjectDeleted(habitId);
+        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmHabit -> {
+            if (realmHabit == null) {
                 realm.close();
-            }, error -> {
-                subscriber.onError(error);
-                realm.close();
+                return Observable.empty();
+            }
+
+            final String habitId = realmHabit.getId();
+
+            return Observable.create(subscriber -> {
+                realm.executeTransactionAsync(backgroundRealm -> {
+                    Habit habitToDelete = backgroundRealm.where(getRealmObjectClass())
+                            .equalTo("sourceMapping." + source, sourceId)
+                            .findFirst();
+                    habitToDelete.deleteFromRealm();
+                }, () -> {
+                    subscriber.onNext(habitId);
+                    subscriber.onCompleted();
+                    onObjectDeleted(habitId);
+                    realm.close();
+                }, error -> {
+                    subscriber.onError(error);
+                    realm.close();
+                });
             });
         });
     }
