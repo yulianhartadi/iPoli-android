@@ -139,7 +139,6 @@ public class App extends MultiDexApplication {
 //                    .penaltyDeath()
 //                    .build());
 //        }
-
     }
 
     private void resetEndDateForIncompleteQuests() {

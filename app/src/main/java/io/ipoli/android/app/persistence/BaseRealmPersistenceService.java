@@ -82,11 +82,11 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     public Observable<T> findById(String id) {
-        return fromRealm(where().equalTo("id", id).findFirst());
+        return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
-        return fromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
+        return findAll(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }
 
     protected abstract Class<T> getRealmObjectClass();
@@ -161,15 +161,27 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return Realm.getDefaultInstance();
     }
 
-    public interface FindAllQueryBuilder<T extends RealmObject & RemoteObject> {
+    protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
+        return new RealmFindAllCommand(queryBuilder).execute();
+    }
+
+    protected Observable<T> find(RealmFindQueryBuilder<T> queryBuilder) {
+        return new RealmFindCommand(queryBuilder).execute();
+    }
+
+    public interface RealmFindQueryBuilder<T extends RealmObject & RemoteObject> {
+        T buildQuery(RealmQuery<T> where);
+    }
+
+    public interface RealmFindAllQueryBuilder<T extends RealmObject & RemoteObject> {
         RealmResults<T> buildQuery(RealmQuery<T> where);
     }
 
-    public class FindAllQuery {
+    public class RealmFindAllCommand {
 
-        private FindAllQueryBuilder<T> queryBuilder;
+        private RealmFindAllQueryBuilder<T> queryBuilder;
 
-        public FindAllQuery(FindAllQueryBuilder<T> queryBuilder) {
+        public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder) {
             this.queryBuilder = queryBuilder;
         }
 
@@ -179,6 +191,29 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
                         .asObservable()
                         .filter(RealmResults::isLoaded)
                         .map(realm::copyFromRealm);
+            }
+        }
+    }
+
+    public class RealmFindCommand {
+
+        private RealmFindQueryBuilder<T> queryBuilder;
+
+        public RealmFindCommand(RealmFindQueryBuilder<T> queryBuilder) {
+            this.queryBuilder = queryBuilder;
+        }
+
+        public Observable<T> execute() {
+            try (Realm realm = getRealm()) {
+                return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
+                        .asObservable()
+                        .filter(T::isLoaded)
+                        .map(realmObject -> {
+                            if (!realmObject.isValid()) {
+                                return null;
+                            }
+                            return realm.copyFromRealm((T) realmObject);
+                        });
             }
         }
     }

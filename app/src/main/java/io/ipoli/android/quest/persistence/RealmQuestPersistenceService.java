@@ -154,24 +154,24 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
 
-        return new FindAllQuery(where -> where.beginGroup()
+        return findAll(where -> where.beginGroup()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .or()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .endGroup()
-                .findAllSortedAsync("startMinute", Sort.ASCENDING)).execute();
+                .findAllSortedAsync("startMinute", Sort.ASCENDING));
     }
 
     @Override
     public Observable<List<Quest>> findAllCompletedForDate(LocalDate currentDate) {
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
-        return fromRealm(where()
+        return findAll(where -> where
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
-                .findAllSorted("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING));
     }
 
     @Override
@@ -179,7 +179,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
 
-        return fromRealm(where()
+        return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
