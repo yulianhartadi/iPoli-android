@@ -179,23 +179,23 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onShowRecurrentQuest(ShowHabitEvent e) {
-        log("show_recurrent_quest_request", e.habit.getId(), e.habit.getName());
+    public void onShowHabit(ShowHabitEvent e) {
+        log("show_habit_request", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onDeleteRecurrentQuestRequest(DeleteHabitRequestEvent e) {
-        log("delete_recurrent_quest_requested", e.habit.getId(), e.habit.getName());
+    public void onDeleteHabitRequest(DeleteHabitRequestEvent e) {
+        log("delete_habit_requested", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteRecurrentQuest(UndoDeleteHabitEvent e) {
-        log("undo_delete_recurrent_quest", e.habit.getId(), e.habit.getName());
+    public void onUndoDeleteHabit(UndoDeleteHabitEvent e) {
+        log("undo_delete_habit", e.habit.getId(), e.habit.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteRecurrentQuest(HabitDeletedEvent e) {
-        log("undo_delete_recurrent_quest", EventParams.of("id", e.id));
+    public void onUndoDeleteHabit(HabitDeletedEvent e) {
+        log("undo_delete_habit", EventParams.of("id", e.id));
     }
 
     @Subscribe

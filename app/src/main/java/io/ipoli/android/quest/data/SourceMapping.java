@@ -32,7 +32,6 @@ public class SourceMapping extends RealmObject implements RemoteObject<SourceMap
     public SourceMapping() {
     }
 
-
     public static SourceMapping fromGoogleCalendar(long eventId) {
         SourceMapping sourceMapping = new SourceMapping();
         sourceMapping.createdAt = DateUtils.nowUTC();

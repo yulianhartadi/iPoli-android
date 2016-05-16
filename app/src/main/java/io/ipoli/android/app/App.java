@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -192,12 +191,12 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onNewRecurrentQuest(NewHabitEvent e) {
+    public void onNewHabitQuest(NewHabitEvent e) {
         habitPersistenceService.save(e.habit);
     }
 
     @Subscribe
-    public void onRecurrentQuestSaved(HabitSavedEvent e) {
+    public void onHabitSaved(HabitSavedEvent e) {
         eventBus.post(new ForceSyncRequestEvent());
     }
 
@@ -225,7 +224,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onRecurrentQuestDeleted(HabitDeletedEvent e) {
+    public void onHabitDeleted(HabitDeletedEvent e) {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_HABITS);
         removedQuests.add(e.id);

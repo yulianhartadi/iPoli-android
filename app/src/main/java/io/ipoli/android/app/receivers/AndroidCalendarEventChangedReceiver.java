@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.provider.CalendarContract;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.squareup.otto.Bus;
 
@@ -55,14 +54,11 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
 
         App.getAppComponent(context).inject(this);
 
-        Log.d("CalendarReceiver", "EventChangedReceiver");
-
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
 
         return Observable.defer(() -> {
-
             for (String cid : calendarIds) {
                 int calendarId = Integer.valueOf(cid);
                 processDeletedEvents(calendarId, provider);

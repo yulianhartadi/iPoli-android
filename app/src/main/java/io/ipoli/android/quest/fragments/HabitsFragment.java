@@ -165,7 +165,7 @@ public class HabitsFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRecurrentQuestDeleteRequest(final DeleteHabitRequestEvent e) {
+    public void onHabitDeleteRequest(final DeleteHabitRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.habit_removed,
