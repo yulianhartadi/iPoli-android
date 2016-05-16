@@ -7,13 +7,16 @@ import android.support.v4.content.ContextCompat;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
@@ -55,14 +58,25 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             q.setId(null);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
-            q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
-            q.setStartMinute(startDateTime.getMinuteOfDay());
+            q.setAllDay(e.allDay);
+            if (e.allDay) {
+                q.setDuration((int) TimeUnit.DAYS.toMinutes(1));
+                q.setStartMinute(0);
+                startDateTime = startDateTime.plusDays(1);
+                endDateTime = endDateTime.minusMillis(1);
+            } else {
+                q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
+                q.setStartMinute(startDateTime.getMinuteOfDay());
+            }
             q.setStartDate(startDateTime.toLocalDate().toDate());
             q.setEndDate(endDateTime.toLocalDate().toDate());
             q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
-            q.setAllDay(e.allDay);
-            q.setCompletedAt(new Date(e.dTend));
+
+            if (endDateTime.toLocalDate().isBefore(new LocalDate())) {
+                q.setCompletedAt(new Date(e.dTend));
+                q.setCompletedAtMinute(Time.of(q.getCompletedAt()).toMinutesAfterMidnight());
+            }
             if (e.originalId != null) {
                 return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(habit -> {
                     q.setHabit(habit);

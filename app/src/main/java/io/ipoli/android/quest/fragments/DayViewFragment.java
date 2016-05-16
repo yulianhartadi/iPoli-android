@@ -395,7 +395,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
-        return Time.of(q.getCompletedAtMinute() - duration);
+        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private class CalendarScheduler {
@@ -403,7 +403,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         public Observable<Schedule> schedule() {
 
             if (currentDate.isBefore(new LocalDate())) {
-                return questPersistenceService.findAllCompletedForDate(currentDate).flatMap(quests -> {
+                return questPersistenceService.findAllNonAllDayCompletedForDate(currentDate).flatMap(quests -> {
                     List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                     for (Quest q : quests) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
@@ -417,7 +417,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
             }
 
             if (currentDate.isAfter(new LocalDate())) {
-                return questPersistenceService.findAllIncompleteForDate(currentDate).flatMap(quests -> {
+                return questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate).flatMap(quests -> {
                     List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                     List<Quest> unscheduledQuests = new ArrayList<>();
                     for (Quest q : quests) {
@@ -432,7 +432,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
                 });
             }
 
-            return questPersistenceService.findAllForDate(currentDate).flatMap(quests -> {
+            return questPersistenceService.findAllNonAllDayForDate(currentDate).flatMap(quests -> {
                 List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                 List<Quest> unscheduledQuests = new ArrayList<>();
                 List<QuestCalendarViewModel> completedEvents = new ArrayList<>();

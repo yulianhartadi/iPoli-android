@@ -109,6 +109,7 @@ public class BaseActivity extends AppCompatActivity {
                     Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
         } else {
             eventBus.post(new SyncCalendarRequestEvent(EventSource.OPTIONS_MENU));
+            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -119,6 +120,7 @@ public class BaseActivity extends AppCompatActivity {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
                 eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
+                Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
             } else if(grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));

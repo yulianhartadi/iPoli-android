@@ -17,7 +17,7 @@ public class Time {
 
     private Time(int minutesAfterMidnight) {
         if (minutesAfterMidnight < 0) {
-            throw new IllegalArgumentException("Minutes must be >= 0");
+            throw new IllegalArgumentException("Minutes must be >= 0. It was: " + minutesAfterMidnight);
         }
         this.minutes = minutesAfterMidnight % MINUTES_IN_A_DAY;
     }
