@@ -200,8 +200,9 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         quest.setActualStart(null);
         quest.setCompletedAt(null);
         quest.setCompletedAtMinute(null);
-        questPersistenceService.save(quest);
-        eventBus.post(new UndoCompletedQuestEvent(quest));
+        questPersistenceService.save(quest).subscribe(q -> {
+            eventBus.post(new UndoCompletedQuestEvent(q));
+        });
     }
 
     @Override
@@ -295,7 +296,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         QuestCalendarViewModel qce = e.questCalendarViewModel;
         Quest q = qce.getQuest();
         q.setStartMinute(qce.getStartMinute());
-        questPersistenceService.save(q);
+        questPersistenceService.save(q).subscribe();
     }
 
     @Subscribe
@@ -357,9 +358,10 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         QuestCalendarViewModel viewModel = e.calendarEvent;
         Quest q = viewModel.getQuest();
         q.setStartMinute(viewModel.getStartMinute());
-        questPersistenceService.save(q);
-        Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
-        updateSchedule();
+        questPersistenceService.save(q).subscribe(quest -> {
+            Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
+            updateSchedule();
+        });
     }
 
     private <T> Observable.Transformer<T, T> applyAPISchedulers() {

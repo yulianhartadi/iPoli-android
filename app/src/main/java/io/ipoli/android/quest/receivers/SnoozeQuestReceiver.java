@@ -39,10 +39,11 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
 
         return getQuest(intent).flatMap(q -> {
             q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
-            questPersistenceService.save(q);
-            scheduleNextQuestReminder(context);
-            eventBus.post(new QuestSnoozedEvent(q));
-            return Observable.empty();
+            return questPersistenceService.save(q).flatMap(quest -> {
+                scheduleNextQuestReminder(context);
+                eventBus.post(new QuestSnoozedEvent(q));
+                return Observable.empty();
+            });
         });
     }
 

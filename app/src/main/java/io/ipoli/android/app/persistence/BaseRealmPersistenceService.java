@@ -10,8 +10,6 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
 
 /**
@@ -152,69 +150,11 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
-        return new RealmFindAllCommand(queryBuilder).execute();
+        return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass()).execute();
     }
 
     protected Observable<T> find(RealmFindQueryBuilder<T> queryBuilder) {
-        return new RealmFindCommand(queryBuilder).execute();
+        return new RealmFindCommand<T>(queryBuilder, getRealmObjectClass()).execute();
     }
-
-    public interface RealmFindQueryBuilder<T extends RealmObject & RemoteObject> {
-        T buildQuery(RealmQuery<T> where);
-    }
-
-    public interface RealmFindAllQueryBuilder<T extends RealmObject & RemoteObject> {
-        RealmResults<T> buildQuery(RealmQuery<T> where);
-    }
-
-    public class RealmFindAllCommand {
-
-        private RealmFindAllQueryBuilder<T> queryBuilder;
-
-        public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder) {
-            this.queryBuilder = queryBuilder;
-        }
-
-        public Observable<List<T>> execute() {
-            Realm realm = getRealm();
-            return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
-                    .asObservable()
-                    .filter(RealmResults::isLoaded)
-                    .first()
-                    .map(results -> {
-                        List<T> res = realm.copyFromRealm(results);
-                        realm.close();
-                        return res;
-                    });
-        }
-    }
-
-    public class RealmFindCommand {
-
-        private RealmFindQueryBuilder<T> queryBuilder;
-
-        public RealmFindCommand(RealmFindQueryBuilder<T> queryBuilder) {
-            this.queryBuilder = queryBuilder;
-        }
-
-        public Observable<T> execute() {
-            Realm realm = getRealm();
-            return queryBuilder.buildQuery(realm.where(getRealmObjectClass()))
-                    .asObservable()
-                    .filter(T::isLoaded)
-                    .first()
-                    .map(realmObject -> {
-                        if (!realmObject.isValid()) {
-                            realm.close();
-                            return null;
-                        }
-                        T res = realm.copyFromRealm((T) realmObject);
-                        realm.close();
-                        return res;
-                    });
-        }
-    }
-
-
 
 }
