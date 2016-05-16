@@ -17,6 +17,6 @@ public class RealmHabitListReader implements ListReader<Habit> {
     }
 
     public Observable<Habit> read() {
-        return habitPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(recurrentQuests -> recurrentQuests);
+        return habitPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(habits -> habits);
     }
 }

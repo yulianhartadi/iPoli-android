@@ -242,7 +242,6 @@ public class AppJobService extends JobService {
             if (isLocalOnly(habit) && habit.getSourceMapping() == null) {
                 JsonObject data = new JsonObject();
                 JsonObject qJson = (JsonObject) gson.toJsonTree(habit);
-                // @TODO look into server side for raw_text
                 data.addProperty("text", qJson.get("raw_text").getAsString());
                 data.addProperty("context", qJson.get("context").getAsString());
                 data.addProperty("created_at", qJson.get("created_at").getAsString());
