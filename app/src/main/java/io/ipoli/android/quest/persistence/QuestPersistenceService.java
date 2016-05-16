@@ -18,7 +18,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllUnplanned();
 
-    Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate);
+    Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 
@@ -34,9 +34,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate);
 
-    Observable<List<Quest>> findAllForDate(LocalDate currentDate);
+    Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate);
 
-    Observable<List<Quest>> findAllCompletedForDate(LocalDate currentDate);
+    Observable<List<Quest>> findAllNonAllDayCompletedForDate(LocalDate currentDate);
 
-    Observable<List<Quest>> findAllIncompleteForDate(LocalDate currentDate);
+    Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate);
 }

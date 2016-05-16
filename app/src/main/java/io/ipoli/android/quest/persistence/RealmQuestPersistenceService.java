@@ -137,7 +137,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllForDate(LocalDate currentDate) {
+    public Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate) {
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
 
@@ -149,21 +149,23 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .endGroup()
+                .equalTo("allDay", false)
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
-    public Observable<List<Quest>> findAllCompletedForDate(LocalDate currentDate) {
+    public Observable<List<Quest>> findAllNonAllDayCompletedForDate(LocalDate currentDate) {
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
         return fromRealm(where()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
+                .equalTo("allDay", false)
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
-    public Observable<List<Quest>> findAllIncompleteForDate(LocalDate currentDate) {
+    public Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
 
@@ -171,6 +173,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
+                .equalTo("allDay", false)
                 .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
@@ -190,10 +193,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedBetween(LocalDate startDate, LocalDate endDate) {
+    public Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
         return fromRealm(where()
                 .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
                 .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
+                .equalTo("allDay", false)
                 .isNull("completedAt")
                 .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }

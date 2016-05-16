@@ -125,7 +125,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void updateQuests() {
-        questPersistenceService.findPlannedBetween(new LocalDate(), new LocalDate().plusDays(7)).subscribe(quests -> {
+        questPersistenceService.findPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7)).subscribe(quests -> {
 
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();
