@@ -12,6 +12,7 @@ import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -19,21 +20,21 @@ import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
  */
 public class StartQuestCommand {
 
-    private Context context;
-    private QuestPersistenceService questPersistenceService;
-    private Quest quest;
+    private final Context context;
+    private final Quest quest;
+    private final QuestPersistenceService questPersistenceService;
 
-    public StartQuestCommand(Context context, QuestPersistenceService questPersistenceService, Quest quest) {
+    public StartQuestCommand(Context context, Quest quest, QuestPersistenceService questPersistenceService) {
         this.context = context;
-        this.questPersistenceService = questPersistenceService;
         this.quest = quest;
+        this.questPersistenceService = questPersistenceService;
     }
 
-    public void execute() {
+    public Observable<Quest> execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
         quest.setActualStart(DateUtils.nowUTC());
-        questPersistenceService.save(quest).subscribe(q -> {
+        return questPersistenceService.save(quest).flatMap(q -> {
             scheduleNextQuestReminder(context);
             stopOtherRunningQuests(quest);
 
@@ -42,9 +43,9 @@ public class StartQuestCommand {
                 long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
                 QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
             }
+            return Observable.just(q);
         });
     }
-
 
     private void stopOtherRunningQuests(Quest q) {
 
@@ -52,11 +53,10 @@ public class StartQuestCommand {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
                     cq.setActualStart(null);
-                    questPersistenceService.save(cq);
+                    questPersistenceService.save(cq).subscribe();
                 }
             }
         });
-
     }
 
     private void scheduleNextQuestReminder(Context context) {

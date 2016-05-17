@@ -24,13 +24,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate);
 
-    Observable<Quest> findPlannedQuestStartingAfter(LocalDate localDate);
+    Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate);
 
-    void delete(Quest quest);
+    Observable<String> deleteBySourceMappingId(String source, String sourceId);
 
-    void deleteBySourceMappingId(String source, String sourceId);
-
-    void deleteAllFromHabit(String habitId);
+    Observable<Void> deleteAllFromHabit(String habitId);
 
     long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate);
 

@@ -52,7 +52,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -99,10 +98,10 @@ public class App extends MultiDexApplication {
 
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
-                .deleteRealmIfMigrationNeeded()
-//                .migration((realm, oldVersion, newVersion) -> {
-//
-//                })
+//                .deleteRealmIfMigrationNeeded()
+                .migration((realm, oldVersion, newVersion) -> {
+
+                })
                 .build();
         Realm.setDefaultConfiguration(config);
 
@@ -111,7 +110,7 @@ public class App extends MultiDexApplication {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         resetEndDateForIncompleteQuests();
         registerServices();
-        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+        scheduleNextReminder();
 
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
@@ -140,20 +139,20 @@ public class App extends MultiDexApplication {
 //                    .penaltyDeath()
 //                    .build());
 //        }
-
     }
 
     private void resetEndDateForIncompleteQuests() {
-        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).toBlocking().first();
-        for (Quest q : quests) {
-            if (q.isStarted()) {
-                q.setEndDate(new Date());
-                q.setStartMinute(0);
-            } else {
-                q.setEndDate(null);
+        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).subscribe(quests -> {
+            for (Quest q : quests) {
+                if (q.isStarted()) {
+                    q.setEndDate(new Date());
+                    q.setStartMinute(0);
+                } else {
+                    q.setEndDate(null);
+                }
+                questPersistenceService.save(q).subscribe();
             }
-            questPersistenceService.save(q);
-        }
+        });
     }
 
     private void registerServices() {
@@ -187,12 +186,12 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestAddedEvent e) {
-        questPersistenceService.save(e.quest);
+        questPersistenceService.save(e.quest).subscribe();
     }
 
     @Subscribe
-    public void onNewHabitQuest(NewHabitEvent e) {
-        habitPersistenceService.save(e.habit);
+    public void onNewHabit(NewHabitEvent e) {
+        habitPersistenceService.save(e.habit).subscribe();
     }
 
     @Subscribe
@@ -202,12 +201,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        eventBus.post(new SyncRequestEvent());
-        scheduleNextReminder();
-    }
-
-    @Subscribe
-    public void onQuestsSaved(QuestsSavedEvent e) {
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }

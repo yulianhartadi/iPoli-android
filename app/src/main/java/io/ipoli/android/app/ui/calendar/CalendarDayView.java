@@ -229,11 +229,9 @@ public class CalendarDayView extends FrameLayout {
     }
 
     public void onMinuteChanged() {
-
         RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) timeLine.getLayoutParams();
         p.topMargin = getCurrentTimeYPosition();
         timeLine.setLayoutParams(p);
-        // @TODO consider date change
     }
 
     int getHoursFor(float y) {

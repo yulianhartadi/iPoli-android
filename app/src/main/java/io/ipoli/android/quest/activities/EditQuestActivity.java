@@ -254,10 +254,12 @@ public class EditQuestActivity extends BaseActivity {
                 eventBus.post(new DeleteQuestRequestedEvent(quest, EventSource.EDIT_QUEST));
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    questPersistenceService.delete(quest);
-                    Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
-                    setResult(Constants.RESULT_REMOVED);
-                    finish();
+                    questPersistenceService.delete(quest).subscribe(questId -> {
+                        Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+
                 });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
                     eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
@@ -305,7 +307,7 @@ public class EditQuestActivity extends BaseActivity {
         quest.setDuration(duration);
         quest.setEndDate((Date) dueDateBtn.getTag());
         Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
-        questPersistenceService.save(quest);
+        questPersistenceService.save(quest).subscribe();
         eventBus.post(new QuestUpdatedEvent(quest));
     }
 

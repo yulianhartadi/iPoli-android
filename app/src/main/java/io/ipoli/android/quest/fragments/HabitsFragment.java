@@ -40,8 +40,8 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.HabitsAdapter;
-import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
 import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
@@ -165,30 +165,30 @@ public class HabitsFragment extends Fragment {
     }
 
     @Subscribe
-    public void onHabitDeleteRequest(final DeleteHabitRequestEvent e) {
+    public void onDeleteHabitRequest(final DeleteHabitRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.habit_removed,
                         Snackbar.LENGTH_LONG);
 
-        final Habit rq = e.habit;
+        final Habit habit = e.habit;
 
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.deleteAllFromHabit(rq.getId());
-                habitPersistenceService.delete(rq);
+                questPersistenceService.deleteAllFromHabit(habit.getId()).subscribe();
+                habitPersistenceService.delete(habit).subscribe();
             }
         });
 
         snackbar.setAction(R.string.undo, view -> {
-            HabitViewModel vm = createViewModel(rq);
+            HabitViewModel vm = createViewModel(habit);
             if (vm != null) {
                 habitsAdapter.addQuest(e.position, vm);
             }
             snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteHabitEvent(rq));
+            eventBus.post(new UndoDeleteHabitEvent(habit));
         });
 
         snackbar.show();

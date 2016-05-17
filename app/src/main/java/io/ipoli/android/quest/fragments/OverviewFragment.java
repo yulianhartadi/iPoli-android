@@ -113,10 +113,12 @@ public class OverviewFragment extends Fragment {
             toast = getString(R.string.quest_scheduled_for_tomorrow);
             endDate = DateUtils.getTomorrow();
         }
+        final String toastMessage = toast;
         q.setEndDate(endDate);
-        questPersistenceService.save(q);
-        Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
-        updateQuests();
+        questPersistenceService.save(q).subscribe(quest -> {
+            Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
+            updateQuests();
+        });
     }
 
     @Subscribe

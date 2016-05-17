@@ -93,11 +93,11 @@ public class TutorialActivity extends AppIntro2 {
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         if (!selectedQuests.isEmpty()) {
-            questPersistenceService.saveRemoteObjects(selectedQuests);
+            questPersistenceService.saveRemoteObjects(selectedQuests).subscribe();
         }
         List<Habit> selectedHabits = pickHabitsFragment.getSelectedQuests();
         if (!selectedHabits.isEmpty()) {
-            habitPersistenceService.saveRemoteObjects(selectedHabits);
+            habitPersistenceService.saveRemoteObjects(selectedHabits).subscribe();
         }
         eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());
