@@ -5,7 +5,6 @@ import com.flurry.android.FlurryEventRecordStatus;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -18,6 +17,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
+import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
@@ -59,37 +59,6 @@ import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/7/16.
- */
-
-class EventParams {
-    private Map<String, String> params = new HashMap<>();
-
-    private EventParams() {
-    }
-
-    public static EventParams create() {
-        return new EventParams();
-    }
-
-    public static EventParams of(String key, String value) {
-        EventParams eventParams = new EventParams();
-        eventParams.params.put(key, value);
-        return eventParams;
-    }
-
-    public EventParams add(String key, String value) {
-        params.put(key, value);
-        return this;
-    }
-
-    public Map<String, String> getParams() {
-        return params;
-    }
-}
 
 public class FlurryAnalyticsService implements AnalyticsService {
 
