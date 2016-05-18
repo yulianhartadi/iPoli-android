@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.fragments;
 
 
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -154,7 +155,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+        InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.showSoftInput(questText, InputMethodManager.SHOW_IMPLICIT);
     }
 
