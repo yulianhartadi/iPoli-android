@@ -184,7 +184,7 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        if (e.quest.getEndDate().after(new Date()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
+        if (new LocalDate(e.quest.getEndDate()).isAfter(new LocalDate()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
         }
     }

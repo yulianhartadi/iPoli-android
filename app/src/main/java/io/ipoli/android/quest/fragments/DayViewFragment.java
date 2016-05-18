@@ -20,7 +20,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -442,7 +441,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
 
                     if (q.getCompletedAt() != null) {
                         QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                        if (hasNoStartTime(q) || new Date().before(q.getEndDate())) {
+                        if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getEndDate()))) {
                             event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
                         }
 
