@@ -23,6 +23,7 @@ import com.squareup.otto.Subscribe;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,8 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.rate.RateDialog;
+import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
@@ -107,6 +110,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     Fragment currentFragment;
 
+    private boolean isRateDialogShown;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +134,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 android.graphics.PorterDuff.Mode.SRC_IN);
+
+        isRateDialogShown = false;
+        new RateDialog().show(getSupportFragmentManager());
+
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
@@ -269,8 +278,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
             });
 
+            snackbar.setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    super.onDismissed(snackbar, event);
+                    if (shouldShowRateDialog()) {
+                        isRateDialogShown = true;
+                        new RateDialog().show(getSupportFragmentManager());
+                    }
+                }
+            });
+
             snackbar.show();
         });
+    }
+
+    private boolean shouldShowRateDialog() {
+        LocalStorage localStorage = LocalStorage.of(this);
+        int appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
+        if (isRateDialogShown || appRun < RateDialogConstants.MIN_APP_RUN_FOR_RATE_DIALOG ||
+                !localStorage.readBool(RateDialogConstants.KEY_SHOULD_SHOW_RATE_DIALOG, true)) {
+            return false;
+        }
+
+        return new Random().nextBoolean();
     }
 
     @Subscribe

@@ -1,0 +1,21 @@
+package io.ipoli.android.app.rate.events;
+
+import org.joda.time.LocalDateTime;
+
+import io.ipoli.android.app.rate.DialogAnswer;
+
+/**
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * on 5/18/16.
+ */
+public class RateDialogRateTappedEvent {
+    public final int appRun;
+    public final DialogAnswer answer;
+    public final LocalDateTime dateTime;
+
+    public RateDialogRateTappedEvent(int appRun, DialogAnswer answer) {
+        this.appRun = appRun;
+        this.answer = answer;
+        dateTime = new LocalDateTime();
+    }
+}
