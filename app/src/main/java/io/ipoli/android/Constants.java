@@ -18,7 +18,7 @@ public interface Constants {
 
     int QUEST_TIMER_NOTIFICATION_ID = 201;
 
-    int QUEST_DONE_NOTIFICATION_ID = 202;
+    int QUEST_COMPLETE_NOTIFICATION_ID = 202;
     int DEFAULT_SNOOZE_TIME_MINUTES = 10;
 
     String DEFAULT_PLAYER_AVATAR = "avatar_07";

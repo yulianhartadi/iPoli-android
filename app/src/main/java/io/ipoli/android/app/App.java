@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
+import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
@@ -206,7 +207,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         eventBus.post(new SyncRequestEvent());
-
         onQuestChanged();
     }
 
@@ -230,9 +230,7 @@ public class App extends MultiDexApplication {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
                 new ComponentName(this, AgendaWidgetProvider.class));
-        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-        sendBroadcast(intent);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
     }
 
     @Subscribe

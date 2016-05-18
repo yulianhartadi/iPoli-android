@@ -10,7 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -62,10 +64,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final int INBOX_TAB_INDEX = 3;
     public static final int HABITS_TAB_INDEX = 4;
 
-    public static final String ACTION_QUEST_DONE = "io.ipoli.android.intent.action.QUEST_DONE";
-
-    @IdRes
-    private int currentSelectedItem = 0;
+    public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
+    public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
 
     private BottomBar bottomBar;
 
@@ -125,10 +125,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         initBottomBar(savedInstanceState);
         toolbarCalendar.setCurrentDate(new Date());
 
-
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 android.graphics.PorterDuff.Mode.SRC_IN);
+
+        Log.d("MainActivityResume", "Create");
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
@@ -182,7 +183,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_container, currentFragment).commit();
-                currentSelectedItem = menuItemId;
                 eventBus.post(new ScreenShownEvent(screenName));
             }
 
@@ -214,14 +214,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        if (getIntent() != null && ACTION_QUEST_DONE.equals(getIntent().getAction())) {
+        if (isFromAction(ACTION_QUEST_COMPLETE)) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
                 bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
                 eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
             });
+        } else if (isFromAction(ACTION_ADD_QUEST)) {
+            setIntent(null);
+            bottomBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    bottomBar.selectTabAtPosition(ADD_QUEST_TAB_INDEX, false);
+                    bottomBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
         }
+    }
+
+    private boolean isFromAction(String action) {
+        return getIntent() != null && action.equals(getIntent().getAction());
     }
 
     @Override

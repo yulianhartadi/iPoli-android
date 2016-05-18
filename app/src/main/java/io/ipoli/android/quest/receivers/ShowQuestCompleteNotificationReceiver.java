@@ -24,9 +24,9 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/1/16.
  */
-public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
+public class ShowQuestCompleteNotificationReceiver extends AsyncBroadcastReceiver {
 
-    public static final String ACTION_SHOW_DONE_QUEST_NOTIFICATION = "io.ipoli.android.intent.action.SHOW_DONE_QUEST_NOTIFICATION";
+    public static final String ACTION_SHOW_DONE_QUEST_NOTIFICATION = "io.ipoli.android.intent.action.SHOW_QUEST_COMPLETE_NOTIFICATION";
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -40,7 +40,7 @@ public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
         return questPersistenceService.findById(questId).flatMap(q -> {
             NotificationCompat.Builder builder = createNotificationBuilder(context, q);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            notificationManagerCompat.notify(Constants.QUEST_DONE_NOTIFICATION_ID, builder.build());
+            notificationManagerCompat.notify(Constants.QUEST_COMPLETE_NOTIFICATION_ID, builder.build());
             return Observable.empty();
         });
     }
@@ -65,7 +65,7 @@ public class ShowDoneQuestNotificationReceiver extends AsyncBroadcastReceiver {
     private PendingIntent getPendingIntent(Context context, String questId) {
         Intent i = new Intent(context, MainActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        i.setAction(MainActivity.ACTION_QUEST_DONE);
+        i.setAction(MainActivity.ACTION_QUEST_COMPLETE);
         i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }

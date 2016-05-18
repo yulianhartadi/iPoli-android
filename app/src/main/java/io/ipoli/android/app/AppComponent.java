@@ -22,7 +22,7 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
-import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
+import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
@@ -64,7 +64,7 @@ public interface AppComponent {
 
     void inject(SnoozeQuestReceiver snoozeQuestReceiver);
 
-    void inject(ShowDoneQuestNotificationReceiver showDoneQuestNotificationReceiver);
+    void inject(ShowQuestCompleteNotificationReceiver showQuestCompleteNotificationReceiver);
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 

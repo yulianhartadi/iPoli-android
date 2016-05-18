@@ -84,10 +84,10 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".quest.receivers.ShowDoneQuestNotificationReceiver"
+            android:name=".quest.receivers.ShowQuestCompleteNotificationReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.SHOW_DONE_QUEST_NOTIFICATION" />
+                <action android:name="io.ipoli.android.intent.action.SHOW_QUEST_COMPLETE_NOTIFICATION" />
             </intent-filter>
         </receiver>
         <receiver

@@ -39,7 +39,6 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onCreate() {
-
     }
 
     @Override
@@ -105,7 +104,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public RemoteViews getLoadingView() {
-        return null;
+        return new RemoteViews(
+                context.getPackageName(),
+                R.layout.widget_agenda_loading_item);
     }
 
     @Override
