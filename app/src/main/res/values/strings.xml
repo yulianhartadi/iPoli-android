@@ -141,7 +141,7 @@
     <string name="invite_friend">Invite friend</string>
     <string name="show_invite_failed">Oops, please, try again later!</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
-    <string name="overview_title">Next 7 Days</string>
+    <string name="overview_title">Your Journey Ahead</string>
     <string name="sync_android_calendars">Import calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
