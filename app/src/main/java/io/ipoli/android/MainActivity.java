@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -128,8 +127,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
                 ContextCompat.getColor(this, R.color.colorPrimary),
                 android.graphics.PorterDuff.Mode.SRC_IN);
-
-        Log.d("MainActivityResume", "Create");
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
