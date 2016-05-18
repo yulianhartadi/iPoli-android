@@ -187,6 +187,20 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate) {
+        Date startDate = toUTCDateAtStartOfDay(currentDate);
+        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
+        try (Realm realm = getRealm()) {
+            return realm.copyFromRealm(realm.where(getRealmObjectClass())
+                    .greaterThanOrEqualTo("endDate", startDate)
+                    .lessThan("endDate", endDate)
+                    .isNull("completedAt")
+                    .equalTo("allDay", false)
+                    .findAllSorted("startMinute", Sort.ASCENDING));
+        }
+    }
+
+    @Override
     public Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate) {
 
         return findAll(where -> where

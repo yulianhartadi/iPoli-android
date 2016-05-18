@@ -84,10 +84,10 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".quest.receivers.ShowDoneQuestNotificationReceiver"
+            android:name=".quest.receivers.ShowQuestCompleteNotificationReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.SHOW_DONE_QUEST_NOTIFICATION" />
+                <action android:name="io.ipoli.android.intent.action.SHOW_QUEST_COMPLETE_NOTIFICATION" />
             </intent-filter>
         </receiver>
         <receiver
@@ -115,6 +115,21 @@
                 <data android:host="com.android.calendar" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".quest.widgets.AgendaWidgetProvider"
+            android:label="@string/widget_journey_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/agenda_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".quest.widgets.AgendaWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
             android:name=".app.services.AppJobService"

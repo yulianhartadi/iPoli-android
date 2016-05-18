@@ -56,6 +56,7 @@
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
     <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
     <string name="calendar_format">EEEE, d MMM</string>
+    <string name="widget_agenda_title_format">\'Journey for \'EEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
@@ -144,6 +145,8 @@
     <string name="overview_title">Your Journey Ahead</string>
     <string name="sync_android_calendars">Import calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
+    <string name="widget_journey_name">Daily Journey</string>
+    <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
     <string name="rate_dialog_initial_message">Do you love iPoli?</string>
     <string name="rate_dialog_yes">Yes</string>

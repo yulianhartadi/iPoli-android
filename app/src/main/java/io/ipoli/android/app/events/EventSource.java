@@ -19,5 +19,6 @@ public enum EventSource {
     KEYBOARD,
     TUTORIAL,
     SNACKBAR,
-    OPTIONS_MENU;
+    OPTIONS_MENU,
+    WIDGET;
 }

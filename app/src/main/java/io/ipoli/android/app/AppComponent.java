@@ -23,11 +23,13 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
-import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
+import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -63,7 +65,7 @@ public interface AppComponent {
 
     void inject(SnoozeQuestReceiver snoozeQuestReceiver);
 
-    void inject(ShowDoneQuestNotificationReceiver showDoneQuestNotificationReceiver);
+    void inject(ShowQuestCompleteNotificationReceiver showQuestCompleteNotificationReceiver);
 
     void inject(StartQuestTimerReceiver startQuestTimerReceiver);
 
@@ -98,6 +100,10 @@ public interface AppComponent {
     void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
 
     void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
+
+    void inject(QuestRemoteViewsFactory questRemoteViewsFactory);
+
+    void inject(AgendaWidgetProvider agendaWidgetProvider);
 
     void inject(RateDialog rateDialog);
 }

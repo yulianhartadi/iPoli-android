@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.quest.receivers.ShowDoneQuestNotificationReceiver;
+import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 
 /**
@@ -57,14 +57,14 @@ public class QuestNotificationScheduler {
 
     public static void stopDone(String questId, Context context) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(Constants.QUEST_DONE_NOTIFICATION_ID);
+        notificationManagerCompat.cancel(Constants.QUEST_COMPLETE_NOTIFICATION_ID);
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(getShowDonePendingIntent(questId, context));
     }
 
     private static PendingIntent getShowDonePendingIntent(String questId, Context context) {
-        Intent intent = new Intent(ShowDoneQuestNotificationReceiver.ACTION_SHOW_DONE_QUEST_NOTIFICATION);
+        Intent intent = new Intent(ShowQuestCompleteNotificationReceiver.ACTION_SHOW_DONE_QUEST_NOTIFICATION);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }

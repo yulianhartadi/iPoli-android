@@ -61,7 +61,7 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
         builder.setContentText("Are you focused?");
         builder.setContentIntent(getContentIntent(q.getId()));
         builder.addAction(R.drawable.ic_clear_24dp, "Cancel", getCancelPendingIntent(q.getId(), QuestActivity.ACTION_QUEST_CANCELED));
-        builder.addAction(R.drawable.ic_done_24dp, "Done", getDonePendingIntent(q.getId(), MainActivity.ACTION_QUEST_DONE));
+        builder.addAction(R.drawable.ic_done_24dp, "Done", getDonePendingIntent(q.getId(), MainActivity.ACTION_QUEST_COMPLETE));
         if (duration > 0) {
             builder.setContentText("For " + DurationFormatter.format(context, duration));
         }

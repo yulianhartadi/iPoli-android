@@ -280,9 +280,11 @@ public class EditQuestActivity extends BaseActivity {
     @OnClick(R.id.quest_due_date)
     public void onDueDateClick(Button button) {
         eventBus.post(new UpdateQuestEndDateRequestEvent(quest));
-        Date dueDate = (Date) dueDateBtn.getTag();
         Calendar c = Calendar.getInstance();
-        c.setTime(dueDate);
+        if (dueDateBtn.getTag() != null) {
+            Date dueDate = (Date) dueDateBtn.getTag();
+            c.setTime(dueDate);
+        }
         DialogFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
         f.show(this.getSupportFragmentManager(), "datePicker");
     }

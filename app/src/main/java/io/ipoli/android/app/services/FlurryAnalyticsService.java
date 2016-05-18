@@ -5,7 +5,6 @@ import com.flurry.android.FlurryEventRecordStatus;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -23,6 +22,7 @@ import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
 import io.ipoli.android.app.rate.events.RateDialogLoveTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogRateTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogShownEvent;
+import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
@@ -64,37 +64,6 @@ import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/7/16.
- */
-
-class EventParams {
-    private Map<String, String> params = new HashMap<>();
-
-    private EventParams() {
-    }
-
-    public static EventParams create() {
-        return new EventParams();
-    }
-
-    public static EventParams of(String key, String value) {
-        EventParams eventParams = new EventParams();
-        eventParams.params.put(key, value);
-        return eventParams;
-    }
-
-    public EventParams add(String key, String value) {
-        params.put(key, value);
-        return this;
-    }
-
-    public Map<String, String> getParams() {
-        return params;
-    }
-}
 
 public class FlurryAnalyticsService implements AnalyticsService {
 
@@ -384,15 +353,15 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCalendarPermissionResponse(CalendarPermissionResponseEvent e) {
         log("calendar_permission_response", EventParams.create()
-        .add("response", e.response.name().toLowerCase())
-        .add("source", e.source.name().toLowerCase()));
+                .add("response", e.response.name().toLowerCase())
+                .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
     public void onRateDialogShownEvent(RateDialogShownEvent e) {
         log("rate_dialog_shown", EventParams.create()
-        .add("app_run", String.valueOf(e.appRun))
-        .add("dateTime", e.dateTime.toString()));
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
     }
 
     @Subscribe
