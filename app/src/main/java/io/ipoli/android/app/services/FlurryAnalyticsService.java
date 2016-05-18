@@ -17,6 +17,11 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
+import io.ipoli.android.app.rate.events.RateDialogFeedbackDeclinedEvent;
+import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
+import io.ipoli.android.app.rate.events.RateDialogLoveTappedEvent;
+import io.ipoli.android.app.rate.events.RateDialogRateTappedEvent;
+import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
@@ -348,8 +353,46 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCalendarPermissionResponse(CalendarPermissionResponseEvent e) {
         log("calendar_permission_response", EventParams.create()
-        .add("response", e.response.name().toLowerCase())
-        .add("source", e.source.name().toLowerCase()));
+                .add("response", e.response.name().toLowerCase())
+                .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onRateDialogShownEvent(RateDialogShownEvent e) {
+        log("rate_dialog_shown", EventParams.create()
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
+    }
+
+    @Subscribe
+    public void onRateDialogLoveTapped(RateDialogLoveTappedEvent e) {
+        log("rate_dialog_love_tapped", EventParams.create()
+                .add("answer", e.answer.name().toLowerCase())
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
+    }
+
+    @Subscribe
+    public void onRateDialogRateTapped(RateDialogRateTappedEvent e) {
+        log("rate_dialog_rate_tapped", EventParams.create()
+                .add("answer", e.answer.name().toLowerCase())
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
+    }
+
+    @Subscribe
+    public void onRateDialogFeedbackSent(RateDialogFeedbackSentEvent e) {
+        log("rate_dialog_feedback_sent", EventParams.create()
+                .add("feedback", e.feedback)
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
+    }
+
+    @Subscribe
+    public void onRateDialogFeedbackDeclined(RateDialogFeedbackDeclinedEvent e) {
+        log("rate_dialog_feedback_declined", EventParams.create()
+                .add("app_run", String.valueOf(e.appRun))
+                .add("dateTime", e.dateTime.toString()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

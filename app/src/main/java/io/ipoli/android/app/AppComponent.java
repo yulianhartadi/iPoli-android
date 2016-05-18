@@ -10,6 +10,7 @@ import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
+import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -103,5 +104,7 @@ public interface AppComponent {
     void inject(QuestRemoteViewsFactory questRemoteViewsFactory);
 
     void inject(AgendaWidgetProvider agendaWidgetProvider);
+
+    void inject(RateDialog rateDialog);
 }
 
