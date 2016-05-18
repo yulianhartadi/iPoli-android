@@ -39,7 +39,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
         android:background="@color/colorAccent"
-        android:text="START"
+        android:text="@string/add"
         android:textColor="@color/md_white" />
 
 

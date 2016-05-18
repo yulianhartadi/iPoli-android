@@ -146,4 +146,5 @@
     <string name="sync_android_calendars">Import calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
     <string name="widget_journey_name">Daily Journey</string>
+    <string name="add">ADD</string>
 </resources>
