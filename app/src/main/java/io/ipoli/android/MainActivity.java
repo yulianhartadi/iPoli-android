@@ -136,8 +136,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 android.graphics.PorterDuff.Mode.SRC_IN);
 
         isRateDialogShown = false;
-        new RateDialog().show(getSupportFragmentManager());
-
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
@@ -300,7 +298,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 !localStorage.readBool(RateDialogConstants.KEY_SHOULD_SHOW_RATE_DIALOG, true)) {
             return false;
         }
-
         return new Random().nextBoolean();
     }
 

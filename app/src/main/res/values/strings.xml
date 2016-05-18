@@ -144,4 +144,15 @@
     <string name="overview_title">Next 7 Days</string>
     <string name="sync_android_calendars">Import calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
+    <string name="rate_dialog_initial_title">Hey Hero</string>
+    <string name="rate_dialog_initial_message">Do you love iPoli?</string>
+    <string name="rate_dialog_yes">Yes</string>
+    <string name="rate_dialog_no">No</string>
+    <string name="rate_dialog_never_ask_again">Never ask again</string>
+    <string name="rate_dialog_rate_title">Me too!</string>
+    <string name="rate_dialog_rate_message">Do want to rate iPoli on Google Play?</string>
+    <string name="rate_dialog_feedback_title">Please, help me improve</string>
+    <string name="rate_dialog_feedback_send">Send</string>
+    <string name="rate_dialog_feedback_no">No, thanks</string>
+    <string name="rate_dialog_feedback_thanks">Thanks</string>
 </resources>

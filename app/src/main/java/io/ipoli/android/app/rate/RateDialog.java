@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.ContextThemeWrapper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +35,10 @@ import io.ipoli.android.app.utils.LocalStorage;
 public class RateDialog extends DialogFragment {
     private static final String TAG = "rate-dialog";
     private static final String STATE = "state";
+
+    @Inject
+    Bus eventBus;
+
     private LocalStorage localStorage;
     private int appRun;
 
@@ -45,6 +48,10 @@ public class RateDialog extends DialogFragment {
 
     private State state;
 
+    public RateDialog() {
+        App.getAppComponent(getContext()).inject(this);
+    }
+
     public static RateDialog newInstance(State state) {
         RateDialog fragment = new RateDialog();
         Bundle args = new Bundle();
@@ -53,13 +60,11 @@ public class RateDialog extends DialogFragment {
         return fragment;
     }
 
-    @Inject
-    Bus eventBus;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getAppComponent(getContext()).inject(this);
+
         if (getArguments() != null && getArguments().containsKey(STATE)) {
             state = State.valueOf(getArguments().getString(STATE));
         } else {
@@ -87,8 +92,8 @@ public class RateDialog extends DialogFragment {
     }
 
     public void show(FragmentManager fragmentManager) {
-        eventBus.post(new RateDialogShownEvent(appRun));
         show(fragmentManager, TAG);
+        eventBus.post(new RateDialogShownEvent(appRun));
     }
 
     private void showNewDialog(State state) {
@@ -97,19 +102,19 @@ public class RateDialog extends DialogFragment {
     }
 
     private Dialog createInitialDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.Theme_iPoli));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setTitle("Hey Hero")
-                .setMessage("Do you love iPoli?")
-                .setPositiveButton("Yes", (dialog, which) -> {
+                .setTitle(getString(R.string.rate_dialog_initial_title))
+                .setMessage(getString(R.string.rate_dialog_initial_message))
+                .setPositiveButton(getString(R.string.rate_dialog_yes), (dialog, which) -> {
                     eventBus.post(new RateDialogLoveTappedEvent(appRun, DialogAnswer.YES));
                     showNewDialog(State.RATE_APP);
                 })
-                .setNegativeButton("No", (dialog, which) -> {
+                .setNegativeButton(getString(R.string.rate_dialog_no), (dialog, which) -> {
                     eventBus.post(new RateDialogLoveTappedEvent(appRun, DialogAnswer.NO));
                     showNewDialog(State.FEEDBACK);
                 })
-                .setNeutralButton("Never ask again", (dialog, which) -> {
+                .setNeutralButton(getString(R.string.rate_dialog_never_ask_again), (dialog, which) -> {
                     eventBus.post(new RateDialogLoveTappedEvent(appRun, DialogAnswer.NEVER_AGAIN));
                     saveNeverShowAgain();
                 });
@@ -121,14 +126,14 @@ public class RateDialog extends DialogFragment {
     private Dialog createRateAppDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setTitle("Me too!")
-                .setMessage("Do want to rate iPoli on Google Play?")
-                .setPositiveButton("Yes", (dialog, which) -> {
+                .setTitle(getString(R.string.rate_dialog_rate_title))
+                .setMessage(getString(R.string.rate_dialog_rate_message))
+                .setPositiveButton(R.string.rate_dialog_yes, (dialog, which) -> {
                     eventBus.post(new RateDialogRateTappedEvent(appRun, DialogAnswer.YES));
                     saveNeverShowAgain();
                     rateApp();
                 })
-                .setNegativeButton("No", (dialog, which) -> {
+                .setNegativeButton(R.string.rate_dialog_no, (dialog, which) -> {
                     eventBus.post(new RateDialogRateTappedEvent(appRun, DialogAnswer.NO));
                 });
 
@@ -143,16 +148,16 @@ public class RateDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(v)
                 .setIcon(R.drawable.logo)
-                .setTitle("Please, help me improve")
-                .setPositiveButton("Send", (dialog, which) -> {
+                .setTitle(getString(R.string.rate_dialog_feedback_title))
+                .setPositiveButton(getString(R.string.rate_dialog_feedback_send), (dialog, which) -> {
                     EditText feedback = (EditText) v.findViewById(R.id.feedback);
                     String feedbackText = feedback.getText().toString();
                     if(!TextUtils.isEmpty(feedbackText.trim())) {
                         eventBus.post(new RateDialogFeedbackSentEvent(feedbackText, appRun));
-                        Toast.makeText(getContext(), "Thanks", Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), R.string.rate_dialog_feedback_thanks, Toast.LENGTH_SHORT);
                     }
                 })
-                .setNegativeButton("No, thanks", (dialog, which) -> {
+                .setNegativeButton(getString(R.string.rate_dialog_feedback_no), (dialog, which) -> {
                     eventBus.post(new RateDialogFeedbackDeclinedEvent(appRun));
                 });
 
@@ -169,4 +174,10 @@ public class RateDialog extends DialogFragment {
         localStorage.saveBool(RateDialogConstants.KEY_SHOULD_SHOW_RATE_DIALOG, false);
     }
 
+    @Override
+    public void onActivityCreated(Bundle arg0) {
+        super.onActivityCreated(arg0);
+        getDialog().getWindow()
+                .getAttributes().windowAnimations = R.style.DialogAnimation;
+    }
 }
