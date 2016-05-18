@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -174,12 +173,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         break;
                 }
 
-
                 if (currentFragment == null) {
                     return;
                 }
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_container, currentFragment).commit();
+                getSupportFragmentManager().executePendingTransactions();
+
                 eventBus.post(new ScreenShownEvent(screenName));
             }
 
@@ -220,13 +220,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             });
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
-            bottomBar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    bottomBar.selectTabAtPosition(ADD_QUEST_TAB_INDEX, false);
-                    bottomBar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            });
+            bottomBar.selectTabAtPosition(ADD_QUEST_TAB_INDEX, false);
         }
     }
 
