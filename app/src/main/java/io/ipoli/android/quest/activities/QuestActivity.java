@@ -181,12 +181,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == Constants.EDIT_QUEST_RESULT_REQUEST_CODE) {
-            questPersistenceService.findById(questId).subscribe(q -> {
-                quest = q;
-                initUI();
-            });
-        } else if (resultCode == Constants.RESULT_REMOVED) {
+        if (resultCode == Constants.RESULT_REMOVED) {
             finish();
         }
     }
