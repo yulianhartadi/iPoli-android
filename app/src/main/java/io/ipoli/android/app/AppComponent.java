@@ -27,6 +27,8 @@ import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -97,5 +99,9 @@ public interface AppComponent {
     void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
 
     void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
+
+    void inject(QuestRemoteViewsFactory questRemoteViewsFactory);
+
+    void inject(AgendaWidgetProvider agendaWidgetProvider);
 }
 
