@@ -116,7 +116,9 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".quest.widgets.AgendaWidgetProvider">
+        <receiver
+            android:name=".quest.widgets.AgendaWidgetProvider"
+            android:label="@string/widget_journey_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

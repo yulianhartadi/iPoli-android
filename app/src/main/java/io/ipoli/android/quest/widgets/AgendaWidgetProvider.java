@@ -43,6 +43,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         App.getAppComponent(context).inject(this);
 
         if (WIDGET_QUEST_CLICK_ACTION.equals(intent.getAction())) {
@@ -81,6 +82,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     }
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+
         for (int appWidgetId : appWidgetIds) {
             Intent intent = new Intent(context, AgendaWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -100,7 +102,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
             PendingIntent templatePendingIntent = PendingIntent.getBroadcast(context, 0, templateIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_agenda_list, templatePendingIntent);
-
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_agenda_list);
             appWidgetManager.updateAppWidget(appWidgetId, rv);
         }
     }

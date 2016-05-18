@@ -2,6 +2,7 @@ package io.ipoli.android.app;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -38,6 +39,7 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -53,6 +55,7 @@ import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.everything.providers.android.calendar.Calendar;
@@ -86,6 +89,7 @@ public class App extends MultiDexApplication {
         public void onReceive(Context context, Intent intent) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             resetEndDateForIncompleteQuests();
+            updateWidgets();
         }
     };
 
@@ -202,7 +206,8 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         eventBus.post(new SyncRequestEvent());
-        scheduleNextReminder();
+
+        onQuestChanged();
     }
 
     @Subscribe
@@ -213,7 +218,21 @@ public class App extends MultiDexApplication {
         removedQuests.add(e.id);
         localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
         eventBus.post(new SyncRequestEvent());
+        onQuestChanged();
+    }
+
+    private void onQuestChanged() {
         scheduleNextReminder();
+        updateWidgets();
+    }
+
+    private void updateWidgets() {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(this, AgendaWidgetProvider.class));
+        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+        sendBroadcast(intent);
     }
 
     @Subscribe
@@ -287,5 +306,10 @@ public class App extends MultiDexApplication {
         }
         localStorage.saveStringSet(Constants.KEY_CALENDARS_TO_SYNC, calendarIds);
         localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        updateWidgets();
     }
 }
