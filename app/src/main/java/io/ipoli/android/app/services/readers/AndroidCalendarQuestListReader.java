@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
@@ -77,14 +79,12 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
                 q.setCompletedAt(new Date(e.dTend));
                 q.setCompletedAtMinute(Time.of(q.getCompletedAt()).toMinutesAfterMidnight());
             }
-            if (e.originalId != null) {
-                return habitPersistenceService.findByExternalSourceMappingId("androidCalendar", e.originalId).flatMap(habit -> {
-                    q.setHabit(habit);
-                    return Observable.just(q);
-                });
-            } else {
+            if (TextUtils.isEmpty(e.originalId)) {
                 return Observable.just(q);
             }
+            Habit h = habitPersistenceService.findByExternalSourceMappingIdSync("androidCalendar", e.originalId);
+            q.setHabit(h);
+            return Observable.just(q);
         }).compose(applyAPISchedulers());
     }
 

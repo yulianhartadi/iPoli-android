@@ -259,22 +259,36 @@ public class EditQuestActivity extends BaseActivity {
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });
-
                 });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
                     eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
                 });
                 d.show();
                 return true;
+
+            case R.id.action_save:
+                String name = nameText.getText().toString().trim();
+                int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
+                quest.setName(name);
+                quest.setDuration(duration);
+                quest.setEndDate((Date) dueDateBtn.getTag());
+                Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
+                questPersistenceService.save(quest).subscribe(q -> {
+                    eventBus.post(new QuestUpdatedEvent(q));
+                    Intent data = new Intent();
+                    data.putExtras(getIntent());
+                    setResult(RESULT_OK, data);
+                    Toast.makeText(getApplicationContext(), R.string.quest_saved, Toast.LENGTH_SHORT).show();
+                    finish();
+                });
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void onBackButton() {
-        saveQuest();
         Intent data = new Intent();
         data.putExtras(getIntent());
-        setResult(RESULT_OK, data);
+        setResult(RESULT_CANCELED, data);
     }
 
     @OnClick(R.id.quest_due_date)
@@ -300,17 +314,6 @@ public class EditQuestActivity extends BaseActivity {
     public void onBackPressed() {
         onBackButton();
         super.onBackPressed();
-    }
-
-    private void saveQuest() {
-        String name = nameText.getText().toString().trim();
-        int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
-        quest.setName(name);
-        quest.setDuration(duration);
-        quest.setEndDate((Date) dueDateBtn.getTag());
-        Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
-        questPersistenceService.save(quest).subscribe();
-        eventBus.post(new QuestUpdatedEvent(quest));
     }
 
     @Subscribe

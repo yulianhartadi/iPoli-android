@@ -82,7 +82,11 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
     }
 
     @Override
-    public Observable<Habit> findByExternalSourceMappingId(String source, String sourceId) {
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync());
+    public Habit findByExternalSourceMappingIdSync(String source, String sourceId) {
+        try (Realm realm = getRealm()) {
+            return realm.copyFromRealm(realm.where(getRealmObjectClass())
+                    .equalTo("sourceMapping." + source, sourceId)
+                    .findFirst());
+        }
     }
 }
