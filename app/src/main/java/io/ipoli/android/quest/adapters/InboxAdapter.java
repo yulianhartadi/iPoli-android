@@ -92,9 +92,13 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     @Override
     public void onItemDismissed(int position, int direction) {
+        if(position >= quests.size()) {
+            return;
+        }
         Quest q = quests.get(position);
         quests.remove(position);
         notifyItemRemoved(position);
+        notifyDataSetChanged();
         if (direction == ItemTouchHelper.START) {
             eventBus.post(new DeleteQuestRequestEvent(q, position));
         } else if (direction == ItemTouchHelper.END) {

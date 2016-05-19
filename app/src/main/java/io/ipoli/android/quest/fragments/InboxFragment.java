@@ -56,6 +56,7 @@ public class InboxFragment extends RxFragment {
 
     private InboxAdapter inboxAdapter;
     private Unbinder unbinder;
+    private DeleteQuestRequestEvent currentDeleteQuestEvent;
 
 
     @Override
@@ -116,28 +117,21 @@ public class InboxFragment extends RxFragment {
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
         eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
+        currentDeleteQuestEvent = e;
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,
-                        Snackbar.LENGTH_LONG);
+                        Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, view -> {
+                    inboxAdapter.addQuest(currentDeleteQuestEvent.position, currentDeleteQuestEvent.quest);
+                    questPersistenceService.saveRemoteObject(currentDeleteQuestEvent.quest).compose(bindToLifecycle()).subscribe();
+                    eventBus.post(new UndoDeleteQuestEvent(currentDeleteQuestEvent.quest, EventSource.INBOX));
+                });
 
-        final Quest quest = e.quest;
 
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                questPersistenceService.delete(quest).compose(bindToLifecycle()).subscribe();
-            }
+        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+            snackbar.show();
         });
-
-        snackbar.setAction(R.string.undo, view -> {
-            inboxAdapter.addQuest(e.position, quest);
-            snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.INBOX));
-        });
-
-        snackbar.show();
     }
 
     @Subscribe
