@@ -121,13 +121,12 @@ public class InboxFragment extends RxFragment {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.quest_removed,
-                        Snackbar.LENGTH_LONG)
+                        Snackbar.LENGTH_SHORT)
                 .setAction(R.string.undo, view -> {
                     inboxAdapter.addQuest(currentDeleteQuestEvent.position, currentDeleteQuestEvent.quest);
                     questPersistenceService.saveRemoteObject(currentDeleteQuestEvent.quest).compose(bindToLifecycle()).subscribe();
                     eventBus.post(new UndoDeleteQuestEvent(currentDeleteQuestEvent.quest, EventSource.INBOX));
                 });
-
 
         questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             snackbar.show();

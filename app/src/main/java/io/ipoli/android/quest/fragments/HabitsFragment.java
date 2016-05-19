@@ -47,6 +47,7 @@ import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.HabitViewModel;
+import rx.Observable;
 
 public class HabitsFragment extends RxFragment {
 
@@ -169,7 +170,7 @@ public class HabitsFragment extends RxFragment {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         R.string.habit_removed,
-                        Snackbar.LENGTH_LONG);
+                        Snackbar.LENGTH_SHORT);
 
         final Habit habit = e.habit;
 
@@ -177,8 +178,8 @@ public class HabitsFragment extends RxFragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.deleteAllFromHabit(habit.getId()).compose(bindToLifecycle()).subscribe();
-                habitPersistenceService.delete(habit).compose(bindToLifecycle()).subscribe();
+                Observable.concat(questPersistenceService.deleteAllFromHabit(habit.getId()), habitPersistenceService.delete(habit))
+                        .compose(bindToLifecycle()).subscribe();
             }
         });
 

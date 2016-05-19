@@ -106,6 +106,9 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onItemDismissed(int position, int direction) {
+        if (position >= viewModels.size()) {
+            return;
+        }
         HabitViewModel vm = viewModels.get(position);
         viewModels.remove(position);
         notifyItemRemoved(position);
