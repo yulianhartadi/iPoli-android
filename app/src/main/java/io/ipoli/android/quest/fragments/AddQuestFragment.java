@@ -214,7 +214,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     private void setContextName() {
-        contextName.setText(questContext.name().substring(0, 1) + questContext.name().substring(1).toLowerCase());
+        String name = questContext.name();
+        contextName.setText(Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase());
     }
 
     @Override

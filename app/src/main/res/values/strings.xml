@@ -158,4 +158,5 @@
     <string name="rate_dialog_feedback_send">Send</string>
     <string name="rate_dialog_feedback_no">No, thanks</string>
     <string name="rate_dialog_feedback_thanks">Thanks</string>
+    <string name="quest_saved">Quest saved</string>
 </resources>
