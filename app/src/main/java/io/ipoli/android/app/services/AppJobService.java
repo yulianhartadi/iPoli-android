@@ -273,7 +273,7 @@ public class AppJobService extends JobService {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteObject();
         if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
-            questPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
+            return questPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
                     Observable.just(serverQuest));
         }
 
