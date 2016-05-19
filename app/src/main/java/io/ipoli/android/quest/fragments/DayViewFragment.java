@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.LocalDate;
 
@@ -72,7 +72,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class DayViewFragment extends Fragment implements CalendarListener<QuestCalendarViewModel> {
+public class DayViewFragment extends RxFragment implements CalendarListener<QuestCalendarViewModel> {
 
     public static final String CURRENT_DATE = "current_date";
 
@@ -199,7 +199,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         quest.setActualStart(null);
         quest.setCompletedAt(null);
         quest.setCompletedAtMinute(null);
-        questPersistenceService.save(quest).subscribe(q -> {
+        saveQuest(quest).subscribe(q -> {
             eventBus.post(new UndoCompletedQuestEvent(q));
         });
     }
@@ -211,10 +211,13 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
             return;
         }
 
-        if (isVisibleToUser) {
-            eventBus.register(this);
-        } else {
-            eventBus.unregister(this);
+        try {
+            if (isVisibleToUser) {
+                eventBus.register(this);
+            } else {
+                eventBus.unregister(this);
+            }
+        } catch (Exception ignored) {
         }
     }
 
@@ -222,7 +225,10 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
     public void onResume() {
         super.onResume();
         if (getUserVisibleHint()) {
-            eventBus.register(this);
+            try {
+                eventBus.register(this);
+            } catch (Exception ignored) {
+            }
         }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         findSlotsSubscriptions = new CompositeSubscription();
@@ -233,34 +239,36 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         if (calendarContainer.isInEditMode()) {
             return;
         }
-        new CalendarScheduler().schedule().subscribe(schedule -> {
+        new CalendarScheduler().schedule()
+                .compose(bindToLifecycle()).subscribe(schedule -> {
+                    List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
 
-            List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
+                    Map<String, List<Quest>> map = new HashMap<>();
+                    for (Quest q : schedule.getUnscheduledQuests()) {
+                        if (q.getHabit() == null) {
+                            unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
+                            continue;
+                        }
+                        String key = q.getHabit().getId();
+                        if (map.get(key) == null) {
+                            map.put(key, new ArrayList<>());
+                        }
+                        map.get(key).add(q);
+                    }
 
-            Map<String, List<Quest>> map = new HashMap<>();
-            for (Quest q : schedule.getUnscheduledQuests()) {
-                if (q.getHabit() == null) {
-                    unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
-                    continue;
+                    for (String key : map.keySet()) {
+                        Quest q = map.get(key).get(0);
+                        int remainingCount = map.get(key).size();
+                        unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
+                    }
+
+                    unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
+                    calendarAdapter.updateEvents(schedule.getCalendarEvents());
+
+                    setUnscheduledQuestsHeight();
+                    calendarDayView.onMinuteChanged();
                 }
-                String key = q.getHabit().getId();
-                if (map.get(key) == null) {
-                    map.put(key, new ArrayList<>());
-                }
-                map.get(key).add(q);
-            }
-
-            for (String key : map.keySet()) {
-                Quest q = map.get(key).get(0);
-                int remainingCount = map.get(key).size();
-                unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
-            }
-
-            unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
-            calendarAdapter.updateEvents(schedule.getCalendarEvents());
-            setUnscheduledQuestsHeight();
-            calendarDayView.onMinuteChanged();
-        });
+        );
     }
 
     @Override
@@ -295,7 +303,7 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         QuestCalendarViewModel qce = e.questCalendarViewModel;
         Quest q = qce.getQuest();
         q.setStartMinute(qce.getStartMinute());
-        questPersistenceService.save(q).subscribe();
+        saveQuest(q).subscribe();
     }
 
     @Subscribe
@@ -357,10 +365,14 @@ public class DayViewFragment extends Fragment implements CalendarListener<QuestC
         QuestCalendarViewModel viewModel = e.calendarEvent;
         Quest q = viewModel.getQuest();
         q.setStartMinute(viewModel.getStartMinute());
-        questPersistenceService.save(q).subscribe(quest -> {
+        saveQuest(q).subscribe(quest -> {
             Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
             updateSchedule();
         });
+    }
+
+    private Observable<Quest> saveQuest(Quest q) {
+        return questPersistenceService.save(q).compose(bindToLifecycle());
     }
 
     private <T> Observable.Transformer<T, T> applyAPISchedulers() {

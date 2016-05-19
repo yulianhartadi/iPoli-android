@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -46,7 +46,7 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends Fragment {
+public class OverviewFragment extends RxFragment {
     @Inject
     Bus eventBus;
 
@@ -115,7 +115,7 @@ public class OverviewFragment extends Fragment {
         }
         final String toastMessage = toast;
         q.setEndDate(endDate);
-        questPersistenceService.save(q).subscribe(quest -> {
+        questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
             updateQuests();
         });
@@ -127,7 +127,7 @@ public class OverviewFragment extends Fragment {
     }
 
     private void updateQuests() {
-        questPersistenceService.findPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7)).subscribe(quests -> {
+        questPersistenceService.findPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7)).compose(bindToLifecycle()).subscribe(quests -> {
 
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();

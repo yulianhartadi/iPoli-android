@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -48,7 +48,7 @@ import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.HabitViewModel;
 
-public class HabitsFragment extends Fragment {
+public class HabitsFragment extends RxFragment {
 
     @Inject
     Bus eventBus;
@@ -114,7 +114,7 @@ public class HabitsFragment extends Fragment {
     }
 
     private void updateQuests() {
-        habitPersistenceService.findAllNonAllDayHabits().subscribe(quests -> {
+        habitPersistenceService.findAllNonAllDayHabits().compose(bindToLifecycle()).subscribe(quests -> {
             List<HabitViewModel> viewModels = new ArrayList<>();
             for (Habit rq : quests) {
                 HabitViewModel vm = createViewModel(rq);
@@ -177,8 +177,8 @@ public class HabitsFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.deleteAllFromHabit(habit.getId()).subscribe();
-                habitPersistenceService.delete(habit).subscribe();
+                questPersistenceService.deleteAllFromHabit(habit.getId()).compose(bindToLifecycle()).subscribe();
+                habitPersistenceService.delete(habit).compose(bindToLifecycle()).subscribe();
             }
         });
 

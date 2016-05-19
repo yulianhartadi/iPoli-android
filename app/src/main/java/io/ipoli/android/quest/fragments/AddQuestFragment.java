@@ -93,7 +93,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     private int selectionStartIdx = 0;
     private Unbinder unbinder;
 
-
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;

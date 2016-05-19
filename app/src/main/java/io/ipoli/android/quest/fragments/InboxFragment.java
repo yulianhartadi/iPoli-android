@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +16,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.Date;
 import java.util.List;
@@ -41,7 +41,7 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;
 
-public class InboxFragment extends Fragment {
+public class InboxFragment extends RxFragment {
 
     @Inject
     Bus eventBus;
@@ -97,7 +97,7 @@ public class InboxFragment extends Fragment {
     }
 
     private Observable<List<Quest>> getAllUnplanned() {
-        return questPersistenceService.findAllUnplanned();
+        return questPersistenceService.findAllUnplanned().compose(bindToLifecycle());
     }
 
     @Override
@@ -127,7 +127,7 @@ public class InboxFragment extends Fragment {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                questPersistenceService.delete(quest).subscribe();
+                questPersistenceService.delete(quest).compose(bindToLifecycle()).subscribe();
             }
         });
 
@@ -144,7 +144,7 @@ public class InboxFragment extends Fragment {
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         q.setEndDate(new Date());
-        questPersistenceService.save(q).subscribe(quest -> {
+        questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
         });
 
