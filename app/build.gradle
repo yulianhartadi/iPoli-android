@@ -73,4 +73,5 @@ dependencies {
     compile 'com.flurry.android:analytics:6.2.0'
     compile 'com.github.sundeepk:compact-calendar-view:1.8.3'
     compile 'me.everything:providers-android:1.0.1'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 }

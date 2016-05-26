@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -61,7 +64,7 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public static final int CALENDAR_TAB_INDEX = 0;
     public static final int OVERVIEW_TAB_INDEX = 1;
     public static final int ADD_QUEST_TAB_INDEX = 2;
@@ -72,6 +75,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
 
     private BottomBar bottomBar;
+
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+
+    @BindView(R.id.navigation_view)
+    NavigationView navigationView;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -136,10 +145,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 android.graphics.PorterDuff.Mode.SRC_IN);
 
         isRateDialogShown = false;
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 
     private void initBottomBar(Bundle savedInstanceState) {
-        bottomBar = BottomBar.attach(this, savedInstanceState);
+        bottomBar = BottomBar.attach(rootContainer, savedInstanceState);
         bottomBar.noTopOffset();
         bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
             @Override
@@ -252,7 +267,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_help) {
+        if (item.getItemId() == R.id.action_help) {
             HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
         }
         return super.onOptionsItemSelected(item);
@@ -384,5 +399,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             appBar.setExpanded(false, true);
         }
         appBar.setTag(false);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        item.setChecked(!item.isChecked());
+        drawerLayout.closeDrawers();
+
+        return false;
     }
 }

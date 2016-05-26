@@ -197,4 +197,7 @@
     <string name="help_dialog_overview_edit">Tap on the quest to edit it</string>
     <string name="help_dialog_overview_swipe_right">Swipe quest right to complete it</string>
     <string name="help_dialog_overview_swipe_left">Swipe quest left to schedule it for today. If the quest is already for today, it will be scheduled for tomorrow.</string>
+    <string name="drawer_close">Navigation Closed</string>
+    <string name="drawer_open">Navigation Opened</string>
+    <string name="home">Home</string>
 </resources>
