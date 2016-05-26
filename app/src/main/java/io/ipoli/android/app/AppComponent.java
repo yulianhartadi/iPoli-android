@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.ipoli.android.MainActivity;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
@@ -106,5 +107,7 @@ public interface AppComponent {
     void inject(AgendaWidgetProvider agendaWidgetProvider);
 
     void inject(RateDialog rateDialog);
+
+    void inject(HelpDialog helpDialog);
 }
 

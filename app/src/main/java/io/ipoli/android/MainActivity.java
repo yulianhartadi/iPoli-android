@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,6 +35,8 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.help.Screen;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
@@ -245,6 +248,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_help) {
+            HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe
