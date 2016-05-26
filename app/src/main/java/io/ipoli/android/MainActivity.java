@@ -66,10 +66,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public static final int CALENDAR_TAB_INDEX = 0;
-    public static final int OVERVIEW_TAB_INDEX = 1;
-    public static final int ADD_QUEST_TAB_INDEX = 2;
-    public static final int INBOX_TAB_INDEX = 3;
-    public static final int HABITS_TAB_INDEX = 4;
+    public static final int ADD_QUEST_TAB_INDEX = 1;
+    public static final int OVERVIEW_TAB_INDEX = 2;
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
@@ -156,6 +154,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void initBottomBar(Bundle savedInstanceState) {
         bottomBar = BottomBar.attach(rootContainer, savedInstanceState);
         bottomBar.noTopOffset();
+        bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorAccent));
         bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
             @Override
             public void onMenuTabSelected(@IdRes int menuItemId) {
@@ -186,16 +185,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         currentFragment = new AddQuestFragment();
                         toolbarTitle.setText(R.string.title_activity_add_quest);
                         break;
-                    case R.id.inbox:
-                        screenName = "inbox";
-                        currentFragment = new InboxFragment();
-                        toolbarTitle.setText(R.string.title_activity_inbox);
-                        break;
-                    case R.id.habits:
-                        screenName = "habits";
-                        currentFragment = new HabitsFragment();
-                        toolbarTitle.setText(R.string.title_fragment_habits);
-                        break;
+
                 }
 
                 if (currentFragment == null) {
@@ -213,13 +203,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         });
-
-
-        bottomBar.mapColorForTab(CALENDAR_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(OVERVIEW_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(ADD_QUEST_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(INBOX_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
-        bottomBar.mapColorForTab(HABITS_TAB_INDEX, ContextCompat.getColor(this, R.color.colorPrimary));
     }
 
     private void resetLayoutColors() {
@@ -283,8 +266,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
-        View view = bottomBar.findViewById(R.id.bb_bottom_bar_outer_container);
-        view.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+//        View view = bottomBar.findViewById(R.id.bb_bottom_bar_outer_container);
+//        view.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
     }
 
     @Subscribe
@@ -405,6 +388,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public boolean onNavigationItemSelected(MenuItem item) {
         item.setChecked(!item.isChecked());
         drawerLayout.closeDrawers();
+
+        String screenName = "";
+        switch (item.getItemId()) {
+            case R.id.inbox:
+                screenName = "inbox";
+                currentFragment = new InboxFragment();
+                toolbarTitle.setText(R.string.title_activity_inbox);
+                break;
+            case R.id.habits:
+                screenName = "habits";
+                currentFragment = new HabitsFragment();
+                toolbarTitle.setText(R.string.title_fragment_habits);
+                break;
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_container, currentFragment).commit();
+        getSupportFragmentManager().executePendingTransactions();
+
+        eventBus.post(new ScreenShownEvent(screenName));
 
         return false;
     }
