@@ -266,8 +266,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
-//        View view = bottomBar.findViewById(R.id.bb_bottom_bar_outer_container);
-//        view.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
     }
 
     @Subscribe
@@ -389,12 +387,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         item.setChecked(!item.isChecked());
         drawerLayout.closeDrawers();
 
+        toolbarExpandContainer.setOnClickListener(null);
+        appBar.setExpanded(false, false);
+        appBar.setTag(false);
+        calendarIndicator.setVisibility(View.GONE);
         String screenName = "";
+        resetLayoutColors();
+        bottomBar.hide();
         switch (item.getItemId()) {
+
+            case R.id.home:
+                calendarIndicator.setVisibility(View.VISIBLE);
+                toolbarExpandContainer.setOnClickListener(MainActivity.this);
+                screenName = "calendar";
+                CalendarFragment calendarFragment = new CalendarFragment();
+                toolbarCalendar.setListener(calendarFragment);
+                currentFragment = calendarFragment;
+                toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+                bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
+                bottomBar.show();
+                break;
+
             case R.id.inbox:
                 screenName = "inbox";
                 currentFragment = new InboxFragment();
                 toolbarTitle.setText(R.string.title_activity_inbox);
+
                 break;
             case R.id.habits:
                 screenName = "habits";
