@@ -24,8 +24,8 @@
         android:layout_alignStart="@+id/profile_image"
         android:gravity="start"
         android:paddingBottom="4dp"
-        android:text="Muncho Gruev"
-        android:textColor="#FFF"
+        android:text="Level 3: Novice"
+        android:textColor="@color/md_white"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -36,9 +36,11 @@
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/username"
         android:layout_marginBottom="8dp"
-        android:gravity="start"
-        android:text="bratochka@vivacoma.bg"
-        android:textColor="#fff"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_life_coin_white_24dp"
+        android:gravity="center_vertical"
+        android:text="375"
+        android:textColor="@color/md_white"
         android:textSize="14sp" />
 
 </RelativeLayout>

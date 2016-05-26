@@ -24,12 +24,11 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -59,10 +58,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_feedback:
-                eventBus.post(new FeedbackTapEvent());
-                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
-                break;
             case R.id.action_contact_us:
                 eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));

@@ -50,7 +50,7 @@
     <string name="dialog_delete_quest_title">Delete quest</string>
     <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
     <string name="inbox">Inbox</string>
-    <string name="feedback">Feedback</string>
+    <string name="feedback">Improve iPoli</string>
     <string name="contact_us">Contact us</string>
     <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
@@ -199,4 +199,6 @@
     <string name="drawer_open">Navigation Opened</string>
     <string name="home">Home</string>
     <string name="repeating_quests">Repeating Quests</string>
+    <string name="challenges">Challenges</string>
+    <string name="performance">Performance</string>
 </resources>

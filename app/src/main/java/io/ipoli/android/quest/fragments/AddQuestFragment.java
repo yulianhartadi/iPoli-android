@@ -221,7 +221,6 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if (menu != null) {
-            menu.removeItem(R.id.action_feedback);
             menu.removeItem(R.id.action_contact_us);
             menu.removeItem(R.id.action_show_tutorial);
         }

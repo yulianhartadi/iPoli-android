@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-
+    <group android:checkableBehavior="single" android:id="@+id/drawer_main_group">
         <item
             android:id="@+id/home"
             android:checked="true"
@@ -15,10 +14,29 @@
             android:title="@string/inbox" />
 
         <item
+            android:id="@+id/challenges"
+            android:checked="false"
+            android:icon="@drawable/ic_sword_white_24dp"
+            android:title="@string/challenges" />
+
+        <item
             android:id="@+id/repeating_quests"
             android:checked="false"
             android:icon="@drawable/ic_autorenew_white_24dp"
             android:title="@string/repeating_quests" />
 
+        <item
+            android:id="@+id/performance"
+            android:checked="false"
+            android:icon="@drawable/ic_performance_white_24dp"
+            android:title="@string/performance" />
+    </group>
+
+    <group android:id="@+id/drawer_secondary_group">
+        <item
+            android:id="@+id/feedback"
+            android:checked="false"
+            android:icon="@drawable/ic_comment_white_24dp"
+            android:title="@string/feedback" />
     </group>
 </menu>

@@ -36,6 +36,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.help.HelpDialog;
@@ -47,6 +48,7 @@ import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -419,6 +421,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 currentFragment = new HabitsFragment();
                 toolbarTitle.setText(R.string.title_fragment_habits);
                 break;
+
+            case R.id.feedback:
+                eventBus.post(new FeedbackTapEvent());
+                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                break;
         }
 
         getSupportFragmentManager().beginTransaction()
@@ -427,6 +434,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         eventBus.post(new ScreenShownEvent(screenName));
 
-        return false;
+        return true;
     }
 }
