@@ -111,7 +111,7 @@ public class HelpDialog extends DialogFragment {
                 })
                 .setNeutralButton(getString(R.string.help_dialog_more_help), (dialog, which) -> {
                     eventBus.post(new MoreHelpTappedEvent(screen, appRun));
-                    EmailUtils.send(getContext(), "Help wanted", "Ask us for help");
+                    EmailUtils.send(getContext(), getString(R.string.help_wanted_email_subject), getString(R.string.help_wanted_chooser_title));
                 });
         return builder.create();
     }

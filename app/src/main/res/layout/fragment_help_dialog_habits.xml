@@ -11,19 +11,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Habits are called all your repeating quests." />
+        android:text="@string/help_dialog_habits_text1" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="iPoli automatically makes a quest in your calendar for the habit if you have to do it on a particular date. " />
+        android:text="@string/help_dialog_habits_text2" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="From this screen you can track your weekly progress." />
+        android:text="@string/help_dialog_habits_text3" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Swipe habit left to delete it if you decide you no longer want to do it" />
+            android:text="@string/help_dialog_habits_delete" />
     </LinearLayout>
 
 

@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Use the overview to manage your uncompleted quests for the next 7 days. " />
+        android:text="@string/help_dialog_overview_text1" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Tap on the quest to edit it" />
+            android:text="@string/help_dialog_overview_edit" />
     </LinearLayout>
 
 
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Swipe quest right to complete it" />
+            android:text="@string/help_dialog_overview_swipe_right" />
     </LinearLayout>
 
     <LinearLayout
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Swipe quest left to schedule it for today. If the quest is already for today, it will be scheduled for tomorrow." />
+            android:text="@string/help_dialog_overview_swipe_left" />
     </LinearLayout>
 
 

@@ -11,19 +11,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create your quests using simple natural everyday language." />
+        android:text="@string/help_dialog_add_quest_text1" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="You can create one time quest or repeating one called Habit." />
+        android:text="@string/help_dialog_add_quest_text2" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Start typing and use the smart suggestions from the dropdown to help you." />
+        android:text="@string/help_dialog_add_quest_text3" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Choose date" />
+            android:text="@string/help_dialog_add_quest_date" />
     </LinearLayout>
 
     <LinearLayout
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Set start time" />
+            android:text="@string/help_dialog_add_quest_start_time" />
     </LinearLayout>
 
     <LinearLayout
@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Adjust the duration" />
+            android:text="@string/help_dialog_add_quest_duration" />
     </LinearLayout>
 
     <LinearLayout
@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Make your schedule repeating. This will automatically categorize your task as Habit." />
+            android:text="@string/help_dialog_add_quest_repeating" />
     </LinearLayout>
 
     <LinearLayout
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="Set times per day repetition" />
+            android:text="@string/help_dialog_add_quest_times_per_day" />
     </LinearLayout>
 
 </LinearLayout>
