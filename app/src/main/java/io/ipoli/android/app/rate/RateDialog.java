@@ -73,6 +73,7 @@ public class RateDialog extends DialogFragment {
 
         localStorage = LocalStorage.of(getContext());
         appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
+        eventBus.post(new RateDialogShownEvent(appRun));
     }
 
     @Override
@@ -93,7 +94,6 @@ public class RateDialog extends DialogFragment {
 
     public void show(FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
-        eventBus.post(new RateDialogShownEvent(appRun));
     }
 
     private void showNewDialog(State state) {
@@ -128,7 +128,7 @@ public class RateDialog extends DialogFragment {
         builder.setIcon(R.drawable.logo)
                 .setTitle(getString(R.string.rate_dialog_rate_title))
                 .setMessage(getString(R.string.rate_dialog_rate_message))
-                .setPositiveButton(R.string.rate_dialog_yes, (dialog, which) -> {
+                .setPositiveButton(R.string.rate_dialog_ok, (dialog, which) -> {
                     eventBus.post(new RateDialogRateTappedEvent(appRun, DialogAnswer.YES));
                     saveNeverShowAgain();
                     rateApp();

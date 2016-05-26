@@ -58,7 +58,7 @@ import io.ipoli.android.quest.data.Habit;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.NewHabitEvent;
-import io.ipoli.android.quest.events.NewQuestAddedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
@@ -284,7 +284,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 q.setCompletedAtMinute(completedAtMinute);
             }
             Quest.setContext(q, questContext);
-            eventBus.post(new NewQuestAddedEvent(q));
+            eventBus.post(new NewQuestEvent(q));
         }
         resetQuestText();
     }

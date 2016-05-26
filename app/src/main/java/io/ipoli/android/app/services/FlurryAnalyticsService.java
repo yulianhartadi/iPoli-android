@@ -17,6 +17,8 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
+import io.ipoli.android.app.help.events.HelpDialogShownEvent;
+import io.ipoli.android.app.help.events.MoreHelpTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogFeedbackDeclinedEvent;
 import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
 import io.ipoli.android.app.rate.events.RateDialogLoveTappedEvent;
@@ -30,7 +32,8 @@ import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestAddedEvent;
+import io.ipoli.android.quest.events.NewHabitEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -80,11 +83,15 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewQuestAdded(NewQuestAddedEvent e) {
+    public void onNewQuestAdded(NewQuestEvent e) {
         log("quest_created", EventParams.create()
-                .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
                 .add("raw_text", e.quest.getRawText()));
+    }
+
+    @Subscribe
+    public void onNewHabitAdded(NewHabitEvent e) {
+        log("habit_created", EventParams.of("raw_text", e.habit.getRawText()));
     }
 
     @Subscribe
@@ -158,7 +165,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onDeleteHabitRequest(DeleteHabitRequestEvent e) {
+    public void onDeleteFHabitRequest(DeleteHabitRequestEvent e) {
         log("delete_habit_requested", e.habit.getId(), e.habit.getName());
     }
 
@@ -361,7 +368,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     public void onRateDialogShownEvent(RateDialogShownEvent e) {
         log("rate_dialog_shown", EventParams.create()
                 .add("app_run", String.valueOf(e.appRun))
-                .add("dateTime", e.dateTime.toString()));
+                .add("date_time", e.dateTime.toString()));
     }
 
     @Subscribe
@@ -369,7 +376,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("rate_dialog_love_tapped", EventParams.create()
                 .add("answer", e.answer.name().toLowerCase())
                 .add("app_run", String.valueOf(e.appRun))
-                .add("dateTime", e.dateTime.toString()));
+                .add("date_time", e.dateTime.toString()));
     }
 
     @Subscribe
@@ -377,7 +384,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("rate_dialog_rate_tapped", EventParams.create()
                 .add("answer", e.answer.name().toLowerCase())
                 .add("app_run", String.valueOf(e.appRun))
-                .add("dateTime", e.dateTime.toString()));
+                .add("date_time", e.dateTime.toString()));
     }
 
     @Subscribe
@@ -385,14 +392,28 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("rate_dialog_feedback_sent", EventParams.create()
                 .add("feedback", e.feedback)
                 .add("app_run", String.valueOf(e.appRun))
-                .add("dateTime", e.dateTime.toString()));
+                .add("date_time", e.dateTime.toString()));
     }
 
     @Subscribe
     public void onRateDialogFeedbackDeclined(RateDialogFeedbackDeclinedEvent e) {
         log("rate_dialog_feedback_declined", EventParams.create()
                 .add("app_run", String.valueOf(e.appRun))
-                .add("dateTime", e.dateTime.toString()));
+                .add("date_time", e.dateTime.toString()));
+    }
+
+    @Subscribe
+    public void onHelpDialogShown(HelpDialogShownEvent e) {
+        log("help_dialog_shown", EventParams.create()
+                .add("screen", e.screen.name().toLowerCase())
+                .add("app_run", String.valueOf(e.appRun)));
+    }
+
+    @Subscribe
+    public void onMoreHelpTapped(MoreHelpTappedEvent e) {
+        log("help_dialog_more_tapped", EventParams.create()
+                .add("screen", e.screen.name().toLowerCase())
+                .add("app_run", String.valueOf(e.appRun)));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
