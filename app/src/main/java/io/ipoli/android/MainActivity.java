@@ -414,7 +414,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 toolbarTitle.setText(R.string.title_activity_inbox);
 
                 break;
-            case R.id.habits:
+            case R.id.repeating_quests:
                 screenName = "habits";
                 currentFragment = new HabitsFragment();
                 toolbarTitle.setText(R.string.title_fragment_habits);

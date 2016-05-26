@@ -128,8 +128,6 @@
     <string name="bottom_bar_calendar_title">Calendar</string>
     <string name="bottom_bar_overview_title">Overview</string>
     <string name="bottom_bar_new_title">New</string>
-    <string name="bottom_bar_inbox_title">Inbox</string>
-    <string name="bottom_bar_habits_title">Habits</string>
     <string name="title_pick_initial_habits">Pick a few Habits to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
@@ -200,4 +198,5 @@
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
     <string name="home">Home</string>
+    <string name="repeating_quests">Repeating Quests</string>
 </resources>
