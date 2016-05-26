@@ -172,7 +172,7 @@
     <string name="help_dialog_more_help">More help</string>
     <string name="help_wanted_email_subject">Help wanted</string>
     <string name="help_wanted_chooser_title">Ask us for help</string>
-    <string name="help_dialog_add_quest_text1">Create your quests using simple natural everyday language.</string>
+    <string name="help_dialog_add_quest_text1">Create your quests using natural everyday language.</string>
     <string name="help_dialog_add_quest_text2">You can create one time quest or repeating one called Habit.</string>
     <string name="help_dialog_add_quest_text3">Start typing and use the smart suggestions from the dropdown to help you.</string>
     <string name="help_dialog_add_quest_date">Choose date</string>
