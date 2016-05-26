@@ -42,10 +42,10 @@
     <string name="next_7_days">next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
-    <string name="title_activity_add_quest">Add new Quest</string>
+    <string name="title_activity_add_quest">Add new Quest or Habit</string>
     <string name="quest_added">Quest added</string>
     <string name="unknown_choice">don\'t know</string>
-    <string name="delete">delete</string>
+    <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
     <string name="dialog_delete_quest_title">Delete quest</string>
     <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
@@ -151,12 +151,23 @@
     <string name="rate_dialog_initial_message">Do you love iPoli?</string>
     <string name="rate_dialog_yes">Yes</string>
     <string name="rate_dialog_no">No</string>
+    <string name="rate_dialog_ok">OK</string>
     <string name="rate_dialog_never_ask_again">Never ask again</string>
     <string name="rate_dialog_rate_title">Me too!</string>
-    <string name="rate_dialog_rate_message">Do want to rate iPoli on Google Play?</string>
+    <string name="rate_dialog_rate_message">Encourage us by rating iPoli on Google Play?</string>
     <string name="rate_dialog_feedback_title">Please, help me improve</string>
     <string name="rate_dialog_feedback_send">Send</string>
     <string name="rate_dialog_feedback_no">No, thanks</string>
     <string name="rate_dialog_feedback_thanks">Thanks</string>
     <string name="quest_saved">Quest saved</string>
+
+
+    <string name="help_explain_screen">Know this screen</string>
+    <string name="help_dialog_calendar_title">What is calendar all about?</string>
+    <string name="help_dialog_overview_title">What is overview all about?</string>
+    <string name="help_dialog_add_quest_title">How to add your quests?</string>
+    <string name="help_dialog_inbox_title">What is my inbox for?</string>
+    <string name="help_dialog_habits_title">What are my habits?</string>
+    <string name="help_dialog_ok">OK</string>
+    <string name="help_dialog_more_help">More help</string>
 </resources>

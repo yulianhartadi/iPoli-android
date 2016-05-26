@@ -48,7 +48,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.HabitSavedEvent;
 import io.ipoli.android.quest.events.NewHabitEvent;
-import io.ipoli.android.quest.events.NewQuestAddedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.persistence.HabitPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -190,7 +190,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onNewQuest(NewQuestAddedEvent e) {
+    public void onNewQuest(NewQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe();
     }
 
