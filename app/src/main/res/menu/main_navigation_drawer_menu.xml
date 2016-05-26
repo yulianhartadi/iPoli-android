@@ -30,6 +30,12 @@
             android:checked="false"
             android:icon="@drawable/ic_performance_white_24dp"
             android:title="@string/performance" />
+
+        <item
+            android:id="@+id/rewards"
+            android:checked="false"
+            android:icon="@drawable/ic_gift_white_24dp"
+            android:title="@string/rewards" />
     </group>
 
     <group android:id="@+id/drawer_secondary_group">
