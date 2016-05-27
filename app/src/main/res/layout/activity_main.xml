@@ -57,7 +57,8 @@
                             android:ellipsize="end"
                             android:singleLine="true"
                             android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:id="@+id/toolbar_calendar_indicator"
