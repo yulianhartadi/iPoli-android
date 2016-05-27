@@ -60,6 +60,7 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.reward.fragments.RewardListFragment;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -375,6 +376,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.challenges:
                 screenName = "challenges";
                 changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
+                break;
+
+            case R.id.rewards:
+                screenName = "rewards";
+                changeCurrentFragment(new RewardListFragment(), R.string.title_fragment_rewards);
                 break;
 
             case R.id.feedback:

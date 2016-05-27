@@ -203,4 +203,5 @@
     <string name="performance">Performance</string>
     <string name="rewards">Rewards</string>
     <string name="title_fragment_challenges">Challenges</string>
+    <string name="title_fragment_rewards">Rewards</string>
 </resources>
