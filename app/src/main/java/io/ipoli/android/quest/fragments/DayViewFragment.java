@@ -245,11 +245,11 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
 
                     Map<String, List<Quest>> map = new HashMap<>();
                     for (Quest q : schedule.getUnscheduledQuests()) {
-                        if (q.getHabit() == null) {
+                        if (q.getRepeatingQuest() == null) {
                             unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
                             continue;
                         }
-                        String key = q.getHabit().getId();
+                        String key = q.getRepeatingQuest().getId();
                         if (map.get(key) == null) {
                             map.put(key, new ArrayList<>());
                         }

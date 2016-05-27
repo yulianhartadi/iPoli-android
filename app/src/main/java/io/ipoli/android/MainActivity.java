@@ -61,7 +61,7 @@ import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
-import io.ipoli.android.quest.fragments.HabitsFragment;
+import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -417,9 +417,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                 break;
             case R.id.repeating_quests:
-                screenName = "habits";
-                currentFragment = new HabitsFragment();
-                toolbarTitle.setText(R.string.title_fragment_habits);
+                screenName = "repeating_quests";
+                currentFragment = new RepeatingQuestsFragment();
+                toolbarTitle.setText(R.string.title_fragment_repeating_quests);
                 break;
 
             case R.id.feedback:

@@ -6,7 +6,7 @@
     <string name="title_activity_edit_quest">Edit quest</string>
     <string name="player_level">Level %d</string>
     <string name="quest_removed">Quest removed</string>
-    <string name="habit_removed">Habit removed</string>
+    <string name="repeating_quest_removed">Repeating Quest removed</string>
     <string name="default_assistant_name">iPoli</string>
     <string name="title_activity_quest_complete">Well done!</string>
     <string name="quest_complete_difficulty_question">How difficult was it?</string>
@@ -42,7 +42,7 @@
     <string name="next_7_days">next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
-    <string name="title_activity_add_quest">Add new Quest or Habit</string>
+    <string name="title_activity_add_quest">Add new Quest</string>
     <string name="quest_added">Quest added</string>
     <string name="unknown_choice">don\'t know</string>
     <string name="delete">Delete</string>
@@ -67,8 +67,8 @@
     <string name="contact_us_email_subject">Hi</string>
     <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
-    <string name="habit_added">Habit added, might take a while to sync</string>
-    <string name="habit_next_datetime">Next: %s</string>
+    <string name="repeating_quest_added">Repeating Quest added, might take a while to sync</string>
+    <string name="repeating_quest_next_datetime">Next: %s</string>
 
     <string-array name="due_date_auto_completes">
         <item>today</item>
@@ -110,7 +110,7 @@
     <string name="title_activity_main">iPoli</string>
 
     <string name="save">Save</string>
-    <string name="no_internet_habit_added">Habit will be added when Internet is available</string>
+    <string name="no_internet_repeating_quest_added">Repeating Quest will be added when Internet is available</string>
     <string name="show_tutorial">Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
     <string name="tutorial_welcome_desc">I\'m your smart assistant. Your daily tasks are now called quests. Be a hero and complete them! You are free to accept or refuse the challenge!</string>
@@ -122,17 +122,17 @@
     <string name="tutorial_add_quest_desc">Use everyday language and autocomplete to create your quests in a flash</string>
     <string name="tutorial_inbox_title">Collect Unscheduled Quests in Inbox</string>
     <string name="tutorial_inbox_desc">Swipe a quest to the right to schedule it for today or to the left to delete it</string>
-    <string name="tutorial_habits_title">Stick to Your Important Habits</string>
-    <string name="tutorial_habits_desc">Track your weekly progress. Swipe a habit to the left to delete it.</string>
+    <string name="tutorial_repeating_quests_title">Stick to Your Important Habits</string>
+    <string name="tutorial_repeating_quests_desc">Track your weekly progress. Swipe a repeating quest to the left to delete it.</string>
     <string name="quest_undone">Quest undone</string>
     <string name="bottom_bar_calendar_title">Calendar</string>
     <string name="bottom_bar_overview_title">Overview</string>
     <string name="bottom_bar_new_title">New</string>
-    <string name="title_pick_initial_habits">Pick a few Habits to start with</string>
+    <string name="title_pick_initial_repeating_quests">Pick a few Repeating Quests to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
     <string name="find_slots_loading_message">Finding the perfect time…</string>
-    <string name="title_fragment_habits">Habits</string>
+    <string name="title_fragment_repeating_quests">Repeating Quests</string>
 
     <string name="share">share</string>
 
@@ -165,27 +165,27 @@
     <string name="help_dialog_overview_title">What is overview all about?</string>
     <string name="help_dialog_add_quest_title">How to add your quests?</string>
     <string name="help_dialog_inbox_title">What is my inbox for?</string>
-    <string name="help_dialog_habits_title">What are my habits?</string>
+    <string name="help_dialog_repeating_quests_title">What are my repeating quests?</string>
     <string name="help_dialog_ok">OK</string>
     <string name="help_dialog_more_help">More help</string>
     <string name="help_wanted_email_subject">Help wanted</string>
     <string name="help_wanted_chooser_title">Ask us for help</string>
     <string name="help_dialog_add_quest_text1">Create your quests using natural everyday language.</string>
-    <string name="help_dialog_add_quest_text2">You can create one time quest or repeating one called Habit.</string>
+    <string name="help_dialog_add_quest_text2">You can create one time quest or repeating one.</string>
     <string name="help_dialog_add_quest_text3">Start typing and use the smart suggestions from the dropdown to help you.</string>
     <string name="help_dialog_add_quest_date">Choose date</string>
     <string name="help_dialog_add_quest_start_time">Set start time</string>
     <string name="help_dialog_add_quest_duration">Adjust the duration</string>
-    <string name="help_dialog_add_quest_repeating">Make your schedule repeating. This will automatically categorize your task as Habit.</string>
+    <string name="help_dialog_add_quest_repeating">Make your quest repeating. This will automatically categorize your task as Repeating Quest.</string>
     <string name="help_dialog_add_quest_times_per_day">Set times per day repetition</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>
     <string name="help_dialog_calendar_smart_schedule">Tap the arrow to automatically schedule the quest. If you don\'t like the chosen time, tap again to reschedule it.</string>
-    <string name="help_dialog_habits_text1">Habits are called all your repeating quests.</string>
-    <string name="help_dialog_habits_text2">iPoli automatically makes a quest in your calendar for the habit if you have to do it on a particular date.</string>
-    <string name="help_dialog_habits_text3">From this screen you can track your weekly progress.</string>
-    <string name="help_dialog_habits_delete">Swipe habit left to delete it if you decide you no longer want to do it</string>
+    <string name="help_dialog_repeating_quests_text1">Repeating Quests are called all your repeating tasks.</string>
+    <string name="help_dialog_repeating_quests_text2">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
+    <string name="help_dialog_repeating_quests_text3">From this screen you can track your weekly progress.</string>
+    <string name="help_dialog_repeating_quests_delete">Swipe repeating quest left to delete it if you decide you no longer want to do it</string>
     <string name="help_dialog_inbox_text1">This is the place with all your unscheduled quests.</string>
     <string name="help_dialog_inbox_text2">If you don\'t complete a quest during the day it will automatically move to your Inbox.</string>
     <string name="help_dialog_inbox_edit">Tap on the quest to edit it</string>

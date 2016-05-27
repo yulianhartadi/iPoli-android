@@ -11,7 +11,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -41,7 +41,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
         return findAll(where -> where
                 .isNull("completedAt")
-                .isNull("habit")
+                .isNull("repeatingQuest")
                 .equalTo("allDay", false)
                 .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
                 .findAllSortedAsync(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
@@ -119,11 +119,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<Void> deleteAllFromHabit(String habitId) {
+    public Observable<Void> deleteAllFromRepeatingQuest(String repeatingQuestId) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm -> {
-                RealmResults<Quest> questsToRemove = where().equalTo("habit.id", habitId).findAll();
+                RealmResults<Quest> questsToRemove = where().equalTo("repeatingQuest.id", repeatingQuestId).findAll();
                 questsToRemove.deleteAllFromRealm();
             }, () -> {
                 subscriber.onNext(null);
@@ -137,11 +137,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate) {
+    public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
 
         return where()
                 .isNotNull("completedAt")
-                .equalTo("habit.id", habit.getId())
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .between("endDate", toUTCDateAtStartOfDay(fromDate), toUTCDateAtStartOfDay(toDate))
                 .count();
     }

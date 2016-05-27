@@ -20,7 +20,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class Habit extends RealmObject implements RemoteObject<Habit> {
+public class RepeatingQuest extends RealmObject implements RemoteObject<RepeatingQuest> {
 
     @Required
     @PrimaryKey
@@ -58,7 +58,7 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
 
     private SourceMapping sourceMapping;
 
-    public Habit() {
+    public RepeatingQuest() {
     }
 
     public void setDuration(Integer duration) {
@@ -89,14 +89,14 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
         this.startMinute = startMinute;
     }
 
-    public static Time getStartTime(Habit quest) {
+    public static Time getStartTime(RepeatingQuest quest) {
         if (quest.getStartMinute() < 0) {
             return null;
         }
         return Time.of(quest.getStartMinute());
     }
 
-    public Habit(String rawText) {
+    public RepeatingQuest(String rawText) {
         this.id = UUID.randomUUID().toString();
         this.rawText = rawText;
         this.createdAt = DateUtils.nowUTC();
@@ -140,15 +140,15 @@ public class Habit extends RealmObject implements RemoteObject<Habit> {
         this.context = context;
     }
 
-    public static QuestContext getContext(Habit quest) {
+    public static QuestContext getContext(RepeatingQuest quest) {
         return QuestContext.valueOf(quest.getContext());
     }
 
-    public static void setContext(Habit quest, QuestContext context) {
+    public static void setContext(RepeatingQuest quest, QuestContext context) {
         quest.setContext(context.name());
     }
 
-    public static void setStartTime(Habit quest, Time time) {
+    public static void setStartTime(RepeatingQuest quest, Time time) {
         if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());
         } else {

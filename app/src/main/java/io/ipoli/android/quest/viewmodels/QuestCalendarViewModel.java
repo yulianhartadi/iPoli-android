@@ -77,7 +77,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isRecurrent() {
-        return quest.getHabit() != null && !TextUtils.isEmpty(quest.getHabit().getRecurrence().getRrule());
+        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 
     @Override

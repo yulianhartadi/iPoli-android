@@ -54,10 +54,10 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ColorLayoutEvent;
-import io.ipoli.android.quest.events.NewHabitEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -248,19 +248,19 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         String text = questText.getText().toString().trim();
 
         QuestParser qParser = new QuestParser(parser);
-        if (qParser.isHabit(text)) {
-            Habit habit = qParser.parseHabit(text);
-            if (habit == null) {
+        if (qParser.isRepeatingQuest(text)) {
+            RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
+            if (repeatingQuest == null) {
                 resetQuestText();
                 Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
-            habit.setContext(questContext.name());
-            eventBus.post(new NewHabitEvent(habit));
+            repeatingQuest.setContext(questContext.name());
+            eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
             if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
-                Toast.makeText(getContext(), R.string.no_internet_habit_added, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.no_internet_repeating_quest_added, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getContext(), R.string.habit_added, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), R.string.repeating_quest_added, Toast.LENGTH_LONG).show();
             }
         } else {
             Quest q = qParser.parse(text);

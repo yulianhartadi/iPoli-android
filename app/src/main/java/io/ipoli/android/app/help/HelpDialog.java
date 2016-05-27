@@ -82,8 +82,8 @@ public class HelpDialog extends DialogFragment {
             case INBOX:
                 dialog = createDialog(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title);
                 break;
-            case HABITS:
-                dialog = createDialog(R.layout.fragment_help_dialog_habits, R.string.help_dialog_habits_title);
+            case REPEATING_QUESTS:
+                dialog = createDialog(R.layout.fragment_help_dialog_repeating_quests, R.string.help_dialog_repeating_quests_title);
                 break;
         }
         return dialog;

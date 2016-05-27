@@ -28,11 +28,11 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewHabitEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -46,21 +46,21 @@ import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowHabitEvent;
+import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
+import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
-import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.tutorial.events.PredefinedHabitDeselectedEvent;
-import io.ipoli.android.tutorial.events.PredefinedHabitSelectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -90,8 +90,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewHabitAdded(NewHabitEvent e) {
-        log("habit_created", EventParams.of("raw_text", e.habit.getRawText()));
+    public void onNewRepeatingQuestAdded(NewRepeatingQuestEvent e) {
+        log("repeating_quest_created", EventParams.of("raw_text", e.repeatingQuest.getRawText()));
     }
 
     @Subscribe
@@ -160,23 +160,23 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onShowHabit(ShowHabitEvent e) {
-        log("show_habit_request", e.habit.getId(), e.habit.getName());
+    public void onShowRepeatingQuest(ShowRepeatingQuestEvent e) {
+        log("show_repeating_quest_request", e.repeatingQuest.getId(), e.repeatingQuest.getName());
     }
 
     @Subscribe
-    public void onDeleteFHabitRequest(DeleteHabitRequestEvent e) {
-        log("delete_habit_requested", e.habit.getId(), e.habit.getName());
+    public void onDeleteRepeatingQuestRequest(DeleteRepeatingQuestRequestEvent e) {
+        log("delete_repeating_quest_requested", e.repeatingQuest.getId(), e.repeatingQuest.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteHabit(UndoDeleteHabitEvent e) {
-        log("undo_delete_habit", e.habit.getId(), e.habit.getName());
+    public void onUndoDeleteRepeatingQuest(UndoDeleteRepeatingQuestEvent e) {
+        log("undo_delete_repeating_quest", e.repeatingQuest.getId(), e.repeatingQuest.getName());
     }
 
     @Subscribe
-    public void onUndoDeleteHabit(HabitDeletedEvent e) {
-        log("undo_delete_habit", EventParams.of("id", e.id));
+    public void onUndoDeleteRepeatingQuest(RepeatingQuestDeletedEvent e) {
+        log("undo_delete_repeating_quest", EventParams.of("id", e.id));
     }
 
     @Subscribe
@@ -274,15 +274,15 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onPredefinedHabitSelectedEvent(PredefinedHabitSelectedEvent e) {
-        log("predefined_habit_selected", EventParams.create()
+    public void onPredefinedRepeatingQuestSelectedEvent(PredefinedRepeatingQuestSelectedEvent e) {
+        log("predefined_repeating_quest_selected", EventParams.create()
                 .add("raw_text", e.rawText)
                 .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onPredefinedHabitDeselectedEvent(PredefinedHabitDeselectedEvent e) {
-        log("predefined_habit_deselected", EventParams.create()
+    public void onPredefinedRepeatingQuestDeselectedEvent(PredefinedRepeatingQuestDeselectedEvent e) {
+        log("predefined_repeating_quest_deselected", EventParams.create()
                 .add("raw_text", e.rawText)
                 .add("source", e.source.name().toLowerCase()));
     }

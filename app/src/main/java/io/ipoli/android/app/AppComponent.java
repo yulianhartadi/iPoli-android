@@ -19,7 +19,7 @@ import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
-import io.ipoli.android.quest.fragments.HabitsFragment;
+import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
@@ -32,7 +32,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.tutorial.TutorialActivity;
-import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
+import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 
@@ -86,11 +86,11 @@ public interface AppComponent {
 
     void inject(InboxFragment inboxFragment);
 
-    void inject(HabitsFragment habitsFragment);
+    void inject(RepeatingQuestsFragment repeatingQuestsFragment);
 
     void inject(TutorialActivity tutorialActivity);
 
-    void inject(PickHabitsFragment pickHabitsFragment);
+    void inject(PickRepeatingQuestsFragment pickRepeatingQuestsFragment);
 
     void inject(PickQuestsFragment pickQuestsFragment);
 

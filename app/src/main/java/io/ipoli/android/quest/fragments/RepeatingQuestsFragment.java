@@ -39,17 +39,17 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.adapters.HabitsAdapter;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.adapters.RepeatingQuestsAdapter;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
-import io.ipoli.android.quest.events.UndoDeleteHabitEvent;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
+import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.viewmodels.HabitViewModel;
+import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 import rx.Observable;
 
-public class HabitsFragment extends RxFragment {
+public class RepeatingQuestsFragment extends RxFragment {
 
     @Inject
     Bus eventBus;
@@ -60,19 +60,19 @@ public class HabitsFragment extends RxFragment {
     RecyclerView questList;
 
     @Inject
-    HabitPersistenceService habitPersistenceService;
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private HabitsAdapter habitsAdapter;
+    private RepeatingQuestsAdapter repeatingQuestsAdapter;
     private Unbinder unbinder;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_habits, container, false);
+        View view = inflater.inflate(R.layout.fragment_repeating_quests, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
@@ -82,11 +82,11 @@ public class HabitsFragment extends RxFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        habitsAdapter = new HabitsAdapter(getContext(), new ArrayList<>(), eventBus);
-        questList.setAdapter(habitsAdapter);
+        repeatingQuestsAdapter = new RepeatingQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
+        questList.setAdapter(repeatingQuestsAdapter);
 
         int swipeFlags = ItemTouchHelper.START;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(habitsAdapter, 0, swipeFlags);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestsAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
@@ -115,20 +115,20 @@ public class HabitsFragment extends RxFragment {
     }
 
     private void updateQuests() {
-        habitPersistenceService.findAllNonAllDayHabits().compose(bindToLifecycle()).subscribe(quests -> {
-            List<HabitViewModel> viewModels = new ArrayList<>();
-            for (Habit rq : quests) {
-                HabitViewModel vm = createViewModel(rq);
+        repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().compose(bindToLifecycle()).subscribe(quests -> {
+            List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
+            for (RepeatingQuest rq : quests) {
+                RepeatingQuestViewModel vm = createViewModel(rq);
                 if (vm != null) {
                     viewModels.add(vm);
                 }
             }
-            habitsAdapter.updateQuests(viewModels);
+            repeatingQuestsAdapter.updateQuests(viewModels);
         });
     }
 
     @Nullable
-    private HabitViewModel createViewModel(Habit rq) {
+    private RepeatingQuestViewModel createViewModel(RepeatingQuest rq) {
         try {
             Recurrence recurrence = rq.getRecurrence();
             Recur recur = new Recur(recurrence.getRrule());
@@ -159,37 +159,37 @@ public class HabitsFragment extends RxFragment {
                     }
                 }
             }
-            return new HabitViewModel(rq, completedCount, recur, nextDate);
+            return new RepeatingQuestViewModel(rq, completedCount, recur, nextDate);
         } catch (ParseException e) {
             return null;
         }
     }
 
     @Subscribe
-    public void onDeleteHabitRequest(final DeleteHabitRequestEvent e) {
+    public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
-                        R.string.habit_removed,
+                        R.string.repeating_quest_removed,
                         Snackbar.LENGTH_SHORT);
 
-        final Habit habit = e.habit;
+        final RepeatingQuest repeatingQuest = e.repeatingQuest;
 
         snackbar.setCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar snackbar, int event) {
                 super.onDismissed(snackbar, event);
-                Observable.concat(questPersistenceService.deleteAllFromHabit(habit.getId()), habitPersistenceService.delete(habit))
+                Observable.concat(questPersistenceService.deleteAllFromRepeatingQuest(repeatingQuest.getId()), repeatingQuestPersistenceService.delete(repeatingQuest))
                         .compose(bindToLifecycle()).subscribe();
             }
         });
 
         snackbar.setAction(R.string.undo, view -> {
-            HabitViewModel vm = createViewModel(habit);
+            RepeatingQuestViewModel vm = createViewModel(repeatingQuest);
             if (vm != null) {
-                habitsAdapter.addQuest(e.position, vm);
+                repeatingQuestsAdapter.addQuest(e.position, vm);
             }
             snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteHabitEvent(habit));
+            eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest));
         });
 
         snackbar.show();

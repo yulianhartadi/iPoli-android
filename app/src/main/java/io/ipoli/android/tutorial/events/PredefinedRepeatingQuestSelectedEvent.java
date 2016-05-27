@@ -6,11 +6,11 @@ import io.ipoli.android.app.events.EventSource;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/29/16.
  */
-public class PredefinedHabitDeselectedEvent {
+public class PredefinedRepeatingQuestSelectedEvent {
     public final String rawText;
     public final EventSource source;
 
-    public PredefinedHabitDeselectedEvent(String rawText, EventSource source) {
+    public PredefinedRepeatingQuestSelectedEvent(String rawText, EventSource source) {
         this.rawText = rawText;
         this.source = source;
     }

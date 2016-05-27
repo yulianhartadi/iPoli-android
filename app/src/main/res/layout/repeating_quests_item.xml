@@ -49,7 +49,7 @@
 
 
         <LinearLayout
-            android:id="@+id/quest_habit_indicators_container"
+            android:id="@+id/quest_repeating_quest_indicators_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -75,7 +75,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/quest_habit_next_datetime"
+            android:id="@+id/quest_next_datetime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

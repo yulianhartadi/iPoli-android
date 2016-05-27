@@ -18,10 +18,10 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
@@ -37,12 +37,12 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
     private final Set<String> questIds;
     private final Context context;
     private final CalendarProvider calendarProvider;
-    private final HabitPersistenceService habitPersistenceService;
+    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    public AndroidCalendarQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage, HabitPersistenceService habitPersistenceService) {
+    public AndroidCalendarQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         this.context = context;
         this.calendarProvider = calendarProvider;
-        this.habitPersistenceService = habitPersistenceService;
+        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
         this.questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
     }
 
@@ -82,8 +82,8 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
             if (TextUtils.isEmpty(e.originalId)) {
                 return Observable.just(q);
             }
-            Habit h = habitPersistenceService.findByExternalSourceMappingIdSync("androidCalendar", e.originalId);
-            q.setHabit(h);
+            RepeatingQuest h = repeatingQuestPersistenceService.findByExternalSourceMappingIdSync("androidCalendar", e.originalId);
+            q.setRepeatingQuest(h);
             return Observable.just(q);
         }).compose(applyAPISchedulers());
     }
