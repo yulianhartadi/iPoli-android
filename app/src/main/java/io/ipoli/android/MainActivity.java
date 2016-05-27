@@ -49,7 +49,6 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -151,56 +150,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
     }
 
-//    private void initBottomBar(Bundle savedInstanceState) {
-//        bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
-//            @Override
-//            public void onMenuTabSelected(@IdRes int menuItemId) {
-//                toolbarExpandContainer.setOnClickListener(null);
-//                appBar.setExpanded(false, false);
-//                appBar.setTag(false);
-//                calendarIndicator.setVisibility(View.GONE);
-//                resetLayoutColors();
-//
-//                switch (menuItemId) {
-//                    case R.id.calendar:
-//                        calendarIndicator.setVisibility(View.VISIBLE);
-//                        toolbarExpandContainer.setOnClickListener(MainActivity.this);
-//                        CalendarFragment calendarFragment = new CalendarFragment();
-//                        toolbarCalendar.setListener(calendarFragment);
-//                        currentFragment = calendarFragment;
-//                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-//                        break;
-//                    case R.id.overview:
-//                        currentFragment = new OverviewFragment();
-//                        toolbarTitle.setText(R.string.overview_title);
-//                        break;
-//                    case R.id.add_quest:
-//                        screenName = "add_quest";
-//                        currentFragment = new AddQuestFragment();
-//                        toolbarTitle.setText(R.string.title_activity_add_quest);
-//                        break;
-//
-//                }
-//
-//                if (currentFragment == null) {
-//                    return;
-//                }
-//                getSupportFragmentManager().beginTransaction()
-//                        .replace(R.id.content_container, currentFragment).commit();
-//                getSupportFragmentManager().executePendingTransactions();
-//            }
-//
-//            @Override
-//            public void onMenuTabReSelected(@IdRes int menuItemId) {
-//
-//            }
-//        });
-//    }
-
-    private void resetLayoutColors() {
-        colorLayout(QuestContext.LEARNING);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -246,7 +195,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 appBar.setExpanded(false, false);
                 appBar.setTag(false);
                 calendarIndicator.setVisibility(View.GONE);
-                resetLayoutColors();
                 changeCurrentFragment(new OverviewFragment(), R.string.overview_title);
                 return true;
 
@@ -271,12 +219,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 .replace(R.id.content_container, fragment).commit();
         currentFragment = fragment;
         getSupportFragmentManager().executePendingTransactions();
-    }
-
-    @Subscribe
-    public void onColorLayout(ColorLayoutEvent e) {
-        QuestContext context = e.questContext;
-        colorLayout(context);
     }
 
     private void colorLayout(QuestContext context) {
@@ -407,7 +349,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         appBar.setTag(false);
         calendarIndicator.setVisibility(View.GONE);
         String screenName = "";
-        resetLayoutColors();
         switch (item.getItemId()) {
 
             case R.id.home:

@@ -14,14 +14,14 @@ import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
-import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
@@ -32,8 +32,8 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.tutorial.TutorialActivity;
-import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 
 /**
@@ -82,8 +82,6 @@ public interface AppComponent {
 
     void inject(OverviewFragment overviewFragment);
 
-    void inject(AddQuestFragment addQuestFragment);
-
     void inject(InboxFragment inboxFragment);
 
     void inject(RepeatingQuestsFragment repeatingQuestsFragment);
@@ -109,5 +107,7 @@ public interface AppComponent {
     void inject(RateDialog rateDialog);
 
     void inject(HelpDialog helpDialog);
+
+    void inject(AddQuestActivity addQuestActivity);
 }
 
