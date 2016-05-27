@@ -46,6 +46,7 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -369,6 +370,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.repeating_quests:
                 screenName = "repeating_quests";
                 changeCurrentFragment(new RepeatingQuestsFragment(), R.string.title_fragment_repeating_quests);
+                break;
+
+            case R.id.challenges:
+                screenName = "challenges";
+                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
                 break;
 
             case R.id.feedback:
