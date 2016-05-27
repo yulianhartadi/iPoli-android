@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -82,7 +84,14 @@ public class OverviewFragment extends RxFragment {
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
 
+        setHasOptionsMenu(true);
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.overview, menu);
     }
 
     @Override

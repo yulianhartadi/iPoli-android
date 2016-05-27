@@ -6,5 +6,11 @@
         android:id="@+id/action_today"
         android:icon="@drawable/ic_today_white_24dp"
         android:title="@string/today"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_overview"
+        android:icon="@drawable/ic_format_list_bulleted_white_24dp"
+        android:title="@string/bottom_bar_overview_title"
         app:showAsAction="always" />
 </menu>
