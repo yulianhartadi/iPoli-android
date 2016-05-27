@@ -22,21 +22,21 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
 import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.quest.events.DeleteHabitRequestEvent;
-import io.ipoli.android.quest.events.ShowHabitEvent;
-import io.ipoli.android.quest.viewmodels.HabitViewModel;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
+import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
+import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
+public class RepeatingQuestsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
     private final Context context;
 
-    private List<HabitViewModel> viewModels;
+    private List<RepeatingQuestViewModel> viewModels;
     private Bus eventBus;
 
-    public HabitsAdapter(Context context, List<HabitViewModel> viewModels, Bus eventBus) {
+    public RepeatingQuestsAdapter(Context context, List<RepeatingQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
@@ -46,16 +46,16 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.habits_quest_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.repeating_quests_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         ViewHolder questHolder = (ViewHolder) holder;
 
-        final HabitViewModel vm = viewModels.get(questHolder.getAdapterPosition());
+        final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
-        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowHabitEvent(vm.getHabit())));
+        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowRepeatingQuestEvent(vm.getRepeatingQuest())));
 
         questHolder.name.setText(vm.getName());
 
@@ -79,14 +79,14 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         LayoutInflater inflater = LayoutInflater.from(context);
         for (int i = 1; i <= vm.getCompletedDailyCount(); i++) {
-            View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
+            View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
             GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
             progressViewBackground.setColor(ContextCompat.getColor(context, vm.getContextColor()));
             questHolder.progressContainer.addView(progressView);
         }
 
         for (int i = 1; i <= vm.getRemainingDailyCount(); i++) {
-            View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
+            View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
             GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
             progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));
@@ -109,21 +109,21 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (position >= viewModels.size()) {
             return;
         }
-        HabitViewModel vm = viewModels.get(position);
+        RepeatingQuestViewModel vm = viewModels.get(position);
         viewModels.remove(position);
         notifyItemRemoved(position);
         if (direction == ItemTouchHelper.START) {
-            eventBus.post(new DeleteHabitRequestEvent(vm.getHabit(), position));
+            eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest(), position));
         }
     }
 
-    public void updateQuests(List<HabitViewModel> newViewModels) {
+    public void updateQuests(List<RepeatingQuestViewModel> newViewModels) {
         viewModels = newViewModels;
         notifyDataSetChanged();
     }
 
-    public void addQuest(int position, HabitViewModel habitViewModel) {
-        viewModels.add(position, habitViewModel);
+    public void addQuest(int position, RepeatingQuestViewModel repeatingQuestViewModel) {
+        viewModels.add(position, repeatingQuestViewModel);
         notifyDataSetChanged();
     }
 
@@ -141,7 +141,7 @@ public class HabitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @BindView(R.id.quest_progress_container)
         public ViewGroup progressContainer;
 
-        @BindView(R.id.quest_habit_next_datetime)
+        @BindView(R.id.quest_next_datetime)
         public TextView nextDateTime;
 
         @BindView(R.id.quest_remaining)

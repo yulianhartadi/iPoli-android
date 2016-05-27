@@ -157,7 +157,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 edit.setVisibility(View.GONE);
             }
 
-            if (quest.isHabit()) {
+            if (quest.isRepeatingQuest()) {
                 edit.setVisibility(View.GONE);
             }
         });

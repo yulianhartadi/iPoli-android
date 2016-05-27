@@ -7,9 +7,9 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.quest.data.Habit;
-import io.ipoli.android.quest.events.HabitSavedEvent;
-import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
+import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.realm.Realm;
 import rx.Observable;
 
@@ -17,31 +17,31 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/31/16.
  */
-public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Habit> implements HabitPersistenceService {
+public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceService<RepeatingQuest> implements RepeatingQuestPersistenceService {
 
     private final Bus eventBus;
 
-    public RealmHabitPersistenceService(Bus eventBus) {
+    public RealmRepeatingQuestPersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
     }
 
     @Override
-    protected Class<Habit> getRealmObjectClass() {
-        return Habit.class;
+    protected Class<RepeatingQuest> getRealmObjectClass() {
+        return RepeatingQuest.class;
     }
 
     @Override
-    protected void onObjectSaved(Habit object) {
-        eventBus.post(new HabitSavedEvent(object));
+    protected void onObjectSaved(RepeatingQuest object) {
+        eventBus.post(new RepeatingQuestSavedEvent(object));
     }
 
     @Override
     protected void onObjectDeleted(String id) {
-        eventBus.post(new HabitDeletedEvent(id));
+        eventBus.post(new RepeatingQuestDeletedEvent(id));
     }
 
     @Override
-    public Observable<List<Habit>> findAllNonAllDayHabits() {
+    public Observable<List<RepeatingQuest>> findAllNonAllDayRepeatingQuests() {
         return findAll(where -> where.isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAllAsync());
     }
 
@@ -54,24 +54,24 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
 
         Realm realm = getRealm();
 
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmHabit -> {
-            if (realmHabit == null) {
+        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmRepeatingQuest -> {
+            if (realmRepeatingQuest == null) {
                 realm.close();
                 return Observable.empty();
             }
 
-            final String habitId = realmHabit.getId();
+            final String repeatingQuestId = realmRepeatingQuest.getId();
 
             return Observable.create(subscriber -> {
                 realm.executeTransactionAsync(backgroundRealm -> {
-                    Habit habitToDelete = backgroundRealm.where(getRealmObjectClass())
+                    RepeatingQuest repeatingQuestToDelete = backgroundRealm.where(getRealmObjectClass())
                             .equalTo("sourceMapping." + source, sourceId)
                             .findFirst();
-                    habitToDelete.deleteFromRealm();
+                    repeatingQuestToDelete.deleteFromRealm();
                 }, () -> {
-                    subscriber.onNext(habitId);
+                    subscriber.onNext(repeatingQuestId);
                     subscriber.onCompleted();
-                    onObjectDeleted(habitId);
+                    onObjectDeleted(repeatingQuestId);
                     realm.close();
                 }, error -> {
                     subscriber.onError(error);
@@ -82,7 +82,7 @@ public class RealmHabitPersistenceService extends BaseRealmPersistenceService<Ha
     }
 
     @Override
-    public Habit findByExternalSourceMappingIdSync(String source, String sourceId) {
+    public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
         try (Realm realm = getRealm()) {
             return realm.copyFromRealm(realm.where(getRealmObjectClass())
                     .equalTo("sourceMapping." + source, sourceId)

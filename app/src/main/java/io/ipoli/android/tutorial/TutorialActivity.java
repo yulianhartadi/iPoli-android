@@ -25,13 +25,13 @@ import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.tutorial.fragments.PickHabitsFragment;
+import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
@@ -46,9 +46,9 @@ public class TutorialActivity extends AppIntro2 {
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    HabitPersistenceService habitPersistenceService;
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    private PickHabitsFragment pickHabitsFragment;
+    private PickRepeatingQuestsFragment pickRepeatingQuestsFragment;
     private PickQuestsFragment pickQuestsFragment;
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
 
@@ -69,8 +69,8 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(syncAndroidCalendarFragment);
         pickQuestsFragment = new PickQuestsFragment();
         addSlide(pickQuestsFragment);
-        pickHabitsFragment = new PickHabitsFragment();
-        addSlide(pickHabitsFragment);
+        pickRepeatingQuestsFragment = new PickRepeatingQuestsFragment();
+        addSlide(pickRepeatingQuestsFragment);
 
         int[] colors = new int[]{
                 R.color.md_indigo_500,
@@ -95,9 +95,9 @@ public class TutorialActivity extends AppIntro2 {
         if (!selectedQuests.isEmpty()) {
             questPersistenceService.saveRemoteObjects(selectedQuests).subscribe();
         }
-        List<Habit> selectedHabits = pickHabitsFragment.getSelectedQuests();
-        if (!selectedHabits.isEmpty()) {
-            habitPersistenceService.saveRemoteObjects(selectedHabits).subscribe();
+        List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
+        if (!selectedRepeatingQuests.isEmpty()) {
+            repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests).subscribe();
         }
         eventBus.post(new ForceSyncRequestEvent());
         eventBus.post(new TutorialDoneEvent());

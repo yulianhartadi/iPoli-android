@@ -97,8 +97,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @NonNull
     private View createIndicator(ViewGroup parent, QuestCalendarViewModel calendarEvent, LayoutInflater inflater) {
-        View v = inflater.inflate(R.layout.calendar_habit_completed_item, parent, false);
-        ImageView indicatorView = (ImageView) v.findViewById(R.id.habit_indicator);
+        View v = inflater.inflate(R.layout.calendar_repeating_quest_completed_item, parent, false);
+        ImageView indicatorView = (ImageView) v.findViewById(R.id.repeating_quest_indicator);
         indicatorView.setImageResource(calendarEvent.getContextImage());
         return v;
     }
@@ -139,7 +139,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             checkBox.setChecked(true);
         }
 
-        if (relativeTime == Time.RelativeTime.PAST || (relativeTime == Time.RelativeTime.FUTURE && q.isHabit())) {
+        if (relativeTime == Time.RelativeTime.PAST || (relativeTime == Time.RelativeTime.FUTURE && q.isRepeatingQuest())) {
             checkBox.setClickable(false);
         } else {
             checkBox.setClickable(true);

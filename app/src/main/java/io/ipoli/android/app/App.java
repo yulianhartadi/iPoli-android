@@ -46,13 +46,13 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.HabitSavedEvent;
-import io.ipoli.android.quest.events.NewHabitEvent;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.HabitDeletedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
@@ -83,7 +83,7 @@ public class App extends MultiDexApplication {
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    HabitPersistenceService habitPersistenceService;
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -195,12 +195,12 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onNewHabit(NewHabitEvent e) {
-        habitPersistenceService.save(e.habit).subscribe();
+    public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
+        repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
     }
 
     @Subscribe
-    public void onHabitSaved(HabitSavedEvent e) {
+    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
         eventBus.post(new ForceSyncRequestEvent());
     }
 
@@ -234,11 +234,11 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onHabitDeleted(HabitDeletedEvent e) {
+    public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_HABITS);
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS);
         removedQuests.add(e.id);
-        localStorage.saveStringSet(Constants.KEY_REMOVED_HABITS, removedQuests);
+        localStorage.saveStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS, removedQuests);
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }

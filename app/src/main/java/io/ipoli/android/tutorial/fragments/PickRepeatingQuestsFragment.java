@@ -13,15 +13,15 @@ import javax.inject.Inject;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
-import io.ipoli.android.tutorial.adapters.PickHabitsAdapter;
+import io.ipoli.android.tutorial.adapters.PickRepeatingQuestsAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickHabitsFragment extends BasePickQuestsFragment<Habit> {
+public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<RepeatingQuest> {
     @Inject
     Bus eventBus;
 
@@ -33,12 +33,12 @@ public class PickHabitsFragment extends BasePickQuestsFragment<Habit> {
 
     @Override
     protected int getTitleRes() {
-        return R.string.title_pick_initial_habits;
+        return R.string.title_pick_initial_repeating_quests;
     }
 
     @Override
     protected void initAdapter() {
-        pickQuestsAdapter = new PickHabitsAdapter(getContext(), eventBus, viewModels);
+        pickQuestsAdapter = new PickRepeatingQuestsAdapter(getContext(), eventBus, viewModels);
     }
 
     @Override
@@ -68,8 +68,8 @@ public class PickHabitsFragment extends BasePickQuestsFragment<Habit> {
     }
 
     private void addViewModel(String text, QuestContext context, boolean isSelected) {
-        Habit rq = new Habit(text);
-        Habit.setContext(rq, context);
+        RepeatingQuest rq = new RepeatingQuest(text);
+        RepeatingQuest.setContext(rq, context);
         viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
     }
 }

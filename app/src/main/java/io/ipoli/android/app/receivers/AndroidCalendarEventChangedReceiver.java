@@ -22,7 +22,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
@@ -39,7 +39,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    HabitPersistenceService habitPersistenceService;
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
     Bus eventBus;
@@ -101,23 +101,23 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     }
 
     private void markEventsForUpdate(List<Event> dirtyEvents, LocalStorage localStorage) {
-        Set<String> habitIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
+        Set<String> repeatingQuestIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE);
         Set<String> questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
         for (Event e : dirtyEvents) {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                habitIds.add(String.valueOf(e.id));
+                repeatingQuestIds.add(String.valueOf(e.id));
             } else {
                 questIds.add(String.valueOf(e.id));
             }
         }
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE, habitIds);
+        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE, repeatingQuestIds);
         localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questIds);
     }
 
     private void deleteEvents(List<Event> events) {
         for (Event e : events) {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                habitPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id)).subscribe();
+                repeatingQuestPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id)).subscribe();
             } else {
                 questPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id)).subscribe();
             }

@@ -189,14 +189,14 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             LayoutInflater inflater = LayoutInflater.from(context);
 
             for (int i = 1; i <= vm.getCompletedCount(); i++) {
-                View progressView = inflater.inflate(R.layout.habit_progress_context_indicator, questHolder.progressContainer, false);
+                View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
                 GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
                 progressViewBackground.setColor(ContextCompat.getColor(context, vm.getContextColor()));
                 questHolder.progressContainer.addView(progressView);
             }
 
             for (int i = 1; i <= vm.getRemainingCount(); i++) {
-                View progressViewEmpty = inflater.inflate(R.layout.habit_progress_context_indicator_empty, questHolder.progressContainer, false);
+                View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
                 GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
                 progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));

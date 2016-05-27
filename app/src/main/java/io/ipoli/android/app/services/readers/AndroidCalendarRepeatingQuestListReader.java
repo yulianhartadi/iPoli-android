@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.SourceMapping;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -28,45 +28,45 @@ import rx.schedulers.Schedulers;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/11/16.
  */
-public class AndroidCalendarHabitListReader implements ListReader<Habit> {
+public class AndroidCalendarRepeatingQuestListReader implements ListReader<RepeatingQuest> {
 
-    private final Set<String> habitIds;
+    private final Set<String> repeatingQuestIds;
     private final Context context;
     private final CalendarProvider calendarProvider;
 
-    public AndroidCalendarHabitListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage) {
+    public AndroidCalendarRepeatingQuestListReader(Context context, CalendarProvider calendarProvider, LocalStorage localStorage) {
         this.context = context;
         this.calendarProvider = calendarProvider;
-        this.habitIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_HABITS_TO_UPDATE);
+        this.repeatingQuestIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE);
     }
 
     @Override
-    public Observable<Habit> read() {
+    public Observable<RepeatingQuest> read() {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
             return Observable.empty();
         }
 
-        return Observable.just(habitIds).concatMapIterable(habitIds -> habitIds).concatMap(habitId -> {
-            Event e = calendarProvider.getEvent(Integer.valueOf(habitId));
-            Habit habit = new Habit("");
-            habit.setId(null);
-            habit.setName(e.title);
-            habit.setSource(Constants.SOURCE_ANDROID_CALENDAR);
-            habit.setAllDay(e.allDay);
+        return Observable.just(repeatingQuestIds).concatMapIterable(repeatingQuestIds -> repeatingQuestIds).concatMap(repeatingQuestId -> {
+            Event e = calendarProvider.getEvent(Integer.valueOf(repeatingQuestId));
+            RepeatingQuest repeatingQuest = new RepeatingQuest("");
+            repeatingQuest.setId(null);
+            repeatingQuest.setName(e.title);
+            repeatingQuest.setSource(Constants.SOURCE_ANDROID_CALENDAR);
+            repeatingQuest.setAllDay(e.allDay);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-            habit.setStartMinute(startDateTime.getMinuteOfDay());
+            repeatingQuest.setStartMinute(startDateTime.getMinuteOfDay());
             Dur dur = new Dur(e.duration);
-            habit.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
+            repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
             Recurrence recurrence = new Recurrence();
             recurrence.setRrule(e.rRule);
             recurrence.setRdate(e.rDate);
             recurrence.setDtstart(new Date(e.dTStart));
             recurrence.setDtend(new Date(e.dTend));
-            habit.setRecurrence(recurrence);
-            habit.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
-            return Observable.just(habit);
+            repeatingQuest.setRecurrence(recurrence);
+            repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
+            return Observable.just(repeatingQuest);
         }).compose(applyAPISchedulers());
     }
 

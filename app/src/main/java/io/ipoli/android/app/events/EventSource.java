@@ -11,7 +11,7 @@ public enum EventSource {
     OVERVIEW,
     ADD_QUEST,
     INBOX,
-    HABITS,
+    REPEATING_QUESTS,
     QUEST,
     EDIT_QUEST,
     NOTIFICATION,

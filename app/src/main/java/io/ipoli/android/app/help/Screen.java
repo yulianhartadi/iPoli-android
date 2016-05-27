@@ -5,5 +5,5 @@ package io.ipoli.android.app.help;
  * on 5/26/16.
  */
 public enum Screen {
-    CALENDAR, OVERVIEW, ADD, INBOX, HABITS
+    CALENDAR, OVERVIEW, ADD, INBOX, REPEATING_QUESTS
 }

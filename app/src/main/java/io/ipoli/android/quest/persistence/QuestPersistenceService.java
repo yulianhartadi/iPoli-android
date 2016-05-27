@@ -5,7 +5,7 @@ import org.joda.time.LocalDate;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import rx.Observable;
 
@@ -28,9 +28,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<String> deleteBySourceMappingId(String source, String sourceId);
 
-    Observable<Void> deleteAllFromHabit(String habitId);
+    Observable<Void> deleteAllFromRepeatingQuest(String repeatingQuestId);
 
-    long countCompletedQuests(Habit habit, LocalDate fromDate, LocalDate toDate);
+    long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
     Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate);
 

@@ -8,8 +8,8 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmHabitPersistenceService;
-import io.ipoli.android.quest.persistence.HabitPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,8 +24,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public HabitPersistenceService provideHabitPersistenceService(Bus eventBus) {
-        return new RealmHabitPersistenceService(eventBus);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus) {
+        return new RealmRepeatingQuestPersistenceService(eventBus);
     }
 
     @Provides

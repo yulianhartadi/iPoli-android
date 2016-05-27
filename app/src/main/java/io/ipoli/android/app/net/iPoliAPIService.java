@@ -3,7 +3,7 @@ package io.ipoli.android.app.net;
 import java.util.List;
 
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
@@ -36,17 +36,17 @@ public interface iPoliAPIService {
     Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
 
     @POST("snippets")
-    Observable<Habit> createHabitFromText(@Body RequestBody data);
+    Observable<RepeatingQuest> createRepeatingQuestFromText(@Body RequestBody data);
 
-    @POST("habits")
-    Observable<Habit> createHabit(@Body RequestBody data);
+    @POST("repeating-quests")
+    Observable<RepeatingQuest> createRepeatingQuest(@Body RequestBody data);
 
-    @POST("habits/{habit_id}")
-    Observable<Habit> updateHabit(@Body RequestBody data, @Path("habit_id") String habitId);
+    @POST("repeating-quests/{repeating_quest_id}")
+    Observable<RepeatingQuest> updateRepeatingQuest(@Body RequestBody data, @Path("repeating_quest_id") String repeatingQuestId);
 
-    @GET("habits")
-    Observable<List<Habit>> getHabits(@Query("player_id") String playerId);
+    @GET("repeating-quests")
+    Observable<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
 
-    @DELETE("habits/{habit_id}")
-    Observable<Void> deleteHabit(@Path("habit_id") String habitId, @Query("player_id") String playerId);
+    @DELETE("repeating-quests/{repeating_quest}")
+    Observable<Void> deleteRepeatingQuest(@Path("repeating_quest_id") String repeatingQuestId, @Query("player_id") String playerId);
 }

@@ -18,7 +18,7 @@ import java.util.Locale;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.data.Habit;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -26,24 +26,24 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/9/16.
  */
-public class HabitViewModel {
+public class RepeatingQuestViewModel {
 
-    private final Habit habit;
+    private final RepeatingQuest repeatingQuest;
     private final int completedCount;
     private final Recur recur;
     private final java.util.Date nextDate;
     private final int timesPerDay;
 
-    public HabitViewModel(Habit habit, int completedCount, Recur recur, java.util.Date nextDate) {
-        this.habit = habit;
+    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, int completedCount, Recur recur, java.util.Date nextDate) {
+        this.repeatingQuest = repeatingQuest;
         this.completedCount = completedCount;
         this.recur = recur;
         this.nextDate = nextDate;
         int timesPerDay = 1;
         try {
-            Recurrence recurrence = habit.getRecurrence();
+            Recurrence recurrence = repeatingQuest.getRecurrence();
             if (!TextUtils.isEmpty(recurrence.getDailyRrule())) {
-                timesPerDay = new Recur(habit.getRecurrence().getDailyRrule()).getCount();
+                timesPerDay = new Recur(repeatingQuest.getRecurrence().getDailyRrule()).getCount();
             }
         } catch (ParseException e) {
             timesPerDay = 1;
@@ -54,7 +54,7 @@ public class HabitViewModel {
     }
 
     public String getName() {
-        return habit.getName();
+        return repeatingQuest.getName();
     }
 
     @ColorRes
@@ -76,7 +76,7 @@ public class HabitViewModel {
     }
 
     private QuestContext getQuestContext() {
-        return Habit.getContext(habit);
+        return RepeatingQuest.getContext(repeatingQuest);
     }
 
     public String getNextText() {
@@ -95,8 +95,8 @@ public class HabitViewModel {
 
         nextText += " ";
 
-        int duration = habit.getDuration();
-        Time startTime = Habit.getStartTime(habit);
+        int duration = repeatingQuest.getDuration();
+        Time startTime = RepeatingQuest.getStartTime(repeatingQuest);
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
             nextText += startTime + " - " + endTime;
@@ -119,7 +119,7 @@ public class HabitViewModel {
         java.util.Date from = LocalDate.now().dayOfWeek().withMinimumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
         java.util.Date to = LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
 
-        return recur.getDates(new DateTime(habit.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesPerDay;
+        return recur.getDates(new DateTime(repeatingQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesPerDay;
     }
 
     public String getRepeatText() {
@@ -141,7 +141,7 @@ public class HabitViewModel {
 
     }
 
-    public Habit getHabit() {
-        return habit;
+    public RepeatingQuest getRepeatingQuest() {
+        return repeatingQuest;
     }
 }

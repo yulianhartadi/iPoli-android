@@ -7,7 +7,7 @@
     android:layout_marginStart="58dp">
 
     <ImageView
-        android:id="@+id/habit_indicator"
+        android:id="@+id/repeating_quest_indicator"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginEnd="2dp"
