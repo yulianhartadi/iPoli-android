@@ -25,16 +25,17 @@ import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
+import rx.Observable;
 
 public class TutorialActivity extends AppIntro2 {
     private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
@@ -92,16 +93,13 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
-        if (!selectedQuests.isEmpty()) {
-            questPersistenceService.saveRemoteObjects(selectedQuests).subscribe();
-        }
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
-        if (!selectedRepeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests).subscribe();
-        }
-        eventBus.post(new ForceSyncRequestEvent());
-        eventBus.post(new TutorialDoneEvent());
-        finish();
+        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests)).subscribe(ignored -> {
+        }, error -> finish(), () -> {
+            eventBus.post(new ForceSyncRequestEvent());
+            eventBus.post(new TutorialDoneEvent());
+            finish();
+        });
     }
 
     @Override
@@ -110,7 +108,7 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void onSlideChanged() {
-        if(previousSlide == SYNC_CALENDAR_SLIDE_INDEX && syncAndroidCalendarFragment.isSyncCalendarChecked()) {
+        if (previousSlide == SYNC_CALENDAR_SLIDE_INDEX && syncAndroidCalendarFragment.isSyncCalendarChecked()) {
             checkCalendarForPermission();
         }
         previousSlide = pager.getCurrentItem();
@@ -154,7 +152,7 @@ public class TutorialActivity extends AppIntro2 {
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.TUTORIAL));
                 eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
-            } else if(grantResults.length > 0
+            } else if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));
             }

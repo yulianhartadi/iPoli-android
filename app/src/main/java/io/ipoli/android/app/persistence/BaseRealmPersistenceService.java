@@ -65,6 +65,9 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     public Observable<List<T>> saveRemoteObjects(List<T> objects) {
+        if (objects.isEmpty()) {
+            return Observable.defer(() -> Observable.just(objects));
+        }
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm ->
