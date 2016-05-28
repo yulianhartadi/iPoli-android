@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,12 +27,14 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 
 /**
@@ -93,7 +96,7 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.calendar, menu);
+        inflater.inflate(R.menu.calendar_menu, menu);
     }
 
     @Override
@@ -118,6 +121,11 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @OnClick(R.id.add_quest)
+    public void onAddQuest(View view) {
+        startActivity(new Intent(getActivity(), AddQuestActivity.class));
     }
 
     private void changeTitle(LocalDate date) {

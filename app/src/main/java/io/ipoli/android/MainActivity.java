@@ -2,7 +2,7 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -20,8 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -39,8 +37,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
-import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.help.Screen;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
@@ -50,31 +46,26 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.events.ColorLayoutEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.fragments.AddQuestFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
-import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.reward.fragments.RewardListFragment;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    public static final int CALENDAR_TAB_INDEX = 0;
-    public static final int ADD_QUEST_TAB_INDEX = 1;
-    public static final int OVERVIEW_TAB_INDEX = 2;
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
-
-    private BottomBar bottomBar;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -137,7 +128,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             startTutorial();
         }
 
-        initBottomBar(savedInstanceState);
         toolbarCalendar.setCurrentDate(new Date());
 
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
@@ -151,70 +141,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-    }
 
-    private void initBottomBar(Bundle savedInstanceState) {
-        bottomBar = BottomBar.attach(rootContainer, savedInstanceState);
-        bottomBar.noTopOffset();
-        bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorAccent));
-        bottomBar.setItemsFromMenu(R.menu.bottom_bar_menu, new OnMenuTabClickListener() {
-            @Override
-            public void onMenuTabSelected(@IdRes int menuItemId) {
-                toolbarExpandContainer.setOnClickListener(null);
-                appBar.setExpanded(false, false);
-                appBar.setTag(false);
-                calendarIndicator.setVisibility(View.GONE);
-                String screenName = "";
-                resetLayoutColors();
+        appBar.setExpanded(false, false);
+        appBar.setTag(false);
 
-                switch (menuItemId) {
-                    case R.id.calendar:
-                        calendarIndicator.setVisibility(View.VISIBLE);
-                        toolbarExpandContainer.setOnClickListener(MainActivity.this);
-                        screenName = "calendar";
-                        CalendarFragment calendarFragment = new CalendarFragment();
-                        toolbarCalendar.setListener(calendarFragment);
-                        currentFragment = calendarFragment;
-                        toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-                        break;
-                    case R.id.overview:
-                        screenName = "overview";
-                        currentFragment = new OverviewFragment();
-                        toolbarTitle.setText(R.string.overview_title);
-                        break;
-                    case R.id.add_quest:
-                        screenName = "add_quest";
-                        currentFragment = new AddQuestFragment();
-                        toolbarTitle.setText(R.string.title_activity_add_quest);
-                        break;
-
-                }
-
-                if (currentFragment == null) {
-                    return;
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.content_container, currentFragment).commit();
-                getSupportFragmentManager().executePendingTransactions();
-
-                eventBus.post(new ScreenShownEvent(screenName));
-            }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-
-            }
-        });
-    }
-
-    private void resetLayoutColors() {
-        colorLayout(QuestContext.LEARNING);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        bottomBar.onSaveInstanceState(outState);
+        calendarIndicator.setVisibility(View.VISIBLE);
+        toolbarExpandContainer.setOnClickListener(this);
+        CalendarFragment calendarFragment = new CalendarFragment();
+        toolbarCalendar.setListener(calendarFragment);
+        changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
     }
 
     @Override
@@ -225,12 +160,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
+                // replace to calendar fragment if current is not calendar fragment
                 eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
             });
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
-            bottomBar.selectTabAtPosition(ADD_QUEST_TAB_INDEX, false);
+            // start add activity
         }
     }
 
@@ -252,16 +187,40 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_help) {
-            HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
+        switch (item.getItemId()) {
+            case R.id.action_help:
+//            HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
+                return true;
+
+            case R.id.action_overview:
+                toolbarExpandContainer.setOnClickListener(null);
+                appBar.setExpanded(false, false);
+                appBar.setTag(false);
+                calendarIndicator.setVisibility(View.GONE);
+                changeCurrentFragment(new OverviewFragment(), R.string.overview_title);
+                return true;
+
+            case R.id.action_calendar:
+                calendarIndicator.setVisibility(View.VISIBLE);
+                toolbarExpandContainer.setOnClickListener(MainActivity.this);
+                CalendarFragment calendarFragment = new CalendarFragment();
+                toolbarCalendar.setListener(calendarFragment);
+                changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Subscribe
-    public void onColorLayout(ColorLayoutEvent e) {
-        QuestContext context = e.questContext;
-        colorLayout(context);
+    private void changeCurrentFragment(Fragment fragment, @StringRes int title) {
+        changeCurrentFragment(fragment, getString(title));
+    }
+
+    private void changeCurrentFragment(Fragment fragment, String title) {
+        toolbarTitle.setText(title);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_container, fragment).commit();
+        currentFragment = fragment;
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     private void colorLayout(QuestContext context) {
@@ -279,29 +238,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
-        bottomBar.post(() -> {
-            Snackbar snackbar = Snackbar
-                    .make(rootContainer,
-                            R.string.quest_complete,
-                            Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar
+                .make(rootContainer,
+                        R.string.quest_complete,
+                        Snackbar.LENGTH_SHORT);
 
-            snackbar.setAction(R.string.share, view -> {
-                eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
-            });
-
-            snackbar.setCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    super.onDismissed(snackbar, event);
-                    if (shouldShowRateDialog()) {
-                        isRateDialogShown = true;
-                        new RateDialog().show(getSupportFragmentManager());
-                    }
-                }
-            });
-
-            snackbar.show();
+        snackbar.setAction(R.string.share, view -> {
+            eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
         });
+
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                super.onDismissed(snackbar, event);
+                if (shouldShowRateDialog()) {
+                    isRateDialogShown = true;
+                    new RateDialog().show(getSupportFragmentManager());
+                }
+            }
+        });
+
+        snackbar.show();
     }
 
     private boolean shouldShowRateDialog() {
@@ -386,7 +343,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        item.setChecked(!item.isChecked());
+        navigationView.setCheckedItem(item.getItemId());
         drawerLayout.closeDrawers();
 
         toolbarExpandContainer.setOnClickListener(null);
@@ -394,8 +351,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         appBar.setTag(false);
         calendarIndicator.setVisibility(View.GONE);
         String screenName = "";
-        resetLayoutColors();
-        bottomBar.hide();
         switch (item.getItemId()) {
 
             case R.id.home:
@@ -404,22 +359,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 screenName = "calendar";
                 CalendarFragment calendarFragment = new CalendarFragment();
                 toolbarCalendar.setListener(calendarFragment);
-                currentFragment = calendarFragment;
-                toolbarTitle.setText(new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-                bottomBar.selectTabAtPosition(CALENDAR_TAB_INDEX, false);
-                bottomBar.show();
+                changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                 break;
 
             case R.id.inbox:
                 screenName = "inbox";
-                currentFragment = new InboxFragment();
-                toolbarTitle.setText(R.string.title_activity_inbox);
+                changeCurrentFragment(new InboxFragment(), R.string.title_activity_inbox);
 
                 break;
             case R.id.repeating_quests:
                 screenName = "repeating_quests";
-                currentFragment = new RepeatingQuestsFragment();
-                toolbarTitle.setText(R.string.title_fragment_repeating_quests);
+                changeCurrentFragment(new RepeatingQuestListFragment(), R.string.title_fragment_repeating_quests);
+                break;
+
+            case R.id.challenges:
+                screenName = "challenges";
+                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
+                break;
+
+            case R.id.rewards:
+                screenName = "rewards";
+                changeCurrentFragment(new RewardListFragment(), R.string.title_fragment_rewards);
                 break;
 
             case R.id.feedback:
@@ -427,10 +387,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
                 break;
         }
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_container, currentFragment).commit();
-        getSupportFragmentManager().executePendingTransactions();
 
         eventBus.post(new ScreenShownEvent(screenName));
 

@@ -57,7 +57,8 @@
                             android:ellipsize="end"
                             android:singleLine="true"
                             android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                            android:textColor="@android:color/white" />
+                            android:textColor="@android:color/white"
+                            android:textSize="18sp" />
 
                         <ImageView
                             android:id="@+id/toolbar_calendar_indicator"
@@ -105,7 +106,6 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <include layout="@layout/loading_indicator" />
-
 
     </android.support.design.widget.CoordinatorLayout>
 

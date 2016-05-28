@@ -12,6 +12,8 @@ import android.view.WindowManager;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.RxLifecycle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +38,11 @@ import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
     private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
+
 
     @Inject
     Bus eventBus;
@@ -52,6 +56,8 @@ public class TutorialActivity extends AppIntro2 {
     private PickRepeatingQuestsFragment pickRepeatingQuestsFragment;
     private PickQuestsFragment pickQuestsFragment;
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
+
+    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
     private int previousSlide = -1;
 
@@ -88,18 +94,26 @@ public class TutorialActivity extends AppIntro2 {
         }
 
         setAnimationColors(c);
+        lifecycleSubject.onNext(ActivityEvent.CREATE);
     }
 
     @Override
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
-        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests)).subscribe(ignored -> {
+        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests))
+                .compose(RxLifecycle.bindActivity(lifecycleSubject)).subscribe(ignored -> {
         }, error -> finish(), () -> {
             eventBus.post(new ForceSyncRequestEvent());
             eventBus.post(new TutorialDoneEvent());
             finish();
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        lifecycleSubject.onNext(ActivityEvent.START);
     }
 
     @Override
@@ -124,12 +138,27 @@ public class TutorialActivity extends AppIntro2 {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
+        lifecycleSubject.onNext(ActivityEvent.RESUME);
+
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
+        lifecycleSubject.onNext(ActivityEvent.PAUSE);
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        lifecycleSubject.onNext(ActivityEvent.STOP);
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        lifecycleSubject.onNext(ActivityEvent.DESTROY);
+        super.onDestroy();
     }
 
     private void checkCalendarForPermission() {

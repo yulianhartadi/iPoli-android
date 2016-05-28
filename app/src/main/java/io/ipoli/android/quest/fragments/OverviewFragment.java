@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.fragments;
 
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -9,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -33,15 +36,17 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
@@ -82,7 +87,14 @@ public class OverviewFragment extends RxFragment {
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
 
+        setHasOptionsMenu(true);
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.overview_menu, menu);
     }
 
     @Override
@@ -119,6 +131,11 @@ public class OverviewFragment extends RxFragment {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
             updateQuests();
         });
+    }
+
+    @OnClick(R.id.add_quest)
+    public void onAddQuest(View view) {
+        startActivity(new Intent(getActivity(), AddQuestActivity.class));
     }
 
     @Subscribe

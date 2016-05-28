@@ -1,27 +1,20 @@
-package io.ipoli.android.quest.fragments;
+package io.ipoli.android.quest.activities;
 
-
-import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,9 +36,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
-import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -54,13 +47,12 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.ColorLayoutEvent;
-import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -70,7 +62,12 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 
-public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggestionsUpdatedListener {
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 5/27/16.
+ */
+public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+
     @Inject
     Bus eventBus;
 
@@ -83,6 +80,9 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     @BindView(R.id.quest_context_container)
     LinearLayout contextContainer;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
@@ -91,29 +91,23 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
-    private Unbinder unbinder;
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
     TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
-    public AddQuestFragment() {
-    }
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-    }
+        setContentView(R.layout.activity_add_quest);
+        ButterKnife.bind(this);
+        App.getAppComponent(this).inject(this);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_add_quest, container, false);
-
-        unbinder = ButterKnife.bind(this, view);
-        App.getAppComponent(getContext()).inject(this);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
@@ -124,7 +118,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         questText.requestFocus();
 
         initUI();
-        initContextUI(view);
+        initContextUI();
 
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
@@ -140,22 +134,12 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
-
-        return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        mgr.showSoftInput(questText, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override
@@ -165,52 +149,48 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     private void initUI() {
-        adapter = new SuggestionsAdapter(getContext(), eventBus, suggestionsManager.getSuggestions());
+        adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
         questText.setThreshold(1);
     }
 
-    private void initContextUI(View view) {
-        changeContext(QuestContext.PERSONAL, view);
+    private void initContextUI() {
+        changeContext(QuestContext.PERSONAL);
 
         final QuestContext[] ctxs = QuestContext.values();
         for (int i = 0; i < contextContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) contextContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(getContext(), ctxs[i].resLightColor));
+            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
 
             final QuestContext ctx = ctxs[i];
             iv.setOnClickListener(v -> {
-                removeSelectedContextCheck(view);
-                changeContext(ctx, view);
+                removeSelectedContextCheck();
+                changeContext(ctx);
                 eventBus.post(new NewQuestContextChangedEvent(ctx));
             });
         }
     }
 
-    private void changeContext(QuestContext ctx, View view) {
-        setBackgroundColors(ctx);
+    private void changeContext(QuestContext ctx) {
+        colorLayout(ctx);
         questContext = ctx;
-        setSelectedContext(view);
+        setSelectedContext();
     }
 
-    private void setSelectedContext(View view) {
-        getCurrentContextImageView(view).setImageResource(questContext.whiteImage);
+    private void setSelectedContext() {
+        getCurrentContextImageView().setImageResource(questContext.whiteImage);
         setContextName();
     }
 
-    private void removeSelectedContextCheck(View view) {
-        getCurrentContextImageView(view).setImageDrawable(null);
+    private void removeSelectedContextCheck() {
+        getCurrentContextImageView().setImageDrawable(null);
     }
 
-    private ImageView getCurrentContextImageView(View view) {
+    private ImageView getCurrentContextImageView() {
         String ctxId = "quest_context_" + questContext.name().toLowerCase();
-        int ctxResId = getResources().getIdentifier(ctxId, "id", getActivity().getPackageName());
-        return (ImageView) view.findViewById(ctxResId);
-    }
-
-    private void setBackgroundColors(QuestContext ctx) {
-        eventBus.post(new ColorLayoutEvent(ctx));
+        int ctxResId = getResources().getIdentifier(ctxId, "id", getPackageName());
+        return (ImageView) findViewById(ctxResId);
     }
 
     private void setContextName() {
@@ -219,18 +199,9 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        if (menu != null) {
-            menu.removeItem(R.id.action_contact_us);
-            menu.removeItem(R.id.action_show_tutorial);
-        }
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add_quest_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.add_quest_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -252,21 +223,21 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
             RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
             if (repeatingQuest == null) {
                 resetQuestText();
-                Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
             repeatingQuest.setContext(questContext.name());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
-            if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
-                Toast.makeText(getContext(), R.string.no_internet_repeating_quest_added, Toast.LENGTH_LONG).show();
+            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+                Toast.makeText(this, R.string.no_internet_repeating_quest_added, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getContext(), R.string.repeating_quest_added, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_LONG).show();
             }
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
                 resetQuestText();
-                Toast.makeText(getContext(), "Please, add quest name", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
             if (isQuestForThePast(q)) {
@@ -290,7 +261,7 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        Toast.makeText(getContext(), R.string.quest_added, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
     }
 
     private boolean hasStartTime(Quest q) {
@@ -384,8 +355,8 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
     }
 
     private void markText(Editable text, int startIdx, int endIdx, int colorRes) {
-        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(getContext(), colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Subscribe
@@ -416,5 +387,11 @@ public class AddQuestFragment extends Fragment implements TextWatcher, OnSuggest
         if (adapter != null) {
             adapter.setSuggestions(suggestionsManager.getSuggestions());
         }
+    }
+
+    private void colorLayout(QuestContext context) {
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
     }
 }
