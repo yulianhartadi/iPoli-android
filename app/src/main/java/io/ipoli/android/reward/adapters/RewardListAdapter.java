@@ -15,11 +15,11 @@ import io.ipoli.android.reward.data.Reward;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RewardListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final List<Reward> rewards;
 
-    public RewardsAdapter(List<Reward> rewards) {
+    public RewardListAdapter(List<Reward> rewards) {
         this.rewards = rewards;
     }
 

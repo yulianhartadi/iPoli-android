@@ -23,7 +23,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.reward.activities.AddRewardActivity;
-import io.ipoli.android.reward.adapters.RewardsAdapter;
+import io.ipoli.android.reward.adapters.RewardListAdapter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -50,7 +50,7 @@ public class RewardListFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
 
-        RewardsAdapter adapter = new RewardsAdapter(new ArrayList<>());
+        RewardListAdapter adapter = new RewardListAdapter(new ArrayList<>());
         rewardList.setAdapter(adapter);
 
         return view;
