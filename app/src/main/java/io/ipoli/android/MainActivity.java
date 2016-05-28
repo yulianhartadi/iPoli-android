@@ -360,7 +360,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 CalendarFragment calendarFragment = new CalendarFragment();
                 toolbarCalendar.setListener(calendarFragment);
                 changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-                // go to calendar
                 break;
 
             case R.id.inbox:
