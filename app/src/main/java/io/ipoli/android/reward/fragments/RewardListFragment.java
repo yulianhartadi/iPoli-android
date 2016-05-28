@@ -1,5 +1,6 @@
 package io.ipoli.android.reward.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,9 +18,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.reward.activities.AddRewardActivity;
 import io.ipoli.android.reward.adapters.RewardsAdapter;
 
 /**
@@ -69,5 +72,10 @@ public class RewardListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @OnClick(R.id.add_reward)
+    public void onAddReward(View view) {
+        startActivity(new Intent(getActivity(), AddRewardActivity.class));
     }
 }

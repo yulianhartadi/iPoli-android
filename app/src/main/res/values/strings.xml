@@ -204,4 +204,6 @@
     <string name="rewards">Rewards</string>
     <string name="title_fragment_challenges">Challenges</string>
     <string name="title_fragment_rewards">Rewards</string>
+    <string name="price_hint">Cost</string>
+    <string name="title_activity_add_reward">Add Reward</string>
 </resources>

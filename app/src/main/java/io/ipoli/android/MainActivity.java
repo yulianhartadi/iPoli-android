@@ -58,7 +58,7 @@ import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
-import io.ipoli.android.quest.fragments.RepeatingQuestsFragment;
+import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 
@@ -370,7 +370,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.repeating_quests:
                 screenName = "repeating_quests";
-                changeCurrentFragment(new RepeatingQuestsFragment(), R.string.title_fragment_repeating_quests);
+                changeCurrentFragment(new RepeatingQuestListFragment(), R.string.title_fragment_repeating_quests);
                 break;
 
             case R.id.challenges:

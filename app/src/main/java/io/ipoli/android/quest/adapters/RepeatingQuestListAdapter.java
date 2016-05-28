@@ -30,13 +30,13 @@ import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class RepeatingQuestsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
+public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
     private final Context context;
 
     private List<RepeatingQuestViewModel> viewModels;
     private Bus eventBus;
 
-    public RepeatingQuestsAdapter(Context context, List<RepeatingQuestViewModel> viewModels, Bus eventBus) {
+    public RepeatingQuestListAdapter(Context context, List<RepeatingQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;

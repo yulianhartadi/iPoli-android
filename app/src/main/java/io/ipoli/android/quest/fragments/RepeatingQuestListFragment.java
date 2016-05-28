@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.fragments;
 
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,23 +34,25 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.adapters.RepeatingQuestsAdapter;
-import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 import rx.Observable;
 
-public class RepeatingQuestsFragment extends RxFragment {
+public class RepeatingQuestListFragment extends RxFragment {
 
     @Inject
     Bus eventBus;
@@ -65,14 +68,13 @@ public class RepeatingQuestsFragment extends RxFragment {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private RepeatingQuestsAdapter repeatingQuestsAdapter;
+    private RepeatingQuestListAdapter repeatingQuestListAdapter;
     private Unbinder unbinder;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_repeating_quests, container, false);
+        View view = inflater.inflate(R.layout.fragment_repeating_quest_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
@@ -82,11 +84,11 @@ public class RepeatingQuestsFragment extends RxFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        repeatingQuestsAdapter = new RepeatingQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
-        questList.setAdapter(repeatingQuestsAdapter);
+        repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
+        questList.setAdapter(repeatingQuestListAdapter);
 
         int swipeFlags = ItemTouchHelper.START;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestsAdapter, 0, swipeFlags);
+        ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestListAdapter, 0, swipeFlags);
         touchCallback.setLongPressDragEnabled(false);
         touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
@@ -123,7 +125,7 @@ public class RepeatingQuestsFragment extends RxFragment {
                     viewModels.add(vm);
                 }
             }
-            repeatingQuestsAdapter.updateQuests(viewModels);
+            repeatingQuestListAdapter.updateQuests(viewModels);
         });
     }
 
@@ -186,7 +188,7 @@ public class RepeatingQuestsFragment extends RxFragment {
         snackbar.setAction(R.string.undo, view -> {
             RepeatingQuestViewModel vm = createViewModel(repeatingQuest);
             if (vm != null) {
-                repeatingQuestsAdapter.addQuest(e.position, vm);
+                repeatingQuestListAdapter.addQuest(e.position, vm);
             }
             snackbar.setCallback(null);
             eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest));
@@ -198,5 +200,10 @@ public class RepeatingQuestsFragment extends RxFragment {
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
         updateQuests();
+    }
+
+    @OnClick(R.id.add_repeating_quest)
+    public void onAddRepeatingQuest(View view) {
+        startActivity(new Intent(getActivity(), AddQuestActivity.class));
     }
 }
