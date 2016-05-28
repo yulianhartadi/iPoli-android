@@ -125,9 +125,8 @@
     <string name="tutorial_repeating_quests_title">Stick to Your Important Habits</string>
     <string name="tutorial_repeating_quests_desc">Track your weekly progress. Swipe a repeating quest to the left to delete it.</string>
     <string name="quest_undone">Quest undone</string>
-    <string name="bottom_bar_calendar_title">Calendar</string>
-    <string name="bottom_bar_overview_title">Overview</string>
-    <string name="bottom_bar_new_title">New</string>
+    <string name="fragment_calendar_title">Calendar</string>
+    <string name="fragment_overview_title">Overview</string>
     <string name="title_pick_initial_repeating_quests">Pick a few Repeating Quests to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>

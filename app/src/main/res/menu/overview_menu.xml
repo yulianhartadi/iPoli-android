@@ -5,6 +5,6 @@
     <item
         android:id="@+id/action_calendar"
         android:icon="@drawable/ic_event_white_24dp"
-        android:title="@string/bottom_bar_calendar_title"
+        android:title="@string/fragment_calendar_title"
         app:showAsAction="always" />
 </menu>

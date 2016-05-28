@@ -11,6 +11,6 @@
     <item
         android:id="@+id/action_overview"
         android:icon="@drawable/ic_format_list_bulleted_white_24dp"
-        android:title="@string/bottom_bar_overview_title"
+        android:title="@string/fragment_overview_title"
         app:showAsAction="always" />
 </menu>

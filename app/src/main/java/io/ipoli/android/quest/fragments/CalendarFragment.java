@@ -96,7 +96,7 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.calendar, menu);
+        inflater.inflate(R.menu.calendar_menu, menu);
     }
 
     @Override

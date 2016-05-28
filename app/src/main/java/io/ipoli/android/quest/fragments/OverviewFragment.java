@@ -94,7 +94,7 @@ public class OverviewFragment extends RxFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.overview, menu);
+        inflater.inflate(R.menu.overview_menu, menu);
     }
 
     @Override
