@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        item.setChecked(!item.isChecked());
+        navigationView.setCheckedItem(item.getItemId());
         drawerLayout.closeDrawers();
 
         toolbarExpandContainer.setOnClickListener(null);
