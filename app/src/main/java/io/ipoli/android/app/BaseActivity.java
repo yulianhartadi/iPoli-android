@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
 import com.squareup.otto.Bus;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
 
@@ -34,7 +34,7 @@ import io.ipoli.android.tutorial.events.ShowTutorialEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends RxAppCompatActivity {
 
     @Inject
     protected Bus eventBus;

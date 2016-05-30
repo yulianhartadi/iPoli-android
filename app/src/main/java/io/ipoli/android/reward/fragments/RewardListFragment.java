@@ -21,15 +21,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
-import io.ipoli.android.reward.activities.AddRewardActivity;
+import io.ipoli.android.reward.activities.RewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
+import io.ipoli.android.reward.events.EditRewardRequestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -68,12 +70,6 @@ public class RewardListFragment extends RxFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
 
-        rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
-            rewardListAdapter = new RewardListAdapter(rewards, eventBus);
-            rewardList.setAdapter(rewardListAdapter);
-            rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-        });
-
         return view;
     }
 
@@ -81,6 +77,11 @@ public class RewardListFragment extends RxFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
+            rewardListAdapter = new RewardListAdapter(rewards, eventBus);
+            rewardList.setAdapter(rewardListAdapter);
+            rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
+        });
     }
 
     @Override
@@ -97,7 +98,7 @@ public class RewardListFragment extends RxFragment {
 
     @OnClick(R.id.add_reward)
     public void onAddReward(View view) {
-        startActivity(new Intent(getActivity(), AddRewardActivity.class));
+        startActivity(new Intent(getActivity(), RewardActivity.class));
     }
 
     @Subscribe
@@ -107,20 +108,9 @@ public class RewardListFragment extends RxFragment {
     }
 
     @Subscribe
-    public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
-        currentDeleteRewardEvent = e;
-        final Snackbar snackbar = Snackbar
-                .make(rootContainer,
-                        "Reward removed",
-                        Snackbar.LENGTH_SHORT)
-                .setAction(R.string.undo, view -> {
-                    rewardListAdapter.addReward(e.position, e.reward);
-                    rewardPersistenceService.saveRemoteObject(currentDeleteRewardEvent.reward).compose(bindToLifecycle()).subscribe();
-                });
-
-        rewardPersistenceService.delete(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
-            snackbar.show();
-        });
+    public void onEditRewardRequest(EditRewardRequestEvent e) {
+        Intent i = new Intent(getContext(), RewardActivity.class);
+        i.putExtra(Constants.REWARD_ID_EXTRA_KEY, e.reward.getId());
+        startActivity(i);
     }
-
 }

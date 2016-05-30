@@ -32,7 +32,7 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
-import io.ipoli.android.reward.activities.AddRewardActivity;
+import io.ipoli.android.reward.activities.RewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -117,6 +117,6 @@ public interface AppComponent {
 
     void inject(RewardListFragment rewardListFragment);
 
-    void inject(AddRewardActivity addRewardActivity);
+    void inject(RewardActivity rewardActivity);
 }
 

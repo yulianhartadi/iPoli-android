@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
+import io.ipoli.android.reward.events.EditRewardRequestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -39,6 +40,7 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Reward reward = rewards.get(holder.getAdapterPosition());
+        holder.itemView.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
 
         holder.name.setText(reward.getName());
         holder.buy.setText(String.valueOf(reward.getPrice()));
