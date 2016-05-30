@@ -53,5 +53,7 @@ public interface Constants {
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
-    int DEFAULT_PLAYER_LEVEL = 1;
+    int DEFAULT_PLAYER_XP = 0;
+    int DEFAULT_PLAYER_LEVEL = 0;
+    long DEFAULT_PLAYER_COINS = 10;
 }

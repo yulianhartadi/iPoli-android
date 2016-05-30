@@ -43,18 +43,21 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
-import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.realm.Realm;
@@ -84,6 +87,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -123,7 +129,12 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
+        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) == 0) {
+            Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+            player.setExperienceForNextLevel(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1).toString());
+            player.setCoins(Constants.DEFAULT_PLAYER_COINS);
+            playerPersistenceService.saveRemoteObject(player).subscribe();
+        } else {
             eventBus.post(new ForceSyncRequestEvent());
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);

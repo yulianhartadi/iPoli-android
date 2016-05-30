@@ -14,7 +14,7 @@ public class ExperienceForLevelGenerator {
         return phi.pow(num).subtract(BigDecimal.ONE.subtract(phi).pow(num)).divide(new BigDecimal(Math.sqrt(5)), BigDecimal.ROUND_HALF_UP);
     }
 
-    public BigInteger forLevel(int level) {
+    public static BigInteger forLevel(int level) {
         if (level < 1) {
             return BigInteger.ZERO;
         }
