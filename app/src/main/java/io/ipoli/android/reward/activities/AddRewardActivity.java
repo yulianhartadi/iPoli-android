@@ -42,7 +42,6 @@ public class AddRewardActivity extends BaseActivity {
         List<String> prices = new ArrayList<>();
         int priceCount = 1000 / 25;
         for (int i = 0; i < priceCount; i++) {
-            i += 25;
             prices.add(i + "");
         }
 
