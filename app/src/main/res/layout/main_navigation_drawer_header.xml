@@ -29,7 +29,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Level 3: Novice"
         android:textColor="@color/md_white"
         android:textSize="14sp"
         android:textStyle="bold" />
@@ -44,11 +43,11 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_life_coin_white_24dp"
         android:gravity="center_vertical"
-        android:text="375"
         android:textColor="@color/md_white"
         android:textSize="14sp" />
 
     <ProgressBar
+        android:id="@+id/player_experience"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="4dp"

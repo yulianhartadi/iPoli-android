@@ -47,6 +47,7 @@ import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -109,6 +110,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     Fragment currentFragment;
 
     private boolean isRateDialogShown;
@@ -138,7 +142,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+                    if (player == null || navigationView.getHeaderCount() < 1) {
+                        return;
+                    }
+                    View header = navigationView.getHeaderView(0);
+                    TextView level = (TextView) header.findViewById(R.id.player_level);
+                    level.setText("Level " + player.getLevel());
+
+                    TextView coins = (TextView) header.findViewById(R.id.player_coins);
+                    coins.setText(player.getCoins() + "");
+
+                    ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+                    experienceBar.setProgress(70);
+                    experienceBar.setMax(100);
+                });
+            }
+        };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
@@ -150,6 +174,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         CalendarFragment calendarFragment = new CalendarFragment();
         toolbarCalendar.setListener(calendarFragment);
         changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+
     }
 
     @Override

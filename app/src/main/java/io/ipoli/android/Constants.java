@@ -53,4 +53,5 @@ public interface Constants {
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
+    int DEFAULT_PLAYER_LEVEL = 1;
 }
