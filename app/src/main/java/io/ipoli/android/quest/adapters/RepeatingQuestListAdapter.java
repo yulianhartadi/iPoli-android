@@ -168,20 +168,20 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         @Override
         public void onItemSwipeStart(int direction) {
             if (direction == ItemTouchHelper.START) {
-                showScheduleForToday();
+                showDelete();
             }
         }
 
-        private void showScheduleForToday() {
-            changeScheduleVisibility(View.VISIBLE);
+        private void showDelete() {
+            changeDeleteVisibility(View.VISIBLE);
         }
 
         private void hideScheduleForToday() {
-            changeScheduleVisibility(View.GONE);
+            changeDeleteVisibility(View.GONE);
         }
 
-        private void changeScheduleVisibility(int iconVisibility) {
-            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
+        private void changeDeleteVisibility(int iconVisibility) {
+            itemView.findViewById(R.id.quest_delete_container).setVisibility(iconVisibility);
         }
 
         @Override
