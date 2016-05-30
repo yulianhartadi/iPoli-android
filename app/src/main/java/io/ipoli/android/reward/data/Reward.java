@@ -1,6 +1,7 @@
 package io.ipoli.android.reward.data;
 
 import java.util.Date;
+import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
@@ -38,6 +39,7 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     }
 
     public Reward(String name, Integer price) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.price = price;
         createdAt = DateUtils.nowUTC();

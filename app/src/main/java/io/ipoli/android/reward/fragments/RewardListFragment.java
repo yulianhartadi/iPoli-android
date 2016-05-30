@@ -1,25 +1,19 @@
 package io.ipoli.android.reward.fragments;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import javax.inject.Inject;
 
@@ -30,7 +24,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.DividerItemDecoration;
-import io.ipoli.android.app.ui.ItemTouchCallback;
+import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.activities.AddRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
@@ -41,12 +35,15 @@ import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends Fragment {
+public class RewardListFragment extends RxFragment {
 
     private Unbinder unbinder;
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    RewardPersistenceService rewardPersistenceService;
 
     private CoordinatorLayout rootContainer;
 
@@ -54,6 +51,8 @@ public class RewardListFragment extends Fragment {
     RecyclerView rewardList;
 
     private RewardListAdapter rewardListAdapter;
+
+    private DeleteRewardRequestEvent currentDeleteRewardEvent;
 
 
     @Nullable
@@ -69,22 +68,11 @@ public class RewardListFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
 
-        List<Reward> rewards = new ArrayList<>();
-        rewards.add(new Reward("Eat a chocolate", 10));
-        rewards.add(new Reward("Drink 3 in 1", 30));
-        rewards.add(new Reward("Eat ice cream", 20));
-        rewards.add(new Reward("Go on vacation", 100));
-
-        rewardListAdapter = new RewardListAdapter(rewards, eventBus);
-        rewardList.setAdapter(rewardListAdapter);
-        rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-
-        int swipeFlags = ItemTouchHelper.START;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(rewardListAdapter, 0, swipeFlags);
-        touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
-        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(rewardList);
+        rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
+            rewardListAdapter = new RewardListAdapter(rewards, eventBus);
+            rewardList.setAdapter(rewardListAdapter);
+            rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
+        });
 
         return view;
     }
@@ -120,19 +108,19 @@ public class RewardListFragment extends Fragment {
 
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
+        currentDeleteRewardEvent = e;
         final Snackbar snackbar = Snackbar
                 .make(rootContainer,
                         "Reward removed",
                         Snackbar.LENGTH_SHORT)
                 .setAction(R.string.undo, view -> {
                     rewardListAdapter.addReward(e.position, e.reward);
-//                    questPersistenceService.saveRemoteObject(currentDeleteQuestEvent.quest).compose(bindToLifecycle()).subscribe();
-//                    eventBus.post(new UndoDeleteQuestEvent(currentDeleteQuestEvent.quest, EventSource.INBOX));
+                    rewardPersistenceService.saveRemoteObject(currentDeleteRewardEvent.reward).compose(bindToLifecycle()).subscribe();
                 });
 
-//        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+        rewardPersistenceService.delete(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
             snackbar.show();
-//        });
+        });
     }
 
 }

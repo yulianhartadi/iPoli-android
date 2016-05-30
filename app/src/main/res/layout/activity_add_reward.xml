@@ -33,7 +33,7 @@
                 android:id="@+id/reward_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/edit_quest_name_hint"
+                android:hint="@string/reward_name_hint"
                 android:inputType="textCapSentences"
                 android:singleLine="true">
 
@@ -47,7 +47,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="240dp"
+        android:layout_marginTop="180dp"
         android:orientation="vertical">
 
 

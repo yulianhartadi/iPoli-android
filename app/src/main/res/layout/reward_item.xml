@@ -10,38 +10,25 @@
         android:id="@+id/reward_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_toStartOf="@+id/buy_reward" />
 
-    <TextView
-        android:id="@+id/reward_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/buy_reward"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="96dp"
+        android:layout_height="32dp"
         android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_toStartOf="@+id/reward_name"
-        android:layout_toEndOf="@+id/reward_delete_container"
-        android:drawableEnd="@drawable/ic_life_coin_black_24dp"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true"/>
-
-    <LinearLayout
-        android:id="@+id/reward_delete_container"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_alignParentEnd="true"
-        android:background="@color/md_red_500"
-        android:padding="8dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:alpha="1.0"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_delete_white_24dp" />
-    </LinearLayout>
+        android:background="?attr/colorAccent"
+        android:drawableStart="@drawable/ic_life_coin_white_24dp"
+        android:gravity="center"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:textColor="@color/md_white" />
 
 </RelativeLayout>
