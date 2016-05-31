@@ -1,6 +1,8 @@
 package io.ipoli.android.player;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
@@ -24,6 +26,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     private Long coins;
     private String avatar;
     private String timezone;
+    private List<AuthProvider> authProviders;
 
     @Required
     private Date createdAt;
@@ -37,11 +40,14 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     public Player() {
     }
 
-    public Player(String experience, int level, String avatar) {
+    public Player(String experience, int level, String avatar, AuthProvider authProvider) {
         this.id = UUID.randomUUID().toString();
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
+        List<AuthProvider> authProviders = new ArrayList<>();
+        authProviders.add(authProvider);
+        this.authProviders = authProviders;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
@@ -149,5 +155,9 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public List<AuthProvider> getAuthProviders() {
+        return authProviders;
     }
 }

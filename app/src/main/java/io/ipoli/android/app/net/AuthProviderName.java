@@ -5,6 +5,6 @@ package io.ipoli.android.app.net;
  * on 3/25/16.
  */
 
-public enum AuthProvider {
+public enum AuthProviderName {
     ANONYMOUS, TWITTER, FACEBOOK, SLACK
 }

@@ -24,7 +24,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
-import io.ipoli.android.app.net.AuthProvider;
+import io.ipoli.android.app.net.AuthProviderName;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.net.iPoliAPIService;
@@ -102,7 +102,7 @@ public class AppJobService extends JobService {
     private Observable<Player> syncPlayer(Player player, LocalStorage localStorage) {
         if (isLocalOnly(player)) {
             return getAdvertisingId().flatMap(advertisingId -> {
-                RequestBody requestBody = createJsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
+                RequestBody requestBody = createJsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProviderName.ANONYMOUS).build();
                 return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
                     sp.setSyncedWithRemote();
                     sp.setRemoteObject();
@@ -204,7 +204,7 @@ public class AppJobService extends JobService {
 
     private Observable<Player> createNewPlayer() {
         return getAdvertisingId().flatMap(advertisingId -> {
-            RequestBody requestBody = createJsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProvider.ANONYMOUS).build();
+            RequestBody requestBody = createJsonRequestBodyBuilder().param("uid", advertisingId).param("provider", AuthProviderName.ANONYMOUS).build();
             return apiService.createPlayer(requestBody).compose(applyAPISchedulers()).concatMap(sp -> {
                 sp.setSyncedWithRemote();
                 sp.setRemoteObject();
