@@ -405,14 +405,14 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onHelpDialogShown(HelpDialogShownEvent e) {
         log("help_dialog_shown", EventParams.create()
-                .add("screen", e.screen.name().toLowerCase())
+                .add("screen", e.screen)
                 .add("app_run", String.valueOf(e.appRun)));
     }
 
     @Subscribe
     public void onMoreHelpTapped(MoreHelpTappedEvent e) {
         log("help_dialog_more_tapped", EventParams.create()
-                .add("screen", e.screen.name().toLowerCase())
+                .add("screen", e.screen)
                 .add("app_run", String.valueOf(e.appRun)));
     }
 

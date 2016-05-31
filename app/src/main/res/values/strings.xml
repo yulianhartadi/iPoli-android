@@ -194,6 +194,12 @@
     <string name="help_dialog_overview_edit">Tap on the quest to edit it</string>
     <string name="help_dialog_overview_swipe_right">Swipe quest right to complete it</string>
     <string name="help_dialog_overview_swipe_left">Swipe quest left to schedule it for today. If the quest is already for today, it will be scheduled for tomorrow.</string>
+    <string name="help_dialog_rewards_title">Earn your rewards</string>
+    <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough coins by completing your quests.</string>
+    <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
+    <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
+    <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
+
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
     <string name="home">Home</string>
@@ -205,7 +211,7 @@
     <string name="title_fragment_rewards">Rewards</string>
     <string name="price_hint">Cost</string>
     <string name="title_activity_add_reward">Add Reward</string>
-    <string name="reward_name_hint">Eat a chocolate</string>
+    <string name="reward_name_hint">Name (e.g. Eat a chocolate)</string>
 
     <string name="dialog_delete_reward_title">Delete reward</string>
     <string name="dialog_delete_reward_message">Sure you want to delete this awesome reward?</string>

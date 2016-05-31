@@ -226,10 +226,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_help:
-//            HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
-                return true;
-
             case R.id.action_overview:
                 toolbarExpandContainer.setOnClickListener(null);
                 appBar.setExpanded(false, false);

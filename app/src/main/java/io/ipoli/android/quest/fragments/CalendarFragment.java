@@ -32,6 +32,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -105,6 +106,9 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         if (id == R.id.action_today) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.MENU));
             eventBus.post(new CloseToolbarCalendarEvent());
+            return true;
+        } else if(id == R.id.action_help) {
+            HelpDialog.newInstance(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title, "calendar").show(getActivity().getSupportFragmentManager());
             return true;
         }
 

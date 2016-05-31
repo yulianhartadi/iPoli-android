@@ -3,6 +3,7 @@ package io.ipoli.android.app.help;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
@@ -30,6 +31,8 @@ import io.ipoli.android.app.utils.LocalStorage;
 public class HelpDialog extends DialogFragment {
     private static final String TAG = "help-dialog";
     private static final String SCREEN = "screen";
+    private static final String LAYOUT_RES = "layout_res";
+    private static final String TITLE = "title";
 
     @Inject
     Bus eventBus;
@@ -37,16 +40,24 @@ public class HelpDialog extends DialogFragment {
     private LocalStorage localStorage;
     private int appRun;
 
-    private Screen screen;
+    @LayoutRes
+    private int layout;
+
+    @StringRes
+    private int title;
+
+    private String screen;
 
     public HelpDialog() {
         App.getAppComponent(getContext()).inject(this);
     }
 
-    public static HelpDialog newInstance(Screen screen) {
+    public static HelpDialog newInstance(@LayoutRes int layout, @StringRes int title, String screen) {
         HelpDialog fragment = new HelpDialog();
         Bundle args = new Bundle();
-        args.putString(SCREEN, screen.name());
+        args.putInt(LAYOUT_RES, layout);
+        args.putInt(TITLE, title);
+        args.putString(SCREEN, screen);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,38 +67,47 @@ public class HelpDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null && getArguments().containsKey(SCREEN)) {
-            screen = Screen.valueOf(getArguments().getString(SCREEN));
-        } else {
-            screen = Screen.CALENDAR;
+        if(getArguments() == null) {
+            dismiss();
         }
+
+        layout = getArguments().getInt(LAYOUT_RES);
+        title = getArguments().getInt(TITLE);
+        screen = getArguments().getString(SCREEN);
+
         localStorage = LocalStorage.of(getContext());
         appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
         eventBus.post(new HelpDialogShownEvent(screen, appRun));
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = null;
-        switch (screen) {
-            case CALENDAR:
-                dialog = createDialog(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title);
-                break;
-            case OVERVIEW:
-                dialog = createDialog(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title);
-                break;
-            case ADD:
-                dialog = createDialog(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title);
-                break;
-            case INBOX:
-                dialog = createDialog(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title);
-                break;
-            case REPEATING_QUESTS:
-                dialog = createDialog(R.layout.fragment_help_dialog_repeating_quests, R.string.help_dialog_repeating_quests_title);
-                break;
-        }
-        return dialog;
+        return createDialog(layout, title);
     }
+
+    //    @Override
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Dialog dialog = null;
+//        switch (screen) {
+//            case CALENDAR:
+//                dialog = createDialog(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title);
+//                break;
+//            case OVERVIEW:
+//                dialog = createDialog(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title);
+//                break;
+//            case ADD:
+//                dialog = createDialog(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title);
+//                break;
+//            case INBOX:
+//                dialog = createDialog(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title);
+//                break;
+//            case REPEATING_QUESTS:
+//                dialog = createDialog(R.layout.fragment_help_dialog_repeating_quests, R.string.help_dialog_repeating_quests_title);
+//                break;
+//        }
+//        return dialog;
+//    }
 
     public void show(FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
