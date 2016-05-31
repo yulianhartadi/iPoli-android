@@ -28,6 +28,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
@@ -143,5 +144,10 @@ public class RewardListFragment extends RxFragment {
         Intent i = new Intent(getContext(), RewardActivity.class);
         i.putExtra(Constants.REWARD_ID_EXTRA_KEY, e.reward.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onSyncComplete(SyncCompleteEvent e) {
+        updateRewards();
     }
 }
