@@ -17,6 +17,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
+import io.ipoli.android.reward.viewmodels.RewardViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,11 +25,11 @@ import io.ipoli.android.reward.events.EditRewardRequestEvent;
  */
 public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.ViewHolder> {
 
-    private final List<Reward> rewards;
+    private final List<RewardViewModel> viewModels;
     private final Bus eventBus;
 
-    public RewardListAdapter(List<Reward> rewards, Bus eventBus) {
-        this.rewards = rewards;
+    public RewardListAdapter(List<RewardViewModel> viewModels, Bus eventBus) {
+        this.viewModels = viewModels;
         this.eventBus = eventBus;
     }
 
@@ -39,26 +40,31 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Reward reward = rewards.get(holder.getAdapterPosition());
+        RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
+        Reward reward = vm.getReward();
         holder.itemView.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
 
         holder.name.setText(reward.getName());
         holder.buy.setText(String.valueOf(reward.getPrice()));
 
-        holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
+        if(vm.canBeBought()) {
+            holder.buy.setEnabled(true);
+            holder.buy.setBackgroundResource(R.color.colorAccent);
+            holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
+        } else {
+            holder.buy.setEnabled(false);
+            holder.buy.setBackgroundResource(R.color.md_grey_500);
+            holder.buy.setOnClickListener(null);
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return rewards.size();
+        return viewModels.size();
     }
 
-    public void addReward(int position, Reward reward) {
-        rewards.add(position, reward);
-        notifyDataSetChanged();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.reward_name)
         TextView name;
