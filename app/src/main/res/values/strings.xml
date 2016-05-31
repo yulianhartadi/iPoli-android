@@ -140,7 +140,7 @@
     <string name="show_invite_failed">Oops, please, try again later!</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="overview_title">Your Journey Ahead</string>
-    <string name="sync_android_calendars">Import calendars</string>
+    <string name="sync_android_calendars">Sync calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
     <string name="widget_journey_name">Daily Journey</string>
     <string name="add">ADD</string>
@@ -205,4 +205,11 @@
     <string name="title_fragment_rewards">Rewards</string>
     <string name="price_hint">Cost</string>
     <string name="title_activity_add_reward">Add Reward</string>
+    <string name="reward_name_hint">Eat a chocolate</string>
+
+    <string name="dialog_delete_reward_title">Delete reward</string>
+    <string name="dialog_delete_reward_message">Sure you want to delete this awesome reward?</string>
+    <string name="reward_removed">Reward removed</string>
+    <string name="reward_activity_edit_title">Edit reward</string>
+    <string name="reward_too_expensive">Not enough coins</string>
 </resources>

@@ -42,9 +42,29 @@
 
     <group android:id="@+id/drawer_secondary_group">
         <item
+            android:id="@+id/invite_friends"
+            android:checked="false"
+            android:icon="@drawable/ic_friends_white_24dp"
+            android:title="@string/invite_friend" />
+        <item
+            android:id="@+id/sync_calendars"
+            android:checked="false"
+            android:icon="@drawable/ic_event_white_24dp"
+            android:title="@string/sync_android_calendars" />
+        <item
+            android:id="@+id/tutorial"
+            android:checked="false"
+            android:icon="@drawable/ic_tutorial_white_24dp"
+            android:title="@string/show_tutorial" />
+        <item
             android:id="@+id/feedback"
             android:checked="false"
             android:icon="@drawable/ic_comment_white_24dp"
             android:title="@string/feedback" />
+        <item
+            android:id="@+id/contact_us"
+            android:checked="false"
+            android:icon="@drawable/ic_email_white_24dp"
+            android:title="@string/contact_us" />
     </group>
 </menu>
