@@ -85,30 +85,7 @@ public class HelpDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return createDialog(layout, title);
     }
-
-    //    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState) {
-//        Dialog dialog = null;
-//        switch (screen) {
-//            case CALENDAR:
-//                dialog = createDialog(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title);
-//                break;
-//            case OVERVIEW:
-//                dialog = createDialog(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title);
-//                break;
-//            case ADD:
-//                dialog = createDialog(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title);
-//                break;
-//            case INBOX:
-//                dialog = createDialog(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title);
-//                break;
-//            case REPEATING_QUESTS:
-//                dialog = createDialog(R.layout.fragment_help_dialog_repeating_quests, R.string.help_dialog_repeating_quests_title);
-//                break;
-//        }
-//        return dialog;
-//    }
-
+    
     public void show(FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
     }
