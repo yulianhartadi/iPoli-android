@@ -9,7 +9,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.NumberPicker;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -33,6 +36,10 @@ import io.ipoli.android.reward.data.Reward;
  * on 5/27/16.
  */
 public class RewardActivity extends BaseActivity {
+    private static final int MIN_PRICE = 100;
+    private static final int MAX_PRICE = 1000;
+    private static final int PRICE_STEP = 50;
+
 
     @Inject
     Bus eventBus;
@@ -47,7 +54,7 @@ public class RewardActivity extends BaseActivity {
     TextInputEditText rewardName;
 
     @BindView(R.id.reward_price)
-    NumberPicker rewardPrice;
+    Spinner rewardPrice;
 
     private boolean isEdit = false;
     private Reward reward;
@@ -55,7 +62,7 @@ public class RewardActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_reward);
+        setContentView(R.layout.activity_reward);
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -67,7 +74,7 @@ public class RewardActivity extends BaseActivity {
 
         if (getIntent() != null && getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY) != null) {
             isEdit = true;
-            setTitle("Edit reward");
+            setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
             rewardPersistenceService.findById(rewardId).compose(bindToLifecycle()).subscribe(r -> {
                 reward = r;
@@ -80,28 +87,36 @@ public class RewardActivity extends BaseActivity {
 
     private void initUI() {
         List<String> prices = new ArrayList<>();
-        int priceCount = 1000 / 25;
-        for (int i = 0; i < priceCount; i++) {
+        int i = MIN_PRICE;
+        do {
             prices.add(i + "");
-        }
+            i += PRICE_STEP;
+        } while (i <= MAX_PRICE);
 
-        rewardPrice.setDisplayedValues(null);
-        rewardPrice.setMinValue(0);
-        rewardPrice.setMaxValue(prices.size() - 1);
-        rewardPrice.setDisplayedValues(prices.toArray(new String[prices.size()]));
+
+        rewardPrice.setAdapter(new ArrayAdapter<>(this, R.layout.reward_price_item, R.id.reward_price, prices));
+        rewardPrice.setSelection(0, false);
+        rewardPrice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         if (reward != null) {
             rewardName.setText(reward.getName());
-            rewardPrice.setValue(reward.getPrice());
-        } else {
-            rewardPrice.setValue(4);
+            int p = (reward.getPrice() - MIN_PRICE) / PRICE_STEP;
+            rewardPrice.setSelection(p);
         }
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_reward_menu, menu);
+        getMenuInflater().inflate(R.menu.reward_menu, menu);
         return true;
     }
 
@@ -139,7 +154,7 @@ public class RewardActivity extends BaseActivity {
 
     private void saveReward() {
         String name = rewardName.getText().toString();
-        int price = rewardPrice.getValue();
+        int price = Integer.parseInt((String) rewardPrice.getSelectedItem());
         if (reward == null) {
             reward = new Reward(name, price);
         } else {

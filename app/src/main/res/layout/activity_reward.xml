@@ -44,39 +44,29 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="180dp"
-        android:orientation="vertical">
+        android:layout_height="72dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="180dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/price_hint" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
+        <Spinner
+            android:id="@+id/reward_price"
+            android:layout_width="128dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:layout_marginStart="32dp" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="4"
-                android:text="@string/price_hint" />
-
-            <NumberPicker
-                android:id="@+id/reward_price"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="32dp"
-                android:layout_weight="3" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

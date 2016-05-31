@@ -210,4 +210,5 @@
     <string name="dialog_delete_reward_title">Delete reward</string>
     <string name="dialog_delete_reward_message">Sure you want to delete this awesome reward?</string>
     <string name="reward_removed">Reward removed</string>
+    <string name="reward_activity_edit_title">Edit reward</string>
 </resources>
