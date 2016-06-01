@@ -28,9 +28,15 @@ public class QuestReward extends RealmObject {
     private Date updatedAt;
 
     public QuestReward() {
-        id = UUID.randomUUID().toString();
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
+
+    }
+
+    public QuestReward(long experience, long coins) {
+        this.id = UUID.randomUUID().toString();
+        this.experience = experience;
+        this.coins = coins;
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
     }
 
     public Date getCreatedAt() {
@@ -55,5 +61,13 @@ public class QuestReward extends RealmObject {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Long getExperience() {
+        return experience;
+    }
+
+    public Long getCoins() {
+        return coins;
     }
 }
