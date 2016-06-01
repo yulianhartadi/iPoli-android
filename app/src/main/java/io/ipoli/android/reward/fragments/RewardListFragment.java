@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.activities.RewardActivity;
@@ -88,21 +90,20 @@ public class RewardListFragment extends RxFragment {
     }
 
     private void updateRewards() {
-        playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
-            if(player == null) {
-                return;
+        rewardPersistenceService.findAll().compose(bindToLifecycle())
+                .flatMap(rewards -> playerPersistenceService.find().compose(bindToLifecycle())
+                .flatMap(player -> Observable.just(new Pair<>(player, rewards))))
+                .subscribe(pair -> {
+            List<RewardViewModel> rewardViewModels = new ArrayList<>();
+            Player player = pair.first;
+            List<Reward> rewards = pair.second;
+            for(Reward r : rewards) {
+                rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
             }
-            long coins = player.getCoins();
-            rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
-                List<RewardViewModel> rewardViewModels = new ArrayList<>();
-                for(Reward r : rewards) {
-                    rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= coins)));
-                }
 
-                rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
-                rewardList.setAdapter(rewardListAdapter);
-                rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-            });
+            rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+            rewardList.setAdapter(rewardListAdapter);
+            rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
         });
     }
 

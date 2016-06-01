@@ -194,7 +194,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         CalendarFragment calendarFragment = new CalendarFragment();
         toolbarCalendar.setListener(calendarFragment);
         changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-
     }
 
     @Override
@@ -465,6 +464,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             Toast.makeText(this, R.string.show_invite_failed, Toast.LENGTH_LONG).show();
         }
     }
+
     private void checkForCalendarPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CALENDAR)
@@ -487,7 +487,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
                 eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
                 Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-            } else if(grantResults.length > 0
+            } else if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
             }
