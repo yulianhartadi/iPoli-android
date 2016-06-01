@@ -3,6 +3,7 @@ package io.ipoli.android.quest.data;
 import java.util.Date;
 import java.util.UUID;
 
+import io.ipoli.android.app.utils.DateUtils;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -33,6 +34,8 @@ public class Recurrence extends RealmObject {
 
     public Recurrence() {
         id = UUID.randomUUID().toString();
+        createdAt = DateUtils.nowUTC();
+        updatedAt = DateUtils.nowUTC();
     }
 
     public String getDailyRrule() {

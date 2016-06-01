@@ -63,6 +63,7 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -186,7 +187,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+        changeToCalendarFragment();
+    }
 
+    private void changeToCalendarFragment() {
         appBar.setExpanded(false, false);
         appBar.setTag(false);
 
@@ -205,12 +209,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                // replace to calendar fragment if current is not calendar fragment
+                changeToCalendarFragment();
                 eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
             });
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
-            // start add activity
+            startActivity(new Intent(this, AddQuestActivity.class));
         }
     }
 
