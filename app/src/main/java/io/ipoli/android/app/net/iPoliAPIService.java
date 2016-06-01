@@ -26,6 +26,9 @@ public interface iPoliAPIService {
     @POST("players")
     Observable<Player> createPlayer(@Body RequestBody request);
 
+    @POST("players/{player_id}")
+    Observable<Player> updatePlayer(@Body RequestBody data, @Path("player_id") String playerId);
+
     @POST("quests")
     Observable<Quest> createQuest(@Body RequestBody data);
 

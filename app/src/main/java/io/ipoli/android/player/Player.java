@@ -1,10 +1,12 @@
 package io.ipoli.android.player;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -18,12 +20,13 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @Required
     @PrimaryKey
     private String id;
-    private Integer experience;
-    private Integer experienceForNextLevel;
+    private String experience;
+    private String experienceForNextLevel;
     private Integer level;
-    private Integer coins;
+    private Long coins;
     private String avatar;
     private String timezone;
+    private RealmList<AuthProvider> authProviders;
 
     @Required
     private Date createdAt;
@@ -37,11 +40,12 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     public Player() {
     }
 
-    public Player(int experience, int level, String avatar) {
+    public Player(String experience, int level, String avatar) {
         this.id = UUID.randomUUID().toString();
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
+        this.authProviders = new RealmList<>();
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
@@ -56,11 +60,11 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.id = id;
     }
 
-    public int getExperience() {
+    public String getExperience() {
         return experience;
     }
 
-    public void setExperience(Integer experience) {
+    public void setExperience(String experience) {
         this.experience = experience;
     }
 
@@ -110,19 +114,19 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.timezone = timezone;
     }
 
-    public Integer getExperienceForNextLevel() {
+    public String getExperienceForNextLevel() {
         return experienceForNextLevel;
     }
 
-    public void setExperienceForNextLevel(Integer experienceForNextLevel) {
+    public void setExperienceForNextLevel(String experienceForNextLevel) {
         this.experienceForNextLevel = experienceForNextLevel;
     }
 
-    public Integer getCoins() {
+    public Long getCoins() {
         return coins;
     }
 
-    public void setCoins(Integer coins) {
+    public void setCoins(Long coins) {
         this.coins = coins;
     }
 
@@ -149,5 +153,13 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public void addAuthProvider(AuthProvider authProvider) {
+        authProviders.add(authProvider);
+    }
+
+    public List<AuthProvider> getAuthProviders() {
+        return authProviders;
     }
 }

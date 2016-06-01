@@ -92,7 +92,7 @@ public class RewardListFragment extends RxFragment {
             if(player == null) {
                 return;
             }
-            int coins = player.getCoins();
+            long coins = player.getCoins();
             rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
                 List<RewardViewModel> rewardViewModels = new ArrayList<>();
                 for(Reward r : rewards) {
