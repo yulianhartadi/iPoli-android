@@ -19,7 +19,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/logo"
         app:civ_border_color="#FF000000" />
 
     <TextView

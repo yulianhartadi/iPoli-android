@@ -178,8 +178,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     experienceBar.setProgress(70);
                     experienceBar.setMax(100);
 
-                    CircleImageView avatar = (CircleImageView) header.findViewById(R.id.player_image);
-                    avatar.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
+                    CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+                    avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+                    avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
                 });
             }
         };
