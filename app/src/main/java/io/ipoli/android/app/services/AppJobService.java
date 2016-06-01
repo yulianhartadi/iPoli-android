@@ -116,7 +116,6 @@ public class AppJobService extends JobService {
                 return updatePlayer(player);
             }
             return Observable.just(player);
-
         });
     }
 
