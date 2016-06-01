@@ -170,7 +170,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     }
                     View header = navigationView.getHeaderView(0);
                     TextView level = (TextView) header.findViewById(R.id.player_level);
-                    level.setText("Level " + player.getLevel());
+                    level.setText("Level " + player.getLevel() + ": Newbie");
 
                     TextView coins = (TextView) header.findViewById(R.id.player_coins);
                     coins.setText(player.getCoins() + "");
