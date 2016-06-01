@@ -436,7 +436,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
-                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
