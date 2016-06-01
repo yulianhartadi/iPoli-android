@@ -8,10 +8,8 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public class DeleteRepeatingQuestRequestEvent {
     public final RepeatingQuest repeatingQuest;
-    public final int position;
 
-    public DeleteRepeatingQuestRequestEvent(RepeatingQuest repeatingQuest, int position) {
+    public DeleteRepeatingQuestRequestEvent(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
-        this.position = position;
     }
 }

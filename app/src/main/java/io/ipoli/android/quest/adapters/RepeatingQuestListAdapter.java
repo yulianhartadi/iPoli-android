@@ -5,13 +5,16 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.Space;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -19,8 +22,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
-import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
@@ -30,23 +31,26 @@ import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
+public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context context;
 
     private List<RepeatingQuestViewModel> viewModels;
     private Bus eventBus;
 
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
+
     public RepeatingQuestListAdapter(Context context, List<RepeatingQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
+        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.repeating_quests_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.repeating_quest_item, parent, false));
     }
 
     @Override
@@ -55,7 +59,11 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
-        questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowRepeatingQuestEvent(vm.getRepeatingQuest())));
+        viewBinderHelper.bind(questHolder.swipeLayout, vm.getRepeatingQuest().getId());
+
+        questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest())));
+
+        questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowRepeatingQuestEvent(vm.getRepeatingQuest())));
 
         questHolder.name.setText(vm.getName());
 
@@ -99,35 +107,12 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         return viewModels.size();
     }
 
-    @Override
-    public void onItemMoved(int fromPosition, int toPosition) {
-
-    }
-
-    @Override
-    public void onItemDismissed(int position, int direction) {
-        if (position >= viewModels.size()) {
-            return;
-        }
-        RepeatingQuestViewModel vm = viewModels.get(position);
-        viewModels.remove(position);
-        notifyItemRemoved(position);
-        if (direction == ItemTouchHelper.START) {
-            eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest(), position));
-        }
-    }
-
     public void updateQuests(List<RepeatingQuestViewModel> newViewModels) {
         viewModels = newViewModels;
         notifyDataSetChanged();
     }
 
-    public void addQuest(int position, RepeatingQuestViewModel repeatingQuestViewModel) {
-        viewModels.add(position, repeatingQuestViewModel);
-        notifyDataSetChanged();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)
         public TextView name;
@@ -150,55 +135,18 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         @BindView(R.id.quest_progress_space)
         public Space progressSpace;
 
+        @BindView(R.id.content_layout)
+        public RelativeLayout contentLayout;
+
+        @BindView(R.id.swipe_layout)
+        public SwipeRevealLayout swipeLayout;
+
+        @BindView(R.id.delete_quest)
+        public ImageButton deleteQuest;
+
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
-        }
-
-        @Override
-        public void onItemSelected() {
-
-        }
-
-        @Override
-        public void onItemClear() {
-
-        }
-
-        @Override
-        public void onItemSwipeStart(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                showDelete();
-            }
-        }
-
-        private void showDelete() {
-            changeDeleteVisibility(View.VISIBLE);
-        }
-
-        private void hideScheduleForToday() {
-            changeDeleteVisibility(View.GONE);
-        }
-
-        private void changeDeleteVisibility(int iconVisibility) {
-            itemView.findViewById(R.id.quest_delete_container).setVisibility(iconVisibility);
-        }
-
-        @Override
-        public void onItemSwipeStopped(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                hideScheduleForToday();
-            }
-        }
-
-        @Override
-        public boolean isEndSwipeEnabled() {
-            return false;
-        }
-
-        @Override
-        public boolean isStartSwipeEnabled() {
-            return true;
         }
     }
 }

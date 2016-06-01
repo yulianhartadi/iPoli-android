@@ -4,16 +4,19 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -23,11 +26,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
-import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
@@ -36,11 +39,12 @@ import io.ipoli.android.quest.viewmodels.QuestViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/16.
  */
-public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
+public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int QUEST_ITEM_VIEW_TYPE = 1;
     private final Context context;
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     private List<Object> items;
     private Bus eventBus;
@@ -50,10 +54,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public OverviewAdapter(Context context, List<QuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
+        viewBinderHelper.setOpenOnlyOne(true);
         setItems(viewModels);
     }
 
     private void setItems(List<QuestViewModel> viewModels) {
+        items = new ArrayList<>();
         List<QuestViewModel> visibleQuests = new ArrayList<>();
         for (QuestViewModel vm : viewModels) {
             Quest q = vm.getQuest();
@@ -61,8 +67,10 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 visibleQuests.add(vm);
             }
         }
+        if (visibleQuests.isEmpty()) {
+            return;
+        }
         calculateHeaderIndices(visibleQuests);
-        items = new ArrayList<>();
         items.addAll(visibleQuests);
         if (headerIndices[0] >= 0) {
             items.add(headerIndices[0], R.string.today);
@@ -139,7 +147,26 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
-            questHolder.itemView.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
+            Quest q = vm.getQuest();
+            viewBinderHelper.bind(questHolder.swipeLayout, q.getId());
+            questHolder.swipeLayout.close(false);
+            questHolder.scheduleQuest.setOnClickListener(v -> {
+                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
+            });
+
+            questHolder.completeQuest.setOnClickListener(v -> {
+                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
+            });
+
+            questHolder.editQuest.setOnClickListener(v -> {
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
+            });
+
+            questHolder.deleteQuest.setOnClickListener(v -> {
+                eventBus.post(new DeleteQuestRequestEvent(q));
+            });
+
+            questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
             questHolder.name.setText(vm.getName());
 
             if (vm.isStarted()) {
@@ -151,7 +178,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 questHolder.runningIndicator.setVisibility(View.GONE);
             }
-
 
             GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
             drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
@@ -180,7 +206,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.scheduleText.setText(vm.getScheduleText());
             }
             questHolder.remainingText.setText(vm.getRemainingText());
-
 
             if (!vm.isRecurrent()) {
                 return;
@@ -215,27 +240,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return items.size();
     }
 
-    @Override
-    public void onItemMoved(int fromPosition, int toPosition) {
-
-    }
-
-    @Override
-    public void onItemDismissed(int position, int direction) {
-        QuestViewModel viewModel = (QuestViewModel) items.get(position);
-        if (viewModel.getRemainingCount() == 1) {
-            items.remove(position);
-            notifyItemRemoved(position);
-        }
-        if (direction == ItemTouchHelper.END) {
-            eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest(), EventSource.OVERVIEW));
-        } else if (direction == ItemTouchHelper.START) {
-            eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest(), EventSource.OVERVIEW));
-        }
-    }
-
     public void updateQuests(List<QuestViewModel> viewModels) {
-        items.clear();
         setItems(viewModels);
         notifyDataSetChanged();
     }
@@ -247,7 +252,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public static class QuestViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class QuestViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)
         public TextView name;
@@ -279,75 +284,27 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.quest_recurrent_indicator)
         public ImageView recurrentIcon;
 
+        @BindView(R.id.content_layout)
+        public RelativeLayout contentLayout;
+
+        @BindView(R.id.swipe_layout)
+        public SwipeRevealLayout swipeLayout;
+
+        @BindView(R.id.schedule_quest)
+        public ImageButton scheduleQuest;
+
+        @BindView(R.id.complete_quest)
+        public ImageButton completeQuest;
+
+        @BindView(R.id.edit_quest)
+        public ImageButton editQuest;
+
+        @BindView(R.id.delete_quest)
+        public ImageButton deleteQuest;
+
         public QuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
-        }
-
-        @Override
-        public void onItemSelected() {
-
-        }
-
-        @Override
-        public void onItemClear() {
-
-        }
-
-        @Override
-        public void onItemSwipeStart(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                showScheduleForToday();
-                hideQuestCompleteCheck();
-            } else if (direction == ItemTouchHelper.END) {
-                showQuestCompleteCheck();
-                hideScheduleForToday();
-            }
-        }
-
-        private void showScheduleForToday() {
-            changeScheduleVisibility(View.VISIBLE, View.GONE);
-        }
-
-        private void showQuestCompleteCheck() {
-            changeCheckVisibility(View.VISIBLE, View.GONE);
-        }
-
-        private void hideScheduleForToday() {
-            changeScheduleVisibility(View.GONE, View.VISIBLE);
-        }
-
-        private void hideQuestCompleteCheck() {
-            changeCheckVisibility(View.GONE, View.VISIBLE);
-        }
-
-        private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
-            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_info_container).setVisibility(durationVisibility);
-        }
-
-        private void changeCheckVisibility(int iconVisibility, int contextIconVisibility) {
-            itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
-            itemView.findViewById(R.id.quest_context_container).setVisibility(contextIconVisibility);
-        }
-
-        @Override
-        public void onItemSwipeStopped(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                hideScheduleForToday();
-            } else if (direction == ItemTouchHelper.END) {
-                hideQuestCompleteCheck();
-            }
-        }
-
-        @Override
-        public boolean isEndSwipeEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isStartSwipeEnabled() {
-            return true;
         }
     }
 }

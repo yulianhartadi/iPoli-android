@@ -50,6 +50,6 @@ public interface iPoliAPIService {
     @GET("repeating-quests")
     Observable<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
 
-    @DELETE("repeating-quests/{repeating_quest}")
+    @DELETE("repeating-quests/{repeating_quest_id}")
     Observable<Void> deleteRepeatingQuest(@Path("repeating_quest_id") String repeatingQuestId, @Query("player_id") String playerId);
 }

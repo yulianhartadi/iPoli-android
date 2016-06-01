@@ -2,11 +2,10 @@ package io.ipoli.android.quest.fragments;
 
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,15 +39,18 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
@@ -63,6 +65,8 @@ public class OverviewFragment extends BaseFragment {
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
 
+    CoordinatorLayout rootContainer;
+
     @Inject
     QuestPersistenceService questPersistenceService;
 
@@ -76,6 +80,7 @@ public class OverviewFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
+        rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -85,14 +90,6 @@ public class OverviewFragment extends BaseFragment {
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootLayout, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
 
-
-        int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(overviewAdapter, 0, swipeFlags);
-        touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeEndDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_green_500)));
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_blue_500)));
-        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(questList);
 
         return view;
     }
@@ -144,6 +141,24 @@ public class OverviewFragment extends BaseFragment {
         q.setEndDate(endDate);
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
+            updateQuests();
+        });
+    }
+
+    @Subscribe
+    public void onQuestCompleted(QuestCompletedEvent e) {
+        updateQuests();
+    }
+
+    @Subscribe
+    public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
+        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
+        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+            Snackbar
+                    .make(rootContainer,
+                            R.string.quest_removed,
+                            Snackbar.LENGTH_SHORT)
+                    .show();
             updateQuests();
         });
     }
