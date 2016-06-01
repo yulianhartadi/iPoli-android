@@ -241,25 +241,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return items.size();
     }
 
-//    @Override
-//    public void onItemMoved(int fromPosition, int toPosition) {
-//
-//    }
-//
-//    @Override
-//    public void onItemDismissed(int position, int direction) {
-//        QuestViewModel viewModel = (QuestViewModel) items.get(position);
-//        if (viewModel.getRemainingCount() == 1) {
-//            items.remove(position);
-//            notifyItemRemoved(position);
-//        }
-//        if (direction == ItemTouchHelper.END) {
-//            eventBus.post(new CompleteQuestRequestEvent(viewModel.getQuest(), EventSource.OVERVIEW));
-//        } else if (direction == ItemTouchHelper.START) {
-//            eventBus.post(new ScheduleQuestForTodayEvent(viewModel.getQuest(), EventSource.OVERVIEW));
-//        }
-//    }
-
     public void updateQuests(List<QuestViewModel> viewModels) {
         setItems(viewModels);
         notifyDataSetChanged();
@@ -326,71 +307,5 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(v);
             ButterKnife.bind(this, v);
         }
-
-//        @Override
-//        public void onItemSelected() {
-//
-//        }
-//
-//        @Override
-//        public void onItemClear() {
-//
-//        }
-//
-//        @Override
-//        public void onItemSwipeStart(int direction) {
-//            if (direction == ItemTouchHelper.START) {
-//                showScheduleForToday();
-//                hideQuestCompleteCheck();
-//            } else if (direction == ItemTouchHelper.END) {
-//                showQuestCompleteCheck();
-//                hideScheduleForToday();
-//            }
-//        }
-//
-//        private void showScheduleForToday() {
-//            changeScheduleVisibility(View.VISIBLE, View.GONE);
-//        }
-//
-//        private void showQuestCompleteCheck() {
-//            changeCheckVisibility(View.VISIBLE, View.GONE);
-//        }
-//
-//        private void hideScheduleForToday() {
-//            changeScheduleVisibility(View.GONE, View.VISIBLE);
-//        }
-//
-//        private void hideQuestCompleteCheck() {
-//            changeCheckVisibility(View.GONE, View.VISIBLE);
-//        }
-//
-//        private void changeScheduleVisibility(int iconVisibility, int durationVisibility) {
-//            itemView.findViewById(R.id.quest_schedule_for_today_container).setVisibility(iconVisibility);
-//            itemView.findViewById(R.id.quest_info_container).setVisibility(durationVisibility);
-//        }
-//
-//        private void changeCheckVisibility(int iconVisibility, int contextIconVisibility) {
-//            itemView.findViewById(R.id.quest_complete_check).setVisibility(iconVisibility);
-//            itemView.findViewById(R.id.quest_context_container).setVisibility(contextIconVisibility);
-//        }
-//
-//        @Override
-//        public void onItemSwipeStopped(int direction) {
-//            if (direction == ItemTouchHelper.START) {
-//                hideScheduleForToday();
-//            } else if (direction == ItemTouchHelper.END) {
-//                hideQuestCompleteCheck();
-//            }
-//        }
-//
-//        @Override
-//        public boolean isEndSwipeEnabled() {
-//            return true;
-//        }
-//
-//        @Override
-//        public boolean isStartSwipeEnabled() {
-//            return true;
-//        }
     }
 }
