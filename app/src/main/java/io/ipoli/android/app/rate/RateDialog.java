@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -76,6 +77,7 @@ public class RateDialog extends DialogFragment {
         eventBus.post(new RateDialogShownEvent(appRun));
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog;
@@ -178,6 +180,6 @@ public class RateDialog extends DialogFragment {
     public void onActivityCreated(Bundle arg0) {
         super.onActivityCreated(arg0);
         getDialog().getWindow()
-                .getAttributes().windowAnimations = R.style.DialogAnimation;
+                .getAttributes().windowAnimations = R.style.SlideInDialogAnimation;
     }
 }

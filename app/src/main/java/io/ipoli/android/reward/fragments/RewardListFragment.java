@@ -88,7 +88,7 @@ public class RewardListFragment extends RxFragment {
 
     private void updateRewards() {
         playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
-            int coins = player.getCoins();
+            long coins = player.getCoins();
             rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
                 List<RewardViewModel> rewardViewModels = new ArrayList<>();
                 for(Reward r : rewards) {
