@@ -228,7 +228,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.progressContainer.addView(progressViewEmpty);
             }
 
-
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
             Integer textRes = (Integer) items.get(position);
