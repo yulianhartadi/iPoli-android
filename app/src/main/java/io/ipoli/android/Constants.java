@@ -56,5 +56,9 @@ public interface Constants {
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
+
     String REWARD_ID_EXTRA_KEY = "reward_id";
+
+    int AVATAR_COUNT = 12;
+    String AVATAR_NAME_EXTRA_KEY = "avatar_name";
 }

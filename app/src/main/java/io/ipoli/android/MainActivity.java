@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -57,7 +58,9 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -80,6 +83,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
+    public static final int PICK_PLAYER_AVATAR = 101;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -173,6 +177,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
                     experienceBar.setProgress(70);
                     experienceBar.setMax(100);
+
+                    CircleImageView avatar = (CircleImageView) header.findViewById(R.id.player_image);
+                    avatar.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
                 });
             }
         };
@@ -225,10 +232,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_help:
-//            HelpDialog.newInstance(Screen.values()[bottomBar.getCurrentTabPosition()]).show(getSupportFragmentManager());
-                return true;
-
             case R.id.action_overview:
                 toolbarExpandContainer.setOnClickListener(null);
                 appBar.setExpanded(false, false);
@@ -490,5 +493,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_PLAYER_AVATAR) {
+            String avatar = data.getStringExtra(Constants.AVATAR_NAME_EXTRA_KEY);
+            if (!TextUtils.isEmpty(avatar)) {
+                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
+                avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
+                playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
+                    player.setAvatar(avatar);
+                    return playerPersistenceService.save(player).compose(bindToLifecycle());
+                }).subscribe();
+
+            }
+        }
+    }
+
 
 }
