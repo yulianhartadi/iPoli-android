@@ -29,7 +29,7 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Subscribe;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -196,9 +196,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private int getCurrentProgress(Player player) {
         int currentLevel = player.getLevel();
-        BigInteger xpForNextLevel = ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(ExperienceForLevelGenerator.forLevel(currentLevel));
-        BigInteger currentXP = new BigInteger(player.getExperience());
-        return currentXP.divide(xpForNextLevel).intValue() * PROGRESS_BAR_MAX_VALUE;
+        BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(ExperienceForLevelGenerator.forLevel(currentLevel)));
+        BigDecimal currentXP = new BigDecimal(player.getExperience());
+        return (int)(currentXP.divide(xpForNextLevel).doubleValue() * PROGRESS_BAR_MAX_VALUE);
     }
 
     private void changeToCalendarFragment() {
