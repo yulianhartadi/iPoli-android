@@ -163,18 +163,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-//                playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
-//                    if (player == null || navigationView.getHeaderCount() < 1) {
-//                        return;
-//                    }
+                playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+                    if (player == null || navigationView.getHeaderCount() < 1) {
+                        return;
+                    }
                     View header = navigationView.getHeaderView(0);
                     TextView level = (TextView) header.findViewById(R.id.player_level);
-//                    level.setText("Level " + player.getLevel());
-                    level.setText("Level 3");
+                    level.setText("Level " + player.getLevel());
 
                     TextView coins = (TextView) header.findViewById(R.id.player_coins);
-//                    coins.setText(player.getCoins() + "");
-                    coins.setText(450 + "");
+                    coins.setText(player.getCoins() + "");
 
                     ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
                     experienceBar.setProgress(70);
@@ -182,7 +180,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
                     CircleImageView avatar = (CircleImageView) header.findViewById(R.id.player_image);
                     avatar.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
-//                });
+                });
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -500,13 +498,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_PLAYER_AVATAR) {
-            String avatar = data.getStringExtra("avatarName");
+            String avatar = data.getStringExtra(Constants.AVATAR_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-//                    Player player = playerPersistenceService.find();
-//                    player.setAvatar(avatar);
-//                    playerPersistenceService.save(player);
+                playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
+                    player.setAvatar(avatar);
+                    return playerPersistenceService.save(player).compose(bindToLifecycle());
+                }).subscribe();
+
             }
         }
     }

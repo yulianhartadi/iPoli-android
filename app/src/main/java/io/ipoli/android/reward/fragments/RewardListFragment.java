@@ -38,6 +38,7 @@ import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.viewmodels.RewardViewModel;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -124,20 +125,20 @@ public class RewardListFragment extends RxFragment {
 
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
-        playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+        playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
             if(player == null) {
-                return;
+                return Observable.empty();
             }
             Reward r = e.reward;
             if(player.getCoins() - r.getPrice() < 0) {
                 showTooExpensiveMessage();
-                return;
+                return Observable.empty();
             }
             player.setCoins(player.getCoins() - r.getPrice());
-            playerPersistenceService.saveRemoteObject(player).compose(bindToLifecycle()).subscribe(p -> {
-                updateRewards();
-                Snackbar.make(rootContainer, r.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
-            });
+            return playerPersistenceService.save(player).compose(bindToLifecycle());
+        }).subscribe(p -> {
+            updateRewards();
+            Snackbar.make(rootContainer, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
         });
     }
 

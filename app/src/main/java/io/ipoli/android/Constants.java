@@ -56,4 +56,5 @@ public interface Constants {
     String REWARD_ID_EXTRA_KEY = "reward_id";
     int DEFAULT_PLAYER_LEVEL = 1;
     int AVATAR_COUNT = 12;
+    String AVATAR_NAME_EXTRA_KEY = "avatar_name";
 }

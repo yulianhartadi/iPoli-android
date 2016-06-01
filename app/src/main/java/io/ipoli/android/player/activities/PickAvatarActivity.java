@@ -60,9 +60,8 @@ public class PickAvatarActivity extends BaseActivity {
 
     @Subscribe
     public void onAvatarSelected(AvatarSelectedEvent e) {
-        Log.d("Avatar", "selected " + e.avatarName);
         Intent data = new Intent();
-        data.putExtra("avatarName", e.avatarName);
+        data.putExtra(Constants.AVATAR_NAME_EXTRA_KEY, e.avatarName);
         setResult(0, data);
         finish();
     }
