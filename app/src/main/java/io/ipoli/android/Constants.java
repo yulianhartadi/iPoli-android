@@ -54,6 +54,7 @@ public interface Constants {
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int DEFAULT_PLAYER_XP = 0;
-    int DEFAULT_PLAYER_LEVEL = 0;
+    int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
+    String REWARD_ID_EXTRA_KEY = "reward_id";
 }

@@ -61,7 +61,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".reward.activities.AddRewardActivity"
+            android:name=".reward.activities.RewardActivity"
             android:label="@string/title_activity_add_reward"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"

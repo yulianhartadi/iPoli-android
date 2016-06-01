@@ -1,10 +1,10 @@
 package io.ipoli.android.reward.adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -14,23 +14,22 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.app.ui.ItemTouchHelperAdapter;
-import io.ipoli.android.app.ui.ItemTouchHelperViewHolder;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
-import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
+import io.ipoli.android.reward.events.EditRewardRequestEvent;
+import io.ipoli.android.reward.viewmodels.RewardViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.ViewHolder> implements ItemTouchHelperAdapter {
+public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.ViewHolder> {
 
-    private final List<Reward> rewards;
+    private final List<RewardViewModel> viewModels;
     private final Bus eventBus;
 
-    public RewardListAdapter(List<Reward> rewards, Bus eventBus) {
-        this.rewards = rewards;
+    public RewardListAdapter(List<RewardViewModel> viewModels, Bus eventBus) {
+        this.viewModels = viewModels;
         this.eventBus = eventBus;
     }
 
@@ -41,96 +40,41 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Reward reward = rewards.get(holder.getAdapterPosition());
+        RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
+        Reward reward = vm.getReward();
+        holder.itemView.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
 
         holder.name.setText(reward.getName());
-        holder.price.setText(String.valueOf(reward.getPrice()));
+        holder.buy.setText(String.valueOf(reward.getPrice()));
 
-        holder.price.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
+        if(vm.canBeBought()) {
+            holder.buy.setEnabled(true);
+            holder.buy.setBackgroundResource(R.color.colorAccent);
+            holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
+        } else {
+            holder.buy.setEnabled(false);
+            holder.buy.setBackgroundResource(R.color.md_grey_500);
+            holder.buy.setOnClickListener(null);
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return rewards.size();
+        return viewModels.size();
     }
 
-    @Override
-    public void onItemMoved(int fromPosition, int toPosition) {
-
-    }
-
-    @Override
-    public void onItemDismissed(int position, int direction) {
-        Reward r = rewards.get(position);
-        rewards.remove(position);
-        notifyItemRemoved(position);
-        if (direction == ItemTouchHelper.START) {
-            eventBus.post(new DeleteRewardRequestEvent(r, position));
-        }
-    }
-
-    public void addReward(int position, Reward reward) {
-        rewards.add(position, reward);
-        notifyDataSetChanged();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.reward_name)
         TextView name;
 
-        @BindView(R.id.reward_price)
-        TextView price;
+        @BindView(R.id.buy_reward)
+        Button buy;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-        }
-
-        @Override
-        public void onItemSelected() {
-
-        }
-
-        @Override
-        public void onItemClear() {
-
-        }
-
-        @Override
-        public void onItemSwipeStart(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                showDelete();
-            }
-        }
-
-        private void showDelete() {
-            changeDeleteVisibility(View.VISIBLE);
-        }
-
-        private void hideScheduleForToday() {
-            changeDeleteVisibility(View.GONE);
-        }
-
-        private void changeDeleteVisibility(int iconVisibility) {
-            itemView.findViewById(R.id.reward_delete_container).setVisibility(iconVisibility);
-        }
-
-        @Override
-        public void onItemSwipeStopped(int direction) {
-            if (direction == ItemTouchHelper.START) {
-                hideScheduleForToday();
-            }
-        }
-
-        @Override
-        public boolean isEndSwipeEnabled() {
-            return false;
-        }
-
-        @Override
-        public boolean isStartSwipeEnabled() {
-            return true;
         }
     }
 }

@@ -58,12 +58,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
-            }
-        });
+        holder.itemView.setOnClickListener(view -> eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
 
         QuestContext ctx = Quest.getContext(q);
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();

@@ -9,7 +9,9 @@ import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RewardPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -31,5 +33,10 @@ public class PersistenceModule {
     @Provides
     public PlayerPersistenceService providePlayerPersistenceService() {
         return new RealmPlayerPersistenceService();
+    }
+
+    @Provides
+    public RewardPersistenceService provideRewardPersistenceService() {
+        return new RealmRewardPersistenceService();
     }
 }
