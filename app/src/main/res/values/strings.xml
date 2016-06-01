@@ -212,4 +212,7 @@
     <string name="reward_removed">Reward removed</string>
     <string name="reward_activity_edit_title">Edit reward</string>
     <string name="reward_too_expensive">Not enough coins</string>
+    <string name="level_up_title">You gained a new level</string>
+    <string name="sweet">SWEET</string>
+    <string name="level_up_message"><![CDATA[Good job! You are now at level <b>%d</b>! Keep up the good work!]]></string>
 </resources>

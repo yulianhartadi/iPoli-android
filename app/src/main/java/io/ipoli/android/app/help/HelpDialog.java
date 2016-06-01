@@ -120,6 +120,6 @@ public class HelpDialog extends DialogFragment {
     public void onActivityCreated(Bundle arg0) {
         super.onActivityCreated(arg0);
         getDialog().getWindow()
-                .getAttributes().windowAnimations = R.style.DialogAnimation;
+                .getAttributes().windowAnimations = R.style.SlideInDialogAnimation;
     }
 }
