@@ -84,6 +84,7 @@ public class RewardListFragment extends BaseFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
+        rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
 
         return view;
     }
@@ -120,7 +121,6 @@ public class RewardListFragment extends BaseFragment {
                     rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
                     rewardList.setAdapter(rewardListAdapter);
                     rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-                    rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
                 });
     }
 
