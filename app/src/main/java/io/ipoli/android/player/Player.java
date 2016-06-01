@@ -21,7 +21,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @PrimaryKey
     private String id;
     private String experience;
-    private String experienceForNextLevel;
     private Integer level;
     private Long coins;
     private String avatar;
@@ -112,14 +111,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
-    }
-
-    public String getExperienceForNextLevel() {
-        return experienceForNextLevel;
-    }
-
-    public void setExperienceForNextLevel(String experienceForNextLevel) {
-        this.experienceForNextLevel = experienceForNextLevel;
     }
 
     public Long getCoins() {
