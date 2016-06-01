@@ -70,6 +70,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Date actualStart;
 
+    private QuestReward reward;
+
     private String source;
 
     private Boolean needsSyncWithRemote;
