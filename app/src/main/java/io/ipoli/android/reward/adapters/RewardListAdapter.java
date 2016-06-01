@@ -51,13 +51,11 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
         viewBinderHelper.bind(holder.swipeLayout, reward.getId());
 
-        holder.delete.setOnClickListener(v -> {
-            eventBus.post(new DeleteRewardRequestEvent(reward));
-        });
+        holder.delete.setOnClickListener(v ->
+                eventBus.post(new DeleteRewardRequestEvent(reward)));
 
-        holder.edit.setOnClickListener(v -> {
-            eventBus.post(new EditRewardRequestEvent(reward));
-        });
+        holder.edit.setOnClickListener(v ->
+                eventBus.post(new EditRewardRequestEvent(reward)));
 
         holder.name.setText(reward.getName());
         holder.buy.setText(String.valueOf(reward.getPrice()));
