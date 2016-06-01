@@ -102,7 +102,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         @BindView(R.id.quest_created_at)
         TextView createdAt;
 
-
         @BindView(R.id.quest_context_indicator_background)
         public View contextIndicatorBackground;
 
