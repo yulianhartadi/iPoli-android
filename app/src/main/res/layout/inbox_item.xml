@@ -12,7 +12,6 @@
     app:mode="same_level">
 
     <FrameLayout
-        android:id="@+id/delete_layout"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
@@ -22,28 +21,28 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/inbox_schedule_quest"
+                android:id="@+id/schedule_quest"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:background="@color/md_orange_500"
                 android:src="@drawable/ic_schedule_white_24dp" />
 
             <ImageButton
-                android:id="@+id/inbox_complete_quest"
+                android:id="@+id/complete_quest"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:background="@color/md_green_500"
                 android:src="@drawable/ic_done_white_24dp" />
 
             <ImageButton
-                android:id="@+id/inbox_edit_quest"
+                android:id="@+id/edit_quest"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:background="@color/md_blue_500"
                 android:src="@drawable/ic_create_white_24dp" />
 
             <ImageButton
-                android:id="@+id/inbox_delete_quest"
+                android:id="@+id/delete_quest"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:background="@color/md_red_500"

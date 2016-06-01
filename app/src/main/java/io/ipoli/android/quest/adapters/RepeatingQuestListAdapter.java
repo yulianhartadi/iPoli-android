@@ -46,7 +46,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.repeating_quests_item, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.repeating_quest_item, parent, false));
     }
 
     @Override
