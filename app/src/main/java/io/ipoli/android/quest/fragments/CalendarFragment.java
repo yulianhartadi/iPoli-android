@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
@@ -42,7 +43,7 @@ import io.ipoli.android.quest.events.QuestCompletedEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/29/16.
  */
-public class CalendarFragment extends Fragment implements CompactCalendarView.CompactCalendarViewListener {
+public class CalendarFragment extends BaseFragment implements CompactCalendarView.CompactCalendarViewListener {
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
@@ -90,8 +91,6 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
 
-        setHasOptionsMenu(true);
-
         return view;
     }
 
@@ -101,14 +100,16 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
     }
 
     @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_today) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.MENU));
             eventBus.post(new CloseToolbarCalendarEvent());
-            return true;
-        } else if(id == R.id.action_help) {
-            HelpDialog.newInstance(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title, "calendar").show(getActivity().getSupportFragmentManager());
             return true;
         }
 
@@ -199,5 +200,10 @@ public class CalendarFragment extends Fragment implements CompactCalendarView.Co
         if (new LocalDate(e.quest.getEndDate()).isAfter(new LocalDate()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
         }
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title, "calendar").show(getActivity().getSupportFragmentManager());
     }
 }

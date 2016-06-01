@@ -12,14 +12,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -41,6 +39,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -53,7 +52,7 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends RxFragment {
+public class OverviewFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
@@ -89,8 +88,6 @@ public class OverviewFragment extends RxFragment {
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
 
-        setHasOptionsMenu(true);
-
         return view;
     }
 
@@ -100,12 +97,13 @@ public class OverviewFragment extends RxFragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_help) {
-            HelpDialog.newInstance(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title, "overview").show(getActivity().getSupportFragmentManager());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title, "overview").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

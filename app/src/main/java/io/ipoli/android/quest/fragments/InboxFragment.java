@@ -10,14 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
@@ -43,7 +42,7 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;
 
-public class InboxFragment extends RxFragment {
+public class InboxFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
@@ -73,18 +72,17 @@ public class InboxFragment extends RxFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        setHasOptionsMenu(true);
-
         return view;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_help) {
-            HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
     }
 
     private void updateQuests() {

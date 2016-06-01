@@ -8,14 +8,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +27,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
@@ -45,7 +44,7 @@ import io.ipoli.android.reward.viewmodels.RewardViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends RxFragment {
+public class RewardListFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
@@ -78,18 +77,17 @@ public class RewardListFragment extends RxFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
 
-        setHasOptionsMenu(true);
-
         return view;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_help) {
-            HelpDialog.newInstance(R.layout.fragment_help_dialog_rewards, R.string.help_dialog_rewards_title, "rewards").show(getActivity().getSupportFragmentManager());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_rewards, R.string.help_dialog_rewards_title, "rewards").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

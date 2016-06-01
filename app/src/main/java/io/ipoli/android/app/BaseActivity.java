@@ -2,7 +2,7 @@ package io.ipoli.android.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import  android.view.Menu;
+import android.view.Menu;
 
 import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
