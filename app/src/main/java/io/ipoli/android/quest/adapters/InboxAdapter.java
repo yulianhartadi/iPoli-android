@@ -81,8 +81,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
 
         holder.deleteQuest.setOnClickListener(v -> {
-            quests.remove(holder.getAdapterPosition());
-            notifyItemRemoved(holder.getAdapterPosition());
             eventBus.post(new DeleteQuestRequestEvent(q));
         });
     }
@@ -114,16 +112,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         @BindView(R.id.swipe_layout)
         public SwipeRevealLayout swipeLayout;
 
-        @BindView(R.id.inbox_schedule_quest)
+        @BindView(R.id.schedule_quest)
         public ImageButton scheduleQuest;
 
-        @BindView(R.id.inbox_complete_quest)
+        @BindView(R.id.complete_quest)
         public ImageButton completeQuest;
 
-        @BindView(R.id.inbox_edit_quest)
+        @BindView(R.id.edit_quest)
         public ImageButton editQuest;
 
-        @BindView(R.id.inbox_delete_quest)
+        @BindView(R.id.delete_quest)
         public ImageButton deleteQuest;
 
         public ViewHolder(View v) {

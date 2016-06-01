@@ -51,7 +51,6 @@ public class InboxFragment extends BaseFragment {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private InboxAdapter inboxAdapter;
     private Unbinder unbinder;
 
     @Override
@@ -90,7 +89,7 @@ public class InboxFragment extends BaseFragment {
     }
 
     private void initQuestList(List<Quest> quests) {
-        inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
+        InboxAdapter inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
         questList.setAdapter(inboxAdapter);
         questList.addItemDecoration(new DividerItemDecoration(getContext()));
     }
@@ -121,6 +120,7 @@ public class InboxFragment extends BaseFragment {
                             R.string.quest_removed,
                             Snackbar.LENGTH_SHORT)
                     .show();
+            updateQuests();
         });
     }
 
