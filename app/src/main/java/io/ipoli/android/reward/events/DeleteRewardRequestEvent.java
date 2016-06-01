@@ -8,10 +8,8 @@ import io.ipoli.android.reward.data.Reward;
  */
 public class DeleteRewardRequestEvent {
     public final Reward reward;
-    public final int position;
 
-    public DeleteRewardRequestEvent(Reward reward, int position) {
+    public DeleteRewardRequestEvent(Reward reward) {
         this.reward = reward;
-        this.position = position;
     }
 }

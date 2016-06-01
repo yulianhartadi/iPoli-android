@@ -107,31 +107,8 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         return viewModels.size();
     }
 
-//    @Override
-//    public void onItemMoved(int fromPosition, int toPosition) {
-//
-//    }
-//
-//    @Override
-//    public void onItemDismissed(int position, int direction) {
-//        if (position >= viewModels.size()) {
-//            return;
-//        }
-//        RepeatingQuestViewModel vm = viewModels.get(position);
-//        viewModels.remove(position);
-//        notifyItemRemoved(position);
-//        if (direction == ItemTouchHelper.START) {
-//            eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest()));
-//        }
-//    }
-
     public void updateQuests(List<RepeatingQuestViewModel> newViewModels) {
         viewModels = newViewModels;
-        notifyDataSetChanged();
-    }
-
-    public void addQuest(int position, RepeatingQuestViewModel repeatingQuestViewModel) {
-        viewModels.add(position, repeatingQuestViewModel);
         notifyDataSetChanged();
     }
 
@@ -171,51 +148,5 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             super(v);
             ButterKnife.bind(this, v);
         }
-
-//        @Override
-//        public void onItemSelected() {
-//
-//        }
-//
-//        @Override
-//        public void onItemClear() {
-//
-//        }
-//
-//        @Override
-//        public void onItemSwipeStart(int direction) {
-//            if (direction == ItemTouchHelper.START) {
-//                showDelete();
-//            }
-//        }
-//
-//        private void showDelete() {
-//            changeDeleteVisibility(View.VISIBLE);
-//        }
-//
-//        private void hideScheduleForToday() {
-//            changeDeleteVisibility(View.GONE);
-//        }
-//
-//        private void changeDeleteVisibility(int iconVisibility) {
-//            itemView.findViewById(R.id.quest_delete_container).setVisibility(iconVisibility);
-//        }
-//
-//        @Override
-//        public void onItemSwipeStopped(int direction) {
-//            if (direction == ItemTouchHelper.START) {
-//                hideScheduleForToday();
-//            }
-//        }
-//
-//        @Override
-//        public boolean isEndSwipeEnabled() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean isStartSwipeEnabled() {
-//            return true;
-//        }
     }
 }

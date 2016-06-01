@@ -40,6 +40,7 @@ import io.ipoli.android.reward.activities.RewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
+import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.viewmodels.RewardViewModel;
 import rx.Observable;
@@ -169,6 +170,14 @@ public class RewardListFragment extends BaseFragment {
         Intent i = new Intent(getContext(), RewardActivity.class);
         i.putExtra(Constants.REWARD_ID_EXTRA_KEY, e.reward.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
+        rewardPersistenceService.delete(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
+            Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
+            updateRewards();
+        });
     }
 
     @Subscribe

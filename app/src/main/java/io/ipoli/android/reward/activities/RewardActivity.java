@@ -40,7 +40,6 @@ public class RewardActivity extends BaseActivity {
     private static final int MAX_PRICE = 1000;
     private static final int PRICE_STEP = 50;
 
-
     @Inject
     Bus eventBus;
 
@@ -70,7 +69,6 @@ public class RewardActivity extends BaseActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
-
 
         if (getIntent() != null && getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY) != null) {
             isEdit = true;
@@ -138,7 +136,7 @@ public class RewardActivity extends BaseActivity {
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_reward_title))
                         .setMessage(getString(R.string.dialog_delete_reward_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    rewardPersistenceService.delete(reward).subscribe(rewardId -> {
+                    rewardPersistenceService.delete(reward).compose(bindToLifecycle()).subscribe(rewardId -> {
                         Toast.makeText(RewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();

@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
+import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.viewmodels.RewardViewModel;
 
@@ -27,10 +31,12 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
     private final List<RewardViewModel> viewModels;
     private final Bus eventBus;
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     public RewardListAdapter(List<RewardViewModel> viewModels, Bus eventBus) {
         this.viewModels = viewModels;
         this.eventBus = eventBus;
+        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -42,12 +48,21 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
         Reward reward = vm.getReward();
-        holder.itemView.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
+
+        viewBinderHelper.bind(holder.swipeLayout, reward.getId());
+
+        holder.delete.setOnClickListener(v -> {
+            eventBus.post(new DeleteRewardRequestEvent(reward));
+        });
+
+        holder.edit.setOnClickListener(v -> {
+            eventBus.post(new EditRewardRequestEvent(reward));
+        });
 
         holder.name.setText(reward.getName());
         holder.buy.setText(String.valueOf(reward.getPrice()));
 
-        if(vm.canBeBought()) {
+        if (vm.canBeBought()) {
             holder.buy.setEnabled(true);
             holder.buy.setBackgroundResource(R.color.colorAccent);
             holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
@@ -56,7 +71,6 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
             holder.buy.setBackgroundResource(R.color.md_grey_500);
             holder.buy.setOnClickListener(null);
         }
-
     }
 
     @Override
@@ -71,6 +85,15 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
         @BindView(R.id.buy_reward)
         Button buy;
+
+        @BindView(R.id.swipe_layout)
+        public SwipeRevealLayout swipeLayout;
+
+        @BindView(R.id.edit)
+        public ImageButton edit;
+
+        @BindView(R.id.delete)
+        public ImageButton delete;
 
         public ViewHolder(View itemView) {
             super(itemView);
