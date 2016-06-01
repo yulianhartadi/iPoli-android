@@ -7,10 +7,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -32,6 +32,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
@@ -63,7 +64,11 @@ public class RewardListFragment extends BaseFragment {
     private CoordinatorLayout rootContainer;
 
     @BindView(R.id.reward_list)
-    RecyclerView rewardList;
+    EmptyStateRecyclerView rewardList;
+
+    @BindView(R.id.root_container)
+    RelativeLayout rootLayout;
+
 
     private RewardListAdapter rewardListAdapter;
 
@@ -103,19 +108,20 @@ public class RewardListFragment extends BaseFragment {
     private void updateRewards() {
         rewardPersistenceService.findAll().compose(bindToLifecycle())
                 .flatMap(rewards -> playerPersistenceService.find().compose(bindToLifecycle())
-                .flatMap(player -> Observable.just(new Pair<>(player, rewards))))
+                        .flatMap(player -> Observable.just(new Pair<>(player, rewards))))
                 .subscribe(pair -> {
-            List<RewardViewModel> rewardViewModels = new ArrayList<>();
-            Player player = pair.first;
-            List<Reward> rewards = pair.second;
-            for(Reward r : rewards) {
-                rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
-            }
+                    List<RewardViewModel> rewardViewModels = new ArrayList<>();
+                    Player player = pair.first;
+                    List<Reward> rewards = pair.second;
+                    for (Reward r : rewards) {
+                        rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
+                    }
 
-            rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
-            rewardList.setAdapter(rewardListAdapter);
-            rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-        });
+                    rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+                    rewardList.setAdapter(rewardListAdapter);
+                    rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
+                    rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
+                });
     }
 
     @Override
@@ -138,11 +144,11 @@ public class RewardListFragment extends BaseFragment {
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
-            if(player == null) {
+            if (player == null) {
                 return Observable.empty();
             }
             Reward r = e.reward;
-            if(player.getCoins() - r.getPrice() < 0) {
+            if (player.getCoins() - r.getPrice() < 0) {
                 showTooExpensiveMessage();
                 return Observable.empty();
             }

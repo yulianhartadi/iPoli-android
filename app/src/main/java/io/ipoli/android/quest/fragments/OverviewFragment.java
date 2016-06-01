@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -42,6 +42,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
@@ -58,8 +59,11 @@ public class OverviewFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
+    @BindView(R.id.root_container)
+    RelativeLayout rootLayout;
+
     @BindView(R.id.quest_list)
-    RecyclerView questList;
+    EmptyStateRecyclerView questList;
 
     CoordinatorLayout rootContainer;
 
@@ -84,6 +88,8 @@ public class OverviewFragment extends BaseFragment {
 
         overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
+        questList.setEmptyView(rootLayout, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
+
 
         return view;
     }
