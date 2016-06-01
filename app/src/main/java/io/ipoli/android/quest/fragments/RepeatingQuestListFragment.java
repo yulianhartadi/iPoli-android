@@ -2,14 +2,11 @@ package io.ipoli.android.quest.fragments;
 
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,14 +38,12 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
@@ -92,13 +87,6 @@ public class RepeatingQuestListFragment extends BaseFragment {
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_autorenew_grey_24dp);
-
-        int swipeFlags = ItemTouchHelper.START;
-        ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestListAdapter, 0, swipeFlags);
-        touchCallback.setLongPressDragEnabled(false);
-        touchCallback.setSwipeStartDrawable(new ColorDrawable(ContextCompat.getColor(getContext(), R.color.md_red_500)));
-        ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
-        helper.attachToRecyclerView(questList);
 
         return view;
     }
@@ -185,32 +173,19 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
-        final Snackbar snackbar = Snackbar
-                .make(rootContainer,
-                        R.string.repeating_quest_removed,
-                        Snackbar.LENGTH_SHORT);
+
 
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                Observable.concat(questPersistenceService.deleteAllFromRepeatingQuest(repeatingQuest.getId()), repeatingQuestPersistenceService.delete(repeatingQuest))
-                        .compose(bindToLifecycle()).subscribe();
-            }
+        Observable.concat(questPersistenceService.deleteAllFromRepeatingQuest(repeatingQuest.getId()), repeatingQuestPersistenceService.delete(repeatingQuest))
+                .compose(bindToLifecycle()).subscribe(o -> {
+        }, error -> {
+        }, () -> {
+            Snackbar
+                    .make(rootContainer,
+                            R.string.repeating_quest_removed,
+                            Snackbar.LENGTH_SHORT).show();
+            updateQuests();
         });
-
-        snackbar.setAction(R.string.undo, view -> {
-            RepeatingQuestViewModel vm = createViewModel(repeatingQuest);
-            if (vm != null) {
-                repeatingQuestListAdapter.addQuest(e.position, vm);
-            }
-            snackbar.setCallback(null);
-            eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest));
-        });
-
-        snackbar.show();
     }
 
     @Subscribe

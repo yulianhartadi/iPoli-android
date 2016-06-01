@@ -119,6 +119,13 @@ public class App extends MultiDexApplication {
         getAppComponent(this).inject(this);
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) == 0) {
+            Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+            player.setExperienceForNextLevel(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1).toString());
+            player.setCoins(Constants.DEFAULT_PLAYER_COINS);
+            playerPersistenceService.saveSync(player);
+        }
+
         resetEndDateForIncompleteQuests();
         registerServices();
         scheduleNextReminder();
@@ -129,12 +136,7 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) == 0) {
-            Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-            player.setExperienceForNextLevel(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1).toString());
-            player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-            playerPersistenceService.saveRemoteObject(player).subscribe();
-        } else {
+        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
             eventBus.post(new ForceSyncRequestEvent());
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);

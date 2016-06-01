@@ -222,7 +222,7 @@
     <string name="sweet">SWEET</string>
     <string name="level_up_message"><![CDATA[Good job! You are now at level <b>%d</b>! Keep up the good work!]]></string>
     <string name="empty_text_rewards">What a shame! No rewards here! Add one?</string>
-    <string name="empty_overview_text">Your adventure is empty? Start it by adding a quest?</string>
+    <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
 </resources>
