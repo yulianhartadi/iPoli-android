@@ -9,12 +9,12 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -40,6 +40,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -60,8 +61,11 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
     CoordinatorLayout rootContainer;
 
+    @BindView(R.id.root_container)
+    RelativeLayout rootLayout;
+
     @BindView(R.id.quest_list)
-    RecyclerView questList;
+    EmptyStateRecyclerView questList;
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
@@ -87,6 +91,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
+        questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_autorenew_grey_24dp);
 
         int swipeFlags = ItemTouchHelper.START;
         ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestListAdapter, 0, swipeFlags);

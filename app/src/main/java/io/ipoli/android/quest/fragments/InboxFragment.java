@@ -7,11 +7,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -32,6 +32,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -49,8 +50,11 @@ public class InboxFragment extends BaseFragment {
 
     CoordinatorLayout rootContainer;
 
+    @BindView(R.id.root_container)
+    RelativeLayout rootLayout;
+
     @BindView(R.id.quest_list)
-    RecyclerView questList;
+    EmptyStateRecyclerView questList;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -99,6 +103,7 @@ public class InboxFragment extends BaseFragment {
         inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
         questList.setAdapter(inboxAdapter);
         questList.addItemDecoration(new DividerItemDecoration(getContext()));
+        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
 
         ItemTouchCallback touchCallback = new ItemTouchCallback(inboxAdapter, ItemTouchHelper.START | ItemTouchHelper.END);
         touchCallback.setLongPressDragEnabled(false);

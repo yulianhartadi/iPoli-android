@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -42,6 +42,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -56,8 +57,11 @@ public class OverviewFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
+    @BindView(R.id.root_container)
+    RelativeLayout rootLayout;
+
     @BindView(R.id.quest_list)
-    RecyclerView questList;
+    EmptyStateRecyclerView questList;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -79,6 +83,8 @@ public class OverviewFragment extends BaseFragment {
 
         overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
+        questList.setEmptyView(rootLayout, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
+
 
         int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
         ItemTouchCallback touchCallback = new ItemTouchCallback(overviewAdapter, 0, swipeFlags);
