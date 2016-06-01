@@ -16,6 +16,8 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -70,7 +72,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Date actualStart;
 
-    private QuestReward reward;
+    private Long coins;
+    private Long experience;
 
     private String source;
 
@@ -185,6 +188,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.needsSyncWithRemote = true;
         this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+        this.experience = new ExperienceRewardGenerator().generate(this);
+        this.coins = new CoinsRewardGenerator().generate(this);
     }
 
     public String getName() {
@@ -376,5 +381,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setSourceMapping(SourceMapping sourceMapping) {
         this.sourceMapping = sourceMapping;
+    }
+
+    public Long getCoins() {
+        return coins;
+    }
+
+    public Long getExperience() {
+        return experience;
     }
 }
