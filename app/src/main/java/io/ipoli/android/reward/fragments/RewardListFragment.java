@@ -88,6 +88,9 @@ public class RewardListFragment extends RxFragment {
 
     private void updateRewards() {
         playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+            if(player == null) {
+                return;
+            }
             int coins = player.getCoins();
             rewardPersistenceService.findAll().compose(bindToLifecycle()).subscribe(rewards -> {
                 List<RewardViewModel> rewardViewModels = new ArrayList<>();
@@ -122,6 +125,9 @@ public class RewardListFragment extends RxFragment {
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+            if(player == null) {
+                return;
+            }
             Reward r = e.reward;
             if(player.getCoins() - r.getPrice() < 0) {
                 showTooExpensiveMessage();

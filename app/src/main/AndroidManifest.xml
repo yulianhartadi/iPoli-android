@@ -75,6 +75,16 @@
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
 
+        <activity android:name=".player.activities.PickAvatarActivity"
+            android:label="@string/title_activity_pick_avatar"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
