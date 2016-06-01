@@ -91,7 +91,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
-        questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
+        questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_autorenew_grey_24dp);
 
         int swipeFlags = ItemTouchHelper.START;
         ItemTouchCallback touchCallback = new ItemTouchCallback(repeatingQuestListAdapter, 0, swipeFlags);
