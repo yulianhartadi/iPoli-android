@@ -43,7 +43,7 @@ public class RateDialog extends DialogFragment {
     private LocalStorage localStorage;
     private int appRun;
 
-    private enum State {
+    public enum State {
         INITIAL, RATE_APP, FEEDBACK;
     }
 
@@ -156,7 +156,7 @@ public class RateDialog extends DialogFragment {
                     String feedbackText = feedback.getText().toString();
                     if(!TextUtils.isEmpty(feedbackText.trim())) {
                         eventBus.post(new RateDialogFeedbackSentEvent(feedbackText, appRun));
-                        Toast.makeText(getContext(), R.string.rate_dialog_feedback_thanks, Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), R.string.rate_dialog_feedback_thanks, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton(getString(R.string.rate_dialog_feedback_no), (dialog, which) -> {

@@ -179,8 +179,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     experienceBar.setProgress(70);
                     experienceBar.setMax(100);
 
-                    CircleImageView avatar = (CircleImageView) header.findViewById(R.id.player_image);
-                    avatar.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
+                    CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+                    avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+                    avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
                 });
             }
         };
@@ -439,7 +440,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
-                EmailUtils.send(this, getString(R.string.feedback_email_subject), getString(R.string.feedback_email_chooser_title));
+                RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
