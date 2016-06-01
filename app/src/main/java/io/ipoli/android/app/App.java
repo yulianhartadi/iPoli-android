@@ -43,7 +43,6 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -121,7 +120,6 @@ public class App extends MultiDexApplication {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) == 0) {
             Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-            player.setExperienceForNextLevel(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1).toString());
             player.setCoins(Constants.DEFAULT_PLAYER_COINS);
             playerPersistenceService.saveSync(player);
         }
