@@ -6,5 +6,5 @@ package io.ipoli.android.app.net;
  */
 
 public enum AuthProviderName {
-    ANONYMOUS, TWITTER, FACEBOOK, SLACK
+    ANONYMOUS, TWITTER, FACEBOOK, SLACK, GOOGLE_ADVERTISING_ID
 }

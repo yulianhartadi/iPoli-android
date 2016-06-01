@@ -1,12 +1,12 @@
 package io.ipoli.android.player;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -26,7 +26,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     private Long coins;
     private String avatar;
     private String timezone;
-    private List<AuthProvider> authProviders;
+    private RealmList<AuthProvider> authProviders;
 
     @Required
     private Date createdAt;
@@ -40,14 +40,12 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     public Player() {
     }
 
-    public Player(String experience, int level, String avatar, AuthProvider authProvider) {
+    public Player(String experience, int level, String avatar) {
         this.id = UUID.randomUUID().toString();
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
-        List<AuthProvider> authProviders = new ArrayList<>();
-        authProviders.add(authProvider);
-        this.authProviders = authProviders;
+        this.authProviders = new RealmList<>();
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
@@ -155,6 +153,10 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @Override
     public boolean isRemoteObject() {
         return isRemoteObject;
+    }
+
+    public void addAuthProvider(AuthProvider authProvider) {
+        authProviders.add(authProvider);
     }
 
     public List<AuthProvider> getAuthProviders() {
