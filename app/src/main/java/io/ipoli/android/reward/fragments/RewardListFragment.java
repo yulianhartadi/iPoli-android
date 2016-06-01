@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,8 @@ import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.player.Player;
@@ -46,7 +47,7 @@ import rx.Observable;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends RxFragment {
+public class RewardListFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
@@ -80,6 +81,16 @@ public class RewardListFragment extends RxFragment {
         rewardList.setLayoutManager(layoutManager);
 
         return view;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_rewards, R.string.help_dialog_rewards_title, "rewards").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

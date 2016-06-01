@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -38,6 +37,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -52,7 +53,7 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 import rx.Observable;
 
-public class RepeatingQuestListFragment extends RxFragment {
+public class RepeatingQuestListFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
@@ -95,6 +96,16 @@ public class RepeatingQuestListFragment extends RxFragment {
         helper.attachToRecyclerView(questList);
 
         return view;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quests, R.string.help_dialog_repeating_quests_title, "repeating_quests").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

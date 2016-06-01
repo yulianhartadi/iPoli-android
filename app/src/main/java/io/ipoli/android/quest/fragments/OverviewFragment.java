@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -40,6 +39,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.ItemTouchCallback;
 import io.ipoli.android.app.utils.DateUtils;
@@ -51,7 +52,7 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends RxFragment {
+public class OverviewFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
@@ -87,14 +88,22 @@ public class OverviewFragment extends RxFragment {
         ItemTouchHelper helper = new ItemTouchHelper(touchCallback);
         helper.attachToRecyclerView(questList);
 
-        setHasOptionsMenu(true);
-
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.overview_menu, menu);
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_overview, R.string.help_dialog_overview_title, "overview").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

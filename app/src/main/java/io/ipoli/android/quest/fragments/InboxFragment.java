@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +27,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.ItemTouchCallback;
@@ -41,7 +42,7 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;
 
-public class InboxFragment extends RxFragment {
+public class InboxFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
@@ -72,6 +73,16 @@ public class InboxFragment extends RxFragment {
         questList.setLayoutManager(layoutManager);
 
         return view;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
     }
 
     private void updateQuests() {

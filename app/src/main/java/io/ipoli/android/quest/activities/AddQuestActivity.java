@@ -40,6 +40,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
@@ -210,6 +211,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             case R.id.action_save:
                 eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
                 saveQuest();
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
