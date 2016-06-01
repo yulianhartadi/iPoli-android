@@ -29,6 +29,7 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Subscribe;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -60,6 +61,8 @@ import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
@@ -85,6 +88,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
     public static final int PICK_PLAYER_AVATAR = 101;
+    private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -176,8 +180,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     coins.setText(player.getCoins() + "");
 
                     ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-                    experienceBar.setProgress(70);
-                    experienceBar.setMax(100);
+                    experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+                    experienceBar.setProgress(getCurrentProgress(player));
 
                     CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
                     avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
@@ -188,6 +192,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         changeToCalendarFragment();
+    }
+
+    private int getCurrentProgress(Player player) {
+        int currentLevel = player.getLevel();
+        BigInteger xpForNextLevel = ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(ExperienceForLevelGenerator.forLevel(currentLevel));
+        BigInteger currentXP = new BigInteger(player.getExperience());
+        return currentXP.divide(xpForNextLevel).intValue() * PROGRESS_BAR_MAX_VALUE;
     }
 
     private void changeToCalendarFragment() {
