@@ -94,9 +94,9 @@ public class InboxFragment extends BaseFragment {
 
     private void initQuestList(List<Quest> quests) {
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
+        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
         questList.setAdapter(inboxAdapter);
         questList.addItemDecoration(new DividerItemDecoration(getContext()));
-        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
     }
 
     private Observable<List<Quest>> getAllUnplanned() {
