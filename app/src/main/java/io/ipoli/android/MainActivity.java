@@ -168,37 +168,42 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
-                    if (player == null || navigationView.getHeaderCount() < 1) {
-                        return;
-                    }
-                    View header = navigationView.getHeaderView(0);
-                    TextView level = (TextView) header.findViewById(R.id.player_level);
-                    level.setText("Level " + player.getLevel() + ": Newbie");
-
-                    TextView coins = (TextView) header.findViewById(R.id.player_coins);
-                    coins.setText(player.getCoins() + "");
-
-                    ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-                    experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
-                    experienceBar.setProgress(getCurrentProgress(player));
-
-                    CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
-                    avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-                    avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
-                });
+                updatePlayerInDrawer();
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         changeToCalendarFragment();
+        updatePlayerInDrawer();
+    }
+
+    private void updatePlayerInDrawer() {
+        playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
+            if (player == null || navigationView.getHeaderCount() < 1) {
+                return;
+            }
+            View header = navigationView.getHeaderView(0);
+            TextView level = (TextView) header.findViewById(R.id.player_level);
+            level.setText("Level " + player.getLevel() + ": Newbie");
+
+            TextView coins = (TextView) header.findViewById(R.id.player_coins);
+            coins.setText(player.getCoins() + "");
+
+            ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+            experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+            experienceBar.setProgress(getCurrentProgress(player));
+
+            CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+            avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+            avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
+        });
     }
 
     private int getCurrentProgress(Player player) {
         int currentLevel = player.getLevel();
         BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(ExperienceForLevelGenerator.forLevel(currentLevel)));
         BigDecimal currentXP = new BigDecimal(player.getExperience());
-        return (int)(currentXP.divide(xpForNextLevel).doubleValue() * PROGRESS_BAR_MAX_VALUE);
+        return (int) (currentXP.divide(xpForNextLevel).doubleValue() * PROGRESS_BAR_MAX_VALUE);
     }
 
     private void changeToCalendarFragment() {

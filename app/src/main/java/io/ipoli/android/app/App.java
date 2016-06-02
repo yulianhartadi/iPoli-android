@@ -109,6 +109,14 @@ public class App extends MultiDexApplication {
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
                 .deleteRealmIfMigrationNeeded()
+                .initialData(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+                        player.setCoins(Constants.DEFAULT_PLAYER_COINS);
+                        realm.copyToRealm(player);
+                    }
+                })
 //                .migration((realm, oldVersion, newVersion) -> {
 //
 //                })
@@ -117,17 +125,11 @@ public class App extends MultiDexApplication {
 
         getAppComponent(this).inject(this);
 
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) == 0) {
-            Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-            player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-            playerPersistenceService.saveSync(player);
-        }
-
         resetEndDateForIncompleteQuests();
         registerServices();
         scheduleNextReminder();
 
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleJob(dailySyncJob());
