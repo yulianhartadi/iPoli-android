@@ -37,6 +37,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 
 /**
@@ -130,6 +131,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
+        eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
         startActivity(new Intent(getActivity(), AddQuestActivity.class));
     }
 

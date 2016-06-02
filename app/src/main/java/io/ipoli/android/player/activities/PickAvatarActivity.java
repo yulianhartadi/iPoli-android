@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -20,7 +19,10 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.adapters.AvatarAdapter;
+import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.AvatarSelectedEvent;
 
 public class PickAvatarActivity extends BaseActivity {
@@ -44,6 +46,8 @@ public class PickAvatarActivity extends BaseActivity {
             avatars.add(String.format(Locale.getDefault(), "avatar_%02d", i));
         }
         avatarList.setAdapter(new AvatarAdapter(avatars, eventBus));
+
+        eventBus.post(new ScreenShownEvent(EventSource.PICK_AVATAR));
     }
 
     @Override
@@ -60,6 +64,7 @@ public class PickAvatarActivity extends BaseActivity {
 
     @Subscribe
     public void onAvatarSelected(AvatarSelectedEvent e) {
+        eventBus.post(new AvatarPickedEvent(e.avatarName));
         Intent data = new Intent();
         data.putExtra(Constants.AVATAR_NAME_EXTRA_KEY, e.avatarName);
         setResult(0, data);

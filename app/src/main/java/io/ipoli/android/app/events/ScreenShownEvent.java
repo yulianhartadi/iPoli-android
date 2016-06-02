@@ -5,9 +5,9 @@ package io.ipoli.android.app.events;
  * on 4/15/16.
  */
 public class ScreenShownEvent {
-    public String screenName;
+    public EventSource source;
 
-    public ScreenShownEvent(String screenName) {
-        this.screenName = screenName;
+    public ScreenShownEvent(EventSource source) {
+        this.source = source;
     }
 }

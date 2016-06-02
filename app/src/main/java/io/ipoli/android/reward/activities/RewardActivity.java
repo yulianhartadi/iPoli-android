@@ -28,8 +28,11 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.data.Reward;
+import io.ipoli.android.reward.events.NewRewardSavedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -72,6 +75,7 @@ public class RewardActivity extends BaseActivity {
 
         if (getIntent() != null && getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY) != null) {
             isEdit = true;
+            eventBus.post(new ScreenShownEvent(EventSource.EDIT_REWARD));
             setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
             rewardPersistenceService.findById(rewardId).compose(bindToLifecycle()).subscribe(r -> {
@@ -79,6 +83,7 @@ public class RewardActivity extends BaseActivity {
                 initUI();
             });
         } else {
+            eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
             initUI();
         }
     }
@@ -161,6 +166,7 @@ public class RewardActivity extends BaseActivity {
         }
 
         rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(reward -> {
+            eventBus.post(new NewRewardSavedEvent(reward));
             Toast.makeText(this, "Reward saved", Toast.LENGTH_SHORT);
             finish();
         });

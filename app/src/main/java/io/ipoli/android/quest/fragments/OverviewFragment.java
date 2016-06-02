@@ -48,6 +48,7 @@ import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -152,7 +153,7 @@ public class OverviewFragment extends BaseFragment {
 
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
-        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
+        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.OVERVIEW));
         questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             Snackbar
                     .make(rootContainer,
@@ -165,6 +166,7 @@ public class OverviewFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
+        eventBus.post(new AddQuestButtonTappedEvent(EventSource.OVERVIEW));
         startActivity(new Intent(getActivity(), AddQuestActivity.class));
     }
 

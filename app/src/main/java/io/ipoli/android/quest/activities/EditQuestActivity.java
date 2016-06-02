@@ -125,7 +125,7 @@ public class EditQuestActivity extends BaseActivity {
             initUI();
         });
 
-        eventBus.post(new ScreenShownEvent("edit_quest"));
+        eventBus.post(new ScreenShownEvent(EventSource.EDIT_QUEST));
     }
 
     private void initUI() {

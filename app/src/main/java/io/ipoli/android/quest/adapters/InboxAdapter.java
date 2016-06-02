@@ -23,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -70,19 +71,20 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
-
-        holder.scheduleQuest.setOnClickListener(v ->
-                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX)));
-
-        holder.completeQuest.setOnClickListener(v ->
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX)));
-
-        holder.editQuest.setOnClickListener(v ->
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
-
-        holder.deleteQuest.setOnClickListener(v -> {
-            eventBus.post(new DeleteQuestRequestEvent(q));
+        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
+            @Override
+            public void onOpened(SwipeRevealLayout view) {
+                super.onOpened(view);
+                eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
+            }
         });
+        holder.scheduleQuest.setOnClickListener(v -> eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX)));
+
+        holder.completeQuest.setOnClickListener(v -> eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX)));
+
+        holder.editQuest.setOnClickListener(v -> eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
+
+        holder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX)));
     }
 
     @Override

@@ -17,6 +17,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
@@ -50,6 +52,13 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         Reward reward = vm.getReward();
 
         viewBinderHelper.bind(holder.swipeLayout, reward.getId());
+        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+            @Override
+            public void onOpened(SwipeRevealLayout view) {
+                super.onOpened(view);
+                eventBus.post(new ItemActionsShownEvent(EventSource.REWARDS));
+            }
+        });
 
         holder.delete.setOnClickListener(v ->
                 eventBus.post(new DeleteRewardRequestEvent(reward)));

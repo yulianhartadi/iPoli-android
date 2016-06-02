@@ -9,8 +9,10 @@ import java.util.HashMap;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
@@ -27,15 +29,19 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.player.events.AvatarPickedEvent;
+import io.ipoli.android.player.events.LevelDownEvent;
+import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
+import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
@@ -46,23 +52,27 @@ import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
-import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
-import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
+import io.ipoli.android.reward.events.BuyRewardEvent;
+import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
+import io.ipoli.android.reward.events.EditRewardRequestEvent;
+import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
+import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
@@ -79,7 +89,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onScreenShown(ScreenShownEvent e) {
-        log("screen_shown", EventParams.of("name", e.screenName));
+        log("screen_shown", EventParams.of("name", e.source.name().toLowerCase()));
     }
 
     @Subscribe
@@ -354,7 +364,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onSyncCalendarRequest(SyncCalendarRequestEvent e) {
-        log("sync_calendar_request", EventParams.of("source", e.source.name().toLowerCase()));
+        log("sync_calendar_request", e.source);
     }
 
     @Subscribe
@@ -416,8 +426,65 @@ public class FlurryAnalyticsService implements AnalyticsService {
                 .add("app_run", String.valueOf(e.appRun)));
     }
 
+    @Subscribe
+    public void onLevelUp(LevelUpEvent e) {
+        log("level_up", EventParams.of("new_level", e.newLevel + ""));
+    }
+
+    @Subscribe
+    public void onLevelDown(LevelDownEvent e) {
+        log("level_down", EventParams.of("new_level", e.newLevel + ""));
+    }
+
+    @Subscribe
+    public void onBuyReward(BuyRewardEvent e) {
+        log("buy_reward", EventParams.create()
+        .add("name", e.reward.getName())
+        .add("price", e.reward.getPrice() + ""));
+    }
+
+    @Subscribe
+    public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
+        log("delete_reward", EventParams.create()
+                .add("name", e.reward.getName())
+                .add("price", e.reward.getPrice() + ""));
+    }
+
+    @Subscribe
+    public void onEditRewardRequest(EditRewardRequestEvent e) {
+        log("edit_reward", EventParams.create()
+                .add("name", e.reward.getName())
+                .add("price", e.reward.getPrice() + ""));
+    }
+
+    @Subscribe
+    public void onNewRewardSaved(NewRewardSavedEvent e) {
+        log("new_reward_saved", EventParams.create()
+                .add("name", e.reward.getName())
+                .add("price", e.reward.getPrice() + ""));
+    }
+
+    @Subscribe
+    public void onAddQuestButtonTapped(AddQuestButtonTappedEvent e) {
+        log("add_quest_button_tapped", e.source);
+    }
+
+    @Subscribe
+    public void onAvatarPicked(AvatarPickedEvent e) {
+        log("avatar_picked", EventParams.of("name", e.avatarName));
+    }
+
+    @Subscribe
+    public void onItemActionsShown(ItemActionsShownEvent e) {
+        log("item_actions_shown", e.source);
+    }
+
     private FlurryEventRecordStatus log(String eventName) {
         return FlurryAgent.logEvent(eventName);
+    }
+
+    private FlurryEventRecordStatus log(String eventName, EventSource source) {
+        return log(eventName, EventParams.of("source", source.name().toLowerCase()));
     }
 
     private FlurryEventRecordStatus log(String eventName, HashMap<String, String> params) {

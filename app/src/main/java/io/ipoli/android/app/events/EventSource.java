@@ -12,6 +12,9 @@ public enum EventSource {
     ADD_QUEST,
     INBOX,
     REPEATING_QUESTS,
+    REWARDS,
+    CHALLENGES,
+    REWARD,
     QUEST,
     EDIT_QUEST,
     NOTIFICATION,
@@ -20,5 +23,5 @@ public enum EventSource {
     TUTORIAL,
     SNACKBAR,
     OPTIONS_MENU,
-    WIDGET;
+    WIDGET, PICK_AVATAR, EDIT_REWARD, ADD_REWARD;
 }

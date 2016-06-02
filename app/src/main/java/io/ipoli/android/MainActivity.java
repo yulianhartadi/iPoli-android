@@ -201,7 +201,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
         avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-        avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
+        avatarView.setOnClickListener(v -> {
+            startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR);
+        });
     }
 
     private int getCurrentProgress(Player player) {
@@ -429,35 +431,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         appBar.setExpanded(false, false);
         appBar.setTag(false);
         calendarIndicator.setVisibility(View.GONE);
-        String screenName = "";
+        EventSource source = null;
         switch (item.getItemId()) {
 
             case R.id.home:
                 calendarIndicator.setVisibility(View.VISIBLE);
                 toolbarExpandContainer.setOnClickListener(MainActivity.this);
-                screenName = "calendar";
+                source = EventSource.CALENDAR;
                 CalendarFragment calendarFragment = new CalendarFragment();
                 toolbarCalendar.setListener(calendarFragment);
                 changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
                 break;
 
             case R.id.inbox:
-                screenName = "inbox";
+                source = EventSource.INBOX;
                 changeCurrentFragment(new InboxFragment(), R.string.title_activity_inbox);
 
                 break;
             case R.id.repeating_quests:
-                screenName = "repeating_quests";
+                source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment(), R.string.title_fragment_repeating_quests);
                 break;
 
             case R.id.challenges:
-                screenName = "challenges";
+                source = EventSource.CHALLENGES;
                 changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
                 break;
 
             case R.id.rewards:
-                screenName = "rewards";
+                source = EventSource.REWARDS;
                 changeCurrentFragment(new RewardListFragment(), R.string.title_fragment_rewards);
                 break;
 
@@ -482,7 +484,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
         }
 
-        eventBus.post(new ScreenShownEvent(screenName));
+        if(source != null) {
+            eventBus.post(new ScreenShownEvent(source));
+        }
 
         return true;
     }

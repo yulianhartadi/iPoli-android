@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -150,21 +151,20 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Quest q = vm.getQuest();
             viewBinderHelper.bind(questHolder.swipeLayout, q.getId());
             questHolder.swipeLayout.close(false);
-            questHolder.scheduleQuest.setOnClickListener(v -> {
-                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
+            questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+                @Override
+                public void onOpened(SwipeRevealLayout view) {
+                    super.onOpened(view);
+                    eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
+                }
             });
+            questHolder.scheduleQuest.setOnClickListener(v -> eventBus.post(new ScheduleQuestForTodayEvent(q,EventSource.OVERVIEW)));
 
-            questHolder.completeQuest.setOnClickListener(v -> {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
-            });
+            questHolder.completeQuest.setOnClickListener(v -> eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW)));
 
-            questHolder.editQuest.setOnClickListener(v -> {
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
-            });
+            questHolder.editQuest.setOnClickListener(v -> eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW)));
 
-            questHolder.deleteQuest.setOnClickListener(v -> {
-                eventBus.post(new DeleteQuestRequestEvent(q));
-            });
+            questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW)));
 
             questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
             questHolder.name.setText(vm.getName());

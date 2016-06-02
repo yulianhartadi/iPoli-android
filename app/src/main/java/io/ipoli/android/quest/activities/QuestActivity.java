@@ -98,7 +98,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         afterOnCreate = true;
-        eventBus.post(new ScreenShownEvent("quest"));
+        eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
     private void initUI() {

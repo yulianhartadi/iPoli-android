@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.events;
 
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -8,8 +9,10 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class DeleteQuestRequestEvent {
     public final Quest quest;
+    public final EventSource source;
 
-    public DeleteQuestRequestEvent(Quest quest) {
+    public DeleteQuestRequestEvent(Quest quest, EventSource source) {
         this.quest = quest;
+        this.source = source;
     }
 }

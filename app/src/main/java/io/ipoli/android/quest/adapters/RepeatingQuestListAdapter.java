@@ -22,6 +22,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
@@ -60,6 +62,14 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
         viewBinderHelper.bind(questHolder.swipeLayout, vm.getRepeatingQuest().getId());
+
+        questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+            @Override
+            public void onOpened(SwipeRevealLayout view) {
+                super.onOpened(view);
+                eventBus.post(new ItemActionsShownEvent(EventSource.REPEATING_QUESTS));
+            }
+        });
 
         questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest())));
 

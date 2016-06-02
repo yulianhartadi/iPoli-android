@@ -195,7 +195,7 @@
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
     <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
     <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
-    <string name="help_dialog_open_options">Swipe quest left to open the options:</string>
+    <string name="help_dialog_open_options">Swipe quest left to open the actions:</string>
     <string name="help_dialog_delete_quest">Delete the quest</string>
     <string name="help_dialog_schedule_for_today">Schedule the quest for today</string>
     <string name="help_dialog_edit_reward">Edit reward</string>
