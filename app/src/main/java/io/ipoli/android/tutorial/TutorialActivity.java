@@ -69,9 +69,8 @@ public class TutorialActivity extends AppIntro2 {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title), getString(R.string.tutorial_welcome_desc), R.drawable.tutorial_welcome, false));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_calendar_title), getString(R.string.tutorial_calendar_desc), R.drawable.tutorial_calendar));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_add_quest_title), getString(R.string.tutorial_add_quest_desc), R.drawable.tutorial_add_quest));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_inbox_title), getString(R.string.tutorial_inbox_desc), R.drawable.tutorial_inbox));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_hero_title), getString(R.string.tutorial_hero_desc), R.drawable.tutorial_hero));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_rewards_title), getString(R.string.tutorial_reward_desc), R.drawable.tutorial_reward));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
         pickQuestsFragment = new PickQuestsFragment();
@@ -82,8 +81,7 @@ public class TutorialActivity extends AppIntro2 {
         int[] colors = new int[]{
                 R.color.md_indigo_500,
                 R.color.md_blue_500,
-                R.color.md_orange_500,
-                R.color.md_deep_purple_500,
+                R.color.md_purple_500,
                 R.color.md_green_500,
                 R.color.md_blue_500,
                 R.color.md_blue_500
