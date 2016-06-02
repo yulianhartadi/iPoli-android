@@ -31,9 +31,6 @@ public class ExperienceForLevelGeneratorTest {
 
     @Test
     public void xpForLevel3() {
-        for(int i=1; i<=10; i++) {
-            System.out.println(ExperienceForLevelGenerator.forLevel(i));
-        }
         assertEquals(ExperienceForLevelGenerator.forLevel(3), new BigInteger("50"));
     }
 }

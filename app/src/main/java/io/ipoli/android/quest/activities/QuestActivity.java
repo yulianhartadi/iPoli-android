@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.player.events.LevelDownEvent;
+import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
@@ -127,6 +130,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onResume() {
         super.onResume();
+        eventBus.register(this);
         questPersistenceService.findById(questId).subscribe(q -> {
             Observable<Quest> questObservable = null;
             if (afterOnCreate) {
@@ -166,17 +170,16 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     protected void onPause() {
+        eventBus.unregister(this);
+        if (isTimerRunning) {
+            stopTimer();
+            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStart().getTime());
+            boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
+            if (!isOverdue) {
+                QuestNotificationScheduler.scheduleUpdateTimer(questId, this);
+            }
+        }
         super.onPause();
-        if (!isTimerRunning) {
-            return;
-        }
-        stopTimer();
-        long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStart().getTime());
-        boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
-        if (isOverdue) {
-            return;
-        }
-        QuestNotificationScheduler.scheduleUpdateTimer(questId, this);
     }
 
     @Override
@@ -261,6 +264,16 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         }
 
         elapsedSeconds++;
+    }
+
+    @Subscribe
+    public void onLevelUp(LevelUpEvent e) {
+        showLevelUpMessage(e.newLevel);
+    }
+
+    @Subscribe
+    public void onLevelDown(LevelDownEvent e) {
+        showLevelDownMessage(e.newLevel);
     }
 
     private void showOverdueTime(long questDurationSeconds) {

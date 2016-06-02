@@ -226,4 +226,5 @@
     <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
+    <string name="action_settings">Settings</string>
 </resources>

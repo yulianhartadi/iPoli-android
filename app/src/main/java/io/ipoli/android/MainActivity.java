@@ -17,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -67,6 +66,8 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.events.LevelDownEvent;
+import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -205,7 +206,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private int getCurrentProgress(Player player) {
         int currentLevel = player.getLevel();
-        Log.d("AAAA", "curr xp: " + player.getExperience());
         BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
         BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(requiredXPForCurrentLevel));
         BigDecimal currentXP = new BigDecimal(new BigInteger(player.getExperience()).subtract(requiredXPForCurrentLevel));
@@ -414,6 +414,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             appBar.setExpanded(false, true);
         }
         appBar.setTag(false);
+    }
+
+    @Subscribe
+    public void onLevelUp(LevelUpEvent e) {
+        showLevelUpMessage(e.newLevel);
+    }
+
+    @Subscribe
+    public void onLevelDown(LevelDownEvent e) {
+        showLevelDownMessage(e.newLevel);
     }
 
     @Override

@@ -47,6 +47,8 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.LevelDownEvent;
+import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
@@ -113,13 +115,10 @@ public class App extends MultiDexApplication {
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .schemaVersion(BuildConfig.VERSION_CODE)
                 .deleteRealmIfMigrationNeeded()
-                .initialData(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-                        player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-                        realm.copyToRealm(player);
-                    }
+                .initialData(realm -> {
+                    Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+                    player.setCoins(Constants.DEFAULT_PLAYER_COINS);
+                    realm.copyToRealm(player);
                 })
 //                .migration((realm, oldVersion, newVersion) -> {
 //
@@ -204,12 +203,12 @@ public class App extends MultiDexApplication {
         questPersistenceService.save(q).subscribe(quest -> {
             Player player = playerPersistenceService.findSync();
             player.addExperience(q.getExperience());
-            if(shouldIncreaseLevel(player)) {
+            if (shouldIncreaseLevel(player)) {
                 player.setLevel(player.getLevel() + 1);
                 while (shouldIncreaseLevel(player)) {
                     player.setLevel(player.getLevel() + 1);
                 }
-                //show level up dialog
+                eventBus.post(new LevelUpEvent(player.getLevel()));
             }
             player.addCoins(q.getCoins());
             playerPersistenceService.saveSync(player);
@@ -229,12 +228,12 @@ public class App extends MultiDexApplication {
         questPersistenceService.save(quest).subscribe(q -> {
             Player player = playerPersistenceService.findSync();
             player.removeExperience(q.getExperience());
-            if(shouldDecreaseLevel(player)) {
+            if (shouldDecreaseLevel(player)) {
                 player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
                 while (shouldDecreaseLevel(player)) {
                     player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
                 }
-                //toast
+                eventBus.post(new LevelDownEvent(player.getLevel()));
             }
             player.removeCoins(q.getCoins());
             playerPersistenceService.saveSync(player);
