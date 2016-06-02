@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -203,8 +205,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private int getCurrentProgress(Player player) {
         int currentLevel = player.getLevel();
-        BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(ExperienceForLevelGenerator.forLevel(currentLevel)));
-        BigDecimal currentXP = new BigDecimal(player.getExperience());
+        Log.d("AAAA", "curr xp: " + player.getExperience());
+        BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
+        BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(requiredXPForCurrentLevel));
+        BigDecimal currentXP = new BigDecimal(new BigInteger(player.getExperience()).subtract(requiredXPForCurrentLevel));
         return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * PROGRESS_BAR_MAX_VALUE);
     }
 

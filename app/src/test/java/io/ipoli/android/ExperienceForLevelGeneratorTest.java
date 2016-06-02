@@ -21,16 +21,19 @@ public class ExperienceForLevelGeneratorTest {
 
     @Test
     public void xpForLevel1() {
-        assertEquals(ExperienceForLevelGenerator.forLevel(1), new BigInteger("10"));
+        assertEquals(ExperienceForLevelGenerator.forLevel(1), BigInteger.ZERO);
     }
 
     @Test
     public void xpForLevel2() {
-        assertEquals(ExperienceForLevelGenerator.forLevel(2), new BigInteger("30"));
+        assertEquals(ExperienceForLevelGenerator.forLevel(2), new BigInteger("20"));
     }
 
     @Test
     public void xpForLevel3() {
-        assertEquals(ExperienceForLevelGenerator.forLevel(3), new BigInteger("60"));
+        for(int i=1; i<=10; i++) {
+            System.out.println(ExperienceForLevelGenerator.forLevel(i));
+        }
+        assertEquals(ExperienceForLevelGenerator.forLevel(3), new BigInteger("50"));
     }
 }

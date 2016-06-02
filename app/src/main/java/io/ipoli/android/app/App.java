@@ -19,6 +19,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.LocalDate;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
@@ -202,6 +204,13 @@ public class App extends MultiDexApplication {
         questPersistenceService.save(q).subscribe(quest -> {
             Player player = playerPersistenceService.findSync();
             player.addExperience(q.getExperience());
+            if(shouldIncreaseLevel(player)) {
+                player.setLevel(player.getLevel() + 1);
+                while (shouldIncreaseLevel(player)) {
+                    player.setLevel(player.getLevel() + 1);
+                }
+                //show level up dialog
+            }
             player.addCoins(q.getCoins());
             playerPersistenceService.saveSync(player);
             eventBus.post(new QuestCompletedEvent(quest, e.source));
@@ -220,10 +229,25 @@ public class App extends MultiDexApplication {
         questPersistenceService.save(quest).subscribe(q -> {
             Player player = playerPersistenceService.findSync();
             player.removeExperience(q.getExperience());
+            if(shouldDecreaseLevel(player)) {
+                player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                while (shouldDecreaseLevel(player)) {
+                    player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                }
+                //toast
+            }
             player.removeCoins(q.getCoins());
             playerPersistenceService.saveSync(player);
             eventBus.post(new UndoCompletedQuestEvent(q));
         });
+    }
+
+    private boolean shouldIncreaseLevel(Player player) {
+        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1)) >= 0;
+    }
+
+    private boolean shouldDecreaseLevel(Player player) {
+        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel())) < 0;
     }
 
     @Subscribe

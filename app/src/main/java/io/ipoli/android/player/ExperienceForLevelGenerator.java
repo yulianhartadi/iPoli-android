@@ -15,11 +15,8 @@ public class ExperienceForLevelGenerator {
     }
 
     public static BigInteger forLevel(int level) {
-        if (level < 1) {
+        if (level <= 1) {
             return BigInteger.ZERO;
-        }
-        if (level == 1) {
-            return new BigInteger("10");
         }
         return (fibonacci(level).add(BigDecimal.ONE)).toBigInteger().multiply(new BigInteger("10")).add(forLevel(level - 1));
     }
