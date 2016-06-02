@@ -269,12 +269,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public void setCompletedAt(Date completedAt) {
-        if (completedAt == null) {
-            this.completedAt = null;
-        } else {
-            DateTimeZone tz = DateTimeZone.getDefault();
-            this.completedAt = new Date(tz.convertLocalToUTC(completedAt.getTime(), false));
-        }
+        this.completedAt = completedAt;
     }
 
     public static boolean isStarted(Quest quest) {
@@ -389,5 +384,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public Long getExperience() {
         return experience;
+    }
+
+    public void setCoins(long coins) {
+        this.coins = coins;
+    }
+
+    public void setExperience(long experience) {
+        this.experience = experience;
     }
 }

@@ -318,18 +318,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR));
         });
 
-        snackbar.setCallback(new Snackbar.Callback() {
-            @Override
-            public void onDismissed(Snackbar snackbar, int event) {
-                super.onDismissed(snackbar, event);
-                if (shouldShowRateDialog()) {
-                    isRateDialogShown = true;
-                    new RateDialog().show(getSupportFragmentManager());
-                }
-            }
-        });
-
         snackbar.show();
+
+        if (shouldShowRateDialog()) {
+            isRateDialogShown = true;
+            new RateDialog().show(getSupportFragmentManager());
+        }
     }
 
     private boolean shouldShowRateDialog() {

@@ -43,6 +43,8 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -299,16 +301,7 @@ public class AppJobService extends JobService {
         });
     }
 
-    private Observable<Quest> updateQuest(Quest serverQuest, Quest localQuest) {
-        serverQuest.setSyncedWithRemote();
-        serverQuest.setRemoteObject();
-        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
-            return questPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
-                    Observable.just(serverQuest));
-        }
 
-        return Observable.just(serverQuest);
-    }
 
     private Observable<RepeatingQuest> updateRepeatingQuest(RepeatingQuest serverQuest, RepeatingQuest localQuest) {
         serverQuest.setSyncedWithRemote();
@@ -331,21 +324,34 @@ public class AppJobService extends JobService {
                 }));
     }
 
+    private Observable<Quest> updateQuest(Quest serverQuest, Quest localQuest) {
+        serverQuest.setSyncedWithRemote();
+        serverQuest.setRemoteObject();
+        if (serverQuest.getExperience() == null) {
+            serverQuest.setExperience(new ExperienceRewardGenerator().generate(serverQuest));
+        }
+        if (serverQuest.getCoins() == null) {
+            serverQuest.setCoins(new CoinsRewardGenerator().generate(serverQuest));
+        }
+        if (localQuest != null && isLocalOnly(localQuest) && !TextUtils.isEmpty(localQuest.getId())) {
+            return questPersistenceService.updateId(localQuest, serverQuest.getId()).flatMap(aVoid ->
+                    Observable.just(serverQuest));
+        }
+
+        return Observable.just(serverQuest);
+    }
+
     private Observable<Quest> getJourneysForAWeekAhead(Player player) {
         return Observable.just(DateUtils.getNext7Days()).concatMapIterable(dates -> dates)
-                .concatMap(date -> apiService.getJourney(date, player.getId()).compose(applyAPISchedulers())).concatMapIterable(quests -> quests)
-                .concatMap(sq -> questPersistenceService.findById(sq.getId()).concatMap(q -> {
+                .concatMap(date -> apiService.getJourney(date, player.getId()).compose(applyAPISchedulers()))
+                .concatMapIterable(quests -> quests)
+                .concatMap(sq -> questPersistenceService.findById(sq.getId())
+                .concatMap(q -> {
                     if (q != null && sq.getUpdatedAt().getTime() <= q.getUpdatedAt().getTime()) {
                         return Observable.just(q);
                     }
-
-                    sq.setSyncedWithRemote();
-                    sq.setRemoteObject();
-
-                    if (q != null && isLocalOnly(q)) {
-                        return questPersistenceService.updateId(q, sq.getId()).flatMap(aVoid -> questPersistenceService.saveRemoteObject(sq));
-                    }
-                    return questPersistenceService.saveRemoteObject(sq);
+                    return updateQuest(sq, q)
+                            .flatMap(updatedServerQuest -> questPersistenceService.saveRemoteObject(updatedServerQuest));
                 }));
     }
 
