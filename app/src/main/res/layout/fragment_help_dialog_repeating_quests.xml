@@ -25,6 +25,12 @@
         android:layout_marginTop="8dp"
         android:text="@string/help_dialog_repeating_quests_text3" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/help_dialog_open_options" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,8 +47,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="@string/help_dialog_repeating_quests_delete" />
+            android:text="@string/help_dialog_delete_quest" />
     </LinearLayout>
-
-
 </LinearLayout>
