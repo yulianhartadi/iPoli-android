@@ -23,16 +23,20 @@ public class EmptyStateRecyclerView extends RecyclerView {
     @Nullable
     private View emptyView;
 
-    public EmptyStateRecyclerView(Context context) { super(context); }
+    public EmptyStateRecyclerView(Context context) {
+        super(context);
+    }
 
-    public EmptyStateRecyclerView(Context context, AttributeSet attrs) { super(context, attrs); }
+    public EmptyStateRecyclerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
     public EmptyStateRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     void checkIfEmpty() {
-        if(getAdapter() == null) {
+        if (getAdapter() == null) {
             return;
         }
         if (emptyView != null) {
@@ -42,13 +46,15 @@ public class EmptyStateRecyclerView extends RecyclerView {
 
     @NonNull
     final AdapterDataObserver observer = new AdapterDataObserver() {
-        @Override public void onChanged() {
+        @Override
+        public void onChanged() {
             super.onChanged();
             checkIfEmpty();
         }
     };
 
-    @Override public void setAdapter(@Nullable Adapter adapter) {
+    @Override
+    public void setAdapter(@Nullable Adapter adapter) {
         final Adapter oldAdapter = getAdapter();
         if (oldAdapter != null) {
             oldAdapter.unregisterAdapterDataObserver(observer);
@@ -62,7 +68,6 @@ public class EmptyStateRecyclerView extends RecyclerView {
 
     public void setEmptyView(@Nullable View emptyView) {
         this.emptyView = emptyView;
-        checkIfEmpty();
     }
 
     public void setEmptyView(ViewGroup rootView, @StringRes int text, @DrawableRes int image) {
@@ -78,7 +83,6 @@ public class EmptyStateRecyclerView extends RecyclerView {
         emptyView.setLayoutParams(layoutParams);
 
         rootView.addView(emptyView);
-        this.emptyView = emptyView;
-        checkIfEmpty();
+        setEmptyView(emptyView);
     }
 }

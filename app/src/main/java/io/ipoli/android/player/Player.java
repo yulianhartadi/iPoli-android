@@ -1,5 +1,6 @@
 package io.ipoli.android.player;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -152,5 +153,25 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public List<AuthProvider> getAuthProviders() {
         return authProviders;
+    }
+
+    public void addExperience(long experience) {
+        this.experience = new BigInteger(this.experience).add(new BigInteger(String.valueOf(experience))).toString();
+    }
+
+    public void removeExperience(long experience) {
+        BigInteger newXP = new BigInteger(this.experience).subtract(new BigInteger(String.valueOf(experience)));
+        if (newXP.compareTo(BigInteger.ZERO) < 0) {
+            newXP = BigInteger.ZERO;
+        }
+        this.experience = newXP.toString();
+    }
+
+    public void addCoins(long coins) {
+        this.coins += coins;
+    }
+
+    public void removeCoins(long coins) {
+        this.coins = Math.max(0, this.coins - coins);
     }
 }

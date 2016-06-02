@@ -48,6 +48,14 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     }
 
+    public void saveSync(T obj) {
+        obj.markUpdated();
+        try (Realm realm = getRealm()) {
+            realm.executeTransaction(transactionRealm ->
+                    transactionRealm.copyToRealmOrUpdate(obj));
+        }
+    }
+
     public Observable<T> saveRemoteObject(T object) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();

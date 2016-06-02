@@ -11,6 +11,7 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -230,6 +231,9 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         eventBus.post(new DoneQuestTapEvent(quest));
         stopTimer();
         eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
+        long experience = quest.getExperience();
+        long coins = quest.getCoins();
+        Toast.makeText(this, "Quest complete! +" + experience + " XP +" + coins + " coins.", Toast.LENGTH_LONG).show();
         finish();
     }
 

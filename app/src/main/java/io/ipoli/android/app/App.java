@@ -35,6 +35,7 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
@@ -52,6 +53,7 @@ import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
+import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -198,7 +200,29 @@ public class App extends MultiDexApplication {
         q.setCompletedAt(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         questPersistenceService.save(q).subscribe(quest -> {
+            Player player = playerPersistenceService.findSync();
+            player.addExperience(q.getExperience());
+            player.addCoins(q.getCoins());
+            playerPersistenceService.saveSync(player);
             eventBus.post(new QuestCompletedEvent(quest, e.source));
+        });
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
+        Quest quest = e.quest;
+        // @TODO remove old logs
+        quest.getLogs().clear();
+        quest.setDifficulty(null);
+        quest.setActualStart(null);
+        quest.setCompletedAt(null);
+        quest.setCompletedAtMinute(null);
+        questPersistenceService.save(quest).subscribe(q -> {
+            Player player = playerPersistenceService.findSync();
+            player.removeExperience(q.getExperience());
+            player.removeCoins(q.getCoins());
+            playerPersistenceService.saveSync(player);
+            eventBus.post(new UndoCompletedQuestEvent(q));
         });
     }
 

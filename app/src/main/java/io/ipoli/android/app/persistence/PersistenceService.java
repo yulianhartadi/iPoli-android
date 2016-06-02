@@ -14,6 +14,8 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<T> save(T obj);
 
+    void saveSync(T obj);
+
     Observable<T> saveRemoteObject(T object);
 
     Observable<List<T>> saveRemoteObjects(List<T> objects);

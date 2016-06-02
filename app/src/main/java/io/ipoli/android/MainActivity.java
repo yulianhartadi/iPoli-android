@@ -70,6 +70,7 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -165,6 +166,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        changeToCalendarFragment();
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -174,30 +176,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-        changeToCalendarFragment();
         updatePlayerInDrawer();
     }
 
     private void updatePlayerInDrawer() {
-        playerPersistenceService.find().compose(bindToLifecycle()).subscribe(player -> {
-            if (player == null || navigationView.getHeaderCount() < 1) {
-                return;
-            }
-            View header = navigationView.getHeaderView(0);
-            TextView level = (TextView) header.findViewById(R.id.player_level);
-            level.setText("Level " + player.getLevel() + ": Newbie");
 
-            TextView coins = (TextView) header.findViewById(R.id.player_coins);
-            coins.setText(player.getCoins() + "");
+        if (navigationView.getHeaderCount() < 1) {
+            return;
+        }
+        Player player = playerPersistenceService.findSync();
+        View header = navigationView.getHeaderView(0);
+        TextView level = (TextView) header.findViewById(R.id.player_level);
+        level.setText("Level " + player.getLevel() + ": Newbie");
 
-            ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-            experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
-            experienceBar.setProgress(getCurrentProgress(player));
+        TextView coins = (TextView) header.findViewById(R.id.player_coins);
+        coins.setText(player.getCoins() + "");
 
-            CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
-            avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-            avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
-        });
+        ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+        experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+        experienceBar.setProgress(getCurrentProgress(player));
+
+        CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+        avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+        avatarView.setOnClickListener(v -> startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR));
     }
 
     private int getCurrentProgress(Player player) {
@@ -300,13 +301,17 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
+        Quest q = e.quest;
+        long experience = q.getExperience();
+        long coins = q.getCoins();
+
         Snackbar snackbar = Snackbar
                 .make(rootContainer,
-                        R.string.quest_complete,
-                        Snackbar.LENGTH_SHORT);
+                        "Quest complete! +" + experience + " XP +" + coins + " coins.",
+                        Snackbar.LENGTH_LONG);
 
         snackbar.setAction(R.string.share, view -> {
-            eventBus.post(new ShareQuestEvent(e.quest, EventSource.SNACKBAR));
+            eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR));
         });
 
         snackbar.setCallback(new Snackbar.Callback() {
@@ -335,9 +340,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
+        Quest q = e.quest;
+        long experience = q.getExperience();
+        long coins = q.getCoins();
+
         Snackbar
                 .make(rootContainer,
-                        R.string.quest_undone,
+                        "Quest undone. -" + experience + " XP -" + coins + " coins.",
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
@@ -524,14 +533,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
-                    player.setAvatar(avatar);
-                    return playerPersistenceService.save(player).compose(bindToLifecycle());
-                }).subscribe();
-
+                Player player = playerPersistenceService.findSync();
+                player.setAvatar(avatar);
+                playerPersistenceService.saveSync(player);
             }
         }
     }
-
-
 }

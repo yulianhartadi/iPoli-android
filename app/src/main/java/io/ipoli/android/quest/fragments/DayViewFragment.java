@@ -33,7 +33,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
@@ -59,7 +58,6 @@ import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
-import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -188,20 +186,6 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
         ViewGroup.LayoutParams layoutParams = unscheduledQuestList.getLayoutParams();
         layoutParams.height = unscheduledQuestsToShow * itemHeight;
         unscheduledQuestList.setLayoutParams(layoutParams);
-    }
-
-    @Subscribe
-    public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
-        Quest quest = e.quest;
-        // @TODO remove old logs
-        quest.getLogs().clear();
-        quest.setDifficulty(null);
-        quest.setActualStart(null);
-        quest.setCompletedAt(null);
-        quest.setCompletedAtMinute(null);
-        saveQuest(quest).subscribe(q -> {
-            eventBus.post(new UndoCompletedQuestEvent(q));
-        });
     }
 
     @Override

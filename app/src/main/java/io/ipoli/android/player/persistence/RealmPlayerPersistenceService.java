@@ -19,6 +19,13 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
     }
 
     @Override
+    public Player findSync() {
+        try (Realm realm = getRealm()) {
+            return realm.copyFromRealm(realm.where(getRealmObjectClass()).findFirst());
+        }
+    }
+
+    @Override
     public Observable<Player> addAuthProvider(Player player, AuthProvider authProvider) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();

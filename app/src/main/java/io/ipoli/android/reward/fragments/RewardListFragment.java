@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +42,6 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.viewmodels.RewardViewModel;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -109,12 +107,9 @@ public class RewardListFragment extends BaseFragment {
 
     private void updateRewards() {
         rewardPersistenceService.findAll().compose(bindToLifecycle())
-                .flatMap(rewards -> playerPersistenceService.find().compose(bindToLifecycle())
-                        .flatMap(player -> Observable.just(new Pair<>(player, rewards))))
-                .subscribe(pair -> {
+                .subscribe(rewards -> {
                     List<RewardViewModel> rewardViewModels = new ArrayList<>();
-                    Player player = pair.first;
-                    List<Reward> rewards = pair.second;
+                    Player player = playerPersistenceService.findSync();
                     for (Reward r : rewards) {
                         rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
                     }
@@ -144,21 +139,16 @@ public class RewardListFragment extends BaseFragment {
 
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
-        playerPersistenceService.find().compose(bindToLifecycle()).flatMap(player -> {
-            if (player == null) {
-                return Observable.empty();
-            }
-            Reward r = e.reward;
-            if (player.getCoins() - r.getPrice() < 0) {
-                showTooExpensiveMessage();
-                return Observable.empty();
-            }
-            player.setCoins(player.getCoins() - r.getPrice());
-            return playerPersistenceService.save(player).compose(bindToLifecycle());
-        }).subscribe(p -> {
-            updateRewards();
-            Snackbar.make(rootContainer, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
-        });
+        Reward r = e.reward;
+        Player player = playerPersistenceService.findSync();
+        if (player.getCoins() - r.getPrice() < 0) {
+            showTooExpensiveMessage();
+            return;
+        }
+        player.removeCoins(r.getPrice());
+        playerPersistenceService.saveSync(player);
+        updateRewards();
+        Snackbar.make(rootContainer, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
     }
 
     private void showTooExpensiveMessage() {

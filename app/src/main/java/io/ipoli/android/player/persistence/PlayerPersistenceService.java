@@ -12,5 +12,7 @@ import rx.Observable;
 public interface PlayerPersistenceService extends PersistenceService<Player> {
     Observable<Player> find();
 
+    Player findSync();
+
     Observable<Player> addAuthProvider(Player player, AuthProvider authProvider);
 }
