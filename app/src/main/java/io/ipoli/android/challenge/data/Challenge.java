@@ -6,6 +6,7 @@ import java.util.Date;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.realm.RealmObject;
@@ -38,19 +39,19 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Required
     private Date updatedAt;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private Boolean needsSyncWithRemote;
+    private String remoteId;
 
     public Challenge() {
     }
 
     public Challenge(String name) {
+        this.id = IDGenerator.generate();
         this.name = name;
         this.context = QuestContext.PERSONAL.name();
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
-        needsSyncWithRemote = true;
-        isRemoteObject = false;
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
+        this.needsSyncWithRemote = true;
     }
 
     @Override
@@ -82,16 +83,6 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Override
     public void setSyncedWithRemote() {
         needsSyncWithRemote = false;
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public Date getCreatedAt() {
@@ -139,7 +130,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setDueDate(Date dueDate) {
-        this.dueDate = DateUtils.getDate(dueDate);;
+        this.dueDate = DateUtils.getDate(dueDate);
     }
 
     public String getContext() {
@@ -156,5 +147,15 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
 
     public static void setContext(Challenge challenge, QuestContext context) {
         challenge.setContext(context.name());
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

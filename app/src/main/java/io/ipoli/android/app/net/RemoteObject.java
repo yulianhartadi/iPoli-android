@@ -15,6 +15,6 @@ public interface RemoteObject<T> {
     void setNeedsSync();
     boolean needsSyncWithRemote();
     void setSyncedWithRemote();
-    void setRemoteObject();
-    boolean isRemoteObject();
+    void setRemoteId(String remoteId);
+    String getRemoteId();
 }

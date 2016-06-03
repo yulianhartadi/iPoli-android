@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -22,11 +22,12 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
+import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import rx.Observable;
 
 public class AgendaWidgetProvider extends AppWidgetProvider {
 
@@ -44,6 +45,18 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     QuestPersistenceService questPersistenceService;
 
     @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+        eventBus.post(new AgendaWidgetEnabledEvent());
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        eventBus.post(new AgendaWidgetDisabledEvent());
+        super.onDisabled(context);
+    }
+
+    @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
@@ -54,7 +67,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
             if (questAction == QUEST_ACTION_VIEW) {
                 onViewQuest(context, questId);
             } else if (questAction == QUEST_ACTION_COMPLETE) {
-                onQuestComplete(context, intent, questId);
+                onQuestComplete(questId);
             }
         }
         super.onReceive(context, intent);
@@ -67,24 +80,13 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
         context.startActivity(i);
     }
 
-    private void onQuestComplete(Context context, Intent intent, String questId) {
-        final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        final int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
-        questPersistenceService.findById(questId).flatMap(q -> {
-            if (q == null) {
-                return Observable.empty();
+    private void onQuestComplete(String questId) {
+        questPersistenceService.findById(questId).subscribe(quest -> {
+            if (quest == null) {
+                return;
             }
-
-            QuestNotificationScheduler.stopAll(q.getId(), context);
-            q.setCompletedAt(new Date());
-            q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-            return questPersistenceService.save(q).flatMap(savedQuest -> {
-                Toast.makeText(context, R.string.quest_complete, Toast.LENGTH_SHORT).show();
-                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_agenda_list);
-                return Observable.empty();
-            });
-        }).subscribe();
+            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.WIDGET));
+        });
     }
 
     @Override

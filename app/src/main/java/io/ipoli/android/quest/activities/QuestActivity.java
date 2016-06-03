@@ -236,7 +236,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
         long experience = quest.getExperience();
         long coins = quest.getCoins();
-        Toast.makeText(this, "Quest complete! +" + experience + " XP +" + coins + " coins.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.quest_complete, experience, coins), Toast.LENGTH_LONG).show();
         finish();
     }
 

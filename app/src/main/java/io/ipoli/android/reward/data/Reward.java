@@ -1,10 +1,10 @@
 package io.ipoli.android.reward.data;
 
 import java.util.Date;
-import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -32,20 +32,19 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Required
     private Date updatedAt;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private Boolean needsSyncWithRemote;
+    private String remoteId;
 
     public Reward() {
     }
 
     public Reward(String name, Integer price) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.name = name;
         this.price = price;
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         needsSyncWithRemote = true;
-        isRemoteObject = false;
     }
 
     @Override
@@ -77,16 +76,6 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Override
     public void setSyncedWithRemote() {
         needsSyncWithRemote = false;
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public Date getCreatedAt() {
@@ -127,5 +116,15 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

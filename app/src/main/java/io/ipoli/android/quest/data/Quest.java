@@ -8,12 +8,12 @@ import org.joda.time.LocalTime;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -78,7 +78,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private String source;
 
     private Boolean needsSyncWithRemote;
-    private Boolean isRemoteObject;
+    private String remoteId;
 
     private SourceMapping sourceMapping;
 
@@ -177,7 +177,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public Quest(String name, Date endDate) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.name = name;
         setEndDate(endDate);
         this.setStartMinute(null);
@@ -186,7 +186,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.context = QuestContext.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
         this.experience = new ExperienceRewardGenerator().generate(this);
         this.coins = new CoinsRewardGenerator().generate(this);
@@ -341,16 +340,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         needsSyncWithRemote = false;
     }
 
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
-    }
-
     public boolean isStarted() {
         return actualStart != null && completedAt == null;
     }
@@ -392,5 +381,15 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setExperience(long experience) {
         this.experience = experience;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

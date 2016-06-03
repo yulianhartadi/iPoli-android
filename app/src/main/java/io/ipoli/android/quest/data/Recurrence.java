@@ -1,9 +1,9 @@
 package io.ipoli.android.quest.data;
 
 import java.util.Date;
-import java.util.UUID;
 
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -33,7 +33,7 @@ public class Recurrence extends RealmObject {
     private Date updatedAt;
 
     public Recurrence() {
-        id = UUID.randomUUID().toString();
+        id = IDGenerator.generate();
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
     }

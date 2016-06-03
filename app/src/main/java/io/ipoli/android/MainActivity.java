@@ -315,7 +315,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         Snackbar snackbar = Snackbar
                 .make(rootContainer,
-                        "Quest complete! +" + experience + " XP +" + coins + " coins.",
+                        getString(R.string.quest_complete, experience, coins),
                         Snackbar.LENGTH_LONG);
 
         snackbar.setAction(R.string.share, view -> {
@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
         Snackbar
                 .make(rootContainer,
-                        "Quest undone. -" + experience + " XP -" + coins + " coins.",
+                        getString(R.string.quest_undone, experience, coins),
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
@@ -486,7 +486,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
         }
 
-        if(source != null) {
+        if (source != null) {
             eventBus.post(new ScreenShownEvent(source));
         }
 

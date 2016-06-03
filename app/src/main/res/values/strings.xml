@@ -19,7 +19,8 @@
     <string name="level_up_reward">You are now level %d! Your reward is:</string>
     <string name="attribution">Source: %s</string>
     <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
-    <string name="quest_complete">Quest complete</string>
+    <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
+    <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="start_time_default">Start time</string>
     <string name="due_date_default">Due date</string>
     <string name="today">Today</string>
@@ -118,7 +119,6 @@
     <string name="tutorial_hero_desc">Your daily tasks and habits are now called quests. Earn life coins and experience by completing them!</string>
     <string name="tutorial_rewards_title">Choose Your Bounty</string>
     <string name="tutorial_reward_desc">Spend your life coins buying real-world rewards that you create</string>
-    <string name="quest_undone">Quest undone</string>
     <string name="fragment_calendar_title">Calendar</string>
     <string name="fragment_overview_title">Overview</string>
     <string name="title_pick_initial_repeating_quests">Pick a few Repeating Quests to start with</string>
