@@ -181,9 +181,9 @@ public class OverviewFragment extends BaseFragment {
             List<QuestViewModel> viewModels = new ArrayList<>();
             List<Quest> recurrent = new ArrayList<>();
             for (Quest q : quests) {
-                if (q.isScheduledForToday() && q.getRepeatingQuest() != null && !TextUtils.isEmpty(q.getRepeatingQuest().getRecurrence().getDailyRrule())) {
+                if (q.isScheduledForToday() && hasDailyRrule(q)) {
                     recurrent.add(q);
-                } else {
+                } else if(q.isScheduledForToday() || !hasDailyRrule(q)){
                     viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
                 }
             }
@@ -226,5 +226,9 @@ public class OverviewFragment extends BaseFragment {
             });
             overviewAdapter.updateQuests(viewModels);
         });
+    }
+
+    private boolean hasDailyRrule(Quest q) {
+        return q.getRepeatingQuest() != null && !TextUtils.isEmpty(q.getRepeatingQuest().getRecurrence().getDailyRrule());
     }
 }
