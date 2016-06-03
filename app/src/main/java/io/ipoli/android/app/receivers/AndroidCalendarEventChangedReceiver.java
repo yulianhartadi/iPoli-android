@@ -22,8 +22,8 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
 import rx.Observable;
@@ -57,22 +57,26 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
-
         return Observable.defer(() -> {
+            ArrayList<Event> deletedEvents = new ArrayList<>();
+            List<Event> dirtyEvents = new ArrayList<>();
             for (String cid : calendarIds) {
                 int calendarId = Integer.valueOf(cid);
-                processDeletedEvents(calendarId, provider);
-                addDirtyEvents(provider, localStorage, calendarId);
+                addDirtyEvents(provider, calendarId, dirtyEvents);
+                addDeletedEvents(calendarId, provider, deletedEvents);
             }
-            eventBus.post(new SyncRequestEvent());
-            return Observable.<Void>empty();
+            markEventsForUpdate(dirtyEvents, localStorage);
+            return deleteEvents(deletedEvents).flatMap(o -> {
+                eventBus.post(new SyncRequestEvent());
+                return Observable.<Void>empty();
+            });
         }).compose(applyAndroidSchedulers());
     }
 
-    private void processDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider) {
+    private void addDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider, List<Event> deletedEvents) {
         Data<Event> deletedEventsData = provider.getDeletedEvents(calendarId);
         Cursor deletedEventsCursor = deletedEventsData.getCursor();
-        List<Event> deletedEvents = new ArrayList<>();
+
         while (deletedEventsCursor.moveToNext()) {
             Event e = deletedEventsData.fromCursor(deletedEventsCursor, CalendarContract.Events._ID,
                     CalendarContract.Events.RRULE,
@@ -80,13 +84,11 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
             deletedEvents.add(e);
         }
         deletedEventsCursor.close();
-        deleteEvents(deletedEvents);
     }
 
-    private void addDirtyEvents(SyncAndroidCalendarProvider provider, LocalStorage localStorage, int calendarId) {
+    private void addDirtyEvents(SyncAndroidCalendarProvider provider, int calendarId, List<Event> dirtyEvents) {
         Data<Event> dirtyEventsData = provider.getDirtyEvents(calendarId);
         Cursor dirtyEventsCursor = dirtyEventsData.getCursor();
-        List<Event> dirtyEvents = new ArrayList<>();
 
         while (dirtyEventsCursor.moveToNext()) {
             Event e = dirtyEventsData.fromCursor(dirtyEventsCursor, CalendarContract.Events._ID,
@@ -96,8 +98,6 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         }
 
         dirtyEventsCursor.close();
-
-        markEventsForUpdate(dirtyEvents, localStorage);
     }
 
     private void markEventsForUpdate(List<Event> dirtyEvents, LocalStorage localStorage) {
@@ -114,14 +114,14 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questIds);
     }
 
-    private void deleteEvents(List<Event> events) {
-        for (Event e : events) {
+    private Observable<List<String>> deleteEvents(List<Event> events) {
+        return Observable.from(events).flatMap(e -> {
             if (isRecurrentAndroidCalendarEvent(e)) {
-                repeatingQuestPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id)).subscribe();
+                return repeatingQuestPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
             } else {
-                questPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id)).subscribe();
+                return questPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
             }
-        }
+        }).toList();
     }
 
     private boolean isRecurrentAndroidCalendarEvent(Event e) {

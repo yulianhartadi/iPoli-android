@@ -62,6 +62,7 @@ import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
@@ -452,10 +453,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 changeCurrentFragment(new RepeatingQuestListFragment(), R.string.title_fragment_repeating_quests);
                 break;
 
-//            case R.id.challenges:
-//                source = EventSource.CHALLENGES;
-//                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
-//                break;
+            case R.id.challenges:
+                source = EventSource.CHALLENGES;
+                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
+                break;
 
             case R.id.rewards:
                 source = EventSource.REWARDS;
