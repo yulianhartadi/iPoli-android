@@ -52,7 +52,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_favorite_accent_24dp" />
+                android:src="@drawable/ic_repeating_quest_24dp" />
 
 
             <ImageView

@@ -79,6 +79,10 @@ public class QuestViewModel {
     }
 
     public boolean isRecurrent() {
+        return quest.getRepeatingQuest() != null;
+    }
+
+    public boolean hasTimesPerDay() {
         return repeatCount > 1;
     }
 
