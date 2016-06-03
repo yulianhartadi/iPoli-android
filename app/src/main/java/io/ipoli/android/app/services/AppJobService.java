@@ -113,7 +113,8 @@ public class AppJobService extends JobService {
             }
             if (isLocalOnly(player)) {
                 return createPlayer(localStorage, player);
-            } else if (player.needsSyncWithRemote()) {
+            }
+            if (player.needsSyncWithRemote()) {
                 return updatePlayer(player);
             }
             return Observable.just(player);
