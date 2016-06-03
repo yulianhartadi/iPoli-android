@@ -190,10 +190,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Player player = playerPersistenceService.findSync();
         View header = navigationView.getHeaderView(0);
         TextView level = (TextView) header.findViewById(R.id.player_level);
-        level.setText("Level " + player.getLevel() + ": Newbie");
+        level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
 
         TextView coins = (TextView) header.findViewById(R.id.player_coins);
-        coins.setText(player.getCoins() + "");
+        coins.setText(String.valueOf(player.getCoins()));
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
@@ -204,6 +204,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         avatarView.setOnClickListener(v -> {
             startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR);
         });
+
+        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
     }
 
     private int getCurrentProgress(Player player) {

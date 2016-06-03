@@ -221,4 +221,6 @@
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
     <string name="action_settings">Settings</string>
+    <string name="nav_header_player_level">Level %d: Newbie</string>
+    <string name="nav_drawer_player_xp">XP: %s</string>
 </resources>
