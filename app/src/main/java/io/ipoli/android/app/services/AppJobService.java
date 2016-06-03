@@ -122,9 +122,9 @@ public class AppJobService extends JobService {
 
     private Observable<? extends Player> updatePlayer(Player player) {
         String localId = player.getId();
-        player.setId(player.getRemoteId());
+        player.setId(null);
         return apiService.updatePlayer(createRequestBody("data", player), player.getRemoteId())
-                .compose(applyAPISchedulers()).concatMap(sp -> {
+                .compose(applyAPISchedulers()).flatMap(sp -> {
                     sp.setSyncedWithRemote();
                     sp.setRemoteId(sp.getId());
                     sp.setId(localId);
@@ -138,10 +138,10 @@ public class AppJobService extends JobService {
             AuthProvider authProvider = new AuthProvider(advertisingId, AuthProviderName.GOOGLE_ADVERTISING_ID.name());
             return playerPersistenceService.addAuthProvider(player, authProvider)
                     .flatMap(p -> {
-                        p.setId(p.getRemoteId());
+                        p.setId(null);
                         return apiService.createPlayer(createRequestBody("data", p)).compose(applyAPISchedulers());
                     })
-                    .concatMap(sp -> {
+                    .flatMap(sp -> {
                         sp.setSyncedWithRemote();
                         sp.setRemoteId(sp.getId());
                         sp.setId(localId);
@@ -170,8 +170,8 @@ public class AppJobService extends JobService {
         }
 
         Set<String> calendarsToSync = localStorage.readStringSet(Constants.KEY_CALENDARS_TO_SYNC);
-        return Observable.just(calendarsToSync).concatMapIterable(calendarIds -> calendarIds)
-                .concatMap(calendarId -> {
+        return Observable.just(calendarsToSync).flatMapIterable(calendarIds -> calendarIds)
+                .flatMap(calendarId -> {
                     Set<String> questKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
                     Set<String> repeatingQuestKeys = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE);
                     SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(getApplicationContext());
@@ -193,9 +193,9 @@ public class AppJobService extends JobService {
 
     private Observable<Void> syncRemovedRepeatingQuests(Player player) {
         return Observable.just(LocalStorage.of(getApplicationContext()).readStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS))
-                .concatMapIterable(ids -> ids)
-                .concatMap(id -> apiService.deleteRepeatingQuest(id, player.getRemoteId()).compose(applyAPISchedulers())
-                        .concatMap(res -> {
+                .flatMapIterable(ids -> ids)
+                .flatMap(id -> apiService.deleteRepeatingQuest(id, player.getRemoteId()).compose(applyAPISchedulers())
+                        .flatMap(res -> {
                             LocalStorage localStorage = LocalStorage.of(getApplicationContext());
                             Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS);
                             removedQuests.remove(id);
@@ -206,9 +206,9 @@ public class AppJobService extends JobService {
 
     private Observable<Void> syncRemovedQuests(Player player) {
         return Observable.just(LocalStorage.of(getApplicationContext()).readStringSet(Constants.KEY_REMOVED_QUESTS))
-                .concatMapIterable(ids -> ids)
-                .concatMap(id -> apiService.deleteQuest(id, player.getRemoteId()).compose(applyAPISchedulers())
-                        .concatMap(res -> {
+                .flatMapIterable(ids -> ids)
+                .flatMap(id -> apiService.deleteQuest(id, player.getRemoteId()).compose(applyAPISchedulers())
+                        .flatMap(res -> {
                             LocalStorage localStorage = LocalStorage.of(getApplicationContext());
                             Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
                             removedQuests.remove(id);
@@ -235,14 +235,15 @@ public class AppJobService extends JobService {
         ListReader<Quest> realmReader = new RealmQuestListReader(questPersistenceService);
         ListReader<Quest> androidCalendarReader = new AndroidCalendarQuestListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage, repeatingQuestPersistenceService);
 
-        return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(q -> {
+        return Observable.concat(realmReader.read(), androidCalendarReader.read()).flatMap(q -> {
             String localId = getLocalIdForRemoteObject(q);
-            q.setId(q.getRemoteId());
+            q.setId(null);
             RequestBody requestBody = createRequestBody().param("data", q).param("player_id", player.getRemoteId()).build();
-            Observable<Quest> apiCall = isLocalOnly(q) ? apiService.createQuest(requestBody) : apiService.updateQuest(requestBody, q.getId());
+            Observable<Quest> apiCall = isLocalOnly(q) ? apiService.createQuest(requestBody) : apiService.updateQuest(requestBody, q.getRemoteId());
             return apiCall.compose(applyAPISchedulers())
-                    .concatMap(sq -> questPersistenceService.saveRemoteObject(updateQuest(sq, localId)))
-                    .concatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
+                    .flatMap(sq -> updateQuest(sq, localId))
+                    .flatMap(updatedQuest -> questPersistenceService.saveRemoteObject(updatedQuest))
+                    .flatMap(savedQuest -> deleteSyncedAndroidCalendarEvent(savedQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE));
         });
     }
 
@@ -271,7 +272,7 @@ public class AppJobService extends JobService {
         ListReader<RepeatingQuest> realmReader = new RealmRepeatingQuestListReader(repeatingQuestPersistenceService);
         ListReader<RepeatingQuest> androidCalendarReader = new AndroidCalendarRepeatingQuestListReader(getApplicationContext(), new CalendarProvider(getApplicationContext()), localStorage);
 
-        return Observable.concat(realmReader.read(), androidCalendarReader.read()).concatMap(repeatingQuest -> {
+        return Observable.concat(realmReader.read(), androidCalendarReader.read()).flatMap(repeatingQuest -> {
             String localId = getLocalIdForRemoteObject(repeatingQuest);
             if (isLocalOnly(repeatingQuest) && repeatingQuest.getSourceMapping() == null) {
                 JsonObject data = new JsonObject();
@@ -283,15 +284,15 @@ public class AppJobService extends JobService {
                 data.addProperty("source", qJson.get("source").getAsString());
                 RequestBody requestBody = createRequestBody().param("data", data).param("player_id", player.getRemoteId()).build();
                 return apiService.createRepeatingQuestFromText(requestBody).compose(applyAPISchedulers())
-                        .concatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId))
-                                .flatMap(q -> Observable.empty()));
+                        .flatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId))
+                                .flatMap(q -> Observable.just(null)));
             } else {
-                repeatingQuest.setId(repeatingQuest.getRemoteId());
+                repeatingQuest.setId(null);
                 RequestBody requestBody = createRequestBody().param("data", repeatingQuest).param("player_id", player.getRemoteId()).build();
-                Observable<RepeatingQuest> apiCall = isLocalOnly(repeatingQuest) ? apiService.createRepeatingQuest(requestBody) : apiService.updateRepeatingQuest(requestBody, repeatingQuest.getId());
+                Observable<RepeatingQuest> apiCall = isLocalOnly(repeatingQuest) ? apiService.createRepeatingQuest(requestBody) : apiService.updateRepeatingQuest(requestBody, repeatingQuest.getRemoteId());
                 return apiCall.compose(applyAPISchedulers())
-                        .concatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId))
-                                .concatMap(savedRepeatingQuest -> deleteSyncedAndroidCalendarEvent(savedRepeatingQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE)));
+                        .flatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId))
+                                .flatMap(savedRepeatingQuest -> deleteSyncedAndroidCalendarEvent(savedRepeatingQuest.getSourceMapping(), localStorage, Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE)));
             }
         });
     }
@@ -306,8 +307,8 @@ public class AppJobService extends JobService {
 
     private Observable<RepeatingQuest> getRepeatingQuests(Player player) {
         return apiService.getRepeatingQuests(player.getRemoteId())
-                .compose(applyAPISchedulers()).concatMapIterable(repeatingQuests -> repeatingQuests)
-                .concatMap(sq -> repeatingQuestPersistenceService.findByRemoteId(sq.getId()).concatMap(repeatingQuest -> {
+                .compose(applyAPISchedulers()).flatMapIterable(repeatingQuests -> repeatingQuests)
+                .flatMap(sq -> repeatingQuestPersistenceService.findByRemoteId(sq.getId()).flatMap(repeatingQuest -> {
                     if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
                         return Observable.just(repeatingQuest);
                     }
@@ -316,7 +317,7 @@ public class AppJobService extends JobService {
                 }));
     }
 
-    private Quest updateQuest(Quest serverQuest, String localId) {
+    private Observable<Quest> updateQuest(Quest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
@@ -326,7 +327,15 @@ public class AppJobService extends JobService {
         if (serverQuest.getCoins() == null) {
             serverQuest.setCoins(new CoinsRewardGenerator().generate(serverQuest));
         }
-        return serverQuest;
+        if (serverQuest.getRepeatingQuest() != null) {
+            return repeatingQuestPersistenceService.findByRemoteId(serverQuest.getRepeatingQuest().getId()).flatMap(repeatingQuest -> {
+                if (repeatingQuest != null) {
+                    serverQuest.setRepeatingQuest(repeatingQuest);
+                }
+                return Observable.just(serverQuest);
+            });
+        }
+        return Observable.just(serverQuest);
     }
 
     private Observable<Quest> getJourneysForAWeekAhead(Player player) {
@@ -339,7 +348,8 @@ public class AppJobService extends JobService {
                                 return Observable.just(q);
                             }
                             String localId = getLocalIdForRemoteObject(q);
-                            return questPersistenceService.saveRemoteObject(updateQuest(sq, localId));
+                            return updateQuest(sq, localId).flatMap(updatedQuest ->
+                                    questPersistenceService.saveRemoteObject(updatedQuest));
                         }));
     }
 
