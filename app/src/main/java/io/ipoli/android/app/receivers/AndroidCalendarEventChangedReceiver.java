@@ -58,15 +58,15 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
         return Observable.defer(() -> {
-            ArrayList<Event> deletedEvents = new ArrayList<>();
             List<Event> dirtyEvents = new ArrayList<>();
+            List<Event> deletedEvents = new ArrayList<>();
             for (String cid : calendarIds) {
                 int calendarId = Integer.valueOf(cid);
                 addDirtyEvents(provider, calendarId, dirtyEvents);
                 addDeletedEvents(calendarId, provider, deletedEvents);
             }
             markEventsForUpdate(dirtyEvents, localStorage);
-            return deleteEvents(deletedEvents).flatMap(o -> {
+            return deleteEvents(deletedEvents).flatMap(ignored -> {
                 eventBus.post(new SyncRequestEvent());
                 return Observable.<Void>empty();
             });
