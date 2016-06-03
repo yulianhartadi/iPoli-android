@@ -3,12 +3,12 @@ package io.ipoli.android.quest.data;
 import android.text.TextUtils;
 
 import java.util.Date;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.realm.RealmList;
@@ -54,7 +54,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     private String source;
 
     private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private String remoteId;
 
     private SourceMapping sourceMapping;
 
@@ -97,14 +97,13 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     }
 
     public RepeatingQuest(String rawText) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.rawText = rawText;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.context = QuestContext.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
@@ -205,16 +204,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         needsSyncWithRemote = false;
     }
 
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
-    }
-
     public SourceMapping getSourceMapping() {
         return sourceMapping;
     }
@@ -229,5 +218,15 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setAllDay(boolean allDay) {
         this.allDay = allDay;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

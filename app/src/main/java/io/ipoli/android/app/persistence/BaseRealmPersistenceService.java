@@ -95,28 +95,15 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
+    public Observable<T> findByRemoteId(String id) {
+        return find(where -> where.equalTo("remoteId", id).findFirstAsync());
+    }
+
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
         return findAll(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }
 
     protected abstract Class<T> getRealmObjectClass();
-
-    public Observable<Void> updateId(T obj, String newId) {
-        return Observable.create(subscriber -> {
-            Realm realm = getRealm();
-            realm.executeTransactionAsync(realm1 -> {
-                T realmObj = realm1.copyToRealmOrUpdate(obj);
-                realmObj.setId(newId);
-            }, () -> {
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-                realm.close();
-            }, error -> {
-                subscriber.onError(error);
-                realm.close();
-            });
-        });
-    }
 
     public Observable<String> delete(T obj) {
         if (obj == null) {

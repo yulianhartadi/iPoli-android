@@ -28,7 +28,7 @@ public class AnalyticsModule {
     public AnalyticsService provideAnalyticsService(Context context) {
         if (!BuildConfig.DEBUG) {
 
-            String playerId = LocalStorage.of(context).readString(Constants.KEY_PLAYER_ID);
+            String playerId = LocalStorage.of(context).readString(Constants.KEY_PLAYER_REMOTE_ID);
             if (!TextUtils.isEmpty(playerId)) {
                 FlurryAgent.setUserId(playerId);
             }

@@ -3,10 +3,10 @@ package io.ipoli.android.player;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -35,13 +35,13 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     private Date updatedAt;
 
     private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private String remoteId;
 
     public Player() {
     }
 
     public Player(String experience, int level, String avatar) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
@@ -49,7 +49,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
     }
 
     public String getId() {
@@ -137,16 +136,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         needsSyncWithRemote = false;
     }
 
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
-    }
-
     public void addAuthProvider(AuthProvider authProvider) {
         authProviders.add(authProvider);
     }
@@ -173,5 +162,15 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public void removeCoins(long coins) {
         this.coins = Math.max(0, this.coins - coins);
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

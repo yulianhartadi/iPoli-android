@@ -83,7 +83,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
-        FlurryAgent.setUserId(e.id);
+        FlurryAgent.setUserId(e.remoteId);
         log("player_created");
     }
 

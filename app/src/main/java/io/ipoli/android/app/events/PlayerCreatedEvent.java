@@ -5,9 +5,9 @@ package io.ipoli.android.app.events;
  * on 4/15/16.
  */
 public class PlayerCreatedEvent {
-    public String id;
+    public String remoteId;
 
-    public PlayerCreatedEvent(String id) {
-        this.id = id;
+    public PlayerCreatedEvent(String remoteId) {
+        this.remoteId = remoteId;
     }
 }
