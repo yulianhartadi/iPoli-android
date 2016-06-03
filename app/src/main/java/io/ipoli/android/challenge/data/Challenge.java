@@ -6,6 +6,7 @@ import java.util.Date;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.realm.RealmObject;
@@ -45,11 +46,12 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public Challenge(String name) {
+        this.id = IDGenerator.generate();
         this.name = name;
         this.context = QuestContext.PERSONAL.name();
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
-        needsSyncWithRemote = true;
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
+        this.needsSyncWithRemote = true;
     }
 
     @Override

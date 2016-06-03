@@ -95,6 +95,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
+    public Observable<T> findByRemoteId(String id) {
+        return find(where -> where.equalTo("remoteId", id).findFirstAsync());
+    }
+
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
         return findAll(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }

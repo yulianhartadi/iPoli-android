@@ -8,12 +8,12 @@ import org.joda.time.LocalTime;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -177,7 +177,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public Quest(String name, Date endDate) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.name = name;
         setEndDate(endDate);
         this.setStartMinute(null);

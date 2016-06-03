@@ -3,10 +3,10 @@ package io.ipoli.android.player;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -41,7 +41,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     }
 
     public Player(String experience, int level, String avatar) {
-        this.id = UUID.randomUUID().toString();
+        this.id = IDGenerator.generate();
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
