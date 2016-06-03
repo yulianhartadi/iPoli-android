@@ -34,6 +34,8 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
+import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
+import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
@@ -477,6 +479,16 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onItemActionsShown(ItemActionsShownEvent e) {
         log("item_actions_shown", e.source);
+    }
+
+    @Subscribe
+    public void onAgendaWidgetEnabled(AgendaWidgetEnabledEvent e) {
+        log("agenda_widget_enabled");
+    }
+
+    @Subscribe
+    public void onAgendaWidgetDisabled(AgendaWidgetDisabledEvent e) {
+        log("agenda_widget_disabled");
     }
 
     private FlurryEventRecordStatus log(String eventName) {
