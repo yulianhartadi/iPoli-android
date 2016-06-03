@@ -38,8 +38,8 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Required
     private Date updatedAt;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private Boolean needsSyncWithRemote;
+    private String remoteId;
 
     public Challenge() {
     }
@@ -50,7 +50,6 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         needsSyncWithRemote = true;
-        isRemoteObject = false;
     }
 
     @Override
@@ -82,16 +81,6 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Override
     public void setSyncedWithRemote() {
         needsSyncWithRemote = false;
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public Date getCreatedAt() {
@@ -139,7 +128,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setDueDate(Date dueDate) {
-        this.dueDate = DateUtils.getDate(dueDate);;
+        this.dueDate = DateUtils.getDate(dueDate);
     }
 
     public String getContext() {
@@ -156,5 +145,15 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
 
     public static void setContext(Challenge challenge, QuestContext context) {
         challenge.setContext(context.name());
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

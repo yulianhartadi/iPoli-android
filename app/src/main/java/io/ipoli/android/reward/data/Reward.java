@@ -32,8 +32,8 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Required
     private Date updatedAt;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private Boolean needsSyncWithRemote;
+    private String remoteId;
 
     public Reward() {
     }
@@ -45,7 +45,6 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         needsSyncWithRemote = true;
-        isRemoteObject = false;
     }
 
     @Override
@@ -77,16 +76,6 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Override
     public void setSyncedWithRemote() {
         needsSyncWithRemote = false;
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public Date getCreatedAt() {
@@ -127,5 +116,15 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

@@ -35,7 +35,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     private Date updatedAt;
 
     private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private String remoteId;
 
     public Player() {
     }
@@ -49,7 +49,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
     }
 
     public String getId() {
@@ -137,16 +136,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         needsSyncWithRemote = false;
     }
 
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
-    }
-
     public void addAuthProvider(AuthProvider authProvider) {
         authProviders.add(authProvider);
     }
@@ -173,5 +162,15 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public void removeCoins(long coins) {
         this.coins = Math.max(0, this.coins - coins);
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }

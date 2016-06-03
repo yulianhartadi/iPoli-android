@@ -2,7 +2,6 @@ package io.ipoli.android.player;
 
 import java.util.Date;
 
-import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -12,7 +11,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/31/16.
  */
-public class AuthProvider extends RealmObject implements RemoteObject<AuthProvider> {
+public class AuthProvider extends RealmObject{
 
     @Required
     @PrimaryKey
@@ -25,9 +24,6 @@ public class AuthProvider extends RealmObject implements RemoteObject<AuthProvid
     @Required
     private Date updatedAt;
 
-    private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
-
     public AuthProvider() {
 
     }
@@ -37,16 +33,12 @@ public class AuthProvider extends RealmObject implements RemoteObject<AuthProvid
         this.provider = provider;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
     }
 
-    @Override
     public void setId(String id) {
         this.id = id;
     }
 
-    @Override
     public String getId() {
         return id;
     }
@@ -65,37 +57,6 @@ public class AuthProvider extends RealmObject implements RemoteObject<AuthProvid
 
     public Date getCreatedAt() {
         return createdAt;
-    }
-
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
     }
 
     public String getProvider() {

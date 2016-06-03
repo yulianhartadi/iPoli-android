@@ -22,8 +22,6 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<List<T>> findAllWhoNeedSyncWithRemote();
 
-    Observable<Void> updateId(T obj, String newId);
-
     Observable<T> findById(String id);
 
     Observable<String> delete(T obj);

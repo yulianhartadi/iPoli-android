@@ -54,7 +54,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     private String source;
 
     private boolean needsSyncWithRemote;
-    private boolean isRemoteObject;
+    private String remoteId;
 
     private SourceMapping sourceMapping;
 
@@ -104,7 +104,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.context = QuestContext.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
-        this.isRemoteObject = false;
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
@@ -205,16 +204,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         needsSyncWithRemote = false;
     }
 
-    @Override
-    public void setRemoteObject() {
-        isRemoteObject = true;
-    }
-
-    @Override
-    public boolean isRemoteObject() {
-        return isRemoteObject;
-    }
-
     public SourceMapping getSourceMapping() {
         return sourceMapping;
     }
@@ -229,5 +218,15 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setAllDay(boolean allDay) {
         this.allDay = allDay;
+    }
+
+    @Override
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    @Override
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }
