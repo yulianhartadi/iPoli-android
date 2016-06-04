@@ -122,7 +122,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         appComponent().inject(this);
         ButterKnife.bind(this);
 
-
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
@@ -144,11 +143,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 super.onDrawerOpened(drawerView);
                 updatePlayerInDrawer();
             }
-
         };
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-//        actionBarDrawerToggle.syncState();
         updatePlayerInDrawer();
     }
 

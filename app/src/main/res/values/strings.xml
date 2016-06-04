@@ -108,6 +108,13 @@
         <item>3 hours</item>
         <item>4 hours</item>
     </string-array>
+
+    <string-array name="growth_intervals">
+        <item>Today</item>
+        <item>Last 7 days</item>
+        <item>Last 30 days</item>
+    </string-array>
+
     <string name="title_activity_main">iPoli</string>
 
     <string name="save">Save</string>
