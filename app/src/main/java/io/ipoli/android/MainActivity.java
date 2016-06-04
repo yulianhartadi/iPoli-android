@@ -542,7 +542,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_AVATAR) {
+        if (requestCode == PICK_PLAYER_AVATAR && resultCode == RESULT_OK && data != null) {
             String avatar = data.getStringExtra(Constants.AVATAR_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);

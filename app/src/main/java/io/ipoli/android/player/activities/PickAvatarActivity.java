@@ -67,7 +67,7 @@ public class PickAvatarActivity extends BaseActivity {
         eventBus.post(new AvatarPickedEvent(e.avatarName));
         Intent data = new Intent();
         data.putExtra(Constants.AVATAR_NAME_EXTRA_KEY, e.avatarName);
-        setResult(0, data);
+        setResult(RESULT_OK, data);
         finish();
     }
 
