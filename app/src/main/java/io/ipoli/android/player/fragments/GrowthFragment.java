@@ -82,7 +82,7 @@ public class GrowthFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.fragment_title_growth);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_growth);
 
         return view;
     }

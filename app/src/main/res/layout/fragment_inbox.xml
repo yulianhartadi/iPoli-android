@@ -1,7 +1,12 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/root_container">
+    android:background="@color/md_white">
+
+    <include layout="@layout/default_app_bar" />
 
     <io.ipoli.android.app.ui.EmptyStateRecyclerView
         android:id="@+id/quest_list"
@@ -10,4 +15,4 @@
         android:background="@color/md_white"
         android:scrollbars="vertical" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

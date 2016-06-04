@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -44,13 +45,14 @@ public class InboxFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
-    CoordinatorLayout rootContainer;
-
     @BindView(R.id.root_container)
-    RelativeLayout rootLayout;
+    CoordinatorLayout rootLayout;
 
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -64,7 +66,8 @@ public class InboxFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_inbox);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
@@ -121,7 +124,7 @@ public class InboxFragment extends BaseFragment {
         eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
         questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             Snackbar
-                    .make(rootContainer,
+                    .make(rootLayout,
                             R.string.quest_removed,
                             Snackbar.LENGTH_SHORT)
                     .show();
