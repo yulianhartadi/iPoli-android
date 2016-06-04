@@ -20,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -37,13 +36,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     private Context context;
     private List<UnscheduledQuestViewModel> viewModels;
     private final Bus eventBus;
-    private final Time.RelativeTime relativeTime;
 
-    public UnscheduledQuestsAdapter(Context context, List<UnscheduledQuestViewModel> viewModels, Bus eventBus, Time.RelativeTime relativeTime) {
+    public UnscheduledQuestsAdapter(Context context, List<UnscheduledQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.viewModels = viewModels;
         this.eventBus = eventBus;
-        this.relativeTime = relativeTime;
     }
 
     @Override
@@ -58,9 +55,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         final UnscheduledQuestViewModel vm = viewModels.get(position);
         Quest q = vm.getQuest();
         holder.itemView.setOnClickListener(view -> {
-            if (relativeTime == Time.RelativeTime.PRESENT || relativeTime == Time.RelativeTime.FUTURE) {
-                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-            }
+            eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
         });
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();

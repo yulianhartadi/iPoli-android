@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.joda.time.LocalDate;
 
@@ -32,6 +31,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
@@ -54,6 +54,7 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
@@ -70,7 +71,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class DayViewFragment extends RxFragment implements CalendarListener<QuestCalendarViewModel> {
+public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
 
     public static final String CURRENT_DATE = "current_date";
 
@@ -106,6 +107,7 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
             calendarDayView.onMinuteChanged();
         }
     };
+
     private LocalDate currentDate;
     private Unbinder unbinder;
 
@@ -115,6 +117,11 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
         args.putLong(CURRENT_DATE, date.toDate().getTime());
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return false;
     }
 
     @Override
@@ -142,27 +149,20 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
 
         calendarContainer.setCalendarListener(this);
 
-        Time.RelativeTime relativeTime = Time.RelativeTime.PRESENT;
-        if (currentDate.isBefore(new LocalDate())) {
-            relativeTime = Time.RelativeTime.PAST;
-        } else if (currentDate.isAfter(new LocalDate())) {
-            relativeTime = Time.RelativeTime.FUTURE;
-        }
 
-        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus, relativeTime);
+        unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
-        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus, relativeTime);
+        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.scrollToNow();
 
-        if (relativeTime == Time.RelativeTime.PRESENT) {
-            calendarDayView.showTimeLine();
-        } else {
+        if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
         }
+
         return view;
     }
 
@@ -176,6 +176,11 @@ public class DayViewFragment extends RxFragment implements CalendarListener<Ques
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
         calendarDayView.smoothScrollToTime(Time.now());
+    }
+
+    @Subscribe
+    public void onUndoQuestForThePast(UndoQuestForThePast e) {
+        Toast.makeText(getContext(), "Quest moved to Inbox", Toast.LENGTH_LONG).show();
     }
 
     private void setUnscheduledQuestsHeight() {

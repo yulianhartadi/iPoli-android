@@ -9,10 +9,6 @@ public class Time {
 
     private static final int MINUTES_IN_A_DAY = 24 * 60;
 
-    public enum RelativeTime {
-        PAST, PRESENT, FUTURE;
-    }
-
     private final int minutes;
 
     private Time(int minutesAfterMidnight) {

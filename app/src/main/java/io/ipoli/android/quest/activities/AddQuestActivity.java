@@ -195,8 +195,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void setContextName() {
-        String name = questContext.name();
-        contextName.setText(Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase());
+        contextName.setText(StringUtils.capitalize(questContext.name()));
     }
 
     @Override

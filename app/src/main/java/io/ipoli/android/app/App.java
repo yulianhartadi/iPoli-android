@@ -33,6 +33,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
@@ -200,20 +201,7 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAt(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        questPersistenceService.save(q).subscribe(quest -> {
-            Player player = playerPersistenceService.findSync();
-            player.addExperience(q.getExperience());
-            if (shouldIncreaseLevel(player)) {
-                player.setLevel(player.getLevel() + 1);
-                while (shouldIncreaseLevel(player)) {
-                    player.setLevel(player.getLevel() + 1);
-                }
-                eventBus.post(new LevelUpEvent(player.getLevel()));
-            }
-            player.addCoins(q.getCoins());
-            playerPersistenceService.saveSync(player);
-            eventBus.post(new QuestCompletedEvent(quest, e.source));
-        });
+        questPersistenceService.save(q).subscribe(this::onQuestComplete);
     }
 
     @Subscribe
@@ -225,6 +213,11 @@ public class App extends MultiDexApplication {
         quest.setActualStart(null);
         quest.setCompletedAt(null);
         quest.setCompletedAtMinute(null);
+
+        if (quest.isScheduledForThePast()) {
+            quest.setEndDate(null);
+            quest.setStartDate(null);
+        }
         questPersistenceService.save(quest).subscribe(q -> {
             Player player = playerPersistenceService.findSync();
             player.removeExperience(q.getExperience());
@@ -251,7 +244,26 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        questPersistenceService.save(e.quest).subscribe();
+        questPersistenceService.save(e.quest).subscribe(quest -> {
+            if (quest.getCompletedAt() != null) {
+                onQuestComplete(quest);
+            }
+        });
+    }
+
+    private void onQuestComplete(Quest quest) {
+        Player player = playerPersistenceService.findSync();
+        player.addExperience(quest.getExperience());
+        if (shouldIncreaseLevel(player)) {
+            player.setLevel(player.getLevel() + 1);
+            while (shouldIncreaseLevel(player)) {
+                player.setLevel(player.getLevel() + 1);
+            }
+            eventBus.post(new LevelUpEvent(player.getLevel()));
+        }
+        player.addCoins(quest.getCoins());
+        playerPersistenceService.saveSync(player);
+        eventBus.post(new QuestCompletedEvent(quest, EventSource.ADD_QUEST));
     }
 
     @Subscribe

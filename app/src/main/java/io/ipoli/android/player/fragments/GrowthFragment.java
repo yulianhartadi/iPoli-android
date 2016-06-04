@@ -20,12 +20,21 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -36,7 +45,10 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -44,27 +56,19 @@ import io.ipoli.android.quest.QuestContext;
  */
 public class GrowthFragment extends BaseFragment {
 
-    @Inject
-    Bus eventBus;
-
     @BindView(R.id.time_spent_chart)
     PieChart timeSpentChart;
 
     @BindView(R.id.experience_chart)
     BarChart experienceChart;
 
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     private Unbinder unbinder;
-
-    protected String[] mMonths = new String[]{
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
-    };
-
-    protected String[] mParties = new String[]{
-            "Party A", "Party B", "Party C", "Party D", "Party E", "Party F", "Party G", "Party H",
-            "Party I", "Party J", "Party K", "Party L", "Party M", "Party N", "Party O", "Party P",
-            "Party Q", "Party R", "Party S", "Party T", "Party U", "Party V", "Party W", "Party X",
-            "Party Y", "Party Z"
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,29 +76,21 @@ public class GrowthFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        setUpTimeSpentChart();
 
-//        LineData data = getData(7, 5);
-////        data.setValueTextColor(getColor(R.color.md_blue_500));
-//
-//        // add some transparency to the color with "& 0x90FFFFFF"
-//        setupChart(experienceChart, data);
 
+        return view;
+    }
+
+    private void setUpExperienceChart(List<Quest> quests, int dayCount) {
         experienceChart.setDrawBarShadow(false);
         experienceChart.setDrawValueAboveBar(true);
 
         experienceChart.setDescription("");
-
-        // if more than 60 entries are displayed in the chart, no values will be
-        // drawn
-        experienceChart.setMaxVisibleValueCount(60);
-
-        // scaling can now only be done on x- and y-axis separately
         experienceChart.setPinchZoom(false);
 
         experienceChart.setDrawGridBackground(false);
         experienceChart.setExtraOffsets(5, 10, 5, 5);
-        // experienceChart.setDrawYLabels(false);
+        experienceChart.setNoDataText("Not enough data to display");
 
         XAxis xAxis = experienceChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -125,25 +121,39 @@ public class GrowthFragment extends BaseFragment {
         l.setTextSize(10f);
         l.setTextColor(getColor(R.color.md_dark_text_87));
 
-        setDataBar(7, 200);
-
-
-        return view;
+        setExperienceChartData(quests, dayCount);
     }
 
-    private void setDataBar(int count, float range) {
+    private void setExperienceChartData(List<Quest> quests, int dayCount) {
 
-        ArrayList<String> xVals = new ArrayList<String>();
-        for (int i = 0; i < count; i++) {
+        ArrayList<String> xVals = new ArrayList<>();
+        for (int i = 0; i < dayCount; i++) {
             xVals.add(String.valueOf(i + 1));
         }
 
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        if (quests.isEmpty()) {
+            return;
+        }
+        TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
 
-        for (int i = 0; i < count; i++) {
-            float mult = (range + 1);
-            int val = (int) (Math.random() * mult);
-            yVals1.add(new BarEntry(val, i));
+        for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
+            groupedByDate.put(date.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate(), new ArrayList<>());
+        }
+
+        for (Quest q : quests) {
+            groupedByDate.get(q.getEndDate()).add(q);
+        }
+
+        ArrayList<BarEntry> yVals1 = new ArrayList<>();
+
+        int index = 0;
+        for (Map.Entry<Date, List<Quest>> pair : groupedByDate.entrySet()) {
+            int total = 0;
+            for (Quest q : pair.getValue()) {
+                total += q.getExperience();
+            }
+            yVals1.add(new BarEntry(total, index));
+            index++;
         }
 
         BarDataSet set1;
@@ -153,7 +163,7 @@ public class GrowthFragment extends BaseFragment {
         set1.setBarSpacePercent(35f);
         set1.setColors(new int[]{getColor(R.color.md_blue_300)});
 
-        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
         dataSets.add(set1);
 
         BarData data = new BarData(xVals, dataSets);
@@ -164,7 +174,7 @@ public class GrowthFragment extends BaseFragment {
         experienceChart.animateY(getResources().getInteger(android.R.integer.config_longAnimTime), Easing.EasingOption.EaseInOutQuad);
     }
 
-    private void setUpTimeSpentChart() {
+    private void setUpTimeSpentChart(List<Quest> quests) {
         timeSpentChart.setExtraOffsets(5, 0, 5, 5);
 
         timeSpentChart.setDragDecelerationFrictionCoef(0.95f);
@@ -183,62 +193,105 @@ public class GrowthFragment extends BaseFragment {
 
         timeSpentChart.setDrawCenterText(true);
 
-        String centerText = "XP: 2565\nCoins: 450";
-        timeSpentChart.setCenterText(centerText);
-        timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
-        timeSpentChart.setCenterTextSize(12f);
-
         timeSpentChart.setRotationAngle(0);
         timeSpentChart.setRotationEnabled(true);
         timeSpentChart.setHighlightPerTapEnabled(true);
         timeSpentChart.getLegend().setEnabled(false);
-        setData(5, 30);
+        setData(quests);
+
 
         timeSpentChart.animateY(getResources().getInteger(android.R.integer.config_longAnimTime), Easing.EasingOption.EaseInOutQuad);
     }
 
-    private void setData(int count, float range) {
+    private void setData(List<Quest> quests) {
+
+        if (quests.isEmpty()) {
+            return;
+        }
 
         ArrayList<Entry> yVals1 = new ArrayList<Entry>();
 
         // IMPORTANT: In a PieChart, no values (Entry) should have the same
         // xIndex (even if from different DataSets), since no values can be
         // drawn above each other.
-        int total = 0;
-        for (int i = 0; i < count + 1; i++) {
-            int val = (int) ((Math.random() * range) + range / 5);
-            yVals1.add(new Entry(val, i));
-            total += val;
+
+        TreeMap<QuestContext, List<Quest>> groupedByContext = new TreeMap<>();
+//        for (QuestContext questContext : QuestContext.values()) {
+//            groupedByContext.put(questContext, new ArrayList<>());
+//        }
+
+        Set<QuestContext> usedContexts = new TreeSet<>();
+        for (Quest q : quests) {
+            QuestContext ctx = Quest.getContext(q);
+            if (!groupedByContext.containsKey(ctx)) {
+                groupedByContext.put(ctx, new ArrayList<>());
+            }
+            groupedByContext.get(ctx).add(q);
+            usedContexts.add(ctx);
         }
+
+        ArrayList<String> xVals = new ArrayList<String>();
+        List<Integer> colors = new ArrayList<>();
+        for (QuestContext usedCtx : usedContexts) {
+            xVals.add(StringUtils.capitalize(usedCtx.name()));
+            colors.add(getColor(usedCtx.resLightColor));
+        }
+
+        int index = 0;
+        int total = 0;
+        long totalXP = 0;
+        long totalCoins = 0;
+        for (Map.Entry<QuestContext, List<Quest>> pair : groupedByContext.entrySet()) {
+//            int total = 0;
+            int sum = 0;
+            for (Quest q : pair.getValue()) {
+                totalXP += q.getExperience();
+                totalCoins += q.getCoins();
+                if (q.getActualStart() != null) {
+                    sum += TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
+                } else {
+                    sum += Math.max(q.getDuration(), 5);
+                }
+            }
+            total += sum;
+//            yVals1.add(new BarEntry(total, index));
+            yVals1.add(new Entry(sum, index));
+            index++;
+        }
+
+//        int total = 0;
+//        for (int i = 0; i < count + 1; i++) {
+//            int val = (int) ((Math.random() * range) + range / 5);
+//            yVals1.add(new Entry(val, i));
+//            total += val;
+//        }
 
         final int tot = total;
 
-        ArrayList<String> xVals = new ArrayList<String>();
 
-        xVals.add("Learning");
-        xVals.add("Wellness");
-        xVals.add("Personal");
-        xVals.add("Work");
-        xVals.add("Fun");
-        xVals.add("Chores");
+//        xVals.add("Learning");
+//        xVals.add("Wellness");
+//        xVals.add("Personal");
+//        xVals.add("Work");
+//        xVals.add("Fun");
+//        xVals.add("Chores");
 
         PieDataSet dataSet = new PieDataSet(yVals1, "");
         dataSet.setSliceSpace(3f);
-        dataSet.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                return Math.round(value) + "h (" + (int) ((value / tot) * 100) + "%)";
-            }
-        });
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
+                String.format("%.1fh (%d%%)", value / 60.0f, (int) ((value / tot) * 100))
+        );
+//                TimeUnit.MINUTES.toHours(Math.round(value)) + "h (" + (int) ((value / tot) * 100) + "%)");
 
         dataSet.setSelectionShift(5f);
 
-        dataSet.setColors(new int[]{getColor(QuestContext.LEARNING.resLightColor),
-                getColor(QuestContext.WELLNESS.resLightColor),
-                getColor(QuestContext.PERSONAL.resLightColor),
-                getColor(QuestContext.WORK.resLightColor),
-                getColor(QuestContext.FUN.resLightColor),
-                getColor(QuestContext.CHORES.resLightColor)});
+//        dataSet.setColors(new int[]{getColor(QuestContext.LEARNING.resLightColor),
+//                getColor(QuestContext.WELLNESS.resLightColor),
+//                getColor(QuestContext.PERSONAL.resLightColor),
+//                getColor(QuestContext.WORK.resLightColor),
+//                getColor(QuestContext.FUN.resLightColor),
+//                getColor(QuestContext.CHORES.resLightColor)});
+        dataSet.setColors(colors);
 
         PieData data = new PieData(xVals, dataSet);
         data.setValueTextSize(12f);
@@ -247,7 +300,12 @@ public class GrowthFragment extends BaseFragment {
 
         timeSpentChart.highlightValues(null);
 
-        timeSpentChart.invalidate();
+        String centerText = String.format(Locale.getDefault(), "XP: %d\nCoins: %d", totalXP, totalCoins);
+        timeSpentChart.setCenterText(centerText);
+        timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
+        timeSpentChart.setCenterTextSize(12f);
+
+//        timeSpentChart.invalidate();
     }
 
     private int getColor(@ColorRes int color) {
@@ -266,6 +324,11 @@ public class GrowthFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(6), new LocalDate().plusDays(1))
+                .compose(bindToLifecycle()).subscribe(quests -> {
+            setUpTimeSpentChart(quests);
+            setUpExperienceChart(quests, 7);
+        });
     }
 
     @Override
