@@ -67,6 +67,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -224,7 +225,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         toolbarExpandContainer.setOnClickListener(this);
         CalendarFragment calendarFragment = new CalendarFragment();
         toolbarCalendar.setListener(calendarFragment);
-        changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+//        changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+        changeCurrentFragment(new GrowthFragment(), R.string.title_fragment_growth);
     }
 
     @Override
@@ -459,6 +461,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 //                source = EventSource.CHALLENGES;
 //                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
 //                break;
+
+            case R.id.growth:
+                source = EventSource.GROWTH;
+                changeCurrentFragment(new GrowthFragment(), R.string.title_fragment_growth);
+                break;
 
             case R.id.rewards:
                 source = EventSource.REWARDS;
