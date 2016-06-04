@@ -12,6 +12,7 @@ import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -118,12 +119,21 @@ public class GrowthFragment extends BaseFragment {
 //        l.setEnabled(false);
 //        chart.setDrawGridBackground(false);
 //
-        chart.getAxisLeft().setDrawGridLines(false);
-        chart.getAxisLeft().setDrawLabels(false);
+        chart.getAxisLeft().setEnabled(false);
         chart.getXAxis().setDrawGridLines(false);
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.TOP);
+        chart.getXAxis().setAxisLineColor(getColor(R.color.md_dark_text_54));
+        chart.getXAxis().setTextColor(getColor(R.color.md_dark_text_54));
+        chart.getXAxis().setDrawAxisLine(false);
+        chart.setDrawBorders(true);
+        chart.setBorderWidth(0.5f);
+        chart.setBorderColor(getColor(R.color.md_dark_text_26));
 //        chart.getAxisLeft().setSpaceTop(40);
 //        chart.getAxisLeft().setSpaceBottom(40);
         chart.getAxisRight().setDrawGridLines(false);
+        chart.getAxisRight().setDrawAxisLine(false);
+        chart.getAxisRight().setAxisLineColor(getColor(R.color.md_dark_text_54));
+        chart.getAxisRight().setTextColor(getColor(R.color.md_dark_text_54));
 //        chart.getAxisRight().setDrawLabels(false);
 
 //        chart.getXAxis().setEnabled(false);
@@ -136,7 +146,7 @@ public class GrowthFragment extends BaseFragment {
 
         ArrayList<String> xVals = new ArrayList<String>();
         for (int i = 0; i < count; i++) {
-            xVals.add(mMonths[i % 12]);
+            xVals.add(String.valueOf(i + 1));
         }
 
         ArrayList<Entry> yVals = new ArrayList<Entry>();
