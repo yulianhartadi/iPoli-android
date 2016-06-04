@@ -224,4 +224,5 @@
     <string name="nav_header_player_level">Level %d: Newbie</string>
     <string name="nav_drawer_player_xp">Current XP: %s</string>
     <string name="title_fragment_growth">Growth</string>
+    <string name="help_dialog_growth_title">What is growth all about?</string>
 </resources>
