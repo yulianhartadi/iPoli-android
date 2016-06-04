@@ -149,12 +149,7 @@ public class GrowthFragment extends BaseFragment {
         BarDataSet set1;
 
         set1 = new BarDataSet(yVals1, "Experience gain per day");
-        set1.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                return String.valueOf(Math.round(value));
-            }
-        });
+        set1.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
         set1.setBarSpacePercent(35f);
         set1.setColors(new int[]{getColor(R.color.md_blue_300)});
 
@@ -209,9 +204,14 @@ public class GrowthFragment extends BaseFragment {
         // IMPORTANT: In a PieChart, no values (Entry) should have the same
         // xIndex (even if from different DataSets), since no values can be
         // drawn above each other.
+        int total = 0;
         for (int i = 0; i < count + 1; i++) {
-            yVals1.add(new Entry((float) (Math.random() * range) + range / 5, i));
+            int val = (int) ((Math.random() * range) + range / 5);
+            yVals1.add(new Entry(val, i));
+            total += val;
         }
+
+        final int tot = total;
 
         ArrayList<String> xVals = new ArrayList<String>();
 
@@ -227,7 +227,7 @@ public class GrowthFragment extends BaseFragment {
         dataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                return Math.round(value) + " h";
+                return Math.round(value) + "h (" + (int) ((value / tot) * 100) + "%)";
             }
         });
 
