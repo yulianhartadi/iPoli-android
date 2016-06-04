@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -62,6 +64,9 @@ public class GrowthFragment extends BaseFragment {
     @BindView(R.id.experience_chart)
     BarChart experienceChart;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     @Inject
     Bus eventBus;
 
@@ -77,6 +82,7 @@ public class GrowthFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.fragment_title_growth);
 
         return view;
     }

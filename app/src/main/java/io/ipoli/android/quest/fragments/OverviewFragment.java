@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -36,6 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -60,12 +61,13 @@ public class OverviewFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
-    @BindView(R.id.root_container)
-    RelativeLayout rootLayout;
-
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
     @Inject
@@ -81,7 +83,7 @@ public class OverviewFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.fragment_overview_title);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -89,8 +91,7 @@ public class OverviewFragment extends BaseFragment {
 
         overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
-        questList.setEmptyView(rootLayout, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
-
+        questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
 
         return view;
     }
@@ -183,7 +184,7 @@ public class OverviewFragment extends BaseFragment {
             for (Quest q : quests) {
                 if (q.isScheduledForToday() && hasDailyRrule(q)) {
                     recurrent.add(q);
-                } else if(q.isScheduledForToday() || !hasDailyRrule(q)){
+                } else if (q.isScheduledForToday() || !hasDailyRrule(q)) {
                     viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
                 }
             }

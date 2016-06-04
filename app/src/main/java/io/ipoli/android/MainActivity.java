@@ -6,14 +6,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -26,15 +26,11 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -45,7 +41,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
@@ -54,11 +49,8 @@ import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
-import io.ipoli.android.app.ui.events.CloseToolbarCalendarEvent;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
-import io.ipoli.android.app.ui.events.NewTitleEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
-import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
@@ -87,7 +79,7 @@ import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
@@ -99,12 +91,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
-
-    @BindView(R.id.root_container)
-    CoordinatorLayout rootContainer;
-
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindView(R.id.content_container)
     View contentContainer;
@@ -118,21 +104,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @BindView(R.id.loading_message)
     TextView loadingMessage;
 
-    @BindView(R.id.toolbar_title)
-    TextView toolbarTitle;
-
-    @BindView(R.id.toolbar_expand_container)
-    View toolbarExpandContainer;
-
-    @BindView(R.id.toolbar_calendar)
-    CompactCalendarView toolbarCalendar;
-
-    @BindView(R.id.toolbar_calendar_indicator)
-    ImageView calendarIndicator;
-
-    @BindView(R.id.appbar)
-    AppBarLayout appBar;
-
     @Inject
     QuestPersistenceService questPersistenceService;
 
@@ -142,6 +113,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     Fragment currentFragment;
 
     private boolean isRateDialogShown;
+    public ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,16 +121,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
         }
-
-        toolbarCalendar.setCurrentDate(new Date());
 
         loadingIndicator.getIndeterminateDrawable().setColorFilter(
                 ContextCompat.getColor(this, R.color.colorPrimary),
@@ -169,16 +138,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         navigationView.setNavigationItemSelectedListener(this);
 
         changeToCalendarFragment();
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 updatePlayerInDrawer();
             }
+
         };
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+//        actionBarDrawerToggle.syncState();
         updatePlayerInDrawer();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            drawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updatePlayerInDrawer() {
@@ -217,15 +197,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void changeToCalendarFragment() {
-        appBar.setExpanded(false, false);
-        appBar.setTag(false);
-
-        calendarIndicator.setVisibility(View.VISIBLE);
-        toolbarExpandContainer.setOnClickListener(this);
-        CalendarFragment calendarFragment = new CalendarFragment();
-        toolbarCalendar.setListener(calendarFragment);
-//        changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-        changeCurrentFragment(new GrowthFragment(), R.string.title_fragment_growth);
+        changeCurrentFragment(new CalendarFragment());
     }
 
     @Override
@@ -261,34 +233,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         super.onPause();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_overview:
-                toolbarExpandContainer.setOnClickListener(null);
-                appBar.setExpanded(false, false);
-                appBar.setTag(false);
-                calendarIndicator.setVisibility(View.GONE);
-                changeCurrentFragment(new OverviewFragment(), R.string.overview_title);
-                return true;
-
-            case R.id.action_calendar:
-                calendarIndicator.setVisibility(View.VISIBLE);
-                toolbarExpandContainer.setOnClickListener(MainActivity.this);
-                CalendarFragment calendarFragment = new CalendarFragment();
-                toolbarCalendar.setListener(calendarFragment);
-                changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void changeCurrentFragment(Fragment fragment, @StringRes int title) {
-        changeCurrentFragment(fragment, getString(title));
-    }
-
-    private void changeCurrentFragment(Fragment fragment, String title) {
-        toolbarTitle.setText(title);
+    private void changeCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_container, fragment).commit();
         currentFragment = fragment;
@@ -309,7 +254,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         long coins = q.getCoins();
 
         Snackbar snackbar = Snackbar
-                .make(rootContainer,
+                .make(contentContainer,
                         getString(R.string.quest_complete, experience, coins),
                         Snackbar.LENGTH_LONG);
 
@@ -342,10 +287,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         long coins = q.getCoins();
 
         Snackbar
-                .make(rootContainer,
+                .make(contentContainer,
                         getString(R.string.quest_undone, experience, coins),
                         Snackbar.LENGTH_SHORT)
                 .show();
+    }
+
+    public void initToolbar(Toolbar toolbar, @StringRes int title) {
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(title);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        actionBarDrawerToggle.syncState();
     }
 
     @Subscribe
@@ -378,38 +333,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     @Subscribe
-    public void onNewTitle(NewTitleEvent e) {
-        toolbarTitle.setText(e.text);
-    }
-
-    @Override
-    public void onClick(View v) {
-        boolean isExpanded = (boolean) appBar.getTag();
-        calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        appBar.setExpanded(!isExpanded, true);
-        appBar.setTag(!isExpanded);
-        eventBus.post(new ToolbarCalendarTapEvent(!isExpanded));
-    }
-
-    @Subscribe
-    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-        if (e.source == CurrentDayChangedEvent.Source.CALENDAR) {
-            return;
-        }
-        toolbarCalendar.setCurrentDate(e.date.toDate());
-    }
-
-    @Subscribe
-    public void onCloseToolbarCalendar(CloseToolbarCalendarEvent e) {
-        boolean isExpanded = (boolean) appBar.getTag();
-        if (isExpanded) {
-            calendarIndicator.animate().rotation(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-            appBar.setExpanded(false, true);
-        }
-        appBar.setTag(false);
-    }
-
-    @Subscribe
     public void onLevelUp(LevelUpEvent e) {
         showLevelUpMessage(e.newLevel);
     }
@@ -424,45 +347,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         navigationView.setCheckedItem(item.getItemId());
         drawerLayout.closeDrawers();
 
-        toolbarExpandContainer.setOnClickListener(null);
-        appBar.setExpanded(false, false);
-        appBar.setTag(false);
-        calendarIndicator.setVisibility(View.GONE);
         EventSource source = null;
         switch (item.getItemId()) {
 
             case R.id.home:
-                calendarIndicator.setVisibility(View.VISIBLE);
-                toolbarExpandContainer.setOnClickListener(MainActivity.this);
                 source = EventSource.CALENDAR;
-                CalendarFragment calendarFragment = new CalendarFragment();
-                toolbarCalendar.setListener(calendarFragment);
-                changeCurrentFragment(calendarFragment, new SimpleDateFormat(getString(R.string.today_calendar_format), Locale.getDefault()).format(new Date()));
+                changeToCalendarFragment();
                 break;
 
             case R.id.inbox:
                 source = EventSource.INBOX;
-                changeCurrentFragment(new InboxFragment(), R.string.title_activity_inbox);
+                changeCurrentFragment(new InboxFragment());
 
                 break;
             case R.id.repeating_quests:
                 source = EventSource.REPEATING_QUESTS;
-                changeCurrentFragment(new RepeatingQuestListFragment(), R.string.title_fragment_repeating_quests);
+                changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
 
 //            case R.id.challenges:
 //                source = EventSource.CHALLENGES;
-//                changeCurrentFragment(new ChallengeListFragment(), R.string.title_fragment_challenges);
+//                changeCurrentFragment(new ChallengeListFragment());
 //                break;
 
             case R.id.growth:
                 source = EventSource.GROWTH;
-                changeCurrentFragment(new GrowthFragment(), R.string.title_fragment_growth);
+                changeCurrentFragment(new GrowthFragment());
                 break;
 
             case R.id.rewards:
                 source = EventSource.REWARDS;
-                changeCurrentFragment(new RewardListFragment(), R.string.title_fragment_rewards);
+                changeCurrentFragment(new RewardListFragment());
                 break;
 
             case R.id.invite_friends:
@@ -552,5 +467,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 playerPersistenceService.saveSync(player);
             }
         }
+    }
+
+    public void startOverview() {
+        changeCurrentFragment(new OverviewFragment());
     }
 }
