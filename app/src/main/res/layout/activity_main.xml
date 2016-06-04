@@ -94,7 +94,6 @@
                         app:compactCalendarTextSize="12sp" />
                 </LinearLayout>
 
-
             </android.support.design.widget.CollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>

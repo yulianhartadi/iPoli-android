@@ -211,14 +211,7 @@ public class GrowthFragment extends BaseFragment {
 
         ArrayList<Entry> yVals1 = new ArrayList<Entry>();
 
-        // IMPORTANT: In a PieChart, no values (Entry) should have the same
-        // xIndex (even if from different DataSets), since no values can be
-        // drawn above each other.
-
         TreeMap<QuestContext, List<Quest>> groupedByContext = new TreeMap<>();
-//        for (QuestContext questContext : QuestContext.values()) {
-//            groupedByContext.put(questContext, new ArrayList<>());
-//        }
 
         Set<QuestContext> usedContexts = new TreeSet<>();
         for (Quest q : quests) {
@@ -242,7 +235,6 @@ public class GrowthFragment extends BaseFragment {
         long totalXP = 0;
         long totalCoins = 0;
         for (Map.Entry<QuestContext, List<Quest>> pair : groupedByContext.entrySet()) {
-//            int total = 0;
             int sum = 0;
             for (Quest q : pair.getValue()) {
                 totalXP += q.getExperience();
@@ -254,43 +246,19 @@ public class GrowthFragment extends BaseFragment {
                 }
             }
             total += sum;
-//            yVals1.add(new BarEntry(total, index));
             yVals1.add(new Entry(sum, index));
             index++;
         }
 
-//        int total = 0;
-//        for (int i = 0; i < count + 1; i++) {
-//            int val = (int) ((Math.random() * range) + range / 5);
-//            yVals1.add(new Entry(val, i));
-//            total += val;
-//        }
-
-        final int tot = total;
-
-
-//        xVals.add("Learning");
-//        xVals.add("Wellness");
-//        xVals.add("Personal");
-//        xVals.add("Work");
-//        xVals.add("Fun");
-//        xVals.add("Chores");
+        final int totalTimeSpent = total;
 
         PieDataSet dataSet = new PieDataSet(yVals1, "");
         dataSet.setSliceSpace(3f);
         dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
-                String.format("%.1fh (%d%%)", value / 60.0f, (int) ((value / tot) * 100))
+                String.format("%.1fh (%d%%)", value / 60.0f, (int) ((value / totalTimeSpent) * 100))
         );
-//                TimeUnit.MINUTES.toHours(Math.round(value)) + "h (" + (int) ((value / tot) * 100) + "%)");
 
         dataSet.setSelectionShift(5f);
-
-//        dataSet.setColors(new int[]{getColor(QuestContext.LEARNING.resLightColor),
-//                getColor(QuestContext.WELLNESS.resLightColor),
-//                getColor(QuestContext.PERSONAL.resLightColor),
-//                getColor(QuestContext.WORK.resLightColor),
-//                getColor(QuestContext.FUN.resLightColor),
-//                getColor(QuestContext.CHORES.resLightColor)});
         dataSet.setColors(colors);
 
         PieData data = new PieData(xVals, dataSet);
@@ -304,21 +272,17 @@ public class GrowthFragment extends BaseFragment {
         timeSpentChart.setCenterText(centerText);
         timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
         timeSpentChart.setCenterTextSize(12f);
-
-//        timeSpentChart.invalidate();
     }
 
     private int getColor(@ColorRes int color) {
         return ContextCompat.getColor(getActivity(), color);
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }
-
 
     @Override
     public void onResume() {

@@ -69,7 +69,6 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -294,12 +293,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 .replace(R.id.content_container, fragment).commit();
         currentFragment = fragment;
         getSupportFragmentManager().executePendingTransactions();
-    }
-
-    private void colorLayout(QuestContext context) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
     }
 
     @Subscribe
