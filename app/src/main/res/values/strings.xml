@@ -232,8 +232,11 @@
     <string name="nav_drawer_player_xp">Current XP: %s</string>
     <string name="title_fragment_growth">Growth</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
-    <string name="chart_not_enough_data">Not enough data. Complete some quests first!</string>
     <string name="chart_time_spent_description">Time spent per context</string>
     <string name="chart_time_spent_center_text">XP: %1$d\nCoins: %2$d</string>
     <string name="chart_experience_description">Experience gain per day</string>
+    <string name="help_dialog_growth_daily_progress">Monitor your daily progress</string>
+    <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
+    <string name="help_dialog_growth_experience_chart">The experience chart shows you how much XP you gain per day</string>
+    <string name="chart_no_data_to_display">No data to display. Go complete some quests!</string>
 </resources>

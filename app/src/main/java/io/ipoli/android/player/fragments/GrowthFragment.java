@@ -63,6 +63,12 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
  */
 public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
+    @BindView(R.id.chart_container)
+    View chartContainer;
+
+    @BindView(R.id.empty_view_container)
+    View emptyViewContainer;
+
     @BindView(R.id.time_spent_chart)
     PieChart timeSpentChart;
 
@@ -106,8 +112,22 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
         currentDayCount = 1;
-
         return view;
+    }
+
+    private void showCharts(int dayCount) {
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1))
+                .compose(bindToLifecycle()).subscribe(quests -> {
+            if (quests.isEmpty()) {
+                chartContainer.setVisibility(View.GONE);
+                emptyViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                chartContainer.setVisibility(View.VISIBLE);
+                emptyViewContainer.setVisibility(View.GONE);
+                setUpTimeSpentChart(quests);
+                setUpExperienceChart(quests, dayCount);
+            }
+        });
     }
 
     private void setUpExperienceChart(List<Quest> quests, int dayCount) {
@@ -122,7 +142,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         Paint textPaint = experienceChart.getPaint(BarChart.PAINT_INFO);
         textPaint.setTextSize(Utils.convertDpToPixel(14f));
         textPaint.setColor(getColor(R.color.md_dark_text_87));
-        experienceChart.setNoDataText(getString(R.string.chart_not_enough_data));
+        experienceChart.setNoDataText(getString(R.string.chart_no_data_to_display));
 
         XAxis xAxis = experienceChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -235,7 +255,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         Paint textPaint = timeSpentChart.getPaint(PieChart.PAINT_INFO);
         textPaint.setTextSize(Utils.convertDpToPixel(14f));
         textPaint.setColor(getColor(R.color.md_dark_text_87));
-        timeSpentChart.setNoDataText(getString(R.string.chart_not_enough_data));
+        timeSpentChart.setNoDataText(getString(R.string.chart_no_data_to_display));
 
         setData(quests);
 
@@ -328,14 +348,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         super.onResume();
         eventBus.register(this);
         showCharts(currentDayCount);
-    }
-
-    private void showCharts(int dayCount) {
-        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1))
-                .compose(bindToLifecycle()).subscribe(quests -> {
-            setUpTimeSpentChart(quests);
-            setUpExperienceChart(quests, dayCount);
-        });
     }
 
     @Override
