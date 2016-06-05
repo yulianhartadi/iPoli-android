@@ -138,7 +138,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         leftAxis.setSpaceTop(15f);
         leftAxis.setTextSize(10f);
         leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+        leftAxis.setAxisMinValue(0f);
 
         YAxis rightAxis = experienceChart.getAxisRight();
         rightAxis.setDrawGridLines(false);

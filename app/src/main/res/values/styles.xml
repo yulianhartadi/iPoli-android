@@ -6,12 +6,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="WhiteDrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/md_white</item>
+    </style>
+
     <style name="Base.Theme.iPoli" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
     </style>
 
     <style name="Theme.iPoli.DialogActivity" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
