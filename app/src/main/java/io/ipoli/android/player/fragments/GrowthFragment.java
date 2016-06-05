@@ -119,6 +119,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 getResources().getStringArray(R.array.growth_intervals));
         adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setSelection(0, false);
         spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
@@ -341,8 +342,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         data.setValueTextSize(12f);
         data.setValueTextColor(getColor(R.color.md_white));
         timeSpentChart.setData(data);
-
-        timeSpentChart.highlightValues(null);
 
         timeSpentChart.setCenterText(getString(R.string.chart_time_spent_center_text, totalXP, totalCoins));
         timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
