@@ -145,7 +145,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         switch (item.getItemId()) {
             case R.id.action_overview:
                 ((MainActivity) getActivity()).startOverview();
-//                changeCurrentFragment(new OverviewFragment(), R.string.overview_title);
                 return true;
 
             case R.id.action_today:

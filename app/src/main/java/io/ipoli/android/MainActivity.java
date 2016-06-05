@@ -136,7 +136,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        changeToCalendarFragment();
+        startCalendar();
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * PROGRESS_BAR_MAX_VALUE);
     }
 
-    private void changeToCalendarFragment() {
+    public void startCalendar() {
         changeCurrentFragment(new CalendarFragment());
     }
 
@@ -204,7 +204,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
             questPersistenceService.findById(questId).subscribe(quest -> {
-                changeToCalendarFragment();
+                startCalendar();
                 eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
             });
         } else if (isFromAction(ACTION_ADD_QUEST)) {
@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.home:
                 source = EventSource.CALENDAR;
-                changeToCalendarFragment();
+                startCalendar();
                 break;
 
             case R.id.inbox:

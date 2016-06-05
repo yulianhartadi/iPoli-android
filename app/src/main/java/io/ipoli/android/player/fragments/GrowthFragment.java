@@ -1,6 +1,7 @@
 package io.ipoli.android.player.fragments;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -25,6 +27,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.Utils;
 import com.squareup.otto.Bus;
 
 import org.joda.time.DateTimeZone;
@@ -59,7 +62,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/4/16.
  */
-public class GrowthFragment extends BaseFragment {
+public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.time_spent_chart)
     PieChart timeSpentChart;
@@ -81,6 +84,8 @@ public class GrowthFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
+    private int currentDayCount;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,10 +100,13 @@ public class GrowthFragment extends BaseFragment {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, new String[]{"Today", "Last 7 days", "Last 30 days"});
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.growth_intervals));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
+
+        currentDayCount = 1;
 
         return view;
     }
@@ -112,7 +120,10 @@ public class GrowthFragment extends BaseFragment {
 
         experienceChart.setDrawGridBackground(false);
         experienceChart.setExtraOffsets(5, 10, 5, 5);
-        experienceChart.setNoDataText("Not enough data to display");
+        Paint textPaint = experienceChart.getPaint(BarChart.PAINT_INFO);
+        textPaint.setTextSize(Utils.convertDpToPixel(14f));
+        textPaint.setColor(getColor(R.color.md_dark_text_87));
+        experienceChart.setNoDataText("Not enough data. Complete some quests first!");
 
         XAxis xAxis = experienceChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -148,13 +159,15 @@ public class GrowthFragment extends BaseFragment {
 
     private void setExperienceChartData(List<Quest> quests, int dayCount) {
 
+
+        if (quests.isEmpty()) {
+            experienceChart.clear();
+            return;
+        }
+
         ArrayList<String> xVals = new ArrayList<>();
         for (int i = 0; i < dayCount; i++) {
             xVals.add(String.valueOf(i + 1));
-        }
-
-        if (quests.isEmpty()) {
-            return;
         }
         TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
 
@@ -219,8 +232,13 @@ public class GrowthFragment extends BaseFragment {
         timeSpentChart.setRotationEnabled(true);
         timeSpentChart.setHighlightPerTapEnabled(true);
         timeSpentChart.getLegend().setEnabled(false);
-        setData(quests);
 
+        Paint textPaint = timeSpentChart.getPaint(PieChart.PAINT_INFO);
+        textPaint.setTextSize(Utils.convertDpToPixel(14f));
+        textPaint.setColor(getColor(R.color.md_dark_text_87));
+        timeSpentChart.setNoDataText("Not enough data. Complete some quests first!");
+
+        setData(quests);
 
         timeSpentChart.animateY(getResources().getInteger(android.R.integer.config_longAnimTime), Easing.EasingOption.EaseInOutQuad);
     }
@@ -228,6 +246,7 @@ public class GrowthFragment extends BaseFragment {
     private void setData(List<Quest> quests) {
 
         if (quests.isEmpty()) {
+            timeSpentChart.clear();
             return;
         }
 
@@ -310,10 +329,14 @@ public class GrowthFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(6), new LocalDate().plusDays(1))
+        showCharts(currentDayCount);
+    }
+
+    private void showCharts(int dayCount) {
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1))
                 .compose(bindToLifecycle()).subscribe(quests -> {
             setUpTimeSpentChart(quests);
-            setUpExperienceChart(quests, 7);
+            setUpExperienceChart(quests, dayCount);
         });
     }
 
@@ -331,5 +354,21 @@ public class GrowthFragment extends BaseFragment {
     @Override
     protected void showHelpDialog() {
         HelpDialog.newInstance(R.layout.fragment_help_dialog_growth, R.string.help_dialog_growth_title, "growth").show(getActivity().getSupportFragmentManager());
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        currentDayCount = 1;
+        if (position == 1) {
+            currentDayCount = 7;
+        } else if (position == 2) {
+            currentDayCount = 30;
+        }
+        showCharts(currentDayCount);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

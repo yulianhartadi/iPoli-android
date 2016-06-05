@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -128,6 +129,17 @@ public class OverviewFragment extends BaseFragment {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_calendar:
+                ((MainActivity) getActivity()).startCalendar();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe
