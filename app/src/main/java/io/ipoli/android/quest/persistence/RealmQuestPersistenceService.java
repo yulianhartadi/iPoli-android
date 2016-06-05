@@ -11,8 +11,8 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
@@ -219,5 +219,15 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .equalTo("allDay", false)
                 .isNull("completedAt")
                 .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+    }
+
+    @Override
+    public Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
+        return findAll(where -> where
+                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
+                .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
+                .equalTo("allDay", false)
+                .isNotNull("completedAt")
+                .findAllSortedAsync("endDate", Sort.ASCENDING));
     }
 }

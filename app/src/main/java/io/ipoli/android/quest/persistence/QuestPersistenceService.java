@@ -20,6 +20,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 
+    Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
+
     Observable<List<Quest>> findAllPlannedAndStartedToday();
 
     Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate);

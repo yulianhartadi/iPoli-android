@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -60,14 +61,14 @@ public class RewardListFragment extends BaseFragment {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
-    private CoordinatorLayout rootContainer;
-
     @BindView(R.id.reward_list)
     EmptyStateRecyclerView rewardList;
 
     @BindView(R.id.root_container)
-    RelativeLayout rootLayout;
+    CoordinatorLayout rootLayout;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private RewardListAdapter rewardListAdapter;
 
@@ -78,7 +79,7 @@ public class RewardListFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        rootContainer = (CoordinatorLayout) getActivity().findViewById(R.id.root_container);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_rewards);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -148,7 +149,7 @@ public class RewardListFragment extends BaseFragment {
         player.removeCoins(r.getPrice());
         playerPersistenceService.saveSync(player);
         updateRewards();
-        Snackbar.make(rootContainer, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
     }
 
     private void showTooExpensiveMessage() {

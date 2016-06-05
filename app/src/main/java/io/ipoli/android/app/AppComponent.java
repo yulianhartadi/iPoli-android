@@ -16,6 +16,7 @@ import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -121,5 +122,7 @@ public interface AppComponent {
     void inject(RewardActivity rewardActivity);
 
     void inject(PickAvatarActivity pickAvatarActivity);
+
+    void inject(GrowthFragment growthFragment);
 }
 

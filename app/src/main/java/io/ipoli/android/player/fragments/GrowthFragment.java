@@ -1,0 +1,383 @@
+package io.ipoli.android.player.fragments;
+
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.Utils;
+import com.squareup.otto.Bus;
+
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import io.ipoli.android.MainActivity;
+import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 6/4/16.
+ */
+public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
+
+    @BindView(R.id.chart_container)
+    View chartContainer;
+
+    @BindView(R.id.empty_view_container)
+    View emptyViewContainer;
+
+    @BindView(R.id.time_spent_chart)
+    PieChart timeSpentChart;
+
+    @BindView(R.id.experience_chart)
+    BarChart experienceChart;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.toolbar_spinner)
+    Spinner spinner;
+
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    private Unbinder unbinder;
+
+    private int currentDayCount;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_growth, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
+
+        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.growth_intervals));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+        ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
+
+        currentDayCount = 1;
+        return view;
+    }
+
+    private void showCharts(int dayCount) {
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1))
+                .compose(bindToLifecycle()).subscribe(quests -> {
+            if (quests.isEmpty()) {
+                chartContainer.setVisibility(View.GONE);
+                emptyViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                chartContainer.setVisibility(View.VISIBLE);
+                emptyViewContainer.setVisibility(View.GONE);
+                setUpTimeSpentChart(quests);
+                setUpExperienceChart(quests, dayCount);
+            }
+        });
+    }
+
+    private void setUpExperienceChart(List<Quest> quests, int dayCount) {
+        experienceChart.setDrawBarShadow(false);
+        experienceChart.setDrawValueAboveBar(true);
+
+        experienceChart.setDescription("");
+        experienceChart.setPinchZoom(false);
+
+        experienceChart.setDrawGridBackground(false);
+        experienceChart.setExtraOffsets(5, 10, 5, 5);
+        Paint textPaint = experienceChart.getPaint(BarChart.PAINT_INFO);
+        textPaint.setTextSize(Utils.convertDpToPixel(14f));
+        textPaint.setColor(getColor(R.color.md_dark_text_87));
+        experienceChart.setNoDataText(getString(R.string.chart_no_data_to_display));
+
+        XAxis xAxis = experienceChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextColor(getColor(R.color.md_dark_text_54));
+        xAxis.setTextSize(10f);
+        xAxis.setSpaceBetweenLabels(2);
+
+        YAxis leftAxis = experienceChart.getAxisLeft();
+        leftAxis.setLabelCount(8, false);
+        leftAxis.setTextColor(getColor(R.color.md_dark_text_54));
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setSpaceTop(15f);
+        leftAxis.setTextSize(10f);
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setAxisMinValue(0f);
+
+        YAxis rightAxis = experienceChart.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setLabelCount(8, false);
+        rightAxis.setTextColor(getColor(R.color.md_dark_text_54));
+        rightAxis.setSpaceTop(15f);
+        rightAxis.setTextSize(10f);
+        rightAxis.setAxisMinValue(0f);
+
+        Legend l = experienceChart.getLegend();
+        l.setPosition(Legend.LegendPosition.BELOW_CHART_LEFT);
+        l.setTextSize(10f);
+        l.setTextColor(getColor(R.color.md_dark_text_87));
+
+        setExperienceChartData(quests, dayCount);
+    }
+
+    private void setExperienceChartData(List<Quest> quests, int dayCount) {
+
+        if (quests.isEmpty()) {
+            experienceChart.clear();
+            return;
+        }
+
+        ArrayList<String> xVals = new ArrayList<>();
+        for (int i = 0; i < dayCount; i++) {
+            xVals.add(String.valueOf(i + 1));
+        }
+        TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
+
+        for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
+            groupedByDate.put(date.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate(), new ArrayList<>());
+        }
+
+        for (Quest q : quests) {
+            groupedByDate.get(q.getEndDate()).add(q);
+        }
+
+        ArrayList<BarEntry> yVals1 = new ArrayList<>();
+
+        int index = 0;
+        for (Map.Entry<Date, List<Quest>> pair : groupedByDate.entrySet()) {
+            int total = 0;
+            for (Quest q : pair.getValue()) {
+                total += q.getExperience();
+            }
+            yVals1.add(new BarEntry(total, index));
+            index++;
+        }
+
+        BarDataSet set1;
+
+        set1 = new BarDataSet(yVals1, getString(R.string.chart_experience_description));
+        set1.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
+        set1.setBarSpacePercent(35f);
+        set1.setColors(new int[]{getColor(R.color.md_blue_300)});
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(set1);
+
+        BarData data = new BarData(xVals, dataSets);
+        data.setValueTextSize(12f);
+        data.setValueTextColor(getColor(R.color.md_dark_text_87));
+
+        experienceChart.setData(data);
+        experienceChart.animateY(getResources().getInteger(android.R.integer.config_longAnimTime), Easing.EasingOption.EaseInOutQuad);
+    }
+
+    private void setUpTimeSpentChart(List<Quest> quests) {
+        timeSpentChart.setExtraOffsets(5, 0, 5, 5);
+
+        timeSpentChart.setDragDecelerationFrictionCoef(0.95f);
+
+        timeSpentChart.setDrawHoleEnabled(true);
+        timeSpentChart.setDescription(getString(R.string.chart_time_spent_description));
+        timeSpentChart.setDescriptionColor(getColor(R.color.md_dark_text_87));
+        timeSpentChart.setDescriptionTextSize(10f);
+        timeSpentChart.setHoleColor(Color.WHITE);
+
+        timeSpentChart.setTransparentCircleColor(Color.WHITE);
+        timeSpentChart.setTransparentCircleAlpha(110);
+
+        timeSpentChart.setHoleRadius(44f);
+        timeSpentChart.setTransparentCircleRadius(47f);
+
+        timeSpentChart.setDrawCenterText(true);
+
+        timeSpentChart.setRotationAngle(0);
+        timeSpentChart.setRotationEnabled(true);
+        timeSpentChart.setHighlightPerTapEnabled(true);
+        timeSpentChart.getLegend().setEnabled(false);
+
+        Paint textPaint = timeSpentChart.getPaint(PieChart.PAINT_INFO);
+        textPaint.setTextSize(Utils.convertDpToPixel(14f));
+        textPaint.setColor(getColor(R.color.md_dark_text_87));
+        timeSpentChart.setNoDataText(getString(R.string.chart_no_data_to_display));
+
+        setData(quests);
+
+        timeSpentChart.animateY(getResources().getInteger(android.R.integer.config_longAnimTime), Easing.EasingOption.EaseInOutQuad);
+    }
+
+    private void setData(List<Quest> quests) {
+
+        if (quests.isEmpty()) {
+            timeSpentChart.clear();
+            return;
+        }
+
+        ArrayList<Entry> yVals1 = new ArrayList<Entry>();
+
+        TreeMap<QuestContext, List<Quest>> groupedByContext = new TreeMap<>();
+
+        Set<QuestContext> usedContexts = new TreeSet<>();
+        for (Quest q : quests) {
+            QuestContext ctx = Quest.getContext(q);
+            if (!groupedByContext.containsKey(ctx)) {
+                groupedByContext.put(ctx, new ArrayList<>());
+            }
+            groupedByContext.get(ctx).add(q);
+            usedContexts.add(ctx);
+        }
+
+        ArrayList<String> xVals = new ArrayList<String>();
+        List<Integer> colors = new ArrayList<>();
+        for (QuestContext usedCtx : usedContexts) {
+            xVals.add(StringUtils.capitalize(usedCtx.name()));
+            colors.add(getColor(usedCtx.resLightColor));
+        }
+
+        int index = 0;
+        int total = 0;
+        long totalXP = 0;
+        long totalCoins = 0;
+        for (Map.Entry<QuestContext, List<Quest>> pair : groupedByContext.entrySet()) {
+            int sum = 0;
+            for (Quest q : pair.getValue()) {
+                totalXP += q.getExperience();
+                totalCoins += q.getCoins();
+                if (q.getActualStart() != null) {
+                    sum += TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
+                } else {
+                    sum += Math.max(q.getDuration(), 5);
+                }
+            }
+            total += sum;
+            yVals1.add(new Entry(sum, index));
+            index++;
+        }
+
+        final int totalTimeSpent = total;
+
+        PieDataSet dataSet = new PieDataSet(yVals1, "");
+        dataSet.setSliceSpace(3f);
+        dataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) ->
+                String.format("%.1fh (%d%%)", value / 60.0f, (int) ((value / totalTimeSpent) * 100))
+        );
+
+        dataSet.setSelectionShift(5f);
+        dataSet.setColors(colors);
+
+        PieData data = new PieData(xVals, dataSet);
+        data.setValueTextSize(12f);
+        data.setValueTextColor(getColor(R.color.md_white));
+        timeSpentChart.setData(data);
+
+        timeSpentChart.highlightValues(null);
+
+        timeSpentChart.setCenterText(getString(R.string.chart_time_spent_center_text, totalXP, totalCoins));
+        timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
+        timeSpentChart.setCenterTextSize(12f);
+    }
+
+    private int getColor(@ColorRes int color) {
+        return ContextCompat.getColor(getActivity(), color);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+        showCharts(currentDayCount);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_growth, R.string.help_dialog_growth_title, "growth").show(getActivity().getSupportFragmentManager());
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        currentDayCount = 1;
+        if (position == 1) {
+            currentDayCount = 7;
+        } else if (position == 2) {
+            currentDayCount = 30;
+        }
+        showCharts(currentDayCount);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+}

@@ -23,4 +23,6 @@ public interface CalendarAdapter<E extends CalendarEvent> {
     void onDragStarted(View draggedView);
 
     void onDragEnded(View draggedView);
+
+    void removeEvent(E calendarEvent);
 }

@@ -27,11 +27,11 @@
             android:icon="@drawable/ic_autorenew_white_24dp"
             android:title="@string/repeating_quests" />
 
-        <!--<item-->
-            <!--android:id="@+id/performance"-->
-            <!--android:checked="false"-->
-            <!--android:icon="@drawable/ic_performance_white_24dp"-->
-            <!--android:title="@string/performance" />-->
+        <item
+            android:id="@+id/growth"
+            android:checked="false"
+            android:icon="@drawable/ic_growth_white_24dp"
+            android:title="@string/growth" />
 
         <item
             android:id="@+id/rewards"
