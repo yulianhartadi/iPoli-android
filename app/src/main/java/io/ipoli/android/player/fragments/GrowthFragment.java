@@ -178,7 +178,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setExperienceChartData(List<Quest> quests, int dayCount) {
 
-
         if (quests.isEmpty()) {
             experienceChart.clear();
             return;

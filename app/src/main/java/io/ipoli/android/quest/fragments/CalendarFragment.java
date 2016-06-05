@@ -113,7 +113,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
         adapter = createAdapter();
 
-
         calendarPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
