@@ -105,8 +105,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.growth_intervals));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(),
+                R.layout.growth_spinner_item,
+                R.id.growth_interval,
+                getResources().getStringArray(R.array.growth_intervals));
+        adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
