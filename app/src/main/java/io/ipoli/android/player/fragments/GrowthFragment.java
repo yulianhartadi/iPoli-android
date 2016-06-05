@@ -36,7 +36,6 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -123,7 +122,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         Paint textPaint = experienceChart.getPaint(BarChart.PAINT_INFO);
         textPaint.setTextSize(Utils.convertDpToPixel(14f));
         textPaint.setColor(getColor(R.color.md_dark_text_87));
-        experienceChart.setNoDataText("Not enough data. Complete some quests first!");
+        experienceChart.setNoDataText(getString(R.string.chart_not_enough_data));
 
         XAxis xAxis = experienceChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -193,7 +192,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         BarDataSet set1;
 
-        set1 = new BarDataSet(yVals1, "Experience gain per day");
+        set1 = new BarDataSet(yVals1, getString(R.string.chart_experience_description));
         set1.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
         set1.setBarSpacePercent(35f);
         set1.setColors(new int[]{getColor(R.color.md_blue_300)});
@@ -215,7 +214,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentChart.setDragDecelerationFrictionCoef(0.95f);
 
         timeSpentChart.setDrawHoleEnabled(true);
-        timeSpentChart.setDescription("Time spent per context");
+        timeSpentChart.setDescription(getString(R.string.chart_time_spent_description));
         timeSpentChart.setDescriptionColor(getColor(R.color.md_dark_text_87));
         timeSpentChart.setDescriptionTextSize(10f);
         timeSpentChart.setHoleColor(Color.WHITE);
@@ -236,7 +235,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         Paint textPaint = timeSpentChart.getPaint(PieChart.PAINT_INFO);
         textPaint.setTextSize(Utils.convertDpToPixel(14f));
         textPaint.setColor(getColor(R.color.md_dark_text_87));
-        timeSpentChart.setNoDataText("Not enough data. Complete some quests first!");
+        timeSpentChart.setNoDataText(getString(R.string.chart_not_enough_data));
 
         setData(quests);
 
@@ -309,8 +308,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         timeSpentChart.highlightValues(null);
 
-        String centerText = String.format(Locale.getDefault(), "XP: %d\nCoins: %d", totalXP, totalCoins);
-        timeSpentChart.setCenterText(centerText);
+        timeSpentChart.setCenterText(getString(R.string.chart_time_spent_center_text, totalXP, totalCoins));
         timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
         timeSpentChart.setCenterTextSize(12f);
     }
