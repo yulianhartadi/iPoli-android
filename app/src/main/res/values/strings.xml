@@ -239,4 +239,6 @@
     <string name="help_dialog_growth_time_spent_chart">The time spent chart shows you which quest contexts take most of your time</string>
     <string name="help_dialog_growth_experience_chart">The experience chart shows you how much XP you gain per day</string>
     <string name="chart_no_data_to_display">No data to display. Go complete some quests!</string>
+    <string name="summary_stats_hours_spent">Hours spent: %.1f</string>
+    <string name="summary_stats_quests_done">Quests done: %d</string>
 </resources>
