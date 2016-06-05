@@ -341,7 +341,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         navigationView.setCheckedItem(item.getItemId());
-        drawerLayout.closeDrawers();
+
 
         EventSource source = null;
         switch (item.getItemId()) {
@@ -400,6 +400,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (source != null) {
             eventBus.post(new ScreenShownEvent(source));
         }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
 
         return true;
     }
