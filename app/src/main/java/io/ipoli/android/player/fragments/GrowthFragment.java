@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -68,6 +69,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @BindView(R.id.empty_view_container)
     View emptyViewContainer;
+
+    @BindView(R.id.summary_stats_quests_done)
+    TextView questsDone;
+
+    @BindView(R.id.summary_stats_hours_spent)
+    TextView hoursSpent;
 
     @BindView(R.id.time_spent_chart)
     PieChart timeSpentChart;
@@ -127,10 +134,20 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             } else {
                 chartContainer.setVisibility(View.VISIBLE);
                 emptyViewContainer.setVisibility(View.GONE);
+                setUpSummaryStats(quests);
                 setUpTimeSpentChart(quests);
                 setUpExperienceChart(quests, dayCount);
             }
         });
+    }
+
+    private void setUpSummaryStats(List<Quest> quests) {
+        questsDone.setText(getString(R.string.summary_stats_quests_done, quests.size()));
+        int totalMin = 0;
+        for (Quest q : quests) {
+            totalMin += getDurationForCompletedQuest(q);
+        }
+        hoursSpent.setText(getString(R.string.summary_stats_hours_spent, totalMin / 60.0f));
     }
 
     private void setUpExperienceChart(List<Quest> quests, int dayCount) {
@@ -301,11 +318,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             for (Quest q : pair.getValue()) {
                 totalXP += q.getExperience();
                 totalCoins += q.getCoins();
-                if (q.getActualStart() != null) {
-                    sum += TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
-                } else {
-                    sum += Math.max(q.getDuration(), 5);
-                }
+                sum += getDurationForCompletedQuest(q);
             }
             total += sum;
             yVals1.add(new Entry(sum, index));
@@ -333,6 +346,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentChart.setCenterText(getString(R.string.chart_time_spent_center_text, totalXP, totalCoins));
         timeSpentChart.setCenterTextColor(getColor(R.color.md_dark_text_87));
         timeSpentChart.setCenterTextSize(12f);
+    }
+
+    private int getDurationForCompletedQuest(Quest q) {
+        if (q.getActualStart() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
+        } else {
+            return Math.max(q.getDuration(), 5);
+        }
     }
 
     private int getColor(@ColorRes int color) {
