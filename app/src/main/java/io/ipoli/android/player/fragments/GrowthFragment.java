@@ -53,6 +53,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -376,6 +377,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         } else if (position == 2) {
             currentDayCount = 30;
         }
+        eventBus.post(new GrowthIntervalSelectedEvent(currentDayCount));
         showCharts(currentDayCount);
     }
 

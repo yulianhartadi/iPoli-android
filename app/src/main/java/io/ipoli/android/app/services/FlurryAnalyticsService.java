@@ -30,6 +30,7 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.player.events.AvatarPickedEvent;
+import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.data.Quest;
@@ -489,6 +490,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onAgendaWidgetDisabled(AgendaWidgetDisabledEvent e) {
         log("agenda_widget_disabled");
+    }
+
+    @Subscribe
+    public void onGrowthIntervalSelected(GrowthIntervalSelectedEvent e) {
+        log("growth_interval_selected", EventParams.of("days", String.valueOf(e.dayCount)));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
