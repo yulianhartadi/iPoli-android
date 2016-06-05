@@ -342,7 +342,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onNavigationItemSelected(MenuItem item) {
         navigationView.setCheckedItem(item.getItemId());
 
-
         EventSource source = null;
         switch (item.getItemId()) {
 
