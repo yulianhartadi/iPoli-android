@@ -42,11 +42,41 @@
             android:paddingTop="16dp"
             android:weightSum="5">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.3">
+
+                <android.support.v4.widget.Space
+                    android:id="@+id/summary_stats_midpoint"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerHorizontal="true" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:layout_toStartOf="@id/summary_stats_midpoint"
+                    android:text="Quests done: 10" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/summary_stats_midpoint"
+                    android:text="Hours spent: 12" />
+            </RelativeLayout>
+
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/time_spent_chart"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="3" />
+                android:layout_weight="2.7" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/experience_chart"
