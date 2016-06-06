@@ -12,7 +12,7 @@ public class CoinsRewardGenerator implements RewardGenerator {
 
     @Override
     public long generate(Quest quest) {
-        Long[] rewards = new Long[] {5L, 10L, 15L, 20L, 30L};
+        Long[] rewards = new Long[] {2L, 5L, 7L, 10L};
         return rewards[new Random().nextInt(rewards.length)];
     }
 

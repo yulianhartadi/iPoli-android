@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -157,6 +158,10 @@ public class RewardActivity extends BaseActivity {
 
     private void saveReward() {
         String name = rewardName.getText().toString();
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, R.string.reward_name_validation, Toast.LENGTH_SHORT).show();
+            return;
+        }
         int price = Integer.parseInt((String) rewardPrice.getSelectedItem());
         if (reward == null) {
             reward = new Reward(name, price);
