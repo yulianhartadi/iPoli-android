@@ -119,11 +119,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 getResources().getStringArray(R.array.growth_intervals));
         adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(0, false);
+        spinner.setSelection(1, false);
         spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
-        currentDayCount = 1;
+        currentDayCount = 7;
         return view;
     }
 
