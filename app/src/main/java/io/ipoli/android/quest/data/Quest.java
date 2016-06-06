@@ -396,4 +396,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
     }
+
+    public void setFlexibleStartTime(boolean flexibleStartTime) {
+        this.flexibleStartTime = flexibleStartTime;
+    }
 }

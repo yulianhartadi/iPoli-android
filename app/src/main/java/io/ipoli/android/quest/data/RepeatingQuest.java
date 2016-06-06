@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import android.text.TextUtils;
-
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -132,7 +130,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     }
 
     public String getContext() {
-        return TextUtils.isEmpty(context) ? QuestContext.PERSONAL.name() : context;
+        return context == null || context.isEmpty() ? QuestContext.PERSONAL.name() : context;
     }
 
     public void setContext(String context) {
