@@ -2,6 +2,7 @@ package io.ipoli.android.player.fragments;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
@@ -119,6 +120,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 getResources().getStringArray(R.array.growth_intervals));
         adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.md_white), PorterDuff.Mode.SRC_ATOP);
         spinner.setSelection(1, false);
         spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
