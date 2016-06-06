@@ -127,7 +127,6 @@
     <string name="tutorial_rewards_title">Choose Your Bounty</string>
     <string name="tutorial_reward_desc">Spend your life coins buying real-world rewards that you create</string>
     <string name="fragment_calendar_title">Calendar</string>
-    <string name="fragment_overview_title">Overview</string>
     <string name="title_pick_initial_repeating_quests">Pick a few Repeating Quests to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
@@ -140,7 +139,7 @@
     <string name="invite_friend">Invite Friend</string>
     <string name="show_invite_failed">Oops, please, try again later!</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
-    <string name="overview_title">Your Journey Ahead</string>
+    <string name="fragment_overview_title">Your Journey Ahead</string>
     <string name="sync_android_calendars">Sync Calendars</string>
     <string name="import_calendar_events_started">Your events will be available soon…</string>
     <string name="widget_journey_name">Daily Journey</string>

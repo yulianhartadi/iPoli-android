@@ -9,6 +9,7 @@
 
     <io.ipoli.android.app.ui.EmptyStateRecyclerView
         android:id="@+id/quest_list"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/md_white"
