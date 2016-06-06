@@ -28,6 +28,7 @@
     <string name="edit_quest_start_time_hint">When should it start?</string>
     <string name="edit_quest_due_date_hint">When will you do it?</string>
     <string name="edit_quest_name_hint">Name (e.g. Read a book)</string>
+    <string name="add_quest_name_hint">Name (e.g. Read a book every day)</string>
     <string name="hours">%02d</string>
     <string name="minutes">%02d</string>
     <string name="start">Start</string>
