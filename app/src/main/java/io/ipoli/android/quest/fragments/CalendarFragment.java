@@ -113,11 +113,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
         adapter = createAdapter();
 
-        calendarPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+        calendarPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
@@ -125,11 +121,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 changeTitle(date);
                 toolbarCalendar.setCurrentDate(date.toDate());
                 eventBus.post(new CurrentDayChangedEvent(date, CurrentDayChangedEvent.Source.SWIPE));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
 
@@ -212,7 +203,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     @Subscribe
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-
         if (e.source == CurrentDayChangedEvent.Source.SWIPE) {
             return;
         }
@@ -221,6 +211,8 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         changeTitle(currentMidDate);
         adapter.notifyDataSetChanged();
         toolbarCalendar.setCurrentDate(currentMidDate.toDate());
+
+        ((DayViewFragment) adapter.getItem(calendarPager.getCurrentItem())).setVisible(false);
         calendarPager.setCurrentItem(MID_POSITION, false);
     }
 
@@ -229,7 +221,9 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
             @Override
             public Fragment getItem(int position) {
-                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION));
+                int plusDays = position - MID_POSITION;
+                boolean isVisible = plusDays == 0;
+                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION), isVisible);
             }
 
             @Override

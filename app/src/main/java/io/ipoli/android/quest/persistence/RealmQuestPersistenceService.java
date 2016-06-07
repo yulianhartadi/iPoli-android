@@ -177,7 +177,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
         Date startDate = toUTCDateAtStartOfDay(currentDate);
         Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
-
         return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)

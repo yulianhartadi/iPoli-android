@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
 import io.ipoli.android.app.scheduling.dto.Task;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -54,14 +54,16 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
-import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
+import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
@@ -74,6 +76,7 @@ import rx.subscriptions.CompositeSubscription;
 public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
 
     public static final String CURRENT_DATE = "current_date";
+    public static final String IS_VISIBLE = "is_visible";
 
     @Inject
     protected Bus eventBus;
@@ -91,9 +94,16 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     QuestPersistenceService questPersistenceService;
 
     @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
     SchedulingAPIService schedulingAPIService;
 
+    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
+
     private int movingQuestPosition;
+
+    private boolean isVisible;
 
     private UnscheduledQuestViewModel movingViewModel;
     private UnscheduledQuestsAdapter unscheduledQuestsAdapter;
@@ -111,10 +121,11 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private LocalDate currentDate;
     private Unbinder unbinder;
 
-    public static DayViewFragment newInstance(LocalDate date) {
+    public static DayViewFragment newInstance(LocalDate date, boolean isVisible) {
         DayViewFragment fragment = new DayViewFragment();
         Bundle args = new Bundle();
         args.putLong(CURRENT_DATE, date.toDate().getTime());
+        args.putBoolean(IS_VISIBLE, isVisible);
         fragment.setArguments(args);
         return fragment;
     }
@@ -130,8 +141,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         if (getArguments() != null) {
             currentDate = new LocalDate(getArguments().getLong(CURRENT_DATE));
+            isVisible = getArguments().getBoolean(IS_VISIBLE);
         } else {
             currentDate = new LocalDate();
+            isVisible = false;
         }
     }
 
@@ -148,7 +161,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         unscheduledQuestList.setLayoutManager(layoutManager);
 
         calendarContainer.setCalendarListener(this);
-
 
         unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
 
@@ -221,43 +233,44 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         findSlotsSubscriptions = new CompositeSubscription();
-        updateSchedule();
+        if (isVisible) {
+            updateSchedule();
+        }
     }
 
-    private void updateSchedule() {
+    void updateSchedule() {
         if (calendarContainer.isInEditMode()) {
             return;
         }
         new CalendarScheduler().schedule()
                 .compose(bindToLifecycle()).subscribe(schedule -> {
-                    List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
+            List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
 
-                    Map<String, List<Quest>> map = new HashMap<>();
-                    for (Quest q : schedule.getUnscheduledQuests()) {
-                        if (q.getRepeatingQuest() == null) {
-                            unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
-                            continue;
-                        }
-                        String key = q.getRepeatingQuest().getId();
-                        if (map.get(key) == null) {
-                            map.put(key, new ArrayList<>());
-                        }
-                        map.get(key).add(q);
-                    }
-
-                    for (String key : map.keySet()) {
-                        Quest q = map.get(key).get(0);
-                        int remainingCount = map.get(key).size();
-                        unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
-                    }
-
-                    unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
-                    calendarAdapter.updateEvents(schedule.getCalendarEvents());
-
-                    setUnscheduledQuestsHeight();
-                    calendarDayView.onMinuteChanged();
+            Map<String, List<Quest>> map = new HashMap<>();
+            for (Quest q : schedule.getUnscheduledQuests()) {
+                if (q.getRepeatingQuest() == null) {
+                    unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
+                    continue;
                 }
-        );
+                String key = q.getRepeatingQuest().getId();
+                if (map.get(key) == null) {
+                    map.put(key, new ArrayList<>());
+                }
+                map.get(key).add(q);
+            }
+
+            for (String key : map.keySet()) {
+                Quest q = map.get(key).get(0);
+                int remainingCount = map.get(key).size();
+                unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
+            }
+
+            unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
+            calendarAdapter.updateEvents(schedule.getCalendarEvents());
+
+            setUnscheduledQuestsHeight();
+            calendarDayView.onMinuteChanged();
+        });
     }
 
     @Override
@@ -388,14 +401,20 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         updateSchedule();
     }
 
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        updateSchedule();
-    }
+//    @Subscribe
+//    public void onSyncComplete(SyncCompleteEvent e) {
+//        if (isVisible) {
+//            updateSchedule();
+//        }
+//    }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
+    }
+
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
     }
 
     private class CalendarScheduler {
@@ -416,46 +435,74 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 });
             }
 
-            if (currentDate.isAfter(new LocalDate())) {
-                return questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate).flatMap(quests -> {
-                    List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
-                    List<Quest> unscheduledQuests = new ArrayList<>();
-                    for (Quest q : quests) {
-                        if (hasNoStartTime(q)) {
-                            unscheduledQuests.add(q);
-                        } else {
-                            QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                            calendarEvents.add(event);
-                        }
-                    }
-                    return Observable.just(new Schedule(unscheduledQuests, calendarEvents));
-                });
+            if (futureDateIsSelected()) {
+                return saveAllNonScheduledQuests().toList().flatMap(lists -> createScheduleForFutureDate());
             }
 
-            return questPersistenceService.findAllNonAllDayForDate(currentDate).flatMap(quests -> {
-                List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
-                List<Quest> unscheduledQuests = new ArrayList<>();
-                List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
-                for (Quest q : quests) {
-                    // completed events should be added first since we don't want them to intercept clicks
-                    // for incomplete events
+            return questPersistenceService.findAllNonAllDayForDate(currentDate).
 
-                    if (q.getCompletedAt() != null) {
-                        QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                        if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getEndDate()))) {
-                            event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
+                    flatMap(quests -> {
+                                List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+                                List<Quest> unscheduledQuests = new ArrayList<>();
+                                List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
+                                for (Quest q : quests) {
+                                    // completed events should be added first since we don't want them to intercept clicks
+                                    // for incomplete events
+
+                                    if (q.getCompletedAt() != null) {
+                                        QuestCalendarViewModel event = new QuestCalendarViewModel(q);
+                                        if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getEndDate()))) {
+                                            event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
+                                        }
+
+                                        completedEvents.add(event);
+                                    } else if (hasNoStartTime(q)) {
+                                        unscheduledQuests.add(q);
+                                    } else {
+                                        calendarEvents.add(new QuestCalendarViewModel(q));
+                                    }
+                                }
+                                calendarEvents.addAll(0, completedEvents);
+                                return Observable.just(new Schedule(unscheduledQuests, calendarEvents));
+                            }
+
+                    );
+        }
+
+        private boolean futureDateIsSelected() {
+            return currentDate.isAfter(new LocalDate());
+        }
+
+        private Observable<List<Quest>> saveAllNonScheduledQuests() {
+            return repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests()
+                    .concatMapIterable(repeatingQuests -> repeatingQuests).concatMap(rq -> {
+                        if (rq.isWeekly()) {
+                            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate.dayOfWeek().withMinimumValue(), currentDate.dayOfWeek().withMaximumValue());
+                            if (createdQuestsCount == 0) {
+                                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, currentDate.dayOfWeek().withMinimumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
+                                questPersistenceService.saveAllSync(questsToCreate);
+                            }
                         }
+                        return Observable.just(null);
+                    });
 
-                        completedEvents.add(event);
-                    } else if (hasNoStartTime(q)) {
-                        unscheduledQuests.add(q);
-                    } else {
-                        calendarEvents.add(new QuestCalendarViewModel(q));
-                    }
-                }
-                calendarEvents.addAll(0, completedEvents);
-                return Observable.just(new Schedule(unscheduledQuests, calendarEvents));
-            });
+        }
+
+        private Observable<Schedule> createScheduleForFutureDate() {
+            return questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate)
+                    .compose(bindToLifecycle()).flatMap(quests -> {
+                        List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+                        List<Quest> unscheduledQuests = new ArrayList<>();
+                        for (Quest q : quests) {
+                            if (hasNoStartTime(q)) {
+                                unscheduledQuests.add(q);
+                            } else {
+                                QuestCalendarViewModel event = new QuestCalendarViewModel(q);
+                                calendarEvents.add(event);
+                            }
+                        }
+                        return Observable.just(new Schedule(unscheduledQuests, calendarEvents));
+                    });
         }
 
         private boolean hasNoStartTime(Quest q) {

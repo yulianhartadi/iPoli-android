@@ -56,6 +56,16 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
+    public void saveAllSync(List<T> objects) {
+        for(T obj: objects) {
+            obj.markUpdated();
+        }
+        try (Realm realm = getRealm()) {
+            realm.executeTransaction(transactionRealm ->
+                    transactionRealm.copyToRealmOrUpdate(objects));
+        }
+    }
+
     public Observable<T> saveRemoteObject(T object) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
