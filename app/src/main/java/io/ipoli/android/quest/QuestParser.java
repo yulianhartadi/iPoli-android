@@ -5,9 +5,9 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.Match;
@@ -94,6 +94,16 @@ public class QuestParser {
         Recur everyDayRecur = everyDayMatcher.parse(text);
         text = text.replace(everyDayText.trim(), "");
 
+        Match dayOfWeekMatch = dayOfWeekMatcher.match(text);
+        String dayOfWeekText = dayOfWeekMatch != null ? dayOfWeekMatch.text : "";
+        Recur dayOfWeekRecur = dayOfWeekMatcher.parse(text);
+        text = text.replace(dayOfWeekText.trim(), "");
+
+        Match dayOfMonthMatch = dayOfMonthMatcher.match(text);
+        String dayOfMonthText = dayOfMonthMatch != null ? dayOfMonthMatch.text : "";
+        Recur dayOfMonthRecur = dayOfMonthMatcher.parse(text);
+        text = text.replace(dayOfMonthText.trim(), "");
+
         String name = text.trim();
 
         if (name.isEmpty()) {
@@ -105,9 +115,14 @@ public class QuestParser {
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
         Recurrence recurrence = new Recurrence(timesPerDay);
-        if(everyDayRecur != null) {
+        if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString());
+        } else if (dayOfWeekRecur != null) {
+            recurrence.setRrule(dayOfWeekRecur.toString());
+        } else if (dayOfMonthRecur != null) {
+            recurrence.setRrule(dayOfMonthRecur.toString());
         }
+
         rq.setRecurrence(recurrence);
 
         return rq;
