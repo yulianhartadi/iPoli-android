@@ -41,7 +41,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
@@ -231,11 +230,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             }
             repeatingQuest.setContext(questContext.name());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
-            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-                Toast.makeText(this, R.string.no_internet_repeating_quest_added, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_LONG).show();
-            }
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {

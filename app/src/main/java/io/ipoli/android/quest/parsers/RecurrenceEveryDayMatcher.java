@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.parsers;
 
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +46,15 @@ public class RecurrenceEveryDayMatcher extends BaseMatcher<Recur> {
         for (Pattern p : getPatterns()) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
-                return new Recur(Recur.DAILY, null);
+                Recur recur = new Recur(Recur.WEEKLY, null);
+                recur.getDayList().add(WeekDay.MO);
+                recur.getDayList().add(WeekDay.TU);
+                recur.getDayList().add(WeekDay.WE);
+                recur.getDayList().add(WeekDay.TH);
+                recur.getDayList().add(WeekDay.FR);
+                recur.getDayList().add(WeekDay.SA);
+                recur.getDayList().add(WeekDay.SU);
+                return recur;
             }
         }
         return null;
@@ -66,7 +75,7 @@ public class RecurrenceEveryDayMatcher extends BaseMatcher<Recur> {
         for (Pattern p : getPatterns()) {
             Matcher matcher = p.matcher(text);
             matcher.matches();
-            if(matcher.hitEnd()) {
+            if (matcher.hitEnd()) {
                 return true;
             }
         }

@@ -22,11 +22,10 @@ import static org.junit.Assert.assertEquals;
 public class RepeatingQuestParserTest {
 
     private static QuestParser questParser;
-    private static PrettyTimeParser parser;
 
     @BeforeClass
     public static void setUp() {
-        parser = new PrettyTimeParser();
+        PrettyTimeParser parser = new PrettyTimeParser();
         questParser = new QuestParser(parser);
     }
 
@@ -65,7 +64,14 @@ public class RepeatingQuestParserTest {
     public void parseRepeatEveryDay() {
         RepeatingQuest rq = parse("Workout every day");
         assertEquals("Workout", rq.getName());
-        Recur recur = new Recur(Recur.DAILY, null);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recur.getDayList().add(WeekDay.MO);
+        recur.getDayList().add(WeekDay.TU);
+        recur.getDayList().add(WeekDay.WE);
+        recur.getDayList().add(WeekDay.TH);
+        recur.getDayList().add(WeekDay.FR);
+        recur.getDayList().add(WeekDay.SA);
+        recur.getDayList().add(WeekDay.SU);
         assertThat(rq.getRecurrence().getRrule(), is(recur.toString()));
     }
 
