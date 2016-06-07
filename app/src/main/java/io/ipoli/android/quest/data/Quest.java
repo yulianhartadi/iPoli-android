@@ -427,4 +427,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
+
+    public void setOriginalStartDate(Date originalStartDate) {
+        this.originalStartDate = originalStartDate;
+    }
 }

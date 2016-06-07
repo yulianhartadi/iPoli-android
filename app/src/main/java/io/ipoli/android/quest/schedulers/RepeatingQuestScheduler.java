@@ -71,7 +71,7 @@ public class RepeatingQuestScheduler {
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
-
+        quest.setOriginalStartDate(endDate);
         quest.setId(IDGenerator.generate());
         quest.setCreatedAt(DateUtils.nowUTC());
         quest.setUpdatedAt(DateUtils.nowUTC());
@@ -80,21 +80,23 @@ public class RepeatingQuestScheduler {
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
+        quest.setRepeatingQuest(repeatingQuest);
         return quest;
     }
 
     private java.util.Date getEndDate(Recur recur, java.util.Date startDate) {
         String frequency = recur.getFrequency();
+        LocalDate localStartDate = new LocalDate(startDate.getTime(), DateTimeZone.UTC);
         if (frequency.equals(Recur.WEEKLY)) {
-            return LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+            return localStartDate.dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
         }
         if(frequency.equals(Recur.MONTHLY)) {
-            return LocalDate.now().dayOfMonth().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+            return localStartDate.dayOfMonth().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
         }
-        if(frequency.equals(Recur.YEARLY)) {
-            return LocalDate.now().dayOfYear().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-        }
-        return startDate;
+//        if(frequency.equals(Recur.YEARLY)) {
+            return localStartDate.dayOfYear().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+//        }
+//        return startDate;
     }
 
     public java.util.Date getEndDate(RepeatingQuest repeatingQuest, java.util.Date startDate) {
