@@ -76,7 +76,6 @@ import rx.subscriptions.CompositeSubscription;
 public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
 
     public static final String CURRENT_DATE = "current_date";
-    public static final String IS_VISIBLE = "is_visible";
 
     @Inject
     protected Bus eventBus;
@@ -103,8 +102,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     private int movingQuestPosition;
 
-    private boolean isVisible;
-
     private UnscheduledQuestViewModel movingViewModel;
     private UnscheduledQuestsAdapter unscheduledQuestsAdapter;
     private QuestCalendarAdapter calendarAdapter;
@@ -121,11 +118,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private LocalDate currentDate;
     private Unbinder unbinder;
 
-    public static DayViewFragment newInstance(LocalDate date, boolean isVisible) {
+    public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
         Bundle args = new Bundle();
         args.putLong(CURRENT_DATE, date.toDate().getTime());
-        args.putBoolean(IS_VISIBLE, isVisible);
         fragment.setArguments(args);
         return fragment;
     }
@@ -141,10 +137,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         if (getArguments() != null) {
             currentDate = new LocalDate(getArguments().getLong(CURRENT_DATE));
-            isVisible = getArguments().getBoolean(IS_VISIBLE);
         } else {
             currentDate = new LocalDate();
-            isVisible = false;
         }
     }
 
@@ -233,9 +227,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         findSlotsSubscriptions = new CompositeSubscription();
-        if (isVisible) {
-            updateSchedule();
-        }
+        updateSchedule();
     }
 
     void updateSchedule() {
@@ -411,10 +403,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private Time getStartTimeForUnscheduledQuest(Quest q) {
         int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
-    }
-
-    public void setVisible(boolean visible) {
-        this.isVisible = visible;
     }
 
     private class CalendarScheduler {

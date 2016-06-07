@@ -212,7 +212,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         adapter.notifyDataSetChanged();
         toolbarCalendar.setCurrentDate(currentMidDate.toDate());
 
-        ((DayViewFragment) adapter.getItem(calendarPager.getCurrentItem())).setVisible(false);
         calendarPager.setCurrentItem(MID_POSITION, false);
     }
 
@@ -222,8 +221,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
             @Override
             public Fragment getItem(int position) {
                 int plusDays = position - MID_POSITION;
-                boolean isVisible = plusDays == 0;
-                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION), isVisible);
+                return DayViewFragment.newInstance(currentMidDate.plusDays(plusDays));
             }
 
             @Override
