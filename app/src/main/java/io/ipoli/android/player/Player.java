@@ -178,7 +178,8 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     @Override
     public void markDeleted() {
-        isDeleted = false;
+        isDeleted = true;
+        markUpdated();
     }
 
     @Override

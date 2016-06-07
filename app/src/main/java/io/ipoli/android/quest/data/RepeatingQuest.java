@@ -233,6 +233,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     @Override
     public void markDeleted() {
         isDeleted = true;
+        markUpdated();
     }
 
     @Override

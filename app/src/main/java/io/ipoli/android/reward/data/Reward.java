@@ -133,6 +133,7 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Override
     public void markDeleted() {
         isDeleted = true;
+        markUpdated();
     }
 
     @Override

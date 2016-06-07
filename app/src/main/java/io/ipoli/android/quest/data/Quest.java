@@ -110,7 +110,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public void setDuration(Integer duration) {
-        if(duration == null) {
+        if (duration == null) {
             this.duration = null;
             return;
         }
@@ -408,6 +408,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void markDeleted() {
         isDeleted = true;
+        markUpdated();
     }
 
     @Override
