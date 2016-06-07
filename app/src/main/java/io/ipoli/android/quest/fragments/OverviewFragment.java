@@ -152,7 +152,7 @@ public class OverviewFragment extends BaseFragment {
             endDate = DateUtils.getTomorrow();
         }
         final String toastMessage = toast;
-        q.setEndDate(endDate);
+        q.setEndDateFromLocal(endDate);
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
             updateQuests();

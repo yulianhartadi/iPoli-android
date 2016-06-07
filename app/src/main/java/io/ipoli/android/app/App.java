@@ -167,7 +167,7 @@ public class App extends MultiDexApplication {
         questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).subscribe(quests -> {
             for (Quest q : quests) {
                 if (q.isStarted()) {
-                    q.setEndDate(new Date());
+                    q.setEndDateFromLocal(new Date());
                     q.setStartMinute(0);
                 } else {
                     q.setEndDate(null);

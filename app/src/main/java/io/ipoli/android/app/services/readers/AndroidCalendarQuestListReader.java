@@ -70,8 +70,8 @@ public class AndroidCalendarQuestListReader implements ListReader<Quest> {
                 q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
                 q.setStartMinute(startDateTime.getMinuteOfDay());
             }
-            q.setStartDate(startDateTime.toLocalDate().toDate());
-            q.setEndDate(endDateTime.toLocalDate().toDate());
+            q.setStartDateFromLocal(startDateTime.toLocalDate().toDate());
+            q.setEndDateFromLocal(endDateTime.toLocalDate().toDate());
             q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
 

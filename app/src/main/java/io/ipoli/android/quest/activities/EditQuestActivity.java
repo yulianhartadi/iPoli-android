@@ -271,7 +271,7 @@ public class EditQuestActivity extends BaseActivity {
                 int duration = durationMatcher.parseShort(questDuration.getSelectedItem().toString());
                 quest.setName(name);
                 quest.setDuration(duration);
-                quest.setEndDate((Date) dueDateBtn.getTag());
+                quest.setEndDateFromLocal((Date) dueDateBtn.getTag());
                 Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
                 questPersistenceService.save(quest).compose(bindToLifecycle()).subscribe(q -> {
                     eventBus.post(new QuestUpdatedEvent(q));

@@ -63,7 +63,7 @@ public class QuestParser {
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setDuration(duration);
-        q.setEndDate(dueDate);
+        q.setEndDateFromLocal(dueDate);
         q.setStartMinute(startTime);
         return q;
     }

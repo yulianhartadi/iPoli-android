@@ -55,6 +55,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     private String remoteId;
 
     private SourceMapping sourceMapping;
+    private boolean isDeleted;
 
     public RepeatingQuest() {
     }
@@ -103,6 +104,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.source = Constants.API_RESOURCE_SOURCE;
+        this.isDeleted = false;
     }
 
     public String getName() {
@@ -221,6 +223,16 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     @Override
     public String getRemoteId() {
         return remoteId;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    @Override
+    public void markDeleted() {
+        isDeleted = true;
     }
 
     @Override

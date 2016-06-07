@@ -135,7 +135,7 @@ public class InboxFragment extends BaseFragment {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        q.setEndDate(new Date());
+        q.setEndDateFromLocal(new Date());
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
             updateQuests();

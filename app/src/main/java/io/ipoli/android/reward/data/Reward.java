@@ -34,6 +34,7 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
 
     private Boolean needsSyncWithRemote;
     private String remoteId;
+    private boolean isDeleted;
 
     public Reward() {
     }
@@ -45,6 +46,7 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         needsSyncWithRemote = true;
+        isDeleted = false;
     }
 
     @Override
@@ -121,6 +123,16 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     @Override
     public String getRemoteId() {
         return remoteId;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    @Override
+    public void markDeleted() {
+        isDeleted = true;
     }
 
     @Override

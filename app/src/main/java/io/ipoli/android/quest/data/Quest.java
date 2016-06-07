@@ -57,6 +57,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Integer duration;
     private Date startDate;
+    private Date originalStartDate;
 
     private Date endDate;
     private RepeatingQuest repeatingQuest;
@@ -81,8 +82,31 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private String remoteId;
 
     private SourceMapping sourceMapping;
+    private boolean isDeleted;
 
     public Quest() {
+    }
+
+    public Quest(String name) {
+        this(name, null);
+    }
+
+    public Quest(String name, Date endDate) {
+        this.id = IDGenerator.generate();
+        this.name = name;
+        setEndDateFromLocal(endDate);
+        setStartDateFromLocal(endDate);
+        this.originalStartDate = DateUtils.getDate(endDate);
+        this.setStartMinute(null);
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
+        this.context = QuestContext.PERSONAL.name();
+        this.flexibleStartTime = false;
+        this.needsSyncWithRemote = true;
+        this.source = Constants.API_RESOURCE_SOURCE;
+        this.experience = new ExperienceRewardGenerator().generate(this);
+        this.coins = new CoinsRewardGenerator().generate(this);
+        this.isDeleted = false;
     }
 
     public void setDuration(int duration) {
@@ -153,8 +177,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartDateFromLocal(Date startDate) {
+        setStartDate(DateUtils.getDate(startDate));
     }
 
     public static Time getStartTime(Quest quest) {
@@ -170,25 +194,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public int getDifficulty() {
         return difficulty;
-    }
-
-    public Quest(String name) {
-        this(name, null);
-    }
-
-    public Quest(String name, Date endDate) {
-        this.id = IDGenerator.generate();
-        this.name = name;
-        setEndDate(endDate);
-        this.setStartMinute(null);
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
-        this.context = QuestContext.PERSONAL.name();
-        this.flexibleStartTime = false;
-        this.needsSyncWithRemote = true;
-        this.source = Constants.API_RESOURCE_SOURCE;
-        this.experience = new ExperienceRewardGenerator().generate(this);
-        this.coins = new CoinsRewardGenerator().generate(this);
     }
 
     public String getName() {
@@ -211,8 +216,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = DateUtils.getDate(endDate);
+    public void setEndDateFromLocal(Date endDate) {
+        setEndDate(DateUtils.getDate(endDate));
     }
 
     public String getId() {
@@ -393,11 +398,28 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void markDeleted() {
+        isDeleted = true;
+    }
+
+    @Override
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
     }
 
     public void setFlexibleStartTime(boolean flexibleStartTime) {
         this.flexibleStartTime = flexibleStartTime;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
