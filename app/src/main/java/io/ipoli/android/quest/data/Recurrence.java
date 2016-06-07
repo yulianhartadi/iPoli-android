@@ -18,7 +18,7 @@ public class Recurrence extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private String dailyRrule;
+    private int timesPerDay;
     private String rrule;
     private String rdate;
     private String exrule;
@@ -33,17 +33,18 @@ public class Recurrence extends RealmObject {
     private Date updatedAt;
 
     public Recurrence() {
+
+    }
+
+    public Recurrence(int timesPerDay) {
         id = IDGenerator.generate();
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
+        this.timesPerDay = timesPerDay;
     }
 
-    public String getDailyRrule() {
-        return dailyRrule;
-    }
-
-    public void setDailyRrule(String dailyRrule) {
-        this.dailyRrule = dailyRrule;
+    public int getTimesPerDay() {
+        return timesPerDay;
     }
 
     public String getRrule() {

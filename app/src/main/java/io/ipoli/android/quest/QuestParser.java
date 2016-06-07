@@ -1,9 +1,11 @@
 package io.ipoli.android.quest;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
@@ -72,11 +74,25 @@ public class QuestParser {
 
         String rawText = text;
 
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{durationMatcher, startTimeMatcher, dueDateMatcher, everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
-            Match match = matcher.match(text);
-            String matchedText = match != null ? match.text : "";
-            text = text.replace(matchedText.trim(), "");
-        }
+        Match durationMatch = durationMatcher.match(text);
+        String matchedDurationText = durationMatch != null ? durationMatch.text : "";
+        int duration = durationMatcher.parse(text);
+        text = text.replace(matchedDurationText.trim(), "");
+
+        Match startTimeMatch = startTimeMatcher.match(text);
+        String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
+        int startMinute = startTimeMatcher.parse(text);
+        text = text.replace(matchedStartTimeText.trim(), "");
+
+        Match timesPerDayMatch = timesPerDayMatcher.match(text);
+        String timesPerDayText = timesPerDayMatch != null ? timesPerDayMatch.text : "";
+        int timesPerDay = Math.max(1, timesPerDayMatcher.parse(text));
+        text = text.replace(timesPerDayText.trim(), "");
+
+        Match everyDayMatch = everyDayMatcher.match(text);
+        String everyDayText = everyDayMatch != null ? everyDayMatch.text : "";
+        Recur everyDayRecur = everyDayMatcher.parse(text);
+        text = text.replace(everyDayText.trim(), "");
 
         String name = text.trim();
 
@@ -84,7 +100,17 @@ public class QuestParser {
             return null;
         }
 
-        return new RepeatingQuest(rawText);
+        RepeatingQuest rq = new RepeatingQuest(rawText);
+        rq.setName(name);
+        rq.setDuration(duration);
+        rq.setStartMinute(startMinute);
+        Recurrence recurrence = new Recurrence(timesPerDay);
+        if(everyDayRecur != null) {
+            recurrence.setRrule(everyDayRecur.toString());
+        }
+        rq.setRecurrence(recurrence);
+
+        return rq;
     }
 
     public boolean isRepeatingQuest(String text) {

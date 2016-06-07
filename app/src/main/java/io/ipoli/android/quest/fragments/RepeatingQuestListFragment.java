@@ -8,7 +8,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +157,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
             if (DateUtils.isTodayUTC(nextDate)) {
                 int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
-                int timesPerDay = TextUtils.isEmpty(recurrence.getDailyRrule()) ? 1 : new Recur(recurrence.getDailyRrule()).getCount();
+                int timesPerDay = recurrence.getTimesPerDay();
                 if (completedForToday >= timesPerDay) {
                     Date tomorrowStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).plusDays(1).toDate();
                     nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(tomorrowStartOfDay));

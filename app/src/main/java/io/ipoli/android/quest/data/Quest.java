@@ -109,7 +109,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.isDeleted = false;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
+        if(duration == null) {
+            this.duration = null;
+            return;
+        }
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
@@ -359,7 +363,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public boolean isIndicator() {
         boolean isCompleted = getCompletedAt() != null;
-        boolean repeatsPerDay = getRepeatingQuest() != null && !TextUtils.isEmpty(getRepeatingQuest().getRecurrence().getDailyRrule());
+        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
         boolean hasShortOrNoDuration = getDuration() < 15;
         return isCompleted && repeatsPerDay && hasShortOrNoDuration;
     }

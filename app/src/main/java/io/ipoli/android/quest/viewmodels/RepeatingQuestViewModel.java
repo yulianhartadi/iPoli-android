@@ -2,7 +2,6 @@ package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-import android.text.TextUtils;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -11,7 +10,6 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -19,7 +17,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
@@ -39,18 +36,7 @@ public class RepeatingQuestViewModel {
         this.completedCount = completedCount;
         this.recur = recur;
         this.nextDate = nextDate;
-        int timesPerDay = 1;
-        try {
-            Recurrence recurrence = repeatingQuest.getRecurrence();
-            if (!TextUtils.isEmpty(recurrence.getDailyRrule())) {
-                timesPerDay = new Recur(repeatingQuest.getRecurrence().getDailyRrule()).getCount();
-            }
-        } catch (ParseException e) {
-            timesPerDay = 1;
-        } finally {
-            this.timesPerDay = timesPerDay;
-        }
-
+        this.timesPerDay = repeatingQuest.getRecurrence().getTimesPerDay();
     }
 
     public String getName() {

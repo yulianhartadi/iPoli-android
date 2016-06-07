@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,9 +20,7 @@ import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -213,14 +210,9 @@ public class OverviewFragment extends BaseFragment {
             for (String key : map.keySet()) {
                 Quest q = map.get(key).get(0);
                 RepeatingQuest rq = q.getRepeatingQuest();
-                try {
-                    Recur recur = new Recur(rq.getRecurrence().getDailyRrule());
-                    int repeatCount = recur.getCount();
-                    int remainingCount = map.get(key).size();
-                    viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                int repeatCount = rq.getRecurrence().getTimesPerDay();
+                int remainingCount = map.get(key).size();
+                viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
             }
 
             Collections.sort(viewModels, new Comparator<QuestViewModel>() {
@@ -242,6 +234,6 @@ public class OverviewFragment extends BaseFragment {
     }
 
     private boolean hasDailyRrule(Quest q) {
-        return q.getRepeatingQuest() != null && !TextUtils.isEmpty(q.getRepeatingQuest().getRecurrence().getDailyRrule());
+        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
     }
 }
