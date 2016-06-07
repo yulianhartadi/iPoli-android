@@ -26,7 +26,11 @@ import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
  * on 6/6/16.
  */
 public class RepeatingQuestScheduler {
-    public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate date) {
+    public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate, List<Quest> createdQuests) {
+        if(createdQuests != null && !createdQuests.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
         if (rruleStr != null && !rruleStr.isEmpty()) {
@@ -37,7 +41,10 @@ public class RepeatingQuestScheduler {
                 return new ArrayList<>();
             }
             java.util.Date endOfWeek = LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-            DateList dates = recur.getDates(new Date(recurrence.getDtstart()), new Date(recurrence.getDtstart()), new DateTime(endOfWeek), Value.DATE);
+            DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()), new DateTime(endOfWeek), Value.DATE);
+
+
+
             List<Quest> res = new ArrayList<>();
             for (Object obj : dates) {
                 res.add(createQuest(repeatingQuest, (Date) obj));
@@ -65,4 +72,9 @@ public class RepeatingQuestScheduler {
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
         return quest;
     }
+
+    public java.util.Date getEndDate(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        return LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+    }
+
 }
