@@ -241,4 +241,5 @@
     <string name="chart_no_data_to_display">No data to display. Go complete some quests!</string>
     <string name="summary_stats_hours_spent">Hours spent: %.1f</string>
     <string name="summary_stats_quests_done">Quests done: %d</string>
+    <string name="title_activity_add_challenge">Add Challenge</string>
 </resources>

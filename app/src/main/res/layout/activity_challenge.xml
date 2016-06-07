@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/edit_quest_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_white">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:paddingBottom="16dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/quest_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_quest_name_hint"
+                android:inputType="textCapSentences"
+                android:singleLine="true">
+
+                <requestFocus />
+            </android.support.design.widget.TextInputEditText>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/quest_context_name"
+            style="@android:style/TextAppearance.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/md_light_text_87" />
+
+        <LinearLayout
+            android:id="@+id/quest_context_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/quest_context_learning"
+                style="@style/QuestContextIndicator" />
+
+            <ImageView
+                android:id="@+id/quest_context_wellness"
+                style="@style/QuestContextIndicator" />
+
+
+            <ImageView
+                android:id="@+id/quest_context_personal"
+                style="@style/QuestContextIndicator" />
+
+            <ImageView
+                android:id="@+id/quest_context_work"
+                style="@style/QuestContextIndicator" />
+
+
+            <ImageView
+                android:id="@+id/quest_context_fun"
+                style="@style/QuestContextIndicator" />
+
+
+            <ImageView
+                android:id="@+id/quest_context_chores"
+                style="@style/QuestContextIndicator"
+                android:layout_marginEnd="0dp" />
+        </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="240dp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/quest_duration_layout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:text="@string/edit_quest_duration_hint" />
+
+            <Spinner
+                android:id="@+id/quest_duration"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="32dp"
+                android:layout_weight="3" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/quest_start_time_layout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:text="@string/edit_quest_start_time_hint" />
+
+            <Button
+                android:id="@+id/quest_start_time"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="32dp"
+                android:layout_weight="3"
+                android:background="?attr/colorAccent"
+                android:drawableStart="@drawable/ic_clock_white_24dp"
+                android:paddingEnd="0dp"
+                android:paddingStart="8dp"
+                android:text="@string/start_time_default"
+                android:textColor="@color/md_white" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/quest_due_layout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:text="@string/edit_quest_due_date_hint" />
+
+            <Button
+                android:id="@+id/quest_due_date"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="32dp"
+                android:layout_weight="3"
+                android:background="?attr/colorAccent"
+                android:drawableStart="@drawable/ic_event_white_24dp"
+                android:paddingEnd="0dp"
+                android:paddingStart="8dp"
+                android:text="@string/due_date_default"
+                android:textColor="@color/md_white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

@@ -54,6 +54,7 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
@@ -360,10 +361,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
 
-//            case R.id.challenges:
-//                source = EventSource.CHALLENGES;
-//                changeCurrentFragment(new ChallengeListFragment());
-//                break;
+            case R.id.challenges:
+                source = EventSource.CHALLENGES;
+                changeCurrentFragment(new ChallengeListFragment());
+                break;
 
             case R.id.growth:
                 source = EventSource.GROWTH;
