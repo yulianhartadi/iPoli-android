@@ -14,6 +14,12 @@ import io.realm.annotations.Required;
  */
 public class Recurrence extends RealmObject {
 
+    public String getType() {
+        return type;
+    }
+
+    public enum RecurrenceType {WEEKLY, MONTHLY}
+
     @Required
     @PrimaryKey
     private String id;
@@ -25,6 +31,8 @@ public class Recurrence extends RealmObject {
     private String exdate;
     private Date dtstart;
     private Date dtend;
+
+    private String type;
 
     @Required
     private Date createdAt;
@@ -51,8 +59,9 @@ public class Recurrence extends RealmObject {
         return rrule;
     }
 
-    public void setRrule(String rrule) {
+    public void setRrule(String rrule, RecurrenceType recurrenceType) {
         this.rrule = rrule;
+        this.type = recurrenceType.name();
     }
 
     public String getRdate() {
@@ -117,5 +126,9 @@ public class Recurrence extends RealmObject {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public RecurrenceType getRecurrenceType() {
+        return RecurrenceType.valueOf(type);
     }
 }

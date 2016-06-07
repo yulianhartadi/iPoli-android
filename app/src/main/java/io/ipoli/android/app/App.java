@@ -53,6 +53,7 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -65,6 +66,7 @@ import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -84,6 +86,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     Bus eventBus;
+
+    //    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
 
     @Inject
     AnalyticsService analyticsService;
@@ -273,7 +278,18 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
-        eventBus.post(new ForceSyncRequestEvent());
+        RepeatingQuest rq = e.repeatingQuest;
+        if (rq.isWeekly()) {
+            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, LocalDate.now().dayOfWeek().withMinimumValue(), LocalDate.now().dayOfWeek().withMaximumValue());
+            if (createdQuestsCount == 0) {
+                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, new Date());
+                questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
+                    eventBus.post(new SyncRequestEvent());
+                });
+            } else {
+                eventBus.post(new SyncRequestEvent());
+            }
+        }
     }
 
     @Subscribe

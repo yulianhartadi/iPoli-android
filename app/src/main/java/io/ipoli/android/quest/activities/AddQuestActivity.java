@@ -53,6 +53,7 @@ import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -229,6 +230,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 return;
             }
             repeatingQuest.setContext(questContext.name());
+            repeatingQuest.getRecurrence().setDtstart(new Date());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
         } else {
             Quest q = qParser.parse(text);
@@ -259,6 +261,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
+        Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_SHORT).show();
     }
 
     private boolean hasStartTime(Quest q) {

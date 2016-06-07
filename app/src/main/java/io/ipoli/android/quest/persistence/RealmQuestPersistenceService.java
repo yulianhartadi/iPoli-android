@@ -201,6 +201,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+        return where()
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .between("originalStartDate", toUTCDateAtStartOfDay(startDate), toUTCDateAtStartOfDay(endDate))
+                .count();
+    }
+
+    @Override
     public Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate) {
 
         return findAll(where -> where
