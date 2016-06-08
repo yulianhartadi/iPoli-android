@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
 import io.ipoli.android.app.scheduling.dto.Slot;
@@ -52,6 +54,7 @@ import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -184,14 +187,29 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     @Subscribe
+    public void onCompletePlaceholderRequest(CompletePlaceholderRequestEvent e) {
+        Quest quest = savePlaceholderQuest(e.quest);
+        eventBus.post(new CompleteQuestRequestEvent(quest, e.source));
+    }
+
+    @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+        Quest quest = e.viewModel.getQuest();
+        if(quest.isPlaceholder()) {
+            quest = savePlaceholderQuest(quest);
+        }
+        eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.CALENDAR_UNSCHEDULED_SECTION));
         calendarDayView.smoothScrollToTime(Time.now());
     }
 
     @Subscribe
     public void onUndoQuestForThePast(UndoQuestForThePast e) {
         Toast.makeText(getContext(), "Quest moved to Inbox", Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
+        updateSchedule();
     }
 
     private void setUnscheduledQuestsHeight() {
@@ -405,9 +423,27 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onShowQuestEvent(ShowQuestEvent e) {
+        Quest quest = e.quest;
+        if (quest.isPlaceholder()) {
+            quest = savePlaceholderQuest(quest);
+        }
         Intent i = new Intent(getActivity(), QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivity(i);
+
+    }
+
+    @NonNull
+    private Quest savePlaceholderQuest(Quest quest) {
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        List<Quest> quests = repeatingQuestScheduler.schedule(quest.getRepeatingQuest(), DateUtils.toStartOfDayUTC(startOfWeek));
+        questPersistenceService.saveAllSync(quests);
+        for(Quest q : quests) {
+            if(quest.getStartDate().equals(q.getStartDate())) {
+                return q;
+            }
+        }
+        return quest;
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {

@@ -27,6 +27,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
@@ -137,7 +138,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                if(q.isPlaceholder()) {
+                    eventBus.post(new CompletePlaceholderRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                } else {
+                    eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                }
             } else {
                 if (q.isScheduledForThePast()) {
                     removeEvent(calendarEvent);
