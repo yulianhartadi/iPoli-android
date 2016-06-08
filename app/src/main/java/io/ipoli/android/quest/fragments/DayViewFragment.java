@@ -99,7 +99,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Inject
     SchedulingAPIService schedulingAPIService;
 
-    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
+    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     private int movingQuestPosition;
 
@@ -425,7 +426,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
 
             if (futureDateIsSelected()) {
-                return createAllNonScheduledQuests().flatMap(quests -> createScheduleForFutureDate(quests));
+                return createAllNonScheduledQuests().flatMap(this::createScheduleForFutureDate);
             }
 
             return questPersistenceService.findAllNonAllDayForDate(currentDate).

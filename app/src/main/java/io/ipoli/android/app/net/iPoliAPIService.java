@@ -3,8 +3,8 @@ package io.ipoli.android.app.net;
 import java.util.List;
 
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -19,9 +19,6 @@ import rx.Observable;
  * on 3/23/16.
  */
 public interface iPoliAPIService {
-
-    @GET("journeys/{date}")
-    Observable<List<Quest>> getJourney(@Path("date") String date, @Query("player_id") String playerId);
 
     @POST("players")
     Observable<Player> createPlayer(@Body RequestBody request);

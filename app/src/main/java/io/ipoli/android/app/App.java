@@ -20,6 +20,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -89,8 +90,8 @@ public class App extends MultiDexApplication {
     @Inject
     Bus eventBus;
 
-    //    @Inject
-    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
+    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
     AnalyticsService analyticsService;
@@ -149,6 +150,7 @@ public class App extends MultiDexApplication {
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
         scheduleQuestsFor2WeeksAhead().subscribe(aVoid -> {
+        }, Throwable::printStackTrace, () -> {
             if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
                 eventBus.post(new ForceSyncRequestEvent());
             }
@@ -173,28 +175,27 @@ public class App extends MultiDexApplication {
 //        }
     }
 
-    private Observable<Void> scheduleQuestsFor2WeeksAhead() {
+    private Observable<List<Quest>> scheduleQuestsFor2WeeksAhead() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
         return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
-                .flatMap(repeatingQuests -> {
-                    for (RepeatingQuest rq : repeatingQuests) {
-                        saveQuestsInRange(rq, startOfWeek, endOfWeek);
-                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek);
-                    }
-                    return Observable.just(null);
-                });
+                .flatMapIterable(repeatingQuests -> repeatingQuests)
+                .flatMap(rq -> Observable.concat(
+                        saveQuestsInRange(rq, startOfWeek, endOfWeek),
+                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek))
+                );
     }
 
-    private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
+    private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
         long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
         if (createdQuestsCount == 0) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            questPersistenceService.saveAllSync(questsToCreate);
+            return questPersistenceService.saveRemoteObjects(questsToCreate);
         }
+        return Observable.just(new ArrayList<>());
     }
 
     private void resetEndDateForIncompleteQuests() {
@@ -308,17 +309,18 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
         RepeatingQuest rq = e.repeatingQuest;
-        if (rq.isWeekly()) {
-            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, LocalDate.now().dayOfWeek().withMinimumValue(), LocalDate.now().dayOfWeek().withMaximumValue());
-            if (createdQuestsCount == 0) {
-                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, new Date());
-                questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
-                    eventBus.post(new SyncRequestEvent());
-                });
-            } else {
-                eventBus.post(new SyncRequestEvent());
-            }
-        }
+
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
+        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+
+        Observable.concat(saveQuestsInRange(rq, startOfWeek, endOfWeek),
+                saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)).subscribe(quests -> {
+        }, Throwable::printStackTrace, () -> {
+            eventBus.post(new SyncRequestEvent());
+        });
     }
 
     @Subscribe

@@ -76,7 +76,8 @@ public class AppJobService extends JobService {
     @Inject
     iPoliAPIService apiService;
 
-    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
+    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
     Gson gson;
@@ -100,8 +101,7 @@ public class AppJobService extends JobService {
                             Observable.defer(() -> syncRemovedQuests(p)),
                             Observable.defer(() -> syncRepeatingQuests(p, localStorage)),
                             Observable.defer(() -> syncQuests(p, localStorage)),
-                            Observable.defer(() -> getRepeatingQuests(p)),
-                            Observable.defer(() -> getJourneysForAWeekAhead(p)));
+                            Observable.defer(() -> getRepeatingQuests(p)));
                 }
         ).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
             Log.e("RxJava", "Error", throwable);
@@ -368,21 +368,6 @@ public class AppJobService extends JobService {
             });
         }
         return Observable.just(serverQuest);
-    }
-
-    private Observable<Quest> getJourneysForAWeekAhead(Player player) {
-        return Observable.just(DateUtils.getNext7Days()).concatMapIterable(dates -> dates)
-                .concatMap(date -> apiService.getJourney(date, player.getRemoteId()).compose(applyAPISchedulers()))
-                .concatMapIterable(quests -> quests)
-                .concatMap(sq -> questPersistenceService.findByRemoteId(sq.getId())
-                        .concatMap(q -> {
-                            if (q != null && sq.getUpdatedAt().getTime() <= q.getUpdatedAt().getTime()) {
-                                return Observable.just(q);
-                            }
-                            String localId = getLocalIdForRemoteObject(q);
-                            return updateQuest(sq, localId).flatMap(updatedQuest ->
-                                    questPersistenceService.saveRemoteObject(updatedQuest));
-                        }));
     }
 
     private String getLocalIdForRemoteObject(RemoteObject<?> remoteObject) {

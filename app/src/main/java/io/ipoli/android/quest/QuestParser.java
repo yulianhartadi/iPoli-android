@@ -110,7 +110,7 @@ public class QuestParser {
         rq.setName(name);
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
-        Recurrence recurrence = new Recurrence(timesPerDay);
+        Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
         recurrence.setDtstart(new Date());
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
