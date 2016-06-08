@@ -52,15 +52,8 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
             q.setAllDay(e.allDay);
-//            if (e.allDay) {
-//                q.setDuration((int) TimeUnit.DAYS.toMinutes(1));
-//                q.setStartMinute(0);
-//                startDateTime = startDateTime.plusDays(1);
-//                endDateTime = endDateTime.minusMillis(1);
-//            } else {
             q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
             q.setStartMinute(startDateTime.getMinuteOfDay());
-//            }
             q.setStartDateFromLocal(startDateTime.toLocalDate().toDate());
             q.setEndDateFromLocal(endDateTime.toLocalDate().toDate());
             q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
