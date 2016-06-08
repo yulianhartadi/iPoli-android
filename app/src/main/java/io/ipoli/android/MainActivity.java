@@ -344,8 +344,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.inbox:
                 source = EventSource.INBOX;
                 changeCurrentFragment(new InboxFragment());
-
                 break;
+
             case R.id.repeating_quests:
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
@@ -370,17 +370,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 eventBus.post(new InviteFriendEvent());
                 inviteFriend();
                 break;
+
             case R.id.sync_calendars:
                 checkForCalendarPermission();
                 break;
+
             case R.id.tutorial:
                 eventBus.post(new ShowTutorialEvent());
                 startTutorial();
                 break;
+
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
                 RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
+
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));

@@ -21,14 +21,14 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
                 + CalendarContract.Events.DIRTY + "= ? AND "
                 + CalendarContract.Events.DELETED + "= ?";
-        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1), String.valueOf(0)};
+        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(true), String.valueOf(false)};
         return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
     }
 
     public Data<Event> getDeletedEvents(long calendarId) {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
                 + CalendarContract.Events.DELETED + "= ?";
-        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1)};
+        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(true)};
         return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
     }
 

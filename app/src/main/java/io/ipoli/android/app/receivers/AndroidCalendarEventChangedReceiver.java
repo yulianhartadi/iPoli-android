@@ -21,9 +21,13 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
+import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.realm.RealmObject;
+import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
 import rx.Observable;
@@ -65,11 +69,14 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
                 addDirtyEvents(provider, calendarId, dirtyEvents);
                 addDeletedEvents(calendarId, provider, deletedEvents);
             }
-            markEventsForUpdate(dirtyEvents, localStorage);
-            return deleteEvents(deletedEvents).flatMap(ignored -> {
-                eventBus.post(new SyncRequestEvent());
-                return Observable.<Void>empty();
-            });
+            return createOrUpdateEvents(dirtyEvents, context)
+                    .flatMap(created -> deleteEvents(deletedEvents)
+                    .toList()
+                    .flatMap(deleted -> {
+                        eventBus.post(new SyncRequestEvent());
+                        return Observable.<Void>empty();
+                    }));
+
         }).compose(applyAndroidSchedulers());
     }
 
@@ -78,9 +85,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         Cursor deletedEventsCursor = deletedEventsData.getCursor();
 
         while (deletedEventsCursor.moveToNext()) {
-            Event e = deletedEventsData.fromCursor(deletedEventsCursor, CalendarContract.Events._ID,
-                    CalendarContract.Events.RRULE,
-                    CalendarContract.Events.RDATE);
+            Event e = deletedEventsData.fromCursor(deletedEventsCursor, CalendarContract.Events._ID);
             deletedEvents.add(e);
         }
         deletedEventsCursor.close();
@@ -100,31 +105,51 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         dirtyEventsCursor.close();
     }
 
-    private void markEventsForUpdate(List<Event> dirtyEvents, LocalStorage localStorage) {
-        Set<String> repeatingQuestIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE);
-        Set<String> questIds = localStorage.readStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE);
+    private Observable<? extends List<? extends RealmObject>> createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
+        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
+        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
+        List<Event> repeating = new ArrayList<>();
+        List<Event> nonRepeating = new ArrayList<>();
+        CalendarProvider calendarProvider = new CalendarProvider(context);
         for (Event e : dirtyEvents) {
-            if (isRecurrentAndroidCalendarEvent(e)) {
-                repeatingQuestIds.add(String.valueOf(e.id));
+            Event event = calendarProvider.getEvent(e.id);
+            if (isRepeatingAndroidCalendarEvent(event)) {
+                repeating.add(event);
             } else {
-                questIds.add(String.valueOf(e.id));
+                nonRepeating.add(event);
             }
         }
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_REPEATING_QUESTS_TO_UPDATE, repeatingQuestIds);
-        localStorage.saveStringSet(Constants.KEY_ANDROID_CALENDAR_QUESTS_TO_UPDATE, questIds);
+        return Observable.concat(
+                questPersistenceService.saveRemoteObjects(questReader.read(nonRepeating)),
+                repeatingQuestPersistenceService.saveRemoteObjects(repeatingQuestReader.read(repeating))
+        );
     }
 
-    private Observable<List<String>> deleteEvents(List<Event> events) {
+    private Observable<? extends RealmObject> deleteEvents(List<Event> events) {
         return Observable.from(events).flatMap(e -> {
-            if (isRecurrentAndroidCalendarEvent(e)) {
-                return repeatingQuestPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
+            if (isRepeatingAndroidCalendarEvent(e)) {
+                return repeatingQuestPersistenceService.findByExternalSourceMappingId("googleCalendar", String.valueOf(e.id))
+                        .flatMap(repeatingQuest -> {
+                            if (repeatingQuest == null) {
+                                return Observable.just(null);
+                            }
+                            repeatingQuest.markDeleted();
+                            return repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest);
+                        });
             } else {
-                return questPersistenceService.deleteBySourceMappingId("googleCalendar", String.valueOf(e.id));
+                return questPersistenceService.findByExternalSourceMappingId("googleCalendar", String.valueOf(e.id))
+                        .flatMap(quest -> {
+                            if (quest == null) {
+                                return Observable.just(null);
+                            }
+                            quest.markDeleted();
+                            return questPersistenceService.saveRemoteObject(quest);
+                        });
             }
-        }).toList();
+        });
     }
 
-    private boolean isRecurrentAndroidCalendarEvent(Event e) {
+    private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 

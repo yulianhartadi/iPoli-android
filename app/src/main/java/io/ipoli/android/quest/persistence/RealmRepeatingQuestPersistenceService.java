@@ -100,4 +100,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                     .findFirst());
         }
     }
+
+    @Override
+    public Observable<RepeatingQuest> findByExternalSourceMappingId(String source, String sourceId) {
+        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync());
+    }
 }

@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.text.TextUtils;
-
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -16,7 +14,6 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
-import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 
@@ -83,61 +80,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .findAllSortedAsync("startMinute", Sort.ASCENDING));
     }
 
-
-    @Override
-    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
-        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return Observable.empty();
-        }
-
-        Realm realm = getRealm();
-
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmQuest -> {
-            if (realmQuest == null) {
-                realm.close();
-                return Observable.empty();
-            }
-
-            final String questId = realmQuest.getId();
-
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                            Quest questToDelete = backgroundRealm.where(getRealmObjectClass())
-                                    .equalTo("sourceMapping." + source, sourceId)
-                                    .findFirst();
-                            questToDelete.deleteFromRealm();
-                        },
-                        () -> {
-                            subscriber.onNext(questId);
-                            subscriber.onCompleted();
-                            onObjectDeleted(questId);
-                            realm.close();
-                        }, error -> {
-                            subscriber.onError(error);
-                            realm.close();
-                        });
-            });
-        });
-    }
-
-    @Override
-    public Observable<Void> deleteAllFromRepeatingQuest(String repeatingQuestId) {
-        return Observable.create(subscriber -> {
-            Realm realm = getRealm();
-            realm.executeTransactionAsync(backgroundRealm -> {
-                RealmResults<Quest> questsToRemove = where().equalTo("repeatingQuest.id", repeatingQuestId).findAll();
-                questsToRemove.deleteAllFromRealm();
-            }, () -> {
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-                realm.close();
-            }, error -> {
-                subscriber.onError(error);
-                realm.close();
-            });
-        });
-    }
-
     @Override
     public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
 
@@ -200,6 +142,22 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                     .equalTo("allDay", false)
                     .findAllSorted("startMinute", Sort.ASCENDING));
         }
+    }
+
+    @Override
+    public Quest findByExternalSourceMappingIdSync(String source, String sourceId) {
+        try (Realm realm = getRealm()) {
+            return realm.copyFromRealm(realm.where(getRealmObjectClass())
+                    .equalTo("sourceMapping." + source, sourceId)
+                    .findFirst());
+        }
+    }
+
+    @Override
+    public Observable<Quest> findByExternalSourceMappingId(String source, String sourceId) {
+        return find(where -> where
+                .equalTo("sourceMapping." + source, sourceId)
+                .findFirstAsync());
     }
 
     @Override
