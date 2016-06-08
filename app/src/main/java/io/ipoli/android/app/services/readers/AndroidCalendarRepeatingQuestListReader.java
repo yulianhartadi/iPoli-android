@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -62,8 +64,8 @@ public class AndroidCalendarRepeatingQuestListReader implements ListReader<Repea
             Recurrence recurrence = Recurrence.create();
             recurrence.setRrule(e.rRule, Recurrence.RecurrenceType.WEEKLY);
             recurrence.setRdate(e.rDate);
-            recurrence.setDtstart(new Date(e.dTStart));
-            recurrence.setDtend(new Date(e.dTend));
+            recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
+            recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
             repeatingQuest.setRecurrence(recurrence);
             repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
             return Observable.just(repeatingQuest);

@@ -111,7 +111,7 @@ public class QuestParser {
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
         Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
-        recurrence.setDtstart(new Date());
+        recurrence.setDtstart(DateUtils.toStartOfDayUTC(LocalDate.now()));
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfWeekRecur != null) {
@@ -119,7 +119,7 @@ public class QuestParser {
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString(), Recurrence.RecurrenceType.MONTHLY);
         } else if (dueDate != null) {
-            recurrence.setDtstart(dueDate);
+            recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC)));
             recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
         }
 
