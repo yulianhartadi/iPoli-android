@@ -1,9 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-
-import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
@@ -17,10 +13,6 @@ import rx.Observable;
  * on 3/25/16.
  */
 public abstract class BaseRealmPersistenceService<T extends RealmObject & RemoteObject> {
-
-    protected static Date toUTCDateAtStartOfDay(LocalDate startDate) {
-        return startDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-    }
 
     protected RealmQuery<T> where() {
         return getRealm().where(getRealmObjectClass());

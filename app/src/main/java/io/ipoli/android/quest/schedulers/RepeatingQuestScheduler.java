@@ -28,15 +28,8 @@ import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
  * on 6/6/16.
  */
 public class RepeatingQuestScheduler {
+
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
-        return schedule(repeatingQuest, startDate, new ArrayList<>());
-    }
-
-    public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate, List<Quest> createdQuests) {
-        if (createdQuests != null && !createdQuests.isEmpty()) {
-            return new ArrayList<>();
-        }
-
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
         if (rruleStr != null && !rruleStr.isEmpty()) {
@@ -61,7 +54,7 @@ public class RepeatingQuestScheduler {
 
     @NonNull
     private DateTime getPeriodEnd(java.util.Date endDate) {
-        return new DateTime(new LocalDate(endDate.getTime()).plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
+        return new DateTime(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
     }
 
     private Quest createQuest(RepeatingQuest repeatingQuest, Date endDate) {
@@ -88,19 +81,34 @@ public class RepeatingQuestScheduler {
         String frequency = recur.getFrequency();
         LocalDate localStartDate = new LocalDate(startDate.getTime(), DateTimeZone.UTC);
         if (frequency.equals(Recur.WEEKLY)) {
-            return localStartDate.dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+            return DateUtils.toStartOfDayUTC(localStartDate.dayOfWeek().withMaximumValue());
         }
-        if(frequency.equals(Recur.MONTHLY)) {
-            return localStartDate.dayOfMonth().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+        if (frequency.equals(Recur.MONTHLY)) {
+            return DateUtils.toStartOfDayUTC(localStartDate.dayOfMonth().withMaximumValue());
         }
-//        if(frequency.equals(Recur.YEARLY)) {
-            return localStartDate.dayOfYear().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-//        }
-//        return startDate;
+        return DateUtils.toStartOfDayUTC(localStartDate.dayOfYear().withMaximumValue());
     }
 
-    public java.util.Date getEndDate(RepeatingQuest repeatingQuest, java.util.Date startDate) {
-        return LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-    }
+    public List<Quest> scheduleForDateRange(RepeatingQuest repeatingQuest, java.util.Date from, java.util.Date to) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        String rruleStr = recurrence.getRrule();
+        if (rruleStr != null && !rruleStr.isEmpty()) {
+            Recur recur;
+            try {
+                recur = new Recur(rruleStr);
+            } catch (ParseException e) {
+                return new ArrayList<>();
+            }
+            DateList dates = recur.getDates(new Date(recurrence.getDtstart()),
+                    new Date(from),
+                    getPeriodEnd(to), Value.DATE);
 
+            List<Quest> res = new ArrayList<>();
+            for (Object obj : dates) {
+                res.add(createQuest(repeatingQuest, (Date) obj));
+            }
+            return res;
+        }
+        return new ArrayList<>();
+    }
 }

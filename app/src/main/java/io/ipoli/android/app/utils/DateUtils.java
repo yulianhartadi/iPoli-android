@@ -58,7 +58,7 @@ public class DateUtils {
         if (dueDate == null) {
             return null;
         }
-        return new LocalDate(dueDate).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+        return toStartOfDayUTC(new LocalDate(dueDate));
     }
 
     public static String toDateStringUSFormat(Date date) {
@@ -90,15 +90,19 @@ public class DateUtils {
         return new Date(System.currentTimeMillis());
     }
 
+    public static Date toStartOfDayUTC(LocalDate localDate) {
+        return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+    }
+
     public static boolean isTodayUTC(LocalDate localDate) {
-        return localDate.isEqual(toStartOfDayUTC(new LocalDate()));
+        return localDate.isEqual(toStartOfDayUTCLocalDate(new LocalDate()));
     }
 
     public static boolean isTomorrowUTC(LocalDate localDate) {
-        return localDate.isEqual(toStartOfDayUTC(new LocalDate().plusDays(1)));
+        return localDate.isEqual(toStartOfDayUTCLocalDate(new LocalDate().plusDays(1)));
     }
 
-    private static LocalDate toStartOfDayUTC(LocalDate localDate) {
+    private static LocalDate toStartOfDayUTCLocalDate(LocalDate localDate) {
         return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate();
     }
 
@@ -111,7 +115,7 @@ public class DateUtils {
     }
 
     public static Date UTCToLocalDate(Date date) {
-        if(date == null) {
+        if (date == null) {
             return null;
         }
         return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();

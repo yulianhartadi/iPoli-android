@@ -18,7 +18,7 @@ public class Recurrence extends RealmObject {
         return type;
     }
 
-    public enum RecurrenceType {WEEKLY, MONTHLY}
+    public enum RecurrenceType {DAILY, WEEKLY, MONTHLY}
 
     @Required
     @PrimaryKey

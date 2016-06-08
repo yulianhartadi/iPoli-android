@@ -16,10 +16,10 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +45,12 @@ import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -424,7 +426,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
 
             if (futureDateIsSelected()) {
-                return saveAllNonScheduledQuests().toList().flatMap(lists -> createScheduleForFutureDate());
+                return createAllNonScheduledQuests().flatMap(quests -> createScheduleForFutureDate(quests));
             }
 
             return questPersistenceService.findAllNonAllDayForDate(currentDate).
@@ -461,24 +463,28 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             return currentDate.isAfter(new LocalDate());
         }
 
-        private Observable<List<Quest>> saveAllNonScheduledQuests() {
-            return repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests()
-                    .concatMapIterable(repeatingQuests -> repeatingQuests).concatMap(rq -> {
-                        if (rq.isWeekly()) {
-                            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate.dayOfWeek().withMinimumValue(), currentDate.dayOfWeek().withMaximumValue());
-                            if (createdQuestsCount == 0) {
-                                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, currentDate.dayOfWeek().withMinimumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
-                                questPersistenceService.saveAllSync(questsToCreate);
-                            }
+        private Observable<List<Quest>> createAllNonScheduledQuests() {
+            return repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().flatMap(repeatingQuests -> {
+                List<Quest> res = new ArrayList<>();
+                for (RepeatingQuest rq : repeatingQuests) {
+                    if (rq.isWeekly()) {
+                        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate.dayOfWeek().withMinimumValue(), currentDate.dayOfWeek().withMaximumValue());
+                        if (createdQuestsCount == 0) {
+                            Date start = DateUtils.toStartOfDayUTC(currentDate);
+                            List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq, start, start);
+                            res.addAll(questsToCreate);
                         }
-                        return Observable.just(null);
-                    });
+                    }
+                }
+                return Observable.just(res);
 
+            });
         }
 
-        private Observable<Schedule> createScheduleForFutureDate() {
+        private Observable<Schedule> createScheduleForFutureDate(List<Quest> createdQuests) {
             return questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate)
                     .compose(bindToLifecycle()).flatMap(quests -> {
+                        quests.addAll(createdQuests);
                         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                         List<Quest> unscheduledQuests = new ArrayList<>();
                         for (Quest q : quests) {

@@ -151,7 +151,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
 
-            Date todayStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+            Date todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now());
 
             java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(todayStartOfDay));
 

@@ -3,7 +3,6 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
@@ -102,8 +101,8 @@ public class RepeatingQuestViewModel {
             return 1;
         }
 
-        java.util.Date from = LocalDate.now().dayOfWeek().withMinimumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-        java.util.Date to = LocalDate.now().dayOfWeek().withMaximumValue().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+        java.util.Date from = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMinimumValue());
+        java.util.Date to = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMaximumValue());
 
         return recur.getDates(new DateTime(repeatingQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesPerDay;
     }
