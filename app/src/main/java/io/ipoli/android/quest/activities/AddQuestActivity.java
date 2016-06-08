@@ -230,7 +230,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 return;
             }
             repeatingQuest.setContext(questContext.name());
-            repeatingQuest.getRecurrence().setDtstart(new Date());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
         } else {
             Quest q = qParser.parse(text);

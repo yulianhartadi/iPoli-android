@@ -122,7 +122,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
     }
 
     private void updateQuests() {
-        repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().compose(bindToLifecycle()).subscribe(quests -> {
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests().compose(bindToLifecycle()).subscribe(quests -> {
             List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
             for (RepeatingQuest rq : quests) {
                 RepeatingQuestViewModel vm = createViewModel(rq);

@@ -463,12 +463,14 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         private Observable<List<Quest>> createAllNonScheduledQuests() {
-            return repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().flatMap(repeatingQuests -> {
+            return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests().flatMap(repeatingQuests -> {
                 List<Quest> res = new ArrayList<>();
                 for (RepeatingQuest rq : repeatingQuests) {
                     long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate);
                     if (createdQuestsCount == 0) {
-                        List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq, DateUtils.toStartOfDayUTC(currentDate), DateUtils.toStartOfDayUTC(currentDate));
+                        List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
+                                DateUtils.toStartOfDayUTC(currentDate),
+                                DateUtils.toStartOfDayUTC(currentDate));
                         res.addAll(questsToCreate);
                     }
                 }

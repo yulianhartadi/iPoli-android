@@ -59,7 +59,7 @@ public class AndroidCalendarRepeatingQuestListReader implements ListReader<Repea
             repeatingQuest.setStartMinute(startDateTime.getMinuteOfDay());
             Dur dur = new Dur(e.duration);
             repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
-            Recurrence recurrence = new Recurrence();
+            Recurrence recurrence = Recurrence.create();
             recurrence.setRrule(e.rRule, Recurrence.RecurrenceType.WEEKLY);
             recurrence.setRdate(e.rDate);
             recurrence.setDtstart(new Date(e.dTStart));

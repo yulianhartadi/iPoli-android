@@ -4,9 +4,12 @@ import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
+import org.joda.time.LocalDate;
+
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
@@ -41,8 +44,16 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    public Observable<List<RepeatingQuest>> findAllNonAllDayRepeatingQuests() {
-        return findAll(where -> where.isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAllAsync());
+    public Observable<List<RepeatingQuest>> findAllNonAllDayActiveRepeatingQuests() {
+        return findAll(where -> where.isNotNull("name")
+                .equalTo("allDay", false)
+                .isNotNull("recurrence.rrule")
+                .beginGroup()
+                    .isNull("recurrence.dtend")
+                    .or()
+                    .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAllAsync());
     }
 
     @Override

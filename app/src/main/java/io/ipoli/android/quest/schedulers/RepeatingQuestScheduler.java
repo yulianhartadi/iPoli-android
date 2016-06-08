@@ -45,11 +45,18 @@ public class RepeatingQuestScheduler {
 
             List<Quest> res = new ArrayList<>();
             for (Object obj : dates) {
-                res.add(createQuest(repeatingQuest, (Date) obj));
+                for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+                    res.add(createQuest(repeatingQuest, (Date) obj));
+                }
             }
             return res;
         }
-        return new ArrayList<>();
+
+        List<Quest> res = new ArrayList<>();
+        for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+            res.add(createQuest(repeatingQuest, new Date(startDate)));
+        }
+        return res;
     }
 
     @NonNull

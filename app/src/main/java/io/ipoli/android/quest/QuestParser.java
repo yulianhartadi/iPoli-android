@@ -94,7 +94,7 @@ public class QuestParser {
         text = dayOfMonthPair.second;
 
         Date dueDate = null;
-        if(everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
+        if (everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
             Pair<Date, String> dueDatePair = parseQuestPart(text, dueDateMatcher);
             dueDate = dueDatePair.first;
             text = dueDatePair.second;
@@ -111,13 +111,14 @@ public class QuestParser {
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
         Recurrence recurrence = new Recurrence(timesPerDay);
+        recurrence.setDtstart(new Date());
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfWeekRecur != null) {
             recurrence.setRrule(dayOfWeekRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString(), Recurrence.RecurrenceType.MONTHLY);
-        } else if (dueDate != null){
+        } else if (dueDate != null) {
             recurrence.setDtstart(dueDate);
             recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
         }

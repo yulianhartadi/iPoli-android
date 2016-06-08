@@ -176,7 +176,7 @@ public class App extends MultiDexApplication {
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests()
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
                 .subscribe(repeatingQuests -> {
                     for (RepeatingQuest rq : repeatingQuests) {
                         saveQuestsInRange(rq, startOfWeek, endOfWeek);
