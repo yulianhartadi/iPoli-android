@@ -218,7 +218,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
 
         for (Quest q : quests) {
-            groupedByDate.get(q.getEndDate()).add(q);
+            groupedByDate.get(new LocalDate(q.getCompletedAt().getTime(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate()).add(q);
         }
 
         ArrayList<BarEntry> yVals1 = new ArrayList<>();
