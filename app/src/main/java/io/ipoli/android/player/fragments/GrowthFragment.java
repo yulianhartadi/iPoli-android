@@ -60,6 +60,8 @@ import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/4/16.
@@ -214,11 +216,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
 
         for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
-            groupedByDate.put(date.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate(), new ArrayList<>());
+            groupedByDate.put(toStartOfDayUTC(date), new ArrayList<>());
         }
 
         for (Quest q : quests) {
-            groupedByDate.get(q.getEndDate()).add(q);
+            Date dateKey = toStartOfDayUTC(new LocalDate(q.getCompletedAt().getTime(), DateTimeZone.UTC));
+            groupedByDate.get(dateKey).add(q);
         }
 
         ArrayList<BarEntry> yVals1 = new ArrayList<>();

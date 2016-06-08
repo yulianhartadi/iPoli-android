@@ -54,7 +54,7 @@ public class RepeatingQuestScheduler {
 
     @NonNull
     private DateTime getPeriodEnd(java.util.Date endDate) {
-        return new DateTime(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
+        return new DateTime(DateUtils.toStartOfDayUTC(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1)));
     }
 
     private Quest createQuest(RepeatingQuest repeatingQuest, Date endDate) {

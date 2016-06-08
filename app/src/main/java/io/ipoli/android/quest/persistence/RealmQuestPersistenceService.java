@@ -233,10 +233,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
         return findAll(where -> where
-                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(startDate))
-                .lessThan("endDate", toStartOfDayUTC(endDate))
+                .greaterThanOrEqualTo("completedAt", toStartOfDayUTC(startDate))
+                .lessThan("completedAt", toStartOfDayUTC(endDate))
                 .equalTo("allDay", false)
-                .isNotNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING));
+                .findAllSortedAsync("completedAt", Sort.ASCENDING));
     }
 }
