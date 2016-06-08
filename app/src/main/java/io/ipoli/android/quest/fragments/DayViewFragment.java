@@ -36,17 +36,12 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
-import io.ipoli.android.app.scheduling.dto.FindSlotsRequest;
-import io.ipoli.android.app.scheduling.dto.Slot;
-import io.ipoli.android.app.scheduling.dto.Task;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
-import io.ipoli.android.app.ui.events.ShowLoaderEvent;
-import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -61,8 +56,6 @@ import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
-import io.ipoli.android.quest.events.RescheduleQuestEvent;
-import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
@@ -75,10 +68,6 @@ import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
 
@@ -113,8 +102,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private UnscheduledQuestViewModel movingViewModel;
     private UnscheduledQuestsAdapter unscheduledQuestsAdapter;
     private QuestCalendarAdapter calendarAdapter;
-
-    private CompositeSubscription findSlotsSubscriptions;
 
     BroadcastReceiver tickReceiver = new BroadcastReceiver() {
         @Override
@@ -195,7 +182,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         Quest quest = e.viewModel.getQuest();
-        if(quest.isPlaceholder()) {
+        if (quest.isPlaceholder()) {
             quest = savePlaceholderQuest(quest);
         }
         eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.CALENDAR_UNSCHEDULED_SECTION));
@@ -249,7 +236,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
         }
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        findSlotsSubscriptions = new CompositeSubscription();
         updateSchedule();
     }
 
@@ -290,7 +276,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        findSlotsSubscriptions.unsubscribe();
         eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
         if (getUserVisibleHint()) {
@@ -319,7 +304,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
         QuestCalendarViewModel qvm = e.questCalendarViewModel;
         Quest q = qvm.getQuest();
-        if(q.isPlaceholder()) {
+        if (q.isPlaceholder()) {
             q.setId(savePlaceholderQuest(q).getId());
         }
 
@@ -341,49 +326,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     @Subscribe
-    public void onScheduleQuestRequest(ScheduleQuestRequestEvent e) {
-        UnscheduledQuestViewModel vm = e.viewModel;
-        Quest q = vm.getQuest();
-        List<Task> scheduledTasks = new ArrayList<>();
-        for (QuestCalendarViewModel cvm : calendarAdapter.getEvents()) {
-            Quest cq = cvm.getQuest();
-            scheduledTasks.add(new Task(cq.getStartMinute(), cq.getDuration(), cq.getContext()));
-        }
-        Task taskToSchedule = new Task(Math.max(q.getDuration(), 15), q.getContext());
-        FindSlotsRequest request = new FindSlotsRequest(scheduledTasks, taskToSchedule);
-
-        eventBus.post(new ShowLoaderEvent(getString(R.string.find_slots_loading_message)));
-        Subscription subscription = schedulingAPIService.findSlots(request, Constants.SUGGESTED_SLOTS_COUNT).compose(applyAPISchedulers()).subscribe(slots -> {
-            if (slots.isEmpty()) {
-                Toast.makeText(getContext(), "No slots available", Toast.LENGTH_SHORT);
-                return;
-            }
-            unscheduledQuestsAdapter.removeQuest(vm);
-            setUnscheduledQuestsHeight();
-            Slot slot = slots.get(0);
-            calendarDayView.smoothScrollToTime(Time.of(slot.startMinute));
-            QuestCalendarViewModel event = new QuestCalendarViewModel(q, slots);
-            event.setStartMinute(slot.startMinute);
-            event.setDuration(Math.max(15, q.getDuration()));
-            calendarAdapter.addEvent(event);
-        }, (throwable) -> {
-            eventBus.post(new SuggestionsUnavailableEvent(q));
-            eventBus.post(new HideLoaderEvent());
-            Toast.makeText(getContext(), "Unable to find slots, try later", Toast.LENGTH_SHORT).show();
-        }, () -> eventBus.post(new HideLoaderEvent()));
-        findSlotsSubscriptions.add(subscription);
-    }
-
-    @Subscribe
-    public void onRescheduleQuest(RescheduleQuestEvent e) {
-        QuestCalendarViewModel viewModel = e.calendarEvent;
-        Slot slot = viewModel.nextSlot();
-        calendarDayView.smoothScrollToTime(Time.of(slot.startMinute));
-        viewModel.setStartMinute(slot.startMinute);
-        calendarAdapter.notifyDataSetChanged();
-    }
-
-    @Subscribe
     public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
         QuestCalendarViewModel viewModel = e.calendarEvent;
         Quest q = viewModel.getQuest();
@@ -396,11 +338,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     private Observable<Quest> saveQuest(Quest q) {
         return questPersistenceService.save(q).compose(bindToLifecycle());
-    }
-
-    private <T> Observable.Transformer<T, T> applyAPISchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -444,8 +381,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         List<Quest> quests = repeatingQuestScheduler.schedule(quest.getRepeatingQuest(), DateUtils.toStartOfDayUTC(startOfWeek));
         questPersistenceService.saveAllSync(quests);
-        for(Quest q : quests) {
-            if(quest.getStartDate().equals(q.getStartDate())) {
+        for (Quest q : quests) {
+            if (quest.getStartDate().equals(q.getStartDate())) {
                 return q;
             }
         }
