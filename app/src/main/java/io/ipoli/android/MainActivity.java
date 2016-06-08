@@ -63,13 +63,11 @@ import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
@@ -234,13 +232,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .replace(R.id.content_container, fragment).commit();
         currentFragment = fragment;
         getSupportFragmentManager().executePendingTransactions();
-    }
-
-    @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(this, QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
     }
 
     @Subscribe
