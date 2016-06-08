@@ -145,6 +145,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .between("endDate", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
+                .equalTo("isDeleted", false)
                 .count();
     }
 
@@ -199,6 +200,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                     .equalTo("allDay", false)
                     .findAllSorted("startMinute", Sort.ASCENDING));
         }
+    }
+
+    @Override
+    public Observable<List<Quest>> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
+        return findAll(where -> where
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .findAllAsync());
     }
 
     @Override

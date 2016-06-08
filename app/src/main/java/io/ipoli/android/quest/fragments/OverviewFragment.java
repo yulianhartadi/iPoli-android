@@ -174,7 +174,8 @@ public class OverviewFragment extends BaseFragment {
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
         eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.OVERVIEW));
-        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+        e.quest.markDeleted();
+        questPersistenceService.save(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             Snackbar
                     .make(rootContainer,
                             R.string.quest_removed,

@@ -332,10 +332,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
         QuestNotificationScheduler.stopAll(e.id, this);
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
-        removedQuests.add(e.id);
-        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
         eventBus.post(new SyncRequestEvent());
         onQuestChanged();
     }
@@ -354,10 +350,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS);
-        removedQuests.add(e.id);
-        localStorage.saveStringSet(Constants.KEY_REMOVED_REPEATING_QUESTS, removedQuests);
         eventBus.post(new SyncRequestEvent());
         scheduleNextReminder();
     }

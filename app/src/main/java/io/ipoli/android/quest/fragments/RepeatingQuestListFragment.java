@@ -41,6 +41,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
@@ -174,10 +175,9 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
-
-
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        Observable.concat(questPersistenceService.deleteAllFromRepeatingQuest(repeatingQuest.getId()), repeatingQuestPersistenceService.delete(repeatingQuest))
+        repeatingQuest.markDeleted();
+        Observable.concat(markQuestsDeleted(repeatingQuest), repeatingQuestPersistenceService.save(repeatingQuest))
                 .compose(bindToLifecycle()).subscribe(o -> {
         }, error -> {
         }, () -> {
@@ -186,6 +186,15 @@ public class RepeatingQuestListFragment extends BaseFragment {
                             R.string.repeating_quest_removed,
                             Snackbar.LENGTH_SHORT).show();
             updateQuests();
+        });
+    }
+
+    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
+        return questPersistenceService.findAllForRepeatingQuest(repeatingQuest).flatMap(quests -> {
+            for (Quest q : quests) {
+                q.markDeleted();
+            }
+            return questPersistenceService.saveRemoteObjects(quests);
         });
     }
 

@@ -142,7 +142,8 @@ public class RewardActivity extends BaseActivity {
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_reward_title))
                         .setMessage(getString(R.string.dialog_delete_reward_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    rewardPersistenceService.delete(reward).compose(bindToLifecycle()).subscribe(rewardId -> {
+                    reward.markDeleted();
+                    rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(rewardId -> {
                         Toast.makeText(RewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();

@@ -16,15 +16,21 @@ public class RealmFindAllCommand<T extends RealmObject & RemoteObject> {
 
     private final Class<T> realmClass;
     private RealmFindAllQueryBuilder<T> queryBuilder;
+    private final boolean includeDeleted;
 
     public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, Class<T> realmClass) {
+        this(queryBuilder, realmClass, false);
+    }
+
+    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, Class<T> realmClass, boolean includeDeleted) {
         this.realmClass = realmClass;
         this.queryBuilder = queryBuilder;
+        this.includeDeleted = includeDeleted;
     }
 
     public Observable<List<T>> execute() {
         Realm realm = Realm.getDefaultInstance();
-        return queryBuilder.buildQuery(realm.where(realmClass))
+        return queryBuilder.buildQuery(realm.where(realmClass).equalTo("isDeleted", includeDeleted))
                 .asObservable()
                 .filter(RealmResults::isLoaded)
                 .first()

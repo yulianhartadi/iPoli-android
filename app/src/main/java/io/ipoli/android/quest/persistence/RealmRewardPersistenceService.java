@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.reward.data.Reward;
+import io.realm.RealmQuery;
 import rx.Observable;
 
 /**
@@ -18,6 +19,6 @@ public class RealmRewardPersistenceService extends BaseRealmPersistenceService<R
 
     @Override
     public Observable<List<Reward>> findAll() {
-        return findAll(where -> where.findAllAsync());
+        return findAll(RealmQuery::findAllAsync);
     }
 }

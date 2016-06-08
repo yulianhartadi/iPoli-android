@@ -49,7 +49,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     public void saveAllSync(List<T> objects) {
-        for(T obj: objects) {
+        for (T obj : objects) {
             obj.markUpdated();
         }
         try (Realm realm = getRealm()) {
@@ -102,7 +102,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
-        return findAll(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
+        return findAllIncludingDeleted(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }
 
     protected abstract Class<T> getRealmObjectClass();
@@ -151,6 +151,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
         return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass()).execute();
+    }
+
+    protected Observable<List<T>> findAllIncludingDeleted(RealmFindAllQueryBuilder<T> queryBuilder) {
+        return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass(), true).execute();
     }
 
     protected Observable<T> find(RealmFindQueryBuilder<T> queryBuilder) {
