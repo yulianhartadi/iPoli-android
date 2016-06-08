@@ -73,6 +73,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -106,6 +107,7 @@ public class App extends MultiDexApplication {
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            scheduleQuestsFor2WeeksAhead().subscribe();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             resetEndDateForIncompleteQuests();
             updateWidgets();
@@ -146,11 +148,12 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        scheduleQuestsFor2WeeksAhead();
-        if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
-            eventBus.post(new ForceSyncRequestEvent());
-        }
-        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+        scheduleQuestsFor2WeeksAhead().subscribe(aVoid -> {
+            if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
+                eventBus.post(new ForceSyncRequestEvent());
+            }
+            localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+        });
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
 
@@ -170,18 +173,19 @@ public class App extends MultiDexApplication {
 //        }
     }
 
-    private void scheduleQuestsFor2WeeksAhead() {
+    private Observable<Void> scheduleQuestsFor2WeeksAhead(RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
-                .subscribe(repeatingQuests -> {
+        return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
+                .flatMap(repeatingQuests -> {
                     for (RepeatingQuest rq : repeatingQuests) {
                         saveQuestsInRange(rq, startOfWeek, endOfWeek);
                         saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek);
                     }
+                    return Observable.just(null);
                 });
     }
 

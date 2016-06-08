@@ -14,6 +14,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.squareup.otto.Bus;
 
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -47,6 +50,7 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import okhttp3.RequestBody;
@@ -72,6 +76,8 @@ public class AppJobService extends JobService {
     @Inject
     iPoliAPIService apiService;
 
+    RepeatingQuestScheduler repeatingQuestScheduler = new RepeatingQuestScheduler();
+
     @Inject
     Gson gson;
 
@@ -82,11 +88,13 @@ public class AppJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Log.d("RxJava", "Sync start");
         syncPlayer(localStorage).flatMap(p -> {
                     if (p == null) {
                         return Observable.empty();
                     }
                     return Observable.concat(
+                            Observable.defer(this::scheduleQuestsFor2WeeksAhead),
                             Observable.defer(() -> syncCalendars(localStorage)),
                             Observable.defer(() -> syncRemovedRepeatingQuests(p)),
                             Observable.defer(() -> syncRemovedQuests(p)),
@@ -104,6 +112,29 @@ public class AppJobService extends JobService {
             jobFinished(params, false);
         });
         return true;
+    }
+
+    private Observable<List<Quest>> scheduleQuestsFor2WeeksAhead() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
+        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+        return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
+                .flatMapIterable(repeatingQuests -> repeatingQuests)
+                .flatMap(rq -> Observable.concat(
+                        saveQuestsInRange(rq, startOfWeek, endOfWeek),
+                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)
+                ));
+    }
+
+    private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
+        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
+        if (createdQuestsCount == 0) {
+            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
+            return questPersistenceService.saveRemoteObjects(questsToCreate);
+        }
+        return Observable.just(new ArrayList<>());
     }
 
     private Observable<Player> syncPlayer(LocalStorage localStorage) {
