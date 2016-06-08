@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.squareup.otto.Bus;
@@ -55,6 +56,7 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -184,8 +186,8 @@ public class App extends MultiDexApplication {
         return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
                 .flatMapIterable(repeatingQuests -> repeatingQuests)
                 .flatMap(rq -> Observable.concat(
-                        saveQuestsInRange(rq, startOfWeek, endOfWeek),
-                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek))
+                        Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
+                        Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
                 );
     }
 
@@ -310,17 +312,32 @@ public class App extends MultiDexApplication {
     public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
         RepeatingQuest rq = e.repeatingQuest;
 
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+        Recurrence recurrence = rq.getRecurrence();
+        if (TextUtils.isEmpty(recurrence.getRrule())) {
+            List<Quest> questsToCreate = new ArrayList<>();
+            for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
+            }
+            questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
+            }, Throwable::printStackTrace, () -> {
+                eventBus.post(new SyncRequestEvent());
+            });
+        } else {
 
-        Observable.concat(saveQuestsInRange(rq, startOfWeek, endOfWeek),
-                saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)).subscribe(quests -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new SyncRequestEvent());
-        });
+            LocalDate currentDate = LocalDate.now();
+            LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+            LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+            LocalDate startOfNextWeek = startOfWeek.plusDays(7);
+            LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+
+            Observable.concat(
+                    Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
+                    Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
+                    .subscribe(quests -> {
+                    }, Throwable::printStackTrace, () -> {
+                        eventBus.post(new SyncRequestEvent());
+                    });
+        }
     }
 
     @Subscribe

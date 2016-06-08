@@ -32,29 +32,24 @@ public class RepeatingQuestScheduler {
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
-        if (rruleStr != null && !rruleStr.isEmpty()) {
-            Recur recur;
-            try {
-                recur = new Recur(rruleStr);
-            } catch (ParseException e) {
-                return new ArrayList<>();
-            }
-            java.util.Date endDate = getEndDate(recur, startDate);
-            DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
-                    getPeriodEnd(endDate), Value.DATE);
-
-            List<Quest> res = new ArrayList<>();
-            for (Object obj : dates) {
-                for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
-                    res.add(createQuest(repeatingQuest, (Date) obj));
-                }
-            }
-            return res;
+        if (rruleStr == null || rruleStr.isEmpty()) {
+            return new ArrayList<>();
         }
+        Recur recur;
+        try {
+            recur = new Recur(rruleStr);
+        } catch (ParseException e) {
+            return new ArrayList<>();
+        }
+        java.util.Date endDate = getEndDate(recur, startDate);
+        DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
+                getPeriodEnd(endDate), Value.DATE);
 
         List<Quest> res = new ArrayList<>();
-        for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
-            res.add(createQuest(repeatingQuest, new Date(recurrence.getDtstart())));
+        for (Object obj : dates) {
+            for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+                res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+            }
         }
         return res;
     }
@@ -64,7 +59,7 @@ public class RepeatingQuestScheduler {
         return new DateTime(DateUtils.toStartOfDayUTC(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1)));
     }
 
-    private Quest createQuest(RepeatingQuest repeatingQuest, Date endDate) {
+    public Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
         Quest quest = new Quest();
         quest.setName(repeatingQuest.getName());
         quest.setContext(repeatingQuest.getContext());
@@ -112,7 +107,7 @@ public class RepeatingQuestScheduler {
 
             List<Quest> res = new ArrayList<>();
             for (Object obj : dates) {
-                res.add(createQuest(repeatingQuest, (Date) obj));
+                res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
             }
             return res;
         }

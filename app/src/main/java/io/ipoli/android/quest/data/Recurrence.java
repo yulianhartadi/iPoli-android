@@ -23,13 +23,13 @@ public class Recurrence extends RealmObject {
     private int timesPerDay;
 
     private String rrule;
+
     private String rdate;
     private String exrule;
     private String exdate;
     private Date dtstart;
     private Date dtend;
     private String type;
-
     @Required
     private Date createdAt;
 
@@ -51,6 +51,10 @@ public class Recurrence extends RealmObject {
         return new Recurrence(1);
     }
 
+    public void setType(RecurrenceType type) {
+        this.type = type.name();
+    }
+
     public String getType() {
         return type;
     }
@@ -63,9 +67,8 @@ public class Recurrence extends RealmObject {
         return rrule;
     }
 
-    public void setRrule(String rrule, RecurrenceType recurrenceType) {
+    public void setRrule(String rrule) {
         this.rrule = rrule;
-        this.type = recurrenceType.name();
     }
 
     public String getRdate() {

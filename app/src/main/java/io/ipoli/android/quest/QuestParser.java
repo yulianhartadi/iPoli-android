@@ -113,14 +113,23 @@ public class QuestParser {
         Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
         recurrence.setDtstart(DateUtils.toStartOfDayUTC(LocalDate.now()));
         if (everyDayRecur != null) {
-            recurrence.setRrule(everyDayRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRrule(everyDayRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfWeekRecur != null) {
-            recurrence.setRrule(dayOfWeekRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRrule(dayOfWeekRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfMonthRecur != null) {
-            recurrence.setRrule(dayOfMonthRecur.toString(), Recurrence.RecurrenceType.MONTHLY);
-        } else if (dueDate != null) {
-            recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC)));
-            recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
+            recurrence.setRrule(dayOfMonthRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else {
+            recurrence.setRrule(null);
+            if (dueDate != null) {
+                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC)));
+                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
+            } else {
+                recurrence.setDtstart(null);
+                recurrence.setDtend(null);
+            }
         }
 
         rq.setRecurrence(recurrence);
