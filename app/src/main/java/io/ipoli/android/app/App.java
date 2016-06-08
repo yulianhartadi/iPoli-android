@@ -173,7 +173,7 @@ public class App extends MultiDexApplication {
 //        }
     }
 
-    private Observable<Void> scheduleQuestsFor2WeeksAhead(RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+    private Observable<Void> scheduleQuestsFor2WeeksAhead() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
