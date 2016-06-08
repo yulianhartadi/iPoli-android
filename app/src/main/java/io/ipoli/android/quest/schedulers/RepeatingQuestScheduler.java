@@ -54,7 +54,7 @@ public class RepeatingQuestScheduler {
 
         List<Quest> res = new ArrayList<>();
         for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
-            res.add(createQuest(repeatingQuest, new Date(startDate)));
+            res.add(createQuest(repeatingQuest, new Date(recurrence.getDtstart())));
         }
         return res;
     }
