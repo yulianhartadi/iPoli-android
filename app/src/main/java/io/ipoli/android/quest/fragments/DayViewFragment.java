@@ -317,10 +317,16 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
-        QuestCalendarViewModel qce = e.questCalendarViewModel;
-        Quest q = qce.getQuest();
-        q.setStartMinute(qce.getStartMinute());
-        saveQuest(q).subscribe();
+        QuestCalendarViewModel qvm = e.questCalendarViewModel;
+        Quest q = qvm.getQuest();
+        if(q.isPlaceholder()) {
+            q.setId(savePlaceholderQuest(q).getId());
+        }
+
+        q.setStartMinute(qvm.getStartMinute());
+        saveQuest(q).subscribe(quest -> {
+            updateSchedule();
+        });
     }
 
     @Subscribe
