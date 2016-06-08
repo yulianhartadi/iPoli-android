@@ -20,6 +20,7 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -83,6 +84,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private SourceMapping sourceMapping;
     private boolean isDeleted;
+
+    @Ignore
+    private boolean isPlaceholder;
 
     public Quest() {
     }
@@ -430,5 +434,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setOriginalStartDate(Date originalStartDate) {
         this.originalStartDate = originalStartDate;
+    }
+
+    public boolean isPlaceholder() {
+        return isPlaceholder;
+    }
+
+    public void setPlaceholder(boolean placeholder) {
+        isPlaceholder = placeholder;
     }
 }

@@ -19,7 +19,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -467,24 +466,23 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             return repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().flatMap(repeatingQuests -> {
                 List<Quest> res = new ArrayList<>();
                 for (RepeatingQuest rq : repeatingQuests) {
-                    if (rq.isWeekly()) {
-                        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate.dayOfWeek().withMinimumValue(), currentDate.dayOfWeek().withMaximumValue());
-                        if (createdQuestsCount == 0) {
-                            Date start = DateUtils.toStartOfDayUTC(currentDate);
-                            List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq, start, start);
-                            res.addAll(questsToCreate);
-                        }
+                    long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate);
+                    if (createdQuestsCount == 0) {
+                        List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq, DateUtils.toStartOfDayUTC(currentDate), DateUtils.toStartOfDayUTC(currentDate));
+                        res.addAll(questsToCreate);
                     }
                 }
+                for (Quest q : res) {
+                    q.setPlaceholder(true);
+                }
                 return Observable.just(res);
-
             });
         }
 
-        private Observable<Schedule> createScheduleForFutureDate(List<Quest> createdQuests) {
+        private Observable<Schedule> createScheduleForFutureDate(List<Quest> placeholderQuests) {
             return questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate)
                     .compose(bindToLifecycle()).flatMap(quests -> {
-                        quests.addAll(createdQuests);
+                        quests.addAll(placeholderQuests);
                         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
                         List<Quest> unscheduledQuests = new ArrayList<>();
                         for (Quest q : quests) {

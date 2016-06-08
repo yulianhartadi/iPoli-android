@@ -44,6 +44,7 @@ import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -145,6 +146,7 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
+        scheduleQuestsFor2WeeksAhead();
         if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
             eventBus.post(new ForceSyncRequestEvent());
         }
@@ -166,6 +168,29 @@ public class App extends MultiDexApplication {
 //                    .penaltyDeath()
 //                    .build());
 //        }
+    }
+
+    private void scheduleQuestsFor2WeeksAhead() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
+        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+        repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests()
+                .subscribe(repeatingQuests -> {
+                    for (RepeatingQuest rq : repeatingQuests) {
+                        saveQuestsInRange(rq, startOfWeek, endOfWeek);
+                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek);
+                    }
+                });
+    }
+
+    private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
+        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
+        if (createdQuestsCount == 0) {
+            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
+            questPersistenceService.saveAllSync(questsToCreate);
+        }
     }
 
     private void resetEndDateForIncompleteQuests() {
