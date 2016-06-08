@@ -2,11 +2,14 @@ package io.ipoli.android.quest;
 
 import android.support.v4.util.Pair;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -80,15 +83,22 @@ public class QuestParser {
         Pair<Integer, String> timesPerDayPair = parseQuestPart(startTimePair.second, timesPerDayMatcher);
         int timesPerDay = timesPerDayPair.first;
 
-        Pair<Recur, String> everyDayRes = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
-        Recur everyDayRecur = everyDayRes.first;
+        Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
+        Recur everyDayRecur = everyDayPair.first;
 
-        Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayRes.second, dayOfWeekMatcher);
+        Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayPair.second, dayOfWeekMatcher);
         Recur dayOfWeekRecur = dayOfWeekPair.first;
 
         Pair<Recur, String> dayOfMonthPair = parseQuestPart(dayOfWeekPair.second, dayOfMonthMatcher);
         Recur dayOfMonthRecur = dayOfMonthPair.first;
         text = dayOfMonthPair.second;
+
+        Date dueDate = null;
+        if(everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
+            Pair<Date, String> dueDatePair = parseQuestPart(text, dueDateMatcher);
+            dueDate = dueDatePair.first;
+            text = dueDatePair.second;
+        }
 
         String name = text.trim();
 
@@ -107,6 +117,9 @@ public class QuestParser {
             recurrence.setRrule(dayOfWeekRecur.toString(), Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString(), Recurrence.RecurrenceType.MONTHLY);
+        } else if (dueDate != null){
+            recurrence.setDtstart(dueDate);
+            recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
         }
 
         rq.setRecurrence(recurrence);
