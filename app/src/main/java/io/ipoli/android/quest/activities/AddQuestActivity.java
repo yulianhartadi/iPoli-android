@@ -41,7 +41,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
@@ -54,6 +53,7 @@ import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -231,11 +231,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             }
             repeatingQuest.setContext(questContext.name());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
-            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-                Toast.makeText(this, R.string.no_internet_repeating_quest_added, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_LONG).show();
-            }
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
@@ -265,6 +260,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
+        Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_SHORT).show();
     }
 
     private boolean hasStartTime(Quest q) {

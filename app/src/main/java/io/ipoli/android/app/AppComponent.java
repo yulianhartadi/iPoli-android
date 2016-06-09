@@ -10,6 +10,7 @@ import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
@@ -52,7 +53,8 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
-                RestAPIModule.class
+                RestAPIModule.class,
+                SchedulerModule.class
         }
 )
 public interface AppComponent {

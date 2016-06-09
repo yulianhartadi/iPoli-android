@@ -17,4 +17,7 @@ public interface RemoteObject<T> {
     void setSyncedWithRemote();
     void setRemoteId(String remoteId);
     String getRemoteId();
+
+    boolean isDeleted();
+    void markDeleted();
 }

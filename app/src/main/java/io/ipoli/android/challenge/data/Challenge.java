@@ -41,6 +41,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
 
     private Boolean needsSyncWithRemote;
     private String remoteId;
+    private boolean isDeleted;
 
     public Challenge() {
     }
@@ -52,6 +53,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
+        this.isDeleted = false;
     }
 
     @Override
@@ -152,6 +154,16 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Override
     public String getRemoteId() {
         return remoteId;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    @Override
+    public void markDeleted() {
+        isDeleted = true;
     }
 
     @Override

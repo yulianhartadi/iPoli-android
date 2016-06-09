@@ -8,7 +8,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -42,6 +40,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
@@ -123,16 +122,18 @@ public class RepeatingQuestListFragment extends BaseFragment {
     }
 
     private void updateQuests() {
-        repeatingQuestPersistenceService.findAllNonAllDayRepeatingQuests().compose(bindToLifecycle()).subscribe(quests -> {
-            List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
-            for (RepeatingQuest rq : quests) {
-                RepeatingQuestViewModel vm = createViewModel(rq);
-                if (vm != null) {
-                    viewModels.add(vm);
-                }
-            }
-            repeatingQuestListAdapter.updateQuests(viewModels);
-        });
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
+                .compose(bindToLifecycle())
+                .subscribe(quests -> {
+                    List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
+                    for (RepeatingQuest rq : quests) {
+                        RepeatingQuestViewModel vm = createViewModel(rq);
+                        if (vm != null) {
+                            viewModels.add(vm);
+                        }
+                    }
+                    repeatingQuestListAdapter.updateQuests(viewModels);
+                });
     }
 
     @Nullable
@@ -151,17 +152,20 @@ public class RepeatingQuestListFragment extends BaseFragment {
             }
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
+            Date todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now());
 
-            Date todayStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+            // we subtract 1 ms because getNextDate excludes equal dates
+            DateTime seed = new DateTime(recurrence.getDtstart().getTime() - 1);
 
-            java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(todayStartOfDay));
+            DateTime startDate = new DateTime(todayStartOfDay.getTime());
+            java.util.Date nextDate = recur.getNextDate(seed, startDate);
 
             if (DateUtils.isTodayUTC(nextDate)) {
                 int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
-                int timesPerDay = TextUtils.isEmpty(recurrence.getDailyRrule()) ? 1 : new Recur(recurrence.getDailyRrule()).getCount();
+                int timesPerDay = recurrence.getTimesPerDay();
                 if (completedForToday >= timesPerDay) {
-                    Date tomorrowStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).plusDays(1).toDate();
-                    nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(tomorrowStartOfDay));
+                    Date tomorrowStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1));
+                    nextDate = recur.getNextDate(seed, new DateTime(tomorrowStartOfDay.getTime()));
                     if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {
                         nextDate = null;
                     }
@@ -175,10 +179,9 @@ public class RepeatingQuestListFragment extends BaseFragment {
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
-
-
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        Observable.concat(questPersistenceService.deleteAllFromRepeatingQuest(repeatingQuest.getId()), repeatingQuestPersistenceService.delete(repeatingQuest))
+        repeatingQuest.markDeleted();
+        Observable.concat(markQuestsDeleted(repeatingQuest), repeatingQuestPersistenceService.save(repeatingQuest))
                 .compose(bindToLifecycle()).subscribe(o -> {
         }, error -> {
         }, () -> {
@@ -187,6 +190,15 @@ public class RepeatingQuestListFragment extends BaseFragment {
                             R.string.repeating_quest_removed,
                             Snackbar.LENGTH_SHORT).show();
             updateQuests();
+        });
+    }
+
+    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
+        return questPersistenceService.findAllForRepeatingQuest(repeatingQuest).flatMap(quests -> {
+            for (Quest q : quests) {
+                q.markDeleted();
+            }
+            return questPersistenceService.saveRemoteObjects(quests);
         });
     }
 

@@ -7,7 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,9 +20,7 @@ import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -37,6 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -47,6 +45,7 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -55,6 +54,7 @@ import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
@@ -143,6 +143,13 @@ public class OverviewFragment extends BaseFragment {
     }
 
     @Subscribe
+    public void onShowQuestEvent(ShowQuestEvent e) {
+        Intent i = new Intent(getActivity(), QuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         Date endDate = new Date();
@@ -152,7 +159,7 @@ public class OverviewFragment extends BaseFragment {
             endDate = DateUtils.getTomorrow();
         }
         final String toastMessage = toast;
-        q.setEndDate(endDate);
+        q.setEndDateFromLocal(endDate);
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
             updateQuests();
@@ -167,7 +174,8 @@ public class OverviewFragment extends BaseFragment {
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
         eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.OVERVIEW));
-        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+        e.quest.markDeleted();
+        questPersistenceService.save(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             Snackbar
                     .make(rootContainer,
                             R.string.quest_removed,
@@ -213,14 +221,9 @@ public class OverviewFragment extends BaseFragment {
             for (String key : map.keySet()) {
                 Quest q = map.get(key).get(0);
                 RepeatingQuest rq = q.getRepeatingQuest();
-                try {
-                    Recur recur = new Recur(rq.getRecurrence().getDailyRrule());
-                    int repeatCount = recur.getCount();
-                    int remainingCount = map.get(key).size();
-                    viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                int repeatCount = rq.getRecurrence().getTimesPerDay();
+                int remainingCount = map.get(key).size();
+                viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
             }
 
             Collections.sort(viewModels, new Comparator<QuestViewModel>() {
@@ -242,6 +245,6 @@ public class OverviewFragment extends BaseFragment {
     }
 
     private boolean hasDailyRrule(Quest q) {
-        return q.getRepeatingQuest() != null && !TextUtils.isEmpty(q.getRepeatingQuest().getRecurrence().getDailyRrule());
+        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
     }
 }

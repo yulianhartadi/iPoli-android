@@ -63,13 +63,11 @@ import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
@@ -237,13 +235,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(this, QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
-    }
-
-    @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
         Quest q = e.quest;
         long experience = q.getExperience();
@@ -353,8 +344,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.inbox:
                 source = EventSource.INBOX;
                 changeCurrentFragment(new InboxFragment());
-
                 break;
+
             case R.id.repeating_quests:
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
@@ -379,17 +370,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 eventBus.post(new InviteFriendEvent());
                 inviteFriend();
                 break;
+
             case R.id.sync_calendars:
                 checkForCalendarPermission();
                 break;
+
             case R.id.tutorial:
                 eventBus.post(new ShowTutorialEvent());
                 startTutorial();
                 break;
+
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
                 RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
+
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));

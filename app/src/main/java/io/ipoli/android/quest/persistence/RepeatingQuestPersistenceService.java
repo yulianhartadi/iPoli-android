@@ -12,9 +12,9 @@ import rx.Observable;
  */
 public interface RepeatingQuestPersistenceService extends PersistenceService<RepeatingQuest> {
 
-    Observable<List<RepeatingQuest>> findAllNonAllDayRepeatingQuests();
-
-    Observable<String> deleteBySourceMappingId(String source, String sourceId);
+    Observable<List<RepeatingQuest>> findAllNonAllDayActiveRepeatingQuests();
 
     RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId);
+
+    Observable<RepeatingQuest> findByExternalSourceMappingId(String source, String sourceId);
 }

@@ -8,12 +8,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.RxLifecycle;
+
+import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +29,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
+import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -41,7 +46,7 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
 
     @Inject
@@ -60,6 +65,8 @@ public class TutorialActivity extends AppIntro2 {
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
     private int previousSlide = -1;
+
+    private QuestParser questParser = new QuestParser(new PrettyTimeParser());
 
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
@@ -97,13 +104,24 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void onDonePressed() {
+        doneButton.setVisibility(View.GONE);
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
-        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests))
+
+        List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
+        for (RepeatingQuest rq : selectedRepeatingQuests) {
+            RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
+            parsedRepeatingQuest.setContext(rq.getContext());
+            parsedRepeatingQuests.add(parsedRepeatingQuest);
+        }
+
+        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests),
+                repeatingQuestPersistenceService.saveRemoteObjects(parsedRepeatingQuests))
                 .compose(RxLifecycle.bindActivity(lifecycleSubject)).subscribe(ignored -> {
         }, error -> finish(), () -> {
-            eventBus.post(new ForceSyncRequestEvent());
+            eventBus.post(new ScheduleRepeatingQuestsEvent());
             eventBus.post(new TutorialDoneEvent());
+            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
             finish();
         });
     }
@@ -178,7 +196,6 @@ public class TutorialActivity extends AppIntro2 {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.TUTORIAL));
-                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
             } else if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));

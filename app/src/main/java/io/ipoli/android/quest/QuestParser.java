@@ -1,11 +1,18 @@
 package io.ipoli.android.quest;
 
+import android.support.v4.util.Pair;
+
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
-import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.Match;
@@ -39,20 +46,15 @@ public class QuestParser {
 
         String rawText = text;
 
-        Match durationMatch = durationMatcher.match(text);
-        String matchedDurationText = durationMatch != null ? durationMatch.text : "";
-        int duration = durationMatcher.parse(text);
-        text = text.replace(matchedDurationText.trim(), "");
+        Pair<Integer, String> durationPair = parseQuestPart(text, durationMatcher);
+        int duration = durationPair.first;
 
-        Match startTimeMatch = startTimeMatcher.match(text);
-        String matchedStartTimeText = startTimeMatch != null ? startTimeMatch.text : "";
-        int startTime = startTimeMatcher.parse(text);
-        text = text.replace(matchedStartTimeText.trim(), "");
+        Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
+        int startTime = startTimePair.first;
 
-        Match dueDateMatch = dueDateMatcher.match(text);
-        String matchedDueDateText = dueDateMatch != null ? dueDateMatch.text : "";
-        Date dueDate = dueDateMatcher.parse(text);
-        text = text.replace(matchedDueDateText.trim(), "");
+        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, dueDateMatcher);
+        Date dueDate = dueDatePair.first;
+        text = dueDatePair.second;
 
         String name = text.trim();
 
@@ -63,7 +65,7 @@ public class QuestParser {
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setDuration(duration);
-        q.setEndDate(dueDate);
+        q.setEndDateFromLocal(dueDate);
         q.setStartMinute(startTime);
         return q;
     }
@@ -72,10 +74,30 @@ public class QuestParser {
 
         String rawText = text;
 
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{durationMatcher, startTimeMatcher, dueDateMatcher, everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
-            Match match = matcher.match(text);
-            String matchedText = match != null ? match.text : "";
-            text = text.replace(matchedText.trim(), "");
+        Pair<Integer, String> durationPair = parseQuestPart(text, durationMatcher);
+        int duration = durationPair.first;
+
+        Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
+        int startMinute = startTimePair.first;
+
+        Pair<Integer, String> timesPerDayPair = parseQuestPart(startTimePair.second, timesPerDayMatcher);
+        int timesPerDay = timesPerDayPair.first;
+
+        Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
+        Recur everyDayRecur = everyDayPair.first;
+
+        Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayPair.second, dayOfWeekMatcher);
+        Recur dayOfWeekRecur = dayOfWeekPair.first;
+
+        Pair<Recur, String> dayOfMonthPair = parseQuestPart(dayOfWeekPair.second, dayOfMonthMatcher);
+        Recur dayOfMonthRecur = dayOfMonthPair.first;
+        text = dayOfMonthPair.second;
+
+        Date dueDate = null;
+        if (everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
+            Pair<Date, String> dueDatePair = parseQuestPart(text, dueDateMatcher);
+            dueDate = dueDatePair.first;
+            text = dueDatePair.second;
         }
 
         String name = text.trim();
@@ -84,7 +106,35 @@ public class QuestParser {
             return null;
         }
 
-        return new RepeatingQuest(rawText);
+        RepeatingQuest rq = new RepeatingQuest(rawText);
+        rq.setName(name);
+        rq.setDuration(duration);
+        rq.setStartMinute(startMinute);
+        Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
+        recurrence.setDtstart(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        if (everyDayRecur != null) {
+            recurrence.setRrule(everyDayRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+        } else if (dayOfWeekRecur != null) {
+            recurrence.setRrule(dayOfWeekRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+        } else if (dayOfMonthRecur != null) {
+            recurrence.setRrule(dayOfMonthRecur.toString());
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else {
+            recurrence.setRrule(null);
+            if (dueDate != null) {
+                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC)));
+                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
+            } else {
+                recurrence.setDtstart(null);
+                recurrence.setDtend(null);
+            }
+        }
+
+        rq.setRecurrence(recurrence);
+
+        return rq;
     }
 
     public boolean isRepeatingQuest(String text) {
@@ -94,5 +144,13 @@ public class QuestParser {
             }
         }
         return false;
+    }
+
+    private <T> Pair<T, String> parseQuestPart(String text, QuestTextMatcher<T> matcher) {
+        Match match = matcher.match(text);
+        String matchedText = match != null ? match.text : "";
+        T parsedText = matcher.parse(text);
+        text = text.replace(matchedText.trim(), "");
+        return new Pair<>(parsedText, text);
     }
 }

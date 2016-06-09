@@ -1,5 +1,8 @@
 package io.ipoli.android.quest.parsers;
 
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.ipoli.android.quest.suggestions.TextEntityType;
@@ -20,6 +23,20 @@ public class RecurrenceDayOfMonthMatcher extends RecurrenceEveryDayMatcher {
 
     public RecurrenceDayOfMonthMatcher() {
         super(new DayOfMonthSuggestionsProvider());
+    }
+
+    @Override
+    public Recur parse(String text) {
+        for (Pattern p : getPatterns()) {
+            Matcher matcher = p.matcher(text);
+            if (matcher.find()) {
+                Recur recur = new Recur(Recur.MONTHLY, null);
+                String matchedDayText = p.pattern().equals(ON_EVERY_MONTH_PATTERN) ? matcher.group(1) : matcher.group(2);
+                recur.getMonthDayList().add(Integer.valueOf(matchedDayText));
+                return recur;
+            }
+        }
+        return null;
     }
 
     @Override

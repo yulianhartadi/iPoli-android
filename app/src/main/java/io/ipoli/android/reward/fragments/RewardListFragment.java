@@ -165,7 +165,8 @@ public class RewardListFragment extends BaseFragment {
 
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
-        rewardPersistenceService.delete(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
+        e.reward.markDeleted();
+        rewardPersistenceService.save(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
             Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
             updateRewards();
         });

@@ -1,9 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-
-import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
@@ -17,10 +13,6 @@ import rx.Observable;
  * on 3/25/16.
  */
 public abstract class BaseRealmPersistenceService<T extends RealmObject & RemoteObject> {
-
-    protected static Date toUTCDateAtStartOfDay(LocalDate startDate) {
-        return startDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
-    }
 
     protected RealmQuery<T> where() {
         return getRealm().where(getRealmObjectClass());
@@ -56,18 +48,28 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
+    public void saveSync(List<T> objects) {
+        for (T obj : objects) {
+            obj.markUpdated();
+        }
+        try (Realm realm = getRealm()) {
+            realm.executeTransaction(transactionRealm ->
+                    transactionRealm.copyToRealmOrUpdate(objects));
+        }
+    }
+
     public Observable<T> saveRemoteObject(T object) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
+                        realm.close();
                         subscriber.onNext(object);
                         subscriber.onCompleted();
-                        realm.close();
                     }, error -> {
-                        subscriber.onError(error);
                         realm.close();
+                        subscriber.onError(error);
                     });
         });
     }
@@ -95,53 +97,23 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
-    public Observable<T> findByRemoteId(String id) {
-        return find(where -> where.equalTo("remoteId", id).findFirstAsync());
+    public T findByRemoteIdSync(String id) {
+        try (Realm realm = getRealm()) {
+            T obj = realm.where(getRealmObjectClass())
+                    .equalTo("remoteId", id)
+                    .findFirst();
+            if (obj == null) {
+                return null;
+            }
+            return realm.copyFromRealm(obj);
+        }
     }
 
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
-        return findAll(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
+        return findAllIncludingDeleted(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }
 
     protected abstract Class<T> getRealmObjectClass();
-
-    public Observable<String> delete(T obj) {
-        if (obj == null) {
-            return Observable.empty();
-        }
-        String id = obj.getId();
-        Realm realm = getRealm();
-
-        return findById(id).flatMap(realmObj -> {
-            if (realmObj == null) {
-                realm.close();
-                return Observable.empty();
-            }
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                            T objToDelete = backgroundRealm.where(getRealmObjectClass())
-                                    .equalTo("id", id)
-                                    .findFirst();
-                            objToDelete.deleteFromRealm();
-                        },
-                        () -> {
-                            subscriber.onNext(id);
-                            subscriber.onCompleted();
-                            onObjectDeleted(id);
-                            realm.close();
-                        }, error -> {
-                            subscriber.onError(error);
-                            realm.close();
-                        });
-            });
-        });
-
-
-    }
-
-    protected void onObjectDeleted(String id) {
-
-    }
 
     protected Realm getRealm() {
         return Realm.getDefaultInstance();
@@ -149,6 +121,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
         return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass()).execute();
+    }
+
+    protected Observable<List<T>> findAllIncludingDeleted(RealmFindAllQueryBuilder<T> queryBuilder) {
+        return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass(), true).execute();
     }
 
     protected Observable<T> find(RealmFindQueryBuilder<T> queryBuilder) {

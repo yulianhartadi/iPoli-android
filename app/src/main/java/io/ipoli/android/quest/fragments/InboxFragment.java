@@ -122,7 +122,8 @@ public class InboxFragment extends BaseFragment {
     @Subscribe
     public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
         eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
-        questPersistenceService.delete(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
+        e.quest.markDeleted();
+        questPersistenceService.save(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
             Snackbar
                     .make(rootLayout,
                             R.string.quest_removed,
@@ -135,7 +136,7 @@ public class InboxFragment extends BaseFragment {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        q.setEndDate(new Date());
+        q.setEndDateFromLocal(new Date());
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
             updateQuests();

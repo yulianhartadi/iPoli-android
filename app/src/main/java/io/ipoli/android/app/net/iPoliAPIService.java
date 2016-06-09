@@ -3,11 +3,10 @@ package io.ipoli.android.app.net;
 import java.util.List;
 
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -20,9 +19,6 @@ import rx.Observable;
  */
 public interface iPoliAPIService {
 
-    @GET("journeys/{date}")
-    Observable<List<Quest>> getJourney(@Path("date") String date, @Query("player_id") String playerId);
-
     @POST("players")
     Observable<Player> createPlayer(@Body RequestBody request);
 
@@ -30,26 +26,14 @@ public interface iPoliAPIService {
     Observable<Player> updatePlayer(@Body RequestBody data, @Path("player_id") String playerId);
 
     @POST("quests")
-    Observable<Quest> createQuest(@Body RequestBody data);
+    Observable<List<Quest>> syncQuests(@Body RequestBody data);
 
-    @POST("quests/{quest_id}")
-    Observable<Quest> updateQuest(@Body RequestBody data, @Path("quest_id") String questId);
-
-    @DELETE("quests/{quest_id}")
-    Observable<Void> deleteQuest(@Path("quest_id") String questId, @Query("player_id") String playerId);
-
-    @POST("snippets")
-    Observable<RepeatingQuest> createRepeatingQuestFromText(@Body RequestBody data);
+    @GET("quests")
+    Observable<List<Quest>> getQuests(@Query("player_id") String playerId);
 
     @POST("repeating-quests")
-    Observable<RepeatingQuest> createRepeatingQuest(@Body RequestBody data);
-
-    @POST("repeating-quests/{repeating_quest_id}")
-    Observable<RepeatingQuest> updateRepeatingQuest(@Body RequestBody data, @Path("repeating_quest_id") String repeatingQuestId);
+    Observable<List<RepeatingQuest>> syncRepeatingQuests(@Body RequestBody data);
 
     @GET("repeating-quests")
     Observable<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
-
-    @DELETE("repeating-quests/{repeating_quest_id}")
-    Observable<Void> deleteRepeatingQuest(@Path("repeating_quest_id") String repeatingQuestId, @Query("player_id") String playerId);
 }
