@@ -64,6 +64,8 @@ public class TutorialActivity extends AppIntro2 {
 
     private int previousSlide = -1;
 
+    private QuestParser questParser = new QuestParser(new PrettyTimeParser());
+
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
@@ -102,14 +104,12 @@ public class TutorialActivity extends AppIntro2 {
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
+
         List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
-        if(!selectedRepeatingQuests.isEmpty()) {
-            QuestParser questParser = new QuestParser(new PrettyTimeParser());
-            for (RepeatingQuest rq : selectedRepeatingQuests) {
-                RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
-                parsedRepeatingQuest.setContext(rq.getContext());
-                parsedRepeatingQuests.add(parsedRepeatingQuest);
-            }
+        for (RepeatingQuest rq : selectedRepeatingQuests) {
+            RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
+            parsedRepeatingQuest.setContext(rq.getContext());
+            parsedRepeatingQuests.add(parsedRepeatingQuest);
         }
 
         Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests),

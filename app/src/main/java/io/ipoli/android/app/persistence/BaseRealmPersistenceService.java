@@ -1,7 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import android.util.Log;
-
 import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
@@ -99,8 +97,16 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
-    public Observable<T> findByRemoteId(String id) {
-        return find(where -> where.equalTo("remoteId", id).findFirstAsync());
+    public T findByRemoteIdSync(String id) {
+        try (Realm realm = getRealm()) {
+            T obj = realm.where(getRealmObjectClass())
+                    .equalTo("remoteId", id)
+                    .findFirst();
+            if (obj == null) {
+                return null;
+            }
+            return realm.copyFromRealm(obj);
+        }
     }
 
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
