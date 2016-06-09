@@ -41,6 +41,7 @@ import rx.schedulers.Schedulers;
  * on 5/8/16.
  */
 public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver {
+    
     @Inject
     QuestPersistenceService questPersistenceService;
 
