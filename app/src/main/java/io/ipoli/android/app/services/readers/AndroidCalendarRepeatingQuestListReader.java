@@ -54,8 +54,12 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
             Recurrence recurrence = Recurrence.create();
             recurrence.setRrule(e.rRule);
             recurrence.setRdate(e.rDate);
-            recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
-            recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
+            if(e.dTStart > 0) {
+                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
+            }
+            if(e.dTend > 0) {
+                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
+            }
             repeatingQuest.setRecurrence(recurrence);
             repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
             res.add(repeatingQuest);
