@@ -49,9 +49,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .equalTo("allDay", false)
                 .isNotNull("recurrence.rrule")
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync());
     }
@@ -95,9 +95,13 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     @Override
     public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
         try (Realm realm = getRealm()) {
-            return realm.copyFromRealm(realm.where(getRealmObjectClass())
+            RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
                     .equalTo("sourceMapping." + source, sourceId)
-                    .findFirst());
+                    .findFirst();
+            if(repeatingQuest == null) {
+                return null;
+            }
+            return realm.copyFromRealm(repeatingQuest);
         }
     }
 
