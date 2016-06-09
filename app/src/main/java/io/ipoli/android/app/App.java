@@ -83,6 +83,8 @@ import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -434,35 +436,34 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
-
-        CalendarProvider provider = new CalendarProvider(this);
-        List<Calendar> calendars = provider.getCalendars().getList();
-        LocalStorage localStorage = LocalStorage.of(this);
-        Set<String> calendarIds = new HashSet<>();
-        List<Event> repeating = new ArrayList<>();
-        List<Event> nonRepeating = new ArrayList<>();
-        for (Calendar c : calendars) {
-            if (!c.visible) {
-                continue;
-            }
-            calendarIds.add(String.valueOf(c.id));
-            List<Event> events = provider.getEvents(c.id).getList();
-            for (Event event : events) {
-                if (isRepeatingAndroidCalendarEvent(event)) {
-                    repeating.add(event);
-                } else {
-                    nonRepeating.add(event);
+        Observable.defer(() -> {
+            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
+            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
+            CalendarProvider provider = new CalendarProvider(this);
+            List<Calendar> calendars = provider.getCalendars().getList();
+            LocalStorage localStorage = LocalStorage.of(this);
+            Set<String> calendarIds = new HashSet<>();
+            List<Event> repeating = new ArrayList<>();
+            List<Event> nonRepeating = new ArrayList<>();
+            for (Calendar c : calendars) {
+                if (!c.visible) {
+                    continue;
+                }
+                calendarIds.add(String.valueOf(c.id));
+                List<Event> events = provider.getEvents(c.id).getList();
+                for (Event event : events) {
+                    if (isRepeatingAndroidCalendarEvent(event)) {
+                        repeating.add(event);
+                    } else {
+                        nonRepeating.add(event);
+                    }
                 }
             }
-        }
-        localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-
-        Observable.concat(
-                questPersistenceService.saveRemoteObjects(questReader.read(nonRepeating)),
-                repeatingQuestPersistenceService.saveRemoteObjects(repeatingQuestReader.read(repeating))
-        ).subscribe();
+            localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
+            questPersistenceService.saveSync(questReader.read(nonRepeating));
+            repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
+            return Observable.just(null);
+        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe();
     }
 
 

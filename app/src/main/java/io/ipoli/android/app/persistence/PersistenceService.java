@@ -26,5 +26,5 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<T> findByRemoteId(String id);
 
-    void saveAllSync(List<T> objects);
+    void saveSync(List<T> objects);
 }

@@ -71,11 +71,11 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
             }
             return createOrUpdateEvents(dirtyEvents, context)
                     .flatMap(created -> deleteEvents(deletedEvents)
-                    .toList()
-                    .flatMap(deleted -> {
-                        eventBus.post(new SyncRequestEvent());
-                        return Observable.<Void>empty();
-                    }));
+                            .toList()
+                            .flatMap(deleted -> {
+                                eventBus.post(new SyncRequestEvent());
+                                return Observable.<Void>empty();
+                            }));
 
         }).compose(applyAndroidSchedulers());
     }
@@ -105,24 +105,26 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         dirtyEventsCursor.close();
     }
 
-    private Observable<? extends List<? extends RealmObject>> createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
-        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
-        List<Event> repeating = new ArrayList<>();
-        List<Event> nonRepeating = new ArrayList<>();
-        CalendarProvider calendarProvider = new CalendarProvider(context);
-        for (Event e : dirtyEvents) {
-            Event event = calendarProvider.getEvent(e.id);
-            if (isRepeatingAndroidCalendarEvent(event)) {
-                repeating.add(event);
-            } else {
-                nonRepeating.add(event);
+    private Observable<Object> createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
+
+        return Observable.defer(() -> {
+            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
+            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
+            List<Event> repeating = new ArrayList<>();
+            List<Event> nonRepeating = new ArrayList<>();
+            CalendarProvider calendarProvider = new CalendarProvider(context);
+            for (Event e : dirtyEvents) {
+                Event event = calendarProvider.getEvent(e.id);
+                if (isRepeatingAndroidCalendarEvent(event)) {
+                    repeating.add(event);
+                } else {
+                    nonRepeating.add(event);
+                }
             }
-        }
-        return Observable.concat(
-                questPersistenceService.saveRemoteObjects(questReader.read(nonRepeating)),
-                repeatingQuestPersistenceService.saveRemoteObjects(repeatingQuestReader.read(repeating))
-        );
+            questPersistenceService.saveSync(questReader.read(nonRepeating));
+            repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
+            return Observable.just(null);
+        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<? extends RealmObject> deleteEvents(List<Event> events) {

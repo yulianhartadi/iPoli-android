@@ -48,7 +48,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
-    public void saveAllSync(List<T> objects) {
+    public void saveSync(List<T> objects) {
         for (T obj : objects) {
             obj.markUpdated();
         }

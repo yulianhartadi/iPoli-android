@@ -380,7 +380,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private Quest savePlaceholderQuest(Quest quest) {
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         List<Quest> quests = repeatingQuestScheduler.schedule(quest.getRepeatingQuest(), DateUtils.toStartOfDayUTC(startOfWeek));
-        questPersistenceService.saveAllSync(quests);
+        questPersistenceService.saveSync(quests);
         for (Quest q : quests) {
             if (quest.getStartDate().equals(q.getStartDate())) {
                 return q;
