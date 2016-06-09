@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.text.TextUtils;
-
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -49,55 +47,23 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .equalTo("allDay", false)
                 .isNotNull("recurrence.rrule")
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync());
     }
 
     @Override
-    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
-
-        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return Observable.empty();
-        }
-
-        Realm realm = getRealm();
-
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmRepeatingQuest -> {
-            if (realmRepeatingQuest == null) {
-                realm.close();
-                return Observable.empty();
-            }
-
-            final String repeatingQuestId = realmRepeatingQuest.getId();
-
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                    RepeatingQuest repeatingQuestToDelete = backgroundRealm.where(getRealmObjectClass())
-                            .equalTo("sourceMapping." + source, sourceId)
-                            .findFirst();
-                    repeatingQuestToDelete.deleteFromRealm();
-                }, () -> {
-                    subscriber.onNext(repeatingQuestId);
-                    subscriber.onCompleted();
-                    onObjectDeleted(repeatingQuestId);
-                    realm.close();
-                }, error -> {
-                    subscriber.onError(error);
-                    realm.close();
-                });
-            });
-        });
-    }
-
-    @Override
     public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
         try (Realm realm = getRealm()) {
-            return realm.copyFromRealm(realm.where(getRealmObjectClass())
+            RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
                     .equalTo("sourceMapping." + source, sourceId)
-                    .findFirst());
+                    .findFirst();
+            if(repeatingQuest == null) {
+                return null;
+            }
+            return realm.copyFromRealm(repeatingQuest);
         }
     }
 

@@ -14,8 +14,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     Observable<List<RepeatingQuest>> findAllNonAllDayActiveRepeatingQuests();
 
-    Observable<String> deleteBySourceMappingId(String source, String sourceId);
-
     RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId);
 
     Observable<RepeatingQuest> findByExternalSourceMappingId(String source, String sourceId);
