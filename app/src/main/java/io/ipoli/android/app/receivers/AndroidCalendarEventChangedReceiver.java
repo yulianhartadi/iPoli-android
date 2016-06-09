@@ -124,7 +124,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
             questPersistenceService.saveSync(questReader.read(nonRepeating));
             repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
             return Observable.just(null);
-        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread());
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<? extends RealmObject> deleteEvents(List<Event> events) {
