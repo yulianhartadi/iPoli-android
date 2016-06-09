@@ -193,7 +193,6 @@ public class AppJobService extends JobService {
     }
 
     private Observable<Quest> syncQuests(Player player) {
-
         return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).flatMap(q -> {
             String localId = getLocalIdForRemoteObject(q);
             q.setId(null);
