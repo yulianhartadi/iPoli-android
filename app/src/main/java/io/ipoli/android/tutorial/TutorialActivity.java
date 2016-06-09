@@ -25,7 +25,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ForceSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -41,7 +40,7 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
 
     @Inject
@@ -102,7 +101,6 @@ public class TutorialActivity extends AppIntro2 {
         Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests))
                 .compose(RxLifecycle.bindActivity(lifecycleSubject)).subscribe(ignored -> {
         }, error -> finish(), () -> {
-            eventBus.post(new ForceSyncRequestEvent());
             eventBus.post(new TutorialDoneEvent());
             finish();
         });
@@ -178,7 +176,6 @@ public class TutorialActivity extends AppIntro2 {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.TUTORIAL));
-                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
             } else if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));

@@ -77,6 +77,7 @@ import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import me.everything.providers.android.calendar.Calendar;
@@ -428,8 +429,27 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onSyncWithCalendarRequest(SyncCalendarRequestEvent e) {
+    public void onTutorialDone(TutorialDoneEvent e) {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CALENDAR)
+                != PackageManager.PERMISSION_GRANTED) {
+            eventBus.post(new ForceSyncRequestEvent());
+            return;
+        }
 
+        Observable.defer(() -> {
+            syncCalendars();
+            return Observable.just(null);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
+        }, Throwable::printStackTrace, () -> {
+            eventBus.post(new ForceSyncRequestEvent());
+        });
+
+
+    }
+
+    @Subscribe
+    public void onSyncWithCalendarRequest(SyncCalendarRequestEvent e) {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -437,33 +457,37 @@ public class App extends MultiDexApplication {
         }
 
         Observable.defer(() -> {
-            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
-            CalendarProvider provider = new CalendarProvider(this);
-            List<Calendar> calendars = provider.getCalendars().getList();
-            LocalStorage localStorage = LocalStorage.of(this);
-            Set<String> calendarIds = new HashSet<>();
-            List<Event> repeating = new ArrayList<>();
-            List<Event> nonRepeating = new ArrayList<>();
-            for (Calendar c : calendars) {
-                if (!c.visible) {
-                    continue;
-                }
-                calendarIds.add(String.valueOf(c.id));
-                List<Event> events = provider.getEvents(c.id).getList();
-                for (Event event : events) {
-                    if (isRepeatingAndroidCalendarEvent(event)) {
-                        repeating.add(event);
-                    } else {
-                        nonRepeating.add(event);
-                    }
-                }
-            }
-            localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-            questPersistenceService.saveSync(questReader.read(nonRepeating));
-            repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
+            syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+    }
+
+    private void syncCalendars() {
+        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
+        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
+        CalendarProvider provider = new CalendarProvider(this);
+        List<Calendar> calendars = provider.getCalendars().getList();
+        LocalStorage localStorage = LocalStorage.of(this);
+        Set<String> calendarIds = new HashSet<>();
+        List<Event> repeating = new ArrayList<>();
+        List<Event> nonRepeating = new ArrayList<>();
+        for (Calendar c : calendars) {
+            if (!c.visible) {
+                continue;
+            }
+            calendarIds.add(String.valueOf(c.id));
+            List<Event> events = provider.getEvents(c.id).getList();
+            for (Event event : events) {
+                if (isRepeatingAndroidCalendarEvent(event)) {
+                    repeating.add(event);
+                } else {
+                    nonRepeating.add(event);
+                }
+            }
+        }
+        localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
+        questPersistenceService.saveSync(questReader.read(nonRepeating));
+        repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
     }
 
 
