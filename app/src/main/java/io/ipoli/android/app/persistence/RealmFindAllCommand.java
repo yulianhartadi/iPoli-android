@@ -5,6 +5,7 @@ import java.util.List;
 import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -30,7 +31,11 @@ public class RealmFindAllCommand<T extends RealmObject & RemoteObject> {
 
     public Observable<List<T>> execute() {
         Realm realm = Realm.getDefaultInstance();
-        return queryBuilder.buildQuery(realm.where(realmClass).equalTo("isDeleted", includeDeleted))
+        RealmQuery<T> query = realm.where(realmClass);
+        if (!includeDeleted) {
+            query = query.equalTo("isDeleted", false);
+        }
+        return queryBuilder.buildQuery(query)
                 .asObservable()
                 .filter(RealmResults::isLoaded)
                 .first()

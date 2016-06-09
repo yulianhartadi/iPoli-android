@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -123,16 +122,18 @@ public class RepeatingQuestListFragment extends BaseFragment {
     }
 
     private void updateQuests() {
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests().compose(bindToLifecycle()).subscribe(quests -> {
-            List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
-            for (RepeatingQuest rq : quests) {
-                RepeatingQuestViewModel vm = createViewModel(rq);
-                if (vm != null) {
-                    viewModels.add(vm);
-                }
-            }
-            repeatingQuestListAdapter.updateQuests(viewModels);
-        });
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
+                .compose(bindToLifecycle())
+                .subscribe(quests -> {
+                    List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
+                    for (RepeatingQuest rq : quests) {
+                        RepeatingQuestViewModel vm = createViewModel(rq);
+                        if (vm != null) {
+                            viewModels.add(vm);
+                        }
+                    }
+                    repeatingQuestListAdapter.updateQuests(viewModels);
+                });
     }
 
     @Nullable
@@ -151,17 +152,20 @@ public class RepeatingQuestListFragment extends BaseFragment {
             }
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
-
             Date todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now());
 
-            java.util.Date nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(todayStartOfDay));
+            // we subtract 1 ms because getNextDate excludes equal dates
+            DateTime seed = new DateTime(recurrence.getDtstart().getTime() - 1);
+
+            DateTime startDate = new DateTime(todayStartOfDay.getTime());
+            java.util.Date nextDate = recur.getNextDate(seed, startDate);
 
             if (DateUtils.isTodayUTC(nextDate)) {
                 int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
                 int timesPerDay = recurrence.getTimesPerDay();
                 if (completedForToday >= timesPerDay) {
-                    Date tomorrowStartOfDay = LocalDate.now().toDateTimeAtStartOfDay(DateTimeZone.UTC).plusDays(1).toDate();
-                    nextDate = recur.getNextDate(new DateTime(recurrence.getDtstart()), new DateTime(tomorrowStartOfDay));
+                    Date tomorrowStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1));
+                    nextDate = recur.getNextDate(seed, new DateTime(tomorrowStartOfDay.getTime()));
                     if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {
                         nextDate = null;
                     }
