@@ -39,10 +39,10 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.ForceServerSyncRequestEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
-import io.ipoli.android.app.events.SyncRequestEvent;
+import io.ipoli.android.app.events.ServerSyncRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -164,7 +164,7 @@ public class App extends MultiDexApplication {
         scheduleQuestsFor2WeeksAhead().subscribe(aVoid -> {
         }, Throwable::printStackTrace, () -> {
             if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
-                eventBus.post(new ForceSyncRequestEvent());
+                eventBus.post(new ForceServerSyncRequestEvent());
             }
             localStorage.increment(Constants.KEY_APP_RUN_COUNT);
         });
@@ -338,7 +338,7 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
             }, Throwable::printStackTrace, () -> {
-                eventBus.post(new SyncRequestEvent());
+                eventBus.post(new ServerSyncRequestEvent());
             });
         } else {
 
@@ -353,21 +353,21 @@ public class App extends MultiDexApplication {
                     Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
                     .subscribe(quests -> {
                     }, Throwable::printStackTrace, () -> {
-                        eventBus.post(new SyncRequestEvent());
+                        eventBus.post(new ServerSyncRequestEvent());
                     });
         }
     }
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        eventBus.post(new SyncRequestEvent());
+        eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
     }
 
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
         QuestNotificationScheduler.stopAll(e.id, this);
-        eventBus.post(new SyncRequestEvent());
+        eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
     }
 
@@ -385,12 +385,12 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
-        eventBus.post(new SyncRequestEvent());
+        eventBus.post(new ServerSyncRequestEvent());
         scheduleNextReminder();
     }
 
     @Subscribe
-    public void onSyncRequest(SyncRequestEvent e) {
+    public void onSyncRequest(ServerSyncRequestEvent e) {
         scheduleJob(defaultSyncJob()
                 .build());
     }
@@ -405,7 +405,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onForceSyncRequest(ForceSyncRequestEvent e) {
+    public void onForceSyncRequest(ForceServerSyncRequestEvent e) {
         scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
@@ -442,7 +442,7 @@ public class App extends MultiDexApplication {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
-            eventBus.post(new ForceSyncRequestEvent());
+            eventBus.post(new ForceServerSyncRequestEvent());
             return;
         }
 
@@ -450,7 +450,7 @@ public class App extends MultiDexApplication {
             syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () -> eventBus.post(new ForceSyncRequestEvent())
+        }, Throwable::printStackTrace, () -> eventBus.post(new ForceServerSyncRequestEvent())
         );
     }
 

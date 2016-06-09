@@ -19,14 +19,16 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.SyncRequestEvent;
+import io.ipoli.android.app.events.ServerSyncRequestEvent;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.realm.RealmObject;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
@@ -57,7 +59,6 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         }
 
         App.getAppComponent(context).inject(this);
-
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
@@ -69,14 +70,11 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
                 addDirtyEvents(provider, calendarId, dirtyEvents);
                 addDeletedEvents(calendarId, provider, deletedEvents);
             }
-            return createOrUpdateEvents(dirtyEvents, context)
-                    .flatMap(created -> deleteEvents(deletedEvents)
-                            .toList()
-                            .flatMap(deleted -> {
-                                eventBus.post(new SyncRequestEvent());
-                                return Observable.<Void>empty();
-                            }));
-
+            createOrUpdateEvents(dirtyEvents, context);
+            deleteEvents(deletedEvents);
+            eventBus.post(new SyncCompleteEvent());
+            eventBus.post(new ServerSyncRequestEvent());
+            return Observable.<Void>empty();
         }).compose(applyAndroidSchedulers());
     }
 
@@ -96,59 +94,50 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         Cursor dirtyEventsCursor = dirtyEventsData.getCursor();
 
         while (dirtyEventsCursor.moveToNext()) {
-            Event e = dirtyEventsData.fromCursor(dirtyEventsCursor, CalendarContract.Events._ID,
-                    CalendarContract.Events.RRULE,
-                    CalendarContract.Events.RDATE);
+            Event e = dirtyEventsData.fromCursor(dirtyEventsCursor, CalendarContract.Events._ID);
             dirtyEvents.add(e);
         }
 
         dirtyEventsCursor.close();
     }
 
-    private Observable<Object> createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
+    private void createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
 
-        return Observable.defer(() -> {
-            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
-            List<Event> repeating = new ArrayList<>();
-            List<Event> nonRepeating = new ArrayList<>();
-            CalendarProvider calendarProvider = new CalendarProvider(context);
-            for (Event e : dirtyEvents) {
-                Event event = calendarProvider.getEvent(e.id);
-                if (isRepeatingAndroidCalendarEvent(event)) {
-                    repeating.add(event);
-                } else {
-                    nonRepeating.add(event);
-                }
+        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
+        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
+        List<Event> repeating = new ArrayList<>();
+        List<Event> nonRepeating = new ArrayList<>();
+        CalendarProvider calendarProvider = new CalendarProvider(context);
+        for (Event e : dirtyEvents) {
+            Event event = calendarProvider.getEvent(e.id);
+            if (isRepeatingAndroidCalendarEvent(event)) {
+                repeating.add(event);
+            } else {
+                nonRepeating.add(event);
             }
-            questPersistenceService.saveSync(questReader.read(nonRepeating));
-            repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
-            return Observable.just(null);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        }
+        questPersistenceService.saveSync(questReader.read(nonRepeating));
+        repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
     }
 
-    private Observable<? extends RealmObject> deleteEvents(List<Event> events) {
-        return Observable.from(events).flatMap(e -> {
+    private void deleteEvents(List<Event> events) {
+        for (Event e : events) {
             if (isRepeatingAndroidCalendarEvent(e)) {
-                return repeatingQuestPersistenceService.findByExternalSourceMappingId("googleCalendar", String.valueOf(e.id))
-                        .flatMap(repeatingQuest -> {
-                            if (repeatingQuest == null) {
-                                return Observable.just(null);
-                            }
-                            repeatingQuest.markDeleted();
-                            return repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest);
-                        });
+                RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+                if (repeatingQuest == null) {
+                    continue;
+                }
+                repeatingQuest.markDeleted();
+                repeatingQuestPersistenceService.saveSync(repeatingQuest);
             } else {
-                return questPersistenceService.findByExternalSourceMappingId("googleCalendar", String.valueOf(e.id))
-                        .flatMap(quest -> {
-                            if (quest == null) {
-                                return Observable.just(null);
-                            }
-                            quest.markDeleted();
-                            return questPersistenceService.saveRemoteObject(quest);
-                        });
+                Quest quest = questPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+                if (quest == null) {
+                    continue;
+                }
+                quest.markDeleted();
+                questPersistenceService.saveSync(quest);
             }
-        });
+        }
     }
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
