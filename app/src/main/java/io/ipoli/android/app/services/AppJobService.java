@@ -241,17 +241,6 @@ public class AppJobService extends JobService {
                         return repeatingQuestPersistenceService.saveRemoteObjects(serverQuests);
                     });
                 });
-
-
-//                .concatMapIterable(repeatingQuest -> repeatingQuest)
-//                .flatMap(repeatingQuest -> {
-//                    String localId = getLocalIdForRemoteObject(repeatingQuest);
-//                    repeatingQuest.setId(null);
-//                    RequestBody requestBody = createRequestBody().param("data", repeatingQuest).param("player_id", player.getRemoteId()).build();
-//                    Observable<RepeatingQuest> apiCall = isLocalOnly(repeatingQuest) ? apiService.createRepeatingQuest(requestBody) : apiService.updateRepeatingQuest(requestBody, repeatingQuest.getRemoteId());
-//                    return apiCall.compose(applyAPISchedulers())
-//                            .flatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId)));
-//                }).toList();
     }
 
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
