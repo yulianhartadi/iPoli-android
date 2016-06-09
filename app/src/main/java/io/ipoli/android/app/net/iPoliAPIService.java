@@ -28,6 +28,9 @@ public interface iPoliAPIService {
     @POST("quests")
     Observable<List<Quest>> syncQuests(@Body RequestBody data);
 
+    @GET("quests")
+    Observable<List<Quest>> getQuests(@Query("player_id") String playerId);
+
     @POST("repeating-quests")
     Observable<List<RepeatingQuest>> syncRepeatingQuests(@Body RequestBody data);
 

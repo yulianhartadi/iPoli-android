@@ -28,6 +28,7 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
@@ -84,7 +85,9 @@ public class AppJobService extends JobService {
                             Observable.defer(this::scheduleQuestsFor2WeeksAhead),
                             Observable.defer(() -> syncRepeatingQuests(p)),
                             Observable.defer(() -> syncQuests(p)),
-                            Observable.defer(() -> getRepeatingQuests(p)));
+                            Observable.defer(() -> getRepeatingQuests(p)),
+                            Observable.defer(() -> getQuests(p))
+                    );
                 }
         ).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
             Log.e("RxJava", "Error", throwable);
@@ -194,6 +197,7 @@ public class AppJobService extends JobService {
 
     private Observable<List<Quest>> syncQuests(Player player) {
         return questPersistenceService.findAllWhoNeedSyncWithRemote()
+                .filter(quests -> !quests.isEmpty())
                 .flatMap(quests -> {
                     List<String> localIds = new ArrayList<>();
                     for (Quest q : quests) {
@@ -226,7 +230,7 @@ public class AppJobService extends JobService {
 
     private Observable<List<RepeatingQuest>> syncRepeatingQuests(Player player) {
         return repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote()
-                .flatMap(quests -> {
+                .filter(repeatingQuests -> !repeatingQuests.isEmpty()).flatMap(quests -> {
                     List<String> localIds = new ArrayList<>();
                     for (RepeatingQuest q : quests) {
                         localIds.add(getLocalIdForRemoteObject(q));
@@ -264,7 +268,22 @@ public class AppJobService extends JobService {
                 ).toList();
     }
 
-    private void updateQuest(Quest serverQuest, String localId) {
+    private Observable<List<Quest>> getQuests(Player player) {
+        return apiService.getQuests(player.getRemoteId())
+                .compose(applyAPISchedulers())
+                .flatMapIterable(quests -> quests)
+                .flatMap(sq -> {
+                            Quest quest = questPersistenceService.findByRemoteIdSync(sq.getId());
+                            if (quest != null && sq.getUpdatedAt().getTime() <= quest.getUpdatedAt().getTime()) {
+                                return Observable.just(quest);
+                            }
+                            String localId = getLocalIdForRemoteObject(quest);
+                            return questPersistenceService.saveRemoteObject(updateQuest(sq, localId));
+                        }
+                ).toList();
+    }
+
+    private Quest updateQuest(Quest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
@@ -280,13 +299,14 @@ public class AppJobService extends JobService {
                 serverQuest.setRepeatingQuest(repeatingQuest);
             }
         }
+        return serverQuest;
     }
 
     private String getLocalIdForRemoteObject(RemoteObject<?> remoteObject) {
         if (remoteObject != null) {
             return remoteObject.getId();
         } else {
-            return UUID.randomUUID().toString();
+            return IDGenerator.generate();
         }
     }
 
