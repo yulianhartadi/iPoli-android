@@ -11,7 +11,6 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
 import io.realm.Sort;
@@ -49,11 +48,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     protected void onObjectSaved(Quest object) {
         eventBus.post(new QuestSavedEvent(object));
-    }
-
-    @Override
-    protected void onObjectDeleted(String id) {
-        eventBus.post(new QuestDeletedEvent(id));
     }
 
     @Override

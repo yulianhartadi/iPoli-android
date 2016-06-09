@@ -97,7 +97,7 @@ public class AppJobService extends JobService {
         return true;
     }
 
-    private Observable<List<Quest>> scheduleQuestsFor2WeeksAhead() {
+    private Observable<List<List<Quest>>> scheduleQuestsFor2WeeksAhead() {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
@@ -108,7 +108,7 @@ public class AppJobService extends JobService {
                 .flatMap(rq -> Observable.concat(
                         saveQuestsInRange(rq, startOfWeek, endOfWeek),
                         saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)
-                ));
+                )).toList();
     }
 
     private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
@@ -192,19 +192,21 @@ public class AppJobService extends JobService {
         }).compose(applyAPISchedulers());
     }
 
-    private Observable<Quest> syncQuests(Player player) {
-        return questPersistenceService.findAllWhoNeedSyncWithRemote().concatMapIterable(quests -> quests).flatMap(q -> {
-            String localId = getLocalIdForRemoteObject(q);
-            q.setId(null);
-            if (q.getRepeatingQuest() != null) {
-                q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
-            }
-            RequestBody requestBody = createRequestBody().param("data", q).param("player_id", player.getRemoteId()).build();
-            Observable<Quest> apiCall = isLocalOnly(q) ? apiService.createQuest(requestBody) : apiService.updateQuest(requestBody, q.getRemoteId());
-            return apiCall.compose(applyAPISchedulers())
-                    .flatMap(sq -> updateQuest(sq, localId))
-                    .flatMap(updatedQuest -> questPersistenceService.saveRemoteObject(updatedQuest));
-        });
+    private Observable<List<Quest>> syncQuests(Player player) {
+        return questPersistenceService.findAllWhoNeedSyncWithRemote()
+                .concatMapIterable(quests -> quests)
+                .flatMap(q -> {
+                    String localId = getLocalIdForRemoteObject(q);
+                    q.setId(null);
+                    if (q.getRepeatingQuest() != null) {
+                        q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
+                    }
+                    RequestBody requestBody = createRequestBody().param("data", q).param("player_id", player.getRemoteId()).build();
+                    Observable<Quest> apiCall = isLocalOnly(q) ? apiService.createQuest(requestBody) : apiService.updateQuest(requestBody, q.getRemoteId());
+                    return apiCall.compose(applyAPISchedulers())
+                            .flatMap(sq -> updateQuest(sq, localId))
+                            .flatMap(updatedQuest -> questPersistenceService.saveRemoteObject(updatedQuest));
+                }).toList();
     }
 
     @NonNull
@@ -217,7 +219,7 @@ public class AppJobService extends JobService {
         return new JsonRequestBodyBuilder(getApplicationContext()).param(param, value).build();
     }
 
-    private Observable<RepeatingQuest> syncRepeatingQuests(Player player) {
+    private Observable<List<RepeatingQuest>> syncRepeatingQuests(Player player) {
         return repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote()
                 .concatMapIterable(repeatingQuest -> repeatingQuest)
                 .flatMap(repeatingQuest -> {
@@ -227,7 +229,7 @@ public class AppJobService extends JobService {
                     Observable<RepeatingQuest> apiCall = isLocalOnly(repeatingQuest) ? apiService.createRepeatingQuest(requestBody) : apiService.updateRepeatingQuest(requestBody, repeatingQuest.getRemoteId());
                     return apiCall.compose(applyAPISchedulers())
                             .flatMap(sq -> repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId)));
-                });
+                }).toList();
     }
 
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
@@ -237,17 +239,17 @@ public class AppJobService extends JobService {
         return serverQuest;
     }
 
-    private Observable<RepeatingQuest> getRepeatingQuests(Player player) {
+    private Observable<List<RepeatingQuest>> getRepeatingQuests(Player player) {
         return apiService.getRepeatingQuests(player.getRemoteId())
                 .compose(applyAPISchedulers()).flatMapIterable(repeatingQuests -> repeatingQuests)
                 .flatMap(sq -> repeatingQuestPersistenceService.findByRemoteId(sq.getId())
                         .flatMap(repeatingQuest -> {
-                    if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
-                        return Observable.just(repeatingQuest);
-                    }
-                    String localId = getLocalIdForRemoteObject(repeatingQuest);
-                    return repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId));
-                }));
+                            if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
+                                return Observable.just(repeatingQuest);
+                            }
+                            String localId = getLocalIdForRemoteObject(repeatingQuest);
+                            return repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId));
+                        })).toList();
     }
 
     private Observable<Quest> updateQuest(Quest serverQuest, String localId) {

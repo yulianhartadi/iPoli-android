@@ -1,5 +1,7 @@
 package io.ipoli.android.app.persistence;
 
+import android.util.Log;
+
 import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
@@ -64,12 +66,12 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
+                        realm.close();
                         subscriber.onNext(object);
                         subscriber.onCompleted();
-                        realm.close();
                     }, error -> {
-                        subscriber.onError(error);
                         realm.close();
+                        subscriber.onError(error);
                     });
         });
     }
@@ -106,44 +108,6 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     protected abstract Class<T> getRealmObjectClass();
-
-    public Observable<String> delete(T obj) {
-        if (obj == null) {
-            return Observable.empty();
-        }
-        String id = obj.getId();
-        Realm realm = getRealm();
-
-        return findById(id).flatMap(realmObj -> {
-            if (realmObj == null) {
-                realm.close();
-                return Observable.empty();
-            }
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                            T objToDelete = backgroundRealm.where(getRealmObjectClass())
-                                    .equalTo("id", id)
-                                    .findFirst();
-                            objToDelete.deleteFromRealm();
-                        },
-                        () -> {
-                            subscriber.onNext(id);
-                            subscriber.onCompleted();
-                            onObjectDeleted(id);
-                            realm.close();
-                        }, error -> {
-                            subscriber.onError(error);
-                            realm.close();
-                        });
-            });
-        });
-
-
-    }
-
-    protected void onObjectDeleted(String id) {
-
-    }
 
     protected Realm getRealm() {
         return Realm.getDefaultInstance();
