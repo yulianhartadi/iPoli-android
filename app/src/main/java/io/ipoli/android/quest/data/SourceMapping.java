@@ -3,6 +3,7 @@ package io.ipoli.android.quest.data;
 import java.util.Date;
 
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IDGenerator;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -30,6 +31,7 @@ public class SourceMapping extends RealmObject{
 
     public static SourceMapping fromGoogleCalendar(long eventId) {
         SourceMapping sourceMapping = new SourceMapping();
+        sourceMapping.id = IDGenerator.generate();
         sourceMapping.createdAt = DateUtils.nowUTC();
         sourceMapping.updatedAt = DateUtils.nowUTC();
         sourceMapping.androidCalendar = String.valueOf(eventId);

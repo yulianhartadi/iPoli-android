@@ -441,11 +441,8 @@ public class App extends MultiDexApplication {
             syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new ForceSyncRequestEvent());
-        });
-
-
+        }, Throwable::printStackTrace, () ->
+                eventBus.post(new ForceSyncRequestEvent()));
     }
 
     @Subscribe
@@ -486,8 +483,10 @@ public class App extends MultiDexApplication {
             }
         }
         localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-        questPersistenceService.saveSync(questReader.read(nonRepeating));
-        repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
+        List<Quest> quests = questReader.read(nonRepeating);
+        questPersistenceService.saveSync(quests);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
+        repeatingQuestPersistenceService.saveSync(repeatingQuests);
     }
 
 

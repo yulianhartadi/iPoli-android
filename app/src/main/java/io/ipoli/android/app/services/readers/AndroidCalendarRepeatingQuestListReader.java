@@ -34,7 +34,7 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
     public List<RepeatingQuest> read(List<Event> events) {
         List<RepeatingQuest> res = new ArrayList<>();
         for (Event e : events) {
-            if (e.allDay) {
+            if (e.allDay || e.deleted) {
                 continue;
             }
             RepeatingQuest repeatingQuest = new RepeatingQuest("");
@@ -58,6 +58,7 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
             recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
             repeatingQuest.setRecurrence(recurrence);
             repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
+            res.add(repeatingQuest);
         }
         return res;
     }

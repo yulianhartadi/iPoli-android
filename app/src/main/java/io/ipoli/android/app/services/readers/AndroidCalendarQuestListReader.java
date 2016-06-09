@@ -38,7 +38,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
     public List<Quest> read(List<Event> events) {
         List<Quest> res = new ArrayList<>();
         for (Event e : events) {
-            if (e.allDay) {
+            if (e.allDay || e.deleted) {
                 continue;
             }
             Quest q = new Quest(e.title);
@@ -48,7 +48,6 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
                 q.setCreatedAt(foundQuest.getCreatedAt());
                 q.setRemoteId(foundQuest.getRemoteId());
             }
-            res.add(q);
             DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
             DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
             q.setAllDay(e.allDay);
@@ -63,6 +62,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
                 q.setCompletedAt(new Date(e.dTend));
                 q.setCompletedAtMinute(Time.of(q.getCompletedAt()).toMinutesAfterMidnight());
             }
+            res.add(q);
             if (TextUtils.isEmpty(e.originalId)) {
                 continue;
             }
