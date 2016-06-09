@@ -244,7 +244,10 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor2WeeksAhead().subscribe();
+        scheduleQuestsFor2WeeksAhead().subscribe(quests -> {
+        }, Throwable::printStackTrace, () -> {
+            eventBus.post(new SyncCompleteEvent());
+        });
     }
 
     @Subscribe
@@ -462,7 +465,10 @@ public class App extends MultiDexApplication {
         Observable.defer(() -> {
             syncCalendars();
             return Observable.just(null);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(o -> {
+        }, Throwable::printStackTrace, () -> {
+            eventBus.post(new SyncCompleteEvent());
+        });
     }
 
     private void syncCalendars() {
@@ -502,6 +508,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
+        scheduleNextReminder();
         updateWidgets();
     }
 }
