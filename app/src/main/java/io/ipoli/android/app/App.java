@@ -499,7 +499,6 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.saveSync(repeatingQuests);
     }
 
-
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
