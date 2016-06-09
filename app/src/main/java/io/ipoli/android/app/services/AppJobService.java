@@ -231,7 +231,6 @@ public class AppJobService extends JobService {
                 });
     }
 
-
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
