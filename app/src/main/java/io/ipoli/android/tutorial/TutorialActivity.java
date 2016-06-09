@@ -1,7 +1,6 @@
 package io.ipoli.android.tutorial;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -66,7 +65,6 @@ public class TutorialActivity extends AppIntro2 {
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
     private int previousSlide = -1;
-    private ProgressDialog progress;
 
     private QuestParser questParser = new QuestParser(new PrettyTimeParser());
 
