@@ -40,6 +40,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ForceSyncRequestEvent;
+import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.SyncRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -239,6 +240,11 @@ public class App extends MultiDexApplication {
                     .build();
         }
         return appComponent;
+    }
+
+    @Subscribe
+    public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
+        scheduleQuestsFor2WeeksAhead().subscribe();
     }
 
     @Subscribe

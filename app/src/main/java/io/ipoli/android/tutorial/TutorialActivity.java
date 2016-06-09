@@ -15,6 +15,8 @@ import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.RxLifecycle;
 
+import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +27,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
+import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -98,9 +102,21 @@ public class TutorialActivity extends AppIntro2 {
     public void onDonePressed() {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
-        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests), repeatingQuestPersistenceService.saveRemoteObjects(selectedRepeatingQuests))
+        List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
+        if(!selectedRepeatingQuests.isEmpty()) {
+            QuestParser questParser = new QuestParser(new PrettyTimeParser());
+            for (RepeatingQuest rq : selectedRepeatingQuests) {
+                RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
+                parsedRepeatingQuest.setContext(rq.getContext());
+                parsedRepeatingQuests.add(parsedRepeatingQuest);
+            }
+        }
+
+        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests),
+                repeatingQuestPersistenceService.saveRemoteObjects(parsedRepeatingQuests))
                 .compose(RxLifecycle.bindActivity(lifecycleSubject)).subscribe(ignored -> {
         }, error -> finish(), () -> {
+            eventBus.post(new ScheduleRepeatingQuestsEvent());
             eventBus.post(new TutorialDoneEvent());
             finish();
         });
