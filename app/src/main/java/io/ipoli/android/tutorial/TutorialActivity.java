@@ -1,6 +1,7 @@
 package io.ipoli.android.tutorial;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
@@ -63,6 +65,7 @@ public class TutorialActivity extends AppIntro2 {
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
     private int previousSlide = -1;
+    private ProgressDialog progress;
 
     private QuestParser questParser = new QuestParser(new PrettyTimeParser());
 
@@ -118,6 +121,7 @@ public class TutorialActivity extends AppIntro2 {
         }, error -> finish(), () -> {
             eventBus.post(new ScheduleRepeatingQuestsEvent());
             eventBus.post(new TutorialDoneEvent());
+            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
             finish();
         });
     }

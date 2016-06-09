@@ -450,8 +450,8 @@ public class App extends MultiDexApplication {
             syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new ForceSyncRequestEvent()));
+        }, Throwable::printStackTrace, () -> eventBus.post(new ForceSyncRequestEvent())
+        );
     }
 
     @Subscribe
@@ -466,9 +466,7 @@ public class App extends MultiDexApplication {
             syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(o -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new SyncCompleteEvent());
-        });
+        }, Throwable::printStackTrace, () -> eventBus.post(new SyncCompleteEvent()));
     }
 
     private void syncCalendars() {
