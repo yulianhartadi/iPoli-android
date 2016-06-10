@@ -121,10 +121,8 @@ public class EditQuestActivity extends BaseActivity {
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questPersistenceService.findById(questId).subscribe(q -> {
-            quest = q;
-            initUI();
-        });
+        this.quest = questPersistenceService.findById(questId);
+        initUI();
 
         eventBus.post(new ScreenShownEvent(EventSource.EDIT_QUEST));
     }

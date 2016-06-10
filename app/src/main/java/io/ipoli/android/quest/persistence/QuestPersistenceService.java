@@ -14,7 +14,6 @@ import rx.Observable;
  * on 1/7/16.
  */
 public interface QuestPersistenceService extends PersistenceService<Quest> {
-    Observable<Quest> findById(String id);
 
     void findAllUnplanned(OnDatabaseChangedListener<Quest> listener);
 

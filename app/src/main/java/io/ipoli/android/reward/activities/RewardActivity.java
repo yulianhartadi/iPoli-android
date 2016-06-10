@@ -48,7 +48,6 @@ public class RewardActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-//    @Inject
     RewardPersistenceService rewardPersistenceService;
 
     @BindView(R.id.toolbar)
@@ -81,14 +80,18 @@ public class RewardActivity extends BaseActivity {
             eventBus.post(new ScreenShownEvent(EventSource.EDIT_REWARD));
             setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
-            rewardPersistenceService.findById(rewardId).compose(bindToLifecycle()).subscribe(r -> {
-                reward = r;
-                initUI();
-            });
+            reward = rewardPersistenceService.findById(rewardId);
+            initUI();
         } else {
             eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
             initUI();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        rewardPersistenceService.close();
+        super.onDestroy();
     }
 
     private void initUI() {

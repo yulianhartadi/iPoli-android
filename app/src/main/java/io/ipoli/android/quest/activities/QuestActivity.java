@@ -133,23 +133,21 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        questPersistenceService.findById(questId).subscribe(q -> {
-            Observable<Quest> questObservable = null;
-            if (afterOnCreate) {
-                afterOnCreate = false;
-                String action = getIntent().getAction();
-                if (ACTION_QUEST_CANCELED.equals(action)) {
-                    questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
-                } else if (ACTION_START_QUEST.equals(action)) {
-                    questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
-                }
+        Quest q = questPersistenceService.findById(questId);
+        Observable<Quest> questObservable = null;
+        if (afterOnCreate) {
+            afterOnCreate = false;
+            String action = getIntent().getAction();
+            if (ACTION_QUEST_CANCELED.equals(action)) {
+                questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
+            } else if (ACTION_START_QUEST.equals(action)) {
+                questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
             }
-            if (questObservable == null) {
-                questObservable = Observable.just(q);
-            }
-            onQuestFound(questObservable);
-        });
-
+        }
+        if (questObservable == null) {
+            questObservable = Observable.just(q);
+        }
+        onQuestFound(questObservable);
     }
 
     private void onQuestFound(Observable<Quest> questObservable) {

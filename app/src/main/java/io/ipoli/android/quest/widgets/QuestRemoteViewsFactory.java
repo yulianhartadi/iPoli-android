@@ -32,6 +32,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     private final Context context;
     private final List<Quest> quests = new ArrayList<>();
+    private final Realm realm;
 
     @Inject
     Bus eventBus;
@@ -40,7 +41,8 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, Realm.getDefaultInstance());
+        realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         this.context = context;
     }
 
@@ -56,6 +58,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDestroy() {
+        if (!realm.isClosed()) {
+            realm.close();
+        }
         quests.clear();
     }
 
@@ -71,7 +76,6 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
         rv.setInt(R.id.widget_agenda_quest_info_container, "setBackgroundColor",
                 ContextCompat.getColor(context, Quest.getContext(q).resLightColor));
-
 
         Bundle tapQuestBundle = new Bundle();
         tapQuestBundle.putInt(AgendaWidgetProvider.QUEST_ACTION_EXTRA_KEY, AgendaWidgetProvider.QUEST_ACTION_VIEW);

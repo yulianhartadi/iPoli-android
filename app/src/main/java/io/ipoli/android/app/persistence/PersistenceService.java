@@ -20,9 +20,9 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<List<T>> saveRemoteObjects(List<T> objects);
 
-    Observable<List<T>> findAllWhoNeedSyncWithRemote();
+    List<T> findAllWhoNeedSyncWithRemote();
 
-    Observable<T> findById(String id);
+    T findById(String id);
 
     T findByRemoteIdSync(String id);
 
