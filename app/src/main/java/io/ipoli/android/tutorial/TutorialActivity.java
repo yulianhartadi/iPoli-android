@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.RxLifecycle;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -44,6 +45,7 @@ import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 import io.realm.Realm;
+import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
@@ -70,9 +72,7 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
-        Realm realm = Realm.getDefaultInstance();
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+
 
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -111,19 +111,31 @@ public class TutorialActivity extends AppIntro2 {
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
 
-        List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
-        for (RepeatingQuest rq : selectedRepeatingQuests) {
-            RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
-            parsedRepeatingQuest.setContext(rq.getContext());
-            parsedRepeatingQuests.add(parsedRepeatingQuest);
-        }
+        Observable.defer(() -> {
+            Realm realm = Realm.getDefaultInstance();
+            questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+            repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
 
-        questPersistenceService.saveSync(selectedQuests);
-        repeatingQuestPersistenceService.saveSync(parsedRepeatingQuests);
-        eventBus.post(new ScheduleRepeatingQuestsEvent());
-        eventBus.post(new TutorialDoneEvent());
-        Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-        finish();
+            List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
+            for (RepeatingQuest rq : selectedRepeatingQuests) {
+                RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
+                parsedRepeatingQuest.setContext(rq.getContext());
+                parsedRepeatingQuests.add(parsedRepeatingQuest);
+            }
+
+            questPersistenceService.saveSync(selectedQuests);
+            repeatingQuestPersistenceService.saveSync(parsedRepeatingQuests);
+            realm.close();
+            return Observable.empty();
+        }).compose(RxLifecycle.bindActivity(lifecycleSubject))
+                .subscribe(ignored -> {
+                        }, error -> finish(),
+                        () -> {
+                            eventBus.post(new ScheduleRepeatingQuestsEvent());
+                            eventBus.post(new TutorialDoneEvent());
+                            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
+                            finish();
+                        });
     }
 
     @Override

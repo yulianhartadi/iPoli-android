@@ -96,7 +96,6 @@ public class AppJobService extends JobService {
                 }
             }
             return Observable.empty();
-
         }).compose(applyAPISchedulers())
                 .subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
                     Log.e("RxJava", "Error", throwable);
