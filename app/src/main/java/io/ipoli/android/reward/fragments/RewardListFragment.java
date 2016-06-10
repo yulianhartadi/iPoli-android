@@ -71,6 +71,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    private List<Reward> rewards;
 
     @Nullable
     @Override
@@ -88,6 +89,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
         rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
         RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
+        rewards = new ArrayList<>();
         rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
         rewardPersistenceService.findAll(this);
@@ -138,6 +140,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
         }
         player.removeCoins(r.getPrice());
         playerPersistenceService.saveSync(player);
+        updateRewards(rewards);
         Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -162,6 +165,11 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     @Override
     public void onDatabaseChanged(List<Reward> rewards) {
+        this.rewards = rewards;
+        updateRewards(rewards);
+    }
+
+    private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
         Player player = playerPersistenceService.find();
         for (Reward r : rewards) {
