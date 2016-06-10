@@ -83,10 +83,8 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     @Override
     public void saveSync(T obj) {
         obj.markUpdated();
-        try (Realm realm = getRealm()) {
-            realm.executeTransaction(transactionRealm ->
-                    transactionRealm.copyToRealmOrUpdate(obj));
-        }
+        realm.executeTransaction(transactionRealm ->
+                transactionRealm.copyToRealmOrUpdate(obj));
     }
 
     @Override
@@ -94,10 +92,8 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         for (T obj : objects) {
             obj.markUpdated();
         }
-        try (Realm realm = getRealm()) {
-            realm.executeTransaction(transactionRealm ->
-                    transactionRealm.copyToRealmOrUpdate(objects));
-        }
+        realm.executeTransaction(transactionRealm ->
+                transactionRealm.copyToRealmOrUpdate(objects));
     }
 
     @Override
@@ -161,16 +157,8 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return realm;
     }
 
-    protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
-        return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass()).execute();
-    }
-
-    protected Observable<List<T>> findAllIncludingDeleted(RealmFindAllQueryBuilder<T> queryBuilder) {
-        return new RealmFindAllCommand<T>(queryBuilder, getRealmObjectClass(), true).execute();
-    }
-
-    protected Observable<T> find(RealmFindQueryBuilder<T> queryBuilder) {
-        return new RealmFindCommand<T>(queryBuilder, getRealmObjectClass()).execute();
+    protected List<T> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
+        return new RealmFindAllCommand<T>(queryBuilder, where(), getRealm()).execute();
     }
 
     @Override

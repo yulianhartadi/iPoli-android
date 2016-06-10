@@ -131,7 +131,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
-        Player player = playerPersistenceService.findSync();
+        Player player = playerPersistenceService.find();
         if (player.getCoins() - r.getPrice() < 0) {
             showTooExpensiveMessage();
             return;
@@ -163,7 +163,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Override
     public void onDatabaseChanged(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
-        Player player = playerPersistenceService.findSync();
+        Player player = playerPersistenceService.find();
         for (Reward r : rewards) {
             rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
         }

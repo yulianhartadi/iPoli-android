@@ -6,8 +6,6 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -15,34 +13,17 @@ import rx.Observable;
  */
 public class RealmFindAllCommand<T extends RealmObject & RemoteObject> {
 
-    private final Class<T> realmClass;
     private RealmFindAllQueryBuilder<T> queryBuilder;
-    private final boolean includeDeleted;
+    private final RealmQuery<T> query;
+    private final Realm realm;
 
-    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, Class<T> realmClass) {
-        this(queryBuilder, realmClass, false);
-    }
-
-    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, Class<T> realmClass, boolean includeDeleted) {
-        this.realmClass = realmClass;
+    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, RealmQuery<T> query, Realm realm) {
         this.queryBuilder = queryBuilder;
-        this.includeDeleted = includeDeleted;
+        this.query = query;
+        this.realm = realm;
     }
 
-    public Observable<List<T>> execute() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuery<T> query = realm.where(realmClass);
-        if (!includeDeleted) {
-            query = query.equalTo("isDeleted", false);
-        }
-        return queryBuilder.buildQuery(query)
-                .asObservable()
-                .filter(RealmResults::isLoaded)
-                .first()
-                .map(results -> {
-                    List<T> res = realm.copyFromRealm(results);
-                    realm.close();
-                    return res;
-                });
+    public List<T> execute() {
+        return realm.copyFromRealm(queryBuilder.buildQuery(query));
     }
 }

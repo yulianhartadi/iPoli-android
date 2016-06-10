@@ -11,7 +11,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -37,7 +36,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    public Observable<List<RepeatingQuest>> findAllNonAllDayActiveRepeatingQuests() {
+    public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
         return findAll(where -> where.isNotNull("name")
                 .equalTo("allDay", false)
                 .isNotNull("recurrence.rrule")

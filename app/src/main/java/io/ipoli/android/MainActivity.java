@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        Player player = playerPersistenceService.findSync();
+        Player player = playerPersistenceService.find();
         View header = navigationView.getHeaderView(0);
         TextView level = (TextView) header.findViewById(R.id.player_level);
         level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
@@ -467,7 +467,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                Player player = playerPersistenceService.findSync();
+                Player player = playerPersistenceService.find();
                 player.setAvatar(avatar);
                 playerPersistenceService.saveSync(player);
             }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -12,7 +11,7 @@ import rx.Observable;
  */
 public interface RepeatingQuestPersistenceService extends PersistenceService<RepeatingQuest> {
 
-    Observable<List<RepeatingQuest>> findAllNonAllDayActiveRepeatingQuests();
+    List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests();
 
     void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener);
 

@@ -10,9 +10,7 @@ import rx.Observable;
  * on 1/10/16.
  */
 public interface PlayerPersistenceService extends PersistenceService<Player> {
-    Observable<Player> find();
-
-    Player findSync();
+    Player find();
 
     Observable<Player> addAuthProvider(Player player, AuthProvider authProvider);
 }

@@ -41,8 +41,8 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ForceServerSyncRequestEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.ServerSyncRequestEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -198,12 +198,13 @@ public class App extends MultiDexApplication {
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
-                .flatMapIterable(repeatingQuests -> repeatingQuests)
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+        return Observable.from(repeatingQuests)
                 .flatMap(rq -> Observable.concat(
                         Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
                         Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
                 );
+
     }
 
     private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
@@ -216,17 +217,16 @@ public class App extends MultiDexApplication {
     }
 
     private void resetEndDateForIncompleteQuests() {
-        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate()).subscribe(quests -> {
-            for (Quest q : quests) {
-                if (q.isStarted()) {
-                    q.setEndDateFromLocal(new Date());
-                    q.setStartMinute(0);
-                } else {
-                    q.setEndDate(null);
-                }
-                questPersistenceService.save(q).subscribe();
+        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate());
+        for (Quest q : quests) {
+            if (q.isStarted()) {
+                q.setEndDateFromLocal(new Date());
+                q.setStartMinute(0);
+            } else {
+                q.setEndDate(null);
             }
-        });
+            questPersistenceService.save(q).subscribe();
+        }
     }
 
     private void registerServices() {
@@ -279,7 +279,7 @@ public class App extends MultiDexApplication {
             quest.setStartDate(null);
         }
         questPersistenceService.save(quest).subscribe(q -> {
-            Player player = playerPersistenceService.findSync();
+            Player player = playerPersistenceService.find();
             player.removeExperience(q.getExperience());
             if (shouldDecreaseLevel(player)) {
                 player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
@@ -312,7 +312,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest) {
-        Player player = playerPersistenceService.findSync();
+        Player player = playerPersistenceService.find();
         player.addExperience(quest.getExperience());
         if (shouldIncreaseLevel(player)) {
             player.setLevel(player.getLevel() + 1);
@@ -455,7 +455,7 @@ public class App extends MultiDexApplication {
             syncCalendars();
             return Observable.just(null);
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () -> eventBus.post(new ForceServerSyncRequestEvent())
+                }, Throwable::printStackTrace, () -> eventBus.post(new ForceServerSyncRequestEvent())
         );
     }
 

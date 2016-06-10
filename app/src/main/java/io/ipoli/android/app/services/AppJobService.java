@@ -117,8 +117,8 @@ public class AppJobService extends JobService {
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        return repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
-                .flatMapIterable(repeatingQuests -> repeatingQuests)
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+        return Observable.from(repeatingQuests)
                 .flatMap(rq -> Observable.concat(
                         saveQuestsInRange(rq, startOfWeek, endOfWeek),
                         saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)
@@ -136,21 +136,20 @@ public class AppJobService extends JobService {
 
     private Observable<Player> syncPlayer() {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        return getPlayer().flatMap(player -> {
-            if (player == null) {
-                return Observable.just(null);
-            }
-            if (isLocalOnly(player)) {
-                return createPlayer(localStorage, player);
-            }
-            if (player.needsSyncWithRemote()) {
-                return updatePlayer(player);
-            }
-            return Observable.just(player);
-        });
+        Player player = getPlayer();
+        if (player == null) {
+            return Observable.just(null);
+        }
+        if (isLocalOnly(player)) {
+            return createPlayer(localStorage, player);
+        }
+        if (player.needsSyncWithRemote()) {
+            return updatePlayer(player);
+        }
+        return Observable.just(player);
     }
 
-    private Observable<? extends Player> updatePlayer(Player player) {
+    private Observable<Player> updatePlayer(Player player) {
         String localId = player.getId();
         player.setId(null);
         return apiService.updatePlayer(createRequestBody("data", player), player.getRemoteId())
@@ -162,7 +161,7 @@ public class AppJobService extends JobService {
                 });
     }
 
-    private Observable<? extends Player> createPlayer(LocalStorage localStorage, Player player) {
+    private Observable<Player> createPlayer(LocalStorage localStorage, Player player) {
         return getAdvertisingId().flatMap(advertisingId -> {
             String localId = player.getId();
             AuthProvider authProvider = new AuthProvider(advertisingId, AuthProviderName.GOOGLE_ADVERTISING_ID.name());
@@ -188,7 +187,7 @@ public class AppJobService extends JobService {
         return false;
     }
 
-    private Observable<Player> getPlayer() {
+    private Player getPlayer() {
         return playerPersistenceService.find();
     }
 

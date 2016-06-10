@@ -7,7 +7,6 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -19,13 +18,13 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener);
 
-    Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
+    List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 
-    Observable<List<Quest>> findAllPlannedAndStartedToday();
+    List<Quest> findAllPlannedAndStartedToday();
 
-    Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate);
+    List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
 
-    Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate);
+    List<Quest> findPlannedQuestsStartingAfter(LocalDate localDate);
 
     long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
@@ -43,5 +42,4 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByExternalSourceMappingIdSync(String source, String sourceId);
 
-    Observable<Quest> findByExternalSourceMappingId(String source, String sourceId);
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationManagerCompat;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
@@ -48,15 +49,13 @@ public class StartQuestCommand {
     }
 
     private void stopOtherRunningQuests(Quest q) {
-
-        questPersistenceService.findAllPlannedAndStartedToday().subscribe(quests -> {
-            for (Quest cq : quests) {
-                if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                    cq.setActualStart(null);
-                    questPersistenceService.save(cq).subscribe();
-                }
+        List<Quest> quests = questPersistenceService.findAllPlannedAndStartedToday();
+        for (Quest cq : quests) {
+            if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
+                cq.setActualStart(null);
+                questPersistenceService.save(cq).subscribe();
             }
-        });
+        }
     }
 
     private void scheduleNextQuestReminder(Context context) {

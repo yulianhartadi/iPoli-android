@@ -4,7 +4,6 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.realm.Realm;
-import io.realm.RealmQuery;
 import rx.Observable;
 
 /**
@@ -18,13 +17,12 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
     }
 
     @Override
-    public Observable<Player> find() {
-        return find(RealmQuery::findFirstAsync);
-    }
-
-    @Override
-    public Player findSync() {
-        return getRealm().copyFromRealm(getRealm().where(getRealmObjectClass()).findFirst());
+    public Player find() {
+        Player res = where().findFirst();
+        if(res == null) {
+            return null;
+        }
+        return getRealm().copyFromRealm(res);
     }
 
     @Override
