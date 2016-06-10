@@ -49,7 +49,6 @@ import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
-import rx.Observable;
 
 public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<RepeatingQuest> {
 
@@ -170,24 +169,24 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.markDeleted();
-        Observable.concat(markQuestsDeleted(repeatingQuest), repeatingQuestPersistenceService.save(repeatingQuest))
-                .compose(bindToLifecycle()).subscribe(o -> {
-        }, error -> {
-        }, () -> {
+        markQuestsDeleted(repeatingQuest);
+        repeatingQuestPersistenceService.save(repeatingQuest);
+//                .compose(bindToLifecycle()).subscribe(o -> {
+//        }, error -> {
+//        }, () -> {
             Snackbar
                     .make(rootLayout,
                             R.string.repeating_quest_removed,
                             Snackbar.LENGTH_SHORT).show();
-        });
+//        });
     }
 
-    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
-        return questPersistenceService.findAllForRepeatingQuest(repeatingQuest).flatMap(quests -> {
-            for (Quest q : quests) {
-                q.markDeleted();
-            }
-            return questPersistenceService.saveRemoteObjects(quests);
-        });
+    private void markQuestsDeleted(RepeatingQuest repeatingQuest) {
+        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
+        for (Quest q : quests) {
+            q.markDeleted();
+        }
+        questPersistenceService.saveSync(quests);
     }
 
     @OnClick(R.id.add_repeating_quest)

@@ -96,7 +96,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Inject
     Bus eventBus;
 
-    //    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -369,8 +368,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        questPersistenceService.close();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     @Override

@@ -30,17 +30,12 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
     @Override
     public Observable<Player> addAuthProvider(Player player, AuthProvider authProvider) {
         return Observable.create(subscriber -> {
-            Realm realm = getRealm();
-            realm.executeTransactionAsync(backgroundRealm ->
+            getRealm().executeTransactionAsync(backgroundRealm ->
                             player.addAuthProvider(authProvider),
                     () -> {
                         subscriber.onNext(player);
                         subscriber.onCompleted();
-                        realm.close();
-                    }, error -> {
-                        subscriber.onError(error);
-                        realm.close();
-                    });
+                    }, subscriber::onError);
         });
     }
 

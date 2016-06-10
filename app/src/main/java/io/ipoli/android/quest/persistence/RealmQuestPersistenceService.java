@@ -158,10 +158,10 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
-        return findAll(where -> where
+    public List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
+        return getRealm().copyFromRealm(where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .findAllAsync());
+                .findAll());
     }
 
     @Override
