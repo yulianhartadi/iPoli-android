@@ -30,11 +30,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
-    Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate);
+    void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
 
-    Observable<List<Quest>> findAllNonAllDayCompletedForDate(LocalDate currentDate);
+    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
 
-    Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate);
+    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
 
     Observable<List<Quest>> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
 

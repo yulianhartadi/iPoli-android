@@ -52,7 +52,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-        public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
+    public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
         listenForResults(where()
                 .isNull("endDate")
                 .isNull("actualStart")
@@ -86,42 +86,42 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate) {
+    public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-
-        return findAll(where -> where.beginGroup()
-                .greaterThanOrEqualTo("endDate", startDate)
-                .lessThan("endDate", endDate)
-                .or()
-                .greaterThanOrEqualTo("completedAt", startDate)
-                .lessThan("completedAt", endDate)
+        listenForResults(where()
+                .beginGroup()
+                    .greaterThanOrEqualTo("endDate", startDate)
+                    .lessThan("endDate", endDate)
+                    .or()
+                    .greaterThanOrEqualTo("completedAt", startDate)
+                    .lessThan("completedAt", endDate)
                 .endGroup()
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayCompletedForDate(LocalDate currentDate) {
+    public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-        return findAll(where -> where
+        listenForResults(where()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
+    public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-        return findAll(where -> where
+        listenForResults(where()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
