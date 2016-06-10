@@ -41,8 +41,8 @@ public abstract class BaseFragment extends RxFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         realm.close();
+        super.onDestroyView();
     }
 
     @Override
