@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
+import com.squareup.otto.Bus;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import rx.Observable;
 
@@ -35,6 +38,8 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
     private Context context;
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -43,6 +48,7 @@ public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         return questPersistenceService.findById(questId).flatMap(q -> {
             showQuestTimerNotification(q);
             return Observable.empty();

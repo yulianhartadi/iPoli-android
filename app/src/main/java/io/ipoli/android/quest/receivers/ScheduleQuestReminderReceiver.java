@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.squareup.otto.Bus;
+
 import org.joda.time.LocalDate;
 
 import java.util.Date;
@@ -17,6 +19,7 @@ import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import rx.Observable;
 
 /**
@@ -28,6 +31,8 @@ public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
     public static final String ACTION_SCHEDULE_REMINDER = "io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDER";
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -36,7 +41,7 @@ public class ScheduleQuestReminderReceiver extends AsyncBroadcastReceiver {
 
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         cancelScheduledReminder(context, alarm);
-
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         return questPersistenceService.findPlannedQuestsStartingAfter(new LocalDate()).flatMap(quests -> {
             if (quests.isEmpty()) {
                 return Observable.empty();

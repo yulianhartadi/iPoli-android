@@ -61,6 +61,8 @@ import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -85,10 +87,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @BindView(R.id.calendar_container)
     CalendarLayout calendarContainer;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
@@ -140,7 +140,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_day_view, container, false);
 
         App.getAppComponent(getContext()).inject(this);
@@ -163,6 +163,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
         }
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         return view;
     }

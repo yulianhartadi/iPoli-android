@@ -30,11 +30,13 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.activities.RewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
@@ -48,17 +50,17 @@ import io.ipoli.android.reward.viewmodels.RewardViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends BaseFragment {
+public class RewardListFragment extends BaseFragment implements OnDatabaseChangedListener<Reward> {
 
     private Unbinder unbinder;
 
     @Inject
     Bus eventBus;
 
-    @Inject
+    //    @Inject
     RewardPersistenceService rewardPersistenceService;
 
-    @Inject
+//    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.reward_list)
@@ -70,22 +72,25 @@ public class RewardListFragment extends BaseFragment {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private RewardListAdapter rewardListAdapter;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_reward_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_rewards);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
         rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
-
+        rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
+        rewardList.setAdapter(rewardListAdapter);
+        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
+        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
+        rewardPersistenceService.findAll(this);
         return view;
     }
 
@@ -103,22 +108,6 @@ public class RewardListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updateRewards();
-    }
-
-    private void updateRewards() {
-        rewardPersistenceService.findAll().compose(bindToLifecycle())
-                .subscribe(rewards -> {
-                    List<RewardViewModel> rewardViewModels = new ArrayList<>();
-                    Player player = playerPersistenceService.findSync();
-                    for (Reward r : rewards) {
-                        rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
-                    }
-
-                    rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
-                    rewardList.setAdapter(rewardListAdapter);
-                    rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
-                });
     }
 
     @Override
@@ -129,8 +118,9 @@ public class RewardListFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        rewardPersistenceService.close();
+        super.onDestroyView();
     }
 
     @OnClick(R.id.add_reward)
@@ -148,7 +138,6 @@ public class RewardListFragment extends BaseFragment {
         }
         player.removeCoins(r.getPrice());
         playerPersistenceService.saveSync(player);
-        updateRewards();
         Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -168,12 +157,17 @@ public class RewardListFragment extends BaseFragment {
         e.reward.markDeleted();
         rewardPersistenceService.save(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
             Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
-            updateRewards();
         });
     }
 
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        updateRewards();
+    @Override
+    public void onDatabaseChanged(List<Reward> rewards) {
+        List<RewardViewModel> rewardViewModels = new ArrayList<>();
+        Player player = playerPersistenceService.findSync();
+        for (Reward r : rewards) {
+            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
+        }
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+        rewardList.setAdapter(rewardListAdapter);
     }
 }

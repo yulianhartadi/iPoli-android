@@ -1,10 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
-import java.util.List;
-
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.reward.data.Reward;
-import rx.Observable;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -12,6 +9,7 @@ import rx.Observable;
  */
 public interface RewardPersistenceService extends PersistenceService<Reward> {
 
-    Observable<List<Reward>> findAll();
+    void findAll(OnDatabaseChangedListener<Reward> listener);
 
+    void close();
 }

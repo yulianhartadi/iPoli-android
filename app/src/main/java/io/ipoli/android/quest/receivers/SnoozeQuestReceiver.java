@@ -14,6 +14,7 @@ import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import rx.Observable;
 
 /**
@@ -27,7 +28,6 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
     @Inject
     Bus eventBus;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -36,6 +36,8 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
         notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
 
         App.getAppComponent(context).inject(this);
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
 
         return getQuest(intent).flatMap(q -> {
             q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);

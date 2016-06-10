@@ -21,7 +21,8 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
 
     private final Bus eventBus;
 
-    public RealmRepeatingQuestPersistenceService(Bus eventBus) {
+    public RealmRepeatingQuestPersistenceService(Bus eventBus, Realm realm) {
+        super(realm);
         this.eventBus = eventBus;
     }
 
@@ -49,12 +50,25 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
+    public void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener) {
+        listenForResults(where().isNotNull("name")
+                .equalTo("allDay", false)
+                .isNotNull("recurrence.rrule")
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAllAsync(), listener);
+    }
+
+    @Override
     public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
         try (Realm realm = getRealm()) {
             RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
                     .equalTo("sourceMapping." + source, sourceId)
                     .findFirst();
-            if(repeatingQuest == null) {
+            if (repeatingQuest == null) {
                 return null;
             }
             return realm.copyFromRealm(repeatingQuest);

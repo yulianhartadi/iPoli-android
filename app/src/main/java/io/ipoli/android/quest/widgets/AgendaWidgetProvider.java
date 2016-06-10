@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.squareup.otto.Bus;
@@ -28,6 +27,8 @@ import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.realm.Realm;
 
 public class AgendaWidgetProvider extends AppWidgetProvider {
 
@@ -41,7 +42,6 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     @Inject
     Bus eventBus;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -59,7 +59,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
-
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, Realm.getDefaultInstance());
         if (WIDGET_QUEST_CLICK_ACTION.equals(intent.getAction())) {
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 

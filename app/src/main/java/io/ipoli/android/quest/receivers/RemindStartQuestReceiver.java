@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
+import com.squareup.otto.Bus;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -23,6 +25,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import rx.Observable;
 
 /**
@@ -34,12 +37,15 @@ public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
     public static final String ACTION_REMIND_START_QUEST = "io.ipoli.android.intent.action.REMIND_START_QUEST";
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     @Override
     protected Observable<Void> doOnReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         return questPersistenceService.findById(questId).flatMap(q -> {
             if (q == null) {
                 return Observable.empty();
@@ -81,8 +87,6 @@ public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
     }
-
-
 
 
     private PendingIntent getStartPendingIntent(String questId, Context context) {

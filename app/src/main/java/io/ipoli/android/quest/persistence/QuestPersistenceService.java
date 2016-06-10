@@ -16,9 +16,9 @@ import rx.Observable;
 public interface QuestPersistenceService extends PersistenceService<Quest> {
     Observable<Quest> findById(String id);
 
-    Observable<List<Quest>> findAllUnplanned();
+    void findAllUnplanned(OnDatabaseChangedListener<Quest> listener);
 
-    Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
+    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener);
 
     Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 

@@ -13,6 +13,10 @@ import rx.Observable;
  */
 public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<Player> implements PlayerPersistenceService {
 
+    public RealmPlayerPersistenceService(Realm realm) {
+        super(realm);
+    }
+
     @Override
     public Observable<Player> find() {
         return find(RealmQuery::findFirstAsync);
@@ -20,9 +24,7 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
 
     @Override
     public Player findSync() {
-        try (Realm realm = getRealm()) {
-            return realm.copyFromRealm(realm.where(getRealmObjectClass()).findFirst());
-        }
+        return getRealm().copyFromRealm(getRealm().where(getRealmObjectClass()).findFirst());
     }
 
     @Override

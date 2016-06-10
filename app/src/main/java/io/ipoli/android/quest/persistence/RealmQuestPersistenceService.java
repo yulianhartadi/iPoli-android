@@ -26,7 +26,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     private final Bus eventBus;
 
-    public RealmQuestPersistenceService(Bus eventBus) {
+    public RealmQuestPersistenceService(Bus eventBus, Realm realm) {
+        super(realm);
         this.eventBus = eventBus;
     }
 
@@ -51,12 +52,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllUnplanned() {
-        return findAll(where -> where
+        public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
+        listenForResults(where()
+                .equalTo("isDeleted", false)
                 .isNull("endDate")
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSortedAsync("createdAt", Sort.DESCENDING));
+                .findAllSortedAsync("createdAt", Sort.DESCENDING), listener);
     }
 
     @Override
@@ -175,7 +177,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate) {
-
         return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", toStartOfDayUTC(localDate))
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
@@ -185,13 +186,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
-        return findAll(where -> where
+    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener) {
+        listenForResults(where()
                 .greaterThanOrEqualTo("endDate", toStartOfDayUTC(startDate))
                 .lessThan("endDate", toStartOfDayUTC(endDate))
                 .equalTo("allDay", false)
                 .isNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING), listener);
     }
 
     @Override

@@ -33,13 +33,17 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
+import io.realm.Realm;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -51,13 +55,10 @@ import rx.schedulers.Schedulers;
  */
 public class AppJobService extends JobService {
 
-    @Inject
     PlayerPersistenceService playerPersistenceService;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
@@ -71,6 +72,15 @@ public class AppJobService extends JobService {
 
     @Inject
     Bus eventBus;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Realm realm = Realm.getDefaultInstance();
+        playerPersistenceService = new RealmPlayerPersistenceService(realm);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+    }
 
     @Override
     public boolean onStartJob(JobParameters params) {

@@ -41,6 +41,7 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
@@ -71,7 +72,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @BindView(R.id.quest_details_edit)
     ImageButton edit;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Inject
@@ -95,6 +95,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         setContentView(R.layout.activity_quest);
         ButterKnife.bind(this);
         appComponent().inject(this);
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
 
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         afterOnCreate = true;

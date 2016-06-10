@@ -60,6 +60,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -71,6 +72,8 @@ import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -108,13 +111,10 @@ public class App extends MultiDexApplication {
     @Inject
     AnalyticsService analyticsService;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
@@ -149,6 +149,11 @@ public class App extends MultiDexApplication {
         Realm.setDefaultConfiguration(config);
 
         getAppComponent(this).inject(this);
+
+        Realm realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+        playerPersistenceService = new RealmPlayerPersistenceService(realm);
 
         resetEndDateForIncompleteQuests();
         registerServices();

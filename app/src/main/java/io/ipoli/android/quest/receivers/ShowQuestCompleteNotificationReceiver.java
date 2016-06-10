@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -18,6 +20,7 @@ import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import rx.Observable;
 
 /**
@@ -29,6 +32,8 @@ public class ShowQuestCompleteNotificationReceiver extends AsyncBroadcastReceive
     public static final String ACTION_SHOW_DONE_QUEST_NOTIFICATION = "io.ipoli.android.intent.action.SHOW_QUEST_COMPLETE_NOTIFICATION";
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -37,6 +42,7 @@ public class ShowQuestCompleteNotificationReceiver extends AsyncBroadcastReceive
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         QuestNotificationScheduler.stopTimer(questId, context);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         return questPersistenceService.findById(questId).flatMap(q -> {
             NotificationCompat.Builder builder = createNotificationBuilder(context, q);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);

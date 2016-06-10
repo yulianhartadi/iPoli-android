@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.squareup.otto.Bus;
+
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -22,7 +24,9 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.realm.Realm;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -30,10 +34,13 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     private final List<Quest> quests = new ArrayList<>();
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, Realm.getDefaultInstance());
         this.context = context;
     }
 

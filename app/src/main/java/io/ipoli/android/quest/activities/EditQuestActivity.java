@@ -61,6 +61,7 @@ import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
@@ -99,7 +100,6 @@ public class EditQuestActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Quest quest;
@@ -120,6 +120,7 @@ public class EditQuestActivity extends BaseActivity {
         durationMatcher = new DurationMatcher();
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questPersistenceService.findById(questId).subscribe(q -> {
             quest = q;
             initUI();

@@ -28,6 +28,8 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -41,11 +43,9 @@ import rx.schedulers.Schedulers;
  * on 5/8/16.
  */
 public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver {
-    
-    @Inject
+
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
@@ -60,6 +60,8 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
         }
 
         App.getAppComponent(context).inject(this);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);

@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
@@ -61,6 +62,7 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
@@ -73,6 +75,7 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -103,9 +106,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     TextView loadingMessage;
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     Fragment currentFragment;
@@ -119,6 +123,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {

@@ -35,6 +35,8 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
@@ -42,20 +44,19 @@ import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
+import io.realm.Realm;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
     @Inject
     Bus eventBus;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     private PickRepeatingQuestsFragment pickRepeatingQuestsFragment;
@@ -71,6 +72,10 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void init(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
+        Realm realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

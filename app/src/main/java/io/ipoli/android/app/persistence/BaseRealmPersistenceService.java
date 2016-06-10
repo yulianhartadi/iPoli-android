@@ -1,37 +1,58 @@
 package io.ipoli.android.app.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/25/16.
  */
-public abstract class BaseRealmPersistenceService<T extends RealmObject & RemoteObject> {
+public abstract class BaseRealmPersistenceService<T extends RealmObject & RemoteObject> implements PersistenceService<T> {
+
+    private final Realm realm;
+    private List<RealmResults<?>> realmResults;
+
+    public BaseRealmPersistenceService(Realm realm) {
+        this.realm = realm;
+        this.realmResults = new ArrayList<>();
+    }
+
+    protected void listenForResults(RealmResults<T> results, OnDatabaseChangedListener<T> listener) {
+        realmResults.add(results);
+        results.addChangeListener(element -> {
+            if (element.isLoaded()) {
+                listener.onDatabaseChanged(realm.copyFromRealm(element));
+            }
+        });
+    }
 
     protected RealmQuery<T> where() {
         return getRealm().where(getRealmObjectClass());
     }
 
+    @Override
     public Observable<T> save(T object) {
         object.markUpdated();
         return Observable.create(subscriber -> {
-            Realm realm = getRealm();
+//            Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
                         subscriber.onNext(object);
                         subscriber.onCompleted();
                         onObjectSaved(object);
-                        realm.close();
+//                        realm.close();
                     }, error -> {
                         subscriber.onError(error);
-                        realm.close();
+//                        realm.close();
                     });
         });
     }
@@ -40,6 +61,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     }
 
+    @Override
     public void saveSync(T obj) {
         obj.markUpdated();
         try (Realm realm = getRealm()) {
@@ -48,6 +70,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
+    @Override
     public void saveSync(List<T> objects) {
         for (T obj : objects) {
             obj.markUpdated();
@@ -58,22 +81,24 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
+    @Override
     public Observable<T> saveRemoteObject(T object) {
         return Observable.create(subscriber -> {
             Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
-                        realm.close();
+//                        realm.close();
                         subscriber.onNext(object);
                         subscriber.onCompleted();
                     }, error -> {
-                        realm.close();
+//                        realm.close();
                         subscriber.onError(error);
                     });
         });
     }
 
+    @Override
     public Observable<List<T>> saveRemoteObjects(List<T> objects) {
         if (objects.isEmpty()) {
             return Observable.defer(() -> Observable.just(objects));
@@ -85,18 +110,20 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
                     () -> {
                         subscriber.onNext(objects);
                         subscriber.onCompleted();
-                        realm.close();
+//                        realm.close();
                     }, error -> {
                         subscriber.onError(error);
-                        realm.close();
+//                        realm.close();
                     });
         });
     }
 
+    @Override
     public Observable<T> findById(String id) {
         return find(where -> where.equalTo("id", id).findFirstAsync());
     }
 
+    @Override
     public T findByRemoteIdSync(String id) {
         try (Realm realm = getRealm()) {
             T obj = realm.where(getRealmObjectClass())
@@ -109,6 +136,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         }
     }
 
+    @Override
     public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
         return findAllIncludingDeleted(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
     }
@@ -116,7 +144,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     protected abstract Class<T> getRealmObjectClass();
 
     protected Realm getRealm() {
-        return Realm.getDefaultInstance();
+        return realm;
     }
 
     protected Observable<List<T>> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
@@ -131,4 +159,11 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return new RealmFindCommand<T>(queryBuilder, getRealmObjectClass()).execute();
     }
 
+    @Override
+    public void close() {
+        for (RealmResults<?> res : realmResults) {
+            res.removeChangeListeners();
+        }
+        realmResults.clear();
+    }
 }

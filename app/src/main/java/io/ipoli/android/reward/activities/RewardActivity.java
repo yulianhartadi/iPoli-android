@@ -31,6 +31,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
@@ -47,7 +48,7 @@ public class RewardActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    @Inject
+//    @Inject
     RewardPersistenceService rewardPersistenceService;
 
     @BindView(R.id.toolbar)
@@ -67,6 +68,7 @@ public class RewardActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reward);
         App.getAppComponent(this).inject(this);
+        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,19 +29,18 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
-import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import rx.Observable;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
-public class InboxFragment extends BaseFragment {
+public class InboxFragment extends BaseFragment implements OnDatabaseChangedListener<Quest>{
 
     @Inject
     Bus eventBus;
@@ -54,7 +54,6 @@ public class InboxFragment extends BaseFragment {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -62,6 +61,7 @@ public class InboxFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_inbox, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
@@ -71,7 +71,14 @@ public class InboxFragment extends BaseFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
+        questList.addItemDecoration(new DividerItemDecoration(getContext()));
+        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
 
+        InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);
+        questList.setAdapter(inboxAdapter);
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questPersistenceService.findAllUnplanned(this);
         return view;
     }
 
@@ -85,32 +92,22 @@ public class InboxFragment extends BaseFragment {
         HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
     }
 
-    private void updateQuests() {
-        getAllUnplanned().subscribe(this::initQuestList);
-    }
-
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        questPersistenceService.close();
+        super.onDestroyView();
     }
 
-    private void initQuestList(List<Quest> quests) {
+    private void updateQuests(List<Quest> quests) {
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
-        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
         questList.setAdapter(inboxAdapter);
-        questList.addItemDecoration(new DividerItemDecoration(getContext()));
-    }
-
-    private Observable<List<Quest>> getAllUnplanned() {
-        return questPersistenceService.findAllUnplanned().compose(bindToLifecycle());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updateQuests();
     }
 
     @Override
@@ -129,7 +126,6 @@ public class InboxFragment extends BaseFragment {
                             R.string.quest_removed,
                             Snackbar.LENGTH_SHORT)
                     .show();
-            updateQuests();
         });
     }
 
@@ -139,19 +135,11 @@ public class InboxFragment extends BaseFragment {
         q.setEndDateFromLocal(new Date());
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
-            updateQuests();
         });
     }
 
-    @Subscribe
-    public void onQuestCompleted(QuestCompletedEvent e) {
-        updateQuests();
+    @Override
+    public void onDatabaseChanged(List<Quest> quests) {
+        updateQuests(quests);
     }
-
-
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        updateQuests();
-    }
-
 }

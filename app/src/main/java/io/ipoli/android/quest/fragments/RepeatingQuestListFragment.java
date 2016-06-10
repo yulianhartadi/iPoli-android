@@ -35,7 +35,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -44,12 +43,15 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 import rx.Observable;
 
-public class RepeatingQuestListFragment extends BaseFragment {
+public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<RepeatingQuest> {
 
     @Inject
     Bus eventBus;
@@ -63,10 +65,8 @@ public class RepeatingQuestListFragment extends BaseFragment {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     private RepeatingQuestListAdapter repeatingQuestListAdapter;
@@ -75,6 +75,7 @@ public class RepeatingQuestListFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_repeating_quest_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
@@ -88,7 +89,9 @@ public class RepeatingQuestListFragment extends BaseFragment {
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_autorenew_grey_24dp);
-
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this);
         return view;
     }
 
@@ -112,28 +115,12 @@ public class RepeatingQuestListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updateQuests();
     }
 
     @Override
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    private void updateQuests() {
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests()
-                .compose(bindToLifecycle())
-                .subscribe(quests -> {
-                    List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
-                    for (RepeatingQuest rq : quests) {
-                        RepeatingQuestViewModel vm = createViewModel(rq);
-                        if (vm != null) {
-                            viewModels.add(vm);
-                        }
-                    }
-                    repeatingQuestListAdapter.updateQuests(viewModels);
-                });
     }
 
     @Nullable
@@ -189,7 +176,6 @@ public class RepeatingQuestListFragment extends BaseFragment {
                     .make(rootLayout,
                             R.string.repeating_quest_removed,
                             Snackbar.LENGTH_SHORT).show();
-            updateQuests();
         });
     }
 
@@ -202,13 +188,20 @@ public class RepeatingQuestListFragment extends BaseFragment {
         });
     }
 
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        updateQuests();
-    }
-
     @OnClick(R.id.add_repeating_quest)
     public void onAddRepeatingQuest(View view) {
         startActivity(new Intent(getActivity(), AddQuestActivity.class));
+    }
+
+    @Override
+    public void onDatabaseChanged(List<RepeatingQuest> quests) {
+        List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
+        for (RepeatingQuest rq : quests) {
+            RepeatingQuestViewModel vm = createViewModel(rq);
+            if (vm != null) {
+                viewModels.add(vm);
+            }
+        }
+        repeatingQuestListAdapter.updateQuests(viewModels);
     }
 }
