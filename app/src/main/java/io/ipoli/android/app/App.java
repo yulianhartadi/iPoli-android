@@ -88,8 +88,6 @@ import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -204,7 +202,6 @@ public class App extends MultiDexApplication {
                         Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
                         Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
                 );
-
     }
 
     private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
@@ -451,12 +448,9 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        Observable.defer(() -> {
-            syncCalendars();
-            return Observable.just(null);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> {
-                }, Throwable::printStackTrace, () -> eventBus.post(new ForceServerSyncRequestEvent())
-        );
+        syncCalendars();
+        eventBus.post(new SyncCompleteEvent());
+        eventBus.post(new ForceServerSyncRequestEvent());
     }
 
     @Subscribe
@@ -467,11 +461,8 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        Observable.defer(() -> {
-            syncCalendars();
-            return Observable.just(null);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(o -> {
-        }, Throwable::printStackTrace, () -> eventBus.post(new SyncCompleteEvent()));
+        syncCalendars();
+        eventBus.post(new SyncCompleteEvent());
     }
 
     private void syncCalendars() {
