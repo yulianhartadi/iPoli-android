@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.RxLifecycle;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -45,7 +44,6 @@ import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 import io.realm.Realm;
-import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
@@ -120,15 +118,12 @@ public class TutorialActivity extends AppIntro2 {
             parsedRepeatingQuests.add(parsedRepeatingQuest);
         }
 
-        Observable.concat(questPersistenceService.saveRemoteObjects(selectedQuests),
-                repeatingQuestPersistenceService.saveRemoteObjects(parsedRepeatingQuests))
-                .compose(RxLifecycle.bindActivity(lifecycleSubject)).subscribe(ignored -> {
-        }, error -> finish(), () -> {
-            eventBus.post(new ScheduleRepeatingQuestsEvent());
-            eventBus.post(new TutorialDoneEvent());
-            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-            finish();
-        });
+        questPersistenceService.saveSync(selectedQuests);
+        repeatingQuestPersistenceService.saveSync(parsedRepeatingQuests);
+        eventBus.post(new ScheduleRepeatingQuestsEvent());
+        eventBus.post(new TutorialDoneEvent());
+        Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
