@@ -54,7 +54,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
         public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
         listenForResults(where()
-                .equalTo("isDeleted", false)
                 .isNull("endDate")
                 .isNull("actualStart")
                 .isNull("completedAt")
@@ -83,7 +82,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .between("endDate", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
-                .equalTo("isDeleted", false)
                 .count();
     }
 

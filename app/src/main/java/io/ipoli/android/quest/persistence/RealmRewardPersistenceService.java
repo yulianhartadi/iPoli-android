@@ -22,7 +22,6 @@ public class RealmRewardPersistenceService extends BaseRealmPersistenceService<R
     @Override
     public void findAll(OnDatabaseChangedListener<Reward> listener) {
         listenForResults(where()
-                .equalTo("isDeleted", false)
                 .findAllAsync(), listener);
     }
 }

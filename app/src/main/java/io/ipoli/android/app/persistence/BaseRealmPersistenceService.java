@@ -35,7 +35,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     protected RealmQuery<T> where() {
-        return getRealm().where(getRealmObjectClass());
+        return getRealm().where(getRealmObjectClass()).equalTo("isDeleted", false);
     }
 
     @Override
@@ -88,13 +88,9 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
-//                        realm.close();
                         subscriber.onNext(object);
                         subscriber.onCompleted();
-                    }, error -> {
-//                        realm.close();
-                        subscriber.onError(error);
-                    });
+                    }, subscriber::onError);
         });
     }
 
@@ -110,11 +106,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
                     () -> {
                         subscriber.onNext(objects);
                         subscriber.onCompleted();
-//                        realm.close();
-                    }, error -> {
-                        subscriber.onError(error);
-//                        realm.close();
-                    });
+                    }, subscriber::onError);
         });
     }
 
