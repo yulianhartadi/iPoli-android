@@ -18,8 +18,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 37
-        versionName "1.6.7"
+        versionCode 38
+        versionName "1.6.8"
     }
 
     compileOptions {
