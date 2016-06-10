@@ -3,6 +3,7 @@ package io.ipoli.android.app.persistence;
 import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import rx.Observable;
 
 /**
@@ -27,7 +28,11 @@ public class RealmFindCommand<T extends RealmObject & RemoteObject> {
 
     public Observable<T> execute() {
         Realm realm = Realm.getDefaultInstance();
-        return queryBuilder.buildQuery(realm.where(realmClass).equalTo("isDeleted", includeDeleted))
+        RealmQuery<T> query = realm.where(realmClass);
+        if (!includeDeleted) {
+            query = query.equalTo("isDeleted", false);
+        }
+        return queryBuilder.buildQuery(query)
                 .asObservable()
                 .filter(T::isLoaded)
                 .first()

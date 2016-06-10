@@ -62,8 +62,9 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
 
         viewBinderHelper.bind(questHolder.swipeLayout, vm.getRepeatingQuest().getId());
+        questHolder.swipeLayout.close(false);
 
-        questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+        questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
             @Override
             public void onOpened(SwipeRevealLayout view) {
                 super.onOpened(view);
@@ -81,7 +82,6 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
 
         questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
-
 
         questHolder.nextDateTime.setText(vm.getNextText());
 

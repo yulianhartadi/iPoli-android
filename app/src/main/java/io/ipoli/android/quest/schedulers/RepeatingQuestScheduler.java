@@ -32,20 +32,24 @@ public class RepeatingQuestScheduler {
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
+        List<Quest> res = new ArrayList<>();
         if (rruleStr == null || rruleStr.isEmpty()) {
-            return new ArrayList<>();
+            return res;
         }
         Recur recur;
         try {
             recur = new Recur(rruleStr);
         } catch (ParseException e) {
-            return new ArrayList<>();
+            return res;
+        }
+
+        if (recur.getFrequency().equals(Recur.YEARLY)) {
+            return res;
         }
         java.util.Date endDate = getEndDate(recur, startDate);
         DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
                 getPeriodEnd(endDate), Value.DATE);
 
-        List<Quest> res = new ArrayList<>();
         for (Object obj : dates) {
             for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
                 res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
@@ -94,23 +98,27 @@ public class RepeatingQuestScheduler {
     public List<Quest> scheduleForDateRange(RepeatingQuest repeatingQuest, java.util.Date from, java.util.Date to) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
-        if (rruleStr != null && !rruleStr.isEmpty()) {
-            Recur recur;
-            try {
-                recur = new Recur(rruleStr);
-            } catch (ParseException e) {
-                return new ArrayList<>();
-            }
-            DateList dates = recur.getDates(new Date(recurrence.getDtstart()),
-                    new Date(from),
-                    getPeriodEnd(to), Value.DATE);
-
-            List<Quest> res = new ArrayList<>();
-            for (Object obj : dates) {
-                res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
-            }
+        List<Quest> res = new ArrayList<>();
+        if (rruleStr == null || rruleStr.isEmpty()) {
             return res;
         }
-        return new ArrayList<>();
+        Recur recur;
+        try {
+            recur = new Recur(rruleStr);
+        } catch (ParseException e) {
+            return res;
+        }
+        if (recur.getFrequency().equals(Recur.YEARLY)) {
+            return res;
+        }
+        DateList dates = recur.getDates(new Date(recurrence.getDtstart()),
+                new Date(from),
+                getPeriodEnd(to), Value.DATE);
+
+
+        for (Object obj : dates) {
+            res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+        }
+        return res;
     }
 }
