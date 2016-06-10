@@ -1,6 +1,7 @@
 package io.ipoli.android.app.receivers;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,18 +32,16 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.realm.Realm;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/8/16.
  */
-public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver {
+public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
     QuestPersistenceService questPersistenceService;
 
@@ -52,33 +51,32 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     Bus eventBus;
 
     @Override
-    protected Observable<Void> doOnReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
-            return Observable.empty();
+            return;
         }
 
         App.getAppComponent(context).inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
         LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
-        return Observable.defer(() -> {
-            List<Event> dirtyEvents = new ArrayList<>();
-            List<Event> deletedEvents = new ArrayList<>();
-            for (String cid : calendarIds) {
-                int calendarId = Integer.valueOf(cid);
-                addDirtyEvents(provider, calendarId, dirtyEvents);
-                addDeletedEvents(calendarId, provider, deletedEvents);
-            }
-            createOrUpdateEvents(dirtyEvents, context);
-            deleteEvents(deletedEvents);
-            eventBus.post(new SyncCompleteEvent());
-            eventBus.post(new ServerSyncRequestEvent());
-            return Observable.<Void>empty();
-        }).compose(applyAndroidSchedulers());
+        Realm realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+        List<Event> dirtyEvents = new ArrayList<>();
+        List<Event> deletedEvents = new ArrayList<>();
+        for (String cid : calendarIds) {
+            int calendarId = Integer.valueOf(cid);
+            addDirtyEvents(provider, calendarId, dirtyEvents);
+            addDeletedEvents(calendarId, provider, deletedEvents);
+        }
+        createOrUpdateEvents(dirtyEvents, context);
+        deleteEvents(deletedEvents);
+        eventBus.post(new SyncCompleteEvent());
+        eventBus.post(new ServerSyncRequestEvent());
+        realm.close();
     }
 
     private void addDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider, List<Event> deletedEvents) {
@@ -105,7 +103,6 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
     }
 
     private void createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
-
         AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
         AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
         List<Event> repeating = new ArrayList<>();
@@ -119,6 +116,7 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
                 nonRepeating.add(event);
             }
         }
+
         questPersistenceService.saveSync(questReader.read(nonRepeating));
         repeatingQuestPersistenceService.saveSync(repeatingQuestReader.read(repeating));
     }
@@ -145,10 +143,5 @@ public class AndroidCalendarEventChangedReceiver extends AsyncBroadcastReceiver 
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
-    }
-
-    private <T> Observable.Transformer<T, T> applyAndroidSchedulers() {
-        return observable -> observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
     }
 }
