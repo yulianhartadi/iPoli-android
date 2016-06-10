@@ -54,14 +54,13 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -133,7 +132,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1));
+        org.joda.time.DateTime startDate = new  org.joda.time.DateTime(DateUtils.getTodayAtMidnight(), DateTimeZone.UTC);
+        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(startDate.minusDays(dayCount - 1).toDate(), startDate.plusDays(1).toDate());
+
         if (quests.isEmpty()) {
             chartContainer.setVisibility(View.GONE);
             emptyViewContainer.setVisibility(View.VISIBLE);
@@ -215,11 +216,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
 
         for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
-            groupedByDate.put(toStartOfDayUTC(date), new ArrayList<>());
+            groupedByDate.put(date.toDate(), new ArrayList<>());
         }
 
         for (Quest q : quests) {
-            Date dateKey = toStartOfDayUTC(new LocalDate(q.getCompletedAt().getTime(), DateTimeZone.UTC));
+            Date dateKey = new LocalDate(q.getCompletedAt().getTime()).toDate();
             groupedByDate.get(dateKey).add(q);
         }
 
