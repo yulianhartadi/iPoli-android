@@ -25,7 +25,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         this.realmResults = new ArrayList<>();
     }
 
-    protected void listenForResults(RealmResults<T> results, OnDatabaseChangedListener<T> listener) {
+    protected void listenForChanges(RealmResults<T> results, OnDatabaseChangedListener<T> listener) {
         realmResults.add(results);
         results.addChangeListener(element -> {
             if (element.isLoaded()) {

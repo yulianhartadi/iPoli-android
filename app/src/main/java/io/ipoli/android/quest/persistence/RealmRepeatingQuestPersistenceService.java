@@ -45,12 +45,12 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .or()
                 .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
-                .findAllAsync());
+                .findAll());
     }
 
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener) {
-        listenForResults(where().isNotNull("name")
+        listenForChanges(where().isNotNull("name")
                 .equalTo("allDay", false)
                 .isNotNull("recurrence.rrule")
                 .beginGroup()

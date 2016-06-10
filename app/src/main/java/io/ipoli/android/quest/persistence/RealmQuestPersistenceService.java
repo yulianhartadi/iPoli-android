@@ -42,7 +42,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .isNull("repeatingQuest")
                 .equalTo("allDay", false)
                 .lessThan("endDate", toStartOfDayUTC(localDate))
-                .findAllSortedAsync(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
+                .findAllSorted(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
-        listenForResults(where()
+        listenForChanges(where()
                 .isNull("endDate")
                 .isNull("actualStart")
                 .isNull("completedAt")
@@ -71,7 +71,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("endDate", startOfToday)
                 .lessThan("endDate", startOfTomorrow)
                 .isNull("completedAt")
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-        listenForResults(where()
+        listenForChanges(where()
                 .beginGroup()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
@@ -104,7 +104,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-        listenForResults(where()
+        listenForChanges(where()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .equalTo("allDay", false)
@@ -115,7 +115,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDayUTC(currentDate);
         Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
-        listenForResults(where()
+        listenForChanges(where()
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
@@ -169,12 +169,12 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
     @Override
     public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener) {
-        listenForResults(where()
+        listenForChanges(where()
                 .greaterThanOrEqualTo("endDate", toStartOfDayUTC(startDate))
                 .lessThan("endDate", toStartOfDayUTC(endDate))
                 .equalTo("allDay", false)
@@ -188,6 +188,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("completedAt", toStartOfDayUTC(startDate))
                 .lessThan("completedAt", toStartOfDayUTC(endDate))
                 .equalTo("allDay", false)
-                .findAllSortedAsync("completedAt", Sort.ASCENDING));
+                .findAllSorted("completedAt", Sort.ASCENDING));
     }
 }
