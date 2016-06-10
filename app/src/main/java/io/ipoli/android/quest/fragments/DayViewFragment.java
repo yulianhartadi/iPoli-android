@@ -411,11 +411,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onAcceptEvent(QuestCalendarViewModel calendarEvent) {
-        if (calendarAdapter.canAddEvent(calendarEvent)) {
-            eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
-        } else {
-            unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingViewModel);
-        }
+        eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         setUnscheduledQuestsHeight();
     }
 

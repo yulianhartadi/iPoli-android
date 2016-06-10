@@ -123,7 +123,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
-                if(q.isPlaceholder()) {
+                if (q.isPlaceholder()) {
                     eventBus.post(new CompletePlaceholderRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
                 } else {
                     eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
@@ -184,11 +184,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @Override
     public void onStartTimeUpdated(QuestCalendarViewModel calendarEvent, int oldStartTime) {
-        if (canAddEvent(calendarEvent)) {
-            eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
-        } else {
-            calendarEvent.setStartMinute(oldStartTime);
-        }
+        eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         notifyDataSetChanged();
     }
 
@@ -219,22 +215,5 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     public void removeEvent(QuestCalendarViewModel calendarEvent) {
         questCalendarViewModels.remove(calendarEvent);
         notifyDataSetChanged();
-    }
-
-    public boolean canAddEvent(QuestCalendarViewModel calendarEvent) {
-        int newStartMin = calendarEvent.getStartMinute();
-        int newEndMin = newStartMin + calendarEvent.getDuration();
-        for (QuestCalendarViewModel e : getEvents()) {
-            if (e == calendarEvent) {
-                continue;
-            }
-            int curStartMin = e.getStartMinute();
-            int curEndMin = curStartMin + e.getDuration();
-
-            if ((newStartMin < curEndMin) && (newEndMin > curStartMin)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
