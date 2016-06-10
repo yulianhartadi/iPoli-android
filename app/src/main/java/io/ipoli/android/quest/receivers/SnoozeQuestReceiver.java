@@ -39,17 +39,16 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
 
-        return getQuest(intent).flatMap(q -> {
-            q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
-            return questPersistenceService.save(q).flatMap(quest -> {
-                scheduleNextQuestReminder(context);
-                eventBus.post(new QuestSnoozedEvent(q));
-                return Observable.empty();
-            });
+        Quest q = getQuest(intent);
+        q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
+        return questPersistenceService.save(q).flatMap(quest -> {
+            scheduleNextQuestReminder(context);
+            eventBus.post(new QuestSnoozedEvent(q));
+            return Observable.empty();
         });
     }
 
-    private Observable<Quest> getQuest(Intent intent) {
+    private Quest getQuest(Intent intent) {
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         return questPersistenceService.findById(questId);
     }

@@ -140,15 +140,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public Quest findByExternalSourceMappingIdSync(String source, String sourceId) {
-        try (Realm realm = getRealm()) {
-            Quest quest = realm.where(getRealmObjectClass())
-                    .equalTo("sourceMapping." + source, sourceId)
-                    .findFirst();
-            if (quest == null) {
-                return null;
-            }
-            return realm.copyFromRealm(quest);
+        Realm realm = getRealm();
+        Quest quest = realm.where(getRealmObjectClass())
+                .equalTo("sourceMapping." + source, sourceId)
+                .findFirst();
+        if (quest == null) {
+            return null;
         }
+        return realm.copyFromRealm(quest);
     }
 
     @Override

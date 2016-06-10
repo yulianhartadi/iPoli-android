@@ -74,18 +74,13 @@ public class AppJobService extends JobService {
     Bus eventBus;
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public boolean onStartJob(JobParameters params) {
+        App.getAppComponent(this).inject(this);
+
         Realm realm = Realm.getDefaultInstance();
         playerPersistenceService = new RealmPlayerPersistenceService(realm);
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-    }
-
-    @Override
-    public boolean onStartJob(JobParameters params) {
-        App.getAppComponent(this).inject(this);
-
         Log.d("RxJava", "Sync start");
         syncPlayer().flatMap(p -> {
                     if (p == null) {
@@ -100,9 +95,15 @@ public class AppJobService extends JobService {
                     );
                 }
         ).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
+            if (!realm.isClosed()) {
+                realm.close();
+            }
             Log.e("RxJava", "Error", throwable);
             jobFinished(params, true);
         }, () -> {
+            if (!realm.isClosed()) {
+                realm.close();
+            }
             eventBus.post(new SyncCompleteEvent());
             Log.d("RxJava", "Sync Job finished");
             jobFinished(params, false);
@@ -206,26 +207,26 @@ public class AppJobService extends JobService {
     }
 
     private Observable<List<Quest>> syncQuests(Player player) {
-        return questPersistenceService.findAllWhoNeedSyncWithRemote()
-                .filter(quests -> !quests.isEmpty())
-                .flatMap(quests -> {
-                    List<String> localIds = new ArrayList<>();
-                    for (Quest q : quests) {
-                        localIds.add(getLocalIdForRemoteObject(q));
-                        q.setId(isLocalOnly(q) ? null : q.getRemoteId());
-                        if (q.getRepeatingQuest() != null) {
-                            q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
-                        }
-                    }
-                    RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
-                    return apiService.syncQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
-                        for (int i = 0; i < serverQuests.size(); i++) {
-                            Quest sq = serverQuests.get(i);
-                            updateQuest(sq, localIds.get(i));
-                        }
-                        return questPersistenceService.saveRemoteObjects(serverQuests);
-                    });
-                });
+        List<Quest> quests = questPersistenceService.findAllWhoNeedSyncWithRemote();
+        if (quests.isEmpty()) {
+            return Observable.just(new ArrayList<>());
+        }
+        List<String> localIds = new ArrayList<>();
+        for (Quest q : quests) {
+            localIds.add(getLocalIdForRemoteObject(q));
+            q.setId(isLocalOnly(q) ? null : q.getRemoteId());
+            if (q.getRepeatingQuest() != null) {
+                q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
+            }
+        }
+        RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
+        return apiService.syncQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
+            for (int i = 0; i < serverQuests.size(); i++) {
+                Quest sq = serverQuests.get(i);
+                updateQuest(sq, localIds.get(i));
+            }
+            return questPersistenceService.saveRemoteObjects(serverQuests);
+        });
     }
 
     @NonNull
@@ -239,22 +240,23 @@ public class AppJobService extends JobService {
     }
 
     private Observable<List<RepeatingQuest>> syncRepeatingQuests(Player player) {
-        return repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote()
-                .filter(repeatingQuests -> !repeatingQuests.isEmpty()).flatMap(quests -> {
-                    List<String> localIds = new ArrayList<>();
-                    for (RepeatingQuest q : quests) {
-                        localIds.add(getLocalIdForRemoteObject(q));
-                        q.setId(isLocalOnly(q) ? null : q.getRemoteId());
-                    }
-                    RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
-                    return apiService.syncRepeatingQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
-                        for (int i = 0; i < serverQuests.size(); i++) {
-                            RepeatingQuest sq = serverQuests.get(i);
-                            updateRepeatingQuest(sq, localIds.get(i));
-                        }
-                        return repeatingQuestPersistenceService.saveRemoteObjects(serverQuests);
-                    });
-                });
+        List<RepeatingQuest> quests = repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote();
+        if (quests.isEmpty()) {
+            return Observable.just(new ArrayList<>());
+        }
+        List<String> localIds = new ArrayList<>();
+        for (RepeatingQuest q : quests) {
+            localIds.add(getLocalIdForRemoteObject(q));
+            q.setId(isLocalOnly(q) ? null : q.getRemoteId());
+        }
+        RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
+        return apiService.syncRepeatingQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
+            for (int i = 0; i < serverQuests.size(); i++) {
+                RepeatingQuest sq = serverQuests.get(i);
+                updateRepeatingQuest(sq, localIds.get(i));
+            }
+            return repeatingQuestPersistenceService.saveRemoteObjects(serverQuests);
+        });
     }
 
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {

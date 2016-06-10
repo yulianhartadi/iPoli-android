@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,20 +20,19 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import rx.Observable;
+import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/17/16.
  */
-public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
+public class RemindStartQuestReceiver extends BroadcastReceiver {
 
     public static final String ACTION_REMIND_START_QUEST = "io.ipoli.android.intent.action.REMIND_START_QUEST";
 
@@ -42,18 +42,16 @@ public class RemindStartQuestReceiver extends AsyncBroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Override
-    protected Observable<Void> doOnReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        Realm realm = Realm.getDefaultInstance();
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        return questPersistenceService.findById(questId).flatMap(q -> {
-            if (q == null) {
-                return Observable.empty();
-            }
-            showNotification(context, questId, q);
-            return Observable.empty();
-        });
-
+        Quest q = questPersistenceService.findById(questId);
+        if (q == null) {
+            return;
+        }
+        showNotification(context, questId, q);
     }
 
     private void showNotification(Context context, String questId, Quest q) {

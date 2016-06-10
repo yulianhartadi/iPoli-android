@@ -35,25 +35,24 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     protected RealmQuery<T> where() {
-        return getRealm().where(getRealmObjectClass()).equalTo("isDeleted", false);
+        return realm.where(getRealmObjectClass()).equalTo("isDeleted", false);
+    }
+
+    protected RealmQuery<T> whereIncludingDeleted() {
+        return realm.where(getRealmObjectClass());
     }
 
     @Override
     public Observable<T> save(T object) {
         object.markUpdated();
         return Observable.create(subscriber -> {
-//            Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm ->
                             backgroundRealm.copyToRealmOrUpdate(object),
                     () -> {
                         subscriber.onNext(object);
                         subscriber.onCompleted();
                         onObjectSaved(object);
-//                        realm.close();
-                    }, error -> {
-                        subscriber.onError(error);
-//                        realm.close();
-                    });
+                    }, subscriber::onError);
         });
     }
 
@@ -111,26 +110,29 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
-    public Observable<T> findById(String id) {
-        return find(where -> where.equalTo("id", id).findFirstAsync());
+    public T findById(String id) {
+        T result = where().equalTo("id", id).findFirst();
+        if (result == null) {
+            return null;
+        }
+        return realm.copyFromRealm(result);
     }
 
     @Override
     public T findByRemoteIdSync(String id) {
-        try (Realm realm = getRealm()) {
-            T obj = realm.where(getRealmObjectClass())
-                    .equalTo("remoteId", id)
-                    .findFirst();
-            if (obj == null) {
-                return null;
-            }
-            return realm.copyFromRealm(obj);
+        Realm realm = getRealm();
+        T obj = realm.where(getRealmObjectClass())
+                .equalTo("remoteId", id)
+                .findFirst();
+        if (obj == null) {
+            return null;
         }
+        return realm.copyFromRealm(obj);
     }
 
     @Override
-    public Observable<List<T>> findAllWhoNeedSyncWithRemote() {
-        return findAllIncludingDeleted(where -> where.equalTo("needsSyncWithRemote", true).findAllAsync());
+    public List<T> findAllWhoNeedSyncWithRemote() {
+        return realm.copyFromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
     }
 
     protected abstract Class<T> getRealmObjectClass();

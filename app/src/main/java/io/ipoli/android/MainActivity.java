@@ -208,10 +208,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (isFromAction(ACTION_QUEST_COMPLETE)) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
-            questPersistenceService.findById(questId).subscribe(quest -> {
-                startCalendar();
-                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
-            });
+            Quest quest = questPersistenceService.findById(questId);
+            startCalendar();
+            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
             startActivity(new Intent(this, AddQuestActivity.class));

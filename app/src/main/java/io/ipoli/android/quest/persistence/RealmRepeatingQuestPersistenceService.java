@@ -64,15 +64,14 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
 
     @Override
     public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
-        try (Realm realm = getRealm()) {
-            RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
-                    .equalTo("sourceMapping." + source, sourceId)
-                    .findFirst();
-            if (repeatingQuest == null) {
-                return null;
-            }
-            return realm.copyFromRealm(repeatingQuest);
+        Realm realm = getRealm();
+        RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
+                .equalTo("sourceMapping." + source, sourceId)
+                .findFirst();
+        if (repeatingQuest == null) {
+            return null;
         }
+        return realm.copyFromRealm(repeatingQuest);
     }
 
     @Override

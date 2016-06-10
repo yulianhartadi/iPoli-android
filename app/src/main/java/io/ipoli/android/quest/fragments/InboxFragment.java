@@ -94,8 +94,8 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
 
     @Override
     public void onDestroyView() {
-        unbinder.unbind();
         questPersistenceService.close();
+        unbinder.unbind();
         super.onDestroyView();
     }
 
