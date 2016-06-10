@@ -6,12 +6,12 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import okhttp3.RequestBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -20,20 +20,20 @@ import rx.Observable;
 public interface iPoliAPIService {
 
     @POST("players")
-    Observable<Player> createPlayer(@Body RequestBody request);
+    Call<Player> createPlayer(@Body RequestBody request);
 
     @POST("players/{player_id}")
-    Observable<Player> updatePlayer(@Body RequestBody data, @Path("player_id") String playerId);
+    Call<Player> updatePlayer(@Body RequestBody data, @Path("player_id") String playerId);
 
     @POST("quests")
-    Observable<List<Quest>> syncQuests(@Body RequestBody data);
+    Call<List<Quest>> syncQuests(@Body RequestBody data);
 
     @GET("quests")
-    Observable<List<Quest>> getQuests(@Query("player_id") String playerId);
+    Call<List<Quest>> getQuests(@Query("player_id") String playerId);
 
     @POST("repeating-quests")
-    Observable<List<RepeatingQuest>> syncRepeatingQuests(@Body RequestBody data);
+    Call<List<RepeatingQuest>> syncRepeatingQuests(@Body RequestBody data);
 
     @GET("repeating-quests")
-    Observable<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
+    Call<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
 }

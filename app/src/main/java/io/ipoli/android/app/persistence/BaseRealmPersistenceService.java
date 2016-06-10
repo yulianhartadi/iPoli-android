@@ -135,7 +135,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
-    public T findByRemoteIdSync(String id) {
+    public T findByRemoteId(String id) {
         Realm realm = getRealm();
         T obj = realm.where(getRealmObjectClass())
                 .equalTo("remoteId", id)
