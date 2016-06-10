@@ -26,7 +26,7 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     T findById(String id);
 
-    T findByRemoteIdSync(String id);
+    T findByRemoteId(String id);
 
     void saveSync(List<T> objects);
 

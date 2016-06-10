@@ -12,6 +12,7 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,12 +56,6 @@ import rx.schedulers.Schedulers;
  */
 public class AppJobService extends JobService {
 
-    PlayerPersistenceService playerPersistenceService;
-
-    QuestPersistenceService questPersistenceService;
-
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
-
     @Inject
     iPoliAPIService apiService;
 
@@ -77,108 +72,104 @@ public class AppJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         App.getAppComponent(this).inject(this);
 
-        Realm realm = Realm.getDefaultInstance();
-        playerPersistenceService = new RealmPlayerPersistenceService(realm);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-        Log.d("RxJava", "Sync start");
-        syncPlayer().flatMap(p -> {
-                    if (p == null) {
-                        return Observable.empty();
-                    }
-                    return Observable.concat(
-                            Observable.defer(this::scheduleQuestsFor2WeeksAhead),
-                            Observable.defer(() -> syncRepeatingQuests(p)),
-                            Observable.defer(() -> syncQuests(p)),
-                            Observable.defer(() -> getRepeatingQuests(p)),
-                            Observable.defer(() -> getQuests(p))
-                    );
+        Observable.defer(() -> {
+            Log.d("RxJava", "Sync start");
+            Realm realm = Realm.getDefaultInstance();
+            try {
+                PlayerPersistenceService playerPersistenceService = new RealmPlayerPersistenceService(realm);
+                QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+                RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+                Player p = syncPlayer(playerPersistenceService);
+                if (p == null) {
+                    return Observable.empty();
                 }
-        ).subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
-            if (!realm.isClosed()) {
-                realm.close();
+                scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                syncRepeatingQuests(repeatingQuestPersistenceService, p);
+                syncQuests(questPersistenceService, repeatingQuestPersistenceService, p);
+                getRepeatingQuests(repeatingQuestPersistenceService, p);
+                getQuests(questPersistenceService, repeatingQuestPersistenceService, p);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (realm != null && !realm.isClosed()) {
+                    realm.close();
+                }
             }
-            Log.e("RxJava", "Error", throwable);
-            jobFinished(params, true);
-        }, () -> {
-            if (!realm.isClosed()) {
-                realm.close();
-            }
-            eventBus.post(new SyncCompleteEvent());
-            Log.d("RxJava", "Sync Job finished");
-            jobFinished(params, false);
-        });
+            return Observable.empty();
+
+        }).compose(applyAPISchedulers())
+                .subscribe(res -> Log.d("RxJava", "OnNext " + res), throwable -> {
+                    Log.e("RxJava", "Error", throwable);
+                    jobFinished(params, true);
+                }, () -> {
+                    eventBus.post(new SyncCompleteEvent());
+                    Log.d("RxJava", "Sync Job finished");
+                    jobFinished(params, false);
+                });
         return true;
     }
 
-    private Observable<List<List<Quest>>> scheduleQuestsFor2WeeksAhead() {
+    private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
         LocalDate startOfNextWeek = startOfWeek.plusDays(7);
         LocalDate endOfNextWeek = endOfWeek.plusDays(7);
         List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
-        return Observable.from(repeatingQuests)
-                .flatMap(rq -> Observable.concat(
-                        saveQuestsInRange(rq, startOfWeek, endOfWeek),
-                        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)
-                )).toList();
+        for (RepeatingQuest rq : repeatingQuests) {
+            saveQuestsInRange(questPersistenceService, rq, startOfWeek, endOfWeek);
+            saveQuestsInRange(questPersistenceService, rq, startOfNextWeek, endOfNextWeek);
+        }
     }
 
-    private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
+    private void saveQuestsInRange(QuestPersistenceService questPersistenceService, RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
         long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
         if (createdQuestsCount == 0) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            return questPersistenceService.saveRemoteObjects(questsToCreate);
+            questPersistenceService.saveSync(questsToCreate);
         }
-        return Observable.just(new ArrayList<>());
     }
 
-    private Observable<Player> syncPlayer() {
+    private Player syncPlayer(PlayerPersistenceService playerPersistenceService) throws IOException {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Player player = getPlayer();
+        Player player = playerPersistenceService.find();
         if (player == null) {
-            return Observable.just(null);
+            return null;
         }
         if (isLocalOnly(player)) {
-            return createPlayer(localStorage, player);
+            return createPlayer(playerPersistenceService, localStorage, player);
         }
         if (player.needsSyncWithRemote()) {
-            return updatePlayer(player);
+            return updatePlayer(player, playerPersistenceService);
         }
-        return Observable.just(player);
+        return player;
     }
 
-    private Observable<Player> updatePlayer(Player player) {
+    private Player updatePlayer(Player player, PlayerPersistenceService playerPersistenceService) throws IOException {
         String localId = player.getId();
         player.setId(null);
-        return apiService.updatePlayer(createRequestBody("data", player), player.getRemoteId())
-                .compose(applyAPISchedulers()).flatMap(sp -> {
-                    sp.setSyncedWithRemote();
-                    sp.setRemoteId(sp.getId());
-                    sp.setId(localId);
-                    return playerPersistenceService.saveRemoteObject(sp);
-                });
+        Player sp = apiService.updatePlayer(createRequestBody("data", player), player.getRemoteId()).execute().body();
+        sp.setSyncedWithRemote();
+        sp.setRemoteId(sp.getId());
+        sp.setId(localId);
+        playerPersistenceService.saveSync(sp);
+        return sp;
     }
 
-    private Observable<Player> createPlayer(LocalStorage localStorage, Player player) {
-        return getAdvertisingId().flatMap(advertisingId -> {
-            String localId = player.getId();
-            AuthProvider authProvider = new AuthProvider(advertisingId, AuthProviderName.GOOGLE_ADVERTISING_ID.name());
-            return playerPersistenceService.addAuthProvider(player, authProvider)
-                    .flatMap(p -> {
-                        p.setId(null);
-                        return apiService.createPlayer(createRequestBody("data", p)).compose(applyAPISchedulers());
-                    })
-                    .flatMap(sp -> {
-                        sp.setSyncedWithRemote();
-                        sp.setRemoteId(sp.getId());
-                        sp.setId(localId);
-                        localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, sp.getRemoteId());
-                        eventBus.post(new PlayerCreatedEvent(sp.getRemoteId()));
-                        return playerPersistenceService.saveRemoteObject(sp);
-                    });
-        });
+    private Player createPlayer(PlayerPersistenceService playerPersistenceService, LocalStorage localStorage, Player player) throws IOException {
+        String advertisingId = getAdvertisingId();
+        String localId = player.getId();
+        AuthProvider authProvider = new AuthProvider(advertisingId, AuthProviderName.GOOGLE_ADVERTISING_ID.name());
+        playerPersistenceService.addAuthProvider(player, authProvider);
+        player.setId(null);
+        Player sp = apiService.createPlayer(createRequestBody("data", player)).execute().body();
+        sp.setSyncedWithRemote();
+        sp.setRemoteId(sp.getId());
+        sp.setId(localId);
+        localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, sp.getRemoteId());
+        eventBus.post(new PlayerCreatedEvent(sp.getRemoteId()));
+        playerPersistenceService.saveSync(sp);
+        return sp;
     }
 
     @Override
@@ -187,28 +178,22 @@ public class AppJobService extends JobService {
         return false;
     }
 
-    private Player getPlayer() {
-        return playerPersistenceService.find();
-    }
-
-    private Observable<String> getAdvertisingId() {
-        return Observable.defer(() -> {
-            try {
-                AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
-                return Observable.just(idInfo.getId());
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG) {
-                    return Observable.just(UUID.randomUUID().toString());
-                }
-                return Observable.error(e);
+    private String getAdvertisingId() {
+        try {
+            AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+            return idInfo.getId();
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG) {
+                return UUID.randomUUID().toString();
             }
-        }).compose(applyAPISchedulers());
+            throw new RuntimeException(e);
+        }
     }
 
-    private Observable<List<Quest>> syncQuests(Player player) {
+    private void syncQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<Quest> quests = questPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
-            return Observable.just(new ArrayList<>());
+            return;
         }
         List<String> localIds = new ArrayList<>();
         for (Quest q : quests) {
@@ -219,13 +204,12 @@ public class AppJobService extends JobService {
             }
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
-        return apiService.syncQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
-            for (int i = 0; i < serverQuests.size(); i++) {
-                Quest sq = serverQuests.get(i);
-                updateQuest(sq, localIds.get(i));
-            }
-            return questPersistenceService.saveRemoteObjects(serverQuests);
-        });
+        List<Quest> serverQuests = apiService.syncQuests(requestBody).execute().body();
+        for (int i = 0; i < serverQuests.size(); i++) {
+            Quest sq = serverQuests.get(i);
+            updateQuest(repeatingQuestPersistenceService, sq, localIds.get(i));
+        }
+        questPersistenceService.saveSync(serverQuests);
     }
 
     @NonNull
@@ -238,10 +222,10 @@ public class AppJobService extends JobService {
         return new JsonRequestBodyBuilder(getApplicationContext()).param(param, value).build();
     }
 
-    private Observable<List<RepeatingQuest>> syncRepeatingQuests(Player player) {
+    private void syncRepeatingQuests(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<RepeatingQuest> quests = repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
-            return Observable.just(new ArrayList<>());
+            return;
         }
         List<String> localIds = new ArrayList<>();
         for (RepeatingQuest q : quests) {
@@ -249,14 +233,12 @@ public class AppJobService extends JobService {
             q.setId(isLocalOnly(q) ? null : q.getRemoteId());
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
-        return apiService.syncRepeatingQuests(requestBody).compose(applyAPISchedulers()).flatMap(serverQuests -> {
-            for (int i = 0; i < serverQuests.size(); i++) {
-                RepeatingQuest sq = serverQuests.get(i);
-                updateRepeatingQuest(sq, localIds.get(i));
-            }
-            repeatingQuestPersistenceService.saveSync(serverQuests);
-            return Observable.just(new ArrayList<>());
-        });
+        List<RepeatingQuest> serverQuests = apiService.syncRepeatingQuests(requestBody).execute().body();
+        for (int i = 0; i < serverQuests.size(); i++) {
+            RepeatingQuest sq = serverQuests.get(i);
+            updateRepeatingQuest(sq, localIds.get(i));
+        }
+        repeatingQuestPersistenceService.saveSync(serverQuests);
     }
 
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
@@ -266,36 +248,31 @@ public class AppJobService extends JobService {
         return serverQuest;
     }
 
-    private Observable<List<RepeatingQuest>> getRepeatingQuests(Player player) {
-        return apiService.getRepeatingQuests(player.getRemoteId())
-                .compose(applyAPISchedulers()).flatMapIterable(repeatingQuests -> repeatingQuests)
-                .flatMap(sq -> {
-                            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteIdSync(sq.getId());
-                            if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
-                                return Observable.just(repeatingQuest);
-                            }
-                            String localId = getLocalIdForRemoteObject(repeatingQuest);
-                            return repeatingQuestPersistenceService.saveRemoteObject(updateRepeatingQuest(sq, localId));
-                        }
-                ).toList();
+    private void getRepeatingQuests(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+        List<RepeatingQuest> serverQuests = apiService.getRepeatingQuests(player.getRemoteId()).execute().body();
+        for (RepeatingQuest sq : serverQuests) {
+            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteId(sq.getId());
+            if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
+                return;
+            }
+            String localId = getLocalIdForRemoteObject(repeatingQuest);
+            repeatingQuestPersistenceService.saveSync(updateRepeatingQuest(sq, localId));
+        }
     }
 
-    private Observable<List<Quest>> getQuests(Player player) {
-        return apiService.getQuests(player.getRemoteId())
-                .compose(applyAPISchedulers())
-                .flatMapIterable(quests -> quests)
-                .flatMap(sq -> {
-                            Quest quest = questPersistenceService.findByRemoteIdSync(sq.getId());
-                            if (quest != null && sq.getUpdatedAt().getTime() <= quest.getUpdatedAt().getTime()) {
-                                return Observable.just(quest);
-                            }
-                            String localId = getLocalIdForRemoteObject(quest);
-                            return questPersistenceService.saveRemoteObject(updateQuest(sq, localId));
-                        }
-                ).toList();
+    private void getQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+        List<Quest> serverQuests = apiService.getQuests(player.getRemoteId()).execute().body();
+        for (Quest sq : serverQuests) {
+            Quest quest = questPersistenceService.findByRemoteId(sq.getId());
+            if (quest != null && sq.getUpdatedAt().getTime() <= quest.getUpdatedAt().getTime()) {
+                return;
+            }
+            String localId = getLocalIdForRemoteObject(quest);
+            questPersistenceService.saveSync(updateQuest(repeatingQuestPersistenceService, sq, localId));
+        }
     }
 
-    private Quest updateQuest(Quest serverQuest, String localId) {
+    private Quest updateQuest(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Quest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
@@ -306,7 +283,7 @@ public class AppJobService extends JobService {
             serverQuest.setCoins(new CoinsRewardGenerator().generate(serverQuest));
         }
         if (serverQuest.getRepeatingQuest() != null) {
-            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteIdSync(serverQuest.getRepeatingQuest().getId());
+            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteId(serverQuest.getRepeatingQuest().getId());
             if (repeatingQuest != null) {
                 serverQuest.setRepeatingQuest(repeatingQuest);
             }
