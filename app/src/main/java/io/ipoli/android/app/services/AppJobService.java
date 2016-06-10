@@ -254,7 +254,8 @@ public class AppJobService extends JobService {
                 RepeatingQuest sq = serverQuests.get(i);
                 updateRepeatingQuest(sq, localIds.get(i));
             }
-            return repeatingQuestPersistenceService.saveRemoteObjects(serverQuests);
+            repeatingQuestPersistenceService.saveSync(serverQuests);
+            return Observable.just(new ArrayList<>());
         });
     }
 
