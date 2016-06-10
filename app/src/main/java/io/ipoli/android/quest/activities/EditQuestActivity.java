@@ -127,6 +127,12 @@ public class EditQuestActivity extends BaseActivity {
         eventBus.post(new ScreenShownEvent(EventSource.EDIT_QUEST));
     }
 
+    @Override
+    protected void onDestroy() {
+        questPersistenceService.close();
+        super.onDestroy();
+    }
+
     private void initUI() {
         nameText.setText(quest.getName());
         nameText.setSelection(nameText.getText().length());

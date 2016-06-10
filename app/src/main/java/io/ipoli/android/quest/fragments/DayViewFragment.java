@@ -54,14 +54,12 @@ import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
@@ -167,9 +165,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
-        if (currentDate.isBefore(new LocalDate())) {
-            questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, quests -> questsForPastUpdated(quests));
-        } else if (futureDateIsSelected()) {
+        if (currentDateIsInThePast()) {
+            questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
+        } else if (currentDateIsInTheFuture()) {
 
             repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
                 futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
@@ -181,10 +179,14 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 questsForFutureUpdated();
             });
         } else {
-            questPersistenceService.findAllNonAllDayForDate(currentDate, quests -> questsForPresentUpdated(quests));
+            questPersistenceService.findAllNonAllDayForDate(currentDate, this::questsForPresentUpdated);
         }
 
         return view;
+    }
+
+    private boolean currentDateIsInThePast() {
+        return currentDate.isBefore(new LocalDate());
     }
 
     @NonNull
@@ -207,8 +209,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
 
     private void questsForFutureUpdated() {
-        List<Quest> quests = new ArrayList<>();
-        quests.addAll(futureQuests);
+        List<Quest> quests = futureQuests;
         quests.addAll(futurePlaceholderQuests);
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
         List<Quest> unscheduledQuests = new ArrayList<>();
@@ -404,16 +405,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         setUnscheduledQuestsHeight();
     }
 
-    @Subscribe
-    public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
-        QuestCalendarViewModel viewModel = e.calendarEvent;
-        Quest q = viewModel.getQuest();
-        q.setStartMinute(viewModel.getStartMinute());
-        saveQuest(q).subscribe(quest -> {
-            Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
-        });
-    }
-
     private Observable<Quest> saveQuest(Quest q) {
         return questPersistenceService.save(q).compose(bindToLifecycle());
     }
@@ -426,14 +417,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             unscheduledQuestsAdapter.addQuest(movingQuestPosition, movingViewModel);
         }
         setUnscheduledQuestsHeight();
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = e.quest;
-        if (!q.isScheduledFor(currentDate)) {
-            return;
-        }
     }
 
     @Subscribe
@@ -466,7 +449,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
-    private boolean futureDateIsSelected() {
+    private boolean currentDateIsInTheFuture() {
         return currentDate.isAfter(new LocalDate());
     }
 

@@ -56,6 +56,26 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         });
     }
 
+    @Override
+    public Observable<List<T>> save(List<T> objects) {
+        for (T obj : objects) {
+            obj.markUpdated();
+        }
+        return Observable.create(subscriber -> {
+            realm.executeTransactionAsync(backgroundRealm ->
+                            backgroundRealm.copyToRealmOrUpdate(objects),
+                    () -> {
+                        subscriber.onNext(objects);
+                        subscriber.onCompleted();
+                        onObjectsSaved(objects);
+                    }, subscriber::onError);
+        });
+    }
+
+    protected void onObjectsSaved(List<T> objects) {
+
+    }
+
     protected void onObjectSaved(T object) {
 
     }
@@ -132,7 +152,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     @Override
     public List<T> findAllWhoNeedSyncWithRemote() {
-        return realm.copyFromRealm(where().equalTo("needsSyncWithRemote", true).findAll());
+        return realm.copyFromRealm(whereIncludingDeleted().equalTo("needsSyncWithRemote", true).findAll());
     }
 
     protected abstract Class<T> getRealmObjectClass();

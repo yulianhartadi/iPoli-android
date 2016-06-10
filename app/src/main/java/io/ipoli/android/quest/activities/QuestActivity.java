@@ -103,6 +103,12 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
+    @Override
+    protected void onDestroy() {
+        questPersistenceService.close();
+        super.onDestroy();
+    }
+
     private void initUI() {
         setBackgroundColors(Quest.getContext(quest));
         questHasDuration = quest.getDuration() > 0;

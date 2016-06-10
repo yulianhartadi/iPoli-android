@@ -178,6 +178,8 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     protected void onDestroy() {
+        questPersistenceService.close();
+        repeatingQuestPersistenceService.close();
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         super.onDestroy();
     }
