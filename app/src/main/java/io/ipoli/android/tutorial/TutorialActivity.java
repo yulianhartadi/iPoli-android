@@ -34,10 +34,8 @@ import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -54,10 +52,6 @@ public class TutorialActivity extends AppIntro2 {
 
     @Inject
     Bus eventBus;
-
-    QuestPersistenceService questPersistenceService;
-
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     private PickRepeatingQuestsFragment pickRepeatingQuestsFragment;
     private PickQuestsFragment pickQuestsFragment;
@@ -113,8 +107,8 @@ public class TutorialActivity extends AppIntro2 {
 
         Observable.defer(() -> {
             Realm realm = Realm.getDefaultInstance();
-            questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+            RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+            RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
 
             List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
             for (RepeatingQuest rq : selectedRepeatingQuests) {
@@ -185,8 +179,6 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
-        repeatingQuestPersistenceService.close();
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         super.onDestroy();
     }
