@@ -32,7 +32,6 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.squareup.otto.Bus;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.QuestContext;
@@ -132,8 +130,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        org.joda.time.DateTime startDate = new  org.joda.time.DateTime(DateUtils.getTodayAtMidnight(), DateTimeZone.UTC);
-        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(startDate.minusDays(dayCount - 1).toDate(), startDate.plusDays(1).toDate());
+        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1));
 
         if (quests.isEmpty()) {
             chartContainer.setVisibility(View.GONE);

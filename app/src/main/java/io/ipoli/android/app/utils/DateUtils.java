@@ -94,6 +94,10 @@ public class DateUtils {
         return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
     }
 
+    public static Date toStartOfDay(LocalDate localDate) {
+        return localDate.toDateTimeAtStartOfDay().toDate();
+    }
+
     public static boolean isTodayUTC(LocalDate localDate) {
         return localDate.isEqual(toStartOfDayUTCLocalDate(new LocalDate()));
     }

@@ -15,6 +15,7 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
 import io.realm.Sort;
 
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
@@ -86,12 +87,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
-        Date startDate = toStartOfDayUTC(currentDate);
-        Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        Date startDateUTC = toStartOfDayUTC(currentDate);
+        Date endDateUTC = toStartOfDayUTC(currentDate.plusDays(1));
         listenForChanges(where()
                 .beginGroup()
-                .greaterThanOrEqualTo("endDate", startDate)
-                .lessThan("endDate", endDate)
+                .greaterThanOrEqualTo("endDate", startDateUTC)
+                .lessThan("endDate", endDateUTC)
                 .or()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
@@ -102,8 +105,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
-        Date startDate = toStartOfDayUTC(currentDate);
-        Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
         listenForChanges(where()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
@@ -183,10 +186,10 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public List<Quest> findAllCompletedNonAllDayBetween(Date startDate, Date endDate) {
+    public List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
         return findAll(where -> where
-                .greaterThanOrEqualTo("completedAt", startDate)
-                .lessThan("completedAt", endDate)
+                .greaterThanOrEqualTo("completedAt", toStartOfDay(startDate))
+                .lessThan("completedAt", toStartOfDay(endDate))
                 .equalTo("allDay", false)
                 .findAllSorted("completedAt", Sort.ASCENDING));
     }
