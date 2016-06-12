@@ -72,6 +72,17 @@ public class RepeatingQuestParserTest {
     }
 
     @Test
+    public void parseWithDateAndTimesPerDayAndDuration() {
+        RepeatingQuest rq = parse("Workout tomorrow 2 times per day for 1h");
+        assertEquals("Workout", rq.getName());
+        assertThat(rq.getRecurrence().getTimesPerDay(), is(2));
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 1);
+        assertStartDate(rq, cal);
+        assertEquals(60, rq.getDuration());
+    }
+
+    @Test
     public void parseRepeatEveryDay() {
         RepeatingQuest rq = parse("Workout every day");
         assertEquals("Workout", rq.getName());

@@ -2,7 +2,6 @@ package io.ipoli.android.quest;
 
 import android.support.v4.util.Pair;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -124,8 +123,8 @@ public class QuestParser {
         } else {
             recurrence.setRrule(null);
             if (dueDate != null) {
-                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC)));
-                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate, DateTimeZone.UTC).plusDays(1)));
+                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate)));
+                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate).plusDays(1)));
             } else {
                 recurrence.setDtstart(null);
                 recurrence.setDtend(null);
