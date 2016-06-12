@@ -67,6 +67,7 @@ public class RepeatingQuestScheduler {
         Quest quest = new Quest();
         quest.setName(repeatingQuest.getName());
         quest.setContext(repeatingQuest.getContext());
+        quest.setDuration(repeatingQuest.getDuration());
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
