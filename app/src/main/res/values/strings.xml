@@ -242,4 +242,5 @@
     <string name="summary_stats_hours_spent">Hours spent: %.1f</string>
     <string name="summary_stats_quests_done">Quests done: %d</string>
     <string name="reward_name_validation">You must add name for your reward</string>
+    <string name="do_not_repeat">Do not repeat</string>
 </resources>
