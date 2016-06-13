@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import com.squareup.otto.Bus;
@@ -24,6 +25,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
@@ -33,7 +35,7 @@ import io.ipoli.android.app.App;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/16.
  */
-public class RecurrencePickerFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
+public class RecurrencePickerFragment extends DialogFragment {
 
     private static final String TAG = "recurrence-picker-dialog";
     public static final int FREQUENCY_DAILY = 0;
@@ -55,6 +57,9 @@ public class RecurrencePickerFragment extends DialogFragment implements AdapterV
     @BindView(R.id.day_of_month)
     Spinner dayOfMonth;
 
+    @BindView(R.id.recurrence_until)
+    Button until;
+
     private Unbinder unbinder;
 
     @Override
@@ -74,10 +79,9 @@ public class RecurrencePickerFragment extends DialogFragment implements AdapterV
 
         recurrenceFrequency.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, new String[]{"Daily", "Weekly", "Monthly"}));
         recurrenceFrequency.setSelection(0, false);
-        recurrenceFrequency.setOnItemSelectedListener(this);
 
         List<String> daysOfMonth = new ArrayList<>();
-        for(int i = 1; i <= 31; i++) {
+        for (int i = 1; i <= 31; i++) {
             daysOfMonth.add(String.valueOf(i));
         }
         dayOfMonth.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, daysOfMonth));
@@ -88,6 +92,7 @@ public class RecurrencePickerFragment extends DialogFragment implements AdapterV
                 .setPositiveButton(getString(R.string.done), (dialog, which) -> {
 
                 })
+                .setNegativeButton(getString(R.string.cancel), null)
                 .setNeutralButton(getString(R.string.do_not_repeat), (dialog, which) -> {
                 });
 
@@ -105,8 +110,8 @@ public class RecurrencePickerFragment extends DialogFragment implements AdapterV
         show(fragmentManager, TAG);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    @OnItemSelected(R.id.recurrence_frequency)
+    public void onFrequencySelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case FREQUENCY_DAILY:
                 dayOfWeekContainer.setVisibility(View.GONE);
@@ -124,13 +129,13 @@ public class RecurrencePickerFragment extends DialogFragment implements AdapterV
         }
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
     @OnItemSelected(R.id.day_of_month)
     public void onDayOfMonthSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d("DayOfMonthSel", position + " ");
+    }
+
+    @OnClick(R.id.recurrence_until)
+    public void onUntilTapped() {
+        DatePickerFragment.newInstance().show(getFragmentManager());
     }
 }

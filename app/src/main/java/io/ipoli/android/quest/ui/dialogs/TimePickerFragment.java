@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
@@ -23,6 +24,8 @@ import io.ipoli.android.quest.events.TimeSelectedEvent;
 
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener, DialogInterface.OnClickListener {
+
+    public static final String TAG = "time-picker-dialog";
 
     @Inject
     Bus eventBus;
@@ -51,5 +54,9 @@ public class TimePickerFragment extends DialogFragment
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         eventBus.post(new TimeSelectedEvent(null));
+    }
+
+    public void show(FragmentManager fragmentManager) {
+        show(fragmentManager, TAG);
     }
 }
