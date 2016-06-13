@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -13,9 +14,11 @@ import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +40,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -51,6 +55,7 @@ import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -58,12 +63,17 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
+import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
+import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.ui.events.DurationSelectedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -221,6 +231,40 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.quest_end_date_container)
+    public void onEndDateClick(View view) {
+        Calendar c = Calendar.getInstance();
+        DialogFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        f.show(this.getSupportFragmentManager(), "datePicker");
+    }
+
+    @OnClick(R.id.quest_start_time_container)
+    public void onStartTimeClick(View view) {
+        DialogFragment f = new TimePickerFragment();
+        f.show(this.getSupportFragmentManager(), "timePicker");
+    }
+
+    @OnClick(R.id.quest_duration_container)
+    public void onDurationClick(View view) {
+        DurationPickerFragment durationPickerFragment = new DurationPickerFragment();
+        durationPickerFragment.show(getSupportFragmentManager());
+    }
+
+    @Subscribe
+    public void onDueDateSelected(DateSelectedEvent e) {
+        Log.d("AAA selected date: ", e.date.toString());
+    }
+
+    @Subscribe
+    public void onStartTimeSelected(TimeSelectedEvent e) {
+        Log.d("AAA selected time: ", e.time.toString());
+    }
+
+    @Subscribe
+    public void onDurationSelected(DurationSelectedEvent e) {
+        Log.d("AAA selected duration: ", e.duration + "");
     }
 
     public void saveQuest() {
