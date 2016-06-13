@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -301,15 +300,15 @@ public class EditQuestActivity extends BaseActivity {
             Date dueDate = (Date) dueDateBtn.getTag();
             c.setTime(dueDate);
         }
-        DialogFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-        f.show(this.getSupportFragmentManager(), "datePicker");
+        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_start_time)
     public void onStartTimeClick(Button button) {
         eventBus.post(new UpdateQuestStartTimeRequestEvent(quest));
-        DialogFragment f = new TimePickerFragment();
-        f.show(this.getSupportFragmentManager(), "timePicker");
+        TimePickerFragment f = new TimePickerFragment();
+        f.show(this.getSupportFragmentManager());
     }
 
     @Override

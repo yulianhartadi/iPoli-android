@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.widget.DatePicker;
 
 import com.squareup.otto.Bus;
@@ -21,6 +22,8 @@ import io.ipoli.android.quest.events.DateSelectedEvent;
 
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
+
+    public static final String TAG = "date-picker-dialog";
 
     private static final String YEAR = "year";
     private static final String MONTH = "month";
@@ -81,5 +84,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         eventBus.post(new DateSelectedEvent(null));
+    }
+
+    public void show(FragmentManager fragmentManager) {
+        show(fragmentManager, TAG);
     }
 }
