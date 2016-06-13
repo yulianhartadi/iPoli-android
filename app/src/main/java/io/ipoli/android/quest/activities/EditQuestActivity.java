@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -69,9 +68,6 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 public class EditQuestActivity extends BaseActivity {
-
-    @BindView(R.id.edit_quest_container)
-    CoordinatorLayout rootContainer;
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;

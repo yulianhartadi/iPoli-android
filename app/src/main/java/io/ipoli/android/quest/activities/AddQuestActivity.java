@@ -2,7 +2,9 @@ package io.ipoli.android.quest.activities;
 
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -68,6 +70,9 @@ import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
  * on 5/27/16.
  */
 public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+
+    @BindView(R.id.appbar)
+    AppBarLayout appBar;
 
     @Inject
     Bus eventBus;
@@ -156,7 +161,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void initContextUI() {
-        changeContext(QuestContext.PERSONAL);
+        changeContext(QuestContext.LEARNING);
 
         final QuestContext[] ctxs = QuestContext.values();
         for (int i = 0; i < contextContainer.getChildCount(); i++) {
@@ -341,8 +346,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Editable editable = questText.getText();
         clearSpans(editable);
         for (ParsedPart p : parsedParts) {
-            int color = p.isPartial ? R.color.md_red_A200 : R.color.md_blue_500;
-            markText(editable, p.startIdx, p.endIdx, color);
+            int backgroundColor = p.isPartial ? R.color.md_red_A200 : R.color.md_white;
+            int foregroundColor = p.isPartial ? R.color.md_white : R.color.md_blue_700;
+            markText(editable, p.startIdx, p.endIdx, backgroundColor, foregroundColor);
         }
     }
 
@@ -357,9 +363,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
     }
 
-    private void markText(Editable text, int startIdx, int endIdx, int colorRes) {
-        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, colorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.md_white)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    private void markText(Editable text, int startIdx, int endIdx, @ColorRes int backgroundColorRes, @ColorRes int foregroundColorRes) {
+        text.setSpan(new BackgroundColorSpan(ContextCompat.getColor(this, backgroundColorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, foregroundColorRes)), startIdx, endIdx + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Subscribe
@@ -393,7 +399,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void colorLayout(QuestContext context) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+        appBar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
     }
