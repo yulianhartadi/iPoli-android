@@ -89,4 +89,115 @@
             style="@style/QuestContextIndicator"
             android:layout_marginEnd="0dp" />
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/quest_repeat_pattern_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/quest_repeat_pattern_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/ic_repeating_quest_24dp" />
+
+        <TextView
+            android:id="@+id/quest_repeat_pattern_question"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/quest_repeat_pattern_icon"
+            android:text="How often it should repeat?" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/quest_repeat_pattern_question"
+            android:layout_toEndOf="@id/quest_repeat_pattern_icon"
+            android:text="Once" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/quest_times_per_day_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/quest_times_per_day_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/ic_multiply_black_24dp" />
+
+        <TextView
+            android:id="@+id/quest_times_per_day_question"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/quest_times_per_day_icon"
+            android:text="How many times per day?" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/quest_times_per_day_question"
+            android:layout_toEndOf="@id/quest_times_per_day_icon"
+            android:text="One" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/quest_notes_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/quest_notes_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/ic_note_black_24dp" />
+
+        <TextView
+            android:id="@+id/quest_notes_question"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/quest_notes_icon"
+            android:text="Notes/Description" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/quest_notes_question"
+            android:layout_toEndOf="@id/quest_notes_icon"
+            android:text="None" />
+    </RelativeLayout>
 </LinearLayout>
