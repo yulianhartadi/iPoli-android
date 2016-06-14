@@ -26,6 +26,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ import io.ipoli.android.quest.data.Recurrence;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/16.
  */
-public class RecurrencePickerFragment extends DialogFragment {
+public class RecurrencePickerFragment extends DialogFragment implements DatePickerFragment.OnDatePickedListener {
 
     private static final String TAG = "recurrence-picker-dialog";
     public static final int FREQUENCY_DAILY = 0;
@@ -202,7 +203,12 @@ public class RecurrencePickerFragment extends DialogFragment {
 
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
-        DatePickerFragment.newInstance().show(getFragmentManager());
+        DatePickerFragment.newInstance(this).show(getFragmentManager());
+    }
+
+    @Override
+    public void onDatePicked(Date date) {
+
     }
 
     public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener) {

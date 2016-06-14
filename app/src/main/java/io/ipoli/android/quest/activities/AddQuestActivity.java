@@ -56,7 +56,6 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -64,7 +63,6 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
@@ -75,13 +73,19 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.events.DurationSelectedEvent;
+import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener, RecurrencePickerFragment.OnRecurrencePickedListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener,
+        DatePickerFragment.OnDatePickedListener,
+        RecurrencePickerFragment.OnRecurrencePickedListener,
+        DurationPickerFragment.OnDurationPickedListener,
+        TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
+        TimePickerFragment.OnTimePickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -109,11 +113,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
-
-    @Override
-    public void onRecurrencePicked(Recurrence recurrence) {
-
-    }
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
@@ -243,20 +242,26 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
         Calendar c = Calendar.getInstance();
-        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
         f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
-        TimePickerFragment f = new TimePickerFragment();
+        TimePickerFragment f = TimePickerFragment.newInstance(this);
         f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        DurationPickerFragment durationPickerFragment = new DurationPickerFragment();
+        DurationPickerFragment durationPickerFragment = DurationPickerFragment.newInstance(this);
         durationPickerFragment.show(getSupportFragmentManager());
+    }
+
+    @OnClick(R.id.quest_times_per_day_container)
+    public void onTimesPerDayClick(View view) {
+        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(this);
+        timesPerDayPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_frequency_container)
@@ -270,20 +275,31 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
-    @Subscribe
-    public void onDueDateSelected(DateSelectedEvent e) {
-        Log.d("AAA selected date: ", e.date.toString());
+    @Override
+    public void onDatePicked(Date date) {
+        Log.d("AAA selected date: ",date.toString());
     }
 
-    @Subscribe
-    public void onStartTimeSelected(TimeSelectedEvent e) {
-        Log.d("AAA selected time: ", e.time.toString());
+    @Override
+    public void onTimePicked(Time time) {
+        Log.d("AAA selected time: ", time.toString());
     }
 
-    @Subscribe
-    public void onDurationSelected(DurationSelectedEvent e) {
-        Log.d("AAA selected duration: ", e.duration + "");
+    @Override
+    public void onDurationPicked(int duration) {
+        Log.d("AAA selected duration: ", duration + "");
     }
+
+    @Override
+    public void onTimesPerDayPicked(int timesPerDay) {
+        Log.d("AAA timesPerDay: ", timesPerDay + "");
+    }
+
+    @Override
+    public void onRecurrencePicked(Recurrence recurrence) {
+
+    }
+
 
     public void saveQuest() {
         String text = questText.getText().toString().trim();

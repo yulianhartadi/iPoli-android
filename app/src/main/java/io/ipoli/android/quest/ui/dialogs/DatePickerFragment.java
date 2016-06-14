@@ -9,16 +9,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.DatePicker;
 
-import com.squareup.otto.Bus;
-
 import java.util.Calendar;
-
-import javax.inject.Inject;
+import java.util.Date;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.events.DateSelectedEvent;
 
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
@@ -28,30 +23,28 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private static final String YEAR = "year";
     private static final String MONTH = "month";
     private static final String DAY = "day";
+    private OnDatePickedListener datePickedListener;
 
-
-    @Inject
-    Bus eventBus;
-
-    public DatePickerFragment() {
-        App.getAppComponent(getActivity()).inject(this);
+    public interface OnDatePickedListener {
+        void onDatePicked(Date date);
     }
 
-    public static DatePickerFragment newInstance() {
+    public static DatePickerFragment newInstance(OnDatePickedListener onDatePickedListener) {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
-        return newInstance(year, month, day);
+        return newInstance(year, month, day, onDatePickedListener);
     }
 
-    public static DatePickerFragment newInstance(int year, int month, int day) {
+    public static DatePickerFragment newInstance(int year, int month, int day, OnDatePickedListener onDatePickedListener) {
         DatePickerFragment fragment = new DatePickerFragment();
         Bundle args = new Bundle();
         args.putInt(YEAR, year);
         args.putInt(MONTH, month);
         args.putInt(DAY, day);
         fragment.setArguments(args);
+        fragment.datePickedListener = onDatePickedListener;
         return fragment;
     }
 
@@ -78,12 +71,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, day);
-        eventBus.post(new DateSelectedEvent(c.getTime()));
+        datePickedListener.onDatePicked(c.getTime());
     }
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-        eventBus.post(new DateSelectedEvent(null));
+        datePickedListener.onDatePicked(null);
     }
 
     public void show(FragmentManager fragmentManager) {
