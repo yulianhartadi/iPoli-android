@@ -268,7 +268,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_repeat_pattern_container"
+                android:id="@+id/quest_frequency_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"

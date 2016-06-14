@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -54,6 +53,7 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
@@ -72,6 +72,7 @@ import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
+import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.DurationSelectedEvent;
 
@@ -79,7 +80,7 @@ import io.ipoli.android.quest.ui.events.DurationSelectedEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener, RecurrencePickerFragment.OnRecurrencePickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -107,6 +108,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
+
+    @Override
+    public void onRecurrencePicked(Recurrence recurrence) {
+
+    }
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
@@ -236,20 +242,26 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
         Calendar c = Calendar.getInstance();
-        DialogFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-        f.show(this.getSupportFragmentManager(), "datePicker");
+        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
-        DialogFragment f = new TimePickerFragment();
-        f.show(this.getSupportFragmentManager(), "timePicker");
+        TimePickerFragment f = new TimePickerFragment();
+        f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
         DurationPickerFragment durationPickerFragment = new DurationPickerFragment();
         durationPickerFragment.show(getSupportFragmentManager());
+    }
+
+    @OnClick(R.id.quest_frequency_container)
+    public void onFrequencyClick(View view) {
+        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this);
+        recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
     @Subscribe

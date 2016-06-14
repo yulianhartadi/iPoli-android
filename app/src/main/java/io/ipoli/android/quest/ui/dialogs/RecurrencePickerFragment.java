@@ -30,6 +30,7 @@ import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.quest.data.Recurrence;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -41,6 +42,10 @@ public class RecurrencePickerFragment extends DialogFragment {
     public static final int FREQUENCY_DAILY = 0;
     public static final int FREQUENCY_WEEKLY = 1;
     public static final int FREQUENCY_MONTHLY = 2;
+
+    public interface OnRecurrencePickedListener {
+        void onRecurrencePicked(Recurrence recurrence);
+    }
 
     @Inject
     Bus eventBus;
@@ -61,6 +66,9 @@ public class RecurrencePickerFragment extends DialogFragment {
     Button until;
 
     private Unbinder unbinder;
+    private OnRecurrencePickedListener recurrencePickerListener;
+
+    private Recurrence recurrence;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,12 +98,11 @@ public class RecurrencePickerFragment extends DialogFragment {
                 .setIcon(R.drawable.logo)
                 .setTitle("Pick repeating pattern")
                 .setPositiveButton(getString(R.string.done), (dialog, which) -> {
-
+                    recurrencePickerListener.onRecurrencePicked(recurrence);
                 })
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setNeutralButton(getString(R.string.do_not_repeat), (dialog, which) -> {
                 });
-
 
         return builder.create();
     }
@@ -125,7 +132,6 @@ public class RecurrencePickerFragment extends DialogFragment {
                 dayOfWeekContainer.setVisibility(View.GONE);
                 dayOfMonthContainer.setVisibility(View.VISIBLE);
                 break;
-
         }
     }
 
@@ -137,5 +143,11 @@ public class RecurrencePickerFragment extends DialogFragment {
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
         DatePickerFragment.newInstance().show(getFragmentManager());
+    }
+
+    public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener) {
+        RecurrencePickerFragment fragment = new RecurrencePickerFragment();
+        fragment.recurrencePickerListener = listener;
+        return fragment;
     }
 }
