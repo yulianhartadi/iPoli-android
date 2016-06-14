@@ -31,7 +31,6 @@ import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -128,7 +127,5 @@ public interface AppComponent {
     void inject(GrowthFragment growthFragment);
 
     void inject(RecurrencePickerFragment recurrencePickerFragment);
-
-    void inject(DurationPickerFragment durationPickerFragment);
 }
 

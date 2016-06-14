@@ -74,13 +74,14 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.events.DurationSelectedEvent;
+import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener, RecurrencePickerFragment.OnRecurrencePickedListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener, RecurrencePickerFragment.OnRecurrencePickedListener, DurationPickerFragment.OnDurationPickedListener, TimesPerDayPickerFragment.OnTimesPerDayPickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -108,11 +109,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
-
-    @Override
-    public void onRecurrencePicked(Recurrence recurrence) {
-
-    }
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
 
@@ -254,8 +250,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        DurationPickerFragment durationPickerFragment = new DurationPickerFragment();
+        DurationPickerFragment durationPickerFragment = DurationPickerFragment.newInstance(this);
         durationPickerFragment.show(getSupportFragmentManager());
+    }
+
+    @OnClick(R.id.quest_times_per_day_container)
+    public void onTimesPerDayClick(View view) {
+        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(this);
+        timesPerDayPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_frequency_container)
@@ -274,10 +276,21 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Log.d("AAA selected time: ", e.time.toString());
     }
 
-    @Subscribe
-    public void onDurationSelected(DurationSelectedEvent e) {
-        Log.d("AAA selected duration: ", e.duration + "");
+    @Override
+    public void onDurationPicked(int duration) {
+        Log.d("AAA selected duration: ", duration + "");
     }
+
+    @Override
+    public void onTimesPerDayPicked(int timesPerDay) {
+        Log.d("AAA timesPerDay: ", timesPerDay + "");
+    }
+
+    @Override
+    public void onRecurrencePicked(Recurrence recurrence) {
+
+    }
+
 
     public void saveQuest() {
         String text = questText.getText().toString().trim();

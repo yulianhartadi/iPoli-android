@@ -110,6 +110,15 @@
         <item>4 hours</item>
     </string-array>
 
+    <string-array name="quest_times_per_day">
+        <item>2 times</item>
+        <item>3 times</item>
+        <item>4 times</item>
+        <item>5 times</item>
+        <item>6 times</item>
+        <item>7 times</item>
+    </string-array>
+
     <string-array name="growth_intervals">
         <item>Today</item>
         <item>Last 7 days</item>
