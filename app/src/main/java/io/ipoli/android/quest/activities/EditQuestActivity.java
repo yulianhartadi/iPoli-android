@@ -48,7 +48,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
@@ -66,7 +65,7 @@ import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
-public class EditQuestActivity extends BaseActivity {
+public class EditQuestActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener{
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -300,7 +299,7 @@ public class EditQuestActivity extends BaseActivity {
             Date dueDate = (Date) dueDateBtn.getTag();
             c.setTime(dueDate);
         }
-        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -317,9 +316,9 @@ public class EditQuestActivity extends BaseActivity {
         super.onBackPressed();
     }
 
-    @Subscribe
-    public void onDueDateSelected(DateSelectedEvent e) {
-        setDueDateText(e.date);
+    @Override
+    public void onDatePicked(Date date) {
+        setDueDateText(date);
     }
 
     @Subscribe

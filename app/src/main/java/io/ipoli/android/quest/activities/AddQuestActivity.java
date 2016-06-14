@@ -55,7 +55,6 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.DateSelectedEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -81,7 +80,11 @@ import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener, RecurrencePickerFragment.OnRecurrencePickedListener, DurationPickerFragment.OnDurationPickedListener, TimesPerDayPickerFragment.OnTimesPerDayPickedListener {
+public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener,
+        DatePickerFragment.OnDatePickedListener,
+        RecurrencePickerFragment.OnRecurrencePickedListener,
+        DurationPickerFragment.OnDurationPickedListener,
+        TimesPerDayPickerFragment.OnTimesPerDayPickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -238,7 +241,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
         Calendar c = Calendar.getInstance();
-        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -266,9 +269,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
-    @Subscribe
-    public void onDueDateSelected(DateSelectedEvent e) {
-        Log.d("AAA selected date: ", e.date.toString());
+    @Override
+    public void onDatePicked(Date date) {
+        Log.d("AAA selected date: ",date.toString());
     }
 
     @Subscribe
