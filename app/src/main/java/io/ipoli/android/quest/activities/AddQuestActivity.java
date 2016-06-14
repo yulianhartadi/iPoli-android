@@ -254,13 +254,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        DurationPickerFragment durationPickerFragment = DurationPickerFragment.newInstance(this);
+        DurationPickerFragment durationPickerFragment = DurationPickerFragment.newInstance(60, this);
         durationPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_times_per_day_container)
     public void onTimesPerDayClick(View view) {
-        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(this);
+        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(3, this);
         timesPerDayPickerFragment.show(getSupportFragmentManager());
     }
 
