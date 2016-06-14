@@ -7,10 +7,11 @@ import org.joda.time.LocalDate;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -43,7 +44,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .greaterThan("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -56,7 +57,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .greaterThan("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
