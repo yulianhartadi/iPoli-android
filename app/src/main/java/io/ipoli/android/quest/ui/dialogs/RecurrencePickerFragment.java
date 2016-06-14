@@ -40,7 +40,9 @@ import butterknife.OnItemSelected;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -208,7 +210,12 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     @Override
     public void onDatePicked(Date date) {
-
+        String text = getString(R.string.end_of_time);
+        if (date != null) {
+            text = DateUtils.isToday(date) ? getString(R.string.today) : DueDateFormatter.format(date);
+        }
+        until.setText(text);
+        until.setTag(date);
     }
 
     public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener) {
