@@ -62,7 +62,6 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
@@ -84,7 +83,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         DatePickerFragment.OnDatePickedListener,
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
-        TimesPerDayPickerFragment.OnTimesPerDayPickedListener {
+        TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
+        TimePickerFragment.OnTimePickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -247,7 +247,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
-        TimePickerFragment f = new TimePickerFragment();
+        TimePickerFragment f = TimePickerFragment.newInstance(this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -274,9 +274,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Log.d("AAA selected date: ",date.toString());
     }
 
-    @Subscribe
-    public void onStartTimeSelected(TimeSelectedEvent e) {
-        Log.d("AAA selected time: ", e.time.toString());
+    @Override
+    public void onTimePicked(Time time) {
+        Log.d("AAA selected time: ", time.toString());
     }
 
     @Override

@@ -11,27 +11,25 @@ import android.support.v4.app.FragmentManager;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
-import com.squareup.otto.Bus;
-
 import java.util.Calendar;
 
-import javax.inject.Inject;
-
 import io.ipoli.android.R;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.events.TimeSelectedEvent;
 
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener, DialogInterface.OnClickListener {
 
     public static final String TAG = "time-picker-dialog";
+    private OnTimePickedListener timePickedListener;
 
-    @Inject
-    Bus eventBus;
+    public interface OnTimePickedListener {
+        void onTimePicked(Time time);
+    }
 
-    public TimePickerFragment() {
-        App.getAppComponent(getActivity()).inject(this);
+    public static TimePickerFragment newInstance(OnTimePickedListener timePickedListener) {
+        TimePickerFragment fragment = new TimePickerFragment();
+        fragment.timePickedListener = timePickedListener;
+        return fragment;
     }
 
     @Override
@@ -48,12 +46,12 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        eventBus.post(new TimeSelectedEvent(Time.at(hourOfDay, minute)));
+        timePickedListener.onTimePicked(Time.at(hourOfDay, minute));
     }
 
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
-        eventBus.post(new TimeSelectedEvent(null));
+        timePickedListener.onTimePicked(null);
     }
 
     public void show(FragmentManager fragmentManager) {

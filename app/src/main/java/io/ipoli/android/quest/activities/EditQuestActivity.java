@@ -25,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +51,6 @@ import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestUpdatedEvent;
-import io.ipoli.android.quest.events.TimeSelectedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
@@ -65,7 +63,7 @@ import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
-public class EditQuestActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener{
+public class EditQuestActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, TimePickerFragment.OnTimePickedListener {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -306,7 +304,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
     @OnClick(R.id.quest_start_time)
     public void onStartTimeClick(Button button) {
         eventBus.post(new UpdateQuestStartTimeRequestEvent(quest));
-        TimePickerFragment f = new TimePickerFragment();
+        TimePickerFragment f = TimePickerFragment.newInstance(this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -321,9 +319,9 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
         setDueDateText(date);
     }
 
-    @Subscribe
-    public void onStartTimeSelected(TimeSelectedEvent e) {
-        setStartTimeText(e.time);
+    @Override
+    public void onTimePicked(Time time) {
+        setStartTimeText(time);
     }
 
     private void setDueDateText(Date date) {
