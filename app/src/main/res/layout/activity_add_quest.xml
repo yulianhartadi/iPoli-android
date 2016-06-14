@@ -303,7 +303,7 @@
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Once" />
+                        android:text="Does not repeat" />
                 </LinearLayout>
             </RelativeLayout>
 
