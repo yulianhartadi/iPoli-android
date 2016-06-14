@@ -30,6 +30,7 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -260,7 +261,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_frequency_container)
     public void onFrequencyClick(View view) {
-        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this);
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        Recur recur = new Recur(Recur.MONTHLY, null);
+        recur.getMonthDayList().add(5);
+        recurrence.setRrule(recur.toString());
+        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this, recurrence);
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
