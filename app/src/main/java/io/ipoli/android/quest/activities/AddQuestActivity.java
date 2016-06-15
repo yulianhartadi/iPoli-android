@@ -33,7 +33,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -50,7 +49,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
@@ -78,7 +76,10 @@ import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 
 /**
@@ -115,6 +116,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @BindView(R.id.quest_times_per_day_value)
     TextView timesPerDay;
+
+    @BindView(R.id.quest_repeat_pattern_value)
+    TextView frequencyText;
 
     private BaseSuggestionsAdapter adapter;
 
@@ -281,7 +285,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             changeState(InsertMode.EDIT);
             populateFormFromParser();
         } else {
-
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         }
@@ -290,7 +293,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
         QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
-        timesPerDay.setText(TimesPerDayFormatter.formatReadable(result.timesPerDay));
+        populateTimesPerDay(result);
+        populateFrequency(result);
+
         questText.setText(result.name);
         questText.setSelection(result.name.length());
         questText.clearFocus();
@@ -299,6 +304,30 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void populateTimesPerDay(QuestParser.QuestParserResult result) {
+        timesPerDay.setText(TimesPerDayFormatter.formatReadable(result.timesPerDay));
+        timesPerDay.setTag(result.timesPerDay);
+    }
+
+    private void populateFrequency(QuestParser.QuestParserResult result) {
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
+        if (result.everyDayRecurrence != null) {
+            recurrence.setRrule(result.everyDayRecurrence.toString());
+            recurrence.setType(Recurrence.RecurrenceType.DAILY);
+        } else if (result.dayOfWeekRecurrence != null) {
+            recurrence.setRrule(result.dayOfWeekRecurrence.toString());
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+        } else if (result.dayOfMonthRecurrence != null) {
+            recurrence.setRrule(result.dayOfMonthRecurrence.toString());
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else {
+            recurrence = null;
+        }
+        frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
+        frequencyText.setTag(recurrence);
     }
 
     @OnClick(R.id.quest_end_date_container)
@@ -328,13 +357,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_frequency_container)
     public void onFrequencyClick(View view) {
-        Recurrence recurrence = Recurrence.create();
-        recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
-        Recur recur = new Recur(Recur.MONTHLY, null);
-        recur.getMonthDayList().add(5);
-        recurrence.setRrule(recur.toString());
-        recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate().plusDays(5)));
-        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this, recurrence);
+        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this, (Recurrence) frequencyText.getTag());
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
@@ -438,7 +461,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         SuggestionsManager.TextTransformResult result = suggestionsManager.deleteText(s.toString(), start);
         setTransformedText(result, TextWatcherState.FROM_DELETE);
         textWatcherState = TextWatcherState.AFTER_DELETE;
-
     }
 
     @Override

@@ -301,6 +301,7 @@
                         android:text="How often it should repeat?" />
 
                     <TextView
+                        android:id="@+id/quest_repeat_pattern_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
