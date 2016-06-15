@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -211,6 +212,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 infoContainer.setVisibility(View.GONE);
                 break;
             case EDIT:
+                questText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 questTextLayout.setHint(getString(R.string.add_quest_name_hint));
                 infoContainer.setVisibility(View.VISIBLE);
                 questText.removeTextChangedListener(this);
