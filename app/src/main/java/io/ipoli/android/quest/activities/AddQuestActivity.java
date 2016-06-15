@@ -267,7 +267,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                onSaveTap();
+                onSaveTap(EventSource.TOOLBAR);
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
@@ -276,11 +276,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSaveTap() {
+    private void onSaveTap(EventSource source) {
         if (insertMode == InsertMode.SMART_ADD) {
             changeState(InsertMode.EDIT);
             populateFormFromParser();
         } else {
+
+            eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         }
     }
@@ -361,10 +363,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Log.d("RecurrencePicked", recurrence.toString());
     }
 
-
     public void saveQuest() {
-
-        eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
         String text = questText.getText().toString().trim();
 
         QuestParser qParser = new QuestParser(prettyTimeParser);
@@ -398,6 +397,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             Quest.setContext(q, questContext);
             eventBus.post(new NewQuestEvent(q));
         }
+        finish();
     }
 
     @Subscribe
@@ -422,7 +422,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            onSaveTap();
+            onSaveTap(EventSource.KEYBOARD);
             return true;
         } else {
             return false;
