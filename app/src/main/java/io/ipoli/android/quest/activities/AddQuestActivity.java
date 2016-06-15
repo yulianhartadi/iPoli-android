@@ -383,7 +383,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
-        Log.d("RecurrencePicked", recurrence.toString());
+        frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
+        frequencyText.setTag(recurrence);
     }
 
     public void saveQuest() {
