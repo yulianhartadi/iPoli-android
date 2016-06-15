@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -106,6 +107,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.quest_info_container)
+    ViewGroup infoContainer;
+
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser parser = new PrettyTimeParser();
@@ -115,9 +119,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
 
-    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN;}
+    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
-    TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
+    enum InsertMode {SMART_ADD, EDIT}
+
+    private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
+
+    private InsertMode insertMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,6 +139,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
+
+        changeState(InsertMode.SMART_ADD);
 
         suggestionsManager = new SuggestionsManager(parser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
@@ -157,6 +167,19 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
+    }
+
+    private void changeState(InsertMode insertMode) {
+        this.insertMode = insertMode;
+        switch (insertMode) {
+            case SMART_ADD:
+                infoContainer.setVisibility(View.GONE);
+                break;
+            case EDIT:
+                infoContainer.setVisibility(View.VISIBLE);
+                break;
+        }
+        supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -227,17 +250,30 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_save).setTitle(insertMode == InsertMode.SMART_ADD ? R.string.done : R.string.save);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
-                saveQuest();
+                onSaveTap();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onSaveTap() {
+        if (insertMode == InsertMode.SMART_ADD) {
+            changeState(InsertMode.EDIT);
+        } else {
+            saveQuest();
+        }
     }
 
     @OnClick(R.id.quest_end_date_container)
@@ -304,6 +340,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
 
     public void saveQuest() {
+
+
+        eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
         String text = questText.getText().toString().trim();
 
         QuestParser qParser = new QuestParser(parser);
@@ -373,8 +412,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.KEYBOARD));
-            saveQuest();
+            onSaveTap();
             return true;
         } else {
             return false;

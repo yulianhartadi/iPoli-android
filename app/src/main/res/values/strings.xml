@@ -127,7 +127,7 @@
 
     <string name="title_activity_main">iPoli</string>
 
-    <string name="save">Save</string>
+    <string name="save">SAVE</string>
     <string name="no_internet_repeating_quest_added">Repeating Quest will be added when Internet is available</string>
     <string name="show_tutorial">Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>

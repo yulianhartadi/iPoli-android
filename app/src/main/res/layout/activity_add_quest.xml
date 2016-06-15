@@ -13,39 +13,39 @@
         android:paddingBottom="16dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <android.support.v7.widget.Toolbar
+        <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_collapseMode="pin"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/quest_text_layout"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/quest_text_layout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
+
+            <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView
+                android:id="@+id/quest_text"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="24dp"
-                app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
+                android:layout_height="wrap_content"
+                android:hint="@string/add_quest_name_hint"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions|textMultiLine"
+                android:maxLines="2">
 
-                <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView
-                    android:id="@+id/quest_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/add_quest_name_hint"
-                    android:imeOptions="actionDone"
-                    android:inputType="textNoSuggestions|textMultiLine"
-                    android:maxLines="2">
+            </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
 
-                </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
-
-            </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
     </android.support.design.widget.AppBarLayout>
 
-
     <ScrollView
+        android:id="@+id/quest_info_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
