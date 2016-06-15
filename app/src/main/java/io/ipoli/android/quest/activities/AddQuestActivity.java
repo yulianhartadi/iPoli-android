@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -133,6 +134,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @BindView(R.id.quest_repeat_pattern_value)
     TextView frequencyText;
 
+    @BindView(R.id.quest_text_layout)
+    TextInputLayout questTextLayout;
+
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
@@ -198,9 +202,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         this.insertMode = insertMode;
         switch (insertMode) {
             case SMART_ADD:
+                questTextLayout.setHint(getString(R.string.smart_add_hint));
                 infoContainer.setVisibility(View.GONE);
                 break;
             case EDIT:
+                questTextLayout.setHint(getString(R.string.add_quest_name_hint));
                 infoContainer.setVisibility(View.VISIBLE);
                 questText.removeTextChangedListener(this);
                 questText.setAdapter(null);

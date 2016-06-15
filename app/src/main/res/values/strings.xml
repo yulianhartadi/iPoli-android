@@ -28,7 +28,7 @@
     <string name="edit_quest_start_time_hint">When should it start?</string>
     <string name="edit_quest_due_date_hint">When will you do it?</string>
     <string name="edit_quest_name_hint">Name (e.g. Read a book)</string>
-    <string name="add_quest_name_hint">Name (e.g. Read a book every day)</string>
+    <string name="add_quest_name_hint">Name (e.g. Read a book)</string>
     <string name="hours">%02d</string>
     <string name="minutes">%02d</string>
     <string name="start">Start</string>
@@ -253,4 +253,5 @@
     <string name="reward_name_validation">You must add name for your reward</string>
     <string name="do_not_repeat">Do not repeat</string>
     <string name="end_of_time">End of time</string>
+    <string name="smart_add_hint">Enter name, start time, duration ...</string>
 </resources>
