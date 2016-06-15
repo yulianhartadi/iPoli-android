@@ -43,7 +43,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -160,7 +160,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
         if (recurrence.getDtend() != null) {
             Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtend(), DateTimeZone.UTC));
-            until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DueDateFormatter.format(dtend));
+            until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DateFormatter.format(dtend));
             until.setTag(dtend);
         }
 
@@ -262,7 +262,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     public void onDatePicked(Date date) {
         String text = getString(R.string.end_of_time);
         if (date != null) {
-            text = DateUtils.isToday(date) ? getString(R.string.today) : DueDateFormatter.format(date);
+            text = DateUtils.isToday(date) ? getString(R.string.today) : DateFormatter.format(date);
         }
         until.setText(text);
         until.setTag(date);

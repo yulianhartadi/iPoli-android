@@ -59,7 +59,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
@@ -330,7 +330,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
         if (date == null) {
             text = getString(R.string.due_date_default);
         } else {
-            text = DateUtils.isToday(date) ? getString(R.string.today) : DueDateFormatter.format(date);
+            text = DateUtils.isToday(date) ? getString(R.string.today) : DateFormatter.format(date);
         }
         dueDateBtn.setText(text);
         dueDateBtn.setTag(date);

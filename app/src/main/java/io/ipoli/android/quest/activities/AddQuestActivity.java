@@ -78,6 +78,9 @@ import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 
@@ -113,8 +116,17 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @BindView(R.id.quest_info_container)
     ViewGroup infoContainer;
 
+    @BindView(R.id.quest_end_date_value)
+    TextView endDateText;
+
+    @BindView(R.id.quest_start_time_value)
+    TextView startTimeText;
+
+    @BindView(R.id.quest_duration_value)
+    TextView durationText;
+
     @BindView(R.id.quest_times_per_day_value)
-    TextView timesPerDay;
+    TextView timesPerDayText;
 
     private BaseSuggestionsAdapter adapter;
 
@@ -290,7 +302,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
         QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
-        timesPerDay.setText(TimesPerDayFormatter.formatReadable(result.timesPerDay));
+        setEndDate(result.endDate);
+        setStartTime(result.startMinute);
+        setDuration(result.duration);
+        setTimesPerDay(result.timesPerDay);
+
+        timesPerDayText.setText(TimesPerDayFormatter.formatReadable(result.timesPerDay));
+
         questText.setText(result.name);
         questText.setSelection(result.name.length());
         questText.clearFocus();
@@ -340,22 +358,43 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onDatePicked(Date date) {
-        Log.d("AAA selected date: ", date.toString());
+        setEndDate(date);
     }
 
     @Override
     public void onTimePicked(Time time) {
-        Log.d("AAA selected time: ", time.toString());
+        setStartTime(time == null ? -1 : time.toMinutesAfterMidnight());
     }
 
     @Override
     public void onDurationPicked(int duration) {
-        Log.d("AAA selected duration: ", duration + "");
+        setDuration(duration);
     }
 
     @Override
     public void onTimesPerDayPicked(int timesPerDay) {
-        Log.d("AAA timesPerDay: ", timesPerDay + "");
+        setTimesPerDay(timesPerDay);
+    }
+
+    private void setEndDate(Date date) {
+        endDateText.setText(DateFormatter.format(date));
+        endDateText.setTag(date);
+    }
+
+    private void setStartTime(int startMinute) {
+        Date time = startMinute >= 0 ? Time.of(startMinute).toDate() : null;
+        startTimeText.setText(StartTimeFormatter.format(time));
+        startTimeText.setTag(startMinute);
+    }
+
+    private void setDuration(int duration) {
+        durationText.setText(DurationFormatter.formatReadable(duration));
+        durationText.setTag(duration);
+    }
+
+    private void setTimesPerDay(int timesPerDay) {
+        timesPerDayText.setText(TimesPerDayFormatter.formatReadable(timesPerDay));
+        timesPerDayText.setTag(timesPerDay);
     }
 
     @Override

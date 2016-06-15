@@ -138,6 +138,7 @@
                         android:text="When will you do it?" />
 
                     <TextView
+                        android:id="@+id/quest_end_date_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -180,6 +181,7 @@
                         android:text="When should it start?" />
 
                     <TextView
+                        android:id="@+id/quest_start_time_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -220,6 +222,7 @@
                         android:text="For how long?" />
 
                     <TextView
+                        android:id="@+id/quest_duration_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

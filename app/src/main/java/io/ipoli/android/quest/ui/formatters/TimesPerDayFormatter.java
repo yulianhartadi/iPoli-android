@@ -6,6 +6,9 @@ package io.ipoli.android.quest.ui.formatters;
  */
 public class TimesPerDayFormatter {
     public static String formatReadable(int timesPerDay) {
-        return timesPerDay + " times";
+        if(timesPerDay <= 0) {
+            timesPerDay = 1;
+        }
+        return timesPerDay == 1 ? timesPerDay + " time" : timesPerDay + " times";
     }
 }

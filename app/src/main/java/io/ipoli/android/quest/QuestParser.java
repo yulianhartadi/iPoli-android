@@ -66,7 +66,9 @@ public class QuestParser {
         result.startMinute = startTimePair.first;
 
         Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
-        result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
+        if(dueDatePair.first != null) {
+            result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
+        }
 
         Pair<Integer, String> timesPerDayPair = parseQuestPart(dueDatePair.second, timesPerDayMatcher);
         result.timesPerDay = Math.max(timesPerDayPair.first, 1);

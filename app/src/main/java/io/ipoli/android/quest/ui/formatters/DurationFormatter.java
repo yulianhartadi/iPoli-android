@@ -13,6 +13,9 @@ import io.ipoli.android.R;
 public class DurationFormatter {
 
     public static String format(Context context, int duration) {
+        if(duration < 0) {
+            return formatEmptyDuration();
+        }
         long hours = 0;
         long mins = 0;
         if (duration > 0) {
@@ -29,6 +32,9 @@ public class DurationFormatter {
     }
 
     public static String formatReadable(int duration) {
+        if(duration < 0) {
+            return formatEmptyDuration();
+        }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
         if (hours <= 0 && mins <= 0) {
@@ -43,5 +49,9 @@ public class DurationFormatter {
         }
 
         return mins == 1 ? "1 minute" : mins + " minutes";
+    }
+
+    private static String formatEmptyDuration() {
+        return "Don't know";
     }
 }
