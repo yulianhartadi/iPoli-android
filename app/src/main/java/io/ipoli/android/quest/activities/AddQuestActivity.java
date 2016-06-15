@@ -60,6 +60,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
@@ -457,15 +458,15 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     public void saveQuest() {
-        String text = questText.getText().toString().trim();
-        if (TextUtils.isEmpty(text)) {
+        String name = questText.getText().toString().trim();
+        if (TextUtils.isEmpty(name)) {
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return;
         }
         if (frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1) {
             // repeating quest
             RepeatingQuest rq = new RepeatingQuest(rawText);
-            rq.setName(text);
+            rq.setName(name);
             rq.setDuration((int) durationText.getTag());
             rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
             Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
@@ -482,38 +483,28 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             rq.setRecurrence(recurrence);
             rq.setContext(questContext.name());
             eventBus.post(new NewRepeatingQuestEvent(rq));
+        } else {
+            Quest q = new Quest(name);
+            q.setRawText(rawText);
+            q.setEndDate((Date) endDateText.getTag());
+            q.setDuration((int) durationText.getTag());
+            q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+            if (isQuestForThePast(q)) {
+                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
+                Calendar c = Calendar.getInstance();
+                c.setTime(completedAt);
+
+                int completedAtMinute = Time.now().toMinutesAfterMidnight();
+                if (hasStartTime(q)) {
+                    completedAtMinute = q.getStartMinute();
+                }
+                c.add(Calendar.MINUTE, completedAtMinute);
+                q.setCompletedAt(c.getTime());
+                q.setCompletedAtMinute(completedAtMinute);
+            }
+            q.setContext(questContext.name());
+            eventBus.post(new NewQuestEvent(q));
         }
-//        QuestParser qParser = new QuestParser(prettyTimeParser);
-//        if (qParser.isRepeatingQuest(text)) {
-//            RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
-//            if (repeatingQuest == null) {
-//                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//            repeatingQuest.setContext(questContext.name());
-//            eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
-//        } else {
-//            Quest q = qParser.parse(text);
-//            if (q == null) {
-//                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//            if (isQuestForThePast(q)) {
-//                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-//                Calendar c = Calendar.getInstance();
-//                c.setTime(completedAt);
-//
-//                int completedAtMinute = Time.now().toMinutesAfterMidnight();
-//                if (hasStartTime(q)) {
-//                    completedAtMinute = q.getStartMinute();
-//                }
-//                c.add(Calendar.MINUTE, completedAtMinute);
-//                q.setCompletedAt(c.getTime());
-//                q.setCompletedAtMinute(completedAtMinute);
-//            }
-//            Quest.setContext(q, questContext);
-//            eventBus.post(new NewQuestEvent(q));
-//        }
         finish();
     }
 
