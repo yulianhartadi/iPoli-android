@@ -48,6 +48,10 @@ public class DateUtils {
         return isSameDay(date, new Date());
     }
 
+    public static boolean isTomorrow(Date date) {
+        return isSameDay(date, getTomorrow());
+    }
+
     public static Date getTomorrow() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, 1);

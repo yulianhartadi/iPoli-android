@@ -77,12 +77,12 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
+import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
-
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -304,7 +304,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
         QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
-        populateEndDate(result.endDate);
+        if (result.endDate == null) {
+            populateEndDate(null);
+        } else {
+            populateEndDate(toStartOfDay(new LocalDate(result.endDate, DateTimeZone.UTC)));
+        }
         populateStartTime(result.startMinute);
         populateDuration(result.duration);
         populateTimesPerDay(result.timesPerDay);
@@ -319,6 +323,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
     private void populateFrequency(QuestParser.QuestParserResult result) {
         Recurrence recurrence = Recurrence.create();
         recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
@@ -334,8 +339,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         } else {
             recurrence = null;
         }
-        frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
-        frequencyText.setTag(recurrence);
+        setFrequencyText(recurrence);
     }
 
     @OnClick(R.id.quest_end_date_container)
@@ -353,13 +357,22 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        DurationPickerFragment durationPickerFragment = DurationPickerFragment.newInstance(60, this);
+        DurationPickerFragment durationPickerFragment;
+        if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
+            durationPickerFragment = DurationPickerFragment.newInstance((int) durationText.getTag(), this);
+        } else {
+            durationPickerFragment = DurationPickerFragment.newInstance(this);
+        }
         durationPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_times_per_day_container)
     public void onTimesPerDayClick(View view) {
-        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(3, this);
+        int timesPerDay = 1;
+        if (timesPerDayText.getTag() != null && (int) timesPerDayText.getTag() > 0) {
+            timesPerDay = (int) timesPerDayText.getTag();
+        }
+        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(timesPerDay, this);
         timesPerDayPickerFragment.show(getSupportFragmentManager());
     }
 
@@ -371,6 +384,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onDatePicked(Date date) {
+        if (date != null) {
+            setFrequencyText(null);
+        }
         populateEndDate(date);
     }
 
@@ -390,12 +406,18 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void populateEndDate(Date date) {
+        if (date != null) {
+            setFrequencyText(null);
+        }
         endDateText.setText(DateFormatter.format(date));
         endDateText.setTag(date);
     }
 
     private void populateStartTime(int startMinute) {
         Date time = startMinute >= 0 ? Time.of(startMinute).toDate() : null;
+        if (time != null) {
+            populateTimesPerDay(1);
+        }
         startTimeText.setText(StartTimeFormatter.format(time));
         startTimeText.setTag(startMinute);
     }
@@ -406,12 +428,22 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void populateTimesPerDay(int timesPerDay) {
+        if (timesPerDay > 1) {
+            populateStartTime(-1);
+        }
         timesPerDayText.setText(TimesPerDayFormatter.formatReadable(timesPerDay));
         timesPerDayText.setTag(timesPerDay);
     }
 
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
+        setFrequencyText(recurrence);
+    }
+
+    private void setFrequencyText(Recurrence recurrence) {
+        if (recurrence != null) {
+            populateEndDate(null);
+        }
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
     }

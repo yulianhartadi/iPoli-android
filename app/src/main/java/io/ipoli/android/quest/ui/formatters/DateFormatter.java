@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import io.ipoli.android.app.utils.DateUtils;
+
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/28/16.
@@ -14,14 +16,20 @@ public class DateFormatter {
     private static SimpleDateFormat DATE_NO_YEAR_FORMAT = new SimpleDateFormat("dd MMM", Locale.getDefault());
 
     public static String format(Date date) {
-        if(date == null) {
+        if (date == null) {
             return formatEmptyDate();
+        }
+        if (DateUtils.isToday(date)) {
+            return "Today";
+        }
+        if (DateUtils.isTomorrow(date)) {
+            return "Tomorrow";
         }
         return DEFAULT_DATE_FORMAT.format(date);
     }
 
     public static String formatWithoutYear(Date date) {
-        if(date == null) {
+        if (date == null) {
             return formatEmptyDate();
         }
         DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));

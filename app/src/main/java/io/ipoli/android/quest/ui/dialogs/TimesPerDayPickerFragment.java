@@ -24,7 +24,7 @@ public class TimesPerDayPickerFragment extends DialogFragment {
     private static final String TAG = "times-per-day-picker-dialog";
     private static final String TIMES_PER_DAY = "times_per_day";
 
-    private static final int[] AVAILABLE_TIMES_PER_DAY = {2, 3, 4, 5, 6, 7};
+    private static final int[] AVAILABLE_TIMES_PER_DAY = {1, 2, 3, 4, 5, 6, 7};
 
     private int timesPerDay;
     private int selectedTimesPerDayIndex;

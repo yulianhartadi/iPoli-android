@@ -68,7 +68,7 @@ public class DurationPickerFragment extends DialogFragment {
             }
         }
 
-        if(selectedDurationIndex == -1) {
+        if (selectedDurationIndex == -1) {
             selectedDurationIndex = 0;
             questDurations.add(0, DurationFormatter.formatReadable(duration));
         }
@@ -85,6 +85,9 @@ public class DurationPickerFragment extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
+                })
+                .setNeutralButton(getString(R.string.unknown_choice), (dialog, which) -> {
+                    durationPickedListener.onDurationPicked(-1);
                 });
         return builder.create();
 
