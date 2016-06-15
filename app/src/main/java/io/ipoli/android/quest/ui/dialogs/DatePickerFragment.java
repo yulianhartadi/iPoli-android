@@ -48,6 +48,15 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         return fragment;
     }
 
+    public static DatePickerFragment newInstance(Date date, OnDatePickedListener onDatePickedListener) {
+        final Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        return newInstance(year, month, day, onDatePickedListener);
+    }
+
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {

@@ -47,6 +47,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
@@ -271,13 +272,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(5);
         recurrence.setRrule(recur.toString());
+        recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate().plusDays(5)));
         RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this, recurrence);
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
     @Override
     public void onDatePicked(Date date) {
-        Log.d("AAA selected date: ",date.toString());
+        Log.d("AAA selected date: ", date.toString());
     }
 
     @Override
@@ -297,7 +299,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
-
+        Log.d("RecurrencePicked", recurrence.toString());
     }
 
 

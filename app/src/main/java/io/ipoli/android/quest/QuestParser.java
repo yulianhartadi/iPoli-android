@@ -8,7 +8,6 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -21,6 +20,8 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -110,7 +111,7 @@ public class QuestParser {
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
         Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
-        recurrence.setDtstart(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString());
             recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
@@ -123,8 +124,8 @@ public class QuestParser {
         } else {
             recurrence.setRrule(null);
             if (dueDate != null) {
-                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(dueDate)));
-                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(dueDate).plusDays(1)));
+                recurrence.setDtstart(toStartOfDayUTC(new LocalDate(dueDate)));
+                recurrence.setDtend(toStartOfDayUTC(new LocalDate(dueDate).plusDays(1)));
             } else {
                 recurrence.setDtstart(null);
                 recurrence.setDtend(null);

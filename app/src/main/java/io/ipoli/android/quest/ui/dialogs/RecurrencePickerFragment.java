@@ -8,7 +8,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,8 @@ import android.widget.Spinner;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
@@ -155,12 +156,19 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         }
 
         recurrenceFrequency.setSelection(selection, false);
+        recurrenceFrequency.setTag(recurrence.getRecurrenceType());
+
+        if (recurrence.getDtend() != null) {
+            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtend(), DateTimeZone.UTC));
+            until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DueDateFormatter.format(dtend));
+            until.setTag(dtend);
+        }
 
         builder.setView(view)
                 .setIcon(R.drawable.logo)
                 .setTitle("Pick repeating pattern")
                 .setPositiveButton(getString(R.string.done), (dialog, which) -> {
-                    recurrencePickerListener.onRecurrencePicked(recurrence);
+                    onDialogDone(view);
                 })
                 .setNegativeButton(getString(R.string.cancel), null)
                 .setNeutralButton(getString(R.string.do_not_repeat), (dialog, which) -> {
@@ -168,6 +176,46 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 });
 
         return builder.create();
+    }
+
+    private void onDialogDone(View view) {
+        Recurrence.RecurrenceType recurrenceType = (Recurrence.RecurrenceType) recurrenceFrequency.getTag();
+        Recur recur = new Recur(Recur.DAILY, null);
+        switch (recurrenceType) {
+            case DAILY:
+                recur.getDayList().add(WeekDay.MO);
+                recur.getDayList().add(WeekDay.TU);
+                recur.getDayList().add(WeekDay.WE);
+                recur.getDayList().add(WeekDay.TH);
+                recur.getDayList().add(WeekDay.FR);
+                recur.getDayList().add(WeekDay.SA);
+                recur.getDayList().add(WeekDay.SU);
+                recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+                recur.setFrequency(Recur.WEEKLY);
+                break;
+            case WEEKLY:
+                for (Map.Entry<WeekDay, Integer> entry : weekDayToCheckBoxId.entrySet()) {
+                    if (((CheckBox) view.findViewById(entry.getValue())).isChecked()) {
+                        recur.getDayList().add(entry.getKey());
+                    }
+                }
+                recur.setFrequency(Recur.WEEKLY);
+                recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+                break;
+            case MONTHLY:
+                recur.setFrequency(Recur.MONTHLY);
+                recur.getMonthDayList().add(dayOfMonth.getSelectedItemPosition() + 1);
+                recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+                break;
+        }
+        recurrence.setRrule(recur.toString());
+        if (until.getTag() != null) {
+            Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));
+            recurrence.setDtend(dtEnd);
+        } else {
+            recurrence.setDtend(null);
+        }
+        recurrencePickerListener.onRecurrencePicked(recurrence);
     }
 
     @Override
@@ -184,28 +232,30 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     public void onFrequencySelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case FREQUENCY_DAILY:
+                recurrenceFrequency.setTag(Recurrence.RecurrenceType.DAILY);
                 dayOfWeekContainer.setVisibility(View.GONE);
                 dayOfMonthContainer.setVisibility(View.GONE);
                 break;
             case FREQUENCY_WEEKLY:
+                recurrenceFrequency.setTag(Recurrence.RecurrenceType.WEEKLY);
                 dayOfWeekContainer.setVisibility(View.VISIBLE);
                 dayOfMonthContainer.setVisibility(View.GONE);
                 break;
             case FREQUENCY_MONTHLY:
+                recurrenceFrequency.setTag(Recurrence.RecurrenceType.MONTHLY);
                 dayOfWeekContainer.setVisibility(View.GONE);
                 dayOfMonthContainer.setVisibility(View.VISIBLE);
                 break;
         }
     }
 
-    @OnItemSelected(R.id.day_of_month)
-    public void onDayOfMonthSelected(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("DayOfMonthSel", position + " ");
-    }
-
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
-        DatePickerFragment.newInstance(this).show(getFragmentManager());
+        if (until.getTag() != null) {
+            DatePickerFragment.newInstance((Date) until.getTag(), this).show(getFragmentManager());
+        } else {
+            DatePickerFragment.newInstance(this).show(getFragmentManager());
+        }
     }
 
     @Override
