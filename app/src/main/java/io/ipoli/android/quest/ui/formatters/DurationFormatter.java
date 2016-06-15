@@ -35,6 +35,9 @@ public class DurationFormatter {
         if(duration < 0) {
             return formatEmptyDuration();
         }
+        if(duration == 15) {
+            return "15 minutes or less";
+        }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
         if (hours <= 0 && mins <= 0) {
