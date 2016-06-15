@@ -275,11 +275,11 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener, Recurrence recurrence) {
         RecurrencePickerFragment fragment = new RecurrencePickerFragment();
         fragment.recurrencePickerListener = listener;
+        Bundle args = new Bundle();
         if (recurrence != null) {
-            Bundle args = new Bundle();
             args.putString(RECURRENCE, new Gson().toJson(recurrence));
-            fragment.setArguments(args);
         }
+        fragment.setArguments(args);
         return fragment;
     }
 }
