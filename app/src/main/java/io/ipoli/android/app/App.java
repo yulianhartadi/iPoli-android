@@ -120,7 +120,7 @@ public class App extends MultiDexApplication {
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            scheduleQuestsFor2WeeksAhead().subscribe();
+            scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             resetEndDateForIncompleteQuests();
             updateWidgets();
@@ -166,7 +166,7 @@ public class App extends MultiDexApplication {
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
         }
-        scheduleQuestsFor2WeeksAhead().subscribe(aVoid -> {
+        scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe(aVoid -> {
         }, Throwable::printStackTrace, () -> {
             if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
                 eventBus.post(new ForceServerSyncRequestEvent());
@@ -192,27 +192,26 @@ public class App extends MultiDexApplication {
 //        }
     }
 
-    private Observable<List<Quest>> scheduleQuestsFor2WeeksAhead() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
-        return Observable.from(repeatingQuests)
-                .flatMap(rq -> Observable.concat(
-                        Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
-                        Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
-                );
+    private Observable<Void> scheduleQuestsFor2WeeksAhead() {
+        return Observable.defer(() -> {
+            Realm realm = Realm.getDefaultInstance();
+            QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+            RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+            for (RepeatingQuest rq : repeatingQuests) {
+                saveQuestsForRepeatingQuest(rq, questPersistenceService);
+            }
+            realm.close();
+            return Observable.empty();
+        });
     }
 
-    private Observable<List<Quest>> saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
+    private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek, QuestPersistenceService questPersistenceService) {
         long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
         if (createdQuestsCount == 0) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            return questPersistenceService.saveRemoteObjects(questsToCreate);
+            questPersistenceService.saveSync(questsToCreate);
         }
-        return Observable.just(new ArrayList<>());
     }
 
     private void resetEndDateForIncompleteQuests() {
@@ -248,7 +247,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor2WeeksAhead().subscribe(quests -> {
+        scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe(quests -> {
         }, Throwable::printStackTrace, () -> {
             eventBus.post(new SyncCompleteEvent());
         });
@@ -346,20 +345,27 @@ public class App extends MultiDexApplication {
             });
         } else {
 
-            LocalDate currentDate = LocalDate.now();
-            LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-            LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-            LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-            LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-
-            Observable.concat(
-                    Observable.defer(() -> saveQuestsInRange(rq, startOfWeek, endOfWeek)),
-                    Observable.defer(() -> saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek)))
-                    .subscribe(quests -> {
-                    }, Throwable::printStackTrace, () -> {
-                        eventBus.post(new ServerSyncRequestEvent());
-                    });
+            Observable.defer(() -> {
+                Realm realm = Realm.getDefaultInstance();
+                QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+                saveQuestsForRepeatingQuest(rq, questPersistenceService);
+                realm.close();
+                return Observable.empty();
+            }).compose(applyAndroidSchedulers()).subscribe(quests -> {
+            }, Throwable::printStackTrace, () -> {
+                eventBus.post(new ServerSyncRequestEvent());
+            });
         }
+    }
+
+    private void saveQuestsForRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
+        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+        saveQuestsInRange(repeatingQuest, startOfWeek, endOfWeek, questPersistenceService);
+        saveQuestsInRange(repeatingQuest, startOfNextWeek, endOfNextWeek, questPersistenceService);
     }
 
     @Subscribe
@@ -411,7 +417,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onForceSyncRequest(ForceServerSyncRequestEvent e) {
         scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
                         setOverrideDeadline(1).build());
     }
@@ -503,6 +508,7 @@ public class App extends MultiDexApplication {
             questPersistenceService.saveSync(quests);
             List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
             repeatingQuestPersistenceService.saveSync(repeatingQuests);
+            realm.close();
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
     }
