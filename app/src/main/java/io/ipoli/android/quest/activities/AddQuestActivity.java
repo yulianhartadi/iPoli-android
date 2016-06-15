@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
@@ -43,6 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
@@ -58,7 +60,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
@@ -139,6 +140,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
+    private String rawText;
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
@@ -173,7 +175,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
         initUI();
         initContextUI();
-
+        populateTimesPerDay(1);
+        populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -304,13 +307,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
         QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
+        this.rawText = result.rawText;
         if (result.endDate == null) {
             populateEndDate(null);
         } else {
             populateEndDate(toStartOfDay(new LocalDate(result.endDate, DateTimeZone.UTC)));
         }
         populateStartTime(result.startMinute);
-        populateDuration(result.duration);
+        populateDuration(Math.max(result.duration, Constants.QUEST_CALENDAR_EVENT_MIN_DURATION));
         populateTimesPerDay(result.timesPerDay);
         populateFrequency(result);
 
@@ -419,7 +423,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             populateTimesPerDay(1);
         }
         startTimeText.setText(StartTimeFormatter.format(time));
-        startTimeText.setTag(startMinute);
+        if (time != null) {
+            startTimeText.setTag(startMinute);
+        } else {
+            startTimeText.setTag(null);
+        }
     }
 
     private void populateDuration(int duration) {
@@ -450,38 +458,62 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     public void saveQuest() {
         String text = questText.getText().toString().trim();
-
-        QuestParser qParser = new QuestParser(prettyTimeParser);
-        if (qParser.isRepeatingQuest(text)) {
-            RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
-            if (repeatingQuest == null) {
-                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
-                return;
-            }
-            repeatingQuest.setContext(questContext.name());
-            eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
-        } else {
-            Quest q = qParser.parse(text);
-            if (q == null) {
-                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (isQuestForThePast(q)) {
-                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-                Calendar c = Calendar.getInstance();
-                c.setTime(completedAt);
-
-                int completedAtMinute = Time.now().toMinutesAfterMidnight();
-                if (hasStartTime(q)) {
-                    completedAtMinute = q.getStartMinute();
-                }
-                c.add(Calendar.MINUTE, completedAtMinute);
-                q.setCompletedAt(c.getTime());
-                q.setCompletedAtMinute(completedAtMinute);
-            }
-            Quest.setContext(q, questContext);
-            eventBus.post(new NewQuestEvent(q));
+        if (TextUtils.isEmpty(text)) {
+            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+            return;
         }
+        if (frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1) {
+            // repeating quest
+            RepeatingQuest rq = new RepeatingQuest(rawText);
+            rq.setName(text);
+            rq.setDuration((int) durationText.getTag());
+            rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+            Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
+            recurrence.setTimesPerDay((int) timesPerDayText.getTag());
+            if (recurrence.getRrule() == null) {
+                if (endDateText.getTag() != null) {
+                    recurrence.setDtstart(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+                    recurrence.setDtend(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+                } else {
+                    recurrence.setDtstart(null);
+                    recurrence.setDtend(null);
+                }
+            }
+            rq.setRecurrence(recurrence);
+            rq.setContext(questContext.name());
+            eventBus.post(new NewRepeatingQuestEvent(rq));
+        }
+//        QuestParser qParser = new QuestParser(prettyTimeParser);
+//        if (qParser.isRepeatingQuest(text)) {
+//            RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
+//            if (repeatingQuest == null) {
+//                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//            repeatingQuest.setContext(questContext.name());
+//            eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
+//        } else {
+//            Quest q = qParser.parse(text);
+//            if (q == null) {
+//                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//            if (isQuestForThePast(q)) {
+//                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
+//                Calendar c = Calendar.getInstance();
+//                c.setTime(completedAt);
+//
+//                int completedAtMinute = Time.now().toMinutesAfterMidnight();
+//                if (hasStartTime(q)) {
+//                    completedAtMinute = q.getStartMinute();
+//                }
+//                c.add(Calendar.MINUTE, completedAtMinute);
+//                q.setCompletedAt(c.getTime());
+//                q.setCompletedAtMinute(completedAtMinute);
+//            }
+//            Quest.setContext(q, questContext);
+//            eventBus.post(new NewQuestEvent(q));
+//        }
         finish();
     }
 
