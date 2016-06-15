@@ -304,7 +304,8 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
     @OnClick(R.id.quest_start_time)
     public void onStartTimeClick(Button button) {
         eventBus.post(new UpdateQuestStartTimeRequestEvent(quest));
-        TimePickerFragment f = TimePickerFragment.newInstance(this);
+        Time selectedTime = (Time) startTimeBtn.getTag();
+        TimePickerFragment f = TimePickerFragment.newInstance(selectedTime, this);
         f.show(this.getSupportFragmentManager());
     }
 
