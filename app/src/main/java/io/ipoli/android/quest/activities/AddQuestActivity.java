@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -76,6 +78,7 @@ import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 
 /**
@@ -110,9 +113,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @BindView(R.id.quest_info_container)
     ViewGroup infoContainer;
 
+    @BindView(R.id.quest_times_per_day_value)
+    TextView timesPerDay;
+
     private BaseSuggestionsAdapter adapter;
 
-    private final PrettyTimeParser parser = new PrettyTimeParser();
+    private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 
     private QuestContext questContext;
 
@@ -142,7 +148,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
         changeState(InsertMode.SMART_ADD);
 
-        suggestionsManager = new SuggestionsManager(parser);
+        suggestionsManager = new SuggestionsManager(prettyTimeParser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         questText.addTextChangedListener(this);
@@ -177,6 +183,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 break;
             case EDIT:
                 infoContainer.setVisibility(View.VISIBLE);
+                questText.removeTextChangedListener(this);
+                questText.setAdapter(null);
                 break;
         }
         supportInvalidateOptionsMenu();
@@ -271,8 +279,23 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void onSaveTap() {
         if (insertMode == InsertMode.SMART_ADD) {
             changeState(InsertMode.EDIT);
+            populateFormFromParser();
         } else {
             saveQuest();
+        }
+    }
+
+    private void populateFormFromParser() {
+        QuestParser questParser = new QuestParser(prettyTimeParser);
+        QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
+        timesPerDay.setText(TimesPerDayFormatter.formatReadable(result.timesPerDay));
+        questText.setText(result.name);
+        questText.setSelection(result.name.length());
+        questText.clearFocus();
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
@@ -341,15 +364,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     public void saveQuest() {
 
-
         eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), EventSource.TOOLBAR));
         String text = questText.getText().toString().trim();
 
-        QuestParser qParser = new QuestParser(parser);
+        QuestParser qParser = new QuestParser(prettyTimeParser);
         if (qParser.isRepeatingQuest(text)) {
             RepeatingQuest repeatingQuest = qParser.parseRepeatingQuest(text);
             if (repeatingQuest == null) {
-                resetQuestText();
                 Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -358,7 +379,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         } else {
             Quest q = qParser.parse(text);
             if (q == null) {
-                resetQuestText();
                 Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -378,7 +398,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             Quest.setContext(q, questContext);
             eventBus.post(new NewQuestEvent(q));
         }
-        resetQuestText();
     }
 
     @Subscribe
@@ -397,15 +416,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private boolean isQuestForThePast(Quest q) {
         return q.getEndDate() != null && new LocalDate(q.getEndDate(), DateTimeZone.UTC).isBefore(new LocalDate());
-    }
-
-    private void resetQuestText() {
-        suggestionsManager.setSuggestionsUpdatedListener(null);
-        suggestionsManager = new SuggestionsManager(parser);
-        suggestionsManager.setSuggestionsUpdatedListener(this);
-        questText.removeTextChangedListener(this);
-        questText.setText("");
-        questText.addTextChangedListener(this);
     }
 
     @OnEditorAction(R.id.quest_text)

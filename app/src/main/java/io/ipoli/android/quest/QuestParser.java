@@ -8,11 +8,12 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.parsers.DueDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
+import io.ipoli.android.quest.parsers.EndDateMatcher;
 import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
@@ -29,7 +30,19 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class QuestParser {
 
-    private final DueDateMatcher dueDateMatcher;
+    public class QuestParserResult {
+        public String rawText;
+        public String name;
+        public int duration;
+        public int startMinute;
+        public Date endDate;
+        public int timesPerDay;
+        public Recur everyDayRecurrence;
+        public Recur dayOfWeekRecurrence;
+        public Recur dayOfMonthRecurrence;
+    }
+
+    private final EndDateMatcher endDateMatcher;
     private final StartTimeMatcher startTimeMatcher;
     private final DurationMatcher durationMatcher = new DurationMatcher();
     private final RecurrenceEveryDayMatcher everyDayMatcher = new RecurrenceEveryDayMatcher();
@@ -39,7 +52,37 @@ public class QuestParser {
 
     public QuestParser(PrettyTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
-        dueDateMatcher = new DueDateMatcher(timeParser);
+        endDateMatcher = new EndDateMatcher(timeParser);
+    }
+
+    public QuestParserResult parseText(String text) {
+        QuestParserResult result = new QuestParserResult();
+        result.rawText = text;
+
+        Pair<Integer, String> durationPair = parseQuestPart(text, durationMatcher);
+        result.duration = durationPair.first;
+
+        Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
+        result.startMinute = startTimePair.first;
+
+        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
+        result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
+
+        Pair<Integer, String> timesPerDayPair = parseQuestPart(dueDatePair.second, timesPerDayMatcher);
+        result.timesPerDay = Math.max(timesPerDayPair.first, 1);
+
+        Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
+        result.everyDayRecurrence = everyDayPair.first;
+
+        Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayPair.second, dayOfWeekMatcher);
+        result.dayOfWeekRecurrence = dayOfWeekPair.first;
+
+        Pair<Recur, String> dayOfMonthPair = parseQuestPart(dayOfWeekPair.second, dayOfMonthMatcher);
+        result.dayOfMonthRecurrence = dayOfMonthPair.first;
+
+        text = dayOfMonthPair.second;
+        result.name = text.trim();
+        return result;
     }
 
     public Quest parse(String text) {
@@ -52,7 +95,7 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         int startTime = startTimePair.first;
 
-        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, dueDateMatcher);
+        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
         Date dueDate = dueDatePair.first;
         text = dueDatePair.second;
 
@@ -95,7 +138,7 @@ public class QuestParser {
 
         Date dueDate = null;
         if (everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
-            Pair<Date, String> dueDatePair = parseQuestPart(text, dueDateMatcher);
+            Pair<Date, String> dueDatePair = parseQuestPart(text, endDateMatcher);
             dueDate = dueDatePair.first;
             text = dueDatePair.second;
         }
