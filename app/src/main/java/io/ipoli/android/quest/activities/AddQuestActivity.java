@@ -116,6 +116,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.toolbar_title)
+    TextView toolbarTitle;
+
     @BindView(R.id.quest_info_container)
     ViewGroup infoContainer;
 
@@ -163,8 +166,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         App.getAppComponent(this).inject(this);
 
         setSupportActionBar(toolbar);
+        toolbarTitle.setText(R.string.title_activity_add_quest);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
+            ab.setDisplayShowTitleEnabled(false);
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
