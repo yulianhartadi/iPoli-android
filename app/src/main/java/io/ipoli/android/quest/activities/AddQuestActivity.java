@@ -463,8 +463,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return;
         }
-        if (frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1) {
-            // repeating quest
+        if (isRepeatingQuest()) {
             RepeatingQuest rq = new RepeatingQuest(rawText);
             rq.setName(name);
             rq.setDuration((int) durationText.getTag());
@@ -506,6 +505,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             eventBus.post(new NewQuestEvent(q));
         }
         finish();
+    }
+
+    private boolean isRepeatingQuest() {
+        return frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1;
     }
 
     @Subscribe
