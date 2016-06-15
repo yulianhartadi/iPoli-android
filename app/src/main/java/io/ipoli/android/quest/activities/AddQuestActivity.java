@@ -67,6 +67,7 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
@@ -185,8 +186,30 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
         initUI();
         initContextUI();
-        populateTimesPerDay(1);
-        populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+
+        if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
+            String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+            RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+            changeState(InsertMode.EDIT);
+            Quest quest = questPersistenceService.findById(questId);
+            questText.setText(quest.getName());
+            questText.setSelection(quest.getName().length());
+            populateDuration(quest.getDuration());
+            populateStartTime(quest.getStartMinute());
+            if (quest.getEndDate() != null) {
+                populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
+            } else {
+                populateEndDate(null);
+            }
+            findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
+            findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
+            setSelectedContext();
+            removeSelectedContextCheck();
+            changeContext(Quest.getContext(quest));
+        } else {
+            populateTimesPerDay(1);
+            populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+        }
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
