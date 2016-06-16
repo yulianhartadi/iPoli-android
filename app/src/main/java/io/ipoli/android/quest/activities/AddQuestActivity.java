@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -103,11 +104,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
         TimePickerFragment.OnTimePickedListener {
 
+    @Inject
+    Bus eventBus;
+
     @BindView(R.id.appbar)
     AppBarLayout appBar;
 
-    @Inject
-    Bus eventBus;
+    @BindView(R.id.toolbar_collapsing_container)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     @BindView(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
@@ -760,6 +764,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     private void colorLayout(QuestContext context) {
         appBar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
     }
