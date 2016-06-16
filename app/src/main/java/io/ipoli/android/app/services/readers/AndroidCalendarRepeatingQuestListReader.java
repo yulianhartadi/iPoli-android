@@ -38,7 +38,7 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
                 continue;
             }
             RepeatingQuest repeatingQuest = new RepeatingQuest("");
-            RepeatingQuest foundRepeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+            RepeatingQuest foundRepeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
             if (foundRepeatingQuest != null) {
                 repeatingQuest.setId(foundRepeatingQuest.getId());
                 repeatingQuest.setCreatedAt(foundRepeatingQuest.getCreatedAt());

@@ -124,14 +124,14 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
     private void deleteEvents(List<Event> events) {
         for (Event e : events) {
             if (isRepeatingAndroidCalendarEvent(e)) {
-                RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+                RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
                 if (repeatingQuest == null) {
                     continue;
                 }
                 repeatingQuest.markDeleted();
                 repeatingQuestPersistenceService.saveSync(repeatingQuest);
             } else {
-                Quest quest = questPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+                Quest quest = questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
                 if (quest == null) {
                     continue;
                 }

@@ -42,7 +42,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
                 continue;
             }
             Quest q = new Quest(e.title);
-            Quest foundQuest = questPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
+            Quest foundQuest = questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
             if (foundQuest != null) {
                 q.setId(foundQuest.getId());
                 q.setCreatedAt(foundQuest.getCreatedAt());
@@ -66,7 +66,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
             if (TextUtils.isEmpty(e.originalId)) {
                 continue;
             }
-            RepeatingQuest h = repeatingQuestPersistenceService.findByExternalSourceMappingIdSync(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId);
+            RepeatingQuest h = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId);
             q.setRepeatingQuest(h);
         }
         return res;

@@ -40,6 +40,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
 
-    Quest findByExternalSourceMappingIdSync(String source, String sourceId);
+    Quest findByExternalSourceMappingId(String source, String sourceId);
 
 }

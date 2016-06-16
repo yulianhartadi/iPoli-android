@@ -239,23 +239,19 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 infoContainer.setVisibility(View.GONE);
                 break;
             case EDIT_NEW_QUEST:
-                questText.setOnClickListener(null);
-                questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                questTextLayout.setHint(getString(R.string.add_quest_name_hint));
-                infoContainer.setVisibility(View.VISIBLE);
-                questText.removeTextChangedListener(this);
-                questText.setAdapter(null);
-                break;
             case EDIT_QUEST:
+            case EDIT_REPEATING_QUEST:
                 questText.setOnClickListener(null);
-                findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
-                findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
                 questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 questTextLayout.setHint(getString(R.string.add_quest_name_hint));
                 infoContainer.setVisibility(View.VISIBLE);
                 questText.removeTextChangedListener(this);
                 questText.setAdapter(null);
                 break;
+        }
+        if (editMode == EditMode.EDIT_QUEST) {
+            findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
+            findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
     }
