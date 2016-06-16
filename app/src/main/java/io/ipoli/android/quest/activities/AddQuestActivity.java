@@ -459,13 +459,17 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
-        DatePickerFragment f = DatePickerFragment.newInstance(new Date(), this);
+        DatePickerFragment f = DatePickerFragment.newInstance((Date) endDateText.getTag(), this);
         f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
-        TimePickerFragment f = TimePickerFragment.newInstance(this);
+        Time time = Time.now();
+        if(startTimeText.getTag() != null && (int) startTimeText.getTag() > -1) {
+            time = Time.of((int) startTimeText.getTag());
+        }
+        TimePickerFragment f = TimePickerFragment.newInstance(time, this);
         f.show(this.getSupportFragmentManager());
     }
 

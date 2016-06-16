@@ -57,7 +57,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public static DatePickerFragment newInstance(Date date, boolean disablePastDaySelection, OnDatePickedListener onDatePickedListener) {
         final Calendar c = Calendar.getInstance();
-        c.setTime(date);
+        if(date != null) {
+            c.setTime(date);
+        }
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
