@@ -8,8 +8,8 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -38,6 +38,6 @@ public interface iPoliAPIService {
     @GET("repeating-quests")
     Call<List<RepeatingQuest>> getRepeatingQuests(@Query("player_id") String playerId);
 
-    @DELETE("quests")
-    Call deleteQuests(@Body RequestBody data);
+    @HTTP(method = "DELETE", path = "/v1/quests", hasBody = true)
+    Call<Void> deleteQuests(@Body RequestBody data);
 }

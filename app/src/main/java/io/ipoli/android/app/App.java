@@ -322,13 +322,14 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        List<Quest> questsToRemove = questPersistenceService.findAllForRepeatingQuest(e.repeatingQuest);
-//        List<Quest> questsToRemove = new ArrayList<>();
+        List<Quest> questsToRemove = questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest);
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
-        for(Quest quest : questsToRemove) {
+        for (Quest quest : questsToRemove) {
             QuestNotificationScheduler.stopAll(quest.getId(), this);
-            removedQuests.add(quest.getId());
+            if (!TextUtils.isEmpty(quest.getRemoteId())) {
+                removedQuests.add(quest.getRemoteId());
+            }
         }
         localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
         questPersistenceService.delete(questsToRemove).subscribe(ignored -> {

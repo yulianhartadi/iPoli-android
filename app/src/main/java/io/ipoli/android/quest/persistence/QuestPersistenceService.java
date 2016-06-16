@@ -42,4 +42,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByExternalSourceMappingId(String source, String sourceId);
 
+    List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
 }

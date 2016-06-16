@@ -111,7 +111,6 @@ public class AppJobService extends JobService {
     }
 
 
-
     private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
@@ -193,14 +192,16 @@ public class AppJobService extends JobService {
         }
     }
 
-    private void syncRemovedQuests(Player player) {
+    private void syncRemovedQuests(Player player) throws IOException {
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        if (removedQuests.isEmpty()) {
+            return;
+        }
         RequestBody requestBody = createRequestBody().param("data", removedQuests).param("player_id", player.getRemoteId()).build();
-        apiService.deleteQuests(requestBody);
+        apiService.deleteQuests(requestBody).execute();
         removedQuests.clear();
         localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
-
     }
 
     private void syncQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
