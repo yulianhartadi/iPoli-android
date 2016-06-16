@@ -252,9 +252,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
         if (until.getTag() != null) {
-            DatePickerFragment.newInstance((Date) until.getTag(), this).show(getFragmentManager());
+            DatePickerFragment.newInstance((Date) until.getTag(), true, this).show(getFragmentManager());
         } else {
-            DatePickerFragment.newInstance(this).show(getFragmentManager());
+            DatePickerFragment.newInstance(true, this).show(getFragmentManager());
         }
     }
 

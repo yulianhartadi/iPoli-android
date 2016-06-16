@@ -42,6 +42,7 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
@@ -156,6 +157,12 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         onQuestFound(questObservable);
     }
 
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = questPersistenceService.findById(questId);
+        onQuestFound(Observable.just(q));
+    }
+
     private void onQuestFound(Observable<Quest> questObservable) {
         QuestNotificationScheduler.stopTimer(questId, this);
         questObservable.subscribe(q -> {
@@ -245,7 +252,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @OnClick(R.id.quest_details_edit)
     public void onEditTap(View v) {
         eventBus.post(new EditQuestRequestEvent(quest, EventSource.QUEST));
-        Intent i = new Intent(this, EditQuestActivity.class);
+        Intent i = new Intent(this, AddQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }

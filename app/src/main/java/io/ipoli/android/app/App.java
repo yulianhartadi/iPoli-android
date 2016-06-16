@@ -71,6 +71,7 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
@@ -302,6 +303,15 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
+        questPersistenceService.save(e.quest).subscribe(quest -> {
+            if (quest.getCompletedAt() != null) {
+                onQuestComplete(quest);
+            }
+        });
+    }
+
+    @Subscribe
+    public void onUpdateQuest(UpdateQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (quest.getCompletedAt() != null) {
                 onQuestComplete(quest);

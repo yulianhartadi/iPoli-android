@@ -50,7 +50,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
-import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
@@ -272,7 +271,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
                 quest.setEndDateFromLocal((Date) dueDateBtn.getTag());
                 Quest.setStartTime(quest, ((Time) startTimeBtn.getTag()));
                 questPersistenceService.save(quest).compose(bindToLifecycle()).subscribe(q -> {
-                    eventBus.post(new QuestUpdatedEvent(q));
+//                    eventBus.post(new QuestUpdatedEvent(q));
                     Intent data = new Intent();
                     data.putExtras(getIntent());
                     setResult(RESULT_OK, data);
@@ -297,8 +296,8 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
             Date dueDate = (Date) dueDateBtn.getTag();
             c.setTime(dueDate);
         }
-        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
-        f.show(this.getSupportFragmentManager());
+//        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
+//        f.show(this.getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_start_time)

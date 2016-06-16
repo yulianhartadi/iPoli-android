@@ -68,6 +68,7 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
@@ -154,11 +155,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
-    enum InsertMode {SMART_ADD, EDIT}
+    enum EditMode {SMART_ADD, EDIT_NEW_QUEST, EDIT_QUEST, EDIT_REPEATING_QUEST}
 
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
-    private InsertMode insertMode;
+    private EditMode editMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -175,42 +176,20 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        changeState(InsertMode.SMART_ADD);
-
-        suggestionsManager = new SuggestionsManager(prettyTimeParser);
-        suggestionsManager.setSuggestionsUpdatedListener(this);
-
-        questText.addTextChangedListener(this);
-
-        questText.setShowSoftInputOnFocus(true);
-        questText.requestFocus();
-
-        initUI();
         initContextUI();
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
-            String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-            RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-            changeState(InsertMode.EDIT);
-            Quest quest = questPersistenceService.findById(questId);
-            questText.setText(quest.getName());
-            questText.setSelection(quest.getName().length());
-            populateDuration(quest.getDuration());
-            populateStartTime(quest.getStartMinute());
-            if (quest.getEndDate() != null) {
-                populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
-            } else {
-                populateEndDate(null);
-            }
-            findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
-            findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
-            setSelectedContext();
-            removeSelectedContextCheck();
-            changeContext(Quest.getContext(quest));
+            onEditQuest();
         } else {
-            populateTimesPerDay(1);
-            populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+            onAddNewQuest();
         }
+
+    }
+
+    private void onAddNewQuest() {
+        changeEditMode(EditMode.SMART_ADD);
+        populateTimesPerDay(1);
+        populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -227,15 +206,51 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         });
     }
 
-    private void changeState(InsertMode insertMode) {
-        this.insertMode = insertMode;
-        switch (insertMode) {
+    private void onEditQuest() {
+        changeEditMode(EditMode.EDIT_QUEST);
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        Quest quest = questPersistenceService.findById(questId);
+        questText.setText(quest.getName());
+        questText.setSelection(quest.getName().length());
+        populateDuration(quest.getDuration());
+        populateStartTime(quest.getStartMinute());
+        if (quest.getEndDate() != null) {
+            populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
+        } else {
+            populateEndDate(null);
+        }
+        setSelectedContext();
+        removeSelectedContextCheck();
+        changeContext(Quest.getContext(quest));
+    }
+
+    private void changeEditMode(EditMode editMode) {
+        this.editMode = editMode;
+        switch (editMode) {
             case SMART_ADD:
+                suggestionsManager = new SuggestionsManager(prettyTimeParser);
+                suggestionsManager.setSuggestionsUpdatedListener(this);
+                initSuggestions();
+                questText.addTextChangedListener(this);
+                questText.setShowSoftInputOnFocus(true);
+                questText.requestFocus();
                 questTextLayout.setHint(getString(R.string.smart_add_hint));
                 infoContainer.setVisibility(View.GONE);
                 break;
-            case EDIT:
-                questText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            case EDIT_NEW_QUEST:
+                questText.setOnClickListener(null);
+                questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                questTextLayout.setHint(getString(R.string.add_quest_name_hint));
+                infoContainer.setVisibility(View.VISIBLE);
+                questText.removeTextChangedListener(this);
+                questText.setAdapter(null);
+                break;
+            case EDIT_QUEST:
+                questText.setOnClickListener(null);
+                findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
+                findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
+                questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 questTextLayout.setHint(getString(R.string.add_quest_name_hint));
                 infoContainer.setVisibility(View.VISIBLE);
                 questText.removeTextChangedListener(this);
@@ -257,7 +272,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         super.onPause();
     }
 
-    private void initUI() {
+    private void initSuggestions() {
         adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
         questText.setThreshold(1);
@@ -314,7 +329,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_save).setTitle(insertMode == InsertMode.SMART_ADD ? R.string.done : R.string.save);
+        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.SMART_ADD ? R.string.done : R.string.save);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -332,13 +347,54 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void onSaveTap(EventSource source) {
-        if (insertMode == InsertMode.SMART_ADD) {
-            changeState(InsertMode.EDIT);
+        if (editMode == EditMode.SMART_ADD) {
+            changeEditMode(EditMode.EDIT_NEW_QUEST);
             populateFormFromParser();
-        } else {
+        } else if (editMode == EditMode.EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
-            saveQuest();
+            createQuest();
+        } else if (editMode == EditMode.EDIT_QUEST) {
+            updateQuest();
         }
+    }
+
+    private void updateQuest() {
+        String name = questText.getText().toString().trim();
+        if (isQuestNameInvalid(name)) {
+            return;
+        }
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        Quest q = questPersistenceService.findById(questId);
+        q.setName(name);
+        q.setEndDate((Date) endDateText.getTag());
+        q.setDuration((int) durationText.getTag());
+        q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+        if (isQuestForThePast(q)) {
+            Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
+            Calendar c = Calendar.getInstance();
+            c.setTime(completedAt);
+
+            int completedAtMinute = Time.now().toMinutesAfterMidnight();
+            if (hasStartTime(q)) {
+                completedAtMinute = q.getStartMinute();
+            }
+            c.add(Calendar.MINUTE, completedAtMinute);
+            q.setCompletedAt(c.getTime());
+            q.setCompletedAtMinute(completedAtMinute);
+        }
+        q.setContext(questContext.name());
+        eventBus.post(new UpdateQuestEvent(q));
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private boolean isQuestNameInvalid(String name) {
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return false;
     }
 
     private void populateFormFromParser() {
@@ -385,8 +441,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
-        Calendar c = Calendar.getInstance();
-        DatePickerFragment f = DatePickerFragment.newInstance(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), this);
+        DatePickerFragment f = DatePickerFragment.newInstance(new Date(), this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -493,54 +548,62 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         frequencyText.setTag(recurrence);
     }
 
-    public void saveQuest() {
+    public void createQuest() {
         String name = questText.getText().toString().trim();
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+        if (isQuestNameInvalid(name)) {
             return;
         }
         if (isRepeatingQuest()) {
-            RepeatingQuest rq = new RepeatingQuest(rawText);
-            rq.setName(name);
-            rq.setDuration((int) durationText.getTag());
-            rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-            Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-            recurrence.setTimesPerDay((int) timesPerDayText.getTag());
-            if (recurrence.getRrule() == null) {
-                if (endDateText.getTag() != null) {
-                    recurrence.setDtstart(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-                    recurrence.setDtend(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-                } else {
-                    recurrence.setDtstart(null);
-                    recurrence.setDtend(null);
-                }
-            }
-            rq.setRecurrence(recurrence);
-            rq.setContext(questContext.name());
-            eventBus.post(new NewRepeatingQuestEvent(rq));
+            createNewRepeatingQuest(name);
         } else {
-            Quest q = new Quest(name);
-            q.setRawText(rawText);
-            q.setEndDate((Date) endDateText.getTag());
-            q.setDuration((int) durationText.getTag());
-            q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-            if (isQuestForThePast(q)) {
-                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-                Calendar c = Calendar.getInstance();
-                c.setTime(completedAt);
-
-                int completedAtMinute = Time.now().toMinutesAfterMidnight();
-                if (hasStartTime(q)) {
-                    completedAtMinute = q.getStartMinute();
-                }
-                c.add(Calendar.MINUTE, completedAtMinute);
-                q.setCompletedAt(c.getTime());
-                q.setCompletedAtMinute(completedAtMinute);
-            }
-            q.setContext(questContext.name());
-            eventBus.post(new NewQuestEvent(q));
+            createNewQuest(name);
         }
+        setResult(RESULT_OK);
         finish();
+    }
+
+    private void createNewQuest(String name) {
+        Quest q = new Quest(name);
+        q.setRawText(rawText);
+        q.setEndDate((Date) endDateText.getTag());
+        q.setDuration((int) durationText.getTag());
+        q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+        if (isQuestForThePast(q)) {
+            Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
+            Calendar c = Calendar.getInstance();
+            c.setTime(completedAt);
+
+            int completedAtMinute = Time.now().toMinutesAfterMidnight();
+            if (hasStartTime(q)) {
+                completedAtMinute = q.getStartMinute();
+            }
+            c.add(Calendar.MINUTE, completedAtMinute);
+            q.setCompletedAt(c.getTime());
+            q.setCompletedAtMinute(completedAtMinute);
+        }
+        q.setContext(questContext.name());
+        eventBus.post(new NewQuestEvent(q));
+    }
+
+    private void createNewRepeatingQuest(String name) {
+        RepeatingQuest rq = new RepeatingQuest(rawText);
+        rq.setName(name);
+        rq.setDuration((int) durationText.getTag());
+        rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+        Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
+        recurrence.setTimesPerDay((int) timesPerDayText.getTag());
+        if (recurrence.getRrule() == null) {
+            if (endDateText.getTag() != null) {
+                recurrence.setDtstart(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+                recurrence.setDtend(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+            } else {
+                recurrence.setDtstart(null);
+                recurrence.setDtend(null);
+            }
+        }
+        rq.setRecurrence(recurrence);
+        rq.setContext(questContext.name());
+        eventBus.post(new NewRepeatingQuestEvent(rq));
     }
 
     private boolean isRepeatingQuest() {

@@ -127,11 +127,14 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     @Override
     public T findById(String id) {
+        realm.beginTransaction();
         T result = where().equalTo("id", id).findFirst();
         if (result == null) {
             return null;
         }
-        return realm.copyFromRealm(result);
+        T res = realm.copyFromRealm(result);
+        realm.commitTransaction();
+        return res;
     }
 
     @Override
