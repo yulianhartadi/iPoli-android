@@ -99,7 +99,7 @@
         <item>for 5m</item>
     </string-array>
 
-    <string-array name="quest_durations">
+    <string-array name="quest_string_durations">
         <item>15 min or less</item>
         <item>30 min</item>
         <item>45 min</item>

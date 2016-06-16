@@ -54,6 +54,27 @@ public class DurationFormatter {
         return mins == 1 ? "1 minute" : mins + " minutes";
     }
 
+    public static String formatReadableShort(int duration) {
+        if(duration < 0) {
+            return "";
+        }
+
+        long hours = TimeUnit.MINUTES.toHours(duration);
+        long mins = duration - hours * 60;
+        if (hours <= 0 && mins <= 0) {
+            return "";
+        }
+        if (hours > 0 && mins > 0) {
+            return hours + "h and " + mins + " m";
+        }
+
+        if (hours > 0 && mins == 0) {
+            return hours == 1 ? "1 hour" : hours + " hours";
+        }
+
+        return mins + " min";
+    }
+
     private static String formatEmptyDuration() {
         return "Don't know";
     }
