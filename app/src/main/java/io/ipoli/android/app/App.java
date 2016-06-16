@@ -78,7 +78,6 @@ import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.QuestsDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -323,7 +322,21 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
+        List<Quest> questsToRemove = questPersistenceService.findAllForRepeatingQuest(e.repeatingQuest);
+//        List<Quest> questsToRemove = new ArrayList<>();
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        for(Quest quest : questsToRemove) {
+            QuestNotificationScheduler.stopAll(quest.getId(), this);
+            removedQuests.add(quest.getId());
+        }
+        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
+        questPersistenceService.delete(questsToRemove).subscribe(ignored -> {
+        }, Throwable::printStackTrace, () -> {
+            repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
+            onQuestChanged();
+        });
+
     }
 
     private void onQuestComplete(Quest quest) {
@@ -389,25 +402,6 @@ public class App extends MultiDexApplication {
     public void onQuestSaved(QuestSavedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
-    }
-
-    @Subscribe
-    public void onQuestsDeleted(QuestsDeletedEvent e) {
-        List<Quest> quests = e.quests;
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
-        for(Quest quest : quests) {
-            QuestNotificationScheduler.stopAll(quest.getId(), this);
-            removedQuests.add(quest.getId());
-        }
-        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
-        questPersistenceService.delete(quests).subscribe(ignored -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new ServerSyncRequestEvent());
-            onQuestChanged();
-        });
-
-
     }
 
     @Subscribe

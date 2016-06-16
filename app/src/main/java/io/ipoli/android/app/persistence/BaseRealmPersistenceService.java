@@ -134,8 +134,11 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
             Realm realm = getRealm();
             realm.executeTransactionAsync(backgroundRealm -> {
                         RealmQuery<T> q = backgroundRealm.where(getRealmObjectClass());
-                        for (T o : objects) {
-                            q = q.equalTo("id", o.getId());
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (i > 0) {
+                                q = q.or();
+                            }
+                            q = q.equalTo("id", objects.get(i).getId());
                         }
                         RealmResults<T> results = q.findAll();
                         results.deleteAllFromRealm();
