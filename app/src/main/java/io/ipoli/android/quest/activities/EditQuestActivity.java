@@ -155,7 +155,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
 
     @NonNull
     private List<String> createAutoSuggestions(String qDurationTxt) {
-        String[] questDurations = getResources().getStringArray(R.array.quest_durations);
+        String[] questDurations = getResources().getStringArray(R.array.quest_string_durations);
         List<String> autoSuggestions = new ArrayList<>(Arrays.asList(questDurations));
 
         if (TextUtils.isEmpty(qDurationTxt)) {

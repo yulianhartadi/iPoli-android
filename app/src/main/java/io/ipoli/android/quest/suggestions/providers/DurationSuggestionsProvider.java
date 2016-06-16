@@ -1,10 +1,11 @@
 package io.ipoli.android.quest.suggestions.providers;
 
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
-
+import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -14,7 +15,11 @@ public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
 
     @Override
     protected List<String> getSuggestions() {
-        return Arrays.asList(new String[]{"5 min", "10 min", "15 min", "30 min", "1 hour", "1 h and 30 m", "2 hours", "3 hours", "4 hours"});
+        List<String> durations = new ArrayList<>();
+        for(int d : Constants.DURATIONS) {
+            durations.add(DurationFormatter.formatReadableShort(d));
+        }
+        return durations;
     }
 
     @Override

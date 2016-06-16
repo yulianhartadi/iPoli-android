@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -23,8 +24,6 @@ public class DurationPickerFragment extends DialogFragment {
     private static final String TAG = "duration-picker-dialog";
     private static final String DURATION = "duration";
 
-    private static final int[] AVAILABLE_DURATIONS = {15, 30, 45, 60, 90, 120, 180, 240};
-
     private int duration;
     private int selectedDurationIndex;
 
@@ -35,13 +34,13 @@ public class DurationPickerFragment extends DialogFragment {
     }
 
     public static DurationPickerFragment newInstance(OnDurationPickedListener durationPickedListener) {
-        return newInstance(AVAILABLE_DURATIONS[0], durationPickedListener);
+        return newInstance(-1 , durationPickedListener);
     }
 
     public static DurationPickerFragment newInstance(int duration, OnDurationPickedListener durationPickedListener) {
         DurationPickerFragment fragment = new DurationPickerFragment();
         Bundle args = new Bundle();
-        args.putInt(DURATION, duration);
+        args.putInt(DURATION, Math.max(duration, Constants.QUEST_CALENDAR_EVENT_MIN_DURATION));
         fragment.setArguments(args);
         fragment.durationPickedListener = durationPickedListener;
         return fragment;
@@ -58,10 +57,11 @@ public class DurationPickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        int[] availableDurations = Constants.DURATIONS;
         List<String> questDurations = new ArrayList<>();
         selectedDurationIndex = -1;
-        for (int i = 0; i < AVAILABLE_DURATIONS.length; i++) {
-            int d = AVAILABLE_DURATIONS[i];
+        for (int i = 0; i < availableDurations.length; i++) {
+            int d = availableDurations[i];
             questDurations.add(DurationFormatter.formatReadable(d));
             if (d == duration) {
                 selectedDurationIndex = i;
