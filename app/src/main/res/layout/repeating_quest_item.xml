@@ -14,13 +14,25 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/delete_quest"
-            android:layout_width="70dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@color/md_red_500"
-            android:src="@drawable/ic_delete_white_24dp" />
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/edit_quest"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:background="@color/md_blue_500"
+                android:src="@drawable/ic_create_white_24dp" />
+
+            <ImageButton
+                android:id="@+id/delete_quest"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:background="@color/md_red_500"
+                android:src="@drawable/ic_delete_white_24dp" />
+        </LinearLayout>
     </FrameLayout>
 
     <FrameLayout
@@ -73,7 +85,6 @@
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
-
                 <LinearLayout
                     android:id="@+id/quest_repeating_quest_indicators_container"
                     android:layout_width="match_parent"
@@ -104,24 +115,6 @@
                     android:id="@+id/quest_next_datetime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/quest_delete_container"
-                android:layout_width="wrap_content"
-                android:layout_height="76dp"
-                android:layout_alignParentEnd="true"
-                android:background="@color/md_red_500"
-                android:padding="8dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="1.0"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_delete_white_24dp" />
             </LinearLayout>
         </RelativeLayout>
     </FrameLayout>

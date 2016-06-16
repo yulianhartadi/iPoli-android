@@ -75,6 +75,7 @@ import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -306,6 +307,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, AddQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onEditRepeatingQuestRequest(EditRepeatingQuestRequestEvent e) {
+        Intent i = new Intent(this, AddQuestActivity.class);
+        i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
     }
 

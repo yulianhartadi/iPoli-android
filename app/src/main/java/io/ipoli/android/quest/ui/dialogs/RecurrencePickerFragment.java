@@ -56,6 +56,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     public static final int FREQUENCY_WEEKLY = 1;
     public static final int FREQUENCY_MONTHLY = 2;
     private static final String RECURRENCE = "recurrence";
+    private static final String DISABLE_NO_REPEAT = "disable_no_repeat";
 
     private static final Map<WeekDay, Integer> weekDayToCheckBoxId = new HashMap<WeekDay, Integer>() {{
         put(WeekDay.MO, R.id.monday);
@@ -68,6 +69,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }};
 
     public interface OnRecurrencePickedListener {
+
         void onRecurrencePicked(Recurrence recurrence);
     }
 
@@ -89,6 +91,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @BindView(R.id.recurrence_until)
     Button until;
 
+    private boolean disableNoRepeat;
+
     private Unbinder unbinder;
     private OnRecurrencePickedListener recurrencePickerListener;
 
@@ -105,6 +109,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         } else {
             recurrence = Recurrence.create();
         }
+        disableNoRepeat = args.getBoolean(DISABLE_NO_REPEAT, false);
     }
 
     @NonNull
@@ -170,10 +175,13 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 .setPositiveButton(getString(R.string.done), (dialog, which) -> {
                     onDialogDone(view);
                 })
-                .setNegativeButton(getString(R.string.cancel), null)
-                .setNeutralButton(getString(R.string.do_not_repeat), (dialog, which) -> {
-                    recurrencePickerListener.onRecurrencePicked(null);
-                });
+                .setNegativeButton(getString(R.string.cancel), null);
+
+        if (!disableNoRepeat) {
+            builder.setNeutralButton(getString(R.string.do_not_repeat), (dialog, which) -> {
+                recurrencePickerListener.onRecurrencePicked(null);
+            });
+        }
 
         return builder.create();
     }
@@ -268,14 +276,15 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         until.setTag(date);
     }
 
-    public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener) {
-        return newInstance(listener, null);
+    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener) {
+        return newInstance(disableNoRepeat, listener, null);
     }
 
-    public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener, Recurrence recurrence) {
+    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener, Recurrence recurrence) {
         RecurrencePickerFragment fragment = new RecurrencePickerFragment();
         fragment.recurrencePickerListener = listener;
         Bundle args = new Bundle();
+        args.putBoolean(DISABLE_NO_REPEAT, disableNoRepeat);
         if (recurrence != null) {
             args.putString(RECURRENCE, new Gson().toJson(recurrence));
         }

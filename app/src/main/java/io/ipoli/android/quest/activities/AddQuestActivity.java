@@ -70,6 +70,8 @@ import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
@@ -180,10 +182,45 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
             onEditQuest();
+        } else if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY))) {
+            onEditRepeatingQuest();
         } else {
             onAddNewQuest();
         }
+    }
 
+    private void onEditQuest() {
+        changeEditMode(EditMode.EDIT_QUEST);
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        Quest quest = questPersistenceService.findById(questId);
+        questText.setText(quest.getName());
+        questText.setSelection(quest.getName().length());
+        populateDuration(quest.getDuration());
+        populateStartTime(quest.getStartMinute());
+        if (quest.getEndDate() != null) {
+            populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
+        } else {
+            populateEndDate(null);
+        }
+        setSelectedContext();
+        removeSelectedContextCheck();
+        changeContext(Quest.getContext(quest));
+    }
+
+    private void onEditRepeatingQuest() {
+        changeEditMode(EditMode.EDIT_REPEATING_QUEST);
+        String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
+        RepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        RepeatingQuest rq = questPersistenceService.findById(questId);
+        questText.setText(rq.getName());
+        questText.setSelection(rq.getName().length());
+        populateDuration(rq.getDuration());
+        populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+        setFrequencyText(rq.getRecurrence());
+        setSelectedContext();
+        removeSelectedContextCheck();
+        changeContext(RepeatingQuest.getContext(rq));
     }
 
     private void onAddNewQuest() {
@@ -204,25 +241,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
-    }
-
-    private void onEditQuest() {
-        changeEditMode(EditMode.EDIT_QUEST);
-        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        Quest quest = questPersistenceService.findById(questId);
-        questText.setText(quest.getName());
-        questText.setSelection(quest.getName().length());
-        populateDuration(quest.getDuration());
-        populateStartTime(quest.getStartMinute());
-        if (quest.getEndDate() != null) {
-            populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
-        } else {
-            populateEndDate(null);
-        }
-        setSelectedContext();
-        removeSelectedContextCheck();
-        changeContext(Quest.getContext(quest));
     }
 
     private void changeEditMode(EditMode editMode) {
@@ -252,6 +270,10 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         if (editMode == EditMode.EDIT_QUEST) {
             findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
             findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
+        }
+        if (editMode == EditMode.EDIT_REPEATING_QUEST) {
+            findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
+            findViewById(R.id.quest_start_time_container).setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
     }
@@ -470,7 +492,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @OnClick(R.id.quest_frequency_container)
     public void onFrequencyClick(View view) {
-        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(this, (Recurrence) frequencyText.getTag());
+        boolean disableNoRepeat = editMode == EditMode.EDIT_REPEATING_QUEST;
+        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(disableNoRepeat, this, (Recurrence) frequencyText.getTag());
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
