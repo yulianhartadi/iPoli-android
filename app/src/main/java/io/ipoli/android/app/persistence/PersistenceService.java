@@ -30,5 +30,7 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     void saveSync(List<T> objects);
 
+    Observable<Void> delete(List<T> objects);
+
     void close();
 }

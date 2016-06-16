@@ -40,6 +40,8 @@ public interface Constants {
 
     String KEY_SELECTED_ANDROID_CALENDARS = "SELECTED_ANDROID_CALENDARS";
 
+    String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
+
     String IPOLI_EMAIL = "hi@ipoli.io";
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 

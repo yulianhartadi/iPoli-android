@@ -126,6 +126,28 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
+    public Observable<Void> delete(List<T> objects) {
+        if (objects.isEmpty()) {
+            return Observable.empty();
+        }
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm -> {
+                        RealmQuery<T> q = backgroundRealm.where(getRealmObjectClass());
+                        for (T o : objects) {
+                            q = q.equalTo("id", o.getId());
+                        }
+                        RealmResults<T> results = q.findAll();
+                        results.deleteAllFromRealm();
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                    }, subscriber::onError);
+        });
+    }
+
+    @Override
     public T findById(String id) {
         return findOne(where -> where.equalTo("id", id).findFirst());
     }

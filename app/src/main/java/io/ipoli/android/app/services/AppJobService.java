@@ -15,6 +15,7 @@ import org.joda.time.LocalDate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -84,6 +85,7 @@ public class AppJobService extends JobService {
                     return Observable.empty();
                 }
                 scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                syncRemovedQuests(p);
                 syncRepeatingQuests(repeatingQuestPersistenceService, p);
                 syncQuests(questPersistenceService, repeatingQuestPersistenceService, p);
                 getRepeatingQuests(repeatingQuestPersistenceService, p);
@@ -107,6 +109,8 @@ public class AppJobService extends JobService {
                 });
         return true;
     }
+
+
 
     private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
@@ -187,6 +191,16 @@ public class AppJobService extends JobService {
             }
             throw new RuntimeException(e);
         }
+    }
+
+    private void syncRemovedQuests(Player player) {
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        RequestBody requestBody = createRequestBody().param("data", removedQuests).param("player_id", player.getRemoteId()).build();
+        apiService.deleteQuests(requestBody);
+        removedQuests.clear();
+        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
+
     }
 
     private void syncQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
