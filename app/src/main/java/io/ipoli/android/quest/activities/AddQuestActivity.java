@@ -84,6 +84,7 @@ import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
+import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
@@ -377,6 +378,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             createQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
             updateQuest();
+        } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
+            updateRepeatingQuest();
         }
     }
 
@@ -407,6 +410,24 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
         q.setContext(questContext.name());
         eventBus.post(new UpdateQuestEvent(q));
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private void updateRepeatingQuest() {
+        String name = questText.getText().toString().trim();
+        if (isQuestNameInvalid(name)) {
+            return;
+        }
+        String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
+        RealmRepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        RepeatingQuest rq = questPersistenceService.findById(questId);
+        rq.setName(name);
+        rq.setDuration((int) durationText.getTag());
+        rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+        rq.setRecurrence((Recurrence) frequencyText.getTag());
+        rq.setContext(questContext.name());
+        eventBus.post(new UpdateRepeatingQuestEvent(rq));
         setResult(RESULT_OK);
         finish();
     }
@@ -470,7 +491,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
         Time time = Time.now();
-        if(startTimeText.getTag() != null && (int) startTimeText.getTag() > -1) {
+        if (startTimeText.getTag() != null && (int) startTimeText.getTag() > -1) {
             time = Time.of((int) startTimeText.getTag());
         }
         TimePickerFragment f = TimePickerFragment.newInstance(time, this);

@@ -81,6 +81,7 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
+import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.realm.Realm;
@@ -317,6 +318,11 @@ public class App extends MultiDexApplication {
                 onQuestComplete(quest);
             }
         });
+    }
+
+    @Subscribe
+    public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
+        repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
     }
 
     private void onQuestComplete(Quest quest) {

@@ -151,20 +151,29 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Quest q = vm.getQuest();
             viewBinderHelper.bind(questHolder.swipeLayout, q.getId());
             questHolder.swipeLayout.close(false);
-            questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+            questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
                 @Override
                 public void onOpened(SwipeRevealLayout view) {
                     super.onOpened(view);
                     eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
                 }
             });
-            questHolder.scheduleQuest.setOnClickListener(v -> eventBus.post(new ScheduleQuestForTodayEvent(q,EventSource.OVERVIEW)));
+            questHolder.scheduleQuest.setOnClickListener(v -> {
+                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
+            });
 
-            questHolder.completeQuest.setOnClickListener(v -> eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW)));
+            questHolder.completeQuest.setOnClickListener(v -> {
+                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
+            });
 
-            questHolder.editQuest.setOnClickListener(v -> eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW)));
+            questHolder.editQuest.setOnClickListener(v -> {
+                questHolder.swipeLayout.close(false);
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
+            });
 
-            questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW)));
+            questHolder.deleteQuest.setOnClickListener(v -> {
+                eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));
+            });
 
             questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
             questHolder.name.setText(vm.getName());
