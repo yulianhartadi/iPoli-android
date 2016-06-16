@@ -271,7 +271,6 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             case EDIT_NEW_QUEST:
             case EDIT_QUEST:
             case EDIT_REPEATING_QUEST:
-                toolbarTitle.setText(R.string.title_edit_quest);
                 questText.setOnClickListener(null);
                 questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 questTextLayout.setHint(getString(R.string.add_quest_name_hint));
@@ -281,10 +280,12 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                 break;
         }
         if (editMode == EditMode.EDIT_QUEST) {
+            toolbarTitle.setText(R.string.title_edit_quest);
             findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
             findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
         }
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
+            toolbarTitle.setText(R.string.title_edit_quest);
             findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
             findViewById(R.id.quest_start_time_container).setVisibility(View.GONE);
         }
