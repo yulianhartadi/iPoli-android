@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
@@ -39,17 +37,14 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
-import rx.Observable;
 
 public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<RepeatingQuest> {
 
@@ -164,29 +159,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
         } catch (ParseException e) {
             return null;
         }
-    }
-
-    @Subscribe
-    public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
-        final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        repeatingQuest.markDeleted();
-        markQuestsDeleted(repeatingQuest).flatMap(ignored ->
-                repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest)).compose(bindToLifecycle()).subscribe(o -> {
-        }, error -> {
-        }, () -> {
-            Snackbar
-                    .make(rootLayout,
-                            R.string.repeating_quest_removed,
-                            Snackbar.LENGTH_SHORT).show();
-        });
-    }
-
-    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
-        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
-        for (Quest q : quests) {
-            q.markDeleted();
-        }
-        return questPersistenceService.saveRemoteObjects(quests);
     }
 
     @OnClick(R.id.add_repeating_quest)

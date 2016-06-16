@@ -37,7 +37,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -155,11 +154,6 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         log("schedule_quest_for_today", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
-    }
-
-    @Subscribe
-    public void onDeleteQuestRequested(DeleteQuestRequestedEvent e) {
-        log("delete_quest_requested", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -442,8 +436,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         log("buy_reward", EventParams.create()
-        .add("name", e.reward.getName())
-        .add("price", e.reward.getPrice() + ""));
+                .add("name", e.reward.getName())
+                .add("price", e.reward.getPrice() + ""));
     }
 
     @Subscribe

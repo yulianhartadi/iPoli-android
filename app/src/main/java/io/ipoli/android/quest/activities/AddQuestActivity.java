@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -10,6 +11,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
@@ -62,6 +64,8 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
@@ -69,7 +73,10 @@ import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
+import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -162,7 +169,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
-    enum EditMode {SMART_ADD, EDIT_NEW_QUEST, EDIT_QUEST, EDIT_REPEATING_QUEST}
+    enum EditMode {ADD, EDIT_NEW_QUEST, EDIT_QUEST, EDIT_REPEATING_QUEST}
 
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
@@ -229,7 +236,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void onAddNewQuest() {
-        changeEditMode(EditMode.SMART_ADD);
+        changeEditMode(EditMode.ADD);
         populateTimesPerDay(1);
         populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
         questText.setOnClickListener(v -> {
@@ -251,7 +258,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void changeEditMode(EditMode editMode) {
         this.editMode = editMode;
         switch (editMode) {
-            case SMART_ADD:
+            case ADD:
                 suggestionsManager = new SuggestionsManager(prettyTimeParser);
                 suggestionsManager.setSuggestionsUpdatedListener(this);
                 initSuggestions();
@@ -264,6 +271,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             case EDIT_NEW_QUEST:
             case EDIT_QUEST:
             case EDIT_REPEATING_QUEST:
+                toolbarTitle.setText(R.string.title_edit_quest);
                 questText.setOnClickListener(null);
                 questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 questTextLayout.setHint(getString(R.string.add_quest_name_hint));
@@ -352,7 +360,8 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.SMART_ADD ? R.string.done : R.string.save);
+        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.ADD ? R.string.done : R.string.save);
+        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EditMode.EDIT_NEW_QUEST));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -362,6 +371,36 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             case R.id.action_save:
                 onSaveTap(EventSource.TOOLBAR);
                 return true;
+            case R.id.action_delete:
+                AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
+                if (editMode == EditMode.EDIT_QUEST) {
+                    QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+                    String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+                    Quest quest = questPersistenceService.findById(questId);
+                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
+                        eventBus.post(new DeleteQuestRequestEvent(quest, EventSource.EDIT_QUEST));
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
+                        eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
+                    });
+                    d.show();
+                } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
+                    RepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+                    String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
+                    RepeatingQuest repeatingQuest = questPersistenceService.findById(questId);
+                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
+                        eventBus.post(new DeleteRepeatingQuestRequestEvent(repeatingQuest, EventSource.EDIT_QUEST));
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
+                        eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest, EventSource.EDIT_QUEST));
+                    });
+                    d.show();
+                }
+                return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
                 return true;
@@ -370,7 +409,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     }
 
     private void onSaveTap(EventSource source) {
-        if (editMode == EditMode.SMART_ADD) {
+        if (editMode == EditMode.ADD) {
             changeEditMode(EditMode.EDIT_NEW_QUEST);
             populateFormFromParser();
         } else if (editMode == EditMode.EDIT_NEW_QUEST) {

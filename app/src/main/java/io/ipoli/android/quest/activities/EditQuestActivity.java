@@ -47,7 +47,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -247,7 +246,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
                 finish();
                 return true;
             case R.id.action_delete:
-                eventBus.post(new DeleteQuestRequestedEvent(quest, EventSource.EDIT_QUEST));
+//                eventBus.post(new DeleteQuestRequestedEvent(quest, EventSource.EDIT_QUEST));
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     quest.markDeleted();

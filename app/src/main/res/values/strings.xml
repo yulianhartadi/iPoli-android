@@ -3,7 +3,7 @@
     <string name="title_activity_quest_list">Today</string>
     <string name="title_fragment_inbox">Inbox</string>
     <string name="title_activity_pick_avatar">Pick avatar</string>
-    <string name="title_activity_edit_quest">Edit quest</string>
+    <string name="title_edit_quest">Edit quest</string>
     <string name="player_level">Level %d</string>
     <string name="quest_removed">Quest removed</string>
     <string name="repeating_quest_removed">Repeating Quest removed</string>

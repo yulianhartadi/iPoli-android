@@ -4,7 +4,6 @@ package io.ipoli.android.quest.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -49,8 +48,6 @@ import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
@@ -163,19 +160,6 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
         q.setEndDateFromLocal(endDate);
         questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
             Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    @Subscribe
-    public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
-        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.OVERVIEW));
-        e.quest.markDeleted();
-        questPersistenceService.save(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
-            Snackbar
-                    .make(rootContainer,
-                            R.string.quest_removed,
-                            Snackbar.LENGTH_SHORT)
-                    .show();
         });
     }
 

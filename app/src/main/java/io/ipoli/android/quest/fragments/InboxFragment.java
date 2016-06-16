@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -27,20 +26,17 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
-public class InboxFragment extends BaseFragment implements OnDatabaseChangedListener<Quest>{
+public class InboxFragment extends BaseFragment implements OnDatabaseChangedListener<Quest> {
 
     @Inject
     Bus eventBus;
@@ -114,19 +110,6 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Subscribe
-    public void onQuestDeleteRequest(final DeleteQuestRequestEvent e) {
-        eventBus.post(new DeleteQuestRequestedEvent(e.quest, EventSource.INBOX));
-        e.quest.markDeleted();
-        questPersistenceService.save(e.quest).compose(bindToLifecycle()).subscribe(questId -> {
-            Snackbar
-                    .make(rootLayout,
-                            R.string.quest_removed,
-                            Snackbar.LENGTH_SHORT)
-                    .show();
-        });
     }
 
     @Subscribe

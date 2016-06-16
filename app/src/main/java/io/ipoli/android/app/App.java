@@ -66,6 +66,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -340,6 +342,14 @@ public class App extends MultiDexApplication {
 
     }
 
+    @Subscribe
+    public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
+        e.quest.markDeleted();
+        questPersistenceService.save(e.quest).subscribe(questId -> {
+
+        });
+    }
+
     private void onQuestComplete(Quest quest) {
         Player player = playerPersistenceService.find();
         player.addExperience(quest.getExperience());
@@ -388,6 +398,23 @@ public class App extends MultiDexApplication {
             });
         }
     }
+
+    @Subscribe
+    public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
+        final RepeatingQuest repeatingQuest = e.repeatingQuest;
+        repeatingQuest.markDeleted();
+        markQuestsDeleted(repeatingQuest).flatMap(ignored ->
+                repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest)).subscribe();
+    }
+
+    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
+        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
+        for (Quest q : quests) {
+            q.markDeleted();
+        }
+        return questPersistenceService.saveRemoteObjects(quests);
+    }
+
 
     private void saveQuestsForRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
         LocalDate currentDate = LocalDate.now();

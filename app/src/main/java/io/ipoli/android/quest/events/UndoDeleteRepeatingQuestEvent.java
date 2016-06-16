@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.events;
 
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -8,8 +9,10 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public class UndoDeleteRepeatingQuestEvent {
     public final RepeatingQuest repeatingQuest;
+    public final EventSource source;
 
-    public UndoDeleteRepeatingQuestEvent(RepeatingQuest repeatingQuest) {
+    public UndoDeleteRepeatingQuestEvent(RepeatingQuest repeatingQuest, EventSource source) {
         this.repeatingQuest = repeatingQuest;
+        this.source = source;
     }
 }

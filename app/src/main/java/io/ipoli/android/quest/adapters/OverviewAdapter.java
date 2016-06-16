@@ -167,7 +167,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
 
             questHolder.editQuest.setOnClickListener(v -> {
-                questHolder.swipeLayout.close(false);
+                questHolder.swipeLayout.close(true);
                 eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
             });
 

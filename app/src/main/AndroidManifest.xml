@@ -59,7 +59,7 @@
         </activity>
         <activity
             android:name=".quest.activities.EditQuestActivity"
-            android:label="@string/title_activity_edit_quest"
+            android:label="@string/title_edit_quest"
             android:screenOrientation="portrait" />
         <activity
             android:name=".reward.activities.RewardActivity"
