@@ -385,7 +385,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Quest q = questPersistenceService.findById(questId);
         q.setName(name);
-        q.setEndDate((Date) endDateText.getTag());
+        q.setEndDateFromLocal((Date) endDateText.getTag());
         q.setDuration((int) durationText.getTag());
         q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         if (isQuestForThePast(q)) {
@@ -588,7 +588,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void createNewQuest(String name) {
         Quest q = new Quest(name);
         q.setRawText(rawText);
-        q.setEndDate((Date) endDateText.getTag());
+        q.setEndDateFromLocal((Date) endDateText.getTag());
         q.setDuration((int) durationText.getTag());
         q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         if (isQuestForThePast(q)) {
