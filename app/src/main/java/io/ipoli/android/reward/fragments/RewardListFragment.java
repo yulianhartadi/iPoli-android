@@ -38,7 +38,7 @@ import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
-import io.ipoli.android.reward.activities.RewardActivity;
+import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
@@ -127,7 +127,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     @OnClick(R.id.add_reward)
     public void onAddReward(View view) {
-        startActivity(new Intent(getActivity(), RewardActivity.class));
+        startActivity(new Intent(getActivity(), EditRewardActivity.class));
     }
 
     @Subscribe
@@ -150,7 +150,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     @Subscribe
     public void onEditRewardRequest(EditRewardRequestEvent e) {
-        Intent i = new Intent(getContext(), RewardActivity.class);
+        Intent i = new Intent(getContext(), EditRewardActivity.class);
         i.putExtra(Constants.REWARD_ID_EXTRA_KEY, e.reward.getId());
         startActivity(i);
     }
