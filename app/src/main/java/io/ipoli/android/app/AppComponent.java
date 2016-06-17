@@ -17,7 +17,6 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
-import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.CalendarFragment;
@@ -30,11 +29,10 @@ import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
-import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
-import io.ipoli.android.reward.activities.RewardActivity;
+import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -58,12 +56,6 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 public interface AppComponent {
 
     void inject(App app);
-
-    void inject(EditQuestActivity editQuestActivity);
-
-    void inject(DatePickerFragment datePickerFragment);
-
-    void inject(TimePickerFragment timePickerFragment);
 
     void inject(QuestActivity questActivity);
 
@@ -113,16 +105,18 @@ public interface AppComponent {
 
     void inject(HelpDialog helpDialog);
 
-    void inject(AddQuestActivity addQuestActivity);
+    void inject(EditQuestActivity editQuestActivity);
 
     void inject(ChallengeListFragment challengeListFragment);
 
     void inject(RewardListFragment rewardListFragment);
 
-    void inject(RewardActivity rewardActivity);
+    void inject(EditRewardActivity editRewardActivity);
 
     void inject(PickAvatarActivity pickAvatarActivity);
 
     void inject(GrowthFragment growthFragment);
+
+    void inject(RecurrencePickerFragment recurrencePickerFragment);
 }
 

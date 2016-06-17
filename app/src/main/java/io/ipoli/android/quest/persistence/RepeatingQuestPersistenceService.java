@@ -15,5 +15,5 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener);
 
-    RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId);
+    RepeatingQuest findByExternalSourceMappingId(String source, String sourceId);
 }

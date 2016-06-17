@@ -49,6 +49,8 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     private Recurrence recurrence;
 
+    private String note;
+
     private String source;
 
     private boolean needsSyncWithRemote;
@@ -236,16 +238,16 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         markUpdated();
     }
 
-    public boolean isWeekly() {
-        return getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.WEEKLY;
-    }
-
-    public boolean isMonthly() {
-        return getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY;
-    }
-
     @Override
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

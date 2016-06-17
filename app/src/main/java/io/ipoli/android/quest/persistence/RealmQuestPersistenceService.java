@@ -77,12 +77,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
-
-        return where()
+        getRealm().beginTransaction();
+        long count = where()
                 .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .between("endDate", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
                 .count();
+        getRealm().commitTransaction();
+        return count;
     }
 
     @Override
@@ -139,15 +141,20 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Quest findByExternalSourceMappingIdSync(String source, String sourceId) {
-        Realm realm = getRealm();
-        Quest quest = realm.where(getRealmObjectClass())
-                .equalTo("sourceMapping." + source, sourceId)
-                .findFirst();
-        if (quest == null) {
-            return null;
-        }
-        return realm.copyFromRealm(quest);
+    public Quest findByExternalSourceMappingId(String source, String sourceId) {
+        return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
+                .findFirst());
+    }
+
+    @Override
+    public List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest) {
+        Date startDateUtc = toStartOfDayUTC(startDate);
+        return findAllIncludingDeleted(where -> where
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .isNull("endDate")
+                .or()
+                .greaterThanOrEqualTo("endDate", startDateUtc)
+                .findAll());
     }
 
     @Override
@@ -159,10 +166,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
-        return where()
+        getRealm().beginTransaction();
+        long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .between("originalStartDate", toStartOfDayUTC(startDate), toStartOfDayUTC(endDate))
                 .count();
+        getRealm().commitTransaction();
+        return count;
     }
 
     @Override

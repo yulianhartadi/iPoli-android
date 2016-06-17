@@ -66,11 +66,14 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
@@ -80,6 +83,7 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
+import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.realm.Realm;
@@ -303,9 +307,45 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
-            if (quest.getCompletedAt() != null) {
+            if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest);
             }
+        });
+    }
+
+    @Subscribe
+    public void onUpdateQuest(UpdateQuestEvent e) {
+        questPersistenceService.save(e.quest).subscribe(quest -> {
+            if (Quest.isCompleted(quest)) {
+                onQuestComplete(quest);
+            }
+        });
+    }
+
+    @Subscribe
+    public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
+        List<Quest> questsToRemove = questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest);
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        for (Quest quest : questsToRemove) {
+            QuestNotificationScheduler.stopAll(quest.getId(), this);
+            if (!TextUtils.isEmpty(quest.getRemoteId())) {
+                removedQuests.add(quest.getRemoteId());
+            }
+        }
+        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
+        questPersistenceService.delete(questsToRemove).subscribe(ignored -> {
+        }, Throwable::printStackTrace, () -> {
+            repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
+            onQuestChanged();
+        });
+    }
+
+    @Subscribe
+    public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
+        e.quest.markDeleted();
+        questPersistenceService.save(e.quest).subscribe(questId -> {
+
         });
     }
 
@@ -356,6 +396,24 @@ public class App extends MultiDexApplication {
                 eventBus.post(new ServerSyncRequestEvent());
             });
         }
+    }
+
+    @Subscribe
+    public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
+        final RepeatingQuest repeatingQuest = e.repeatingQuest;
+        repeatingQuest.markDeleted();
+        markQuestsDeleted(repeatingQuest).flatMap(ignored ->
+                repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest)).subscribe();
+    }
+
+    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
+        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
+        for (Quest q : quests) {
+            if (!Quest.isCompleted(q)) {
+                q.markDeleted();
+            }
+        }
+        return questPersistenceService.saveRemoteObjects(quests);
     }
 
     private void saveQuestsForRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {

@@ -137,7 +137,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             }
         });
 
-        if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+        if (q.getDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.END);

@@ -33,9 +33,7 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<SuggestionDrop
     }
 
     public BaseSuggestionsAdapter(Context context, Bus eventBus) {
-        super(context, R.layout.add_quest_suggestion_item, R.id.suggestion_text);
-        this.suggestions = new ArrayList<>();
-        this.eventBus = eventBus;
+        this(context, eventBus, new ArrayList<>());
     }
 
     @Override

@@ -7,10 +7,11 @@ import org.joda.time.LocalDate;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -43,7 +44,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -56,20 +57,14 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", DateUtils.toStartOfDayUTC(LocalDate.now()))
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
 
     @Override
-    public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
-        Realm realm = getRealm();
-        RepeatingQuest repeatingQuest = realm.where(getRealmObjectClass())
-                .equalTo("sourceMapping." + source, sourceId)
-                .findFirst();
-        if (repeatingQuest == null) {
-            return null;
-        }
-        return realm.copyFromRealm(repeatingQuest);
+    public RepeatingQuest findByExternalSourceMappingId(String source, String sourceId) {
+        return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
+                .findFirst());
     }
 }

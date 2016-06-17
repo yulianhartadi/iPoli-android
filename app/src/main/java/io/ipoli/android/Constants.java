@@ -27,33 +27,40 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
 
     String QUEST_ID_EXTRA_KEY = "quest_id";
-    int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
+    String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
+
+    int CALENDAR_EVENT_MIN_DURATION = 15;
+    int QUEST_MIN_DURATION = 10;
 
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
-
     int RESULT_REMOVED = 100;
-    String KEY_APP_RUN_COUNT = "APP_RUN_COUNT";
 
+    String KEY_APP_RUN_COUNT = "APP_RUN_COUNT";
     String KEY_APP_VERSION_CODE = "APP_VERSION_CODE";
     String KEY_PLAYER_REMOTE_ID = "PLAYER_REMOTE_ID";
+
     String KEY_SELECTED_ANDROID_CALENDARS = "SELECTED_ANDROID_CALENDARS";
 
+    String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
+
     String IPOLI_EMAIL = "hi@ipoli.io";
-
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
-    String API_RESOURCE_SOURCE = "ipoli-android";
 
+    String API_RESOURCE_SOURCE = "ipoli-android";
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
-    String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
+    String SOURCE_ANDROID_CALENDAR = "android-calendar";
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_PLAYER_LEVEL = 1;
+
     long DEFAULT_PLAYER_COINS = 10;
 
     String REWARD_ID_EXTRA_KEY = "reward_id";
-
     int AVATAR_COUNT = 12;
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
+
+    int[] DURATIONS = {10, 15, 30, 45, 60, 90, 120, 180, 240};
+    int DEFAULT_MIN_REWARD_PRICE = 100;
 }

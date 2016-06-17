@@ -63,7 +63,6 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
-import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -76,6 +75,7 @@ import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -220,7 +220,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
-            startActivity(new Intent(this, AddQuestActivity.class));
+            startActivity(new Intent(this, EditQuestActivity.class));
         }
     }
 
@@ -285,10 +285,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Quest q = e.quest;
         long experience = q.getExperience();
         long coins = q.getCoins();
-
+        String text = getString(q.getEndDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, experience, coins);
         Snackbar
                 .make(contentContainer,
-                        getString(R.string.quest_undone, experience, coins),
+                        text,
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
@@ -307,6 +307,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onEditRepeatingQuestRequest(EditRepeatingQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
     }
 

@@ -4,12 +4,13 @@ import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
- * on 1/9/16.
+ * on 6/16/16.
  */
-public class QuestUpdatedEvent {
+public class UpdateQuestEvent {
     public final Quest quest;
 
-    public QuestUpdatedEvent(Quest quest) {
+    public UpdateQuestEvent(Quest quest) {
+
         this.quest = quest;
     }
 }

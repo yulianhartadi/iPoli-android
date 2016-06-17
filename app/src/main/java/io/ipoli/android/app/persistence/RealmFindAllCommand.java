@@ -24,6 +24,9 @@ public class RealmFindAllCommand<T extends RealmObject & RemoteObject> {
     }
 
     public List<T> execute() {
-        return realm.copyFromRealm(queryBuilder.buildQuery(query));
+        realm.beginTransaction();
+        List<T> result = realm.copyFromRealm(queryBuilder.buildQuery(query));
+        realm.commitTransaction();
+        return result;
     }
 }

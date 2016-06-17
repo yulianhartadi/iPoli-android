@@ -27,7 +27,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         if (shouldDisplayAsIndicator()) {
             this.duration = EMPIRICALLY_TESTED_MINUTES_FOR_INDICATOR;
         } else {
-            this.duration = Math.max(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
+            this.duration = Math.max(Constants.CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         }
         this.backgroundColor = Quest.getContext(quest).backgroundColor;
         this.startTime = quest.getStartMinute();

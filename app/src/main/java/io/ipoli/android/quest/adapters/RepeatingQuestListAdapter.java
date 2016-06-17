@@ -25,8 +25,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.ViewUtils;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
+import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
 /**
@@ -58,10 +59,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         ViewHolder questHolder = (ViewHolder) holder;
-
         final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
+        RepeatingQuest rq = vm.getRepeatingQuest();
 
-        viewBinderHelper.bind(questHolder.swipeLayout, vm.getRepeatingQuest().getId());
+        viewBinderHelper.bind(questHolder.swipeLayout, rq.getId());
         questHolder.swipeLayout.close(false);
 
         questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
@@ -72,9 +73,15 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             }
         });
 
-        questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(vm.getRepeatingQuest())));
+        questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS)));
 
-        questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowRepeatingQuestEvent(vm.getRepeatingQuest())));
+        questHolder.editQuest.setOnClickListener(v -> {
+            questHolder.swipeLayout.close(true);
+            eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+        });
+
+        questHolder.contentLayout.setOnClickListener(view ->
+                eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS)));
 
         questHolder.name.setText(vm.getName());
 
@@ -150,6 +157,9 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         @BindView(R.id.swipe_layout)
         public SwipeRevealLayout swipeLayout;
+
+        @BindView(R.id.edit_quest)
+        public ImageButton editQuest;
 
         @BindView(R.id.delete_quest)
         public ImageButton deleteQuest;

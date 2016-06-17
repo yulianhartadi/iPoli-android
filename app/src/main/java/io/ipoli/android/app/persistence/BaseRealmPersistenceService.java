@@ -82,15 +82,32 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     @Override
     public void saveSync(T obj) {
-        obj.markUpdated();
+        saveSync(obj, true);
+    }
+
+    @Override
+    public void saveSync(T obj, boolean markUpdated) {
+        if (markUpdated) {
+            obj.markUpdated();
+        }
         realm.executeTransaction(transactionRealm ->
                 transactionRealm.copyToRealmOrUpdate(obj));
     }
 
     @Override
     public void saveSync(List<T> objects) {
-        for (T obj : objects) {
-            obj.markUpdated();
+        saveSync(objects, true);
+    }
+
+    @Override
+    public void saveSync(List<T> objects, boolean markUpdated) {
+        if (objects.isEmpty()) {
+            return;
+        }
+        if (markUpdated) {
+            for (T obj : objects) {
+                obj.markUpdated();
+            }
         }
         realm.executeTransaction(transactionRealm ->
                 transactionRealm.copyToRealmOrUpdate(objects));
@@ -126,29 +143,45 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
-    public T findById(String id) {
-        T result = where().equalTo("id", id).findFirst();
-        if (result == null) {
-            return null;
+    public Observable<Void> delete(List<T> objects) {
+        if (objects.isEmpty()) {
+            return Observable.empty();
         }
-        return realm.copyFromRealm(result);
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm -> {
+                        RealmQuery<T> q = backgroundRealm.where(getRealmObjectClass());
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (i > 0) {
+                                q = q.or();
+                            }
+                            q = q.equalTo("id", objects.get(i).getId());
+                        }
+                        RealmResults<T> results = q.findAll();
+                        results.deleteAllFromRealm();
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                    }, subscriber::onError);
+        });
+    }
+
+    @Override
+    public T findById(String id) {
+        return findOne(where -> where.equalTo("id", id).findFirst());
     }
 
     @Override
     public T findByRemoteId(String id) {
-        Realm realm = getRealm();
-        T obj = realm.where(getRealmObjectClass())
-                .equalTo("remoteId", id)
-                .findFirst();
-        if (obj == null) {
-            return null;
-        }
-        return realm.copyFromRealm(obj);
+        return findOne(where -> where.equalTo("remoteId", id).findFirst());
     }
 
     @Override
     public List<T> findAllWhoNeedSyncWithRemote() {
-        return realm.copyFromRealm(whereIncludingDeleted().equalTo("needsSyncWithRemote", true).findAll());
+        return findAllIncludingDeleted(where -> where
+                .equalTo("needsSyncWithRemote", true)
+                .findAll());
     }
 
     protected abstract Class<T> getRealmObjectClass();
@@ -157,8 +190,16 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return realm;
     }
 
+    protected T findOne(RealmFindOneQueryBuilder<T> queryBuilder) {
+        return new RealmFindOneCommand<T>(queryBuilder, where(), getRealm()).execute();
+    }
+
     protected List<T> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
         return new RealmFindAllCommand<T>(queryBuilder, where(), getRealm()).execute();
+    }
+
+    protected List<T> findAllIncludingDeleted(RealmFindAllQueryBuilder<T> queryBuilder) {
+        return new RealmFindAllCommand<T>(queryBuilder, whereIncludingDeleted(), getRealm()).execute();
     }
 
     @Override

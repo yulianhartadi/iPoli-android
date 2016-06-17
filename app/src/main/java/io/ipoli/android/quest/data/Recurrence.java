@@ -14,7 +14,7 @@ import io.realm.annotations.Required;
  */
 public class Recurrence extends RealmObject {
 
-    public enum RecurrenceType {WEEKLY, MONTHLY;}
+    public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
 
     @Required
     @PrimaryKey
@@ -25,6 +25,7 @@ public class Recurrence extends RealmObject {
     private String rrule;
 
     private String rdate;
+
     private String exrule;
     private String exdate;
     private Date dtstart;
@@ -32,7 +33,6 @@ public class Recurrence extends RealmObject {
     private String type;
     @Required
     private Date createdAt;
-
     @Required
     private Date updatedAt;
 
@@ -44,6 +44,11 @@ public class Recurrence extends RealmObject {
         id = IDGenerator.generate();
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
+        setType(RecurrenceType.DAILY);
+        this.timesPerDay = timesPerDay;
+    }
+
+    public void setTimesPerDay(int timesPerDay) {
         this.timesPerDay = timesPerDay;
     }
 

@@ -15,6 +15,7 @@ import org.joda.time.LocalDate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -84,6 +85,7 @@ public class AppJobService extends JobService {
                     return Observable.empty();
                 }
                 scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                syncRemovedQuests(p);
                 syncRepeatingQuests(repeatingQuestPersistenceService, p);
                 syncQuests(questPersistenceService, repeatingQuestPersistenceService, p);
                 getRepeatingQuests(repeatingQuestPersistenceService, p);
@@ -107,6 +109,7 @@ public class AppJobService extends JobService {
                 });
         return true;
     }
+
 
     private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
@@ -151,7 +154,7 @@ public class AppJobService extends JobService {
         sp.setSyncedWithRemote();
         sp.setRemoteId(sp.getId());
         sp.setId(localId);
-        playerPersistenceService.saveSync(sp);
+        playerPersistenceService.saveSync(sp, false);
         return sp;
     }
 
@@ -167,7 +170,7 @@ public class AppJobService extends JobService {
         sp.setId(localId);
         localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, sp.getRemoteId());
         eventBus.post(new PlayerCreatedEvent(sp.getRemoteId()));
-        playerPersistenceService.saveSync(sp);
+        playerPersistenceService.saveSync(sp, false);
         return sp;
     }
 
@@ -189,6 +192,18 @@ public class AppJobService extends JobService {
         }
     }
 
+    private void syncRemovedQuests(Player player) throws IOException {
+        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
+        if (removedQuests.isEmpty()) {
+            return;
+        }
+        RequestBody requestBody = createRequestBody().param("data", removedQuests).param("player_id", player.getRemoteId()).build();
+        apiService.deleteQuests(requestBody).execute();
+        removedQuests.clear();
+        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
+    }
+
     private void syncQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<Quest> quests = questPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
@@ -208,7 +223,7 @@ public class AppJobService extends JobService {
             Quest sq = serverQuests.get(i);
             updateQuest(repeatingQuestPersistenceService, sq, localIds.get(i));
         }
-        questPersistenceService.saveSync(serverQuests);
+        questPersistenceService.saveSync(serverQuests, false);
     }
 
     @NonNull
@@ -237,7 +252,7 @@ public class AppJobService extends JobService {
             RepeatingQuest sq = serverQuests.get(i);
             updateRepeatingQuest(sq, localIds.get(i));
         }
-        repeatingQuestPersistenceService.saveSync(serverQuests);
+        repeatingQuestPersistenceService.saveSync(serverQuests, false);
     }
 
     private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
@@ -249,26 +264,30 @@ public class AppJobService extends JobService {
 
     private void getRepeatingQuests(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<RepeatingQuest> serverQuests = apiService.getRepeatingQuests(player.getRemoteId()).execute().body();
+        List<RepeatingQuest> questsToSave = new ArrayList<>();
         for (RepeatingQuest sq : serverQuests) {
             RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteId(sq.getId());
             if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
-                return;
+                continue;
             }
             String localId = getLocalIdForRemoteObject(repeatingQuest);
-            repeatingQuestPersistenceService.saveSync(updateRepeatingQuest(sq, localId));
+            questsToSave.add(updateRepeatingQuest(sq, localId));
         }
+        repeatingQuestPersistenceService.saveSync(questsToSave, false);
     }
 
     private void getQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<Quest> serverQuests = apiService.getQuests(player.getRemoteId()).execute().body();
+        List<Quest> questsToSave = new ArrayList<>();
         for (Quest sq : serverQuests) {
             Quest quest = questPersistenceService.findByRemoteId(sq.getId());
             if (quest != null && sq.getUpdatedAt().getTime() <= quest.getUpdatedAt().getTime()) {
-                return;
+                continue;
             }
             String localId = getLocalIdForRemoteObject(quest);
-            questPersistenceService.saveSync(updateQuest(repeatingQuestPersistenceService, sq, localId));
+            questsToSave.add(updateQuest(repeatingQuestPersistenceService, sq, localId));
         }
+        questPersistenceService.saveSync(questsToSave, false);
     }
 
     private Quest updateQuest(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Quest serverQuest, String localId) {
