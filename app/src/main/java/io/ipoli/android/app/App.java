@@ -307,7 +307,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
-            if (quest.getCompletedAt() != null) {
+            if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest);
             }
         });
@@ -316,7 +316,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
-            if (quest.getCompletedAt() != null) {
+            if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest);
             }
         });
@@ -339,7 +339,6 @@ public class App extends MultiDexApplication {
             repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
             onQuestChanged();
         });
-
     }
 
     @Subscribe
@@ -416,7 +415,6 @@ public class App extends MultiDexApplication {
         }
         return questPersistenceService.saveRemoteObjects(quests);
     }
-
 
     private void saveQuestsForRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
         LocalDate currentDate = LocalDate.now();

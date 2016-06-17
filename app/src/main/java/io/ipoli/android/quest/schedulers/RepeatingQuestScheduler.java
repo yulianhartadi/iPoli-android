@@ -23,6 +23,8 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/6/16.
@@ -42,10 +44,14 @@ public class RepeatingQuestScheduler {
         } catch (ParseException e) {
             return res;
         }
+        if (recurrence.getDtend() != null) {
+            recur.setUntil(new Date(recurrence.getDtend()));
+        }
 
         if (recur.getFrequency().equals(Recur.YEARLY)) {
             return res;
         }
+
         java.util.Date endDate = getEndDate(recur, startDate);
         DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
                 getPeriodEnd(endDate), Value.DATE);
@@ -60,7 +66,7 @@ public class RepeatingQuestScheduler {
 
     @NonNull
     private DateTime getPeriodEnd(java.util.Date endDate) {
-        return new DateTime(DateUtils.toStartOfDayUTC(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1)));
+        return new DateTime(toStartOfDayUTC(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1)));
     }
 
     public Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
@@ -88,12 +94,12 @@ public class RepeatingQuestScheduler {
         String frequency = recur.getFrequency();
         LocalDate localStartDate = new LocalDate(startDate.getTime(), DateTimeZone.UTC);
         if (frequency.equals(Recur.WEEKLY)) {
-            return DateUtils.toStartOfDayUTC(localStartDate.dayOfWeek().withMaximumValue());
+            return toStartOfDayUTC(localStartDate.dayOfWeek().withMaximumValue());
         }
         if (frequency.equals(Recur.MONTHLY)) {
-            return DateUtils.toStartOfDayUTC(localStartDate.dayOfMonth().withMaximumValue());
+            return toStartOfDayUTC(localStartDate.dayOfMonth().withMaximumValue());
         }
-        return DateUtils.toStartOfDayUTC(localStartDate.dayOfYear().withMaximumValue());
+        return toStartOfDayUTC(localStartDate.dayOfYear().withMaximumValue());
     }
 
     public List<Quest> scheduleForDateRange(RepeatingQuest repeatingQuest, java.util.Date from, java.util.Date to) {
