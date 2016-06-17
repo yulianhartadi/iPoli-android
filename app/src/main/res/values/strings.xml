@@ -5,8 +5,8 @@
     <string name="title_activity_pick_avatar">Pick avatar</string>
     <string name="title_edit_quest">Edit quest</string>
     <string name="player_level">Level %d</string>
-    <string name="quest_removed">Quest removed</string>
-    <string name="repeating_quest_removed">Repeating Quest removed</string>
+    <string name="quest_deleted">Quest deleted</string>
+    <string name="repeating_quest_deleted">Repeating Quest deleted</string>
     <string name="default_assistant_name">iPoli</string>
     <string name="title_activity_quest_complete">Well done!</string>
     <string name="quest_complete_difficulty_question">How difficult was it?</string>
@@ -45,7 +45,6 @@
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
     <string name="title_activity_add_quest">Add new Quest</string>
-    <string name="quest_added">Quest added</string>
     <string name="unknown_choice">don\'t know</string>
     <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
@@ -69,7 +68,7 @@
     <string name="contact_us_email_subject">Hi</string>
     <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
-    <string name="repeating_quest_added">Repeating Quest added</string>
+    <string name="repeating_quest_saved">Repeating Quest saved</string>
     <string name="repeating_quest_next_datetime">Next: %s</string>
 
     <string-array name="due_date_auto_completes">
@@ -254,4 +253,10 @@
     <string name="do_not_repeat">Do not repeat</string>
     <string name="end_of_time">End of time</string>
     <string name="smart_add_hint">Enter name, start time, duration ...</string>
+    <string name="quest_end_date_question">When will you do it?</string>
+    <string name="quest_start_time_question">When should it start?</string>
+    <string name="quest_duration_question">For how long?</string>
+    <string name="quest_times_per_day_question">How many times per day?</string>
+    <string name="quest_repeat_pattern_question">How often it should repeat?</string>
+    <string name="quest_notes_question">Notes</string>
 </resources>

@@ -70,7 +70,6 @@ import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
-import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -80,7 +79,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -380,6 +378,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                     Quest quest = questPersistenceService.findById(questId);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                         eventBus.post(new DeleteQuestRequestEvent(quest, EventSource.EDIT_QUEST));
+                        Toast.makeText(this, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });
@@ -393,6 +392,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
                     RepeatingQuest repeatingQuest = questPersistenceService.findById(questId);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                         eventBus.post(new DeleteRepeatingQuestRequestEvent(repeatingQuest, EventSource.EDIT_QUEST));
+                        Toast.makeText(this, R.string.repeating_quest_deleted, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });
@@ -450,6 +450,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
         q.setContext(questContext.name());
         eventBus.post(new UpdateQuestEvent(q));
+        Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
     }
@@ -468,6 +469,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         rq.setRecurrence((Recurrence) frequencyText.getTag());
         rq.setContext(questContext.name());
         eventBus.post(new UpdateRepeatingQuestEvent(rq));
+        Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
     }
@@ -671,6 +673,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
         q.setContext(questContext.name());
         eventBus.post(new NewQuestEvent(q));
+        Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
     }
 
     private void createNewRepeatingQuest(String name) {
@@ -692,20 +695,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         rq.setRecurrence(recurrence);
         rq.setContext(questContext.name());
         eventBus.post(new NewRepeatingQuestEvent(rq));
+        Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
 
     private boolean isRepeatingQuest() {
         return frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1;
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        Toast.makeText(this, R.string.quest_added, Toast.LENGTH_SHORT).show();
-    }
-
-    @Subscribe
-    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
-        Toast.makeText(this, R.string.repeating_quest_added, Toast.LENGTH_SHORT).show();
     }
 
     private boolean hasStartTime(Quest q) {
