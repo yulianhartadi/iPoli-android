@@ -87,6 +87,7 @@ public class RepeatingQuestScheduler {
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
         quest.setRepeatingQuest(repeatingQuest);
+        quest.setNote("");
         return quest;
     }
 
