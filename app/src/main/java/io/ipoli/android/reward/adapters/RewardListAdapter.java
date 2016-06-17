@@ -60,6 +60,9 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
             }
         });
 
+        holder.itemView.setOnClickListener(v ->
+                eventBus.post(new EditRewardRequestEvent(reward)));
+
         holder.delete.setOnClickListener(v ->
                 eventBus.post(new DeleteRewardRequestEvent(reward)));
 

@@ -40,7 +40,7 @@ import io.ipoli.android.reward.events.NewRewardSavedEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardActivity extends BaseActivity {
+public class EditRewardActivity extends BaseActivity {
     private static final int MIN_PRICE = 100;
     private static final int MAX_PRICE = 1000;
     private static final int PRICE_STEP = 50;
@@ -65,7 +65,7 @@ public class RewardActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reward);
+        setContentView(R.layout.activity_edit_reward);
         App.getAppComponent(this).inject(this);
         rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         ButterKnife.bind(this);
@@ -149,7 +149,7 @@ public class RewardActivity extends BaseActivity {
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     reward.markDeleted();
                     rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(rewardId -> {
-                        Toast.makeText(RewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditRewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });

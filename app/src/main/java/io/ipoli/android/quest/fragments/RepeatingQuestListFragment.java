@@ -83,7 +83,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
 
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
-        questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_autorenew_grey_24dp);
+        questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this);

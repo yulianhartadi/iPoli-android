@@ -33,7 +33,7 @@ import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
-import io.ipoli.android.reward.activities.RewardActivity;
+import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
@@ -114,7 +114,7 @@ public interface AppComponent {
 
     void inject(RewardListFragment rewardListFragment);
 
-    void inject(RewardActivity rewardActivity);
+    void inject(EditRewardActivity editRewardActivity);
 
     void inject(PickAvatarActivity pickAvatarActivity);
 

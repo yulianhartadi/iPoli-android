@@ -62,7 +62,7 @@
             android:label="@string/title_edit_quest"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".reward.activities.RewardActivity"
+            android:name=".reward.activities.EditRewardActivity"
             android:label="@string/title_activity_add_reward"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
