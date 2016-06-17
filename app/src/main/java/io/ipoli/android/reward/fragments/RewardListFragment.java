@@ -57,10 +57,8 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Inject
     Bus eventBus;
 
-    //    @Inject
     RewardPersistenceService rewardPersistenceService;
 
-//    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.reward_list)
