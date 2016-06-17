@@ -77,6 +77,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Long coins;
     private Long experience;
 
+    private String note;
+
     private String source;
 
     private Boolean needsSyncWithRemote;
@@ -107,9 +109,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.context = QuestContext.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
-        this.source = Constants.API_RESOURCE_SOURCE;
         this.experience = new ExperienceRewardGenerator().generate(this);
         this.coins = new CoinsRewardGenerator().generate(this);
+        this.source = Constants.API_RESOURCE_SOURCE;
         this.isDeleted = false;
     }
 
@@ -442,5 +444,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setPlaceholder(boolean placeholder) {
         isPlaceholder = placeholder;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

@@ -18,7 +18,6 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
-import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
@@ -57,8 +56,6 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 public interface AppComponent {
 
     void inject(App app);
-
-    void inject(EditQuestActivity editQuestActivity);
 
     void inject(QuestActivity questActivity);
 

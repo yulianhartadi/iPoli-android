@@ -87,6 +87,7 @@ import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
@@ -108,7 +109,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
         TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
-        TimePickerFragment.OnTimePickedListener {
+        TimePickerFragment.OnTimePickedListener, TextPickerFragment.OnTextPickedListener {
 
     @Inject
     Bus eventBus;
@@ -151,6 +152,9 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
 
     @BindView(R.id.quest_repeat_pattern_value)
     TextView frequencyText;
+
+    @BindView(R.id.quest_note_value)
+    TextView noteText;
 
     @BindView(R.id.quest_text_layout)
     TextInputLayout questTextLayout;
@@ -216,6 +220,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         setSelectedContext();
         removeSelectedContextCheck();
         changeContext(Quest.getContext(quest));
+        populateNoteText(quest.getNote());
     }
 
     private void onEditRepeatingQuest() {
@@ -231,12 +236,14 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         setSelectedContext();
         removeSelectedContextCheck();
         changeContext(RepeatingQuest.getContext(rq));
+        populateNoteText(rq.getNote());
     }
 
     private void onAddNewQuest() {
         changeEditMode(EditMode.ADD);
         populateTimesPerDay(1);
         populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+        populateNoteText(null);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -415,7 +422,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             populateFormFromParser();
         } else if (editMode == EditMode.EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
-            createQuest();
+            saveQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
             updateQuest();
         } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
@@ -449,8 +456,13 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             q.setCompletedAtMinute(completedAtMinute);
         }
         q.setContext(questContext.name());
+        q.setNote((String) noteText.getTag());
         eventBus.post(new UpdateQuestEvent(q));
-        Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        if (q.getEndDate() != null) {
+            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.quest_saved_to_inbox, Toast.LENGTH_SHORT).show();
+        }
         setResult(RESULT_OK);
         finish();
     }
@@ -468,6 +480,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
         rq.setContext(questContext.name());
+        rq.setNote((String) noteText.getTag());
         eventBus.post(new UpdateRepeatingQuestEvent(rq));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
@@ -568,12 +581,32 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_note_container)
+    public void onNoteClick(View view) {
+        TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());
+    }
+
     @Override
     public void onDatePicked(Date date) {
         if (date != null) {
             setFrequencyText(null);
         }
         populateEndDate(date);
+    }
+
+
+    @Override
+    public void onTextPicked(String text) {
+        populateNoteText(text);
+    }
+
+    private void populateNoteText(String text) {
+        noteText.setTag(text);
+        if (TextUtils.isEmpty(text)) {
+            noteText.setText(R.string.none);
+        } else {
+            noteText.setText(text);
+        }
     }
 
     @Override
@@ -638,21 +671,21 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         frequencyText.setTag(recurrence);
     }
 
-    public void createQuest() {
+    public void saveQuest() {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
             return;
         }
         if (isRepeatingQuest()) {
-            createNewRepeatingQuest(name);
+            createRepeatingQuest(name);
         } else {
-            createNewQuest(name);
+            createQuest(name);
         }
         setResult(RESULT_OK);
         finish();
     }
 
-    private void createNewQuest(String name) {
+    private void createQuest(String name) {
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setEndDateFromLocal((Date) endDateText.getTag());
@@ -672,11 +705,16 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             q.setCompletedAtMinute(completedAtMinute);
         }
         q.setContext(questContext.name());
+        q.setNote((String) noteText.getTag());
         eventBus.post(new NewQuestEvent(q));
-        Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        if (q.getEndDate() != null) {
+            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.quest_saved_to_inbox, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void createNewRepeatingQuest(String name) {
+    private void createRepeatingQuest(String name) {
         RepeatingQuest rq = new RepeatingQuest(rawText);
         rq.setName(name);
         rq.setDuration((int) durationText.getTag());
@@ -694,6 +732,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         }
         rq.setRecurrence(recurrence);
         rq.setContext(questContext.name());
+        rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
