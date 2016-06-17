@@ -34,7 +34,7 @@ public class DurationPickerFragment extends DialogFragment {
     }
 
     public static DurationPickerFragment newInstance(OnDurationPickedListener durationPickedListener) {
-        return newInstance(-1 , durationPickedListener);
+        return newInstance(-1, durationPickedListener);
     }
 
     public static DurationPickerFragment newInstance(int duration, OnDurationPickedListener durationPickedListener) {
@@ -75,7 +75,7 @@ public class DurationPickerFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setTitle("Pick duration")
+                .setTitle(R.string.quest_duration_question)
                 .setSingleChoiceItems(questDurations.toArray(new String[questDurations.size()]), selectedDurationIndex, (dialog, which) -> {
                     selectedDurationIndex = which;
                 })
