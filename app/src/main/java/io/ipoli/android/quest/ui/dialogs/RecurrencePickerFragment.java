@@ -69,7 +69,6 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }};
 
     public interface OnRecurrencePickedListener {
-
         void onRecurrencePicked(Recurrence recurrence);
     }
 

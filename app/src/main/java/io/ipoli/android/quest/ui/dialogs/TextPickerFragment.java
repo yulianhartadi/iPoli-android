@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -69,8 +70,10 @@ public class TextPickerFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_text_picker, null);
         unbinder = ButterKnife.bind(this, view);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        noteText.setText(text);
-        noteText.setSelection(text.length());
+        if (!TextUtils.isEmpty(text)) {
+            noteText.setText(text);
+            noteText.setSelection(text.length());
+        }
         builder.setIcon(R.drawable.logo)
                 .setView(view)
                 .setTitle(title)

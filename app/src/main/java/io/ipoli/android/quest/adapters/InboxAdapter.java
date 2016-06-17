@@ -67,6 +67,9 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
 
+        holder.contentLayout.setOnClickListener(view ->
+                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
+
         holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
 
         holder.name.setText(q.getName());
@@ -98,6 +101,9 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.content_layout)
+        View contentLayout;
+
         @BindView(R.id.quest_text)
         TextView name;
 
@@ -105,25 +111,25 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         TextView createdAt;
 
         @BindView(R.id.quest_context_indicator_background)
-        public View contextIndicatorBackground;
+        View contextIndicatorBackground;
 
         @BindView(R.id.quest_context_indicator_image)
-        public ImageView contextIndicatorImage;
+        ImageView contextIndicatorImage;
 
         @BindView(R.id.swipe_layout)
-        public SwipeRevealLayout swipeLayout;
+        SwipeRevealLayout swipeLayout;
 
         @BindView(R.id.schedule_quest)
-        public ImageButton scheduleQuest;
+        ImageButton scheduleQuest;
 
         @BindView(R.id.complete_quest)
-        public ImageButton completeQuest;
+        ImageButton completeQuest;
 
         @BindView(R.id.edit_quest)
-        public ImageButton editQuest;
+        ImageButton editQuest;
 
         @BindView(R.id.delete_quest)
-        public ImageButton deleteQuest;
+        ImageButton deleteQuest;
 
         public ViewHolder(View v) {
             super(v);
