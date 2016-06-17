@@ -77,6 +77,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Long coins;
     private Long experience;
 
+    private String note;
+
     private String source;
 
     private Boolean needsSyncWithRemote;
@@ -442,5 +444,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setPlaceholder(boolean placeholder) {
         isPlaceholder = placeholder;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }
