@@ -85,7 +85,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         holder.completeQuest.setOnClickListener(v -> eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX)));
 
-        holder.editQuest.setOnClickListener(v -> eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
+        holder.editQuest.setOnClickListener(v -> {
+            holder.swipeLayout.close(true);
+            eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
+        });
 
         holder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX)));
     }

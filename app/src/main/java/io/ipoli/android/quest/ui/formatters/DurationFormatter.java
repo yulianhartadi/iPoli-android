@@ -58,7 +58,9 @@ public class DurationFormatter {
         if (duration < 0) {
             return "";
         }
-
+        if (duration <= 10) {
+            return "10 min or less";
+        }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
         if (hours <= 0 && mins <= 0) {

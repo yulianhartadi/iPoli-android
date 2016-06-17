@@ -31,7 +31,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -131,6 +131,6 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
 
     @OnClick(R.id.add_quest)
     public void onAddQuestClick(View view) {
-        startActivity(new Intent(getActivity(), AddQuestActivity.class));
+        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 }

@@ -252,7 +252,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @OnClick(R.id.quest_details_edit)
     public void onEditTap(View v) {
         eventBus.post(new EditQuestRequestEvent(quest, EventSource.QUEST));
-        Intent i = new Intent(this, AddQuestActivity.class);
+        Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
     }

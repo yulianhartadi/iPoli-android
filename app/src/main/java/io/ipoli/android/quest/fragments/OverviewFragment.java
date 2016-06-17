@@ -42,7 +42,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -166,7 +166,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
         eventBus.post(new AddQuestButtonTappedEvent(EventSource.OVERVIEW));
-        startActivity(new Intent(getActivity(), AddQuestActivity.class));
+        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
     private boolean hasDailyRrule(Quest q) {

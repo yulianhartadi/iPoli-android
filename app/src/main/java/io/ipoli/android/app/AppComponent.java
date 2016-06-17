@@ -17,7 +17,7 @@ import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
@@ -105,7 +105,7 @@ public interface AppComponent {
 
     void inject(HelpDialog helpDialog);
 
-    void inject(AddQuestActivity addQuestActivity);
+    void inject(EditQuestActivity editQuestActivity);
 
     void inject(ChallengeListFragment challengeListFragment);
 

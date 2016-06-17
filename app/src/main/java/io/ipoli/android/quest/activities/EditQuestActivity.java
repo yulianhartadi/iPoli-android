@@ -104,7 +104,7 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener,
+public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener,
         DatePickerFragment.OnDatePickedListener,
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
@@ -180,7 +180,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_quest);
+        setContentView(R.layout.activity_edit_quest);
         ButterKnife.bind(this);
         App.getAppComponent(this).inject(this);
 

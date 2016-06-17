@@ -35,7 +35,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -163,7 +163,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
 
     @OnClick(R.id.add_repeating_quest)
     public void onAddRepeatingQuest(View view) {
-        startActivity(new Intent(getActivity(), AddQuestActivity.class));
+        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
     @Override
