@@ -7,10 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.NumberPicker;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.reward.formatters.PriceFormatter;
@@ -26,10 +32,12 @@ public class PricePickerFragment extends DialogFragment {
     private static final int MAX_PRICE = 1000;
     private static final int PRICE_STEP = 50;
 
-    private int price;
-    private int selectedPriceIndex;
+    @BindView(R.id.price_number_picker)
+    NumberPicker pricePicker;
 
+    private int price;
     private OnPricePickedListener pricePickedListener;
+    private Unbinder unbinder;
 
     public interface OnPricePickedListener {
         void onPricePicked(int price);
@@ -59,26 +67,31 @@ public class PricePickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        List<Integer> availablePrices = generateAvailablePrices();
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_price_picker, null);
+        unbinder = ButterKnife.bind(this, view);
 
+        List<Integer> availablePrices = generateAvailablePrices();
         List<String> prices = new ArrayList<>();
-        selectedPriceIndex = -1;
+        int selectedPriceIndex = 1;
         for (int i = 0; i < availablePrices.size(); i++) {
-            int price = availablePrices.get(i);
-            prices.add(PriceFormatter.formatReadable(price));
-            if (price == this.price) {
+            prices.add(PriceFormatter.formatReadable(availablePrices.get(i)));
+            if (availablePrices.get(i) == this.price) {
                 selectedPriceIndex = i;
             }
         }
 
+        pricePicker.setMinValue(0);
+        pricePicker.setMaxValue(availablePrices.size() - 1);
+        pricePicker.setValue(selectedPriceIndex);
+        pricePicker.setDisplayedValues(prices.toArray(new String[prices.size()]));
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
                 .setTitle(R.string.reward_price_question)
-                .setSingleChoiceItems(prices.toArray(new String[prices.size()]), selectedPriceIndex, (dialog, which) -> {
-                    selectedPriceIndex = which;
-                })
+                .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    pricePickedListener.onPricePicked(availablePrices.get(selectedPriceIndex));
+                    pricePickedListener.onPricePicked(availablePrices.get(pricePicker.getValue()));
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
@@ -96,6 +109,12 @@ public class PricePickerFragment extends DialogFragment {
             p += PRICE_STEP;
         } while (p <= MAX_PRICE);
         return availablePrices;
+    }
+
+    @Override
+    public void onDestroyView() {
+        unbinder.unbind();
+        super.onDestroyView();
     }
 
     public void show(FragmentManager fragmentManager) {
