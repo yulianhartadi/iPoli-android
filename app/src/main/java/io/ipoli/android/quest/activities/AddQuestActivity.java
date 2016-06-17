@@ -243,7 +243,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         changeEditMode(EditMode.ADD);
         populateTimesPerDay(1);
         populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
-        populateNoteText("");
+        populateNoteText(null);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();

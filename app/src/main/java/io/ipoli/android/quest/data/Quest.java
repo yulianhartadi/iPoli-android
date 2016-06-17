@@ -110,7 +110,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.experience = new ExperienceRewardGenerator().generate(this);
-        this.note = "";
         this.coins = new CoinsRewardGenerator().generate(this);
         this.source = Constants.API_RESOURCE_SOURCE;
         this.isDeleted = false;
