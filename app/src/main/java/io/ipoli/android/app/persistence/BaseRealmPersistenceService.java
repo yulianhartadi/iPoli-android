@@ -82,15 +82,32 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     @Override
     public void saveSync(T obj) {
-        obj.markUpdated();
+        saveSync(obj, true);
+    }
+
+    @Override
+    public void saveSync(T obj, boolean markUpdated) {
+        if (markUpdated) {
+            obj.markUpdated();
+        }
         realm.executeTransaction(transactionRealm ->
                 transactionRealm.copyToRealmOrUpdate(obj));
     }
 
     @Override
     public void saveSync(List<T> objects) {
-        for (T obj : objects) {
-            obj.markUpdated();
+        saveSync(objects, true);
+    }
+
+    @Override
+    public void saveSync(List<T> objects, boolean markUpdated) {
+        if (objects.isEmpty()) {
+            return;
+        }
+        if (markUpdated) {
+            for (T obj : objects) {
+                obj.markUpdated();
+            }
         }
         realm.executeTransaction(transactionRealm ->
                 transactionRealm.copyToRealmOrUpdate(objects));
