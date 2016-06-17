@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 <TextView
                     android:id="@+id/toolbar_title"
@@ -159,14 +159,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="When will you do it?" />
+                        android:text="@string/quest_end_date_question" />
 
                     <TextView
                         android:id="@+id/quest_end_date_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Today" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
 
@@ -202,14 +201,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="When should it start?" />
+                        android:text="@string/quest_start_time_question" />
 
                     <TextView
                         android:id="@+id/quest_start_time_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="21:45" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -243,14 +241,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="For how long?" />
+                        android:text="@string/quest_duration_question" />
 
                     <TextView
                         android:id="@+id/quest_duration_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1h and 30m" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -284,14 +281,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How many times per day?" />
+                        android:text="@string/quest_times_per_day_question" />
 
                     <TextView
                         android:id="@+id/quest_times_per_day_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="One" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -325,14 +321,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How often it should repeat?" />
+                        android:text="@string/quest_repeat_pattern_question" />
 
                     <TextView
                         android:id="@+id/quest_repeat_pattern_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Does not repeat" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -366,13 +361,12 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Notes/Description" />
+                        android:text="@string/quest_notes_question" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="None" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

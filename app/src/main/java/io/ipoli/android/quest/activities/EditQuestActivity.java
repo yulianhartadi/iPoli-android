@@ -251,7 +251,7 @@ public class EditQuestActivity extends BaseActivity implements DatePickerFragmen
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     quest.markDeleted();
                     questPersistenceService.save(quest).compose(bindToLifecycle()).subscribe(questId -> {
-                        Toast.makeText(EditQuestActivity.this, R.string.quest_removed, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditQuestActivity.this, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });
