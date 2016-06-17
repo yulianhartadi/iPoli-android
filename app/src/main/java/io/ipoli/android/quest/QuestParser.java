@@ -170,7 +170,7 @@ public class QuestParser {
             recurrence.setRrule(null);
             if (dueDate != null) {
                 recurrence.setDtstart(toStartOfDayUTC(new LocalDate(dueDate)));
-                recurrence.setDtend(toStartOfDayUTC(new LocalDate(dueDate).plusDays(1)));
+                recurrence.setDtend(toStartOfDayUTC(new LocalDate(dueDate)));
             } else {
                 recurrence.setDtstart(null);
                 recurrence.setDtend(null);

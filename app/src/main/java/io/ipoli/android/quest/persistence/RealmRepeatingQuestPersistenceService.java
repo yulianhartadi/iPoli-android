@@ -44,7 +44,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -57,7 +57,7 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .beginGroup()
                 .isNull("recurrence.dtend")
                 .or()
-                .greaterThan("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
