@@ -29,6 +29,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
+import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.formatters.PriceFormatter;
@@ -38,7 +39,7 @@ import io.ipoli.android.reward.ui.dialogs.PricePickerFragment;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class EditRewardActivity extends BaseActivity implements PricePickerFragment.OnPricePickedListener {
+public class EditRewardActivity extends BaseActivity implements PricePickerFragment.OnPricePickedListener, TextPickerFragment.OnTextPickedListener {
 
     @Inject
     Bus eventBus;
@@ -145,7 +146,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     @OnClick(R.id.reward_description_container)
     public void onDescriptionClick(View view) {
-
+        TextPickerFragment.newInstance((String) descriptionText.getTag(), R.string.reward_description_question, this).show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.reward_price_container)
@@ -156,11 +157,17 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     }
 
     @Override
+    public void onTextPicked(String text) {
+        setDescriptionText(text);
+    }
+
+    @Override
     public void onPricePicked(int price) {
         setPriceText(price);
     }
 
     private void setDescriptionText(String description) {
+        descriptionText.setTag(description);
         if(TextUtils.isEmpty(description)) {
             descriptionText.setText(R.string.unknown_choice);
             return;
@@ -180,14 +187,17 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             return;
         }
         int price = Math.max((int) priceText.getTag(), Constants.DEFAULT_MIN_REWARD_PRICE);
-        String description = descriptionText.getText().toString();
         if (reward == null) {
             reward = new Reward(name, price);
         } else {
             reward.setName(name);
             reward.setPrice(price);
         }
-        reward.setDescription(description);
+
+        String description = (String) descriptionText.getTag();
+        if(!TextUtils.isEmpty(description)) {
+            reward.setDescription(description);
+        }
 
         rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(reward -> {
             eventBus.post(new NewRewardSavedEvent(reward));
