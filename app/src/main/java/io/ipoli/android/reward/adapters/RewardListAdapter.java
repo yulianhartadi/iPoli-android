@@ -1,6 +1,7 @@
 package io.ipoli.android.reward.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         Reward reward = vm.getReward();
 
         viewBinderHelper.bind(holder.swipeLayout, reward.getId());
-        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener(){
+        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
             @Override
             public void onOpened(SwipeRevealLayout view) {
                 super.onOpened(view);
@@ -71,6 +72,12 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
                 eventBus.post(new EditRewardRequestEvent(reward)));
 
         holder.name.setText(reward.getName());
+        if (TextUtils.isEmpty(reward.getDescription())) {
+            holder.description.setVisibility(View.GONE);
+        } else {
+            holder.description.setText(reward.getDescription());
+            holder.description.setVisibility(View.VISIBLE);
+        }
         holder.buy.setText(String.valueOf(reward.getPrice()));
 
         if (vm.canBeBought()) {
@@ -95,6 +102,9 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
         @BindView(R.id.reward_name)
         TextView name;
+
+        @BindView(R.id.reward_description)
+        TextView description;
 
         @BindView(R.id.buy_reward)
         Button buy;
