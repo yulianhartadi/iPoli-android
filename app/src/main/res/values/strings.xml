@@ -259,4 +259,7 @@
     <string name="quest_times_per_day_question">How many times per day?</string>
     <string name="quest_repeat_pattern_question">How often it should repeat?</string>
     <string name="quest_notes_question">Notes</string>
+    <string name="reward_description_question">Why do you want this reward?</string>
+    <string name="reward_price_question">How much does it cost?</string>
+    <string name="reward_saved">Reward saved</string>
 </resources>

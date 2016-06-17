@@ -61,4 +61,5 @@ public interface Constants {
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
     int[] DURATIONS = {15, 30, 45, 60, 90, 120, 180, 240};
+    int DEFAULT_MIN_REWARD_PRICE = 100;
 }
