@@ -410,7 +410,9 @@ public class App extends MultiDexApplication {
     private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
         List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
         for (Quest q : quests) {
-            q.markDeleted();
+            if (!Quest.isCompleted(q)) {
+                q.markDeleted();
+            }
         }
         return questPersistenceService.saveRemoteObjects(quests);
     }
