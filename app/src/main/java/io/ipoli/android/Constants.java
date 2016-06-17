@@ -29,7 +29,8 @@ public interface Constants {
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
 
-    int QUEST_CALENDAR_EVENT_MIN_DURATION = 15;
+    int CALENDAR_EVENT_MIN_DURATION = 15;
+    int QUEST_MIN_DURATION = 10;
 
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
     int RESULT_REMOVED = 100;
@@ -60,6 +61,6 @@ public interface Constants {
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
-    int[] DURATIONS = {15, 30, 45, 60, 90, 120, 180, 240};
+    int[] DURATIONS = {10, 15, 30, 45, 60, 90, 120, 180, 240};
     int DEFAULT_MIN_REWARD_PRICE = 100;
 }

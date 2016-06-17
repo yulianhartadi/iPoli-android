@@ -13,7 +13,7 @@ import io.ipoli.android.R;
 public class DurationFormatter {
 
     public static String format(Context context, int duration) {
-        if(duration < 0) {
+        if (duration < 0) {
             return formatEmptyDuration();
         }
         long hours = 0;
@@ -32,11 +32,11 @@ public class DurationFormatter {
     }
 
     public static String formatReadable(int duration) {
-        if(duration < 0) {
+        if (duration < 0) {
             return formatEmptyDuration();
         }
-        if(duration == 15) {
-            return "15 minutes or less";
+        if (duration <= 10) {
+            return "10 minutes or less";
         }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
@@ -55,7 +55,7 @@ public class DurationFormatter {
     }
 
     public static String formatReadableShort(int duration) {
-        if(duration < 0) {
+        if (duration < 0) {
             return "";
         }
 

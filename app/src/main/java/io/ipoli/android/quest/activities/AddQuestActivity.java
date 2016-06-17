@@ -242,7 +242,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
     private void onAddNewQuest() {
         changeEditMode(EditMode.ADD);
         populateTimesPerDay(1);
-        populateDuration(Constants.QUEST_CALENDAR_EVENT_MIN_DURATION);
+        populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
@@ -505,7 +505,7 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
             populateEndDate(toStartOfDay(new LocalDate(result.endDate, DateTimeZone.UTC)));
         }
         populateStartTime(result.startMinute);
-        populateDuration(Math.max(result.duration, Constants.QUEST_CALENDAR_EVENT_MIN_DURATION));
+        populateDuration(Math.max(result.duration, Constants.QUEST_MIN_DURATION));
         populateTimesPerDay(result.timesPerDay);
         populateFrequency(result);
 

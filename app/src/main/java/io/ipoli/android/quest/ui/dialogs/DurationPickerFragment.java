@@ -40,7 +40,7 @@ public class DurationPickerFragment extends DialogFragment {
     public static DurationPickerFragment newInstance(int duration, OnDurationPickedListener durationPickedListener) {
         DurationPickerFragment fragment = new DurationPickerFragment();
         Bundle args = new Bundle();
-        args.putInt(DURATION, Math.max(duration, Constants.QUEST_CALENDAR_EVENT_MIN_DURATION));
+        args.putInt(DURATION, Math.max(duration, Constants.QUEST_MIN_DURATION));
         fragment.setArguments(args);
         fragment.durationPickedListener = durationPickedListener;
         return fragment;
