@@ -258,15 +258,11 @@
     <string name="quest_duration_question">For how long?</string>
     <string name="quest_times_per_day_question">How many times per day?</string>
     <string name="quest_repeat_pattern_question">How often it should repeat?</string>
-<<<<<<< HEAD
-    <string name="quest_notes_question">Notes</string>
     <string name="reward_description_question">Why do you want this reward?</string>
     <string name="reward_price_question">How much does it cost?</string>
     <string name="reward_saved">Reward saved</string>
-=======
     <string name="quest_note_question">Note</string>
     <string name="none">None</string>
     <string name="pick_note_title">Enter a note</string>
     <string name="quest_saved_to_inbox">Quest saved to inbox</string>
->>>>>>> bf602194253d5932dc4eaa3d023fa359ea17a42d
 </resources>
