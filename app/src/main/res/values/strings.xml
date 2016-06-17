@@ -252,11 +252,13 @@
     <string name="reward_name_validation">You must add name for your reward</string>
     <string name="do_not_repeat">Do not repeat</string>
     <string name="end_of_time">End of time</string>
-    <string name="smart_add_hint">Enter name, start time, duration ...</string>
+    <string name="smart_add_hint">Enter name, start time, duration …</string>
     <string name="quest_end_date_question">When will you do it?</string>
     <string name="quest_start_time_question">When should it start?</string>
     <string name="quest_duration_question">For how long?</string>
     <string name="quest_times_per_day_question">How many times per day?</string>
     <string name="quest_repeat_pattern_question">How often it should repeat?</string>
-    <string name="quest_notes_question">Notes</string>
+    <string name="quest_note_question">Note</string>
+    <string name="none">None</string>
+    <string name="pick_note_title">Enter a note</string>
 </resources>

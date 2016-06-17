@@ -332,7 +332,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_notes_container"
+                android:id="@+id/quest_note_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -340,7 +340,7 @@
                 android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/quest_notes_icon"
+                    android:id="@+id/quest_note_icon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -353,20 +353,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_notes_icon"
+                    android:layout_toEndOf="@id/quest_note_icon"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/quest_notes_question"
+                        android:id="@+id/quest_note_question"
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quest_notes_question" />
+                        android:text="@string/quest_note_question" />
 
                     <TextView
+                        android:id="@+id/quest_note_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:maxLines="1" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
