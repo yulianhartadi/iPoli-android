@@ -512,7 +512,11 @@ public class AddQuestActivity extends BaseActivity implements TextWatcher, OnSug
         questText.setText(result.name);
         questText.setSelection(result.name.length());
         questText.clearFocus();
-        View view = this.getCurrentFocus();
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
