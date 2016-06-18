@@ -4,7 +4,9 @@ package io.ipoli.android.tutorial.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
+import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -24,9 +26,10 @@ import io.ipoli.android.tutorial.adapters.PickQuestsAdapter;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickQuestsFragment extends BasePickQuestsFragment<Quest> {
+public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements ISlideBackgroundColorHolder {
     @Inject
     Bus eventBus;
+    private int backgroundColor;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,5 +94,10 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> {
         Quest.setContext(q, context);
         q.setRawText(name + " today");
         return q;
+    }
+
+    @Override
+    public int getDefaultBackgroundColor() {
+        return ContextCompat.getColor(getContext(), R.color.md_blue_500);
     }
 }

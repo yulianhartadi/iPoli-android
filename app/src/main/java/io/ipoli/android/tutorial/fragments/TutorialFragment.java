@@ -1,20 +1,23 @@
 package io.ipoli.android.tutorial.fragments;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
+
 import io.ipoli.android.R;
 
-public class TutorialFragment extends Fragment {
+public class TutorialFragment extends Fragment implements ISlideBackgroundColorHolder {
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String IMAGE = "image";
@@ -25,19 +28,17 @@ public class TutorialFragment extends Fragment {
     private String description;
     private int backgroundColor;
     private boolean showLogo;
+    private int slideBackgroundColor;
+    private View containerView;
 
     public TutorialFragment() {
     }
 
-    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image) {
-        return newInstance(title, description, image, Color.TRANSPARENT, true);
+    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, @ColorRes int backgroundColor) {
+        return newInstance(title, description, image, backgroundColor, true);
     }
 
-    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, boolean showLogo) {
-        return newInstance(title, description, image, Color.TRANSPARENT, showLogo);
-    }
-
-    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, @ColorInt int backgroundColor, boolean showLogo) {
+    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, @ColorRes int backgroundColor, boolean showLogo) {
         TutorialFragment fragment = new TutorialFragment();
         Bundle args = new Bundle();
         args.putString(TITLE, title);
@@ -66,13 +67,13 @@ public class TutorialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tutorial, container, false);
-        View containerView = v.findViewById(R.id.tutorial_container);
+        containerView = v.findViewById(R.id.tutorial_container);
         TextView titleView = (TextView) v.findViewById(R.id.tutorial_title);
         TextView descView = (TextView) v.findViewById(R.id.tutorial_description);
         ImageView imageView = (ImageView) v.findViewById(R.id.tutorial_image);
         ImageView logoView = (ImageView) v.findViewById(R.id.tutorial_logo);
 
-        if(showLogo) {
+        if (showLogo) {
             logoView.setVisibility(View.VISIBLE);
         } else {
             logoView.setVisibility(View.GONE);
@@ -81,8 +82,16 @@ public class TutorialFragment extends Fragment {
         titleView.setText(title);
         descView.setText(description);
         imageView.setImageResource(image);
-        containerView.setBackgroundColor(backgroundColor);
-
         return v;
+    }
+
+    @Override
+    public int getDefaultBackgroundColor() {
+        return ContextCompat.getColor(getContext(), backgroundColor);
+    }
+
+    @Override
+    public void setBackgroundColor(@ColorInt int backgroundColor) {
+        containerView.setBackgroundColor(backgroundColor);
     }
 }

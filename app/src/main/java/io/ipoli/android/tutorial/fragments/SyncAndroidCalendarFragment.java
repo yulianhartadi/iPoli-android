@@ -2,12 +2,15 @@ package io.ipoli.android.tutorial.fragments;
 
 
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -19,7 +22,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
 
-public class SyncAndroidCalendarFragment extends Fragment {
+public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackgroundColorHolder {
     @Inject
     Bus eventBus;
 
@@ -27,16 +30,18 @@ public class SyncAndroidCalendarFragment extends Fragment {
     CheckBox syncCheckBox;
 
     private Unbinder unbinder;
+    private int backgroundColor;
+    private View contentView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_sync_google_calendar, container, false);
+        contentView = inflater.inflate(R.layout.fragment_sync_google_calendar, container, false);
         App.getAppComponent(getContext()).inject(this);
-        unbinder = ButterKnife.bind(this, v);
+        unbinder = ButterKnife.bind(this, contentView);
         syncCheckBox.setOnCheckedChangeListener((buttonView, isChecked) ->
                 eventBus.post(new SyncCalendarCheckTappedEvent(isChecked)));
-        return v;
+        return contentView;
     }
 
     @Override
@@ -47,5 +52,15 @@ public class SyncAndroidCalendarFragment extends Fragment {
 
     public boolean isSyncCalendarChecked() {
         return syncCheckBox.isChecked();
+    }
+
+    @Override
+    public int getDefaultBackgroundColor() {
+        return ContextCompat.getColor(getContext(), R.color.md_green_500);
+    }
+
+    @Override
+    public void setBackgroundColor(@ColorInt int backgroundColor) {
+        contentView.setBackgroundColor(backgroundColor);
     }
 }

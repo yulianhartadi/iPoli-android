@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.WindowManager;
@@ -64,17 +65,27 @@ public class TutorialActivity extends AppIntro2 {
     private QuestParser questParser = new QuestParser(new PrettyTimeParser());
 
     @Override
-    public void init(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         App.getAppComponent(this).inject(this);
-
 
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title), getString(R.string.tutorial_welcome_desc), R.drawable.tutorial_welcome, false));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_hero_title), getString(R.string.tutorial_hero_desc), R.drawable.tutorial_hero));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_rewards_title), getString(R.string.tutorial_reward_desc), R.drawable.tutorial_reward));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title),
+                getString(R.string.tutorial_welcome_desc),
+                R.drawable.tutorial_welcome,
+                R.color.md_indigo_500,
+                false));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_hero_title),
+                getString(R.string.tutorial_hero_desc),
+                R.drawable.tutorial_hero,
+                R.color.md_blue_500));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_rewards_title),
+                getString(R.string.tutorial_reward_desc),
+                R.drawable.tutorial_reward,
+                R.color.md_purple_500));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
         pickQuestsFragment = new PickQuestsFragment();
@@ -82,25 +93,13 @@ public class TutorialActivity extends AppIntro2 {
         pickRepeatingQuestsFragment = new PickRepeatingQuestsFragment();
         addSlide(pickRepeatingQuestsFragment);
 
-        int[] colors = new int[]{
-                R.color.md_indigo_500,
-                R.color.md_blue_500,
-                R.color.md_purple_500,
-                R.color.md_green_500,
-                R.color.md_blue_500,
-                R.color.md_blue_500
-        };
-        ArrayList<Integer> c = new ArrayList<>();
-        for (int color : colors) {
-            c.add(ContextCompat.getColor(this, color));
-        }
-
-        setAnimationColors(c);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
+        setImmersiveMode(true, true);
+        setColorTransitionsEnabled(true);
     }
 
     @Override
-    public void onDonePressed() {
+    public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
         List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
@@ -139,11 +138,7 @@ public class TutorialActivity extends AppIntro2 {
     }
 
     @Override
-    public void onNextPressed() {
-    }
-
-    @Override
-    public void onSlideChanged() {
+    public void onSlideChanged(Fragment oldFragment, Fragment newFragment) {
         if (previousSlide == SYNC_CALENDAR_SLIDE_INDEX && syncAndroidCalendarFragment.isSyncCalendarChecked()) {
             checkCalendarForPermission();
         }
@@ -154,6 +149,12 @@ public class TutorialActivity extends AppIntro2 {
     public void onBackPressed() {
         eventBus.post(new TutorialSkippedEvent());
         super.onBackPressed();
+    }
+
+    @Override
+    public void onSkipPressed(Fragment currentFragment) {
+        eventBus.post(new TutorialSkippedEvent());
+        finish();
     }
 
     @Override
