@@ -197,7 +197,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 recur.getDayList().add(WeekDay.FR);
                 recur.getDayList().add(WeekDay.SA);
                 recur.getDayList().add(WeekDay.SU);
-                recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+                recurrence.setType(Recurrence.RecurrenceType.DAILY);
                 recur.setFrequency(Recur.WEEKLY);
                 break;
             case WEEKLY:

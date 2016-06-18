@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -354,7 +355,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         if (q.getActualStart() != null) {
             return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
         } else {
-            return Math.max(q.getDuration(), 5);
+            return Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION);
         }
     }
 

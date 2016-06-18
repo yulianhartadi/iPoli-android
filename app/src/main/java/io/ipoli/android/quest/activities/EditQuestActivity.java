@@ -525,7 +525,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateFrequency(QuestParser.QuestParserResult result) {
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (result.everyDayRecurrence != null) {
             recurrence.setRrule(result.everyDayRecurrence.toString());
             recurrence.setType(Recurrence.RecurrenceType.DAILY);
@@ -725,6 +724,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
         recurrence.setTimesPerDay((int) timesPerDayText.getTag());
+        recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (recurrence.getRrule() == null) {
             if (endDateText.getTag() != null) {
                 recurrence.setDtstart(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
