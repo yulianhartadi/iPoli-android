@@ -61,6 +61,6 @@ public interface Constants {
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
-    int[] DURATIONS = {10, 15, 30, 45, 60, 90, 120, 180, 240};
+    int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
     int DEFAULT_MIN_REWARD_PRICE = 100;
 }
