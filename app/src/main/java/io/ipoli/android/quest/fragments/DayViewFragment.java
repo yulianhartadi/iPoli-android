@@ -326,6 +326,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             } catch (Exception ignored) {
             }
         }
+        calendarDayView.onMinuteChanged();
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
