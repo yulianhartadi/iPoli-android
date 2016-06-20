@@ -9,7 +9,7 @@ import java.util.Locale;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.ui.formatters.DueDateFormatter;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
@@ -45,7 +45,7 @@ public class QuestViewModel {
     }
 
     public String getDueDateText() {
-        return DueDateFormatter.formatWithoutYear(quest.getEndDate());
+        return DateFormatter.formatWithoutYear(quest.getEndDate());
     }
 
     private QuestContext getQuestContext() {

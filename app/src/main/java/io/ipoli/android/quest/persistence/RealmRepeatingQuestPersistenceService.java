@@ -1,17 +1,17 @@
 package io.ipoli.android.quest.persistence;
 
-import android.text.TextUtils;
-
 import com.squareup.otto.Bus;
+
+import org.joda.time.LocalDate;
 
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.realm.Realm;
-import rx.Observable;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,7 +21,8 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
 
     private final Bus eventBus;
 
-    public RealmRepeatingQuestPersistenceService(Bus eventBus) {
+    public RealmRepeatingQuestPersistenceService(Bus eventBus, Realm realm) {
+        super(realm);
         this.eventBus = eventBus;
     }
 
@@ -36,57 +37,34 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    protected void onObjectDeleted(String id) {
-        eventBus.post(new RepeatingQuestDeletedEvent(id));
+    public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
+        return findAll(where -> where.isNotNull("name")
+                .equalTo("allDay", false)
+                .isNotNull("recurrence.rrule")
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAll());
     }
 
     @Override
-    public Observable<List<RepeatingQuest>> findAllNonAllDayRepeatingQuests() {
-        return findAll(where -> where.isNotNull("name").equalTo("allDay", false).isNotNull("recurrence.rrule").findAllAsync());
+    public void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener) {
+        listenForChanges(where().isNotNull("name")
+                .equalTo("allDay", false)
+                .isNotNull("recurrence.rrule")
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAllAsync(), listener);
     }
 
     @Override
-    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
-
-        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return Observable.empty();
-        }
-
-        Realm realm = getRealm();
-
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmRepeatingQuest -> {
-            if (realmRepeatingQuest == null) {
-                realm.close();
-                return Observable.empty();
-            }
-
-            final String repeatingQuestId = realmRepeatingQuest.getId();
-
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                    RepeatingQuest repeatingQuestToDelete = backgroundRealm.where(getRealmObjectClass())
-                            .equalTo("sourceMapping." + source, sourceId)
-                            .findFirst();
-                    repeatingQuestToDelete.deleteFromRealm();
-                }, () -> {
-                    subscriber.onNext(repeatingQuestId);
-                    subscriber.onCompleted();
-                    onObjectDeleted(repeatingQuestId);
-                    realm.close();
-                }, error -> {
-                    subscriber.onError(error);
-                    realm.close();
-                });
-            });
-        });
-    }
-
-    @Override
-    public RepeatingQuest findByExternalSourceMappingIdSync(String source, String sourceId) {
-        try (Realm realm = getRealm()) {
-            return realm.copyFromRealm(realm.where(getRealmObjectClass())
-                    .equalTo("sourceMapping." + source, sourceId)
-                    .findFirst());
-        }
+    public RepeatingQuest findByExternalSourceMappingId(String source, String sourceId) {
+        return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
+                .findFirst());
     }
 }

@@ -3,10 +3,10 @@
     <string name="title_activity_quest_list">Today</string>
     <string name="title_fragment_inbox">Inbox</string>
     <string name="title_activity_pick_avatar">Pick avatar</string>
-    <string name="title_activity_edit_quest">Edit quest</string>
+    <string name="title_edit_quest">Edit quest</string>
     <string name="player_level">Level %d</string>
-    <string name="quest_removed">Quest removed</string>
-    <string name="repeating_quest_removed">Repeating Quest removed</string>
+    <string name="quest_deleted">Quest deleted</string>
+    <string name="repeating_quest_deleted">Repeating Quest deleted</string>
     <string name="default_assistant_name">iPoli</string>
     <string name="title_activity_quest_complete">Well done!</string>
     <string name="quest_complete_difficulty_question">How difficult was it?</string>
@@ -21,6 +21,7 @@
     <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
     <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
+    <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
     <string name="start_time_default">Start time</string>
     <string name="due_date_default">Due date</string>
     <string name="today">Today</string>
@@ -28,7 +29,7 @@
     <string name="edit_quest_start_time_hint">When should it start?</string>
     <string name="edit_quest_due_date_hint">When will you do it?</string>
     <string name="edit_quest_name_hint">Name (e.g. Read a book)</string>
-    <string name="add_quest_name_hint">Name (e.g. Read a book every day)</string>
+    <string name="add_quest_name_hint">Name (e.g. Read a book)</string>
     <string name="hours">%02d</string>
     <string name="minutes">%02d</string>
     <string name="start">Start</string>
@@ -45,8 +46,7 @@
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
     <string name="title_activity_add_quest">Add new Quest</string>
-    <string name="quest_added">Quest added</string>
-    <string name="unknown_choice">don\'t know</string>
+    <string name="unknown_choice">Don\'t know</string>
     <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
     <string name="dialog_delete_quest_title">Delete quest</string>
@@ -69,7 +69,7 @@
     <string name="contact_us_email_subject">Hi</string>
     <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
-    <string name="repeating_quest_added">Repeating Quest added, might take a while to sync</string>
+    <string name="repeating_quest_saved">Repeating Quest saved</string>
     <string name="repeating_quest_next_datetime">Next: %s</string>
 
     <string-array name="due_date_auto_completes">
@@ -99,8 +99,8 @@
         <item>for 5m</item>
     </string-array>
 
-    <string-array name="quest_durations">
-        <item>15 min</item>
+    <string-array name="quest_string_durations">
+        <item>15 min or less</item>
         <item>30 min</item>
         <item>45 min</item>
         <item>1 hour</item>
@@ -108,6 +108,15 @@
         <item>2 hours</item>
         <item>3 hours</item>
         <item>4 hours</item>
+    </string-array>
+
+    <string-array name="quest_times_per_day">
+        <item>2 times</item>
+        <item>3 times</item>
+        <item>4 times</item>
+        <item>5 times</item>
+        <item>6 times</item>
+        <item>7 times</item>
     </string-array>
 
     <string-array name="growth_intervals">
@@ -118,7 +127,7 @@
 
     <string name="title_activity_main">iPoli</string>
 
-    <string name="save">Save</string>
+    <string name="save">SAVE</string>
     <string name="no_internet_repeating_quest_added">Repeating Quest will be added when Internet is available</string>
     <string name="show_tutorial">Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
@@ -128,7 +137,7 @@
     <string name="tutorial_rewards_title">Choose Your Bounty</string>
     <string name="tutorial_reward_desc">Spend your life coins buying real-world rewards that you create</string>
     <string name="fragment_calendar_title">Calendar</string>
-    <string name="title_pick_initial_repeating_quests">Pick a few Repeating Quests to start with</string>
+    <string name="title_pick_initial_repeating_quests">Pick a few Habits to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="loading_message">Looking for a cracker…</string>
     <string name="find_slots_loading_message">Finding the perfect time…</string>
@@ -242,4 +251,20 @@
     <string name="summary_stats_hours_spent">Hours spent: %.1f</string>
     <string name="summary_stats_quests_done">Quests done: %d</string>
     <string name="title_activity_add_challenge">Add Challenge</string>
+    <string name="reward_name_validation">You must add name for your reward</string>
+    <string name="do_not_repeat">Do not repeat</string>
+    <string name="end_of_time">End of time</string>
+    <string name="smart_add_hint">Enter name, start time, duration …</string>
+    <string name="quest_end_date_question">When will you do it?</string>
+    <string name="quest_start_time_question">When should it start?</string>
+    <string name="quest_duration_question">For how long?</string>
+    <string name="quest_times_per_day_question">How many times per day?</string>
+    <string name="quest_repeat_pattern_question">How often it should repeat?</string>
+    <string name="reward_description_question">Why do you want this reward?</string>
+    <string name="reward_price_question">How much does it cost?</string>
+    <string name="reward_saved">Reward saved</string>
+    <string name="quest_note_question">Note</string>
+    <string name="none">None</string>
+    <string name="pick_note_title">Enter a note</string>
+    <string name="quest_saved_to_inbox">Quest saved to inbox</string>
 </resources>

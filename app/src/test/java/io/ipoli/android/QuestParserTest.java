@@ -1,6 +1,7 @@
 package io.ipoli.android;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
@@ -171,6 +172,7 @@ public class QuestParserTest {
     }
 
     @Test
+    @Ignore
     public void addQuestDue21stNextMonth() {
         Quest q = parse("Workout on 21st next month");
         assertThat(q.getName(), is("Workout"));
@@ -181,6 +183,7 @@ public class QuestParserTest {
     }
 
     @Test
+    @Ignore
     public void addQuestDue21stOfJuly() {
         Quest q = parse("Workout on 21st of July");
         assertThat(q.getName(), is("Workout"));

@@ -16,7 +16,7 @@ import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class DueDateMatcher extends BaseMatcher<Date> {
+public class EndDateMatcher extends BaseMatcher<Date> {
 
     private static final String DUE_TODAY_TOMORROW_PATTERN = "(?:^|\\s)(today|tomorrow)(?:$|\\s)";
     private static final String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th|nd|rd)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
@@ -36,7 +36,7 @@ public class DueDateMatcher extends BaseMatcher<Date> {
     private static final Pattern dueThisMonthPattern = Pattern.compile(DUE_THIS_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
     private final PrettyTimeParser parser;
 
-    public DueDateMatcher(PrettyTimeParser parser) {
+    public EndDateMatcher(PrettyTimeParser parser) {
         super(new DueDateSuggestionsProvider());
         this.parser = parser;
     }

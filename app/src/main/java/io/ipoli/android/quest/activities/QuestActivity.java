@@ -41,6 +41,8 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
@@ -71,7 +73,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @BindView(R.id.quest_details_edit)
     ImageButton edit;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Inject
@@ -96,9 +97,17 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         ButterKnife.bind(this);
         appComponent().inject(this);
 
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         afterOnCreate = true;
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
+    }
+
+    @Override
+    protected void onDestroy() {
+        questPersistenceService.close();
+        super.onDestroy();
     }
 
     private void initUI() {
@@ -131,23 +140,27 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        questPersistenceService.findById(questId).subscribe(q -> {
-            Observable<Quest> questObservable = null;
-            if (afterOnCreate) {
-                afterOnCreate = false;
-                String action = getIntent().getAction();
-                if (ACTION_QUEST_CANCELED.equals(action)) {
-                    questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
-                } else if (ACTION_START_QUEST.equals(action)) {
-                    questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
-                }
+        Quest q = questPersistenceService.findById(questId);
+        Observable<Quest> questObservable = null;
+        if (afterOnCreate) {
+            afterOnCreate = false;
+            String action = getIntent().getAction();
+            if (ACTION_QUEST_CANCELED.equals(action)) {
+                questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
+            } else if (ACTION_START_QUEST.equals(action)) {
+                questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
             }
-            if (questObservable == null) {
-                questObservable = Observable.just(q);
-            }
-            onQuestFound(questObservable);
-        });
+        }
+        if (questObservable == null) {
+            questObservable = Observable.just(q);
+        }
+        onQuestFound(questObservable);
+    }
 
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = questPersistenceService.findById(questId);
+        onQuestFound(Observable.just(q));
     }
 
     private void onQuestFound(Observable<Quest> questObservable) {
@@ -159,10 +172,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
                 resumeTimer();
                 timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-                edit.setVisibility(View.GONE);
-            }
-
-            if (quest.isRepeatingQuest()) {
                 edit.setVisibility(View.GONE);
             }
         });

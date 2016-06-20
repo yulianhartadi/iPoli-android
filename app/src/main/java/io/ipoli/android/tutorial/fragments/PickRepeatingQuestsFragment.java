@@ -3,6 +3,7 @@ package io.ipoli.android.tutorial.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import com.squareup.otto.Bus;
 
@@ -22,6 +23,7 @@ import io.ipoli.android.tutorial.adapters.PickRepeatingQuestsAdapter;
  * on 4/27/16.
  */
 public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<RepeatingQuest> {
+
     @Inject
     Bus eventBus;
 
@@ -71,5 +73,10 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
         RepeatingQuest rq = new RepeatingQuest(text);
         RepeatingQuest.setContext(rq, context);
         viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
+    }
+
+    @Override
+    public int getDefaultBackgroundColor() {
+        return ContextCompat.getColor(getContext(), R.color.md_blue_500);
     }
 }

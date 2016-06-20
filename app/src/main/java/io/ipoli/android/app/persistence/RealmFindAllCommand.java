@@ -5,8 +5,7 @@ import java.util.List;
 import io.ipoli.android.app.net.RemoteObject;
 import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.RealmResults;
-import rx.Observable;
+import io.realm.RealmQuery;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -14,24 +13,20 @@ import rx.Observable;
  */
 public class RealmFindAllCommand<T extends RealmObject & RemoteObject> {
 
-    private final Class<T> realmClass;
     private RealmFindAllQueryBuilder<T> queryBuilder;
+    private final RealmQuery<T> query;
+    private final Realm realm;
 
-    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, Class<T> realmClass) {
-        this.realmClass = realmClass;
+    public RealmFindAllCommand(RealmFindAllQueryBuilder<T> queryBuilder, RealmQuery<T> query, Realm realm) {
         this.queryBuilder = queryBuilder;
+        this.query = query;
+        this.realm = realm;
     }
 
-    public Observable<List<T>> execute() {
-        Realm realm = Realm.getDefaultInstance();
-        return queryBuilder.buildQuery(realm.where(realmClass))
-                .asObservable()
-                .filter(RealmResults::isLoaded)
-                .first()
-                .map(results -> {
-                    List<T> res = realm.copyFromRealm(results);
-                    realm.close();
-                    return res;
-                });
+    public List<T> execute() {
+        realm.beginTransaction();
+        List<T> result = realm.copyFromRealm(queryBuilder.buildQuery(query));
+        realm.commitTransaction();
+        return result;
     }
 }

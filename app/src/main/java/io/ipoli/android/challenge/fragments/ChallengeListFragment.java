@@ -1,6 +1,5 @@
 package io.ipoli.android.challenge.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,7 +22,6 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.challenge.adapters.ChallengesAdapter;
-import io.ipoli.android.reward.activities.RewardActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,8 +72,7 @@ public class ChallengeListFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick(R.id.add_reward)
+    @OnClick(R.id.add_challenge)
     public void onAddReward(View view) {
-        startActivity(new Intent(getActivity(), RewardActivity.class));
     }
 }

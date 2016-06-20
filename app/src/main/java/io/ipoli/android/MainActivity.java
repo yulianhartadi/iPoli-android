@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
@@ -62,20 +63,20 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
@@ -106,9 +107,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     TextView loadingMessage;
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
-    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     Fragment currentFragment;
@@ -122,6 +124,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
 
         LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -150,6 +155,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onDestroy() {
+        questPersistenceService.close();
+        playerPersistenceService.close();
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             drawerLayout.openDrawer(GravityCompat.START);
@@ -163,7 +175,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        Player player = playerPersistenceService.findSync();
+        Player player = playerPersistenceService.find();
         View header = navigationView.getHeaderView(0);
         TextView level = (TextView) header.findViewById(R.id.player_level);
         level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
@@ -204,13 +216,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (isFromAction(ACTION_QUEST_COMPLETE)) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
-            questPersistenceService.findById(questId).subscribe(quest -> {
-                startCalendar();
-                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
-            });
+            Quest quest = questPersistenceService.findById(questId);
+            startCalendar();
+            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
-            startActivity(new Intent(this, AddQuestActivity.class));
+            startActivity(new Intent(this, EditQuestActivity.class));
         }
     }
 
@@ -235,13 +246,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .replace(R.id.content_container, fragment).commit();
         currentFragment = fragment;
         getSupportFragmentManager().executePendingTransactions();
-    }
-
-    @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(this, QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
     }
 
     @Subscribe
@@ -282,10 +286,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Quest q = e.quest;
         long experience = q.getExperience();
         long coins = q.getCoins();
-
+        String text = getString(q.getEndDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, experience, coins);
         Snackbar
                 .make(contentContainer,
-                        getString(R.string.quest_undone, experience, coins),
+                        text,
                         Snackbar.LENGTH_SHORT)
                 .show();
     }
@@ -304,6 +308,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onEditRepeatingQuestRequest(EditRepeatingQuestRequestEvent e) {
+        Intent i = new Intent(this, EditQuestActivity.class);
+        i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
     }
 
@@ -354,8 +365,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.inbox:
                 source = EventSource.INBOX;
                 changeCurrentFragment(new InboxFragment());
-
                 break;
+
             case R.id.repeating_quests:
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
@@ -380,17 +391,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 eventBus.post(new InviteFriendEvent());
                 inviteFriend();
                 break;
+
             case R.id.sync_calendars:
                 checkForCalendarPermission();
                 break;
+
             case R.id.tutorial:
                 eventBus.post(new ShowTutorialEvent());
                 startTutorial();
                 break;
+
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
                 RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
+
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
                 EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
@@ -460,7 +475,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                Player player = playerPersistenceService.findSync();
+                Player player = playerPersistenceService.find();
                 player.setAvatar(avatar);
                 playerPersistenceService.saveSync(player);
             }

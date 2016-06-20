@@ -80,7 +80,7 @@ public class CalendarLayout extends FrameLayout {
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
         params.topMargin = (int) y - params.height / 2;
         dragView.setLayoutParams(params);
-        if (calendarEvent.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+        if (calendarEvent.getDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(dragView);
         }
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);

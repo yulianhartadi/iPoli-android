@@ -36,6 +36,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     private boolean needsSyncWithRemote;
     private String remoteId;
+    private boolean isDeleted;
 
     public Player() {
     }
@@ -49,6 +50,7 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
+        this.isDeleted = false;
     }
 
     public String getId() {
@@ -167,6 +169,17 @@ public class Player extends RealmObject implements RemoteObject<Player> {
     @Override
     public String getRemoteId() {
         return remoteId;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    @Override
+    public void markDeleted() {
+        isDeleted = true;
+        markUpdated();
     }
 
     @Override

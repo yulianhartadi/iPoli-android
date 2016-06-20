@@ -37,7 +37,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
-import io.ipoli.android.quest.events.DeleteQuestRequestedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -50,7 +49,6 @@ import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
-import io.ipoli.android.quest.events.QuestUpdatedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
@@ -65,6 +63,7 @@ import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
@@ -158,11 +157,6 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onDeleteQuestRequested(DeleteQuestRequestedEvent e) {
-        log("delete_quest_requested", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
-    }
-
-    @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
         log("quest_deleted", EventParams.of("id", e.id));
     }
@@ -234,8 +228,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onQuestUpdated(QuestUpdatedEvent e) {
-        log("quest_updated", e.quest.getId(), e.quest.getName());
+    public void onUpdateQuest(UpdateQuestEvent e) {
+        log("update_quest", e.quest.getId(), e.quest.getName());
     }
 
     @Subscribe
@@ -442,8 +436,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         log("buy_reward", EventParams.create()
-        .add("name", e.reward.getName())
-        .add("price", e.reward.getPrice() + ""));
+                .add("name", e.reward.getName())
+                .add("price", e.reward.getPrice() + ""));
     }
 
     @Subscribe

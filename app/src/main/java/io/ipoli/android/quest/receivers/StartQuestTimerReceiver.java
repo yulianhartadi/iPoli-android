@@ -1,12 +1,15 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
+
+import com.squareup.otto.Bus;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,36 +20,39 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
-import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import rx.Observable;
+import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/2/16.
  */
-public class StartQuestTimerReceiver extends AsyncBroadcastReceiver {
+public class StartQuestTimerReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SHOW_QUEST_TIMER = "io.ipoli.android.intent.action.SHOW_QUEST_TIMER";
 
     private Context context;
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
 
     @Override
-    protected Observable<Void> doOnReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         this.context = context;
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        return questPersistenceService.findById(questId).flatMap(q -> {
-            showQuestTimerNotification(q);
-            return Observable.empty();
-        });
+        Realm realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        Quest q = questPersistenceService.findById(questId);
+        showQuestTimerNotification(q);
+        realm.close();
     }
 
     private void showQuestTimerNotification(Quest q) {

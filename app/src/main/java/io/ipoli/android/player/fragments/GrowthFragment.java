@@ -2,6 +2,7 @@ package io.ipoli.android.player.fragments;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +32,6 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.squareup.otto.Bus;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -58,6 +59,7 @@ import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -92,7 +94,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Inject
     Bus eventBus;
 
-    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -102,10 +103,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         ((MainActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
@@ -119,6 +121,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 getResources().getStringArray(R.array.growth_intervals));
         adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.md_white), PorterDuff.Mode.SRC_ATOP);
         spinner.setSelection(1, false);
         spinner.setOnItemSelectedListener(this);
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
@@ -128,19 +131,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1))
-                .compose(bindToLifecycle()).subscribe(quests -> {
-            if (quests.isEmpty()) {
-                chartContainer.setVisibility(View.GONE);
-                emptyViewContainer.setVisibility(View.VISIBLE);
-            } else {
-                chartContainer.setVisibility(View.VISIBLE);
-                emptyViewContainer.setVisibility(View.GONE);
-                setUpSummaryStats(quests);
-                setUpTimeSpentChart(quests);
-                setUpExperienceChart(quests, dayCount);
-            }
-        });
+        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1));
+
+        if (quests.isEmpty()) {
+            chartContainer.setVisibility(View.GONE);
+            emptyViewContainer.setVisibility(View.VISIBLE);
+        } else {
+            chartContainer.setVisibility(View.VISIBLE);
+            emptyViewContainer.setVisibility(View.GONE);
+            setUpSummaryStats(quests);
+            setUpTimeSpentChart(quests);
+            setUpExperienceChart(quests, dayCount);
+        }
     }
 
     private void setUpSummaryStats(List<Quest> quests) {
@@ -212,11 +214,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
 
         for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
-            groupedByDate.put(date.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate(), new ArrayList<>());
+            groupedByDate.put(date.toDate(), new ArrayList<>());
         }
 
         for (Quest q : quests) {
-            groupedByDate.get(q.getEndDate()).add(q);
+            Date dateKey = new LocalDate(q.getCompletedAt().getTime()).toDate();
+            groupedByDate.get(dateKey).add(q);
         }
 
         ArrayList<BarEntry> yVals1 = new ArrayList<>();
@@ -352,7 +355,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         if (q.getActualStart() != null) {
             return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
         } else {
-            return Math.max(q.getDuration(), 5);
+            return Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION);
         }
     }
 
@@ -362,8 +365,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        questPersistenceService.close();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     @Override

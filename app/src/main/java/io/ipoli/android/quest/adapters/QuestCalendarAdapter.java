@@ -27,12 +27,11 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.quest.QuestContext;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
-import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
@@ -74,23 +73,10 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        if (calendarEvent.shouldDisplayAsSuggestion()) {
-            return createSuggestion(parent, calendarEvent, inflater);
-        }
         if (calendarEvent.shouldDisplayAsIndicator()) {
             return createIndicator(parent, calendarEvent, inflater);
         }
         return createQuest(parent, calendarEvent, q, inflater);
-    }
-
-    @NonNull
-    private View createSuggestion(ViewGroup parent, final QuestCalendarViewModel calendarEvent, LayoutInflater inflater) {
-        View v = inflater.inflate(R.layout.calendar_suggestion_item, parent, false);
-        TextView suggestionName = (TextView) v.findViewById(R.id.quest_suggestion_text);
-        suggestionName.setText(calendarEvent.getName());
-        v.findViewById(R.id.quest_suggestion_next).setOnClickListener(v1 -> eventBus.post(new RescheduleQuestEvent(calendarEvent)));
-        v.setOnClickListener(v1 -> eventBus.post(new SuggestionAcceptedEvent(calendarEvent)));
-        return v;
     }
 
     @NonNull
@@ -137,7 +123,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                if (q.isPlaceholder()) {
+                    eventBus.post(new CompletePlaceholderRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                } else {
+                    eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                }
             } else {
                 if (q.isScheduledForThePast()) {
                     removeEvent(calendarEvent);
@@ -147,7 +137,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             }
         });
 
-        if (q.getDuration() <= Constants.QUEST_CALENDAR_EVENT_MIN_DURATION) {
+        if (q.getDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.END);
@@ -194,11 +184,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @Override
     public void onStartTimeUpdated(QuestCalendarViewModel calendarEvent, int oldStartTime) {
-        if (canAddEvent(calendarEvent)) {
-            eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
-        } else {
-            calendarEvent.setStartMinute(oldStartTime);
-        }
+        eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         notifyDataSetChanged();
     }
 
@@ -229,22 +215,5 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     public void removeEvent(QuestCalendarViewModel calendarEvent) {
         questCalendarViewModels.remove(calendarEvent);
         notifyDataSetChanged();
-    }
-
-    public boolean canAddEvent(QuestCalendarViewModel calendarEvent) {
-        int newStartMin = calendarEvent.getStartMinute();
-        int newEndMin = newStartMin + calendarEvent.getDuration();
-        for (QuestCalendarViewModel e : getEvents()) {
-            if (e == calendarEvent) {
-                continue;
-            }
-            int curStartMin = e.getStartMinute();
-            int curEndMin = curStartMin + e.getDuration();
-
-            if ((newStartMin < curEndMin) && (newEndMin > curStartMin)) {
-                return false;
-            }
-        }
-        return true;
     }
 }

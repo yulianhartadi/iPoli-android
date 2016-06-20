@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".quest.activities.AddQuestActivity"
+            android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_add_quest"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -58,11 +58,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".quest.activities.EditQuestActivity"
-            android:label="@string/title_activity_edit_quest"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".reward.activities.RewardActivity"
+            android:name=".reward.activities.EditRewardActivity"
             android:label="@string/title_activity_add_reward"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"

@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.text.TextUtils;
-
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -13,12 +11,12 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
-import io.realm.RealmResults;
 import io.realm.Sort;
-import rx.Observable;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,7 +26,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     private final Bus eventBus;
 
-    public RealmQuestPersistenceService(Bus eventBus) {
+    public RealmQuestPersistenceService(Bus eventBus, Realm realm) {
+        super(realm);
         this.eventBus = eventBus;
     }
 
@@ -38,13 +37,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public Observable<List<Quest>> findAllIncompleteToDosBefore(LocalDate localDate) {
+    public List<Quest> findAllIncompleteToDosBefore(LocalDate localDate) {
         return findAll(where -> where
                 .isNull("completedAt")
                 .isNull("repeatingQuest")
                 .equalTo("allDay", false)
-                .lessThan("endDate", toUTCDateAtStartOfDay(localDate))
-                .findAllSortedAsync(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
+                .lessThan("endDate", toStartOfDayUTC(localDate))
+                .findAllSorted(new String[]{"endDate", "startMinute", "createdAt"}, new Sort[]{Sort.ASCENDING, Sort.ASCENDING, Sort.DESCENDING}));
     }
 
     @Override
@@ -53,181 +52,155 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    protected void onObjectDeleted(String id) {
-        eventBus.post(new QuestDeletedEvent(id));
-    }
-
-    @Override
-    public Observable<List<Quest>> findAllUnplanned() {
-        return findAll(where -> where
+    public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
+        listenForChanges(where()
                 .isNull("endDate")
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSortedAsync("createdAt", Sort.DESCENDING));
+                .findAllSortedAsync("createdAt", Sort.DESCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllPlannedAndStartedToday() {
+    public List<Quest> findAllPlannedAndStartedToday() {
 
         LocalDate today = LocalDate.now();
 
-        Date startOfToday = toUTCDateAtStartOfDay(today);
-        Date startOfTomorrow = toUTCDateAtStartOfDay(today.plusDays(1));
+        Date startOfToday = toStartOfDayUTC(today);
+        Date startOfTomorrow = toStartOfDayUTC(today.plusDays(1));
 
         return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", startOfToday)
                 .lessThan("endDate", startOfTomorrow)
                 .isNull("completedAt")
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
-    }
-
-
-    @Override
-    public Observable<String> deleteBySourceMappingId(String source, String sourceId) {
-        if (TextUtils.isEmpty(source) || TextUtils.isEmpty(sourceId)) {
-            return Observable.empty();
-        }
-
-        Realm realm = getRealm();
-
-        return find(where -> where.equalTo("sourceMapping." + source, sourceId).findFirstAsync()).flatMap(realmQuest -> {
-            if (realmQuest == null) {
-                realm.close();
-                return Observable.empty();
-            }
-
-            final String questId = realmQuest.getId();
-
-            return Observable.create(subscriber -> {
-                realm.executeTransactionAsync(backgroundRealm -> {
-                            Quest questToDelete = backgroundRealm.where(getRealmObjectClass())
-                                    .equalTo("sourceMapping." + source, sourceId)
-                                    .findFirst();
-                            questToDelete.deleteFromRealm();
-                        },
-                        () -> {
-                            subscriber.onNext(questId);
-                            subscriber.onCompleted();
-                            onObjectDeleted(questId);
-                            realm.close();
-                        }, error -> {
-                            subscriber.onError(error);
-                            realm.close();
-                        });
-            });
-        });
-    }
-
-    @Override
-    public Observable<Void> deleteAllFromRepeatingQuest(String repeatingQuestId) {
-        return Observable.create(subscriber -> {
-            Realm realm = getRealm();
-            realm.executeTransactionAsync(backgroundRealm -> {
-                RealmResults<Quest> questsToRemove = where().equalTo("repeatingQuest.id", repeatingQuestId).findAll();
-                questsToRemove.deleteAllFromRealm();
-            }, () -> {
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-                realm.close();
-            }, error -> {
-                subscriber.onError(error);
-                realm.close();
-            });
-        });
+                .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
     public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
-
-        return where()
+        getRealm().beginTransaction();
+        long count = where()
                 .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .between("endDate", toUTCDateAtStartOfDay(fromDate), toUTCDateAtStartOfDay(toDate))
+                .between("endDate", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
                 .count();
+        getRealm().commitTransaction();
+        return count;
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayForDate(LocalDate currentDate) {
-        Date startDate = toUTCDateAtStartOfDay(currentDate);
-        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
-
-        return findAll(where -> where.beginGroup()
-                .greaterThanOrEqualTo("endDate", startDate)
-                .lessThan("endDate", endDate)
+    public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        Date startDateUTC = toStartOfDayUTC(currentDate);
+        Date endDateUTC = toStartOfDayUTC(currentDate.plusDays(1));
+        listenForChanges(where()
+                .beginGroup()
+                .greaterThanOrEqualTo("endDate", startDateUTC)
+                .lessThan("endDate", endDateUTC)
                 .or()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .endGroup()
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayCompletedForDate(LocalDate currentDate) {
-        Date startDate = toUTCDateAtStartOfDay(currentDate);
-        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
-        return findAll(where -> where
+    public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        listenForChanges(where()
                 .greaterThanOrEqualTo("completedAt", startDate)
                 .lessThan("completedAt", endDate)
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
-        Date startDate = toUTCDateAtStartOfDay(currentDate);
-        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
+    public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
+        Date startDate = toStartOfDayUTC(currentDate);
+        Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
+        listenForChanges(where()
+                .greaterThanOrEqualTo("endDate", startDate)
+                .lessThan("endDate", endDate)
+                .isNull("completedAt")
+                .equalTo("allDay", false)
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
+    }
 
+    @Override
+    public List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate) {
+        Date startDate = toStartOfDayUTC(currentDate);
+        Date endDate = toStartOfDayUTC(currentDate.plusDays(1));
         return findAll(where -> where
                 .greaterThanOrEqualTo("endDate", startDate)
                 .lessThan("endDate", endDate)
                 .isNull("completedAt")
                 .equalTo("allDay", false)
-                .findAllSortedAsync("startMinute", Sort.ASCENDING));
+                .findAllSorted("startMinute", Sort.ASCENDING));
     }
 
     @Override
-    public List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate) {
-        Date startDate = toUTCDateAtStartOfDay(currentDate);
-        Date endDate = toUTCDateAtStartOfDay(currentDate.plusDays(1));
-        try (Realm realm = getRealm()) {
-            return realm.copyFromRealm(realm.where(getRealmObjectClass())
-                    .greaterThanOrEqualTo("endDate", startDate)
-                    .lessThan("endDate", endDate)
-                    .isNull("completedAt")
-                    .equalTo("allDay", false)
-                    .findAllSorted("startMinute", Sort.ASCENDING));
-        }
+    public Quest findByExternalSourceMappingId(String source, String sourceId) {
+        return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
+                .findFirst());
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedQuestsStartingAfter(LocalDate localDate) {
+    public List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest) {
+        Date startDateUtc = toStartOfDayUTC(startDate);
+        return findAllIncludingDeleted(where -> where
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .isNull("endDate")
+                .or()
+                .greaterThanOrEqualTo("endDate", startDateUtc)
+                .findAll());
+    }
 
+    @Override
+    public List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
         return findAll(where -> where
-                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(localDate))
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .findAll());
+    }
+
+    @Override
+    public long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .between("originalStartDate", toStartOfDayUTC(startDate), toStartOfDayUTC(endDate))
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public List<Quest> findPlannedQuestsStartingAfter(LocalDate localDate) {
+        return findAll(where -> where
+                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(localDate))
                 .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
                 .isNull("actualStart")
                 .isNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
     }
 
     @Override
-    public Observable<List<Quest>> findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
-        return findAll(where -> where
-                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
-                .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
+    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener) {
+        listenForChanges(where()
+                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(startDate))
+                .lessThan("endDate", toStartOfDayUTC(endDate))
                 .equalTo("allDay", false)
                 .isNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
+                .findAllSortedAsync("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING), listener);
     }
 
     @Override
-    public Observable<List<Quest>> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
+    public List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
         return findAll(where -> where
-                .greaterThanOrEqualTo("endDate", toUTCDateAtStartOfDay(startDate))
-                .lessThan("endDate", toUTCDateAtStartOfDay(endDate))
+                .greaterThanOrEqualTo("completedAt", toStartOfDay(startDate))
+                .lessThan("completedAt", toStartOfDay(endDate))
                 .equalTo("allDay", false)
-                .isNotNull("completedAt")
-                .findAllSortedAsync("endDate", Sort.ASCENDING));
+                .findAllSorted("completedAt", Sort.ASCENDING));
     }
 }

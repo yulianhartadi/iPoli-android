@@ -8,6 +8,6 @@ import io.realm.RealmQuery;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/16/16.
  */
-public interface RealmFindQueryBuilder<T extends RealmObject & RemoteObject> {
+public interface RealmFindOneQueryBuilder<T extends RealmObject & RemoteObject> {
     T buildQuery(RealmQuery<T> where);
 }

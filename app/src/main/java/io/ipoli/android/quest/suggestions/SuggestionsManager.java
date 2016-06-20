@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.parsers.DueDateMatcher;
+import io.ipoli.android.quest.parsers.EndDateMatcher;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.MainMatcher;
 import io.ipoli.android.quest.parsers.Match;
@@ -51,7 +51,7 @@ public class SuggestionsManager {
             put(TextEntityType.MAIN, new MainMatcher());
             put(TextEntityType.DURATION, new DurationMatcher());
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
-            put(TextEntityType.DUE_DATE, new DueDateMatcher(parser));
+            put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
             put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());

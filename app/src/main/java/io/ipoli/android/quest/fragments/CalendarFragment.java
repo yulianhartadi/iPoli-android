@@ -41,7 +41,7 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
-import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 
@@ -85,6 +85,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
         ButterKnife.bind(this, view);
@@ -113,11 +114,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
         adapter = createAdapter();
 
-        calendarPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+        calendarPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
@@ -125,11 +122,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 changeTitle(date);
                 toolbarCalendar.setCurrentDate(date.toDate());
                 eventBus.post(new CurrentDayChangedEvent(date, CurrentDayChangedEvent.Source.SWIPE));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
             }
         });
 
@@ -189,7 +181,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
         eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
-        startActivity(new Intent(getActivity(), AddQuestActivity.class));
+        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
     private void changeTitle(LocalDate date) {
@@ -212,7 +204,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     @Subscribe
     public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-
         if (e.source == CurrentDayChangedEvent.Source.SWIPE) {
             return;
         }
@@ -221,6 +212,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         changeTitle(currentMidDate);
         adapter.notifyDataSetChanged();
         toolbarCalendar.setCurrentDate(currentMidDate.toDate());
+
         calendarPager.setCurrentItem(MID_POSITION, false);
     }
 
@@ -229,7 +221,8 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
             @Override
             public Fragment getItem(int position) {
-                return DayViewFragment.newInstance(currentMidDate.plusDays(position - MID_POSITION));
+                int plusDays = position - MID_POSITION;
+                return DayViewFragment.newInstance(currentMidDate.plusDays(plusDays));
             }
 
             @Override

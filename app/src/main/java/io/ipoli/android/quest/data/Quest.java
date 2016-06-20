@@ -20,6 +20,7 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -57,6 +58,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     private Integer duration;
     private Date startDate;
+    private Date originalStartDate;
 
     private Date endDate;
     private RepeatingQuest repeatingQuest;
@@ -75,17 +77,49 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Long coins;
     private Long experience;
 
+    private String note;
+
     private String source;
 
     private Boolean needsSyncWithRemote;
     private String remoteId;
 
     private SourceMapping sourceMapping;
+    private boolean isDeleted;
+
+    @Ignore
+    private boolean isPlaceholder;
 
     public Quest() {
     }
 
-    public void setDuration(int duration) {
+    public Quest(String name) {
+        this(name, null);
+    }
+
+    public Quest(String name, Date endDate) {
+        this.id = IDGenerator.generate();
+        this.name = name;
+        setEndDateFromLocal(endDate);
+        setStartDateFromLocal(endDate);
+        this.originalStartDate = DateUtils.getDate(endDate);
+        this.setStartMinute(null);
+        this.createdAt = DateUtils.nowUTC();
+        this.updatedAt = DateUtils.nowUTC();
+        this.context = QuestContext.PERSONAL.name();
+        this.flexibleStartTime = false;
+        this.needsSyncWithRemote = true;
+        this.experience = new ExperienceRewardGenerator().generate(this);
+        this.coins = new CoinsRewardGenerator().generate(this);
+        this.source = Constants.API_RESOURCE_SOURCE;
+        this.isDeleted = false;
+    }
+
+    public void setDuration(Integer duration) {
+        if (duration == null) {
+            this.duration = null;
+            return;
+        }
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
@@ -153,8 +187,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartDateFromLocal(Date startDate) {
+        setStartDate(DateUtils.getDate(startDate));
     }
 
     public static Time getStartTime(Quest quest) {
@@ -170,25 +204,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public int getDifficulty() {
         return difficulty;
-    }
-
-    public Quest(String name) {
-        this(name, null);
-    }
-
-    public Quest(String name, Date endDate) {
-        this.id = IDGenerator.generate();
-        this.name = name;
-        setEndDate(endDate);
-        this.setStartMinute(null);
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
-        this.context = QuestContext.PERSONAL.name();
-        this.flexibleStartTime = false;
-        this.needsSyncWithRemote = true;
-        this.source = Constants.API_RESOURCE_SOURCE;
-        this.experience = new ExperienceRewardGenerator().generate(this);
-        this.coins = new CoinsRewardGenerator().generate(this);
     }
 
     public String getName() {
@@ -211,8 +226,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = DateUtils.getDate(endDate);
+    public void setEndDateFromLocal(Date endDate) {
+        setEndDate(DateUtils.getDate(endDate));
     }
 
     public String getId() {
@@ -296,7 +311,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public boolean isScheduledForThePast() {
-        return getEndDate() != null && getEndDate().before(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
+        return getEndDate() != null && getEndDate().before(DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     public int getStartMinute() {
@@ -349,13 +364,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public boolean isScheduledForTomorrow() {
-        return DateUtils.isTomorrowUTC(new LocalDate(getEndDate(), DateTimeZone.UTC).toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate());
+        return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getEndDate(), DateTimeZone.UTC)));
     }
 
     public boolean isIndicator() {
         boolean isCompleted = getCompletedAt() != null;
-        boolean repeatsPerDay = getRepeatingQuest() != null && !TextUtils.isEmpty(getRepeatingQuest().getRecurrence().getDailyRrule());
-        boolean hasShortOrNoDuration = getDuration() < 15;
+        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
+        boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
         return isCompleted && repeatsPerDay && hasShortOrNoDuration;
     }
 
@@ -393,7 +408,49 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     @Override
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void markDeleted() {
+        isDeleted = true;
+        markUpdated();
+    }
+
+    @Override
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public void setFlexibleStartTime(boolean flexibleStartTime) {
+        this.flexibleStartTime = flexibleStartTime;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setOriginalStartDate(Date originalStartDate) {
+        this.originalStartDate = originalStartDate;
+    }
+
+    public boolean isPlaceholder() {
+        return isPlaceholder;
+    }
+
+    public void setPlaceholder(boolean placeholder) {
+        isPlaceholder = placeholder;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

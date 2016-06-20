@@ -24,7 +24,7 @@
         <item
             android:id="@+id/repeating_quests"
             android:checked="false"
-            android:icon="@drawable/ic_autorenew_white_24dp"
+            android:icon="@drawable/ic_repeat_white_24dp"
             android:title="@string/repeating_quests" />
 
         <item

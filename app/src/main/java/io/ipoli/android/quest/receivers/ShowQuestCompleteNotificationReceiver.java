@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.receivers;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,42 +9,32 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.receivers.AsyncBroadcastReceiver;
 import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import rx.Observable;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/1/16.
  */
-public class ShowQuestCompleteNotificationReceiver extends AsyncBroadcastReceiver {
+public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SHOW_DONE_QUEST_NOTIFICATION = "io.ipoli.android.intent.action.SHOW_QUEST_COMPLETE_NOTIFICATION";
 
     @Inject
+    Bus eventBus;
+
     QuestPersistenceService questPersistenceService;
-
-    @Override
-    protected Observable<Void> doOnReceive(Context context, Intent intent) {
-        App.getAppComponent(context).inject(this);
-
-        String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        QuestNotificationScheduler.stopTimer(questId, context);
-        return questPersistenceService.findById(questId).flatMap(q -> {
-            NotificationCompat.Builder builder = createNotificationBuilder(context, q);
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            notificationManagerCompat.notify(Constants.QUEST_COMPLETE_NOTIFICATION_ID, builder.build());
-            return Observable.empty();
-        });
-    }
 
     private NotificationCompat.Builder createNotificationBuilder(Context context, Quest q) {
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
@@ -70,4 +61,18 @@ public class ShowQuestCompleteNotificationReceiver extends AsyncBroadcastReceive
         return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        App.getAppComponent(context).inject(this);
+
+        String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        QuestNotificationScheduler.stopTimer(questId, context);
+        Realm realm = Realm.getDefaultInstance();
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
+        Quest q = questPersistenceService.findById(questId);
+        NotificationCompat.Builder builder = createNotificationBuilder(context, q);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        notificationManagerCompat.notify(Constants.QUEST_COMPLETE_NOTIFICATION_ID, builder.build());
+        realm.close();
+    }
 }

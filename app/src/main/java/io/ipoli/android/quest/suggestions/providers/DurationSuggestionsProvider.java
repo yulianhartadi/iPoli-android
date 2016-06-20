@@ -1,10 +1,12 @@
 package io.ipoli.android.quest.suggestions.providers;
 
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
-
+import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -12,9 +14,17 @@ import io.ipoli.android.R;
  */
 public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
 
+    public DurationSuggestionsProvider() {
+        for (int d : Constants.DURATIONS) {
+            String visibleText = DurationFormatter.formatReadableShort(d);
+            String text = d == Constants.QUEST_MIN_DURATION ? DurationFormatter.formatShort(d) : visibleText;
+            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), visibleText, getMatchingStartWord() + text));
+        }
+    }
+
     @Override
     protected List<String> getSuggestions() {
-        return Arrays.asList(new String[]{"5 min", "10 min", "15 min", "30 min", "1 hour", "1 h and 30 m", "2 hours", "3 hours", "4 hours"});
+        return new ArrayList<>();
     }
 
     @Override
@@ -26,5 +36,4 @@ public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
     protected String getMatchingStartWord() {
         return "for ";
     }
-
 }
