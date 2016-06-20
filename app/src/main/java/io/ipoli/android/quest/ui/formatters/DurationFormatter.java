@@ -1,9 +1,11 @@
 package io.ipoli.android.quest.ui.formatters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.concurrent.TimeUnit;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 
 /**
@@ -35,8 +37,8 @@ public class DurationFormatter {
         if (duration < 0) {
             return formatEmptyDuration();
         }
-        if (duration <= 10) {
-            return "10 minutes or less";
+        if (duration <= Constants.QUEST_MIN_DURATION) {
+            return Constants.QUEST_MIN_DURATION + " minutes or less";
         }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
@@ -58,9 +60,21 @@ public class DurationFormatter {
         if (duration < 0) {
             return "";
         }
-        if (duration <= 10) {
-            return "10 min or less";
+        if (duration <= Constants.QUEST_MIN_DURATION) {
+            return Constants.QUEST_MIN_DURATION + " min or less";
         }
+        return doFormatShort(duration);
+    }
+
+    public static String formatShort(int duration) {
+        if (duration < 0) {
+            return "";
+        }
+        return doFormatShort(duration);
+    }
+
+    @NonNull
+    private static String doFormatShort(int duration) {
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
         if (hours <= 0 && mins <= 0) {
@@ -76,6 +90,8 @@ public class DurationFormatter {
 
         return mins + " min";
     }
+
+
 
     private static String formatEmptyDuration() {
         return "Don't know";
