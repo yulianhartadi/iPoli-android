@@ -267,4 +267,5 @@
     <string name="none">None</string>
     <string name="pick_note_title">Enter a note</string>
     <string name="quest_saved_to_inbox">Quest saved to inbox</string>
+    <string name="empty_text_chanllenge">Add your challenges and conquer them!</string>
 </resources>
