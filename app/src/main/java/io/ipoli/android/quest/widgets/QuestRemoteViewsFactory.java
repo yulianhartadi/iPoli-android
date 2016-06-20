@@ -65,6 +65,10 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public RemoteViews getViewAt(int position) {
+        if(position >= getCount()) {
+            return getLoadingView();
+        }
+
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
         rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
