@@ -63,4 +63,11 @@ public interface Constants {
 
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
     int DEFAULT_MIN_REWARD_PRICE = 100;
+
+    String[] DAYS_OF_WEEK = new String[]{
+            "Sunday", "Monday",
+            "Tuesday", "Wednesday",
+            "Thursday", "Friday",
+            "Saturday"
+    };
 }

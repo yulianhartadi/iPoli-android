@@ -146,7 +146,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="bottom"
-                android:text="Challenge me on these days" />
+                android:text="@string/challenge_days_question" />
 
             <TextView
                 android:id="@+id/daily_challenge_days"

@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -22,15 +24,15 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
-import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/21/16.
  */
-public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener {
+public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
 
     @Inject
     Bus eventBus;
@@ -95,6 +97,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         onDailyChallengeNotificationChanged();
     }
 
+    @OnClick(R.id.daily_challenge_days_container)
+    public void onDailyChallengeDaysClicked(View view) {
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(this);
+        fragment.show(getFragmentManager());
+    }
+
     private void onDailyChallengeNotificationChanged() {
         if (dailyChallengeNotification.isChecked()) {
             dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
@@ -108,5 +116,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @Override
     public void onTimePicked(Time time) {
         dailyChallengeStartTime.setText(StartTimeFormatter.format(time.toDate()));
+    }
+
+    @Override
+    public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
+
     }
 }
