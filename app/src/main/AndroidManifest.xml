@@ -43,8 +43,7 @@
             android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_add_quest"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible">
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

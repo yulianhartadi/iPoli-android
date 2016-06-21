@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -272,6 +273,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 questText.requestFocus();
                 questTextLayout.setHint(getString(R.string.smart_add_hint));
                 infoContainer.setVisibility(View.GONE);
+                showKeyboard();
                 break;
             case EDIT_NEW_QUEST:
             case EDIT_QUEST:
@@ -513,6 +515,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setSelection(result.name.length());
         questText.clearFocus();
         hideKeyboard();
+    }
+
+    private void showKeyboard() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private void hideKeyboard() {
