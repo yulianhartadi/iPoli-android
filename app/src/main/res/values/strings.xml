@@ -129,7 +129,7 @@
 
     <string name="save">SAVE</string>
     <string name="no_internet_repeating_quest_added">Repeating Quest will be added when Internet is available</string>
-    <string name="show_tutorial">Tutorial</string>
+    <string name="show_tutorial">Show Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
     <string name="tutorial_welcome_desc">Ready for a life-changing challenge? You are free to accept or refuse!</string>
     <string name="tutorial_hero_title">Level Up Your Life</string>
@@ -146,7 +146,7 @@
     <string name="share">share</string>
 
     <string name="facebook_app_id">1609232436065758</string>
-    <string name="invite_friend">Invite Friend</string>
+    <string name="invite_friends">Invite Friends</string>
     <string name="show_invite_failed">Oops, please, try again later!</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
@@ -266,4 +266,5 @@
     <string name="none">None</string>
     <string name="pick_note_title">Enter a note</string>
     <string name="quest_saved_to_inbox">Quest saved to inbox</string>
+    <string name="settings">Settings</string>
 </resources>
