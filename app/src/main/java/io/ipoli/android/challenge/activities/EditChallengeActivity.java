@@ -14,7 +14,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 
-public class ChallengeActivity extends AppCompatActivity {
+public class EditChallengeActivity extends AppCompatActivity {
     @Inject
     Bus eventBus;
 
