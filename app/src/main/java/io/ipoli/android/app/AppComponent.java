@@ -34,6 +34,7 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
+import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
@@ -118,5 +119,7 @@ public interface AppComponent {
     void inject(GrowthFragment growthFragment);
 
     void inject(RecurrencePickerFragment recurrencePickerFragment);
+
+    void inject(SettingsFragment settingsFragment);
 }
 

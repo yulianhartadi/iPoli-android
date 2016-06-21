@@ -77,6 +77,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
+import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
@@ -398,6 +399,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.tutorial:
                 eventBus.post(new ShowTutorialEvent());
                 startTutorial();
+                break;
+
+            case R.id.settings:
+                source = EventSource.SETTINGS;
+                changeCurrentFragment(new SettingsFragment());
                 break;
 
             case R.id.feedback:
