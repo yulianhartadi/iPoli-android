@@ -74,7 +74,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @OnClick(R.id.daily_challenge_start_time_container)
     public void onDailyChallengeStartTimeClicked(View view) {
-        TimePickerFragment fragment = TimePickerFragment.newInstance(this);
+        TimePickerFragment fragment = TimePickerFragment.newInstance(false, this);
         fragment.show(getFragmentManager());
     }
 
