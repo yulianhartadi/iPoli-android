@@ -1,6 +1,7 @@
 package io.ipoli.android.settings;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
+import retrofit2.http.HEAD;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -45,6 +47,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @BindView(R.id.daily_challenge_days)
     TextView dailyChallengeDays;
 
+    @BindView(R.id.daily_challenge_start_time_hint)
+    TextView dailyChallengeStartTimeHint;
+
 
     private Unbinder unbinder;
 
@@ -57,6 +62,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
+        onDailyChallengeNotificationChanged();
+        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+            onDailyChallengeNotificationChanged();
+        });
 
         return view;
     }
@@ -74,8 +83,26 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @OnClick(R.id.daily_challenge_start_time_container)
     public void onDailyChallengeStartTimeClicked(View view) {
-        TimePickerFragment fragment = TimePickerFragment.newInstance(false, this);
-        fragment.show(getFragmentManager());
+        if (dailyChallengeNotification.isChecked()) {
+            TimePickerFragment fragment = TimePickerFragment.newInstance(false, this);
+            fragment.show(getFragmentManager());
+        }
+    }
+
+    @OnClick(R.id.daily_challenge_notification_container)
+    public void onDailyChallengeNotificationClicked(View view) {
+        dailyChallengeNotification.setChecked(!dailyChallengeNotification.isChecked());
+        onDailyChallengeNotificationChanged();
+    }
+
+    private void onDailyChallengeNotificationChanged() {
+        if (dailyChallengeNotification.isChecked()) {
+            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        } else {
+            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
+            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
+        }
     }
 
     @Override

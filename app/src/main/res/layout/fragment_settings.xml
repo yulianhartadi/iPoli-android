@@ -47,7 +47,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="top"
-                android:text="Pick your new avatar" />
+                android:text="Pick an awesome new avatar for yourself" />
         </LinearLayout>
     </LinearLayout>
 
@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:text="Enable notifications" />
+                android:text="Show a reminder" />
 
             <Switch
                 android:id="@+id/daily_challenge_notification"
@@ -111,6 +111,7 @@
             android:weightSum="2">
 
             <TextView
+                android:id="@+id/daily_challenge_start_time_hint"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -145,7 +146,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="bottom"
-                android:text="Challenge me at these days" />
+                android:text="Challenge me on these days" />
 
             <TextView
                 android:id="@+id/daily_challenge_days"
