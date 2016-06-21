@@ -61,6 +61,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
+        onDailyChallengeNotificationChanged();
+        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+            onDailyChallengeNotificationChanged();
+        });
 
         return view;
     }
@@ -87,6 +91,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.daily_challenge_notification_container)
     public void onDailyChallengeNotificationClicked(View view) {
         dailyChallengeNotification.setChecked(!dailyChallengeNotification.isChecked());
+        onDailyChallengeNotificationChanged();
+    }
+
+    private void onDailyChallengeNotificationChanged() {
         if (dailyChallengeNotification.isChecked()) {
             dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
             dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
