@@ -73,7 +73,9 @@ public interface Constants {
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
     int DEFAULT_MIN_REWARD_PRICE = 100;
+
     int DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 9 * 60;
+    boolean DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true;
 
     Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[] {
             DaysOfWeek.MONDAY.getIsoOrder(),
