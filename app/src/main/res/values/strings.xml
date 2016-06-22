@@ -273,4 +273,5 @@
     <string name="no_challenge_days">No days selected</string>
     <string name="do_not_know">Don\'t know</string>
     <string name="title_pick_daily_challenge_quests">Pick 3 most important quests</string>
+    <string name="empty_daily_challenge_quests_text">No quests to challenge you!</string>
 </resources>
