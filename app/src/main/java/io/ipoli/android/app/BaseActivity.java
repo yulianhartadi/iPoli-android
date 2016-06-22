@@ -12,12 +12,14 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import org.joda.time.LocalDate;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.player.ui.dialogs.LevelUpDialogFragment;
@@ -56,9 +58,14 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        LocalStorage localStorage = LocalStorage.of(this);
+        Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
+        Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
+        boolean isCompletedForToday = todayUtc.equals(lastCompleted);
+
         Set<Integer> challengeDays = LocalStorage.of(this).readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         int currentDayOfWeek = LocalDate.now().getDayOfWeek();
-        if (!challengeDays.contains(currentDayOfWeek)) {
+        if (isCompletedForToday || !challengeDays.contains(currentDayOfWeek)) {
             menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
