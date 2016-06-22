@@ -17,6 +17,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
