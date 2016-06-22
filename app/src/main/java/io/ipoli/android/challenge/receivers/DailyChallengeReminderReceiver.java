@@ -49,9 +49,11 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
 
+        String text = context.getString(R.string.daily_challenge_notification_text);
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                .setContentTitle("Do you accept or refuse your daily challenge?")
-                .setContentText("Pick your 3 most important quests that will make the most impact on your day")
+                .setContentTitle(context.getString(R.string.daily_challenge_notification_title))
+                .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(true)
                 .setSmallIcon(R.drawable.ic_notification_small)

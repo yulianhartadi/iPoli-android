@@ -273,4 +273,6 @@
     <string name="no_challenge_days">No days selected</string>
     <string name="do_not_know">Don\'t know</string>
     <string name="title_pick_daily_challenge_quests">Pick 3 most important quests</string>
+    <string name="daily_challenge_notification_title">Your daily challenge</string>
+    <string name="daily_challenge_notification_text">When the day is over, what 3 quests will you want to have conquered?</string>
 </resources>
