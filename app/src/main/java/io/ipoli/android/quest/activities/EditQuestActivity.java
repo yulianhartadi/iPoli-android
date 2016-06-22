@@ -458,7 +458,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setContext(questContext.name());
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q));
+        eventBus.post(new UpdateQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -712,7 +712,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setContext(questContext.name());
         q.setNote((String) noteText.getTag());
-        eventBus.post(new NewQuestEvent(q));
+        eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {

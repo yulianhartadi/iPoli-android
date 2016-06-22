@@ -153,7 +153,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
-
     }
 
     @Override

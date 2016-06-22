@@ -275,7 +275,9 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAt(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        questPersistenceService.save(q).subscribe(this::onQuestComplete);
+        questPersistenceService.save(q).subscribe(quest -> {
+            onQuestComplete(quest, e.source);
+        });
     }
 
     @Subscribe
@@ -320,7 +322,7 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest);
+                onQuestComplete(quest, e.source);
             }
         });
     }
@@ -329,7 +331,7 @@ public class App extends MultiDexApplication {
     public void onUpdateQuest(UpdateQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest);
+                onQuestComplete(quest, e.source);
             }
         });
     }
@@ -356,12 +358,10 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         e.quest.markDeleted();
-        questPersistenceService.save(e.quest).subscribe(questId -> {
-
-        });
+        questPersistenceService.save(e.quest).subscribe();
     }
 
-    private void onQuestComplete(Quest quest) {
+    private void onQuestComplete(Quest quest, EventSource source) {
         Player player = playerPersistenceService.find();
         player.addExperience(quest.getExperience());
         if (shouldIncreaseLevel(player)) {
@@ -373,7 +373,7 @@ public class App extends MultiDexApplication {
         }
         player.addCoins(quest.getCoins());
         playerPersistenceService.saveSync(player);
-        eventBus.post(new QuestCompletedEvent(quest, EventSource.ADD_QUEST));
+        eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
     @Subscribe

@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.receivers;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,9 @@ public class ScheduleDailyChallengeReminderReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent repeatingIntent = getDailyChallengeReminderIntent();
+        PendingIntent repeatingIntent = IntentUtils.getBroadcastPendingIntent(context, getDailyChallengeReminderIntent());
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(repeatingIntent);
         LocalStorage localStorage = LocalStorage.of(context);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
         long firstTriggerMillis = LocalDate.now().toDateTimeAtStartOfDay().getMillis() + Time.of(startMinute).toMillisAfterMidnight();
@@ -33,7 +35,7 @@ public class ScheduleDailyChallengeReminderReceiver extends BroadcastReceiver {
             firstTriggerMillis += TimeUnit.DAYS.toMillis(1);
         }
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, firstTriggerMillis,
-                TimeUnit.DAYS.toMillis(1), IntentUtils.getBroadcastPendingIntent(context, repeatingIntent));
+                TimeUnit.DAYS.toMillis(1), repeatingIntent);
     }
 
     private boolean timeIsInThePast(long firstTriggerMillis) {

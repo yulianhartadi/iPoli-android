@@ -9,7 +9,6 @@ public enum EventSource {
     CALENDAR_DAY_VIEW,
     CALENDAR_UNSCHEDULED_SECTION,
     OVERVIEW,
-    ADD_QUEST,
     INBOX,
     REPEATING_QUESTS,
     REWARDS,
