@@ -29,6 +29,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
@@ -85,7 +86,6 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         questList.setAdapter(pickQuestsAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now(), this);
-
     }
 
     @Override
@@ -122,34 +122,35 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
 
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
-        eventBus.post(new AddQuestButtonTappedEvent(EventSource.OVERVIEW));
+        eventBus.post(new AddQuestButtonTappedEvent(EventSource.PICK_DAILY_CHALLENGE_QUESTS));
         startActivity(new Intent(this, EditQuestActivity.class));
     }
 
     private void saveQuests() {
         List<Quest> selectedQuests = pickQuestsAdapter.getSelectedQuests();
-        if(selectedQuests.size() > Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+        eventBus.post(new DailyChallengeQuestsSelectedEvent(selectedQuests.size()));
+        if (selectedQuests.size() > Constants.DAILY_CHALLENGE_QUEST_COUNT) {
             Toast.makeText(this, R.string.pick_max_3_miq, Toast.LENGTH_LONG).show();
             return;
         }
 
         List<Quest> questsToSave = new ArrayList<>();
 
-        for(Quest q : previouslySelectedQuests) {
-            if(!selectedQuests.contains(q)) {
+        for (Quest q : previouslySelectedQuests) {
+            if (!selectedQuests.contains(q)) {
                 q.setPriority(null);
                 questsToSave.add(q);
             }
         }
 
-        for(Quest q : selectedQuests) {
+        for (Quest q : selectedQuests) {
             q.setPriority(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY);
         }
         questsToSave.addAll(selectedQuests);
 
         questPersistenceService.saveSync(questsToSave);
 
-        if(!selectedQuests.isEmpty()) {
+        if (!selectedQuests.isEmpty()) {
             Toast.makeText(this, R.string.miq_saved, Toast.LENGTH_LONG).show();
         }
 
@@ -160,9 +161,9 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     public void onDatabaseChanged(List<Quest> quests) {
         previouslySelectedQuests.clear();
         List<PickQuestViewModel<Quest>> viewModels = new ArrayList<>();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             PickQuestViewModel<Quest> vm = new PickQuestViewModel<>(q, q.getName());
-            if(q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+            if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                 vm.select();
                 previouslySelectedQuests.add(q);
             }

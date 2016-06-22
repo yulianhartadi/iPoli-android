@@ -1,4 +1,4 @@
-package io.ipoli.android.challenge.events;
+package io.ipoli.android.settings.events;
 
 import io.ipoli.android.app.utils.Time;
 

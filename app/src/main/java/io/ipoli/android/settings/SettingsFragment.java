@@ -32,10 +32,12 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.challenge.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -125,6 +127,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         dailyChallengeNotification.setChecked(!dailyChallengeNotification.isChecked());
         localStorage.saveBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, dailyChallengeNotification.isChecked());
         onDailyChallengeNotificationChanged();
+        eventBus.post(new DailyChallengeReminderChangeEvent(dailyChallengeNotification.isChecked()));
     }
 
     @OnClick(R.id.daily_challenge_days_container)
@@ -155,6 +158,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
         populateDaysOfWeekText(selectedDays);
         localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
+        eventBus.post(new DailyChallengeDaysOfWeekChangedEvent(selectedDays));
     }
 
     private void populateDaysOfWeekText(Set<Integer> selectedDays) {

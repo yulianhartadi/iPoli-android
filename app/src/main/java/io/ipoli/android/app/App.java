@@ -56,7 +56,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
-import io.ipoli.android.challenge.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
