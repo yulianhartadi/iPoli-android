@@ -35,14 +35,14 @@ public class ChallengeCompleteDialogFragment extends DialogFragment {
 
     private Unbinder unbinder;
 
-    private int experience;
-    private int coins;
+    private long experience;
+    private long coins;
 
-    public static ChallengeCompleteDialogFragment newInstance(int experience, int coins) {
+    public static ChallengeCompleteDialogFragment newInstance(long experience, long coins) {
         ChallengeCompleteDialogFragment fragment = new ChallengeCompleteDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(EXPERIENCE, experience);
-        args.putInt(COINS, coins);
+        args.putLong(EXPERIENCE, experience);
+        args.putLong(COINS, coins);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,8 +51,8 @@ public class ChallengeCompleteDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            experience = getArguments().getInt(EXPERIENCE);
-            coins = getArguments().getInt(COINS);
+            experience = getArguments().getLong(EXPERIENCE);
+            coins = getArguments().getLong(COINS);
         }
     }
 
@@ -70,7 +70,7 @@ public class ChallengeCompleteDialogFragment extends DialogFragment {
         experienceText.setText(String.valueOf(experience));
         coinsText.setText(String.valueOf(coins));
         return builder.setIcon(R.drawable.logo)
-                .setTitle("Daily challenge complete")
+                .setTitle(R.string.daily_challenge_complete_dialog_title)
                 .setView(view)
                 .setPositiveButton(getString(R.string.sweet), null)
                 .create();

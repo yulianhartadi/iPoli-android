@@ -28,7 +28,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="start"
-            android:text="Experience gained" />
+            android:text="@string/experience_gained" />
 
         <TextView
             android:id="@+id/experience_text"
@@ -53,7 +53,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:gravity="start"
-            android:text="Coins won" />
+            android:text="@string/coins_won" />
 
         <TextView
             android:id="@+id/coins_text"

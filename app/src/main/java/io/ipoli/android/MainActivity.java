@@ -76,6 +76,8 @@ import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
@@ -156,8 +158,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
-
-        ChallengeCompleteDialogFragment.newInstance(300, 100).show(getSupportFragmentManager());
     }
 
     @Override
@@ -235,7 +235,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
-        ChallengeCompleteDialogFragment.newInstance(300, 100).show(getSupportFragmentManager());
+        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
+        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+        ChallengeCompleteDialogFragment.newInstance(xp, coins).show(getSupportFragmentManager());
     }
 
     private boolean isFromAction(String action) {

@@ -281,4 +281,7 @@
     <string name="menu_miq">Choose important quests</string>
     <string name="daily_challenge_complete_title">Daily challenge complete</string>
     <string name="daily_challenge_complete_text">Ready to get your reward?</string>
+    <string name="daily_challenge_complete_dialog_title">Daily challenge complete</string>
+    <string name="experience_gained">Experience gained</string>
+    <string name="coins_won">Coins won</string>
 </resources>

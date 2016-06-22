@@ -24,4 +24,10 @@ public class ExperienceRewardGenerator implements RewardGenerator {
     public long generate() {
         return generate(null);
     }
+
+    @Override
+    public long generateForDailyChallenge() {
+        long[] rewards = new long[]{20L, 30L, 50L, 80L, 100L};
+        return rewards[new Random().nextInt(rewards.length)];
+    }
 }

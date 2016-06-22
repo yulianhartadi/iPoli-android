@@ -24,4 +24,10 @@ public class CoinsRewardGenerator implements RewardGenerator {
     public long generate() {
         return generate(null);
     }
+
+    @Override
+    public long generateForDailyChallenge() {
+        long[] rewards = new long[]{20L, 30L, 40L, 50L, 80L};
+        return rewards[new Random().nextInt(rewards.length)];
+    }
 }
