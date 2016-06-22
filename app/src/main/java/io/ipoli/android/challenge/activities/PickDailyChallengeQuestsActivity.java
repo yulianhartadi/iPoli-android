@@ -27,6 +27,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
@@ -111,6 +112,9 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         switch (item.getItemId()) {
             case R.id.action_save:
                 saveQuests();
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_pick_daily_challenge_quests, R.string.help_dialog_pick_daily_challenge_quests_title, "pick_daily_challenge_quests").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
