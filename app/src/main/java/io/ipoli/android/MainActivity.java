@@ -60,6 +60,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
@@ -85,7 +86,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
-    public static final int PICK_PLAYER_AVATAR = 101;
+    public static final int PICK_PLAYER_AVATAR_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
     @BindView(R.id.drawer_layout)
@@ -190,7 +191,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
         avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
         avatarView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR);
+            eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
         });
 
         TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
@@ -472,10 +473,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    @Subscribe
+    public void onPickAvatarRequest(PickAvatarRequestEvent e) {
+        startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR_REQUEST_CODE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_AVATAR && resultCode == RESULT_OK && data != null) {
+        if (requestCode == PICK_PLAYER_AVATAR_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String avatar = data.getStringExtra(Constants.AVATAR_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);

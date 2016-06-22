@@ -27,9 +27,11 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
@@ -95,6 +97,11 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @Override
     protected boolean useOptionsMenu() {
         return false;
+    }
+
+    @OnClick(R.id.pick_avatar_container)
+    public void onPickAvatarClicked(View view) {
+        eventBus.post(new PickAvatarRequestEvent(EventSource.SETTINGS));
     }
 
     @OnClick(R.id.daily_challenge_start_time_container)
