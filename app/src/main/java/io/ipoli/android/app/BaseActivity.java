@@ -20,7 +20,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
-import io.ipoli.android.player.ui.dialogs.LevelUpDialog;
+import io.ipoli.android.player.ui.dialogs.LevelUpDialogFragment;
 import io.realm.Realm;
 
 /**
@@ -80,7 +80,7 @@ public class BaseActivity extends RxAppCompatActivity {
     }
 
     protected void showLevelUpMessage(int newLevel) {
-        LevelUpDialog.newInstance(newLevel).show(getSupportFragmentManager());
+        LevelUpDialogFragment.newInstance(newLevel).show(getSupportFragmentManager());
     }
 
     protected void showLevelDownMessage(int newLevel) {
