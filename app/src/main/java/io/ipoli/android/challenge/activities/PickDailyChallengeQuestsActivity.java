@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
@@ -42,7 +43,6 @@ import io.ipoli.android.tutorial.adapters.PickQuestsAdapter;
  * on 6/22/16.
  */
 public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDatabaseChangedListener<Quest> {
-    private static final int MAX_MIQ_COUNT = 3;
 
     @Inject
     Bus eventBus;
@@ -124,7 +124,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
 
     private void saveQuests() {
         List<Quest> selectedQuests = pickQuestsAdapter.getSelectedQuests();
-        if(selectedQuests.size() > MAX_MIQ_COUNT) {
+        if(selectedQuests.size() > Constants.DAILY_CHALLENGE_QUEST_COUNT) {
             Toast.makeText(this, R.string.pick_max_3_miq, Toast.LENGTH_LONG).show();
             return;
         }

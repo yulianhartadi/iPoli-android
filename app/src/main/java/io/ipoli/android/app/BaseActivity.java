@@ -10,9 +10,15 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
+import org.joda.time.LocalDate;
+
+import java.util.Set;
+
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.player.ui.dialogs.LevelUpDialog;
 import io.realm.Realm;
@@ -46,6 +52,16 @@ public class BaseActivity extends RxAppCompatActivity {
     protected void onDestroy() {
         realm.close();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Set<Integer> challengeDays = LocalStorage.of(this).readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        if (!challengeDays.contains(currentDayOfWeek)) {
+            menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
