@@ -31,6 +31,7 @@ import io.realm.annotations.Required;
 public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
+    public static final int DEFAULT_NO_PRIORITY_VALUE = -1;
 
     @Required
     @PrimaryKey
@@ -170,10 +171,14 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     }
 
     public int getPriority() {
-        return priority;
+        return priority != null ? priority : DEFAULT_NO_PRIORITY_VALUE;
     }
 
     public void setPriority(int priority) {
+        if(priority <= 0) {
+            this.priority = null;
+            return;
+        }
         this.priority = priority;
     }
 
