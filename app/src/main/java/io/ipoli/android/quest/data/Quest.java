@@ -372,10 +372,15 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public boolean isIndicator() {
         boolean isCompleted = getCompletedAt() != null;
+        return isCompleted && repeatPerDayWithShortOrNoDuration();
+    }
+
+    public boolean repeatPerDayWithShortOrNoDuration() {
         boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
         boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
-        return isCompleted && repeatsPerDay && hasShortOrNoDuration;
+        return repeatsPerDay && hasShortOrNoDuration;
     }
+
 
     public boolean isRepeatingQuest() {
         return getRepeatingQuest() != null;

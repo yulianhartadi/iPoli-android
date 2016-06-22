@@ -162,6 +162,9 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         previouslySelectedQuests.clear();
         List<PickQuestViewModel<Quest>> viewModels = new ArrayList<>();
         for (Quest q : quests) {
+            if(q.repeatPerDayWithShortOrNoDuration()) {
+                continue;
+            }
             PickQuestViewModel<Quest> vm = new PickQuestViewModel<>(q, q.getName());
             if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                 vm.select();
