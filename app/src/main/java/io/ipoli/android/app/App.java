@@ -56,7 +56,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
-import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -89,6 +88,7 @@ import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -282,6 +282,7 @@ public class App extends MultiDexApplication {
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         questPersistenceService.save(q).subscribe(quest -> {
             onQuestComplete(quest, e.source);
+            checkForDailyChallengeCompletion(quest, e.source);
         });
     }
 
@@ -368,7 +369,6 @@ public class App extends MultiDexApplication {
 
     private void onQuestComplete(Quest quest, EventSource source) {
         updatePlayer(quest);
-        checkForDailyChallengeCompletion(quest, source);
         eventBus.post(new QuestCompletedEvent(quest, source));
 
     }
