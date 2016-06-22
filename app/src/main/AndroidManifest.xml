@@ -80,6 +80,16 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".challenge.activities.PickDailyChallengeQuestsActivity"
+            android:label="@string/title_pick_daily_challenge_quests"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
