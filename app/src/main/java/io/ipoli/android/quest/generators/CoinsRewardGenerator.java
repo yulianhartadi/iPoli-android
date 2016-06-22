@@ -12,8 +12,12 @@ public class CoinsRewardGenerator implements RewardGenerator {
 
     @Override
     public long generate(Quest quest) {
-        Long[] rewards = new Long[] {2L, 5L, 7L, 10L};
-        return rewards[new Random().nextInt(rewards.length)];
+        long[] rewards = new long[]{2L, 5L, 7L, 10L};
+        long reward = rewards[new Random().nextInt(rewards.length)];
+        if (quest != null && quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+            reward *= 2;
+        }
+        return reward;
     }
 
     @Override

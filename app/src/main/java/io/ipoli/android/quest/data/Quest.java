@@ -30,6 +30,8 @@ import io.realm.annotations.Required;
  */
 public class Quest extends RealmObject implements RemoteObject<Quest> {
 
+    public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
+
     @Required
     @PrimaryKey
     private String id;
