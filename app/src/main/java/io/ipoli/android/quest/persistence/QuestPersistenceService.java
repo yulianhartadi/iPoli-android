@@ -44,5 +44,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
 
-    List<Quest> findAllCompletedWithPriorityForDate(int priority, LocalDate date);
+    long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
 }
