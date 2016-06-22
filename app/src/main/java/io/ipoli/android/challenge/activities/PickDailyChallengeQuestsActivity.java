@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -41,6 +42,7 @@ import io.ipoli.android.tutorial.adapters.PickQuestsAdapter;
  * on 6/22/16.
  */
 public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDatabaseChangedListener<Quest> {
+    private static final int MAX_MIQ_COUNT = 3;
 
     @Inject
     Bus eventBus;
@@ -57,6 +59,8 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     EmptyStateRecyclerView questList;
 
     private BasePickQuestAdapter<Quest> pickQuestsAdapter;
+
+    private List<Quest> previouslySelectedQuests = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,16 +117,45 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     }
 
     private void saveQuests() {
+        List<Quest> selectedQuests = pickQuestsAdapter.getSelectedQuests();
+        if(selectedQuests.size() > MAX_MIQ_COUNT) {
+            Toast.makeText(this, R.string.pick_max_3_miq, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        List<Quest> questsToSave = new ArrayList<>();
+
+        for(Quest q : previouslySelectedQuests) {
+            if(!selectedQuests.contains(q)) {
+                q.setPriority(-1);
+                questsToSave.add(q);
+            }
+        }
+
+        for(Quest q : selectedQuests) {
+            q.setPriority(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY);
+        }
+        questsToSave.addAll(selectedQuests);
+
+        questPersistenceService.saveSync(questsToSave);
+
+        if(!selectedQuests.isEmpty()) {
+            Toast.makeText(this, R.string.miq_saved, Toast.LENGTH_LONG).show();
+        }
+
+        finish();
     }
 
     @Override
     public void onDatabaseChanged(List<Quest> quests) {
+        previouslySelectedQuests.clear();
         List<PickQuestViewModel<Quest>> viewModels = new ArrayList<>();
         for(Quest q : quests) {
             PickQuestViewModel<Quest> vm = new PickQuestViewModel<>(q, q.getName());
-//            if(q.getPriority() == 4) {
-//                vm.select();
-//            }
+            if(q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                vm.select();
+                previouslySelectedQuests.add(q);
+            }
             viewModels.add(vm);
         }
 

@@ -274,4 +274,6 @@
     <string name="do_not_know">Don\'t know</string>
     <string name="title_pick_daily_challenge_quests">Pick 3 most important quests</string>
     <string name="empty_daily_challenge_quests_text">No quests to challenge you!</string>
+    <string name="pick_max_3_miq">Pick max 3 most important quest</string>
+    <string name="miq_saved">Most important quest for today saved</string>
 </resources>
