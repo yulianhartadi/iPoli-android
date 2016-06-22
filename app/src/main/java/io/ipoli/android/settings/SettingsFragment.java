@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
@@ -90,6 +91,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        menu.findItem(R.id.action_help).setVisible(false);
+    }
+
+    @Override
     public void onDestroyView() {
         unbinder.unbind();
         super.onDestroyView();
@@ -97,7 +104,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     protected boolean useOptionsMenu() {
-        return false;
+        return true;
     }
 
     @OnClick(R.id.pick_avatar_container)
