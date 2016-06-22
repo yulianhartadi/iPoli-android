@@ -43,31 +43,41 @@ public interface Constants {
 
     String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
 
-    String IPOLI_EMAIL = "hi@ipoli.io";
-    String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
+    String KEY_DAILY_CHALLENGE_SELECTED_DAYS = "DAILY_CHALLENGE_SELECTED_DAYS";
 
+    String IPOLI_EMAIL = "hi@ipoli.io";
+
+    String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
     String API_RESOURCE_SOURCE = "ipoli-android";
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
-    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
 
+    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
     int DEFAULT_PLAYER_XP = 0;
+
     int DEFAULT_PLAYER_LEVEL = 1;
 
     long DEFAULT_PLAYER_COINS = 10;
-
     String REWARD_ID_EXTRA_KEY = "reward_id";
     int AVATAR_COUNT = 12;
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
-    String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
+    String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
+
     int DEFAULT_MIN_REWARD_PRICE = 100;
 
-    String[] DAYS_OF_WEEK = new String[]{
-            "Monday", "Tuesday",
-            "Wednesday", "Thursday",
-            "Friday", "Saturday",
-            "Sunday"
-    };
+    enum DaysOfWeek {
+        SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
+
+        private final int order;
+
+        DaysOfWeek(int order) {
+            this.order = order;
+        }
+
+        public int getIsoOrder() {
+            return order;
+        }
+    }
 }

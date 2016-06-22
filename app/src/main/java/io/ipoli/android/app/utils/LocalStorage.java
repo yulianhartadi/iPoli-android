@@ -44,9 +44,14 @@ public class LocalStorage {
         editor().putString(key, gson.toJson(values)).apply();
     }
 
+    public void saveIntSet(String key, Set<Integer> values) {
+        Gson gson = new Gson();
+        editor().putString(key, gson.toJson(values)).apply();
+    }
+
     public Set<String> readStringSet(String key) {
         String json = sharedPreferences.getString(key, "");
-        if(TextUtils.isEmpty(json)) {
+        if (TextUtils.isEmpty(json)) {
             return new CopyOnWriteArraySet<>();
         }
         Gson gson = new Gson();
@@ -88,5 +93,6 @@ public class LocalStorage {
     public void saveBool(String key, boolean value) {
         editor().putBoolean(key, value).apply();
     }
+
 
 }

@@ -9,17 +9,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.SparseBooleanArray;
 
-import org.joda.time.DateTimeConstants;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.ipoli.android.Constants;
+import io.ipoli.android.Constants.DaysOfWeek;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -61,31 +58,28 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        boolean[] checkedDays = new boolean[Constants.DAYS_OF_WEEK.length];
-        for (int selectedDay : preSelectedDays) {
-            if (selectedDay == DateTimeConstants.SUNDAY) {
-                checkedDays[0] = true;
-            } else {
-                checkedDays[selectedDay] = true;
+        boolean[] checkedDays = new boolean[DaysOfWeek.values().length];
+
+        String[] daysOfWeek = new String[DaysOfWeek.values().length];
+
+        for (int i = 0; i < DaysOfWeek.values().length; i++) {
+            DaysOfWeek dayOfWeek = DaysOfWeek.values()[i];
+            if (preSelectedDays.contains(dayOfWeek.getIsoOrder())) {
+                checkedDays[i] = true;
             }
+            daysOfWeek[i] = StringUtils.capitalize(dayOfWeek.name());
         }
-        List<String> daysOfWeek = sundayBeforeMondayDaysOfWeek();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setMultiChoiceItems(daysOfWeek.toArray(new String[daysOfWeek.size()]), checkedDays, null)
+                .setMultiChoiceItems(daysOfWeek, checkedDays, null)
                 .setTitle(R.string.challenge_days_question)
                 .setPositiveButton(R.string.accept, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
-                    Set<Integer> selectedDays = new LinkedHashSet<>();
+                    Set<Integer> selectedDays = new HashSet<>();
                     for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
                         if (selectedPositions.get(i)) {
-                            if (i == 0) {
-                                // turn sunday (index 0) to Joda Time Sunday (index 7)
-                                selectedDays.add(DateTimeConstants.SUNDAY);
-                            } else {
-                                selectedDays.add(i);
-                            }
+                            selectedDays.add(DaysOfWeek.values()[i].getIsoOrder());
                         }
                     }
                     textPickedListener.onDaysOfWeekPicked(selectedDays);
@@ -95,14 +89,6 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
                 });
         alertDialog = builder.create();
         return alertDialog;
-    }
-
-    @NonNull
-    private List<String> sundayBeforeMondayDaysOfWeek() {
-        List<String> daysOfWeek = new ArrayList<>(Arrays.asList(Constants.DAYS_OF_WEEK));
-        daysOfWeek.add(0, daysOfWeek.get(daysOfWeek.size() - 1));
-        daysOfWeek.remove(daysOfWeek.size() - 1);
-        return daysOfWeek;
     }
 
     public void show(FragmentManager fragmentManager) {

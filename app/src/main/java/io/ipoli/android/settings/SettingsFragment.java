@@ -27,6 +27,8 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
@@ -58,6 +60,8 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     private Unbinder unbinder;
 
+    private LocalStorage localStorage;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,11 +71,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
-        onDailyChallengeNotificationChanged();
-        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) -> {
-            onDailyChallengeNotificationChanged();
-        });
 
+        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) ->
+                onDailyChallengeNotificationChanged());
+
+        localStorage = LocalStorage.of(getContext());
+        onDailyChallengeNotificationChanged();
         return view;
     }
 
@@ -124,10 +129,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
         List<String> dayNames = new ArrayList<>();
-        for (int selectedDay : selectedDays) {
-            dayNames.add(Constants.DAYS_OF_WEEK[selectedDay - 1].substring(0, 3));
+        for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
+            if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
+                dayNames.add(StringUtils.capitalize(dayOfWeek.name()).substring(0, 3));
+            }
         }
         dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
-        dailyChallengeDays.setTag(selectedDays);
+        localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_SELECTED_DAYS, selectedDays);
     }
 }
