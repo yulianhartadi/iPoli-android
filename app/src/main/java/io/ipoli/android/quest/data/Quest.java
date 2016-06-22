@@ -174,11 +174,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         return priority != null ? priority : DEFAULT_NO_PRIORITY_VALUE;
     }
 
-    public void setPriority(int priority) {
-        if(priority <= 0) {
-            this.priority = null;
-            return;
-        }
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 

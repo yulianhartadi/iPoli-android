@@ -133,7 +133,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
 
         for(Quest q : previouslySelectedQuests) {
             if(!selectedQuests.contains(q)) {
-                q.setPriority(-1);
+                q.setPriority(null);
                 questsToSave.add(q);
             }
         }

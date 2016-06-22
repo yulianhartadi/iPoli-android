@@ -130,7 +130,7 @@ public class App extends MultiDexApplication {
         public void onReceive(Context context, Intent intent) {
             scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
-            resetEndDateForIncompleteQuests();
+            moveIncompleteQuestsToInbox();
             updateWidgets();
         }
     };
@@ -163,7 +163,7 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
         playerPersistenceService = new RealmPlayerPersistenceService(realm);
 
-        resetEndDateForIncompleteQuests();
+        moveIncompleteQuestsToInbox();
         registerServices();
         scheduleNextReminder();
         scheduleDailyChallenge();
@@ -232,7 +232,7 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void resetEndDateForIncompleteQuests() {
+    private void moveIncompleteQuestsToInbox() {
         List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate());
         for (Quest q : quests) {
             if (q.isStarted()) {
@@ -240,6 +240,9 @@ public class App extends MultiDexApplication {
                 q.setStartMinute(0);
             } else {
                 q.setEndDate(null);
+            }
+            if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                q.setPriority(null);
             }
             questPersistenceService.save(q).subscribe();
         }
