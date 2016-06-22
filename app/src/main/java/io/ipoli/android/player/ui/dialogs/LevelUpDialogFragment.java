@@ -15,7 +15,7 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/1/16.
  */
-public class LevelUpDialog extends DialogFragment {
+public class LevelUpDialogFragment extends DialogFragment {
 
     private static final String TAG = "level-up-dialog";
 
@@ -23,8 +23,8 @@ public class LevelUpDialog extends DialogFragment {
 
     private int level;
 
-    public static LevelUpDialog newInstance(int level) {
-        LevelUpDialog fragment = new LevelUpDialog();
+    public static LevelUpDialogFragment newInstance(int level) {
+        LevelUpDialogFragment fragment = new LevelUpDialogFragment();
         Bundle args = new Bundle();
         args.putInt(LEVEL, level);
         fragment.setArguments(args);
@@ -49,9 +49,9 @@ public class LevelUpDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         return builder.setIcon(R.drawable.logo)
-                .setTitle(getActivity().getString(R.string.level_up_title))
-                .setMessage(Html.fromHtml(getActivity().getString(R.string.level_up_message, level)))
-                .setPositiveButton(getActivity().getString(R.string.sweet), null)
+                .setTitle(getString(R.string.level_up_title))
+                .setMessage(Html.fromHtml(getString(R.string.level_up_message, level)))
+                .setPositiveButton(getString(R.string.sweet), null)
                 .create();
     }
 

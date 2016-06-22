@@ -11,11 +11,13 @@ import android.support.v7.app.NotificationCompat;
 
 import org.joda.time.LocalDate;
 
+import java.util.Date;
 import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 
@@ -31,6 +33,13 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         LocalStorage localStorage = LocalStorage.of(context);
+
+        Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
+        Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
+        boolean isCompletedForToday = todayUtc.equals(lastCompleted);
+        if (isCompletedForToday) {
+            return;
+        }
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         if (!isReminderEnabled) {

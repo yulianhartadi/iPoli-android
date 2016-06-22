@@ -55,6 +55,8 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.challenge.ui.dialogs.ChallengeCompleteDialogFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
@@ -224,7 +226,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
             startActivity(new Intent(this, EditQuestActivity.class));
+        } else if (isFromAction(ACTION_DAILY_CHALLENGE_COMPLETE)) {
+            eventBus.post(new DailyChallengeCompleteEvent());
         }
+    }
+
+    @Subscribe
+    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
+        ChallengeCompleteDialogFragment.newInstance(300, 100).show(getSupportFragmentManager());
     }
 
     private boolean isFromAction(String action) {

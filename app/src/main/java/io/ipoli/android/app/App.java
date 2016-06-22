@@ -377,7 +377,8 @@ public class App extends MultiDexApplication {
         LocalStorage localStorage = LocalStorage.of(this);
         Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
         Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
-        if (todayUtc.equals(lastCompleted)) {
+        boolean isCompletedForToday = todayUtc.equals(lastCompleted);
+        if (isCompletedForToday) {
             return;
         }
         Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
