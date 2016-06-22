@@ -28,8 +28,8 @@ public class DailyChallengeCompleteReceiver extends BroadcastReceiver {
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                .setContentTitle("Daily challenge complete")
-                .setContentText("Ready to get your reward?")
+                .setContentTitle(context.getString(R.string.daily_challenge_complete_title))
+                .setContentText(context.getString(R.string.daily_challenge_complete_text))
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(true)
                 .setSmallIcon(R.drawable.ic_notification_small)
