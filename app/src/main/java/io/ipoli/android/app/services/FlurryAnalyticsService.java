@@ -1,5 +1,7 @@
 package io.ipoli.android.app.services;
 
+import android.text.TextUtils;
+
 import com.flurry.android.FlurryAgent;
 import com.flurry.android.FlurryEventRecordStatus;
 import com.squareup.otto.Subscribe;
@@ -29,6 +31,7 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -72,6 +75,9 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
+import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
@@ -495,6 +501,26 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onGrowthIntervalSelected(GrowthIntervalSelectedEvent e) {
         log("growth_interval_selected", EventParams.of("days", String.valueOf(e.dayCount)));
+    }
+
+    @Subscribe
+    public void onDailyChallengeReminderChange(DailyChallengeReminderChangeEvent e) {
+        log("daily_challenge_reminder_changed", EventParams.of("is_enabled", String.valueOf(e.enabled)));
+    }
+
+    @Subscribe
+    public void onDailyChallengeStartTimeChanged(DailyChallengeStartTimeChangedEvent e) {
+        log("daily_challenge_start_time_changed", EventParams.of("time", e.time.toString()));
+    }
+
+    @Subscribe
+    public void onDailyChallengeDaysOfWeekChanged(DailyChallengeDaysOfWeekChangedEvent e) {
+        log("daily_challenge_days_of_week_changed", EventParams.of("days", TextUtils.join(", ", e.selectedDaysOfWeek)));
+    }
+
+    @Subscribe
+    public void onDailyChallengeQuestsSelected(DailyChallengeQuestsSelectedEvent e) {
+        log("daily_challenge_quests_selected", EventParams.of("count", String.valueOf(e.count)));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
