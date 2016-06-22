@@ -7,7 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.R;
 
 /**
@@ -20,6 +26,14 @@ public class ChallengeCompleteDialogFragment extends DialogFragment {
 
     private static final String EXPERIENCE = "experience";
     private static final String COINS = "coins";
+
+    @BindView(R.id.experience_text)
+    TextView experienceText;
+
+    @BindView(R.id.coins_text)
+    TextView coinsText;
+
+    private Unbinder unbinder;
 
     private int experience;
     private int coins;
@@ -50,11 +64,22 @@ public class ChallengeCompleteDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_challenge_complete, null);
+        unbinder = ButterKnife.bind(this, view);
+        experienceText.setText(String.valueOf(experience));
+        coinsText.setText(String.valueOf(coins));
         return builder.setIcon(R.drawable.logo)
                 .setTitle("Daily challenge complete")
-                .setMessage("You gained " + experience + " XP and " + coins + " life coins")
+                .setView(view)
                 .setPositiveButton(getString(R.string.sweet), null)
                 .create();
+    }
+
+    @Override
+    public void onDestroyView() {
+        unbinder.unbind();
+        super.onDestroyView();
     }
 
     @Override
