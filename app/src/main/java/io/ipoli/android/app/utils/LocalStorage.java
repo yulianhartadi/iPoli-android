@@ -55,9 +55,20 @@ public class LocalStorage {
             return new CopyOnWriteArraySet<>();
         }
         Gson gson = new Gson();
-        Type listOfTestObject = new TypeToken<CopyOnWriteArraySet<String>>() {
+        Type typeToken = new TypeToken<CopyOnWriteArraySet<String>>() {
         }.getType();
-        return gson.fromJson(json, listOfTestObject);
+        return gson.fromJson(json, typeToken);
+    }
+
+    public Set<Integer> readIntSet(String key, Set<Integer> defaultValue) {
+        String json = sharedPreferences.getString(key, "");
+        if (TextUtils.isEmpty(json)) {
+            return defaultValue;
+        }
+        Gson gson = new Gson();
+        Type typeToken = new TypeToken<CopyOnWriteArraySet<Integer>>() {
+        }.getType();
+        return gson.fromJson(json, typeToken);
     }
 
     public int readInt(String key) {

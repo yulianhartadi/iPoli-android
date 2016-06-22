@@ -1,5 +1,9 @@
 package io.ipoli.android;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/15/15.
@@ -43,29 +47,41 @@ public interface Constants {
 
     String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
 
-    String KEY_DAILY_CHALLENGE_SELECTED_DAYS = "DAILY_CHALLENGE_SELECTED_DAYS";
+    String KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS";
+
+    String KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE = "DAILY_CHALLENGE_REMINDER_START_MINUTE";
+
+    String KEY_DAILY_CHALLENGE_ENABLE_REMINDER = "DAILY_CHALLENGE_ENABLE_REMINDER";
 
     String IPOLI_EMAIL = "hi@ipoli.io";
-
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
+
     String API_RESOURCE_SOURCE = "ipoli-android";
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
-
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
+
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
+
     int DEFAULT_PLAYER_XP = 0;
-
     int DEFAULT_PLAYER_LEVEL = 1;
-
     long DEFAULT_PLAYER_COINS = 10;
     String REWARD_ID_EXTRA_KEY = "reward_id";
+
     int AVATAR_COUNT = 12;
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
 
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
-
     int DEFAULT_MIN_REWARD_PRICE = 100;
+    int DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 9 * 60;
+
+    Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[] {
+            DaysOfWeek.MONDAY.getIsoOrder(),
+            DaysOfWeek.TUESDAY.getIsoOrder(),
+            DaysOfWeek.WEDNESDAY.getIsoOrder(),
+            DaysOfWeek.THURSDAY.getIsoOrder(),
+            DaysOfWeek.FRIDAY.getIsoOrder()
+    }));
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

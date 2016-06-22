@@ -32,7 +32,6 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -72,11 +71,18 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
 
-        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) ->
-                onDailyChallengeNotificationChanged());
-
         localStorage = LocalStorage.of(getContext());
+        boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, true);
+        dailyChallengeNotification.setChecked(isReminderEnabled);
+        int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
+        dailyChallengeStartTime.setText(Time.of(startMinute).toString());
+        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+            localStorage.saveBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, dailyChallengeNotification.isChecked());
+            onDailyChallengeNotificationChanged();
+        });
         onDailyChallengeNotificationChanged();
+        Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        populateDaysOfWeekText(selectedDays);
         return view;
     }
 
@@ -102,12 +108,14 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.daily_challenge_notification_container)
     public void onDailyChallengeNotificationClicked(View view) {
         dailyChallengeNotification.setChecked(!dailyChallengeNotification.isChecked());
+        localStorage.saveBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, dailyChallengeNotification.isChecked());
         onDailyChallengeNotificationChanged();
     }
 
     @OnClick(R.id.daily_challenge_days_container)
     public void onDailyChallengeDaysClicked(View view) {
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(this);
+        Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(selectedDays, this);
         fragment.show(getFragmentManager());
     }
 
@@ -123,18 +131,27 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     public void onTimePicked(Time time) {
-        dailyChallengeStartTime.setText(StartTimeFormatter.format(time.toDate()));
+        dailyChallengeStartTime.setText(time.toString());
+        localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
     }
 
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
+        populateDaysOfWeekText(selectedDays);
+        localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
+    }
+
+    private void populateDaysOfWeekText(Set<Integer> selectedDays) {
         List<String> dayNames = new ArrayList<>();
         for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
             if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
                 dayNames.add(StringUtils.capitalize(dayOfWeek.name()).substring(0, 3));
             }
         }
-        dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
-        localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_SELECTED_DAYS, selectedDays);
+        if (dayNames.isEmpty()) {
+            dailyChallengeDays.setText(R.string.no_challenge_days);
+        } else {
+            dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
+        }
     }
 }

@@ -270,4 +270,5 @@
     <string name="title_fragment_settings">Settings</string>
     <string name="accept">Accept</string>
     <string name="challenge_days_question">Challenge me on these days</string>
+    <string name="no_challenge_days">No days selected</string>
 </resources>
