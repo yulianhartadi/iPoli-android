@@ -47,11 +47,21 @@
                 android:layout_height="wrap_content" />
 
             <ImageView
-                android:id="@+id/quest_recurrent_indicator"
+                android:id="@+id/quest_priority_indicator"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitXY"
+                android:src="@drawable/ic_star_accent_24dp" />
+
+
+            <ImageView
+                android:id="@+id/quest_repeating_indicator"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitXY"
+                android:layout_marginStart="8dp"
                 android:src="@drawable/ic_repeating_quest_24dp_transparent" />
 
 
