@@ -131,6 +131,20 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".challenge.receivers.ScheduleDailyChallengeReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.SCHEDULE_DAILY_CHALLENGE_REMINDER" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".challenge.receivers.DailyChallengeReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.SHOW_DAILY_CHALLENGE_REMINDER" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".app.receivers.AndroidCalendarEventChangedReceiver"
             android:priority="999">
             <intent-filter>

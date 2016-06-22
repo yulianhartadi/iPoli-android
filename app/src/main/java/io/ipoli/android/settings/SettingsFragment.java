@@ -31,6 +31,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
@@ -140,6 +141,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     public void onTimePicked(Time time) {
         dailyChallengeStartTime.setText(time.toString());
         localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
+        eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
     }
 
     @Override

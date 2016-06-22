@@ -55,13 +55,14 @@ import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListRe
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
-import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -82,6 +83,7 @@ import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -162,6 +164,7 @@ public class App extends MultiDexApplication {
         resetEndDateForIncompleteQuests();
         registerServices();
         scheduleNextReminder();
+        scheduleDailyChallenge();
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
@@ -194,6 +197,15 @@ public class App extends MultiDexApplication {
 //                    .penaltyDeath()
 //                    .build());
 //        }
+    }
+
+    private void scheduleDailyChallenge() {
+        sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
+    }
+
+    @Subscribe
+    public void onDailyChallengeStartTimeChanged(DailyChallengeStartTimeChangedEvent e) {
+        scheduleDailyChallenge();
     }
 
     private Observable<Void> scheduleQuestsFor2WeeksAhead() {

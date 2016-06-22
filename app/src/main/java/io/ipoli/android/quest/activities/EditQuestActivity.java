@@ -95,7 +95,6 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -642,14 +641,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private void populateStartTime(int startMinute) {
-        Date time = startMinute >= 0 ? Time.of(startMinute).toDate() : null;
-        if (time != null) {
+        if (startMinute >= 0) {
             populateTimesPerDay(1);
-        }
-        startTimeText.setText(StartTimeFormatter.format(time));
-        if (time != null) {
+            startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
+            startTimeText.setText(R.string.do_not_know);
             startTimeText.setTag(null);
         }
     }

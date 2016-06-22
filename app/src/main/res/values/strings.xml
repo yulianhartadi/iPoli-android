@@ -271,4 +271,5 @@
     <string name="accept">Accept</string>
     <string name="challenge_days_question">Challenge me on these days</string>
     <string name="no_challenge_days">No days selected</string>
+    <string name="do_not_know">Don\'t know</string>
 </resources>
