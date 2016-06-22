@@ -143,7 +143,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             name.setEllipsize(TextUtils.TruncateAt.END);
         }
 
-        v.findViewById(R.id.quest_recurrent_indicator).setVisibility(calendarEvent.isRecurrent() ? View.VISIBLE : View.GONE);
+        v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRecurrent() ? View.VISIBLE : View.GONE);
+
+        v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
 
         ImageView share = (ImageView) v.findViewById(R.id.quest_share);
         share.setVisibility(Quest.isCompleted(q) ? View.VISIBLE : View.GONE);
