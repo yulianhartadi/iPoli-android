@@ -7,4 +7,10 @@
         android:menuCategory="secondary"
         android:title="@string/help_explain_screen"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_pick_daily_challenge_quests"
+        android:menuCategory="secondary"
+        android:title="@string/menu_miq"
+        app:showAsAction="never" />
 </menu>

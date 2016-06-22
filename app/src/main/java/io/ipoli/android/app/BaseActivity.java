@@ -1,8 +1,10 @@
 package io.ipoli.android.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -11,6 +13,7 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import javax.inject.Inject;
 
 import io.ipoli.android.R;
+import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.player.ui.dialogs.LevelUpDialog;
 import io.realm.Realm;
 
@@ -49,6 +52,15 @@ public class BaseActivity extends RxAppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_pick_daily_challenge_quests) {
+            startActivity(new Intent(this, PickDailyChallengeQuestsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected void showLevelUpMessage(int newLevel) {
