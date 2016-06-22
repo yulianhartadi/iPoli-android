@@ -78,16 +78,12 @@ public class Time {
         return Integer.parseInt(pieces[1]);
     }
 
-    public Date toDate() {
-        Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(0);
-        c.set(Calendar.HOUR_OF_DAY, getHours());
-        c.set(Calendar.MINUTE, getMinutes());
-        return c.getTime();
-    }
-
     public int toMinutesAfterMidnight() {
         return minutes;
+    }
+
+    public long toMillisAfterMidnight() {
+        return TimeUnit.MINUTES.toMillis(minutes);
     }
 
     public int getHours() {

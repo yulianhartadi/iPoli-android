@@ -173,6 +173,7 @@
     <string name="help_dialog_calendar_title">What is calendar all about?</string>
     <string name="help_dialog_overview_title">What is overview all about?</string>
     <string name="help_dialog_add_quest_title">How to add your quests?</string>
+    <string name="help_dialog_pick_daily_challenge_quests_title">Why to accept daily challenge?</string>
     <string name="help_dialog_inbox_title">What is my inbox for?</string>
     <string name="help_dialog_repeating_quests_title">What are my repeating quests?</string>
     <string name="help_dialog_ok">OK</string>
@@ -271,4 +272,22 @@
     <string name="accept">Accept</string>
     <string name="challenge_days_question">Challenge me on these days</string>
     <string name="no_challenge_days">No days selected</string>
+    <string name="do_not_know">Don\'t know</string>
+    <string name="title_pick_daily_challenge_quests">Choose 3 quests</string>
+    <string name="daily_challenge_notification_title">Your daily challenge</string>
+    <string name="daily_challenge_notification_text">When the day is over, what 3 quests will you want to have conquered?</string>
+    <string name="empty_daily_challenge_quests_text">No quests to challenge you!</string>
+    <string name="pick_max_3_miq">Pick max 3 most important quest</string>
+    <string name="miq_saved">Most important quest for today saved</string>
+    <string name="menu_miq">Choose important quests</string>
+    <string name="daily_challenge_complete_title">Daily challenge complete</string>
+    <string name="daily_challenge_complete_text">Ready to get your reward?</string>
+    <string name="daily_challenge_complete_dialog_title">Daily challenge complete</string>
+    <string name="experience_gained">Experience gained</string>
+    <string name="coins_won">Coins won</string>
+    <string name="help_dialog_daily_challenge_text1">Ready for a challenge?</string>
+    <string name="every_morning_choose_your_3_help_dialog_daily_challenge_text2">Every morning, choose your 3 most important quests for the day.</string>
+    <string name="help_dialog_daily_challenge_text3">By defining and prioritising your tasks you are much more likely to complete them.</string>
+    <string name="help_dialog_daily_challenge_star">Most important quests will be marked with star in your calendar and journey</string>
+    <string name="help_dialog_daily_challenge_settings">You can adjust challenge days and reminder time in Settings</string>
 </resources>

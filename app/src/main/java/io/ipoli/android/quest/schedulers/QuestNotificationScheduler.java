@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.schedulers;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

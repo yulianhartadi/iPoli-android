@@ -65,12 +65,18 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.QuestDurationPickedEvent;
+import io.ipoli.android.quest.events.QuestNodePickedEvent;
+import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
+import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
+import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -95,7 +101,6 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
-import io.ipoli.android.quest.ui.formatters.StartTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -459,7 +464,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setContext(questContext.name());
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q));
+        eventBus.post(new UpdateQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -601,12 +606,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             setFrequencyText(null);
         }
         populateEndDate(date);
+        eventBus.post(new QuestDatePickedEvent(editMode.name().toLowerCase()));
     }
 
 
     @Override
     public void onTextPicked(String text) {
         populateNoteText(text);
+        eventBus.post(new QuestNodePickedEvent(editMode.name().toLowerCase()));
     }
 
     private void populateNoteText(String text) {
@@ -621,16 +628,19 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onTimePicked(Time time) {
         populateStartTime(time == null ? -1 : time.toMinutesAfterMidnight());
+        eventBus.post(new QuestStartTimePickedEvent(editMode.name().toLowerCase()));
     }
 
     @Override
     public void onDurationPicked(int duration) {
         populateDuration(duration);
+        eventBus.post(new QuestDurationPickedEvent(editMode.name().toLowerCase()));
     }
 
     @Override
     public void onTimesPerDayPicked(int timesPerDay) {
         populateTimesPerDay(timesPerDay);
+        eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
     }
 
     private void populateEndDate(Date date) {
@@ -642,14 +652,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private void populateStartTime(int startMinute) {
-        Date time = startMinute >= 0 ? Time.of(startMinute).toDate() : null;
-        if (time != null) {
+        if (startMinute >= 0) {
             populateTimesPerDay(1);
-        }
-        startTimeText.setText(StartTimeFormatter.format(time));
-        if (time != null) {
+            startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
+            startTimeText.setText(R.string.do_not_know);
             startTimeText.setTag(null);
         }
     }
@@ -670,6 +678,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
         setFrequencyText(recurrence);
+        eventBus.post(new QuestRecurrencePickedEvent(editMode.name().toLowerCase()));
     }
 
     private void setFrequencyText(Recurrence recurrence) {
@@ -715,7 +724,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setContext(questContext.name());
         q.setNote((String) noteText.getTag());
-        eventBus.post(new NewQuestEvent(q));
+        eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {

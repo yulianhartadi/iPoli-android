@@ -55,13 +55,16 @@ import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListRe
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
+import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
-import io.ipoli.android.quest.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -82,6 +85,7 @@ import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -126,7 +130,7 @@ public class App extends MultiDexApplication {
         public void onReceive(Context context, Intent intent) {
             scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
-            resetEndDateForIncompleteQuests();
+            moveIncompleteQuestsToInbox();
             updateWidgets();
         }
     };
@@ -159,9 +163,10 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
         playerPersistenceService = new RealmPlayerPersistenceService(realm);
 
-        resetEndDateForIncompleteQuests();
+        moveIncompleteQuestsToInbox();
         registerServices();
         scheduleNextReminder();
+        scheduleDailyChallenge();
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
@@ -196,6 +201,15 @@ public class App extends MultiDexApplication {
 //        }
     }
 
+    private void scheduleDailyChallenge() {
+        sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
+    }
+
+    @Subscribe
+    public void onDailyChallengeStartTimeChanged(DailyChallengeStartTimeChangedEvent e) {
+        scheduleDailyChallenge();
+    }
+
     private Observable<Void> scheduleQuestsFor2WeeksAhead() {
         return Observable.defer(() -> {
             Realm realm = Realm.getDefaultInstance();
@@ -218,7 +232,7 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void resetEndDateForIncompleteQuests() {
+    private void moveIncompleteQuestsToInbox() {
         List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate());
         for (Quest q : quests) {
             if (q.isStarted()) {
@@ -226,6 +240,9 @@ public class App extends MultiDexApplication {
                 q.setStartMinute(0);
             } else {
                 q.setEndDate(null);
+            }
+            if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                q.setPriority(null);
             }
             questPersistenceService.save(q).subscribe();
         }
@@ -263,7 +280,9 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAt(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        questPersistenceService.save(q).subscribe(this::onQuestComplete);
+        questPersistenceService.save(q).subscribe(quest -> {
+            onQuestComplete(quest, e.source);
+        });
     }
 
     @Subscribe
@@ -308,7 +327,7 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest);
+                onQuestComplete(quest, e.source);
             }
         });
     }
@@ -317,7 +336,7 @@ public class App extends MultiDexApplication {
     public void onUpdateQuest(UpdateQuestEvent e) {
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest);
+                onQuestComplete(quest, e.source);
             }
         });
     }
@@ -344,14 +363,53 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         e.quest.markDeleted();
-        questPersistenceService.save(e.quest).subscribe(questId -> {
-
-        });
+        questPersistenceService.save(e.quest).subscribe();
     }
 
-    private void onQuestComplete(Quest quest) {
+    private void onQuestComplete(Quest quest, EventSource source) {
+        updatePlayer(quest);
+        checkForDailyChallengeCompletion(quest, source);
+        eventBus.post(new QuestCompletedEvent(quest, source));
+
+    }
+
+    private void checkForDailyChallengeCompletion(Quest quest, EventSource source) {
+        if (quest.getPriority() != Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+            return;
+        }
+        LocalStorage localStorage = LocalStorage.of(this);
+        Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
+        Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
+        boolean isCompletedForToday = todayUtc.equals(lastCompleted);
+        if (isCompletedForToday) {
+            return;
+        }
+        Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        if (!challengeDays.contains(currentDayOfWeek)) {
+            return;
+        }
+        long questCount = questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now());
+        if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+            return;
+        }
+        localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
+        if (source == EventSource.WIDGET) {
+            sendBroadcast(new Intent(DailyChallengeCompleteReceiver.ACTION_DAILY_CHALLENGE_COMPLETE));
+        } else {
+            eventBus.post(new DailyChallengeCompleteEvent());
+        }
+    }
+
+    private void updatePlayer(Quest quest) {
         Player player = playerPersistenceService.find();
         player.addExperience(quest.getExperience());
+        increasePlayerLevelIfNeeded(player);
+        player.addCoins(quest.getCoins());
+        playerPersistenceService.saveSync(player);
+    }
+
+    private void increasePlayerLevelIfNeeded(Player player) {
         if (shouldIncreaseLevel(player)) {
             player.setLevel(player.getLevel() + 1);
             while (shouldIncreaseLevel(player)) {
@@ -359,9 +417,6 @@ public class App extends MultiDexApplication {
             }
             eventBus.post(new LevelUpEvent(player.getLevel()));
         }
-        player.addCoins(quest.getCoins());
-        playerPersistenceService.saveSync(player);
-        eventBus.post(new QuestCompletedEvent(quest, EventSource.ADD_QUEST));
     }
 
     @Subscribe

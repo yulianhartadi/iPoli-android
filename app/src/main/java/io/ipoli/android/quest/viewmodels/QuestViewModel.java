@@ -96,4 +96,8 @@ public class QuestViewModel {
     public boolean isStarted() {
         return Quest.isStarted(quest);
     }
+
+    public boolean isMostImportant() {
+        return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
+    }
 }

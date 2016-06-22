@@ -158,6 +158,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public long countAllCompletedWithPriorityForDate(int priority, LocalDate date) {
+        Date dateUtc = toStartOfDayUTC(date);
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("priority", priority)
+                .isNotNull("completedAt")
+                .equalTo("endDate", dateUtc)
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
     public List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
         return findAll(where -> where
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())

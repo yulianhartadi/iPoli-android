@@ -9,4 +9,5 @@ import io.ipoli.android.quest.data.Quest;
 public interface RewardGenerator {
     long generate(Quest quest);
     long generate();
+    long generateForDailyChallenge();
 }

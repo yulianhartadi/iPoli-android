@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
@@ -31,9 +32,12 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,7 +78,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
 
         localStorage = LocalStorage.of(getContext());
-        boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, true);
+        boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
         dailyChallengeStartTime.setText(Time.of(startMinute).toString());
@@ -89,6 +93,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        menu.findItem(R.id.action_help).setVisible(false);
+    }
+
+    @Override
     public void onDestroyView() {
         unbinder.unbind();
         super.onDestroyView();
@@ -96,7 +106,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     protected boolean useOptionsMenu() {
-        return false;
+        return true;
     }
 
     @OnClick(R.id.pick_avatar_container)
@@ -117,6 +127,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         dailyChallengeNotification.setChecked(!dailyChallengeNotification.isChecked());
         localStorage.saveBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, dailyChallengeNotification.isChecked());
         onDailyChallengeNotificationChanged();
+        eventBus.post(new DailyChallengeReminderChangeEvent(dailyChallengeNotification.isChecked()));
     }
 
     @OnClick(R.id.daily_challenge_days_container)
@@ -129,7 +140,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     private void onDailyChallengeNotificationChanged() {
         if (dailyChallengeNotification.isChecked()) {
             dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
         } else {
             dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
             dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
@@ -140,12 +151,14 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     public void onTimePicked(Time time) {
         dailyChallengeStartTime.setText(time.toString());
         localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
+        eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
     }
 
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
         populateDaysOfWeekText(selectedDays);
         localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
+        eventBus.post(new DailyChallengeDaysOfWeekChangedEvent(selectedDays));
     }
 
     private void populateDaysOfWeekText(Set<Integer> selectedDays) {

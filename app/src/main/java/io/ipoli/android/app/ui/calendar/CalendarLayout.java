@@ -86,7 +86,7 @@ public class CalendarLayout extends FrameLayout {
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
-        View recurrentIndicator = dragView.findViewById(R.id.quest_recurrent_indicator);
+        View recurrentIndicator = dragView.findViewById(R.id.quest_repeating_indicator);
         recurrentIndicator.setVisibility(calendarEvent.isRecurrent() ? VISIBLE : GONE);
 
         View shareButton = dragView.findViewById(R.id.quest_share);
