@@ -14,6 +14,7 @@ import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -121,5 +122,7 @@ public interface AppComponent {
     void inject(RecurrencePickerFragment recurrencePickerFragment);
 
     void inject(SettingsFragment settingsFragment);
+
+    void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
 }
 
