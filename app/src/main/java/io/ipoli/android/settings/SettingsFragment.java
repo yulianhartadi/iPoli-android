@@ -3,6 +3,7 @@ package io.ipoli.android.settings;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -19,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -51,7 +55,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @BindView(R.id.daily_challenge_start_time_hint)
     TextView dailyChallengeStartTimeHint;
-
 
     private Unbinder unbinder;
 
@@ -120,6 +123,11 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
-
+        List<String> dayNames = new ArrayList<>();
+        for (int selectedDay : selectedDays) {
+            dayNames.add(Constants.DAYS_OF_WEEK[selectedDay - 1].substring(0, 3));
+        }
+        dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
+        dailyChallengeDays.setTag(selectedDays);
     }
 }

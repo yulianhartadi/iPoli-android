@@ -65,9 +65,9 @@ public interface Constants {
     int DEFAULT_MIN_REWARD_PRICE = 100;
 
     String[] DAYS_OF_WEEK = new String[]{
-            "Sunday", "Monday",
-            "Tuesday", "Wednesday",
-            "Thursday", "Friday",
-            "Saturday"
+            "Monday", "Tuesday",
+            "Wednesday", "Thursday",
+            "Friday", "Saturday",
+            "Sunday"
     };
 }

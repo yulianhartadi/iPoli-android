@@ -12,7 +12,9 @@ import android.util.SparseBooleanArray;
 import org.joda.time.DateTimeConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -67,13 +69,15 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
                 checkedDays[selectedDay] = true;
             }
         }
+        List<String> daysOfWeek = sundayBeforeMondayDaysOfWeek();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setMultiChoiceItems(Constants.DAYS_OF_WEEK, checkedDays, null)
+                .setMultiChoiceItems(daysOfWeek.toArray(new String[daysOfWeek.size()]), checkedDays, null)
                 .setTitle(R.string.challenge_days_question)
                 .setPositiveButton(R.string.accept, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
-                    Set<Integer> selectedDays = new HashSet<>();
+                    Set<Integer> selectedDays = new LinkedHashSet<>();
                     for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
                         if (selectedPositions.get(i)) {
                             if (i == 0) {
@@ -91,6 +95,14 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
                 });
         alertDialog = builder.create();
         return alertDialog;
+    }
+
+    @NonNull
+    private List<String> sundayBeforeMondayDaysOfWeek() {
+        List<String> daysOfWeek = new ArrayList<>(Arrays.asList(Constants.DAYS_OF_WEEK));
+        daysOfWeek.add(0, daysOfWeek.get(daysOfWeek.size() - 1));
+        daysOfWeek.remove(daysOfWeek.size() - 1);
+        return daysOfWeek;
     }
 
     public void show(FragmentManager fragmentManager) {
