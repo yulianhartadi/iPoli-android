@@ -65,12 +65,18 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.QuestDurationPickedEvent;
+import io.ipoli.android.quest.events.QuestNodePickedEvent;
+import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
+import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
+import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
@@ -600,12 +606,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             setFrequencyText(null);
         }
         populateEndDate(date);
+        eventBus.post(new QuestDatePickedEvent(editMode.name().toLowerCase()));
     }
 
 
     @Override
     public void onTextPicked(String text) {
         populateNoteText(text);
+        eventBus.post(new QuestNodePickedEvent(editMode.name().toLowerCase()));
     }
 
     private void populateNoteText(String text) {
@@ -620,16 +628,19 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onTimePicked(Time time) {
         populateStartTime(time == null ? -1 : time.toMinutesAfterMidnight());
+        eventBus.post(new QuestStartTimePickedEvent(editMode.name().toLowerCase()));
     }
 
     @Override
     public void onDurationPicked(int duration) {
         populateDuration(duration);
+        eventBus.post(new QuestDurationPickedEvent(editMode.name().toLowerCase()));
     }
 
     @Override
     public void onTimesPerDayPicked(int timesPerDay) {
         populateTimesPerDay(timesPerDay);
+        eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
     }
 
     private void populateEndDate(Date date) {
@@ -667,6 +678,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
         setFrequencyText(recurrence);
+        eventBus.post(new QuestRecurrencePickedEvent(editMode.name().toLowerCase()));
     }
 
     private void setFrequencyText(Recurrence recurrence) {

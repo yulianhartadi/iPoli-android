@@ -47,9 +47,15 @@ import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
+import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.QuestDurationPickedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
+import io.ipoli.android.quest.events.QuestNodePickedEvent;
+import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
+import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
+import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
@@ -495,6 +501,36 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onGrowthIntervalSelected(GrowthIntervalSelectedEvent e) {
         log("growth_interval_selected", EventParams.of("days", String.valueOf(e.dayCount)));
+    }
+
+    @Subscribe
+    public void onQuestDatePicked(QuestDatePickedEvent e) {
+        log("quest_date_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestNotePicked(QuestNodePickedEvent e) {
+        log("quest_note_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestStartTimePicked(QuestStartTimePickedEvent e) {
+        log("quest_start_time_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestDurationPicked(QuestDurationPickedEvent e) {
+        log("quest_duration_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestTimesPerDayPicked(QuestTimesPerDayPickedEvent e) {
+        log("quest_times_per_day_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
+        log("quest_recurrence_picked", EventParams.of("mode", e.mode));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
