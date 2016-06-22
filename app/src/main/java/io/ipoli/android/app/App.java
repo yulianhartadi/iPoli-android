@@ -55,7 +55,9 @@ import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListRe
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -362,8 +364,48 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
+        updatePlayer(quest);
+        checkForDailyChallengeCompletion(quest, source);
+        eventBus.post(new QuestCompletedEvent(quest, source));
+
+    }
+
+    private void checkForDailyChallengeCompletion(Quest quest, EventSource source) {
+        if (quest.getPriority() != Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+            return;
+        }
+        LocalStorage localStorage = LocalStorage.of(this);
+        Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
+        Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
+        if (todayUtc.equals(lastCompleted)) {
+            return;
+        }
+        Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        if (!challengeDays.contains(currentDayOfWeek)) {
+            return;
+        }
+        long questCount = questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now());
+        if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+            return;
+        }
+        localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
+        if (source == EventSource.WIDGET) {
+            sendBroadcast(new Intent(DailyChallengeCompleteReceiver.ACTION_DAILY_CHALLENGE_COMPLETE));
+        } else {
+            eventBus.post(new DailyChallengeCompleteEvent());
+        }
+    }
+
+    private void updatePlayer(Quest quest) {
         Player player = playerPersistenceService.find();
         player.addExperience(quest.getExperience());
+        increasePlayerLevelIfNeeded(player);
+        player.addCoins(quest.getCoins());
+        playerPersistenceService.saveSync(player);
+    }
+
+    private void increasePlayerLevelIfNeeded(Player player) {
         if (shouldIncreaseLevel(player)) {
             player.setLevel(player.getLevel() + 1);
             while (shouldIncreaseLevel(player)) {
@@ -371,9 +413,6 @@ public class App extends MultiDexApplication {
             }
             eventBus.post(new LevelUpEvent(player.getLevel()));
         }
-        player.addCoins(quest.getCoins());
-        playerPersistenceService.saveSync(player);
-        eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
     @Subscribe

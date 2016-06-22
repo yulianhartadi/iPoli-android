@@ -38,8 +38,8 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
         }
 
         int currentDayOfWeek = LocalDate.now().getDayOfWeek();
-        Set<Integer> daysOfWeek = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        if (!daysOfWeek.contains(currentDayOfWeek)) {
+        Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        if (!challengeDays.contains(currentDayOfWeek)) {
             return;
         }
 
@@ -64,6 +64,6 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
+        notificationManagerCompat.notify(Constants.REMIND_DAILY_CHALLENGE_NOTIFICATION_ID, builder.build());
     }
 }

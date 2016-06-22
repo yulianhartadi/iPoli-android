@@ -86,6 +86,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
+    public static final String ACTION_DAILY_CHALLENGE_COMPLETE = "io.ipoli.android.intent.action.DAILY_CHALLENGE_COMPLETE";
     public static final int PICK_PLAYER_AVATAR_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
