@@ -91,6 +91,7 @@ public interface Constants {
             DaysOfWeek.FRIDAY.getIsoOrder()
     }));
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
+    int DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET = 30;
 
 
     enum DaysOfWeek {

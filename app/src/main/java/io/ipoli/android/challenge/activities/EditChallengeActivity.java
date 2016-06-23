@@ -9,16 +9,23 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.joda.time.LocalDate;
+
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
@@ -26,8 +33,10 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
-public class EditChallengeActivity extends BaseActivity {
+public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener {
     @Inject
     Bus eventBus;
 
@@ -49,6 +58,9 @@ public class EditChallengeActivity extends BaseActivity {
     @BindView(R.id.challenge_category_container)
     LinearLayout contextContainer;
 
+    @BindView(R.id.challenge_end_date_value)
+    TextView endDateText;
+
     private Category category;
 
 
@@ -68,18 +80,20 @@ public class EditChallengeActivity extends BaseActivity {
         }
 
         initContextUI();
+
+        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
     }
 
     private void initContextUI() {
         changeContext(Category.LEARNING);
 
-        final Category[] ctxs = Category.values();
+        final Category[] categories = Category.values();
         for (int i = 0; i < contextContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) contextContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
+            drawable.setColor(ContextCompat.getColor(this, categories[i].resLightColor));
 
-            final Category ctx = ctxs[i];
+            final Category ctx = categories[i];
             iv.setOnClickListener(v -> {
                 removeSelectedContextCheck();
                 changeContext(ctx);
@@ -147,5 +161,21 @@ public class EditChallengeActivity extends BaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.challenge_end_date_container)
+    public void onEndDateClicked(View view) {
+        DatePickerFragment f = DatePickerFragment.newInstance((Date) endDateText.getTag(), true, false, this);
+        f.show(this.getSupportFragmentManager());
+    }
+
+    @Override
+    public void onDatePicked(Date date) {
+        populateEndDate(date);
+    }
+
+    private void populateEndDate(Date date) {
+        endDateText.setText(DateFormatter.format(date));
+        endDateText.setTag(date);
     }
 }

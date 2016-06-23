@@ -38,7 +38,7 @@
                     android:hint="@string/add_challenge_name_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine"
-                    android:maxLines="2"/>
+                    android:maxLines="2" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -163,19 +163,19 @@
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="I don't want to be fat"/>
+                        android:text="I don't want to be fat" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="I want to be cool like Vihroncho"/>
+                        android:text="I want to be cool like Vihroncho" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="My feet smell"/>
+                        android:text="My feet smell" />
                 </LinearLayout>
 
             </RelativeLayout>
@@ -216,19 +216,19 @@
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="I don't want to be fat"/>
+                        android:text="I don't want to be fat" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="I want to be cool like Vihroncho"/>
+                        android:text="I want to be cool like Vihroncho" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="My feet smell"/>
+                        android:text="My feet smell" />
                 </LinearLayout>
 
             </RelativeLayout>
@@ -269,8 +269,7 @@
                         android:id="@+id/challenge_end_date_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="24 Jun 16"/>
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 
@@ -311,7 +310,7 @@
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Normal"/>
+                        android:text="Normal" />
                 </LinearLayout>
             </RelativeLayout>
 
