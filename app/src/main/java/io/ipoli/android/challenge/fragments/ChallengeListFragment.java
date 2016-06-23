@@ -26,7 +26,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.challenge.activities.ChallengeActivity;
+import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.adapters.ChallengesAdapter;
 
 /**
@@ -97,7 +97,7 @@ public class ChallengeListFragment extends BaseFragment {
     }
 
     @OnClick(R.id.add_challenge)
-    public void onAddReward(View view) {
-        startActivity(new Intent(getContext(), ChallengeActivity.class));
+    public void onAddChallenge(View view) {
+        startActivity(new Intent(getContext(), EditChallengeActivity.class));
     }
 }

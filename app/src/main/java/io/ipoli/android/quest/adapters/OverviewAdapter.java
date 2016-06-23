@@ -198,8 +198,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             questHolder.progressContainer.removeAllViews();
 
-            int recurIconVisibility = vm.isRecurrent() ? View.VISIBLE : View.GONE;
-            questHolder.recurrentIcon.setVisibility(recurIconVisibility);
+            questHolder.repeatingIcon.setVisibility(vm.isRecurrent() ? View.VISIBLE : View.GONE);
+
+            questHolder.priorityIcon.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
 
             if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(vm.getRemainingText())) {
                 questHolder.detailsContainer.setVisibility(View.GONE);
@@ -290,8 +291,11 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.quest_progress_container)
         public ViewGroup progressContainer;
 
-        @BindView(R.id.quest_recurrent_indicator)
-        public ImageView recurrentIcon;
+        @BindView(R.id.quest_repeating_indicator)
+        public ImageView repeatingIcon;
+
+        @BindView(R.id.quest_priority_indicator)
+        public ImageView priorityIcon;
 
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;

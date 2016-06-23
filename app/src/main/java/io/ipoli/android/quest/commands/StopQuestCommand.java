@@ -2,7 +2,7 @@ package io.ipoli.android.quest.commands;
 
 import android.content.Context;
 
-import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import rx.Observable;

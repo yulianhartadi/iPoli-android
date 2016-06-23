@@ -157,14 +157,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:id="@+id/quest_recurrent_indicator"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="4dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_repeating_quest_24dp_transparent" />
+                    android:layout_marginTop="4dp">
+
+                    <ImageView
+                        android:id="@+id/quest_repeating_indicator"
+                        android:layout_marginEnd="2dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_repeating_quest_24dp_transparent" />
+
+                    <ImageView
+                        android:id="@+id/quest_priority_indicator"
+                        android:layout_marginStart="2dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_star_accent_24dp" />
+
+                </LinearLayout>
             </LinearLayout>
 
         </RelativeLayout>

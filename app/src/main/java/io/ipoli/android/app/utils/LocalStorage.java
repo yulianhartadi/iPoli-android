@@ -44,15 +44,31 @@ public class LocalStorage {
         editor().putString(key, gson.toJson(values)).apply();
     }
 
+    public void saveIntSet(String key, Set<Integer> values) {
+        Gson gson = new Gson();
+        editor().putString(key, gson.toJson(values)).apply();
+    }
+
     public Set<String> readStringSet(String key) {
         String json = sharedPreferences.getString(key, "");
-        if(TextUtils.isEmpty(json)) {
+        if (TextUtils.isEmpty(json)) {
             return new CopyOnWriteArraySet<>();
         }
         Gson gson = new Gson();
-        Type listOfTestObject = new TypeToken<CopyOnWriteArraySet<String>>() {
+        Type typeToken = new TypeToken<CopyOnWriteArraySet<String>>() {
         }.getType();
-        return gson.fromJson(json, listOfTestObject);
+        return gson.fromJson(json, typeToken);
+    }
+
+    public Set<Integer> readIntSet(String key, Set<Integer> defaultValue) {
+        String json = sharedPreferences.getString(key, "");
+        if (TextUtils.isEmpty(json)) {
+            return defaultValue;
+        }
+        Gson gson = new Gson();
+        Type typeToken = new TypeToken<CopyOnWriteArraySet<Integer>>() {
+        }.getType();
+        return gson.fromJson(json, typeToken);
     }
 
     public int readInt(String key) {
@@ -88,5 +104,6 @@ public class LocalStorage {
     public void saveBool(String key, boolean value) {
         editor().putBoolean(key, value).apply();
     }
+
 
 }

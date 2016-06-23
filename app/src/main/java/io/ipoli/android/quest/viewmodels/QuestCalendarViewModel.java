@@ -81,4 +81,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         this.duration = duration;
     }
 
+    public boolean isMostImportant() {
+        return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
+    }
 }

@@ -45,7 +45,7 @@
             android:id="@+id/invite_friends"
             android:checked="false"
             android:icon="@drawable/ic_friends_white_24dp"
-            android:title="@string/invite_friend" />
+            android:title="@string/invite_friends" />
         <item
             android:id="@+id/sync_calendars"
             android:checked="false"
@@ -56,6 +56,13 @@
             android:checked="false"
             android:icon="@drawable/ic_tutorial_white_24dp"
             android:title="@string/show_tutorial" />
+    </group>
+    <group android:id="@+id/third_group">
+        <item
+            android:id="@+id/settings"
+            android:checked="false"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/settings" />
         <item
             android:id="@+id/feedback"
             android:checked="false"

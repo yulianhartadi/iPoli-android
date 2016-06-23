@@ -8,23 +8,34 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.R;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/1/16.
  */
-public class LevelUpDialog extends DialogFragment {
+public class LevelUpDialogFragment extends DialogFragment {
 
     private static final String TAG = "level-up-dialog";
 
     private static final String LEVEL = "level";
 
+    @BindView(R.id.message)
+    TextView message;
+
     private int level;
 
-    public static LevelUpDialog newInstance(int level) {
-        LevelUpDialog fragment = new LevelUpDialog();
+    private Unbinder unbinder;
+
+    public static LevelUpDialogFragment newInstance(int level) {
+        LevelUpDialogFragment fragment = new LevelUpDialogFragment();
         Bundle args = new Bundle();
         args.putInt(LEVEL, level);
         fragment.setArguments(args);
@@ -48,11 +59,21 @@ public class LevelUpDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_level_up, null);
+        unbinder = ButterKnife.bind(this, view);
+        message.setText(Html.fromHtml(getString(R.string.level_up_message, level)));
         return builder.setIcon(R.drawable.logo)
-                .setTitle(getActivity().getString(R.string.level_up_title))
-                .setMessage(Html.fromHtml(getActivity().getString(R.string.level_up_message, level)))
-                .setPositiveButton(getActivity().getString(R.string.sweet), null)
+                .setTitle(getString(R.string.level_up_title))
+                .setView(view)
+                .setPositiveButton(getString(R.string.sweet), null)
                 .create();
+    }
+
+    @Override
+    public void onDestroyView() {
+        unbinder.unbind();
+        super.onDestroyView();
     }
 
     @Override

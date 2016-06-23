@@ -11,9 +11,6 @@ import android.support.v7.app.NotificationCompat;
 
 import com.squareup.otto.Bus;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -72,7 +69,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 .setContentText("Ready to start?")
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(false)
-                .setContentInfo(new SimpleDateFormat("HH:mm", Locale.getDefault()).format(Time.of(q.getStartMinute()).toDate()))
+                .setContentInfo(Time.of(q.getStartMinute()).toString())
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(true)

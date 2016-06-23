@@ -31,7 +31,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.QuestNotificationScheduler;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 
 /**
@@ -15,5 +16,6 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         context.sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
+        context.sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
     }
 }

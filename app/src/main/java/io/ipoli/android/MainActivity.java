@@ -56,11 +56,14 @@ import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.challenge.ui.dialogs.ChallengeCompleteDialogFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
@@ -74,10 +77,13 @@ import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
+import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
@@ -85,7 +91,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
-    public static final int PICK_PLAYER_AVATAR = 101;
+    public static final String ACTION_DAILY_CHALLENGE_COMPLETE = "io.ipoli.android.intent.action.DAILY_CHALLENGE_COMPLETE";
+    public static final int PICK_PLAYER_AVATAR_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
     @BindView(R.id.drawer_layout)
@@ -190,7 +197,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
         avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
         avatarView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR);
+            eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
         });
 
         TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
@@ -222,7 +229,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else if (isFromAction(ACTION_ADD_QUEST)) {
             setIntent(null);
             startActivity(new Intent(this, EditQuestActivity.class));
+        } else if (isFromAction(ACTION_DAILY_CHALLENGE_COMPLETE)) {
+            eventBus.post(new DailyChallengeCompleteEvent());
         }
+    }
+
+    @Subscribe
+    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
+        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
+        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+        ChallengeCompleteDialogFragment.newInstance(xp, coins).show(getSupportFragmentManager());
     }
 
     private boolean isFromAction(String action) {
@@ -401,6 +417,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startTutorial();
                 break;
 
+            case R.id.settings:
+                source = EventSource.SETTINGS;
+                changeCurrentFragment(new SettingsFragment());
+                break;
+
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
                 RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
@@ -467,10 +488,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    @Subscribe
+    public void onPickAvatarRequest(PickAvatarRequestEvent e) {
+        startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR_REQUEST_CODE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_AVATAR && resultCode == RESULT_OK && data != null) {
+        if (requestCode == PICK_PLAYER_AVATAR_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String avatar = data.getStringExtra(Constants.AVATAR_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);

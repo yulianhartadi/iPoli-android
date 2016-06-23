@@ -114,9 +114,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_recurrence_picker, null);
         unbinder = ButterKnife.bind(this, view);
 

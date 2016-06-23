@@ -95,6 +95,12 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
         return viewModels.size();
     }
 
+    public void setViewModels(List<PickQuestViewModel<T>> viewModels) {
+        this.viewModels = viewModels;
+        notifyDataSetChanged();
+
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.quest_check)
         CheckBox check;
