@@ -66,7 +66,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".challenge.activities.ChallengeActivity"
+        <activity android:name=".challenge.activities.EditChallengeActivity"
             android:label="@string/title_activity_add_challenge"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
