@@ -27,7 +27,6 @@ public class ScheduleDailyChallengeReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         PendingIntent repeatingIntent = IntentUtils.getBroadcastPendingIntent(context, getDailyChallengeReminderIntent());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(repeatingIntent);
         LocalStorage localStorage = LocalStorage.of(context);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
         long firstTriggerMillis = LocalDate.now().toDateTimeAtStartOfDay().getMillis() + Time.of(startMinute).toMillisAfterMidnight();
@@ -35,7 +34,7 @@ public class ScheduleDailyChallengeReminderReceiver extends BroadcastReceiver {
             firstTriggerMillis += TimeUnit.DAYS.toMillis(1);
         }
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstTriggerMillis,
-                TimeUnit.DAYS.toMillis(1), repeatingIntent);
+                AlarmManager.INTERVAL_DAY, repeatingIntent);
     }
 
     private boolean timeIsInThePast(long firstTriggerMillis) {
