@@ -77,6 +77,6 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
 
     @Override
     public int getDefaultBackgroundColor() {
-        return ContextCompat.getColor(getContext(), R.color.md_blue_500);
+        return ContextCompat.getColor(getContext(), R.color.md_white);
     }
 }
