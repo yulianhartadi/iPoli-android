@@ -1,6 +1,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/quest_container"
+    android:id="@+id/challenge_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_white">
@@ -22,7 +22,7 @@
             app:statusBarScrim="?attr/colorPrimaryDark">
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/quest_text_layout"
+                android:id="@+id/challenge_text_layout"
                 android:layout_width="match_parent"
                 android:layout_height="136dp"
                 android:layout_gravity="center_horizontal"
@@ -32,7 +32,7 @@
                 app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
                 <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView
-                    android:id="@+id/quest_text"
+                    android:id="@+id/challenge_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/add_quest_name_hint"
@@ -68,7 +68,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/quest_info_container"
+        android:id="@+id/challenge_info_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -79,7 +79,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/quest_context_name"
+                android:id="@+id/challenge_category_name"
                 style="@android:style/TextAppearance.Medium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:textColor="@color/md_dark_text_87" />
 
             <LinearLayout
-                android:id="@+id/quest_context_container"
+                android:id="@+id/challenge_category_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -100,38 +100,92 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/quest_context_learning"
+                    android:id="@+id/challenge_category_learning"
                     style="@style/QuestContextIndicator" />
 
                 <ImageView
-                    android:id="@+id/quest_context_wellness"
-                    style="@style/QuestContextIndicator" />
-
-
-                <ImageView
-                    android:id="@+id/quest_context_personal"
-                    style="@style/QuestContextIndicator" />
-
-                <ImageView
-                    android:id="@+id/quest_context_work"
+                    android:id="@+id/challenge_category_wellness"
                     style="@style/QuestContextIndicator" />
 
 
                 <ImageView
-                    android:id="@+id/quest_context_fun"
+                    android:id="@+id/challenge_category_personal"
+                    style="@style/QuestContextIndicator" />
+
+                <ImageView
+                    android:id="@+id/challenge_category_work"
                     style="@style/QuestContextIndicator" />
 
 
                 <ImageView
-                    android:id="@+id/quest_context_chores"
+                    android:id="@+id/challenge_category_fun"
+                    style="@style/QuestContextIndicator" />
+
+
+                <ImageView
+                    android:id="@+id/challenge_category_chores"
                     style="@style/QuestContextIndicator"
                     android:layout_marginEnd="0dp" />
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_end_date_container"
+                android:id="@+id/callenge_outcomes_container"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/challenge_outcomes_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_trophy_outline_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/challenge_outcomes_icon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/challenge_outcomes_question"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="What results do you expect to achieve?" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I don't want to be fat"/>
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I want to be cool like Vihroncho"/>
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="My feet smell"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/callenge_reasons_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:background="?android:attr/selectableItemBackground"
@@ -145,7 +199,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_event_black_18dp" />
+                    android:src="@drawable/ic_question_outline_black_24dp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -155,222 +209,33 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/quest_end_date_question"
+                        android:id="@+id/challenge_reasons_question"
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/quest_end_date_question" />
+                        android:text="Why do you want to do it?" />
 
                     <TextView
-                        android:id="@+id/quest_end_date_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/quest_start_time_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_start_time_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_clock_black_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_start_time_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_start_time_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_start_time_question" />
-
-                    <TextView
-                        android:id="@+id/quest_start_time_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/quest_duration_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_duration_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_timer_black_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_duration_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_duration_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_duration_question" />
-
-                    <TextView
-                        android:id="@+id/quest_duration_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/quest_times_per_day_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_times_per_day_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_multiply_black_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_times_per_day_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_times_per_day_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_times_per_day_question" />
-
-                    <TextView
-                        android:id="@+id/quest_times_per_day_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/quest_frequency_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_repeat_pattern_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_repeating_quest_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_repeat_pattern_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_repeat_pattern_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_repeat_pattern_question" />
-
-                    <TextView
-                        android:id="@+id/quest_repeat_pattern_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/quest_note_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_note_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_note_black_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_note_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_note_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_note_question" />
-
-                    <TextView
-                        android:id="@+id/quest_note_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxLines="1" />
+                        android:text="I don't want to be fat"/>
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I want to be cool like Vihroncho"/>
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="My feet smell"/>
                 </LinearLayout>
+
             </RelativeLayout>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
