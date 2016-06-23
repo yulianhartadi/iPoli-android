@@ -18,6 +18,7 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -33,12 +34,13 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
+import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
-public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener {
+public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener, MultiTextPickerFragment.OnMultiTextPickedListener {
     @Inject
     Bus eventBus;
 
@@ -168,6 +170,21 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         return super.onOptionsItemSelected(item);
     }
 
+    @OnClick(R.id.challenge_outcomes_container)
+    public void onOutcomesClicked(View view) {
+        ArrayList<String> texts = new ArrayList<>();
+        texts.add("bleh bleh");
+        texts.add("");
+        texts.add("");
+
+        ArrayList<String> hints = new ArrayList<>();
+        hints.add("1st reason");
+        hints.add("2nd reason");
+        hints.add("3rd reason");
+        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_outcomes_question, this);
+        f.show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.challenge_end_date_container)
     public void onEndDateClicked(View view) {
         DatePickerFragment f = DatePickerFragment.newInstance((Date) endDateText.getTag(), true, false, this);
@@ -198,5 +215,10 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public void onDifficultyPicked(Difficulty difficulty) {
         populateDifficulty(difficulty);
+    }
+
+    @Override
+    public void onTextPicked(String text) {
+
     }
 }

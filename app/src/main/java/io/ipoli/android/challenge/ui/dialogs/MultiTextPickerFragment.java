@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -26,27 +28,33 @@ import io.ipoli.android.R;
 public class MultiTextPickerFragment extends DialogFragment {
     private static final String TAG = "multi-text-picker-dialog";
     private static final String TEXTS = "texts";
+    private static final String HINTS = "hints";
     private static final String TITLE = "title";
 
     @BindView(R.id.note)
     EditText noteText;
 
-    private OnTextPickedListener textPickedListener;
+    private OnMultiTextPickedListener textPickedListener;
 
     private List<String> texts;
+    private List<String> hints;
     private int title;
 
-    public static MultiTextPickerFragment newInstance(ArrayList<String> texts, @StringRes int title, OnTextPickedListener listener) {
+    public static MultiTextPickerFragment newInstance(ArrayList<String> texts, ArrayList<String> hints, @StringRes int title, OnMultiTextPickedListener listener) {
+        if(texts.size() != hints.size()) {
+            throw new IllegalArgumentException("Hints and texts must have the same size");
+        }
         MultiTextPickerFragment fragment = new MultiTextPickerFragment();
         Bundle args = new Bundle();
         args.putStringArrayList(TEXTS, texts);
+        args.putStringArrayList(HINTS, hints);
         args.putInt(TITLE, title);
         fragment.setArguments(args);
         fragment.textPickedListener = listener;
         return fragment;
     }
 
-    public interface OnTextPickedListener {
+    public interface OnMultiTextPickedListener {
         void onTextPicked(String text);
     }
 
@@ -54,6 +62,7 @@ public class MultiTextPickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         texts = getArguments().getStringArrayList(TEXTS);
+        hints = getArguments().getStringArrayList(HINTS);
         title = getArguments().getInt(TITLE);
     }
 
@@ -61,10 +70,12 @@ public class MultiTextPickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_text_picker, null);
+        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_multi_text_picker, null);
 
-        for(String text : texts) {
-            View textItem = inflater.inflate(R.layout.fragment_text_picker, view, false);
+        for(int i = 0; i< texts.size(); i ++) {
+            View textItem = inflater.inflate(R.layout.text_picker_item, view, false);
+            ((TextInputLayout) textItem.findViewById(R.id.text_picker_container)).setHint(hints.get(i));
+            ((TextInputEditText) textItem.findViewById(R.id.text_picker_text)).setText(texts.get(i));
             view.addView(textItem);
         }
 
