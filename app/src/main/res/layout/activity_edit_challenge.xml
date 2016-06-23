@@ -31,16 +31,14 @@
                 android:paddingTop="?attr/actionBarSize"
                 app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
-                <io.ipoli.android.quest.ui.AddQuestAutocompleteTextView
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/challenge_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/add_quest_name_hint"
+                    android:hint="@string/add_challenge_name_hint"
                     android:imeOptions="actionDone"
-                    android:inputType="textNoSuggestions|textMultiLine"
-                    android:maxLines="2">
-
-                </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
+                    android:inputType="textMultiLine"
+                    android:maxLines="2"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -131,7 +129,7 @@
             <RelativeLayout
                 android:id="@+id/callenge_outcomes_container"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
+                android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="32dp"
                 android:background="?android:attr/selectableItemBackground"
@@ -183,11 +181,10 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/callenge_reasons_container"
+                android:id="@+id/challenge_reasons_container"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
+                android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true">
 
@@ -234,6 +231,88 @@
                         android:text="My feet smell"/>
                 </LinearLayout>
 
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/challenge_end_date_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/challenge_end_date_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_event_black_18dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/challenge_end_date_icon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/challenge_end_date_question"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="When is the deadline?" />
+
+                    <TextView
+                        android:id="@+id/challenge_end_date_value"
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="24 Jun 16"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/challenge_difficulty_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/challenge_difficulty_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_dumbbell_black_24dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/challenge_difficulty_icon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/challenge_difficulty_question"
+                        style="@style/TextAppearance.AppCompat.Body1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="How hard it is?" />
+
+                    <TextView
+                        android:id="@+id/challenge_difficulty_value"
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Normal"/>
+                </LinearLayout>
             </RelativeLayout>
 
         </LinearLayout>

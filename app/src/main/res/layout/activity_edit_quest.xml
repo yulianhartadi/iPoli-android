@@ -138,7 +138,7 @@
                 android:clickable="true">
 
                 <ImageView
-                    android:id="@+id/challenge_reasons_icon"
+                    android:id="@+id/quest_end_date_icon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentStart="true"
@@ -151,7 +151,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/challenge_reasons_icon"
+                    android:layout_toEndOf="@id/quest_end_date_icon"
                     android:orientation="vertical">
 
                     <TextView

@@ -6,8 +6,9 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,11 +21,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 
-public class EditChallengeActivity extends AppCompatActivity {
+public class EditChallengeActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
@@ -116,5 +119,33 @@ public class EditChallengeActivity extends AppCompatActivity {
         collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.edit_challenge_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+//        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.ADD ? R.string.done : R.string.save);
+//        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EditMode.EDIT_NEW_QUEST));
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+//                onSaveTap(EventSource.TOOLBAR);
+                return true;
+            case R.id.action_delete:
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
