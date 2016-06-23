@@ -127,7 +127,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/callenge_outcomes_container"
+                android:id="@+id/challenge_outcomes_container"
                 android:layout_width="match_parent"
                 android:layout_height="88dp"
                 android:layout_gravity="center_horizontal"
@@ -157,7 +157,7 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="What results do you expect to achieve?" />
+                        android:text="@string/challenge_outcomes_question" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
@@ -210,7 +210,7 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Why do you want to do it?" />
+                        android:text="@string/challenge_reasons_question" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Caption"
