@@ -15,6 +15,7 @@ import io.realm.annotations.Required;
  * on 5/27/16.
  */
 public class Challenge extends RealmObject implements RemoteObject<Challenge> {
+
     @Required
     @PrimaryKey
     private String id;

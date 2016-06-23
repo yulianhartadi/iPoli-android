@@ -293,4 +293,5 @@
     <string name="help_dialog_daily_challenge_star">Most important quests will be marked with star in your calendar and journey</string>
     <string name="help_dialog_daily_challenge_settings">You can adjust challenge days and reminder time in Settings</string>
     <string name="add_challenge_name_hint">Name (e.g. Run a 5k marathon)</string>
+    <string name="challenge_difficulty_question">How difficult is it?</string>
 </resources>

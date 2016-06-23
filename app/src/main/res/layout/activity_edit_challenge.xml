@@ -303,14 +303,13 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How hard it is?" />
+                        android:text="@string/challenge_difficulty_question" />
 
                     <TextView
                         android:id="@+id/challenge_difficulty_value"
                         style="@style/TextAppearance.AppCompat.Caption"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Normal" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </RelativeLayout>
 

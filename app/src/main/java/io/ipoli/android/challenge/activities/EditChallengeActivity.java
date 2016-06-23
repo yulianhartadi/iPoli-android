@@ -31,12 +31,14 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.data.Difficulty;
+import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
-public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener {
+public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener {
     @Inject
     Bus eventBus;
 
@@ -61,8 +63,10 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @BindView(R.id.challenge_end_date_value)
     TextView endDateText;
 
-    private Category category;
+    @BindView(R.id.challenge_difficulty_value)
+    TextView difficultyText;
 
+    private Category category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         initContextUI();
 
         populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
+        populateDifficulty(Difficulty.NORMAL);
     }
 
     private void initContextUI() {
@@ -169,6 +174,12 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         f.show(this.getSupportFragmentManager());
     }
 
+    @OnClick(R.id.challenge_difficulty_container)
+    public void onDifficultyClicked(View view) {
+        DifficultyPickerFragment f = DifficultyPickerFragment.newInstance((Difficulty) difficultyText.getTag(), this);
+        f.show(this.getSupportFragmentManager());
+    }
+
     @Override
     public void onDatePicked(Date date) {
         populateEndDate(date);
@@ -177,5 +188,15 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     private void populateEndDate(Date date) {
         endDateText.setText(DateFormatter.format(date));
         endDateText.setTag(date);
+    }
+
+    private void populateDifficulty(Difficulty difficulty) {
+        difficultyText.setText(StringUtils.capitalize(difficulty.name()));
+        difficultyText.setTag(difficulty);
+    }
+
+    @Override
+    public void onDifficultyPicked(Difficulty difficulty) {
+        populateDifficulty(difficulty);
     }
 }
