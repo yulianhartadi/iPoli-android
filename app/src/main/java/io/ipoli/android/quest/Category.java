@@ -9,7 +9,7 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/4/16.
  */
-public enum QuestContext {
+public enum Category {
 
     LEARNING(R.color.md_blue_50, R.color.md_blue_500, R.color.md_blue_700, R.color.md_blue_800, R.drawable.ic_context_learning_white_24dp, R.drawable.ic_context_learning_blue_24dp),
     WELLNESS(R.color.md_green_50, R.color.md_green_500, R.color.md_green_700, R.color.md_green_800, R.drawable.ic_context_wellness_white_24dp, R.drawable.ic_context_wellness_green_24dp),
@@ -36,7 +36,7 @@ public enum QuestContext {
     @DrawableRes
     public final int colorfulImage;
 
-    QuestContext(int backgroundColor, @ColorRes int resLightColor, @ColorRes int resDarkColor, int resDarkerColor, int whiteImage, int colorfulImage) {
+    Category(int backgroundColor, @ColorRes int resLightColor, @ColorRes int resDarkColor, int resDarkerColor, int whiteImage, int colorfulImage) {
         this.backgroundColor = backgroundColor;
         this.resLightColor = resLightColor;
         this.resDarkColor = resDarkColor;

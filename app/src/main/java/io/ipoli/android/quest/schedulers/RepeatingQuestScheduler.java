@@ -72,7 +72,7 @@ public class RepeatingQuestScheduler {
     public Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
         Quest quest = new Quest();
         quest.setName(repeatingQuest.getName());
-        quest.setContext(repeatingQuest.getContext());
+        quest.setCategory(repeatingQuest.getCategory());
         quest.setDuration(repeatingQuest.getDuration());
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);

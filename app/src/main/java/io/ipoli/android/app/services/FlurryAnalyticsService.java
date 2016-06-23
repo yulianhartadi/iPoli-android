@@ -237,7 +237,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("updated_quest_context", EventParams.create()
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
-                .add("context", e.questContext.name()));
+                .add("context", e.category.name()));
     }
 
     @Subscribe
@@ -254,7 +254,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onNewQuestContextChanged(NewQuestContextChangedEvent e) {
-        log("new_quest_context_changed", EventParams.of("context", e.questContext.name()));
+        log("new_quest_context_changed", EventParams.of("context", e.category.name()));
     }
 
     @Subscribe

@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickRepeatingQuestsAdapter;
@@ -47,31 +47,31 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
     protected void initViewModels() {
         viewModels = new ArrayList<>();
 
-        addViewModel("Set today's goals every Mon Tue Wed Thur and Fri at 9:00", QuestContext.PERSONAL, true);
-        addViewModel("Exercise every Mon Wed and Fri", QuestContext.WELLNESS);
-        addViewModel("Walk the dog every day", QuestContext.FUN);
-        addViewModel("Be mindful for 15 min every day", QuestContext.WELLNESS);
-        addViewModel("Review my day every Mon Tue Wed Thur and Fri at 22:00", QuestContext.PERSONAL, true);
-        addViewModel("Learn new language every day", QuestContext.LEARNING);
-        addViewModel("Drink water 6 times per day every day", QuestContext.WELLNESS);
-        addViewModel("Floss every day", QuestContext.WELLNESS);
-        addViewModel("Read every day for 1 hour", QuestContext.LEARNING);
-        addViewModel("Go for a run every Tue and Thur", QuestContext.WELLNESS);
-        addViewModel("Stretch every Mon Tue Wed Thur and Fri", QuestContext.WELLNESS);
-        addViewModel("Pay bills every 20th of the month", QuestContext.CHORES);
-        addViewModel("Answer emails every Mon Tue Wed Thur and Fri", QuestContext.WORK);
-        addViewModel("Call mom and dad every Sun", QuestContext.PERSONAL);
-        addViewModel("Do laundry every Sun", QuestContext.CHORES);
+        addViewModel("Set today's goals every Mon Tue Wed Thur and Fri at 9:00", Category.PERSONAL, true);
+        addViewModel("Exercise every Mon Wed and Fri", Category.WELLNESS);
+        addViewModel("Walk the dog every day", Category.FUN);
+        addViewModel("Be mindful for 15 min every day", Category.WELLNESS);
+        addViewModel("Review my day every Mon Tue Wed Thur and Fri at 22:00", Category.PERSONAL, true);
+        addViewModel("Learn new language every day", Category.LEARNING);
+        addViewModel("Drink water 6 times per day every day", Category.WELLNESS);
+        addViewModel("Floss every day", Category.WELLNESS);
+        addViewModel("Read every day for 1 hour", Category.LEARNING);
+        addViewModel("Go for a run every Tue and Thur", Category.WELLNESS);
+        addViewModel("Stretch every Mon Tue Wed Thur and Fri", Category.WELLNESS);
+        addViewModel("Pay bills every 20th of the month", Category.CHORES);
+        addViewModel("Answer emails every Mon Tue Wed Thur and Fri", Category.WORK);
+        addViewModel("Call mom and dad every Sun", Category.PERSONAL);
+        addViewModel("Do laundry every Sun", Category.CHORES);
 
     }
 
-    private void addViewModel(String text, QuestContext context) {
+    private void addViewModel(String text, Category context) {
         addViewModel(text, context, false);
     }
 
-    private void addViewModel(String text, QuestContext context, boolean isSelected) {
+    private void addViewModel(String text, Category context, boolean isSelected) {
         RepeatingQuest rq = new RepeatingQuest(text);
-        RepeatingQuest.setContext(rq, context);
+        RepeatingQuest.setCategory(rq, context);
         viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
     }
 

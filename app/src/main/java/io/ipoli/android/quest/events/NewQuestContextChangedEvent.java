@@ -1,15 +1,15 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/16/16.
  */
 public class NewQuestContextChangedEvent {
-    public final QuestContext questContext;
+    public final Category category;
 
-    public NewQuestContextChangedEvent(QuestContext questContext) {
-        this.questContext = questContext;
+    public NewQuestContextChangedEvent(Category category) {
+        this.category = category;
     }
 }

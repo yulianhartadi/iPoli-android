@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.events;
 
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -9,10 +9,10 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class QuestContextUpdatedEvent {
     public final Quest quest;
-    public final QuestContext questContext;
+    public final Category category;
 
-    public QuestContextUpdatedEvent(Quest quest, QuestContext questContext) {
+    public QuestContextUpdatedEvent(Quest quest, Category category) {
         this.quest = quest;
-        this.questContext = questContext;
+        this.category = category;
     }
 }

@@ -15,7 +15,7 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.realm.RealmList;
@@ -42,7 +42,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     @Required
     private String name;
 
-    private String context;
+    private String category;
 
     private boolean allDay;
 
@@ -109,7 +109,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.setStartMinute(null);
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.context = QuestContext.PERSONAL.name();
+        this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.experience = new ExperienceRewardGenerator().generate(this);
@@ -241,20 +241,20 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
         this.id = id;
     }
 
-    public String getContext() {
-        return TextUtils.isEmpty(context) ? QuestContext.PERSONAL.name() : context;
+    public String getCategory() {
+        return TextUtils.isEmpty(category) ? Category.PERSONAL.name() : category;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public static QuestContext getContext(Quest quest) {
-        return QuestContext.valueOf(quest.getContext());
+    public static Category getCategory(Quest quest) {
+        return Category.valueOf(quest.getCategory());
     }
 
-    public static void setContext(Quest quest, QuestContext context) {
-        quest.setContext(context.name());
+    public static void setCategory(Quest quest, Category category) {
+        quest.setCategory(category.name());
     }
 
     public static Date getStartDateTime(Quest quest) {

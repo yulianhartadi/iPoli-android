@@ -25,7 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -43,13 +43,13 @@ import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
  */
 public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewModel> {
 
-    private static final HashMap<QuestContext, Integer> QUEST_CONTEXT_TO_CHECKBOX_STYLE = new HashMap<QuestContext, Integer>() {{
-        put(QuestContext.LEARNING, R.style.LearningCheckbox);
-        put(QuestContext.WELLNESS, R.style.WellnessCheckbox);
-        put(QuestContext.PERSONAL, R.style.PersonalCheckbox);
-        put(QuestContext.WORK, R.style.WorkCheckbox);
-        put(QuestContext.FUN, R.style.FunCheckbox);
-        put(QuestContext.CHORES, R.style.ChoresCheckbox);
+    private static final HashMap<Category, Integer> QUEST_CONTEXT_TO_CHECKBOX_STYLE = new HashMap<Category, Integer>() {{
+        put(Category.LEARNING, R.style.LearningCheckbox);
+        put(Category.WELLNESS, R.style.WellnessCheckbox);
+        put(Category.PERSONAL, R.style.PersonalCheckbox);
+        put(Category.WORK, R.style.WorkCheckbox);
+        put(Category.FUN, R.style.FunCheckbox);
+        put(Category.CHORES, R.style.ChoresCheckbox);
     }};
 
     private List<QuestCalendarViewModel> questCalendarViewModels;
@@ -91,7 +91,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
-        QuestContext ctx = Quest.getContext(q);
+        Category ctx = Quest.getCategory(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
         v.findViewById(R.id.quest_context_indicator).setBackgroundResource(ctx.resLightColor);
 
@@ -158,7 +158,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @NonNull
     private CheckBox createCheckBox(Quest q, Context context) {
-        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CONTEXT_TO_CHECKBOX_STYLE.get(Quest.getContext(q))));
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CONTEXT_TO_CHECKBOX_STYLE.get(Quest.getCategory(q))));
         LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int marginEndDP = 16;

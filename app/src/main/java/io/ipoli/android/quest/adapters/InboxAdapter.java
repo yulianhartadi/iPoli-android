@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -63,7 +63,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         final Quest q = quests.get(position);
         viewBinderHelper.bind(holder.swipeLayout, q.getId());
 
-        QuestContext ctx = Quest.getContext(q);
+        Category ctx = Quest.getCategory(q);
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
 

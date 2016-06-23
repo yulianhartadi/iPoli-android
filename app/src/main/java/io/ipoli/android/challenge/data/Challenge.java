@@ -1,14 +1,11 @@
 package io.ipoli.android.challenge.data;
 
-import android.text.TextUtils;
-
 import java.util.Date;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
-import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.Category;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -25,13 +22,24 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Required
     private String name;
 
-    private String context;
+    private String category;
 
-    private String reason;
+    private String reason1;
+    private String reason2;
+    private String reason3;
+
+    private String outcome1;
+    private String outcome2;
+    private String outcome3;
 
     private Integer difficulty;
 
-    private Date dueDate;
+    private Date endDate;
+
+    private Date completedAt;
+
+    private Long coins;
+    private Long experience;
 
     @Required
     private Date createdAt;
@@ -41,7 +49,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
 
     private Boolean needsSyncWithRemote;
     private String remoteId;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public Challenge() {
     }
@@ -49,7 +57,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     public Challenge(String name) {
         this.id = IDGenerator.generate();
         this.name = name;
-        this.context = QuestContext.PERSONAL.name();
+        this.category = Category.PERSONAL.name();
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
@@ -111,12 +119,52 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
         this.name = name;
     }
 
-    public String getReason() {
-        return reason;
+    public String getReason1() {
+        return reason1;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
+    public void setReason1(String reason1) {
+        this.reason1 = reason1;
+    }
+
+    public String getReason2() {
+        return reason2;
+    }
+
+    public void setReason2(String reason2) {
+        this.reason2 = reason2;
+    }
+
+    public String getReason3() {
+        return reason3;
+    }
+
+    public void setReason3(String reason3) {
+        this.reason3 = reason3;
+    }
+
+    public String getOutcome1() {
+        return outcome1;
+    }
+
+    public void setOutcome1(String outcome1) {
+        this.outcome1 = outcome1;
+    }
+
+    public String getOutcome2() {
+        return outcome2;
+    }
+
+    public void setOutcome2(String outcome2) {
+        this.outcome2 = outcome2;
+    }
+
+    public String getOutcome3() {
+        return outcome3;
+    }
+
+    public void setOutcome3(String outcome3) {
+        this.outcome3 = outcome3;
     }
 
     public Integer getDifficulty() {
@@ -127,28 +175,44 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
         this.difficulty = difficulty;
     }
 
-    public Date getDueDate() {
-        return dueDate;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setDueDate(Date dueDate) {
-        this.dueDate = DateUtils.getDate(dueDate);
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
-    public String getContext() {
-        return TextUtils.isEmpty(context) ? QuestContext.PERSONAL.name() : context;
+    public Date getCompletedAt() {
+        return completedAt;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setCompletedAt(Date completedAt) {
+        this.completedAt = completedAt;
     }
 
-    public static QuestContext getContext(Quest quest) {
-        return QuestContext.valueOf(quest.getContext());
+    public Long getCoins() {
+        return coins;
     }
 
-    public static void setContext(Challenge challenge, QuestContext context) {
-        challenge.setContext(context.name());
+    public void setCoins(Long coins) {
+        this.coins = coins;
+    }
+
+    public Long getExperience() {
+        return experience;
+    }
+
+    public void setExperience(Long experience) {
+        this.experience = experience;
+    }
+
+    public Category getCategory() {
+        return Category.valueOf(category);
+    }
+
+    public void setCategory(Category category) {
+        this.category = category.name();
     }
 
     @Override

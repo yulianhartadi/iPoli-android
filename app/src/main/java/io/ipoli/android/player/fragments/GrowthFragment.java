@@ -56,7 +56,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -295,11 +295,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         ArrayList<Entry> yVals1 = new ArrayList<Entry>();
 
-        TreeMap<QuestContext, List<Quest>> groupedByContext = new TreeMap<>();
+        TreeMap<Category, List<Quest>> groupedByContext = new TreeMap<>();
 
-        Set<QuestContext> usedContexts = new TreeSet<>();
+        Set<Category> usedContexts = new TreeSet<>();
         for (Quest q : quests) {
-            QuestContext ctx = Quest.getContext(q);
+            Category ctx = Quest.getCategory(q);
             if (!groupedByContext.containsKey(ctx)) {
                 groupedByContext.put(ctx, new ArrayList<>());
             }
@@ -309,7 +309,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         ArrayList<String> xVals = new ArrayList<String>();
         List<Integer> colors = new ArrayList<>();
-        for (QuestContext usedCtx : usedContexts) {
+        for (Category usedCtx : usedContexts) {
             xVals.add(StringUtils.capitalize(usedCtx.name()));
             colors.add(getColor(usedCtx.resLightColor));
         }
@@ -318,7 +318,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int total = 0;
         long totalXP = 0;
         long totalCoins = 0;
-        for (Map.Entry<QuestContext, List<Quest>> pair : groupedByContext.entrySet()) {
+        for (Map.Entry<Category, List<Quest>> pair : groupedByContext.entrySet()) {
             int sum = 0;
             for (Quest q : pair.getValue()) {
                 totalXP += q.getExperience();

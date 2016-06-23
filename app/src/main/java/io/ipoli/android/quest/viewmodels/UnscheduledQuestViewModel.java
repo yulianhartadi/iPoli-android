@@ -2,7 +2,7 @@ package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.ColorRes;
 
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -31,8 +31,8 @@ public class UnscheduledQuestViewModel {
         return getQuestContext().resLightColor;
     }
 
-    private QuestContext getQuestContext() {
-        return Quest.getContext(quest);
+    private Category getQuestContext() {
+        return Quest.getCategory(quest);
     }
 
     public String getName() {

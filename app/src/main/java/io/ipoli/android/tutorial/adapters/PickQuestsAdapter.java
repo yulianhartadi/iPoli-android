@@ -7,7 +7,7 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
@@ -35,7 +35,7 @@ public class PickQuestsAdapter extends BasePickQuestAdapter<Quest> {
     }
 
     @Override
-    protected QuestContext getQuestContext(int adapterPosition) {
-        return Quest.getContext(viewModels.get(adapterPosition).getQuest());
+    protected Category getQuestContext(int adapterPosition) {
+        return Quest.getCategory(viewModels.get(adapterPosition).getQuest());
     }
 }

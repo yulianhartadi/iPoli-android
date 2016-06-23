@@ -19,7 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
 /**
@@ -48,7 +48,7 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PickQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-        QuestContext ctx = getQuestContext(holder.getAdapterPosition());
+        Category ctx = getQuestContext(holder.getAdapterPosition());
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
         holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
@@ -78,7 +78,7 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
 
     protected abstract void sendQuestSelectedEvent(int adapterPosition);
 
-    protected abstract QuestContext getQuestContext(int adapterPosition);
+    protected abstract Category getQuestContext(int adapterPosition);
 
     public List<T> getSelectedQuests() {
         List<T> selectedQuests = new ArrayList<>();
