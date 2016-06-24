@@ -28,10 +28,11 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.challenge.ui.dialogs.ChallengeCompleteDialogFragment;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
@@ -40,9 +41,12 @@ import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
@@ -312,5 +316,12 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             long defaultDurationSeconds = TimeUnit.MINUTES.toSeconds(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
             return elapsedSeconds % defaultDurationSeconds;
         }
+    }
+
+    @Subscribe
+    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
+        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
+        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+        ChallengeCompleteDialogFragment.newInstance(xp, coins).show(getSupportFragmentManager());
     }
 }
