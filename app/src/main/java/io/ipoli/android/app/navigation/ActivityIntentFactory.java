@@ -20,4 +20,11 @@ public class ActivityIntentFactory {
 
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
+    public static Intent[] createIntentWithParentStack(Class<? extends BaseActivity> activityClass, Intent intent, Context context) {
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(activityClass);
+        stackBuilder.addNextIntent(intent);
+        return stackBuilder.getIntents();
+    }
 }

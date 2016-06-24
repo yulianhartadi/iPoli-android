@@ -23,6 +23,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
@@ -81,7 +82,8 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
         Intent i = new Intent(context, QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
+        Intent[] intentWithParentStack = ActivityIntentFactory.createIntentWithParentStack(QuestActivity.class, i, context);
+        context.startActivities(intentWithParentStack);
     }
 
     private void onQuestComplete(String questId) {

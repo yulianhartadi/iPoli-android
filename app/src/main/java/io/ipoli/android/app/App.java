@@ -373,7 +373,6 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         updatePlayer(quest);
         eventBus.post(new QuestCompletedEvent(quest, source));
-
     }
 
     private void checkForDailyChallengeCompletion(Quest quest, EventSource source) {
