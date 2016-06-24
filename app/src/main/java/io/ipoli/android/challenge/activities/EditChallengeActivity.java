@@ -8,9 +8,13 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +34,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -40,8 +46,11 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
+import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -50,6 +59,8 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
 public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener {
+    enum EditMode {ADD, EDIT}
+
     @Inject
     Bus eventBus;
 
@@ -66,7 +77,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     TextView toolbarTitle;
 
     @BindView(R.id.challenge_name)
-    TextInputEditText name;
+    TextInputEditText nameText;
 
     @BindView(R.id.challenge_category_name)
     TextView categoryName;
@@ -86,6 +97,8 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     private Category category;
 
+    private EditMode editMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,17 +107,25 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        toolbarTitle.setText(R.string.title_activity_add_challenge);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayShowTitleEnabled(false);
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        initContextUI();
+        initUI();
 
-        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
-        populateDifficulty(Difficulty.NORMAL);
+        if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
+            onEditChallenge();
+        } else {
+            onAddNewChallenge();
+        }
+
+
+    }
+
+    private void initUI() {
+        initContextUI();
 
         expectedResultTextViews = new ArrayList<>();
         expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_1_value));
@@ -115,13 +136,47 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_1_value));
         reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_2_value));
         reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_3_value));
+    }
 
+    private void onAddNewChallenge() {
+        editMode = EditMode.ADD;
+        toolbarTitle.setText(R.string.title_activity_add_challenge);
+        showKeyboard();
         populateExpectedResults(new ArrayList<>());
         populateReasons(new ArrayList<>());
+        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
+        populateDifficulty(Difficulty.NORMAL);
+    }
+
+    private void onEditChallenge() {
+        editMode = EditMode.EDIT;
+        toolbarTitle.setText(R.string.title_edit_challenge);
+
+        String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        Challenge challenge = challengePersistenceService.findById(challengeId);
+
+        nameText.setText(challenge.getName());
+        nameText.setSelection(challenge.getName().length());
+        setSelectedCategory();
+        removeSelectedCategoryCheck();
+        changeCategory(challenge.getCategory());
+        populateExpectedResults(new ArrayList<>(Arrays.asList(new String[] {
+                challenge.getExpectedResult1(),
+                challenge.getExpectedResult2(),
+                challenge.getExpectedResult3()
+        })));
+        populateReasons(new ArrayList<>(Arrays.asList(new String[] {
+                challenge.getReason1(),
+                challenge.getReason2(),
+                challenge.getReason3()
+        })));
+        populateEndDate(challenge.getEndDate());
+        populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
     }
 
     private void initContextUI() {
-        changeContext(Category.LEARNING);
+        changeCategory(Category.LEARNING);
 
         final Category[] categories = Category.values();
         for (int i = 0; i < contextContainer.getChildCount(); i++) {
@@ -131,25 +186,25 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
             final Category ctx = categories[i];
             iv.setOnClickListener(v -> {
-                removeSelectedContextCheck();
-                changeContext(ctx);
+                removeSelectedCategoryCheck();
+                changeCategory(ctx);
                 eventBus.post(new NewQuestContextChangedEvent(ctx));
             });
         }
     }
 
-    private void changeContext(Category ctx) {
+    private void changeCategory(Category ctx) {
         colorLayout(ctx);
         category = ctx;
-        setSelectedContext();
+        setSelectedCategory();
     }
 
-    private void setSelectedContext() {
+    private void setSelectedCategory() {
         getCurrentContextImageView().setImageResource(category.whiteImage);
         setContextName();
     }
 
-    private void removeSelectedContextCheck() {
+    private void removeSelectedCategoryCheck() {
         getCurrentContextImageView().setImageDrawable(null);
     }
 
@@ -197,8 +252,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-//        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.ADD ? R.string.done : R.string.save);
-//        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EditMode.EDIT_NEW_QUEST));
+        menu.findItem(R.id.action_delete).setVisible(editMode == EditMode.EDIT);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -217,23 +271,50 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSaveTap(EventSource toolbar) {
-        if (StringUtils.isEmpty(name.getText().toString())) {
-            Toast.makeText(this, R.string.add_challenge_name, Toast.LENGTH_LONG).show();
+    @OnEditorAction(R.id.quest_text)
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            onSaveTap(EventSource.KEYBOARD);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void onSaveTap(EventSource source) {
+        if (!isChallengeValid()) {
             return;
         }
 
-        if (StringUtils.isEmpty((String) expectedResultTextViews.get(0).getTag())) {
-            Toast.makeText(this, R.string.add_challenge_expected_result, Toast.LENGTH_LONG).show();
-            return;
+        if(editMode == EditMode.ADD) {
+            addNewChallenge(source);
+        } else {
+            updateChallenge(source);
         }
 
-        if (StringUtils.isEmpty((String) reasonTextViews.get(0).getTag())) {
-            Toast.makeText(this, R.string.add_challenge_reason, Toast.LENGTH_LONG).show();
-            return;
-        }
+        Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
+        finish();
+    }
 
-        Challenge challenge = new Challenge(name.getText().toString());
+    private void addNewChallenge(EventSource source) {
+        Challenge challenge = new Challenge(nameText.getText().toString().trim());
+        populateChallengeFromForm(challenge);
+        challenge.setExperience(new ExperienceRewardGenerator().generate(challenge));
+        challenge.setCoins(new CoinsRewardGenerator().generate(challenge));
+        eventBus.post(new NewChallengeEvent(challenge, source));
+    }
+
+    private void updateChallenge(EventSource source) {
+        String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        Challenge challenge = challengePersistenceService.findById(challengeId);
+        challenge.setName(nameText.getText().toString().trim());
+        populateChallengeFromForm(challenge);
+        eventBus.post(new UpdateChallengeEvent(challenge, source));
+    }
+
+    private void populateChallengeFromForm(Challenge challenge) {
         challenge.setCategory(category);
 
         challenge.setExpectedResult1((String) expectedResultTextViews.get(0).getTag());
@@ -246,12 +327,24 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
         challenge.setEndDate(DateUtils.getDate((Date) endDateText.getTag()));
         challenge.setDifficulty(((Difficulty) difficultyText.getTag()).getValue());
+    }
 
-        challenge.setExperience(new ExperienceRewardGenerator().generate(challenge));
-        challenge.setCoins(new CoinsRewardGenerator().generate(challenge));
-        eventBus.post(new NewChallengeEvent(challenge));
-        Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
-        finish();
+    private boolean isChallengeValid() {
+        if (StringUtils.isEmpty(nameText.getText().toString())) {
+            Toast.makeText(this, R.string.add_challenge_name, Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (StringUtils.isEmpty((String) expectedResultTextViews.get(0).getTag())) {
+            Toast.makeText(this, R.string.add_challenge_expected_result, Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        if (StringUtils.isEmpty((String) reasonTextViews.get(0).getTag())) {
+            Toast.makeText(this, R.string.add_challenge_reason, Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
     @OnClick(R.id.challenge_expected_results_container)
@@ -353,5 +446,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
             textView.setTag(text);
             textView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showKeyboard() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 }

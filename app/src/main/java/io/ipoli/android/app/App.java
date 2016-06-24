@@ -62,6 +62,7 @@ import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -523,6 +524,11 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
+        challengePersistenceService.save(e.challenge).subscribe();
+    }
+
+    @Subscribe
+    public void onUpdateChallenge(UpdateChallengeEvent e) {
         challengePersistenceService.save(e.challenge).subscribe();
     }
 

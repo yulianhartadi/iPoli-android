@@ -212,7 +212,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void onEditQuest() {
         changeEditMode(EditMode.EDIT_QUEST);
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Quest quest = questPersistenceService.findById(questId);
         questText.setText(quest.getName());
         questText.setSelection(quest.getName().length());
@@ -449,13 +449,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
-            updateQuest();
+            updateQuest(source);
         } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
-            updateRepeatingQuest();
+            updateRepeatingQuest(source);
         }
     }
 
-    private void updateQuest() {
+    private void updateQuest(EventSource source) {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
             return;
@@ -482,7 +482,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setCategory(category.name());
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q, EventSource.EDIT_QUEST));
+        eventBus.post(new UpdateQuestEvent(q, source));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -492,7 +492,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         finish();
     }
 
-    private void updateRepeatingQuest() {
+    private void updateRepeatingQuest(EventSource source) {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
             return;
@@ -506,7 +506,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setRecurrence((Recurrence) frequencyText.getTag());
         rq.setCategory(category.name());
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateRepeatingQuestEvent(rq));
+        eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();

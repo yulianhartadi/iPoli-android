@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -32,6 +34,7 @@ import io.ipoli.android.challenge.adapters.ChallengeListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 
 /**
@@ -116,5 +119,12 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
     public void onDatabaseChanged(List<Challenge> results) {
         ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), results, eventBus);
         challengeList.setAdapter(adapter);
+    }
+
+    @Subscribe
+    public void onEditChallengeRequest(EditChallengeRequestEvent e) {
+        Intent i = new Intent(getActivity(), EditChallengeActivity.class);
+        i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, e.challenge.getId());
+        startActivity(i);
     }
 }

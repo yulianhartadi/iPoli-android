@@ -16,4 +16,14 @@ public enum Difficulty {
     public int getValue() {
         return value;
     }
+
+    public static Difficulty getByValue(int value) {
+        for(Difficulty difficulty : values()) {
+            if(difficulty.getValue() == value) {
+                return difficulty;
+            }
+        }
+
+        throw new IllegalArgumentException("Difficulty value not found");
+    }
 }

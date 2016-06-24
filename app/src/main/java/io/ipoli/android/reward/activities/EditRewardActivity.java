@@ -188,9 +188,9 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
         }
         int price = Math.max((int) priceText.getTag(), Constants.DEFAULT_MIN_REWARD_PRICE);
         if (reward == null) {
-            reward = new Reward(name, price);
+            reward = new Reward(name.trim(), price);
         } else {
-            reward.setName(name);
+            reward.setName(name.trim());
             reward.setPrice(price);
         }
 
