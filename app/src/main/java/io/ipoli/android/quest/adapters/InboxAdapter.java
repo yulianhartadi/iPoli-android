@@ -57,7 +57,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.inbox_item, parent, false));
     }
 
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);

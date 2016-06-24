@@ -55,9 +55,8 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.challenge.activities.EditChallengeActivity;
-import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.ui.dialogs.ChallengeCompleteDialogFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -161,8 +160,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
-
-        startActivity(new Intent(this, EditChallengeActivity.class));
     }
 
     @Override

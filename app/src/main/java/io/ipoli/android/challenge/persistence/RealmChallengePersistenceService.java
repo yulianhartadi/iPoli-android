@@ -4,7 +4,9 @@ import com.squareup.otto.Bus;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.realm.Realm;
+import io.realm.Sort;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,5 +24,12 @@ public class RealmChallengePersistenceService extends BaseRealmPersistenceServic
     @Override
     protected Class<Challenge> getRealmObjectClass() {
         return Challenge.class;
+    }
+
+    @Override
+    public void findAllNotCompleted(OnDatabaseChangedListener<Challenge> listener) {
+        listenForChanges(where()
+                .isNull("completedAt")
+                .findAllSortedAsync("endDate", Sort.ASCENDING), listener);
     }
 }

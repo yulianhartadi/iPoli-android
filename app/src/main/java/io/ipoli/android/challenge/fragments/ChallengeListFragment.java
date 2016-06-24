@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,13 +28,17 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
-import io.ipoli.android.challenge.adapters.ChallengesAdapter;
+import io.ipoli.android.challenge.adapters.ChallengeListAdapter;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class ChallengeListFragment extends BaseFragment {
+public class ChallengeListFragment extends BaseFragment implements OnDatabaseChangedListener<Challenge> {
 
     private Unbinder unbinder;
 
@@ -48,6 +53,7 @@ public class ChallengeListFragment extends BaseFragment {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    private ChallengePersistenceService challengePersistenceService;
 
     @Nullable
     @Override
@@ -63,8 +69,11 @@ public class ChallengeListFragment extends BaseFragment {
         challengeList.setLayoutManager(layoutManager);
         challengeList.setEmptyView(rootLayout, R.string.empty_text_chanllenge, R.drawable.ic_sword_grey_24dp);
 
-        ChallengesAdapter adapter = new ChallengesAdapter(new ArrayList<>());
+        ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), new ArrayList<>(), eventBus);
         challengeList.setAdapter(adapter);
+
+        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        challengePersistenceService.findAllNotCompleted(this);
 
         return view;
     }
@@ -93,12 +102,19 @@ public class ChallengeListFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        challengePersistenceService.close();
+        super.onDestroyView();
     }
 
     @OnClick(R.id.add_challenge)
     public void onAddChallenge(View view) {
         startActivity(new Intent(getContext(), EditChallengeActivity.class));
+    }
+
+    @Override
+    public void onDatabaseChanged(List<Challenge> results) {
+        ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), results, eventBus);
+        challengeList.setAdapter(adapter);
     }
 }
