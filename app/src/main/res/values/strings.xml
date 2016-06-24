@@ -297,4 +297,6 @@
     <string name="challenge_expected_results_question">What results do you expect to achieve?</string>
     <string name="challenge_reasons_question">Why do you want to do it?</string>
     <string name="add_challenge_name">Please, add challenge name</string>
+    <string name="add_challenge_expected_result">Add at least 1 expected result to motivate yourself</string>
+    <string name="add_challenge_reason">Add at least 1 reason to know why you are doing this</string>
 </resources>

@@ -35,6 +35,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
@@ -219,9 +220,30 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
             return;
         }
 
+        if(StringUtils.isEmpty((String) expectedResultTextViews.get(0).getTag())) {
+            Toast.makeText(this, R.string.add_challenge_expected_result, Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        if(StringUtils.isEmpty((String) reasonTextViews.get(0).getTag())) {
+            Toast.makeText(this, R.string.add_challenge_reason, Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        Challenge challenge = new Challenge();
+        Challenge challenge = new Challenge(name.getText().toString());
+        challenge.setCategory(category);
+
+        challenge.setExpectedResult1((String) expectedResultTextViews.get(0).getTag());
+        challenge.setExpectedResult2((String) expectedResultTextViews.get(1).getTag());
+        challenge.setExpectedResult3((String) expectedResultTextViews.get(2).getTag());
+
+        challenge.setReason1((String) reasonTextViews.get(0).getTag());
+        challenge.setReason2((String) reasonTextViews.get(1).getTag());
+        challenge.setReason3((String) reasonTextViews.get(2).getTag());
+
+        challenge.setEndDate(DateUtils.getDate((Date) endDateText.getTag()));
+        challenge.setDifficulty(((Difficulty) difficultyText.getTag()).getValue());
+
     }
 
     @OnClick(R.id.challenge_expected_results_container)

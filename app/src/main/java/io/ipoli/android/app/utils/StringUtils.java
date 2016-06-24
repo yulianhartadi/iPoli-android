@@ -1,14 +1,15 @@
 package io.ipoli.android.app.utils;
 
-import android.text.TextUtils;
-
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/31/16.
  */
 public class StringUtils {
     public static boolean isEmpty(String text) {
-        return TextUtils.isEmpty(text.trim());
+        if(text == null) {
+            return true;
+        }
+        return text.trim().isEmpty();
     }
 
     public static String cut(String text, int startIdx, int endIdx) {
