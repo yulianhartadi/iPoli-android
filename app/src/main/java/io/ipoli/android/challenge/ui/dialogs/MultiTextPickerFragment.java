@@ -39,9 +39,14 @@ public class MultiTextPickerFragment extends DialogFragment {
     private List<String> texts;
     private List<String> hints;
     private int title;
+    private List<TextInputEditText> textViews;
+
+    public interface OnMultiTextPickedListener {
+        void onTextPicked(List<String> texts);
+    }
 
     public static MultiTextPickerFragment newInstance(ArrayList<String> texts, ArrayList<String> hints, @StringRes int title, OnMultiTextPickedListener listener) {
-        if(texts.size() != hints.size()) {
+        if (texts.size() != hints.size()) {
             throw new IllegalArgumentException("Hints and texts must have the same size");
         }
         MultiTextPickerFragment fragment = new MultiTextPickerFragment();
@@ -52,10 +57,6 @@ public class MultiTextPickerFragment extends DialogFragment {
         fragment.setArguments(args);
         fragment.textPickedListener = listener;
         return fragment;
-    }
-
-    public interface OnMultiTextPickedListener {
-        void onTextPicked(String text);
     }
 
     @Override
@@ -72,10 +73,14 @@ public class MultiTextPickerFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_multi_text_picker, null);
 
-        for(int i = 0; i< texts.size(); i ++) {
+        textViews = new ArrayList<>();
+
+        for (int i = 0; i < texts.size(); i++) {
             View textItem = inflater.inflate(R.layout.text_picker_item, view, false);
             ((TextInputLayout) textItem.findViewById(R.id.text_picker_container)).setHint(hints.get(i));
-            ((TextInputEditText) textItem.findViewById(R.id.text_picker_text)).setText(texts.get(i));
+            TextInputEditText textView = ((TextInputEditText) textItem.findViewById(R.id.text_picker_text));
+            textView.setText(texts.get(i));
+            textViews.add(textView);
             view.addView(textItem);
         }
 
@@ -88,7 +93,11 @@ public class MultiTextPickerFragment extends DialogFragment {
                 .setView(view)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    textPickedListener.onTextPicked(noteText.getText().toString());
+                    List<String> texts = new ArrayList<>();
+                    for (TextInputEditText textView : textViews) {
+                        texts.add(textView.getText().toString());
+                    }
+                    textPickedListener.onTextPicked(texts);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 

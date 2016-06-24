@@ -7,6 +7,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -68,6 +70,26 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @BindView(R.id.challenge_difficulty_value)
     TextView difficultyText;
 
+    @BindView(R.id.challenge_reason_1_value)
+    TextView reason1Text;
+
+    @BindView(R.id.challenge_reason_2_value)
+    TextView reason2Text;
+
+    @BindView(R.id.challenge_reason_3_value)
+    TextView reason3Text;
+
+    @BindView(R.id.challenge_expected_result_1_value)
+    TextView expectedResult1Text;
+
+    @BindView(R.id.challenge_expected_result_2_value)
+    TextView expectedResult2Text;
+
+    @BindView(R.id.challenge_expected_result_3_value)
+    TextView expectedResult3Text;
+
+    List<TextView> expectedResults;
+
     private Category category;
 
     @Override
@@ -89,6 +111,13 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
         populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
         populateDifficulty(Difficulty.NORMAL);
+
+        expectedResults = new ArrayList<>();
+        expectedResults.add(expectedResult1Text);
+        expectedResults.add(expectedResult2Text);
+        expectedResults.add(expectedResult3Text);
+
+        populateExpectedResults(new ArrayList<>());
     }
 
     private void initContextUI() {
@@ -170,18 +199,18 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.challenge_outcomes_container)
-    public void onOutcomesClicked(View view) {
+    @OnClick(R.id.challenge_expected_results_container)
+    public void onExpectedResultsClicked(View view) {
         ArrayList<String> texts = new ArrayList<>();
-        texts.add("bleh bleh");
-        texts.add("");
-        texts.add("");
+        for (TextView textView : expectedResults) {
+            texts.add((String) textView.getTag());
+        }
 
         ArrayList<String> hints = new ArrayList<>();
-        hints.add("1st reason");
-        hints.add("2nd reason");
-        hints.add("3rd reason");
-        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_outcomes_question, this);
+        hints.add("1st result");
+        hints.add("2nd result");
+        hints.add("3rd result");
+        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_expected_results_question, this);
         f.show(getSupportFragmentManager());
     }
 
@@ -218,7 +247,38 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     @Override
-    public void onTextPicked(String text) {
+    public void onTextPicked(List<String> texts) {
+        populateExpectedResults(texts);
+    }
 
+    private void populateExpectedResults(List<String> texts) {
+        List<String> nonEmptyTexts = new ArrayList<>();
+
+        for (String text : texts) {
+            if (!TextUtils.isEmpty(text)) {
+                nonEmptyTexts.add(text);
+            }
+        }
+
+        for (TextView textView : expectedResults) {
+            textView.setText("");
+            textView.setTag("");
+            textView.setVisibility(View.GONE);
+        }
+
+        if (nonEmptyTexts.isEmpty()) {
+            TextView textView = expectedResults.get(0);
+            textView.setText(R.string.do_not_know);
+            textView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        for (int i = 0; i < nonEmptyTexts.size(); i++) {
+            TextView textView = expectedResults.get(i);
+            String text = nonEmptyTexts.get(i);
+            textView.setText(text);
+            textView.setTag(text);
+            textView.setVisibility(View.VISIBLE);
+        }
     }
 }
