@@ -2,6 +2,8 @@ package io.ipoli.android.challenge.persistence;
 
 import com.squareup.otto.Bus;
 
+import java.util.List;
+
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
@@ -31,5 +33,12 @@ public class RealmChallengePersistenceService extends BaseRealmPersistenceServic
         listenForChanges(where()
                 .isNull("completedAt")
                 .findAllSortedAsync("endDate", Sort.ASCENDING), listener);
+    }
+
+    @Override
+    public List<Challenge> findAllNotCompleted() {
+        return findAll(where -> where
+                .isNull("completedAt")
+                .findAllSorted("endDate", Sort.ASCENDING));
     }
 }

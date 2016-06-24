@@ -31,6 +31,7 @@ import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
+import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
@@ -127,5 +128,7 @@ public interface AppComponent {
     void inject(SettingsFragment settingsFragment);
 
     void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
+
+    void inject(ChallengePickerFragment challengePickerFragment);
 }
 

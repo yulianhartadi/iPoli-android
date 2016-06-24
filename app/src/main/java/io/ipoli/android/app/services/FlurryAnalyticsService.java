@@ -41,6 +41,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -69,7 +71,6 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
@@ -549,6 +550,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
         log("quest_recurrence_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onChallengePicked(ChallengePickedEvent e) {
+        log("quest_challenge_picked", EventParams.create()
+                .add("mode", e.mode)
+                .add("challenge_name", e.name));
     }
 
     @Subscribe

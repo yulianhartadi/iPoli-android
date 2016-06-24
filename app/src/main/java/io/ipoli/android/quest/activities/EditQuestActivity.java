@@ -58,6 +58,9 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
@@ -65,6 +68,8 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
@@ -79,7 +84,6 @@ import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
 import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -91,6 +95,7 @@ import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
+import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
@@ -115,7 +120,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
         TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
-        TimePickerFragment.OnTimePickedListener, TextPickerFragment.OnTextPickedListener {
+        TimePickerFragment.OnTimePickedListener, TextPickerFragment.OnTextPickedListener, ChallengePickerFragment.OnChallengePickedListener {
 
     @Inject
     Bus eventBus;
@@ -158,6 +163,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @BindView(R.id.quest_repeat_pattern_value)
     TextView frequencyText;
+
+    @BindView(R.id.quest_challenge_value)
+    TextView challengeValue;
 
     @BindView(R.id.quest_note_value)
     TextView noteText;
@@ -227,6 +235,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         removeSelectedContextCheck();
         changeContext(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
+        populateChallenge(quest.getChallenge());
     }
 
     private void onEditRepeatingQuest() {
@@ -243,6 +252,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         removeSelectedContextCheck();
         changeContext(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
+        populateChallenge(rq.getChallenge());
     }
 
     private void onAddNewQuest() {
@@ -250,6 +260,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateTimesPerDay(1);
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
+        populateChallenge(null);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -481,6 +492,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAtMinute(completedAtMinute);
         }
         q.setCategory(category.name());
+        q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
         eventBus.post(new UpdateQuestEvent(q, source));
         if (q.getEndDate() != null) {
@@ -505,6 +517,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
         rq.setCategory(category.name());
+        rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
@@ -613,6 +626,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_challenge_container)
+    public void onChallengeClick(View view) {
+        ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
         TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());
@@ -661,6 +679,32 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
     }
 
+    @Override
+    public void onChallengePicked(String challengeId) {
+        Challenge challenge = findChallenge(challengeId);
+        populateChallenge(challenge);
+        String name = challenge != null ? challenge.getName() : getString(R.string.none);
+        eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
+    }
+
+    private void populateChallenge(Challenge challenge) {
+        if (challenge != null) {
+            challengeValue.setText(challenge.getName());
+            challengeValue.setTag(challenge.getId());
+        } else {
+            challengeValue.setText(R.string.none);
+            challengeValue.setTag(null);
+        }
+    }
+
+    private Challenge findChallenge(String challengeId) {
+        if(challengeId == null) {
+            return  null;
+        }
+        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        return challengePersistenceService.findById(challengeId);
+    }
+
     private void populateEndDate(Date date) {
         if (date != null) {
             setFrequencyText(null);
@@ -707,6 +751,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         frequencyText.setTag(recurrence);
     }
 
+
     public void saveQuest() {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
@@ -742,6 +787,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setCategory(category.name());
         q.setNote((String) noteText.getTag());
+        q.setChallenge(findChallenge((String) challengeValue.getTag()));
         eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
@@ -769,6 +815,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         rq.setRecurrence(recurrence);
         rq.setCategory(category.name());
+        rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();

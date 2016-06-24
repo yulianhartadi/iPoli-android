@@ -1,5 +1,7 @@
 package io.ipoli.android.challenge.persistence;
 
+import java.util.List;
+
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
@@ -11,4 +13,6 @@ import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 public interface ChallengePersistenceService extends PersistenceService<Challenge> {
 
     void findAllNotCompleted(OnDatabaseChangedListener<Challenge> listener);
+
+    List<Challenge> findAllNotCompleted();
 }
