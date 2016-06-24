@@ -2,6 +2,7 @@ package io.ipoli.android.quest.generators;
 
 import java.util.Random;
 
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -11,18 +12,20 @@ import io.ipoli.android.quest.data.Quest;
 public class CoinsRewardGenerator implements RewardGenerator {
 
     @Override
-    public long generate(Quest quest) {
-        long[] rewards = new long[]{2L, 5L, 7L, 10L};
-        long reward = rewards[new Random().nextInt(rewards.length)];
-        if (quest != null && quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
-            reward *= 2;
-        }
+    public long generate(Challenge challenge) {
+        long reward = generateForDailyChallenge() * 2;
+        reward *= challenge.getDifficulty();
         return reward;
     }
 
     @Override
-    public long generate() {
-        return generate(null);
+    public long generate(Quest quest) {
+        long[] rewards = new long[]{2L, 5L, 7L, 10L};
+        long reward = rewards[new Random().nextInt(rewards.length)];
+        if (quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+            reward *= 2;
+        }
+        return reward;
     }
 
     @Override

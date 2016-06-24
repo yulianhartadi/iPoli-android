@@ -43,6 +43,8 @@ import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
@@ -243,6 +245,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
         challenge.setEndDate(DateUtils.getDate((Date) endDateText.getTag()));
         challenge.setDifficulty(((Difficulty) difficultyText.getTag()).getValue());
+
+        challenge.setExperience(new ExperienceRewardGenerator().generate(challenge));
+        challenge.setCoins(new CoinsRewardGenerator().generate(challenge));
 
     }
 

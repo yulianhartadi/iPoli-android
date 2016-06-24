@@ -33,6 +33,7 @@ import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -145,6 +146,8 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
 
         for (Quest q : selectedQuests) {
             q.setPriority(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY);
+            q.setExperience(new ExperienceRewardGenerator().generate(q));
+            q.setCoins(new ExperienceRewardGenerator().generate(q));
         }
         questsToSave.addAll(selectedQuests);
 
@@ -162,7 +165,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         previouslySelectedQuests.clear();
         List<PickQuestViewModel<Quest>> viewModels = new ArrayList<>();
         for (Quest q : quests) {
-            if(q.repeatPerDayWithShortOrNoDuration()) {
+            if (q.repeatPerDayWithShortOrNoDuration()) {
                 continue;
             }
             PickQuestViewModel<Quest> vm = new PickQuestViewModel<>(q, q.getName());
