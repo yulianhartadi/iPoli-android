@@ -65,13 +65,13 @@ import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
 import io.ipoli.android.quest.events.QuestNodePickedEvent;
 import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
@@ -356,9 +356,27 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private ImageView getCurrentContextImageView() {
-        String ctxId = "quest_context_" + category.name().toLowerCase();
-        int ctxResId = getResources().getIdentifier(ctxId, "id", getPackageName());
-        return (ImageView) findViewById(ctxResId);
+        switch (category) {
+            case LEARNING:
+                return extractImageView(R.id.quest_context_learning);
+
+            case WELLNESS:
+                return extractImageView(R.id.quest_context_wellness);
+
+            case PERSONAL:
+                return extractImageView(R.id.quest_context_personal);
+
+            case WORK:
+                return extractImageView(R.id.quest_context_work);
+
+            case FUN:
+                return extractImageView(R.id.quest_context_fun);
+        }
+        return extractImageView(R.id.quest_context_chores);
+    }
+
+    private ImageView extractImageView(int categoryViewId) {
+        return (ImageView) findViewById(categoryViewId);
     }
 
     private void setContextName() {
