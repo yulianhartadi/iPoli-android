@@ -513,7 +513,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private boolean isQuestNameInvalid(String name) {
-        if (TextUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return true;
         }
@@ -636,7 +636,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateNoteText(String text) {
         noteText.setTag(text);
-        if (TextUtils.isEmpty(text)) {
+        if (StringUtils.isEmpty(text)) {
             noteText.setText(R.string.none);
         } else {
             noteText.setText(text);

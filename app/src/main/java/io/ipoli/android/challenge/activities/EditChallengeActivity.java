@@ -4,16 +4,17 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -32,8 +33,10 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
@@ -57,6 +60,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
+
+    @BindView(R.id.challenge_name)
+    TextInputEditText name;
 
     @BindView(R.id.challenge_category_name)
     TextView categoryName;
@@ -144,9 +150,27 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private ImageView getCurrentContextImageView() {
-        String ctxId = "challenge_category_" + category.name().toLowerCase();
-        int ctxResId = getResources().getIdentifier(ctxId, "id", getPackageName());
-        return (ImageView) findViewById(ctxResId);
+        switch (category) {
+            case LEARNING:
+                return extractImageView(R.id.challenge_category_learning);
+
+            case WELLNESS:
+                return extractImageView(R.id.challenge_category_wellness);
+
+            case PERSONAL:
+                return extractImageView(R.id.challenge_category_personal);
+
+            case WORK:
+                return extractImageView(R.id.challenge_category_work);
+
+            case FUN:
+                return extractImageView(R.id.challenge_category_fun);
+        }
+        return extractImageView(R.id.challenge_category_chores);
+    }
+
+    private ImageView extractImageView(int categoryViewId) {
+        return (ImageView) findViewById(categoryViewId);
     }
 
     private void setContextName() {
@@ -178,7 +202,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-//                onSaveTap(EventSource.TOOLBAR);
+                onSaveTap(EventSource.TOOLBAR);
                 return true;
             case R.id.action_delete:
                 return true;
@@ -187,6 +211,17 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onSaveTap(EventSource toolbar) {
+        if(StringUtils.isEmpty(name.getText().toString())) {
+            Toast.makeText(this, R.string.add_challenge_name, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+
+        Challenge challenge = new Challenge();
     }
 
     @OnClick(R.id.challenge_expected_results_container)
@@ -263,7 +298,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         List<String> nonEmptyTexts = new ArrayList<>();
 
         for (String text : texts) {
-            if (!TextUtils.isEmpty(text)) {
+            if (!StringUtils.isEmpty(text)) {
                 nonEmptyTexts.add(text);
             }
         }

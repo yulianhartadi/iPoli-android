@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -28,6 +27,7 @@ import io.ipoli.android.app.rate.events.RateDialogLoveTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogRateTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -154,7 +154,7 @@ public class RateDialog extends DialogFragment {
                 .setPositiveButton(getString(R.string.rate_dialog_feedback_send), (dialog, which) -> {
                     EditText feedback = (EditText) v.findViewById(R.id.feedback);
                     String feedbackText = feedback.getText().toString();
-                    if(!TextUtils.isEmpty(feedbackText.trim())) {
+                    if(!StringUtils.isEmpty(feedbackText)) {
                         eventBus.post(new RateDialogFeedbackSentEvent(feedbackText, appRun));
                         Toast.makeText(getContext(), R.string.rate_dialog_feedback_thanks, Toast.LENGTH_SHORT).show();
                     }

@@ -296,4 +296,5 @@
     <string name="challenge_difficulty_question">How difficult is it?</string>
     <string name="challenge_expected_results_question">What results do you expect to achieve?</string>
     <string name="challenge_reasons_question">Why do you want to do it?</string>
+    <string name="add_challenge_name">Please, add challenge name</string>
 </resources>

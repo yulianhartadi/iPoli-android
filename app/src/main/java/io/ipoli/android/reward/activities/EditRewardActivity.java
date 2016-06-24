@@ -7,7 +7,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +26,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.RealmRewardPersistenceService;
 import io.ipoli.android.quest.persistence.RewardPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
@@ -168,7 +168,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     private void setDescriptionText(String description) {
         descriptionText.setTag(description);
-        if(TextUtils.isEmpty(description)) {
+        if(StringUtils.isEmpty(description)) {
             descriptionText.setText(R.string.unknown_choice);
             return;
         }
@@ -182,7 +182,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     private void saveReward() {
         String name = rewardName.getText().toString();
-        if (TextUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             Toast.makeText(this, R.string.reward_name_validation, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -195,7 +195,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
         }
 
         String description = (String) descriptionText.getTag();
-        if(!TextUtils.isEmpty(description)) {
+        if(!StringUtils.isEmpty(description)) {
             reward.setDescription(description);
         }
 

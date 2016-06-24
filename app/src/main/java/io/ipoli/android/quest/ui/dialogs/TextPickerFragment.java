@@ -8,7 +8,6 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -70,7 +70,7 @@ public class TextPickerFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_text_picker, null);
         unbinder = ButterKnife.bind(this, view);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        if (!TextUtils.isEmpty(text)) {
+        if (!StringUtils.isEmpty(text)) {
             noteText.setText(text);
             noteText.setSelection(text.length());
         }
