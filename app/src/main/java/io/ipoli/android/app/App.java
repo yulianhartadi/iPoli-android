@@ -166,11 +166,11 @@ public class App extends MultiDexApplication {
         moveIncompleteQuestsToInbox();
         registerServices();
         scheduleNextReminder();
-        scheduleDailyChallenge();
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
+            scheduleDailyChallenge();
             scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
