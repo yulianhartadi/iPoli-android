@@ -97,7 +97,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     @Override
