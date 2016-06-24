@@ -32,6 +32,11 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
+import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -41,6 +46,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -69,7 +75,6 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
@@ -569,6 +574,31 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onDailyChallengeQuestsSelected(DailyChallengeQuestsSelectedEvent e) {
         log("daily_challenge_quests_selected", EventParams.of("count", String.valueOf(e.count)));
+    }
+
+    @Subscribe
+    public void onNewChallenge(NewChallengeEvent e) {
+        log("new_challenge", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onUpdateChallenge(UpdateChallengeEvent e) {
+        log("update_challenge", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
+        log("delete_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
+        log("complete_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onEditChallengeRequest(EditChallengeRequestEvent e) {
+        log("edit_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
