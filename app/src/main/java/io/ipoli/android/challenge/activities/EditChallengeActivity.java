@@ -42,7 +42,7 @@ import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
-public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener, MultiTextPickerFragment.OnMultiTextPickedListener {
+public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener {
     @Inject
     Bus eventBus;
 
@@ -70,25 +70,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @BindView(R.id.challenge_difficulty_value)
     TextView difficultyText;
 
-    @BindView(R.id.challenge_reason_1_value)
-    TextView reason1Text;
+    List<TextView> expectedResultTextViews;
 
-    @BindView(R.id.challenge_reason_2_value)
-    TextView reason2Text;
-
-    @BindView(R.id.challenge_reason_3_value)
-    TextView reason3Text;
-
-    @BindView(R.id.challenge_expected_result_1_value)
-    TextView expectedResult1Text;
-
-    @BindView(R.id.challenge_expected_result_2_value)
-    TextView expectedResult2Text;
-
-    @BindView(R.id.challenge_expected_result_3_value)
-    TextView expectedResult3Text;
-
-    List<TextView> expectedResults;
+    List<TextView> reasonTextViews;
 
     private Category category;
 
@@ -112,12 +96,18 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
         populateDifficulty(Difficulty.NORMAL);
 
-        expectedResults = new ArrayList<>();
-        expectedResults.add(expectedResult1Text);
-        expectedResults.add(expectedResult2Text);
-        expectedResults.add(expectedResult3Text);
+        expectedResultTextViews = new ArrayList<>();
+        expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_1_value));
+        expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_2_value));
+        expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_3_value));
+
+        reasonTextViews = new ArrayList<>();
+        reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_1_value));
+        reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_2_value));
+        reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_3_value));
 
         populateExpectedResults(new ArrayList<>());
+        populateReasons(new ArrayList<>());
     }
 
     private void initContextUI() {
@@ -202,7 +192,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @OnClick(R.id.challenge_expected_results_container)
     public void onExpectedResultsClicked(View view) {
         ArrayList<String> texts = new ArrayList<>();
-        for (TextView textView : expectedResults) {
+        for (TextView textView : expectedResultTextViews) {
             texts.add((String) textView.getTag());
         }
 
@@ -210,7 +200,22 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         hints.add("1st result");
         hints.add("2nd result");
         hints.add("3rd result");
-        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_expected_results_question, this);
+        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_expected_results_question, this::populateExpectedResults);
+        f.show(getSupportFragmentManager());
+    }
+
+    @OnClick(R.id.challenge_reasons_container)
+    public void onReasonsClicked(View view) {
+        ArrayList<String> texts = new ArrayList<>();
+        for (TextView textView : reasonTextViews) {
+            texts.add((String) textView.getTag());
+        }
+
+        ArrayList<String> hints = new ArrayList<>();
+        hints.add("1st reason");
+        hints.add("2nd reason");
+        hints.add("3rd reason");
+        MultiTextPickerFragment f = MultiTextPickerFragment.newInstance(texts, hints, R.string.challenge_reasons_question, this::populateReasons);
         f.show(getSupportFragmentManager());
     }
 
@@ -246,12 +251,15 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         populateDifficulty(difficulty);
     }
 
-    @Override
-    public void onTextPicked(List<String> texts) {
-        populateExpectedResults(texts);
+    private void populateExpectedResults(List<String> expectedResults) {
+        populateTextList(expectedResults, expectedResultTextViews);
     }
 
-    private void populateExpectedResults(List<String> texts) {
+    private void populateReasons(List<String> reasons) {
+        populateTextList(reasons, reasonTextViews);
+    }
+
+    private void populateTextList(List<String> texts, List<TextView> textViews) {
         List<String> nonEmptyTexts = new ArrayList<>();
 
         for (String text : texts) {
@@ -260,21 +268,21 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
             }
         }
 
-        for (TextView textView : expectedResults) {
+        for (TextView textView : textViews) {
             textView.setText("");
             textView.setTag("");
             textView.setVisibility(View.GONE);
         }
 
         if (nonEmptyTexts.isEmpty()) {
-            TextView textView = expectedResults.get(0);
+            TextView textView = textViews.get(0);
             textView.setText(R.string.do_not_know);
             textView.setVisibility(View.VISIBLE);
             return;
         }
 
         for (int i = 0; i < nonEmptyTexts.size(); i++) {
-            TextView textView = expectedResults.get(i);
+            TextView textView = textViews.get(i);
             String text = nonEmptyTexts.get(i);
             textView.setText(text);
             textView.setTag(text);

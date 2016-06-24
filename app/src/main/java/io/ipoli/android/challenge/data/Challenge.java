@@ -29,9 +29,9 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     private String reason2;
     private String reason3;
 
-    private String outcome1;
-    private String outcome2;
-    private String outcome3;
+    private String expectedResult1;
+    private String expectedResult2;
+    private String expectedResult3;
 
     private Integer difficulty;
 
@@ -144,28 +144,28 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
         this.reason3 = reason3;
     }
 
-    public String getOutcome1() {
-        return outcome1;
+    public String getExpectedResult1() {
+        return expectedResult1;
     }
 
-    public void setOutcome1(String outcome1) {
-        this.outcome1 = outcome1;
+    public void setExpectedResult1(String expectedResult1) {
+        this.expectedResult1 = expectedResult1;
     }
 
-    public String getOutcome2() {
-        return outcome2;
+    public String getExpectedResult2() {
+        return expectedResult2;
     }
 
-    public void setOutcome2(String outcome2) {
-        this.outcome2 = outcome2;
+    public void setExpectedResult2(String expectedResult2) {
+        this.expectedResult2 = expectedResult2;
     }
 
-    public String getOutcome3() {
-        return outcome3;
+    public String getExpectedResult3() {
+        return expectedResult3;
     }
 
-    public void setOutcome3(String outcome3) {
-        this.outcome3 = outcome3;
+    public void setExpectedResult3(String expectedResult3) {
+        this.expectedResult3 = expectedResult3;
     }
 
     public Integer getDifficulty() {
