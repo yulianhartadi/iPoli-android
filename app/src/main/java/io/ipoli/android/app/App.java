@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
+import com.flurry.android.FlurryAgent;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -173,7 +174,9 @@ public class App extends MultiDexApplication {
             scheduleDailyChallenge();
             scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
+            FlurryAgent.onStartSession(this);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
+            FlurryAgent.onEndSession(this);
         }
         scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe(aVoid -> {
         }, Throwable::printStackTrace, () -> {
