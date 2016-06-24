@@ -7,6 +7,7 @@ import org.joda.time.LocalDate;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
@@ -66,5 +67,12 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     public RepeatingQuest findByExternalSourceMappingId(String source, String sourceId) {
         return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
                 .findFirst());
+    }
+
+    @Override
+    public List<RepeatingQuest> findAllForChallenge(Challenge challenge) {
+        return findAllIncludingDeleted(where -> where
+                .equalTo("challenge.id", challenge.getId())
+                .findAll());
     }
 }

@@ -69,7 +69,7 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
@@ -177,8 +177,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
-        log("undo_delete_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
+    public void onCancelDeleteQuest(CancelDeleteQuestEvent e) {
+        log("cancel_delete_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe

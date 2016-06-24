@@ -126,7 +126,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setReason1(String reason1) {
-        if(StringUtils.isEmpty(reason1)) {
+        if (StringUtils.isEmpty(reason1)) {
             reason1 = null;
         }
         this.reason1 = reason1;
@@ -137,7 +137,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setReason2(String reason2) {
-        if(StringUtils.isEmpty(reason2)) {
+        if (StringUtils.isEmpty(reason2)) {
             reason2 = null;
         }
         this.reason2 = reason2;
@@ -148,7 +148,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setReason3(String reason3) {
-        if(StringUtils.isEmpty(reason3)) {
+        if (StringUtils.isEmpty(reason3)) {
             reason3 = null;
         }
         this.reason3 = reason3;
@@ -159,7 +159,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setExpectedResult1(String expectedResult1) {
-        if(StringUtils.isEmpty(expectedResult1)) {
+        if (StringUtils.isEmpty(expectedResult1)) {
             expectedResult1 = null;
         }
         this.expectedResult1 = expectedResult1;
@@ -170,7 +170,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setExpectedResult2(String expectedResult2) {
-        if(StringUtils.isEmpty(expectedResult2)) {
+        if (StringUtils.isEmpty(expectedResult2)) {
             expectedResult2 = null;
         }
         this.expectedResult2 = expectedResult2;
@@ -181,7 +181,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     }
 
     public void setExpectedResult3(String expectedResult3) {
-        if(StringUtils.isEmpty(expectedResult3)) {
+        if (StringUtils.isEmpty(expectedResult3)) {
             expectedResult3 = null;
         }
         this.expectedResult3 = expectedResult3;
@@ -248,6 +248,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge> {
     @Override
     public void markDeleted() {
         isDeleted = true;
+        markUpdated();
     }
 
     @Override

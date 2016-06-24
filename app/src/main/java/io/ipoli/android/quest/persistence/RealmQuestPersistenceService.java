@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -168,6 +169,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .count();
         getRealm().commitTransaction();
         return count;
+    }
+
+    @Override
+    public List<Quest> findAllForChallenge(Challenge challenge) {
+        return findAllIncludingDeleted(where -> where
+                .equalTo("challenge.id", challenge.getId())
+                .findAll());
     }
 
     @Override

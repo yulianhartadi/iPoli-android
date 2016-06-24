@@ -79,7 +79,7 @@ import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
 import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -415,7 +415,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                         finish();
                     });
                     d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                        eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
+                        eventBus.post(new CancelDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
                     });
                     d.show();
                 } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {

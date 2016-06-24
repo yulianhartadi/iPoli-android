@@ -51,6 +51,8 @@
     <string name="delete_it">DELETE IT</string>
     <string name="dialog_delete_quest_title">Delete quest</string>
     <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
+    <string name="dialog_delete_challenge_title">Delete challenge</string>
+    <string name="dialog_delete_challenge_message">Sure you want to delete this epic challenge?</string>
     <string name="inbox">Inbox</string>
     <string name="feedback">Improve iPoli</string>
     <string name="contact_us">Contact Us</string>
@@ -301,4 +303,5 @@
     <string name="add_challenge_reason">Add at least 1 reason to know why you are doing this</string>
     <string name="challenge_saved">Challenge accepted</string>
     <string name="title_edit_challenge">Edit Challenge</string>
+    <string name="challenge_deleted">Challenge deleted</string>
 </resources>

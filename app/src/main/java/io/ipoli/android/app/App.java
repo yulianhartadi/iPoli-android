@@ -62,6 +62,7 @@ import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -498,10 +499,22 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onQuestDeleted(QuestDeletedEvent e) {
-        QuestNotificationScheduler.stopAll(e.id, this);
-        eventBus.post(new ServerSyncRequestEvent());
-        onQuestChanged();
+    public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
+        e.challenge.markDeleted();
+        challengePersistenceService.save(e.challenge).subscribe();
+        List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(e.challenge);
+
+        for (Quest quest : quests) {
+            quest.setChallenge(null);
+        }
+
+        for (RepeatingQuest repeatingQuest : repeatingQuests) {
+            repeatingQuest.setChallenge(null);
+        }
+
+        questPersistenceService.save(quests).subscribe();
+        repeatingQuestPersistenceService.save(repeatingQuests).subscribe();
     }
 
     private void onQuestChanged() {
@@ -530,6 +543,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateChallenge(UpdateChallengeEvent e) {
         challengePersistenceService.save(e.challenge).subscribe();
+    }
+
+    @Subscribe
+    public void onQuestDeleted(QuestDeletedEvent e) {
+        QuestNotificationScheduler.stopAll(e.id, this);
+        eventBus.post(new ServerSyncRequestEvent());
+        onQuestChanged();
     }
 
     @Subscribe

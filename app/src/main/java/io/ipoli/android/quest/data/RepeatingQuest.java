@@ -8,6 +8,7 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -50,6 +51,8 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     private Recurrence recurrence;
 
     private String note;
+
+    private Challenge challenge;
 
     private String source;
 
@@ -249,5 +252,13 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 }

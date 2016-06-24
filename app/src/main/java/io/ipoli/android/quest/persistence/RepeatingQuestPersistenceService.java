@@ -3,6 +3,7 @@ package io.ipoli.android.quest.persistence;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -16,4 +17,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener);
 
     RepeatingQuest findByExternalSourceMappingId(String source, String sourceId);
+
+    List<RepeatingQuest> findAllForChallenge(Challenge challenge);
 }

@@ -15,6 +15,7 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
@@ -76,6 +77,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
     private Integer completedAtMinute;
 
     private Date actualStart;
+
+    private Challenge challenge;
 
     private Long coins;
     private Long experience;
@@ -460,5 +463,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest> {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 }
