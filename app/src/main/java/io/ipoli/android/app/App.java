@@ -57,6 +57,9 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -120,11 +123,13 @@ public class App extends MultiDexApplication {
     @Inject
     AnalyticsService analyticsService;
 
-    QuestPersistenceService questPersistenceService;
+    private QuestPersistenceService questPersistenceService;
 
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    PlayerPersistenceService playerPersistenceService;
+    private ChallengePersistenceService challengePersistenceService;
+
+    private PlayerPersistenceService playerPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -162,6 +167,7 @@ public class App extends MultiDexApplication {
         Realm realm = Realm.getDefaultInstance();
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
+        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
         playerPersistenceService = new RealmPlayerPersistenceService(realm);
 
         moveIncompleteQuestsToInbox();
@@ -513,6 +519,11 @@ public class App extends MultiDexApplication {
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
         scheduleNextReminder();
+    }
+
+    @Subscribe
+    public void onNewChallenge(NewChallengeEvent e) {
+        challengePersistenceService.save(e.challenge).subscribe();
     }
 
     @Subscribe

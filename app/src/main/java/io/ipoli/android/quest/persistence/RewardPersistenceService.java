@@ -10,6 +10,4 @@ import io.ipoli.android.reward.data.Reward;
 public interface RewardPersistenceService extends PersistenceService<Reward> {
 
     void findAll(OnDatabaseChangedListener<Reward> listener);
-
-    void close();
 }

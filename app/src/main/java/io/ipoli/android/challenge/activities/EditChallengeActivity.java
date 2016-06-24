@@ -39,6 +39,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.quest.Category;
@@ -217,17 +218,17 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void onSaveTap(EventSource toolbar) {
-        if(StringUtils.isEmpty(name.getText().toString())) {
+        if (StringUtils.isEmpty(name.getText().toString())) {
             Toast.makeText(this, R.string.add_challenge_name, Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(StringUtils.isEmpty((String) expectedResultTextViews.get(0).getTag())) {
+        if (StringUtils.isEmpty((String) expectedResultTextViews.get(0).getTag())) {
             Toast.makeText(this, R.string.add_challenge_expected_result, Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(StringUtils.isEmpty((String) reasonTextViews.get(0).getTag())) {
+        if (StringUtils.isEmpty((String) reasonTextViews.get(0).getTag())) {
             Toast.makeText(this, R.string.add_challenge_reason, Toast.LENGTH_LONG).show();
             return;
         }
@@ -248,7 +249,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
         challenge.setExperience(new ExperienceRewardGenerator().generate(challenge));
         challenge.setCoins(new CoinsRewardGenerator().generate(challenge));
-
+        eventBus.post(new NewChallengeEvent(challenge));
+        Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @OnClick(R.id.challenge_expected_results_container)

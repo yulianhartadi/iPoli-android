@@ -299,4 +299,5 @@
     <string name="add_challenge_name">Please, add challenge name</string>
     <string name="add_challenge_expected_result">Add at least 1 expected result to motivate yourself</string>
     <string name="add_challenge_reason">Add at least 1 reason to know why you are doing this</string>
+    <string name="challenge_saved">Challenge accepted</string>
 </resources>
