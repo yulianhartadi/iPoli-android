@@ -80,6 +80,7 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
@@ -89,7 +90,7 @@ import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
-    public static final String ACTION_ADD_QUEST = "io.ipoli.android.intent.action.ADD_QUEST";
+    public static final String ACTION_ADD_QUEST_FROM_WIDGET = "io.ipoli.android.intent.action.ADD_QUEST_FROM_WIDGET";
     public static final String ACTION_DAILY_CHALLENGE_COMPLETE = "io.ipoli.android.intent.action.DAILY_CHALLENGE_COMPLETE";
     public static final int PICK_PLAYER_AVATAR_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
@@ -225,7 +226,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             Quest quest = questPersistenceService.findById(questId);
             startCalendar();
             eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
-        } else if (isFromAction(ACTION_ADD_QUEST)) {
+        } else if (isFromAction(ACTION_ADD_QUEST_FROM_WIDGET)) {
+            eventBus.post(new AddQuestRequestEvent(EventSource.WIDGET));
             setIntent(null);
             startActivity(new Intent(this, EditQuestActivity.class));
         } else if (isFromAction(ACTION_DAILY_CHALLENGE_COMPLETE)) {

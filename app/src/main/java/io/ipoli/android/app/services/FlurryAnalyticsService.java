@@ -77,6 +77,7 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
+import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
@@ -492,6 +493,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onItemActionsShown(ItemActionsShownEvent e) {
         log("item_actions_shown", e.source);
+    }
+
+    @Subscribe
+    public void onAddQuestRequest(AddQuestRequestEvent e) {
+        log("add_quest_request", e.source);
     }
 
     @Subscribe
