@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.adapters.ChallengeListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
@@ -126,5 +128,13 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
         Intent i = new Intent(getActivity(), EditChallengeActivity.class);
         i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, e.challenge.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onChallengeCompleted(ChallengeCompletedEvent e) {
+        Snackbar
+                .make(rootLayout,
+                        getString(R.string.challenge_complete, e.challenge.getExperience(), e.challenge.getCoins()),
+                        Snackbar.LENGTH_LONG).show();
     }
 }

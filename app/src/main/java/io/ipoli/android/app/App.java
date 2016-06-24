@@ -56,12 +56,15 @@ import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListRe
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.DailyChallengeCompleteReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -82,6 +85,7 @@ import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
+import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
@@ -286,7 +290,7 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onQuestCompleteRequest(CompleteQuestRequestEvent e) {
+    public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAt(new Date());
@@ -412,11 +416,11 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void updatePlayer(Quest quest) {
+    private void updatePlayer(RewardProvider rewardProvider) {
         Player player = playerPersistenceService.find();
-        player.addExperience(quest.getExperience());
+        player.addExperience(rewardProvider.getExperience());
         increasePlayerLevelIfNeeded(player);
-        player.addCoins(quest.getCoins());
+        player.addCoins(rewardProvider.getCoins());
         playerPersistenceService.saveSync(player);
     }
 
@@ -515,6 +519,20 @@ public class App extends MultiDexApplication {
 
         questPersistenceService.save(quests).subscribe();
         repeatingQuestPersistenceService.save(repeatingQuests).subscribe();
+    }
+
+    @Subscribe
+    public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
+        Challenge challenge = e.challenge;
+        challenge.setCompletedAt(new Date());
+        challengePersistenceService.save(challenge).subscribe(quest -> {
+            onChallengeComplete(challenge, e.source);
+        });
+    }
+
+    private void onChallengeComplete(Challenge challenge, EventSource source) {
+        updatePlayer(challenge);
+        eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
     private void onQuestChanged() {

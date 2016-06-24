@@ -7,6 +7,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.generators.RewardProvider;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -15,7 +16,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class Challenge extends RealmObject implements RemoteObject<Challenge> {
+public class Challenge extends RealmObject implements RemoteObject<Challenge>, RewardProvider {
 
     @Required
     @PrimaryKey

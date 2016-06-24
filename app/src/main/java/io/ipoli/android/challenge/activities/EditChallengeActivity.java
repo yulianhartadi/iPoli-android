@@ -265,7 +265,10 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                 onSaveTap(EventSource.TOOLBAR);
                 return true;
             case R.id.action_delete:
-                AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_challenge_title)).setMessage(getString(R.string.dialog_delete_challenge_message)).create();
+                AlertDialog d = new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.dialog_delete_challenge_title))
+                        .setMessage(getString(R.string.dialog_delete_challenge_message))
+                        .create();
                 Challenge challenge = findChallenge();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));

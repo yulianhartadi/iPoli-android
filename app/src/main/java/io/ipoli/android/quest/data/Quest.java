@@ -19,6 +19,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
+import io.ipoli.android.quest.generators.RewardProvider;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -29,7 +30,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class Quest extends RealmObject implements RemoteObject<Quest> {
+public class Quest extends RealmObject implements RemoteObject<Quest>, RewardProvider {
 
     public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
     public static final int DEFAULT_NO_PRIORITY_VALUE = -1;
