@@ -116,7 +116,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
         if (menu != null && !isEdit) {
             menu.removeItem(R.id.action_delete);
         }
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     @Override
