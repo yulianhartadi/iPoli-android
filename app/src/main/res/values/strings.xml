@@ -278,7 +278,7 @@
     <string name="daily_challenge_notification_text">When the day is over, what 3 quests will you want to have conquered?</string>
     <string name="empty_daily_challenge_quests_text">No quests to challenge you!</string>
     <string name="pick_max_3_miq">Pick max 3 most important quest</string>
-    <string name="miq_saved">Most important quest for today saved</string>
+    <string name="miq_saved">Most important quests for today saved</string>
     <string name="menu_miq">Choose important quests</string>
     <string name="daily_challenge_complete_title">Daily challenge complete</string>
     <string name="daily_challenge_complete_text">Ready to get your reward?</string>
