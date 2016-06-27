@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import butterknife.Unbinder;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.Category;
@@ -20,14 +22,16 @@ import io.ipoli.android.quest.Category;
  * on 6/27/16.
  */
 public class CategoryView extends LinearLayout {
+    private List<OnCategoryChangedListener> categoryChangedListeners = new ArrayList<>();
+    private View view;
 
-    //    @BindView(R.id.challenge_category_name)
-    TextView categoryName;
+    public interface OnCategoryChangedListener {
+        void onCategoryChanged(Category category);
+    }
 
-    //    @BindView(R.id.challenge_category_container)
-    LinearLayout categoryContainer;
+    private TextView categoryName;
+    private LinearLayout categoryContainer;
 
-    private Unbinder unbinder;
     private Category category;
 
     public CategoryView(Context context) {
@@ -45,14 +49,12 @@ public class CategoryView extends LinearLayout {
     }
 
     private void initUI(Context context) {
-        View v = LayoutInflater.from(context).inflate(
+        view = LayoutInflater.from(context).inflate(
                 R.layout.layout_category, this);
 
-//        unbinder = ButterKnife.bind(this, v);
-
-        categoryName = (TextView) v.findViewById(R.id.category_name);
-        categoryContainer = (LinearLayout) v.findViewById(R.id.category_container);
-        changeCategory(Category.LEARNING);
+        categoryName = (TextView) view.findViewById(R.id.category_name);
+        categoryContainer = (LinearLayout) view.findViewById(R.id.category_container);
+        doChangeCategory(Category.LEARNING);
 
         final Category[] categories = Category.values();
         for (int i = 0; i < categoryContainer.getChildCount(); i++) {
@@ -63,16 +65,27 @@ public class CategoryView extends LinearLayout {
             final Category category = categories[i];
             iv.setOnClickListener(view -> {
                 removeSelectedCategoryCheck();
-                changeCategory(category);
-//                eventBus.post(new NewQuestCategoryChangedEvent(category));
+                doChangeCategory(category);
             });
         }
     }
 
-    private void changeCategory(Category category) {
-        colorLayout(category);
+    public void changeCategory(Category category) {
+        removeSelectedCategoryCheck();
+        doChangeCategory(category);
+    }
+
+    public Category getSelectedCategory() {
+        return category;
+    }
+
+
+    private void doChangeCategory(Category category) {
         this.category = category;
         setSelectedCategory();
+        for(OnCategoryChangedListener listener : categoryChangedListeners) {
+            listener.onCategoryChanged(category);
+        }
     }
 
     private void setSelectedCategory() {
@@ -87,38 +100,38 @@ public class CategoryView extends LinearLayout {
     private ImageView getCurrentCategoryImageView() {
         switch (category) {
             case LEARNING:
-                return extractImageView(R.id.challenge_category_learning);
+                return extractImageView(R.id.category_learning);
 
             case WELLNESS:
-                return extractImageView(R.id.challenge_category_wellness);
+                return extractImageView(R.id.category_wellness);
 
             case PERSONAL:
-                return extractImageView(R.id.challenge_category_personal);
+                return extractImageView(R.id.category_personal);
 
             case WORK:
-                return extractImageView(R.id.challenge_category_work);
+                return extractImageView(R.id.category_work);
 
             case FUN:
-                return extractImageView(R.id.challenge_category_fun);
+                return extractImageView(R.id.category_fun);
         }
-        return extractImageView(R.id.challenge_category_chores);
+        return extractImageView(R.id.category_chores);
     }
 
     private ImageView extractImageView(int categoryViewId) {
-        return (ImageView) findViewById(categoryViewId);
+        return (ImageView) view.findViewById(categoryViewId);
     }
 
     private void setCategoryName() {
         categoryName.setText(StringUtils.capitalize(category.name()));
     }
 
-    private void colorLayout(Category category) {
-//        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-//        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-//        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
-//        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
-//        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
+
+    public void addCategoryChangedListener(OnCategoryChangedListener listener) {
+        categoryChangedListeners.add(listener);
     }
 
+    public void removeCategoryChangedListener(OnCategoryChangedListener listener) {
+        categoryChangedListeners.remove(listener);
+    }
 
 }

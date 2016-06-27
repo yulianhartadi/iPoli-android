@@ -2,7 +2,6 @@ package io.ipoli.android.quest.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
@@ -28,8 +27,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +53,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
@@ -120,7 +118,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
         TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
-        TimePickerFragment.OnTimePickedListener, TextPickerFragment.OnTextPickedListener, ChallengePickerFragment.OnChallengePickedListener {
+        TimePickerFragment.OnTimePickedListener,
+        TextPickerFragment.OnTextPickedListener,
+        ChallengePickerFragment.OnChallengePickedListener,
+        CategoryView.OnCategoryChangedListener{
 
     @Inject
     Bus eventBus;
@@ -134,11 +135,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
 
-    @BindView(R.id.quest_category_name)
-    TextView categoryName;
-
-    @BindView(R.id.quest_category_container)
-    LinearLayout categoryContainer;
+    @BindView(R.id.quest_category)
+    CategoryView categoryView;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -177,8 +175,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 
-    private Category category;
-
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
     private String rawText;
@@ -206,7 +202,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        initCategoryUI();
+        categoryView.addCategoryChangedListener(this);
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
             onEditQuest();
@@ -231,9 +227,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else {
             populateEndDate(null);
         }
-        setSelectedCategory();
-        removeSelectedCategoryCheck();
-        changeCategory(Quest.getCategory(quest));
+        categoryView.changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
     }
@@ -248,9 +242,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(rq.getDuration());
         populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
         setFrequencyText(rq.getRecurrence());
-        setSelectedCategory();
-        removeSelectedCategoryCheck();
-        changeCategory(RepeatingQuest.getCategory(rq));
+        categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
     }
@@ -331,67 +323,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
         questText.setThreshold(1);
-    }
-
-    private void initCategoryUI() {
-        changeCategory(Category.LEARNING);
-
-        final Category[] categories = Category.values();
-        for (int i = 0; i < categoryContainer.getChildCount(); i++) {
-            final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
-            GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, categories[i].resLightColor));
-
-            final Category category = categories[i];
-            iv.setOnClickListener(v -> {
-                removeSelectedCategoryCheck();
-                changeCategory(category);
-                eventBus.post(new NewQuestCategoryChangedEvent(category));
-            });
-        }
-    }
-
-    private void changeCategory(Category category) {
-        colorLayout(category);
-        this.category = category;
-        setSelectedCategory();
-    }
-
-    private void setSelectedCategory() {
-        getCurrentCategoryImageView().setImageResource(category.whiteImage);
-        setCategoryName();
-    }
-
-    private void removeSelectedCategoryCheck() {
-        getCurrentCategoryImageView().setImageDrawable(null);
-    }
-
-    private ImageView getCurrentCategoryImageView() {
-        switch (category) {
-            case LEARNING:
-                return extractImageView(R.id.quest_category_learning);
-
-            case WELLNESS:
-                return extractImageView(R.id.quest_category_wellness);
-
-            case PERSONAL:
-                return extractImageView(R.id.quest_category_personal);
-
-            case WORK:
-                return extractImageView(R.id.quest_category_work);
-
-            case FUN:
-                return extractImageView(R.id.quest_category_fun);
-        }
-        return extractImageView(R.id.quest_category_chores);
-    }
-
-    private ImageView extractImageView(int categoryViewId) {
-        return (ImageView) findViewById(categoryViewId);
-    }
-
-    private void setCategoryName() {
-        categoryName.setText(StringUtils.capitalize(category.name()));
     }
 
     @Override
@@ -491,7 +422,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setCategory(category.name());
+        q.setCategory(categoryView.getSelectedCategory().name());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
         eventBus.post(new UpdateQuestEvent(q, source));
@@ -516,7 +447,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
-        rq.setCategory(category.name());
+        rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
@@ -785,7 +716,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setCategory(category.name());
+        q.setCategory(categoryView.getSelectedCategory().name());
         q.setNote((String) noteText.getTag());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
         eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
@@ -814,7 +745,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
         }
         rq.setRecurrence(recurrence);
-        rq.setCategory(category.name());
+        rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq));
@@ -940,6 +871,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
     }
 
+    @Override
+    public void onCategoryChanged(Category category) {
+        colorLayout(category);
+        if(editMode == EditMode.EDIT_NEW_QUEST) {
+            eventBus.post(new NewQuestCategoryChangedEvent(category));
+        }
+    }
+
     private void colorLayout(Category category) {
         appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
         toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
@@ -947,4 +886,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
+
+
 }

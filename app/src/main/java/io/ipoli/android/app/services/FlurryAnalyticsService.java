@@ -32,6 +32,7 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
+import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
@@ -268,6 +269,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
         log("new_quest_category_changed", EventParams.of("category", e.category.name()));
+    }
+
+    @Subscribe
+    public void onNewChallengeCategoryChanged(NewChallengeCategoryChangedEvent e) {
+        log("new_challenge_category_changed", EventParams.of("category", e.category.name()));
     }
 
     @Subscribe
