@@ -30,7 +30,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
-import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
@@ -143,15 +142,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             name.setEllipsize(TextUtils.TruncateAt.END);
         }
 
-        v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRecurrent() ? View.VISIBLE : View.GONE);
-
+        v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
-
-        ImageView share = (ImageView) v.findViewById(R.id.quest_share);
-        share.setVisibility(Quest.isCompleted(q) ? View.VISIBLE : View.GONE);
-        share.setOnClickListener(v1 -> {
-            eventBus.post(new ShareQuestEvent(q, EventSource.CALENDAR_DAY_VIEW));
-        });
+        v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
 
         return v;
     }

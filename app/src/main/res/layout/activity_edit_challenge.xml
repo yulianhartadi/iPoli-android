@@ -76,55 +76,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/challenge_category_name"
-                style="@android:style/TextAppearance.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/md_dark_text_87" />
-
-            <LinearLayout
-                android:id="@+id/challenge_category_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/challenge_category_learning"
-                    style="@style/CategoryIndicator" />
-
-                <ImageView
-                    android:id="@+id/challenge_category_wellness"
-                    style="@style/CategoryIndicator" />
-
-
-                <ImageView
-                    android:id="@+id/challenge_category_personal"
-                    style="@style/CategoryIndicator" />
-
-                <ImageView
-                    android:id="@+id/challenge_category_work"
-                    style="@style/CategoryIndicator" />
-
-
-                <ImageView
-                    android:id="@+id/challenge_category_fun"
-                    style="@style/CategoryIndicator" />
-
-
-                <ImageView
-                    android:id="@+id/challenge_category_chores"
-                    style="@style/CategoryIndicator"
-                    android:layout_marginEnd="0dp" />
-            </LinearLayout>
+            <io.ipoli.android.app.ui.CategoryView
+                android:id="@+id/challenge_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <RelativeLayout
                 android:id="@+id/challenge_expected_results_container"

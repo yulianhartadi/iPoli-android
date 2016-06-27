@@ -90,7 +90,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
 
     @Override
     protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_rewards, R.string.help_dialog_rewards_title, "rewards").show(getActivity().getSupportFragmentManager());
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_challenges, R.string.help_dialog_challenges_title, "challenges").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

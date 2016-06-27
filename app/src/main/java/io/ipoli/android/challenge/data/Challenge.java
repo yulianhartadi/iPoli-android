@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.data;
 
 import java.util.Date;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
@@ -44,6 +45,8 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
     private Long coins;
     private Long experience;
 
+    private String source;
+
     @Required
     private Date createdAt;
 
@@ -61,6 +64,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
         this.id = IDGenerator.generate();
         this.name = name;
         this.category = Category.PERSONAL.name();
+        this.source = Constants.API_RESOURCE_SOURCE;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.needsSyncWithRemote = true;
@@ -234,6 +238,14 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
 
     public void setCategory(Category category) {
         this.category = category.name();
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

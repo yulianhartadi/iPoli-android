@@ -1,7 +1,6 @@
 package io.ipoli.android.challenge.activities;
 
 import android.content.DialogInterface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -17,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,10 +40,12 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
+import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
@@ -56,13 +55,15 @@ import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
-public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener, DifficultyPickerFragment.OnDifficultyPickedListener {
+public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener,
+        DifficultyPickerFragment.OnDifficultyPickedListener,
+        CategoryView.OnCategoryChangedListener {
+
     enum EditMode {ADD, EDIT}
 
     @Inject
@@ -83,11 +84,8 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @BindView(R.id.challenge_name)
     TextInputEditText nameText;
 
-    @BindView(R.id.challenge_category_name)
-    TextView categoryName;
-
-    @BindView(R.id.challenge_category_container)
-    LinearLayout categoryContainer;
+    @BindView(R.id.challenge_category)
+    CategoryView categoryView;
 
     @BindView(R.id.challenge_end_date_value)
     TextView endDateText;
@@ -98,8 +96,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     List<TextView> expectedResultTextViews;
 
     List<TextView> reasonTextViews;
-
-    private Category category;
 
     private EditMode editMode;
 
@@ -129,7 +125,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void initUI() {
-        initCategoryUI();
+        categoryView.addCategoryChangedListener(this);
 
         expectedResultTextViews = new ArrayList<>();
         expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_1_value));
@@ -160,9 +156,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
         nameText.setText(challenge.getName());
         nameText.setSelection(challenge.getName().length());
-        setSelectedCategory();
-        removeSelectedCategoryCheck();
-        changeCategory(challenge.getCategory());
+        categoryView.changeCategory(challenge.getCategory());
         populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
                 challenge.getExpectedResult1(),
                 challenge.getExpectedResult2(),
@@ -177,85 +171,16 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
     }
 
-    private void initCategoryUI() {
-        changeCategory(Category.LEARNING);
-
-        final Category[] categories = Category.values();
-        for (int i = 0; i < categoryContainer.getChildCount(); i++) {
-            final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
-            GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, categories[i].resLightColor));
-
-            final Category category = categories[i];
-            iv.setOnClickListener(v -> {
-                removeSelectedCategoryCheck();
-                changeCategory(category);
-                eventBus.post(new NewQuestCategoryChangedEvent(category));
-            });
-        }
-    }
-
-    private void changeCategory(Category category) {
-        colorLayout(category);
-        this.category = category;
-        setSelectedCategory();
-    }
-
-    private void setSelectedCategory() {
-        getCurrentCategoryImageView().setImageResource(category.whiteImage);
-        setCategoryName();
-    }
-
-    private void removeSelectedCategoryCheck() {
-        getCurrentCategoryImageView().setImageDrawable(null);
-    }
-
-    private ImageView getCurrentCategoryImageView() {
-        switch (category) {
-            case LEARNING:
-                return extractImageView(R.id.challenge_category_learning);
-
-            case WELLNESS:
-                return extractImageView(R.id.challenge_category_wellness);
-
-            case PERSONAL:
-                return extractImageView(R.id.challenge_category_personal);
-
-            case WORK:
-                return extractImageView(R.id.challenge_category_work);
-
-            case FUN:
-                return extractImageView(R.id.challenge_category_fun);
-        }
-        return extractImageView(R.id.challenge_category_chores);
-    }
-
-    private ImageView extractImageView(int categoryViewId) {
-        return (ImageView) findViewById(categoryViewId);
-    }
-
-    private void setCategoryName() {
-        categoryName.setText(StringUtils.capitalize(category.name()));
-    }
-
-    private void colorLayout(Category category) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_challenge_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_delete).setVisible(editMode == EditMode.EDIT);
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -336,7 +261,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void populateChallengeFromForm(Challenge challenge) {
-        challenge.setCategory(category);
+        challenge.setCategory(categoryView.getSelectedCategory());
 
         challenge.setExpectedResult1((String) expectedResultTextViews.get(0).getTag());
         challenge.setExpectedResult2((String) expectedResultTextViews.get(1).getTag());
@@ -471,5 +396,21 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     private void showKeyboard() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    @Override
+    public void onCategoryChanged(Category category) {
+        colorLayout(category);
+        if(editMode == EditMode.ADD) {
+            eventBus.post(new NewChallengeCategoryChangedEvent(category));
+        }
+    }
+
+    private void colorLayout(Category category) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
 }

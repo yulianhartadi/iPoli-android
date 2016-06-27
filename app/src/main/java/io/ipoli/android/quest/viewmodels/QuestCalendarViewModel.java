@@ -63,7 +63,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     }
 
     @Override
-    public boolean isRecurrent() {
+    public boolean isRepeating() {
         return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 
@@ -81,7 +81,13 @@ public class QuestCalendarViewModel implements CalendarEvent {
         this.duration = duration;
     }
 
+    @Override
     public boolean isMostImportant() {
         return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
+    }
+
+    @Override
+    public boolean isForChallenge() {
+        return quest.getChallenge() != null;
     }
 }

@@ -86,9 +86,9 @@ public class CalendarLayout extends FrameLayout {
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
 
-        dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRecurrent() ? VISIBLE : GONE);
+        dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? VISIBLE : GONE);
         dragView.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? VISIBLE : GONE);
-        dragView.findViewById(R.id.quest_share).setVisibility(GONE);
+        dragView.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? VISIBLE : GONE);
 
         addView(dragView);
 
