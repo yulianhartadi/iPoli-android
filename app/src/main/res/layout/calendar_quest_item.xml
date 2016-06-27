@@ -66,13 +66,13 @@
 
 
             <ImageView
-                android:id="@+id/quest_share"
+                android:id="@+id/quest_challenge_indicator"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_share_black_24dp" />
+                android:src="@drawable/ic_sword_black_24dp" />
 
 
             <android.support.v4.widget.Space

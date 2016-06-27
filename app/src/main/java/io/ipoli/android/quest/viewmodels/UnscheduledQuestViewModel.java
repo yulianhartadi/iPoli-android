@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.ColorRes;
+import android.text.TextUtils;
 
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -49,5 +50,17 @@ public class UnscheduledQuestViewModel {
 
     public void decreaseRemainingCount() {
         remainingCount--;
+    }
+
+    public boolean isRepeating() {
+        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
+    }
+
+    public boolean isMostImportant() {
+        return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
+    }
+
+    public boolean isForChallenge() {
+        return quest.getChallenge() != null;
     }
 }

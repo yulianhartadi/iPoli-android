@@ -174,13 +174,13 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_challenge_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_delete).setVisible(editMode == EditMode.EDIT);
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     @Override
