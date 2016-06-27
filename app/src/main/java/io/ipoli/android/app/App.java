@@ -216,11 +216,11 @@ public class App extends MultiDexApplication {
     private Observable<Void> scheduleQuestsFor2WeeksAhead() {
         return Observable.defer(() -> {
             Realm realm = Realm.getDefaultInstance();
-            QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
             RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
             List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+            QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
             for (RepeatingQuest rq : repeatingQuests) {
-                saveQuestsForRepeatingQuest(rq, questPersistenceService);
+                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
             }
             realm.close();
             return Observable.empty();
@@ -445,7 +445,7 @@ public class App extends MultiDexApplication {
             Observable.defer(() -> {
                 Realm realm = Realm.getDefaultInstance();
                 QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-                saveQuestsForRepeatingQuest(rq, questPersistenceService);
+                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
@@ -473,7 +473,7 @@ public class App extends MultiDexApplication {
         return questPersistenceService.saveRemoteObjects(quests);
     }
 
-    private void saveQuestsForRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuestFor2WeeksAhead(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
         LocalDate currentDate = LocalDate.now();
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
@@ -623,6 +623,11 @@ public class App extends MultiDexApplication {
             questPersistenceService.saveSync(quests);
             List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
             repeatingQuestPersistenceService.saveSync(repeatingQuests);
+
+            for (RepeatingQuest rq : repeatingQuests) {
+                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
+            }
+
             realm.close();
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
