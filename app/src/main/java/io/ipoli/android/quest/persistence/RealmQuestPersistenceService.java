@@ -151,9 +151,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         Date startDateUtc = toStartOfDayUTC(startDate);
         return findAllIncludingDeleted(where -> where
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .isNull("endDate")
-                .or()
-                .greaterThanOrEqualTo("endDate", startDateUtc)
+                .beginGroup()
+                    .isNull("endDate")
+                    .or()
+                    .greaterThanOrEqualTo("endDate", startDateUtc)
+                .endGroup()
                 .findAll());
     }
 
