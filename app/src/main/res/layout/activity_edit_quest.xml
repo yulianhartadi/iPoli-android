@@ -101,30 +101,30 @@
 
                 <ImageView
                     android:id="@+id/quest_category_learning"
-                    style="@style/QuestCategoryIndicator" />
+                    style="@style/CategoryIndicator" />
 
                 <ImageView
                     android:id="@+id/quest_category_wellness"
-                    style="@style/QuestCategoryIndicator" />
+                    style="@style/CategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/quest_category_personal"
-                    style="@style/QuestCategoryIndicator" />
+                    style="@style/CategoryIndicator" />
 
                 <ImageView
                     android:id="@+id/quest_category_work"
-                    style="@style/QuestCategoryIndicator" />
+                    style="@style/CategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/quest_category_fun"
-                    style="@style/QuestCategoryIndicator" />
+                    style="@style/CategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/quest_category_chores"
-                    style="@style/QuestCategoryIndicator"
+                    style="@style/CategoryIndicator"
                     android:layout_marginEnd="0dp" />
             </LinearLayout>
 
