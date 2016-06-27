@@ -48,8 +48,12 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
                 q.setCreatedAt(foundQuest.getCreatedAt());
                 q.setRemoteId(foundQuest.getRemoteId());
             }
-            DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
-            DateTime endDateTime = new DateTime(e.dTend, DateTimeZone.forID(e.eventTimeZone));
+            DateTimeZone timeZone = DateTimeZone.getDefault();
+            if(!TextUtils.isEmpty(e.eventTimeZone)) {
+                timeZone = DateTimeZone.forID(e.eventTimeZone);
+            }
+            DateTime startDateTime = new DateTime(e.dTStart, timeZone);
+            DateTime endDateTime = new DateTime(e.dTend, timeZone);
             q.setAllDay(e.allDay);
             q.setDuration(Minutes.minutesBetween(startDateTime, endDateTime).getMinutes());
             q.setStartMinute(startDateTime.getMinuteOfDay());
