@@ -2,6 +2,7 @@ package io.ipoli.android.app.net;
 
 import java.util.List;
 
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -40,4 +41,10 @@ public interface iPoliAPIService {
 
     @HTTP(method = "DELETE", path = "/v1/quests", hasBody = true)
     Call<Void> deleteQuests(@Body RequestBody data);
+
+    @POST("challenges")
+    Call<List<Challenge>> syncChallenges(@Body RequestBody requestBody);
+
+    @GET("challenges")
+    Call<List<Challenge>> getChallenges(@Query("player_id") String playerId);
 }
