@@ -35,20 +35,20 @@ public class QuestViewModel {
     }
 
     @ColorRes
-    public int getContextColor() {
-        return getQuestContext().resLightColor;
+    public int getCategoryColor() {
+        return getQuestCategory().resLightColor;
     }
 
     @DrawableRes
-    public int getContextImage() {
-        return getQuestContext().whiteImage;
+    public int getCategoryImage() {
+        return getQuestCategory().whiteImage;
     }
 
     public String getDueDateText() {
         return DateFormatter.formatWithoutYear(quest.getEndDate());
     }
 
-    private Category getQuestContext() {
+    private Category getQuestCategory() {
         return Quest.getCategory(quest);
     }
 

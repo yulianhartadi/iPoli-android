@@ -72,7 +72,7 @@ import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -134,11 +134,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
 
-    @BindView(R.id.quest_context_name)
-    TextView contextName;
+    @BindView(R.id.quest_category_name)
+    TextView categoryName;
 
-    @BindView(R.id.quest_context_container)
-    LinearLayout contextContainer;
+    @BindView(R.id.quest_category_container)
+    LinearLayout categoryContainer;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -206,7 +206,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        initContextUI();
+        initCategoryUI();
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
             onEditQuest();
@@ -231,9 +231,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else {
             populateEndDate(null);
         }
-        setSelectedContext();
-        removeSelectedContextCheck();
-        changeContext(Quest.getCategory(quest));
+        setSelectedCategory();
+        removeSelectedCategoryCheck();
+        changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
     }
@@ -248,9 +248,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(rq.getDuration());
         populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
         setFrequencyText(rq.getRecurrence());
-        setSelectedContext();
-        removeSelectedContextCheck();
-        changeContext(RepeatingQuest.getCategory(rq));
+        setSelectedCategory();
+        removeSelectedCategoryCheck();
+        changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
     }
@@ -333,65 +333,65 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setThreshold(1);
     }
 
-    private void initContextUI() {
-        changeContext(Category.LEARNING);
+    private void initCategoryUI() {
+        changeCategory(Category.LEARNING);
 
-        final Category[] ctxs = Category.values();
-        for (int i = 0; i < contextContainer.getChildCount(); i++) {
-            final ImageView iv = (ImageView) contextContainer.getChildAt(i);
+        final Category[] categories = Category.values();
+        for (int i = 0; i < categoryContainer.getChildCount(); i++) {
+            final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
+            drawable.setColor(ContextCompat.getColor(this, categories[i].resLightColor));
 
-            final Category ctx = ctxs[i];
+            final Category category = categories[i];
             iv.setOnClickListener(v -> {
-                removeSelectedContextCheck();
-                changeContext(ctx);
-                eventBus.post(new NewQuestContextChangedEvent(ctx));
+                removeSelectedCategoryCheck();
+                changeCategory(category);
+                eventBus.post(new NewQuestCategoryChangedEvent(category));
             });
         }
     }
 
-    private void changeContext(Category ctx) {
-        colorLayout(ctx);
-        category = ctx;
-        setSelectedContext();
+    private void changeCategory(Category category) {
+        colorLayout(category);
+        this.category = category;
+        setSelectedCategory();
     }
 
-    private void setSelectedContext() {
-        getCurrentContextImageView().setImageResource(category.whiteImage);
-        setContextName();
+    private void setSelectedCategory() {
+        getCurrentCategoryImageView().setImageResource(category.whiteImage);
+        setCategoryName();
     }
 
-    private void removeSelectedContextCheck() {
-        getCurrentContextImageView().setImageDrawable(null);
+    private void removeSelectedCategoryCheck() {
+        getCurrentCategoryImageView().setImageDrawable(null);
     }
 
-    private ImageView getCurrentContextImageView() {
+    private ImageView getCurrentCategoryImageView() {
         switch (category) {
             case LEARNING:
-                return extractImageView(R.id.quest_context_learning);
+                return extractImageView(R.id.quest_category_learning);
 
             case WELLNESS:
-                return extractImageView(R.id.quest_context_wellness);
+                return extractImageView(R.id.quest_category_wellness);
 
             case PERSONAL:
-                return extractImageView(R.id.quest_context_personal);
+                return extractImageView(R.id.quest_category_personal);
 
             case WORK:
-                return extractImageView(R.id.quest_context_work);
+                return extractImageView(R.id.quest_category_work);
 
             case FUN:
-                return extractImageView(R.id.quest_context_fun);
+                return extractImageView(R.id.quest_category_fun);
         }
-        return extractImageView(R.id.quest_context_chores);
+        return extractImageView(R.id.quest_category_chores);
     }
 
     private ImageView extractImageView(int categoryViewId) {
         return (ImageView) findViewById(categoryViewId);
     }
 
-    private void setContextName() {
-        contextName.setText(StringUtils.capitalize(category.name()));
+    private void setCategoryName() {
+        categoryName.setText(StringUtils.capitalize(category.name()));
     }
 
     @Override
@@ -940,11 +940,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
     }
 
-    private void colorLayout(Category context) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
+    private void colorLayout(Category category) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
 }

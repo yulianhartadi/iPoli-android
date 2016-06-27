@@ -43,7 +43,7 @@ import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
  */
 public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewModel> {
 
-    private static final HashMap<Category, Integer> QUEST_CONTEXT_TO_CHECKBOX_STYLE = new HashMap<Category, Integer>() {{
+    private static final HashMap<Category, Integer> QUEST_CATEGORY_TO_CHECKBOX_STYLE = new HashMap<Category, Integer>() {{
         put(Category.LEARNING, R.style.LearningCheckbox);
         put(Category.WELLNESS, R.style.WellnessCheckbox);
         put(Category.PERSONAL, R.style.PersonalCheckbox);
@@ -91,9 +91,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
-        Category ctx = Quest.getCategory(q);
-        v.findViewById(R.id.quest_background).setBackgroundResource(ctx.resLightColor);
-        v.findViewById(R.id.quest_context_indicator).setBackgroundResource(ctx.resLightColor);
+        Category category = Quest.getCategory(q);
+        v.findViewById(R.id.quest_background).setBackgroundResource(category.resLightColor);
+        v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.resLightColor);
 
         TextView name = (TextView) v.findViewById(R.id.quest_text);
         name.setText(q.getName());
@@ -158,7 +158,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @NonNull
     private CheckBox createCheckBox(Quest q, Context context) {
-        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CONTEXT_TO_CHECKBOX_STYLE.get(Quest.getCategory(q))));
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(Quest.getCategory(q))));
         LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int marginEndDP = 16;

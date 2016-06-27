@@ -51,12 +51,12 @@ import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
+import io.ipoli.android.quest.events.QuestCategoryUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
@@ -241,11 +241,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onQuestContextUpdated(QuestContextUpdatedEvent e) {
-        log("updated_quest_context", EventParams.create()
+    public void onQuestCategoryUpdated(QuestCategoryUpdatedEvent e) {
+        log("updated_quest_category", EventParams.create()
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
-                .add("context", e.category.name()));
+                .add("category", e.category.name()));
     }
 
     @Subscribe
@@ -266,8 +266,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewQuestContextChanged(NewQuestContextChangedEvent e) {
-        log("new_quest_context_changed", EventParams.of("context", e.category.name()));
+    public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
+        log("new_quest_category_changed", EventParams.of("category", e.category.name()));
     }
 
     @Subscribe

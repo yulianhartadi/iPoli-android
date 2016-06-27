@@ -43,7 +43,7 @@
         <item name="colorAccent">@color/md_light_text_87</item>
     </style>
 
-    <style name="QuestContextIndicator">
+    <style name="QuestCategoryIndicator">
         <item name="android:layout_width">42dp</item>
         <item name="android:layout_height">42dp</item>
         <item name="android:scaleType">center</item>

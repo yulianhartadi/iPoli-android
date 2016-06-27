@@ -35,7 +35,7 @@ public class PickRepeatingQuestsAdapter extends BasePickQuestAdapter<RepeatingQu
     }
 
     @Override
-    protected Category getQuestContext(int adapterPosition) {
+    protected Category getQuestCategory(int adapterPosition) {
         return RepeatingQuest.getCategory(viewModels.get(adapterPosition).getQuest());
     }
 }

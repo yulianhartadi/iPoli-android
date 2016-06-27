@@ -48,10 +48,10 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PickQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-        Category ctx = getQuestContext(holder.getAdapterPosition());
-        GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
-        holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
+        Category category = getQuestCategory(holder.getAdapterPosition());
+        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(vm.getText());
 
@@ -78,7 +78,7 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
 
     protected abstract void sendQuestSelectedEvent(int adapterPosition);
 
-    protected abstract Category getQuestContext(int adapterPosition);
+    protected abstract Category getQuestCategory(int adapterPosition);
 
     public List<T> getSelectedQuests() {
         List<T> selectedQuests = new ArrayList<>();
@@ -108,11 +108,11 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_context_indicator_background)
-        public View contextIndicatorBackground;
+        @BindView(R.id.quest_category_indicator_background)
+        public View categoryIndicatorBackground;
 
-        @BindView(R.id.quest_context_indicator_image)
-        public ImageView contextIndicatorImage;
+        @BindView(R.id.quest_category_indicator_image)
+        public ImageView categoryIndicatorImage;
 
         public ViewHolder(View v) {
             super(v);

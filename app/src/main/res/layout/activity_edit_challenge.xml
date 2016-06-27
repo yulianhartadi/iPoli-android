@@ -99,30 +99,30 @@
 
                 <ImageView
                     android:id="@+id/challenge_category_learning"
-                    style="@style/QuestContextIndicator" />
+                    style="@style/QuestCategoryIndicator" />
 
                 <ImageView
                     android:id="@+id/challenge_category_wellness"
-                    style="@style/QuestContextIndicator" />
+                    style="@style/QuestCategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/challenge_category_personal"
-                    style="@style/QuestContextIndicator" />
+                    style="@style/QuestCategoryIndicator" />
 
                 <ImageView
                     android:id="@+id/challenge_category_work"
-                    style="@style/QuestContextIndicator" />
+                    style="@style/QuestCategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/challenge_category_fun"
-                    style="@style/QuestContextIndicator" />
+                    style="@style/QuestCategoryIndicator" />
 
 
                 <ImageView
                     android:id="@+id/challenge_category_chores"
-                    style="@style/QuestContextIndicator"
+                    style="@style/QuestCategoryIndicator"
                     android:layout_marginEnd="0dp" />
             </LinearLayout>
 

@@ -56,7 +56,7 @@ import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
@@ -87,7 +87,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     TextView categoryName;
 
     @BindView(R.id.challenge_category_container)
-    LinearLayout contextContainer;
+    LinearLayout categoryContainer;
 
     @BindView(R.id.challenge_end_date_value)
     TextView endDateText;
@@ -129,7 +129,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void initUI() {
-        initContextUI();
+        initCategoryUI();
 
         expectedResultTextViews = new ArrayList<>();
         expectedResultTextViews.add((TextView) findViewById(R.id.challenge_expected_result_1_value));
@@ -177,40 +177,40 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
     }
 
-    private void initContextUI() {
+    private void initCategoryUI() {
         changeCategory(Category.LEARNING);
 
         final Category[] categories = Category.values();
-        for (int i = 0; i < contextContainer.getChildCount(); i++) {
-            final ImageView iv = (ImageView) contextContainer.getChildAt(i);
+        for (int i = 0; i < categoryContainer.getChildCount(); i++) {
+            final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
             drawable.setColor(ContextCompat.getColor(this, categories[i].resLightColor));
 
-            final Category ctx = categories[i];
+            final Category category = categories[i];
             iv.setOnClickListener(v -> {
                 removeSelectedCategoryCheck();
-                changeCategory(ctx);
-                eventBus.post(new NewQuestContextChangedEvent(ctx));
+                changeCategory(category);
+                eventBus.post(new NewQuestCategoryChangedEvent(category));
             });
         }
     }
 
-    private void changeCategory(Category ctx) {
-        colorLayout(ctx);
-        category = ctx;
+    private void changeCategory(Category category) {
+        colorLayout(category);
+        this.category = category;
         setSelectedCategory();
     }
 
     private void setSelectedCategory() {
-        getCurrentContextImageView().setImageResource(category.whiteImage);
-        setContextName();
+        getCurrentCategoryImageView().setImageResource(category.whiteImage);
+        setCategoryName();
     }
 
     private void removeSelectedCategoryCheck() {
-        getCurrentContextImageView().setImageDrawable(null);
+        getCurrentCategoryImageView().setImageDrawable(null);
     }
 
-    private ImageView getCurrentContextImageView() {
+    private ImageView getCurrentCategoryImageView() {
         switch (category) {
             case LEARNING:
                 return extractImageView(R.id.challenge_category_learning);
@@ -234,16 +234,16 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         return (ImageView) findViewById(categoryViewId);
     }
 
-    private void setContextName() {
+    private void setCategoryName() {
         categoryName.setText(StringUtils.capitalize(category.name()));
     }
 
-    private void colorLayout(Category context) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
+    private void colorLayout(Category category) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
 
     @Override

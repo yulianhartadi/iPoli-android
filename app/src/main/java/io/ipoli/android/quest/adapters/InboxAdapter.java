@@ -62,14 +62,14 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         final Quest q = quests.get(position);
         viewBinderHelper.bind(holder.swipeLayout, q.getId());
 
-        Category ctx = Quest.getCategory(q);
-        GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
+        Category category = Quest.getCategory(q);
+        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
 
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
 
-        holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
+        holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
@@ -112,11 +112,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         @BindView(R.id.quest_created_at)
         TextView createdAt;
 
-        @BindView(R.id.quest_context_indicator_background)
-        View contextIndicatorBackground;
+        @BindView(R.id.quest_category_indicator_background)
+        View categoryIndicatorBackground;
 
-        @BindView(R.id.quest_context_indicator_image)
-        ImageView contextIndicatorImage;
+        @BindView(R.id.quest_category_indicator_image)
+        ImageView categoryIndicatorImage;
 
         @BindView(R.id.swipe_layout)
         SwipeRevealLayout swipeLayout;

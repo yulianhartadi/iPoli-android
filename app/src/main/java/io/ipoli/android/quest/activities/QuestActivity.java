@@ -118,10 +118,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         name.setText(quest.getName());
     }
 
-    private void setBackgroundColors(Category ctx) {
-        rootContainer.setBackgroundColor(ContextCompat.getColor(this, ctx.resDarkerColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
+    private void setBackgroundColors(Category category) {
+        rootContainer.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resDarkerColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkerColor));
     }
 
     private void resetTimerUI() {

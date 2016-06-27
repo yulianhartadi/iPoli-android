@@ -28,7 +28,7 @@
             android:orientation="horizontal">
 
             <View
-                android:id="@+id/quest_context_indicator"
+                android:id="@+id/quest_category_indicator"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_centerVertical="true"
@@ -42,7 +42,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/quest_context_indicator"
+                android:layout_toEndOf="@+id/quest_category_indicator"
                 android:layout_toStartOf="@+id/quest_schedule"
                 android:ellipsize="end"
                 android:maxLines="2"

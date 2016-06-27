@@ -65,13 +65,13 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
 
     }
 
-    private void addViewModel(String text, Category context) {
-        addViewModel(text, context, false);
+    private void addViewModel(String text, Category category) {
+        addViewModel(text, category, false);
     }
 
-    private void addViewModel(String text, Category context, boolean isSelected) {
+    private void addViewModel(String text, Category category, boolean isSelected) {
         RepeatingQuest rq = new RepeatingQuest(text);
-        RepeatingQuest.setCategory(rq, context);
+        RepeatingQuest.setCategory(rq, category);
         viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
     }
 

@@ -60,7 +60,7 @@
             android:layout_height="match_parent">
 
             <FrameLayout
-                android:id="@+id/quest_context_container"
+                android:id="@+id/quest_category_container"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentStart="true"
@@ -68,13 +68,13 @@
                 android:layout_marginStart="16dp">
 
                 <View
-                    android:id="@+id/quest_context_indicator_background"
+                    android:id="@+id/quest_category_indicator_background"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/ic_context_progress_indicator" />
 
                 <ImageView
-                    android:id="@+id/quest_context_indicator_image"
+                    android:id="@+id/quest_category_indicator_image"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"

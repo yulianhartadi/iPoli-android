@@ -59,7 +59,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         });
 
         GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+        drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
 
         if (vm.isStarted()) {
             Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
@@ -117,7 +117,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_context_indicator)
+        @BindView(R.id.quest_category_indicator)
         View indicator;
 
         @BindView(R.id.quest_schedule)

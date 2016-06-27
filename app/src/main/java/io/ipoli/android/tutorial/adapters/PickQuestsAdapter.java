@@ -35,7 +35,7 @@ public class PickQuestsAdapter extends BasePickQuestAdapter<Quest> {
     }
 
     @Override
-    protected Category getQuestContext(int adapterPosition) {
+    protected Category getQuestCategory(int adapterPosition) {
         return Quest.getCategory(viewModels.get(adapterPosition).getQuest());
     }
 }

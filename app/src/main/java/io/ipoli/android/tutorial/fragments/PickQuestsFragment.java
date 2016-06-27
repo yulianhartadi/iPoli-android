@@ -73,25 +73,25 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements
         addViewModel("Play my favourite song and dance", Category.FUN);
     }
 
-    private void addViewModel(String name, Category context) {
-        addViewModel(name, context, false);
+    private void addViewModel(String name, Category category) {
+        addViewModel(name, category, false);
     }
 
-    private void addViewModel(String name, Category context, boolean isSelected) {
-        Quest q = makeQuest(name, context);
+    private void addViewModel(String name, Category category, boolean isSelected) {
+        Quest q = makeQuest(name, category);
         viewModels.add(new PickQuestViewModel<>(q, name, isSelected));
     }
 
-    private void addViewModel(String name, Category context, String text, int duration) {
-        Quest q = makeQuest(name, context);
+    private void addViewModel(String name, Category category, String text, int duration) {
+        Quest q = makeQuest(name, category);
         q.setDuration(duration);
         viewModels.add(new PickQuestViewModel<>(q, text));
     }
 
     @NonNull
-    private Quest makeQuest(String name, Category context) {
+    private Quest makeQuest(String name, Category category) {
         Quest q = new Quest(name, DateUtils.now());
-        Quest.setCategory(q, context);
+        Quest.setCategory(q, category);
         q.setRawText(name + " today");
         return q;
     }

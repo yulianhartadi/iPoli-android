@@ -27,11 +27,11 @@ public class UnscheduledQuestViewModel {
     }
 
     @ColorRes
-    public int getContextColor() {
-        return getQuestContext().resLightColor;
+    public int getCategoryColor() {
+        return getQuestCategory().resLightColor;
     }
 
-    private Category getQuestContext() {
+    private Category getQuestCategory() {
         return Quest.getCategory(quest);
     }
 

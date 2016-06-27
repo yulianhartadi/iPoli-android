@@ -43,13 +43,13 @@ public class RepeatingQuestViewModel {
     }
 
     @ColorRes
-    public int getContextColor() {
-        return getQuestContext().resLightColor;
+    public int getCategoryColor() {
+        return getQuestCategory().resLightColor;
     }
 
     @DrawableRes
-    public int getContextImage() {
-        return getQuestContext().whiteImage;
+    public int getCategoryImage() {
+        return getQuestCategory().whiteImage;
     }
 
     public int getCompletedDailyCount() {
@@ -60,7 +60,7 @@ public class RepeatingQuestViewModel {
         return (int) Math.ceil((double) (getTotalCount() - completedCount) / (double) timesPerDay);
     }
 
-    private Category getQuestContext() {
+    private Category getQuestCategory() {
         return RepeatingQuest.getCategory(repeatingQuest);
     }
 
