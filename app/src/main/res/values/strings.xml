@@ -307,4 +307,9 @@
     <string name="challenge_deleted">Challenge deleted</string>
     <string name="quest_challenge_question">Challenge</string>
     <string name="quest_pick_challenge">Pick a challenge</string>
+    <string name="help_dialog_complete_challenge">Complete the challenge</string>
+    <string name="help_dialog_edit_challenge">Edit the challenge</string>
+    <string name="help_dialog_delete_challenge">Delete the challenge</string>
+    <string name="help_dialog_challenges_title">Challenge yourself</string>
+    <string name="help_dialog_open_challenges_options">Swipe challenge left to open the actions:</string>
 </resources>
