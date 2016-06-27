@@ -1,5 +1,7 @@
 package io.ipoli.android.app.services.readers;
 
+import android.text.TextUtils;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -47,7 +49,12 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
             repeatingQuest.setName(e.title);
             repeatingQuest.setSource(Constants.SOURCE_ANDROID_CALENDAR);
             repeatingQuest.setAllDay(e.allDay);
-            DateTime startDateTime = new DateTime(e.dTStart, DateTimeZone.forID(e.eventTimeZone));
+
+            DateTimeZone timeZone = DateTimeZone.getDefault();
+            if(!TextUtils.isEmpty(e.eventTimeZone)) {
+                timeZone = DateTimeZone.forID(e.eventTimeZone);
+            }
+            DateTime startDateTime = new DateTime(e.dTStart, timeZone);
             repeatingQuest.setStartMinute(startDateTime.getMinuteOfDay());
             Dur dur = new Dur(e.duration);
             repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
