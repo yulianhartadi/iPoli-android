@@ -204,7 +204,7 @@
     <string name="help_dialog_edit_quest">Edit the quest</string>
     <string name="help_dialog_complete_quest">Complete the quest</string>
     <string name="help_dialog_reschedule_quest">Reschedule quest for today or tomorrow</string>
-    <string name="help_dialog_challenges_text1">Challenges are your short or long-term goals.</string>
+    <string name="help_dialog_challenges_text1">Challenges are your short and long-term goals.</string>
     <string name="help_dialog_challenges_text2">Use them to clearly define what you want, why you want it and by what date you will achieve it.</string>
     <string name="help_dialog_challenges_text3">Divide your epic challenges into smaller tasks by assigning (repeating) quests to a challenge. Gain additional XP and coins when you complete a quest from a challenge!</string>
     <string name="help_dialog_rewards_title">Earn your rewards</string>
