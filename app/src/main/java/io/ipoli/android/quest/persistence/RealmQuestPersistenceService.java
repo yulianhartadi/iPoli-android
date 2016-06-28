@@ -181,6 +181,22 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDatabaseChangedListener<Quest> listener) {
+        Date startDateUTC = toStartOfDayUTC(date);
+        Date endDateUTC = toStartOfDayUTC(date.plusDays(1));
+        listenForChanges(where()
+                .greaterThanOrEqualTo("endDate", startDateUTC)
+                .lessThan("endDate", endDateUTC)
+                .beginGroup()
+                    .isNull("completedAt")
+                    .or()
+                    .equalTo("priority", Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY)
+                .endGroup()
+                .equalTo("allDay", false)
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
+    }
+
+    @Override
     public List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
         return findAll(where -> where
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())

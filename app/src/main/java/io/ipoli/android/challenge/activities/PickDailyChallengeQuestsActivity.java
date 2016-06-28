@@ -86,7 +86,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         pickQuestsAdapter = new PickQuestsAdapter(this, eventBus, new ArrayList<>());
         questList.setAdapter(pickQuestsAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        questPersistenceService.findAllNonAllDayForDate(LocalDate.now(), this);
+        questPersistenceService.findAllIncompleteOrMostImportantForDate(LocalDate.now(), this);
     }
 
     @Override
@@ -172,6 +172,9 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
             if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                 vm.select();
                 previouslySelectedQuests.add(q);
+            }
+            if(Quest.isCompleted(q)) {
+                vm.markCompleted();
             }
             viewModels.add(vm);
         }

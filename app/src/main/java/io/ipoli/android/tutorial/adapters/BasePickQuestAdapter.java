@@ -57,21 +57,25 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(vm.isSelected());
-        holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                vm.select();
-                sendQuestSelectedEvent(holder.getAdapterPosition());
-            } else {
-                vm.deselect();
-                sendQuestDeselectEvent(holder.getAdapterPosition());
+        if(vm.isCompleted()) {
+            holder.check.setEnabled(false);
+        } else {
+            holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    vm.select();
+                    sendQuestSelectedEvent(holder.getAdapterPosition());
+                } else {
+                    vm.deselect();
+                    sendQuestDeselectEvent(holder.getAdapterPosition());
 
-            }
-        });
-        holder.itemView.setOnClickListener(view -> {
-            CheckBox cb = holder.check;
-            cb.setChecked(!cb.isChecked());
+                }
+            });
+            holder.itemView.setOnClickListener(view -> {
+                CheckBox cb = holder.check;
+                cb.setChecked(!cb.isChecked());
 
-        });
+            });
+        }
     }
 
     protected abstract void sendQuestDeselectEvent(int adapterPosition);

@@ -48,4 +48,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
 
     List<Quest> findAllForChallenge(Challenge challenge);
+
+    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
 }
