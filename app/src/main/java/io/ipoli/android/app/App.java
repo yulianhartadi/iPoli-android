@@ -288,9 +288,8 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
         scheduleQuestsFor2WeeksAhead().compose(applyAndroidSchedulers()).subscribe(quests -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new SyncCompleteEvent());
-        });
+        }, Throwable::printStackTrace, () ->
+                eventBus.post(new SyncCompleteEvent()));
     }
 
     @Subscribe
