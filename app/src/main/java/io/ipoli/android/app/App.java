@@ -420,6 +420,7 @@ public class App extends MultiDexApplication {
         dailyChallenge.setCoins(coins);
         updatePlayer(dailyChallenge);
         Intent intent = new Intent(this, ChallengeCompleteActivity.class);
+        intent.putExtra(ChallengeCompleteActivity.TITLE, getString(R.string.daily_challenge_complete_dialog_title));
         intent.putExtra(ChallengeCompleteActivity.EXPERIENCE, xp);
         intent.putExtra(ChallengeCompleteActivity.COINS, coins);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
