@@ -66,7 +66,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".challenge.activities.EditChallengeActivity"
+        <activity
+            android:name=".challenge.activities.EditChallengeActivity"
             android:label="@string/title_activity_add_challenge"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
@@ -97,6 +98,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <activity
+            android:name=".player.activities.LevelUpActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
+
+        <activity
+            android:name=".challenge.activities.ChallengeCompleteActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
 
         <activity
             android:name="com.facebook.FacebookActivity"

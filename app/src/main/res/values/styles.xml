@@ -26,6 +26,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="android:windowAnimationStyle">@style/ScaleInDialogAnimation</item>
     </style>
 
     <style name="Theme.iPoli" parent="Base.Theme.iPoli" />
