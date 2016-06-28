@@ -20,7 +20,7 @@
     <string name="attribution">Source: %s</string>
     <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
     <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
-    <string name="challenge_complete">Challenge complete! +%1$d XP +%2$d coins.</string>
+    <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
     <string name="start_time_default">Start time</string>
@@ -288,8 +288,6 @@
     <string name="pick_max_3_miq">Pick max 3 most important quest</string>
     <string name="miq_saved">Most important quests for today saved</string>
     <string name="menu_miq">Choose important quests</string>
-    <string name="daily_challenge_complete_title">Daily challenge complete</string>
-    <string name="daily_challenge_complete_text">Ready to get your reward?</string>
     <string name="daily_challenge_complete_dialog_title">Daily challenge complete</string>
     <string name="experience_gained">Experience gained</string>
     <string name="coins_won">Coins won</string>

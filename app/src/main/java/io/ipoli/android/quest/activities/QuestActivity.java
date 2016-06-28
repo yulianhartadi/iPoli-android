@@ -29,7 +29,6 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -273,11 +272,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         }
 
         elapsedSeconds++;
-    }
-
-    @Subscribe
-    public void onLevelUp(LevelUpEvent e) {
-        showLevelUpMessage(e.newLevel);
     }
 
     @Subscribe
