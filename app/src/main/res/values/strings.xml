@@ -20,7 +20,7 @@
     <string name="attribution">Source: %s</string>
     <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
     <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
-    <string name="challenge_complete">Challenge complete! +%1$d XP +%2$d coins.</string>
+    <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
     <string name="start_time_default">Start time</string>

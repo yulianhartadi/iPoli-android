@@ -419,13 +419,17 @@ public class App extends MultiDexApplication {
         dailyChallenge.setExperience(xp);
         dailyChallenge.setCoins(coins);
         updatePlayer(dailyChallenge);
+        showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
+        eventBus.post(new DailyChallengeCompleteEvent());
+    }
+
+    private void showChallengeCompleteDialog(String title, long xp, long coins) {
         Intent intent = new Intent(this, ChallengeCompleteActivity.class);
-        intent.putExtra(ChallengeCompleteActivity.TITLE, getString(R.string.daily_challenge_complete_dialog_title));
+        intent.putExtra(ChallengeCompleteActivity.TITLE, title);
         intent.putExtra(ChallengeCompleteActivity.EXPERIENCE, xp);
         intent.putExtra(ChallengeCompleteActivity.COINS, coins);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        eventBus.post(new DailyChallengeCompleteEvent());
     }
 
     private void updatePlayer(RewardProvider rewardProvider) {
@@ -548,6 +552,7 @@ public class App extends MultiDexApplication {
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updatePlayer(challenge);
+        showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
