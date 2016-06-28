@@ -106,7 +106,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
+        questPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 

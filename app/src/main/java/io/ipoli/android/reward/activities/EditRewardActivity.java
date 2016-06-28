@@ -89,7 +89,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     @Override
     protected void onDestroy() {
-        rewardPersistenceService.close();
+        rewardPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 

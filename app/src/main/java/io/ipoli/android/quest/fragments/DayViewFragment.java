@@ -264,8 +264,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        questPersistenceService.close();
-        repeatingQuestPersistenceService.close();
+        questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 

@@ -96,14 +96,12 @@ public class ChallengePickerFragment extends DialogFragment {
                 .setNeutralButton(R.string.none, (dialogInterface, i) -> {
                     challengePickedListener.onChallengePicked(null);
                 });
-
         return builder.create();
 
     }
 
     @Override
     public void onDestroyView() {
-        challengePersistenceService.close();
         realm.close();
         super.onDestroyView();
     }

@@ -102,8 +102,8 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
 
     @Override
     public void onDestroyView() {
-        questPersistenceService.close();
-        repeatingQuestPersistenceService.close();
+        questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }

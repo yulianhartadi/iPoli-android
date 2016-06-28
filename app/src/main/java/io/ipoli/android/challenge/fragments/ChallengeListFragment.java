@@ -108,7 +108,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        challengePersistenceService.close();
+        challengePersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 

@@ -203,7 +203,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
-    public void close() {
+    public void removeAllListeners() {
         for (RealmResults<?> res : realmResults) {
             res.removeChangeListeners();
         }

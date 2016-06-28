@@ -112,7 +112,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
 
     @Override
     public void onDestroyView() {
-        questPersistenceService.close();
+        questPersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }

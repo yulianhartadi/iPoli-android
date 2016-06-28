@@ -119,7 +119,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        rewardPersistenceService.close();
+        rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 

@@ -365,7 +365,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @Override
     public void onDestroyView() {
-        questPersistenceService.close();
+        questPersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }

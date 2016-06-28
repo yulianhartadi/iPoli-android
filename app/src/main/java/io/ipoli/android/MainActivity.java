@@ -164,8 +164,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
-        playerPersistenceService.close();
+        questPersistenceService.removeAllListeners();
+        playerPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 

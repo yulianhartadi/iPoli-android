@@ -91,7 +91,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
+        questPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 
