@@ -85,10 +85,6 @@ public class MultiTextPickerFragment extends DialogFragment {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        if (!TextUtils.isEmpty(texts)) {
-//            noteText.setText(texts);
-//            noteText.setSelection(texts.length());
-//        }
         builder.setIcon(R.drawable.logo)
                 .setView(view)
                 .setTitle(title)
