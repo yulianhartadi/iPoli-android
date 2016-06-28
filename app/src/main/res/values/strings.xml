@@ -204,6 +204,9 @@
     <string name="help_dialog_edit_quest">Edit the quest</string>
     <string name="help_dialog_complete_quest">Complete the quest</string>
     <string name="help_dialog_reschedule_quest">Reschedule quest for today or tomorrow</string>
+    <string name="help_dialog_challenges_text1">Challenges are your short or long-term goals.</string>
+    <string name="help_dialog_challenges_text2">Use them to clearly define what you want, why you want it and by what date you will achieve it.</string>
+    <string name="help_dialog_challenges_text3">Divide your epic challenges into smaller tasks by assigning (repeating) quests to a challenge. Gain additional XP and coins when you complete a quest from a challenge!</string>
     <string name="help_dialog_rewards_title">Earn your rewards</string>
     <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough coins by completing your quests.</string>
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
@@ -310,6 +313,6 @@
     <string name="help_dialog_complete_challenge">Complete the challenge</string>
     <string name="help_dialog_edit_challenge">Edit the challenge</string>
     <string name="help_dialog_delete_challenge">Delete the challenge</string>
-    <string name="help_dialog_challenges_title">Challenge yourself</string>
+    <string name="help_dialog_challenges_title">Ready to achieve more?</string>
     <string name="help_dialog_open_challenges_options">Swipe challenge left to open the actions:</string>
 </resources>

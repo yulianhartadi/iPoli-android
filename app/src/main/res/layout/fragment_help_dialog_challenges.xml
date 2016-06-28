@@ -11,13 +11,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/help_dialog_inbox_text1" />
+        android:text="@string/help_dialog_challenges_text1" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/help_dialog_inbox_text2" />
+        android:text="@string/help_dialog_challenges_text2" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/help_dialog_challenges_text3" />
 
     <TextView
         android:layout_width="match_parent"
