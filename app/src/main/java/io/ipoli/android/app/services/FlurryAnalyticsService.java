@@ -31,6 +31,7 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
@@ -56,8 +57,8 @@ import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
-import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestCategoryUpdatedEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
@@ -588,6 +589,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onDailyChallengeQuestsSelected(DailyChallengeQuestsSelectedEvent e) {
         log("daily_challenge_quests_selected", EventParams.of("count", String.valueOf(e.count)));
+    }
+
+    @Subscribe
+    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
+        log("daily_challenge_complete");
     }
 
     @Subscribe

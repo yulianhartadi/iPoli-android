@@ -144,7 +144,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         showKeyboard();
         populateExpectedResults(new ArrayList<>());
         populateReasons(new ArrayList<>());
-        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET).toDateTimeAtStartOfDay().toDate());
+        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION).toDateTimeAtStartOfDay().toDate());
         populateDifficulty(Difficulty.NORMAL);
     }
 

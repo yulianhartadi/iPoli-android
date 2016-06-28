@@ -93,7 +93,7 @@ public interface Constants {
     }));
 
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
-    int DEFAULT_CHALLENGE_DEADLINE_DAY_OFFSET = 30;
+    int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
 
 
     enum DaysOfWeek {
