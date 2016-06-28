@@ -28,7 +28,7 @@ public class LevelUpActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.fragment_level_up);
+        setContentView(R.layout.activity_level_up);
         ButterKnife.bind(this);
 
         int level = getIntent().getIntExtra(LEVEL, 100);
