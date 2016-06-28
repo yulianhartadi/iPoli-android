@@ -34,12 +34,11 @@ public class ChallengeCompleteActivity extends BaseActivity {
     private long experience;
     private long coins;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.fragment_challenge_complete);
+        setContentView(R.layout.activity_challenge_complete);
         ButterKnife.bind(this);
 
         title.setText(getIntent().getStringExtra(TITLE));
