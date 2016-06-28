@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -60,6 +59,7 @@ import rx.schedulers.Schedulers;
  */
 public class AppJobService extends JobService {
 
+    public static final String DEBUG_ADVERTISING_ID = "12345";
     @Inject
     iPoliAPIService apiService;
 
@@ -191,7 +191,7 @@ public class AppJobService extends JobService {
             return idInfo.getId();
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                return UUID.randomUUID().toString();
+                return DEBUG_ADVERTISING_ID;
             }
             throw new RuntimeException(e);
         }
@@ -211,7 +211,7 @@ public class AppJobService extends JobService {
 
     private void syncChallenges(ChallengePersistenceService challengePersistenceService, Player player) throws IOException {
         List<Challenge> challenges = challengePersistenceService.findAllWhoNeedSyncWithRemote();
-        if(challenges.isEmpty()) {
+        if (challenges.isEmpty()) {
             return;
         }
 
@@ -275,7 +275,7 @@ public class AppJobService extends JobService {
         return new JsonRequestBodyBuilder(getApplicationContext()).param(param, value).build();
     }
 
-    private void syncRepeatingQuests(ChallengePersistenceService challengePersistenceService,  RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+    private void syncRepeatingQuests(ChallengePersistenceService challengePersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<RepeatingQuest> quests = repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
             return;
@@ -299,9 +299,9 @@ public class AppJobService extends JobService {
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
 
-        if(serverQuest.getChallenge() != null) {
+        if (serverQuest.getChallenge() != null) {
             Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
-            if(challenge != null) {
+            if (challenge != null) {
                 serverQuest.setChallenge(challenge);
             }
         }
@@ -366,9 +366,9 @@ public class AppJobService extends JobService {
                 serverQuest.setRepeatingQuest(repeatingQuest);
             }
         }
-        if(serverQuest.getChallenge() != null) {
+        if (serverQuest.getChallenge() != null) {
             Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
-            if(challenge != null) {
+            if (challenge != null) {
                 serverQuest.setChallenge(challenge);
             }
         }
