@@ -255,6 +255,9 @@ public class AppJobService extends JobService {
             if (q.getRepeatingQuest() != null) {
                 q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
             }
+            if (q.getChallenge() != null) {
+                q.getChallenge().setId(q.getChallenge().getRemoteId());
+            }
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
         List<Quest> serverQuests = apiService.syncQuests(requestBody).execute().body();
@@ -284,6 +287,9 @@ public class AppJobService extends JobService {
         for (RepeatingQuest q : quests) {
             localIds.add(getLocalIdForRemoteObject(q));
             q.setId(isLocalOnly(q) ? null : q.getRemoteId());
+            if (q.getChallenge() != null) {
+                q.getChallenge().setId(q.getChallenge().getRemoteId());
+            }
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
         List<RepeatingQuest> serverQuests = apiService.syncRepeatingQuests(requestBody).execute().body();
