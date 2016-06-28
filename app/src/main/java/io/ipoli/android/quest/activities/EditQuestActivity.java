@@ -2,7 +2,6 @@ package io.ipoli.android.quest.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
@@ -28,8 +27,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,18 +53,24 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -79,7 +82,6 @@ import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
 import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -91,6 +93,7 @@ import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
+import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
@@ -115,7 +118,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
         TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
-        TimePickerFragment.OnTimePickedListener, TextPickerFragment.OnTextPickedListener {
+        TimePickerFragment.OnTimePickedListener,
+        TextPickerFragment.OnTextPickedListener,
+        ChallengePickerFragment.OnChallengePickedListener,
+        CategoryView.OnCategoryChangedListener{
 
     @Inject
     Bus eventBus;
@@ -129,11 +135,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_text)
     AddQuestAutocompleteTextView questText;
 
-    @BindView(R.id.quest_context_name)
-    TextView contextName;
-
-    @BindView(R.id.quest_context_container)
-    LinearLayout contextContainer;
+    @BindView(R.id.quest_category)
+    CategoryView categoryView;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -159,6 +162,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_repeat_pattern_value)
     TextView frequencyText;
 
+    @BindView(R.id.quest_challenge_value)
+    TextView challengeValue;
+
     @BindView(R.id.quest_note_value)
     TextView noteText;
 
@@ -168,8 +174,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
-
-    private QuestContext questContext;
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
@@ -198,7 +202,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        initContextUI();
+        categoryView.addCategoryChangedListener(this);
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
             onEditQuest();
@@ -212,7 +216,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void onEditQuest() {
         changeEditMode(EditMode.EDIT_QUEST);
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Quest quest = questPersistenceService.findById(questId);
         questText.setText(quest.getName());
         questText.setSelection(quest.getName().length());
@@ -223,10 +227,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else {
             populateEndDate(null);
         }
-        setSelectedContext();
-        removeSelectedContextCheck();
-        changeContext(Quest.getContext(quest));
+        categoryView.changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
+        populateChallenge(quest.getChallenge());
     }
 
     private void onEditRepeatingQuest() {
@@ -239,10 +242,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(rq.getDuration());
         populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
         setFrequencyText(rq.getRecurrence());
-        setSelectedContext();
-        removeSelectedContextCheck();
-        changeContext(RepeatingQuest.getContext(rq));
+        categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
+        populateChallenge(rq.getChallenge());
     }
 
     private void onAddNewQuest() {
@@ -250,6 +252,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateTimesPerDay(1);
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
+        populateChallenge(null);
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -322,67 +325,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setThreshold(1);
     }
 
-    private void initContextUI() {
-        changeContext(QuestContext.LEARNING);
-
-        final QuestContext[] ctxs = QuestContext.values();
-        for (int i = 0; i < contextContainer.getChildCount(); i++) {
-            final ImageView iv = (ImageView) contextContainer.getChildAt(i);
-            GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, ctxs[i].resLightColor));
-
-            final QuestContext ctx = ctxs[i];
-            iv.setOnClickListener(v -> {
-                removeSelectedContextCheck();
-                changeContext(ctx);
-                eventBus.post(new NewQuestContextChangedEvent(ctx));
-            });
-        }
-    }
-
-    private void changeContext(QuestContext ctx) {
-        colorLayout(ctx);
-        questContext = ctx;
-        setSelectedContext();
-    }
-
-    private void setSelectedContext() {
-        getCurrentContextImageView().setImageResource(questContext.whiteImage);
-        setContextName();
-    }
-
-    private void removeSelectedContextCheck() {
-        getCurrentContextImageView().setImageDrawable(null);
-    }
-
-    private ImageView getCurrentContextImageView() {
-        switch (questContext) {
-            case LEARNING:
-                return extractImageView(R.id.quest_context_learning);
-
-            case WELLNESS:
-                return extractImageView(R.id.quest_context_wellness);
-
-            case PERSONAL:
-                return extractImageView(R.id.quest_context_personal);
-
-            case WORK:
-                return extractImageView(R.id.quest_context_work);
-
-            case FUN:
-                return extractImageView(R.id.quest_context_fun);
-        }
-        return extractImageView(R.id.quest_context_chores);
-    }
-
-    private ImageView extractImageView(int contextViewId) {
-        return (ImageView) findViewById(contextViewId);
-    }
-
-    private void setContextName() {
-        contextName.setText(StringUtils.capitalize(questContext.name()));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.add_quest_menu, menu);
@@ -415,7 +357,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                         finish();
                     });
                     d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                        eventBus.post(new UndoDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
+                        eventBus.post(new CancelDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
                     });
                     d.show();
                 } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
@@ -449,13 +391,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
-            updateQuest();
+            updateQuest(source);
         } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
-            updateRepeatingQuest();
+            updateRepeatingQuest(source);
         }
     }
 
-    private void updateQuest() {
+    private void updateQuest(EventSource source) {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
             return;
@@ -480,9 +422,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setContext(questContext.name());
+        q.setCategory(categoryView.getSelectedCategory().name());
+        q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q, EventSource.EDIT_QUEST));
+        eventBus.post(new UpdateQuestEvent(q, source));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -492,7 +435,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         finish();
     }
 
-    private void updateRepeatingQuest() {
+    private void updateRepeatingQuest(EventSource source) {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
             return;
@@ -504,16 +447,17 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
-        rq.setContext(questContext.name());
+        rq.setCategory(categoryView.getSelectedCategory().name());
+        rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateRepeatingQuestEvent(rq));
+        eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
     }
 
     private boolean isQuestNameInvalid(String name) {
-        if (TextUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
             return true;
         }
@@ -613,6 +557,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_challenge_container)
+    public void onChallengeClick(View view) {
+        ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
         TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());
@@ -636,7 +585,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateNoteText(String text) {
         noteText.setTag(text);
-        if (TextUtils.isEmpty(text)) {
+        if (StringUtils.isEmpty(text)) {
             noteText.setText(R.string.none);
         } else {
             noteText.setText(text);
@@ -659,6 +608,32 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     public void onTimesPerDayPicked(int timesPerDay) {
         populateTimesPerDay(timesPerDay);
         eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
+    }
+
+    @Override
+    public void onChallengePicked(String challengeId) {
+        Challenge challenge = findChallenge(challengeId);
+        populateChallenge(challenge);
+        String name = challenge != null ? challenge.getName() : getString(R.string.none);
+        eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
+    }
+
+    private void populateChallenge(Challenge challenge) {
+        if (challenge != null) {
+            challengeValue.setText(challenge.getName());
+            challengeValue.setTag(challenge.getId());
+        } else {
+            challengeValue.setText(R.string.none);
+            challengeValue.setTag(null);
+        }
+    }
+
+    private Challenge findChallenge(String challengeId) {
+        if(challengeId == null) {
+            return  null;
+        }
+        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        return challengePersistenceService.findById(challengeId);
     }
 
     private void populateEndDate(Date date) {
@@ -707,6 +682,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         frequencyText.setTag(recurrence);
     }
 
+
     public void saveQuest() {
         String name = questText.getText().toString().trim();
         if (isQuestNameInvalid(name)) {
@@ -740,8 +716,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setContext(questContext.name());
+        q.setCategory(categoryView.getSelectedCategory().name());
         q.setNote((String) noteText.getTag());
+        q.setChallenge(findChallenge((String) challengeValue.getTag()));
         eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
@@ -768,7 +745,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
         }
         rq.setRecurrence(recurrence);
-        rq.setContext(questContext.name());
+        rq.setCategory(categoryView.getSelectedCategory().name());
+        rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
@@ -893,11 +871,21 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
     }
 
-    private void colorLayout(QuestContext context) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, context.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, context.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, context.resDarkColor));
+    @Override
+    public void onCategoryChanged(Category category) {
+        colorLayout(category);
+        if(editMode == EditMode.EDIT_NEW_QUEST) {
+            eventBus.post(new NewQuestCategoryChangedEvent(category));
+        }
     }
+
+    private void colorLayout(Category category) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
+    }
+
+
 }

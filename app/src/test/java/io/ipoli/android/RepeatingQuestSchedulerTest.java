@@ -13,7 +13,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 import java.util.Date;
 import java.util.List;
 
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -226,7 +226,7 @@ public class RepeatingQuestSchedulerTest {
     @NonNull
     private RepeatingQuest createRepeatingQuest() {
         RepeatingQuest repeatingQuest = new RepeatingQuest("Test");
-        RepeatingQuest.setContext(repeatingQuest, QuestContext.CHORES);
+        RepeatingQuest.setCategory(repeatingQuest, Category.CHORES);
         return repeatingQuest;
     }
 }

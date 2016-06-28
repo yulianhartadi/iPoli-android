@@ -16,11 +16,13 @@ public interface CalendarEvent {
     @ColorRes
     int getBackgroundColor();
 
-    boolean isRecurrent();
+    boolean isRepeating();
 
     String getName();
 
     boolean shouldDisplayAsIndicator();
 
     boolean isMostImportant();
+
+    boolean isForChallenge();
 }

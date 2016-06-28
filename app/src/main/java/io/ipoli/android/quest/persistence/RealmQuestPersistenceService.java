@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
@@ -170,6 +171,29 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .count();
         getRealm().commitTransaction();
         return count;
+    }
+
+    @Override
+    public List<Quest> findAllForChallenge(Challenge challenge) {
+        return findAllIncludingDeleted(where -> where
+                .equalTo("challenge.id", challenge.getId())
+                .findAll());
+    }
+
+    @Override
+    public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDatabaseChangedListener<Quest> listener) {
+        Date startDateUTC = toStartOfDayUTC(date);
+        Date endDateUTC = toStartOfDayUTC(date.plusDays(1));
+        listenForChanges(where()
+                .greaterThanOrEqualTo("endDate", startDateUTC)
+                .lessThan("endDate", endDateUTC)
+                .beginGroup()
+                    .isNull("completedAt")
+                    .or()
+                    .equalTo("priority", Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY)
+                .endGroup()
+                .equalTo("allDay", false)
+                .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
     }
 
     @Override

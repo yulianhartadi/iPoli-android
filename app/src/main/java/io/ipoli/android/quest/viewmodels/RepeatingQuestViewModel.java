@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -43,13 +43,13 @@ public class RepeatingQuestViewModel {
     }
 
     @ColorRes
-    public int getContextColor() {
-        return getQuestContext().resLightColor;
+    public int getCategoryColor() {
+        return getQuestCategory().resLightColor;
     }
 
     @DrawableRes
-    public int getContextImage() {
-        return getQuestContext().whiteImage;
+    public int getCategoryImage() {
+        return getQuestCategory().whiteImage;
     }
 
     public int getCompletedDailyCount() {
@@ -60,8 +60,8 @@ public class RepeatingQuestViewModel {
         return (int) Math.ceil((double) (getTotalCount() - completedCount) / (double) timesPerDay);
     }
 
-    private QuestContext getQuestContext() {
-        return RepeatingQuest.getContext(repeatingQuest);
+    private Category getQuestCategory() {
+        return RepeatingQuest.getCategory(repeatingQuest);
     }
 
     public String getNextText() {

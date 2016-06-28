@@ -29,9 +29,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.quest.QuestContext;
-import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
@@ -43,6 +41,7 @@ import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
@@ -106,22 +105,22 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
+        questPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 
     private void initUI() {
-        setBackgroundColors(Quest.getContext(quest));
+        setBackgroundColors(Quest.getCategory(quest));
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;
         name.setText(quest.getName());
     }
 
-    private void setBackgroundColors(QuestContext ctx) {
-        rootContainer.setBackgroundColor(ContextCompat.getColor(this, ctx.resDarkerColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, ctx.resDarkerColor));
+    private void setBackgroundColors(Category category) {
+        rootContainer.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resDarkerColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkerColor));
     }
 
     private void resetTimerUI() {
@@ -273,11 +272,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         }
 
         elapsedSeconds++;
-    }
-
-    @Subscribe
-    public void onLevelUp(LevelUpEvent e) {
-        showLevelUpMessage(e.newLevel);
     }
 
     @Subscribe

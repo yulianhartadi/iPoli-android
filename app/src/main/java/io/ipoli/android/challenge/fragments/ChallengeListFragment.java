@@ -1,32 +1,49 @@
 package io.ipoli.android.challenge.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.challenge.adapters.ChallengesAdapter;
+import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.challenge.activities.EditChallengeActivity;
+import io.ipoli.android.challenge.adapters.ChallengeListAdapter;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class ChallengeListFragment extends Fragment {
+public class ChallengeListFragment extends BaseFragment implements OnDatabaseChangedListener<Challenge> {
 
     private Unbinder unbinder;
 
@@ -34,23 +51,46 @@ public class ChallengeListFragment extends Fragment {
     Bus eventBus;
 
     @BindView(R.id.challenge_list)
-    RecyclerView challengeList;
+    EmptyStateRecyclerView challengeList;
+
+    @BindView(R.id.root_container)
+    CoordinatorLayout rootLayout;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    private ChallengePersistenceService challengePersistenceService;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_challenge_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_challenges);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         challengeList.setLayoutManager(layoutManager);
+        challengeList.setEmptyView(rootLayout, R.string.empty_text_chanllenge, R.drawable.ic_sword_grey_24dp);
 
-        ChallengesAdapter adapter = new ChallengesAdapter(new ArrayList<>());
+        ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), new ArrayList<>(), eventBus);
         challengeList.setAdapter(adapter);
 
+        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        challengePersistenceService.findAllNotCompleted(this);
+
         return view;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_challenges, R.string.help_dialog_challenges_title, "challenges").show(getActivity().getSupportFragmentManager());
     }
 
     @Override
@@ -67,7 +107,34 @@ public class ChallengeListFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        challengePersistenceService.removeAllListeners();
+        super.onDestroyView();
+    }
+
+    @OnClick(R.id.add_challenge)
+    public void onAddChallenge(View view) {
+        startActivity(new Intent(getContext(), EditChallengeActivity.class));
+    }
+
+    @Override
+    public void onDatabaseChanged(List<Challenge> results) {
+        ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), results, eventBus);
+        challengeList.setAdapter(adapter);
+    }
+
+    @Subscribe
+    public void onEditChallengeRequest(EditChallengeRequestEvent e) {
+        Intent i = new Intent(getActivity(), EditChallengeActivity.class);
+        i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, e.challenge.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onChallengeCompleted(ChallengeCompletedEvent e) {
+        Snackbar
+                .make(rootLayout,
+                        getString(R.string.challenge_complete, e.challenge.getExperience(), e.challenge.getCoins()),
+                        Snackbar.LENGTH_LONG).show();
     }
 }

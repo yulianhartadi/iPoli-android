@@ -19,7 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
 /**
@@ -48,37 +48,41 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PickQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-        QuestContext ctx = getQuestContext(holder.getAdapterPosition());
-        GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, ctx.resLightColor));
-        holder.contextIndicatorImage.setImageResource(ctx.whiteImage);
+        Category category = getQuestCategory(holder.getAdapterPosition());
+        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(vm.getText());
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(vm.isSelected());
-        holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                vm.select();
-                sendQuestSelectedEvent(holder.getAdapterPosition());
-            } else {
-                vm.deselect();
-                sendQuestDeselectEvent(holder.getAdapterPosition());
+        if(vm.isCompleted()) {
+            holder.check.setEnabled(false);
+        } else {
+            holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    vm.select();
+                    sendQuestSelectedEvent(holder.getAdapterPosition());
+                } else {
+                    vm.deselect();
+                    sendQuestDeselectEvent(holder.getAdapterPosition());
 
-            }
-        });
-        holder.itemView.setOnClickListener(view -> {
-            CheckBox cb = holder.check;
-            cb.setChecked(!cb.isChecked());
+                }
+            });
+            holder.itemView.setOnClickListener(view -> {
+                CheckBox cb = holder.check;
+                cb.setChecked(!cb.isChecked());
 
-        });
+            });
+        }
     }
 
     protected abstract void sendQuestDeselectEvent(int adapterPosition);
 
     protected abstract void sendQuestSelectedEvent(int adapterPosition);
 
-    protected abstract QuestContext getQuestContext(int adapterPosition);
+    protected abstract Category getQuestCategory(int adapterPosition);
 
     public List<T> getSelectedQuests() {
         List<T> selectedQuests = new ArrayList<>();
@@ -108,11 +112,11 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_context_indicator_background)
-        public View contextIndicatorBackground;
+        @BindView(R.id.quest_category_indicator_background)
+        public View categoryIndicatorBackground;
 
-        @BindView(R.id.quest_context_indicator_image)
-        public ImageView contextIndicatorImage;
+        @BindView(R.id.quest_category_indicator_image)
+        public ImageView categoryIndicatorImage;
 
         public ViewHolder(View v) {
             super(v);

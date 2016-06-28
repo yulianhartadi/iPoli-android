@@ -33,8 +33,9 @@ public interface Constants {
 
     int MAX_QUEST_DURATION_HOURS = 4;
     String QUEST_ID_EXTRA_KEY = "quest_id";
-
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
+    String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
+
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
     int QUEST_MIN_DURATION = 10;
@@ -90,7 +91,9 @@ public interface Constants {
             DaysOfWeek.THURSDAY.getIsoOrder(),
             DaysOfWeek.FRIDAY.getIsoOrder()
     }));
+
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
+    int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
 
 
     enum DaysOfWeek {

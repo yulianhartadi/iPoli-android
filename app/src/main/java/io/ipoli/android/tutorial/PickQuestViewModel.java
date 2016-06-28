@@ -8,6 +8,7 @@ public class PickQuestViewModel<T> {
     private String text;
     private T quest;
     private boolean isSelected;
+    private boolean isCompleted;
 
     public PickQuestViewModel(T quest, String text) {
         this(quest, text, false);
@@ -17,6 +18,7 @@ public class PickQuestViewModel<T> {
         this.quest = quest;
         this.isSelected = isSelected;
         this.text = text;
+        this.isCompleted = false;
     }
 
     public String getText() {
@@ -37,5 +39,13 @@ public class PickQuestViewModel<T> {
 
     public T getQuest() {
         return quest;
+    }
+
+    public void markCompleted() {
+        isCompleted = true;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
     }
 }

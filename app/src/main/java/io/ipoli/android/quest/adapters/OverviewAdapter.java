@@ -180,7 +180,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (vm.isStarted()) {
                 GradientDrawable drawable = (GradientDrawable) questHolder.runningIndicator.getBackground();
-                drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+                drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
                 Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
                 questHolder.runningIndicator.startAnimation(blinkAnimation);
                 questHolder.runningIndicator.setVisibility(View.VISIBLE);
@@ -189,18 +189,18 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
-            drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+            drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
 
-            questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
+            questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
             questHolder.dueDate.setText(vm.getDueDateText());
 
             String scheduleText = vm.getScheduleText();
 
             questHolder.progressContainer.removeAllViews();
 
-            questHolder.repeatingIcon.setVisibility(vm.isRecurrent() ? View.VISIBLE : View.GONE);
-
-            questHolder.priorityIcon.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
+            questHolder.repeatingIndicator.setVisibility(vm.isRecurrent() ? View.VISIBLE : View.GONE);
+            questHolder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
+            questHolder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
 
             if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(vm.getRemainingText())) {
                 questHolder.detailsContainer.setVisibility(View.GONE);
@@ -226,7 +226,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             for (int i = 1; i <= vm.getCompletedCount(); i++) {
                 View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
                 GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
-                progressViewBackground.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+                progressViewBackground.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
                 questHolder.progressContainer.addView(progressView);
             }
 
@@ -234,7 +234,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
                 GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
-                progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));
+                progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
                 questHolder.progressContainer.addView(progressViewEmpty);
             }
 
@@ -270,10 +270,10 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.quest_running_indicator)
         View runningIndicator;
 
-        @BindView(R.id.quest_context_indicator_background)
+        @BindView(R.id.quest_category_indicator_background)
         public View contextIndicatorBackground;
 
-        @BindView(R.id.quest_context_indicator_image)
+        @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;
 
         @BindView(R.id.quest_duration)
@@ -292,10 +292,13 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public ViewGroup progressContainer;
 
         @BindView(R.id.quest_repeating_indicator)
-        public ImageView repeatingIcon;
+        public ImageView repeatingIndicator;
 
         @BindView(R.id.quest_priority_indicator)
-        public ImageView priorityIcon;
+        public ImageView priorityIndicator;
+
+        @BindView(R.id.quest_challenge_indicator)
+        public ImageView challengeIndicator;
 
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;

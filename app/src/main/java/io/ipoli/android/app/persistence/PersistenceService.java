@@ -36,5 +36,5 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     Observable<Void> delete(List<T> objects);
 
-    void close();
+    void removeAllListeners();
 }

@@ -86,9 +86,9 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         questHolder.name.setText(vm.getName());
 
         GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+        drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
 
-        questHolder.contextIndicatorImage.setImageResource(vm.getContextImage());
+        questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
 
         questHolder.nextDateTime.setText(vm.getNextText());
 
@@ -106,7 +106,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         for (int i = 1; i <= vm.getCompletedDailyCount(); i++) {
             View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
             GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
-            progressViewBackground.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+            progressViewBackground.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
             questHolder.progressContainer.addView(progressView);
         }
 
@@ -114,7 +114,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
             GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
-            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getContextColor()));
+            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
             questHolder.progressContainer.addView(progressViewEmpty);
         }
     }
@@ -134,10 +134,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         @BindView(R.id.quest_name)
         public TextView name;
 
-        @BindView(R.id.quest_context_indicator_background)
+        @BindView(R.id.quest_category_indicator_background)
         public View contextIndicatorBackground;
 
-        @BindView(R.id.quest_context_indicator_image)
+        @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;
 
         @BindView(R.id.quest_progress_container)

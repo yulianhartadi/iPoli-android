@@ -14,6 +14,7 @@ import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
@@ -30,6 +31,7 @@ import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
+import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
@@ -119,10 +121,14 @@ public interface AppComponent {
 
     void inject(GrowthFragment growthFragment);
 
+    void inject(EditChallengeActivity editChallengeActivity);
+
     void inject(RecurrencePickerFragment recurrencePickerFragment);
 
     void inject(SettingsFragment settingsFragment);
 
     void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
+
+    void inject(ChallengePickerFragment challengePickerFragment);
 }
 

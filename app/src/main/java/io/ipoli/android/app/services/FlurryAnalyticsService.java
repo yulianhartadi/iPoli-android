@@ -31,7 +31,14 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
+import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
+import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
+import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -41,15 +48,17 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
+import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestContextChangedEvent;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
+import io.ipoli.android.quest.events.QuestCategoryUpdatedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.events.QuestContextUpdatedEvent;
 import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
@@ -69,7 +78,6 @@ import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.UndoDeleteQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
@@ -78,6 +86,7 @@ import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
+import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
@@ -176,8 +185,8 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onUndoDeleteQuest(UndoDeleteQuestEvent e) {
-        log("undo_delete_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
+    public void onCancelDeleteQuest(CancelDeleteQuestEvent e) {
+        log("cancel_delete_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -234,16 +243,21 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onQuestContextUpdated(QuestContextUpdatedEvent e) {
-        log("updated_quest_context", EventParams.create()
+    public void onQuestCategoryUpdated(QuestCategoryUpdatedEvent e) {
+        log("updated_quest_category", EventParams.create()
                 .add("id", e.quest.getId())
                 .add("name", e.quest.getName())
-                .add("context", e.questContext.name()));
+                .add("category", e.category.name()));
     }
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        log("update_quest", e.quest.getId(), e.quest.getName());
+        log("update_quest", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
+    }
+
+    @Subscribe
+    public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
+        log("update_quest", e.repeatingQuest.getId(), e.repeatingQuest.getName(), e.source.name().toLowerCase());
     }
 
     @Subscribe
@@ -254,8 +268,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewQuestContextChanged(NewQuestContextChangedEvent e) {
-        log("new_quest_context_changed", EventParams.of("context", e.questContext.name()));
+    public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
+        log("new_quest_category_changed", EventParams.of("category", e.category.name()));
+    }
+
+    @Subscribe
+    public void onNewChallengeCategoryChanged(NewChallengeCategoryChangedEvent e) {
+        log("new_challenge_category_changed", EventParams.of("category", e.category.name()));
     }
 
     @Subscribe
@@ -546,6 +565,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
+    public void onChallengePicked(ChallengePickedEvent e) {
+        log("quest_challenge_picked", EventParams.create()
+                .add("mode", e.mode)
+                .add("challenge_name", e.name));
+    }
+
+    @Subscribe
     public void onDailyChallengeReminderChange(DailyChallengeReminderChangeEvent e) {
         log("daily_challenge_reminder_changed", EventParams.of("is_enabled", String.valueOf(e.enabled)));
     }
@@ -563,6 +589,36 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onDailyChallengeQuestsSelected(DailyChallengeQuestsSelectedEvent e) {
         log("daily_challenge_quests_selected", EventParams.of("count", String.valueOf(e.count)));
+    }
+
+    @Subscribe
+    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
+        log("daily_challenge_complete");
+    }
+
+    @Subscribe
+    public void onNewChallenge(NewChallengeEvent e) {
+        log("new_challenge", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onUpdateChallenge(UpdateChallengeEvent e) {
+        log("update_challenge", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
+        log("delete_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
+        log("complete_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
+    }
+
+    @Subscribe
+    public void onEditChallengeRequest(EditChallengeRequestEvent e) {
+        log("edit_challenge_request", EventParams.of("name", e.challenge.getName()).add("source", e.source.name()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

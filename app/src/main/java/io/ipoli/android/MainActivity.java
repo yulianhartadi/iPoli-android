@@ -55,13 +55,11 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
-import io.ipoli.android.challenge.ui.dialogs.ChallengeCompleteDialogFragment;
+import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -76,8 +74,6 @@ import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
@@ -91,7 +87,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
     public static final String ACTION_ADD_QUEST_FROM_WIDGET = "io.ipoli.android.intent.action.ADD_QUEST_FROM_WIDGET";
-    public static final String ACTION_DAILY_CHALLENGE_COMPLETE = "io.ipoli.android.intent.action.DAILY_CHALLENGE_COMPLETE";
     public static final int PICK_PLAYER_AVATAR_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
@@ -163,8 +158,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void onDestroy() {
-        questPersistenceService.close();
-        playerPersistenceService.close();
+        questPersistenceService.removeAllListeners();
+        playerPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 
@@ -230,16 +225,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             eventBus.post(new AddQuestRequestEvent(EventSource.WIDGET));
             setIntent(null);
             startActivity(new Intent(this, EditQuestActivity.class));
-        } else if (isFromAction(ACTION_DAILY_CHALLENGE_COMPLETE)) {
-            eventBus.post(new DailyChallengeCompleteEvent());
         }
-    }
-
-    @Subscribe
-    public void onDailyChallengeComplete(DailyChallengeCompleteEvent e) {
-        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
-        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
-        ChallengeCompleteDialogFragment.newInstance(xp, coins).show(getSupportFragmentManager());
     }
 
     private boolean isFromAction(String action) {
@@ -358,11 +344,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
-    public void onLevelUp(LevelUpEvent e) {
-        showLevelUpMessage(e.newLevel);
-    }
-
-    @Subscribe
     public void onLevelDown(LevelDownEvent e) {
         showLevelDownMessage(e.newLevel);
     }
@@ -389,10 +370,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
 
-//            case R.id.challenges:
-//                source = EventSource.CHALLENGES;
-//                changeCurrentFragment(new ChallengeListFragment());
-//                break;
+            case R.id.challenges:
+                source = EventSource.CHALLENGES;
+                changeCurrentFragment(new ChallengeListFragment());
+                break;
 
             case R.id.growth:
                 source = EventSource.GROWTH;

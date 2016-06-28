@@ -8,7 +8,8 @@ import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.Category;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -27,7 +28,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     private String name;
 
-    private String context;
+    private String category;
 
     private boolean allDay;
 
@@ -50,6 +51,8 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     private Recurrence recurrence;
 
     private String note;
+
+    private Challenge challenge;
 
     private String source;
 
@@ -102,7 +105,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.rawText = rawText;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.context = QuestContext.PERSONAL.name();
+        this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.source = Constants.API_RESOURCE_SOURCE;
@@ -133,20 +136,20 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.id = id;
     }
 
-    public String getContext() {
-        return context == null || context.isEmpty() ? QuestContext.PERSONAL.name() : context;
+    public String getCategory() {
+        return category == null || category.isEmpty() ? Category.PERSONAL.name() : category;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public static QuestContext getContext(RepeatingQuest quest) {
-        return QuestContext.valueOf(quest.getContext());
+    public static Category getCategory(RepeatingQuest quest) {
+        return Category.valueOf(quest.getCategory());
     }
 
-    public static void setContext(RepeatingQuest quest, QuestContext context) {
-        quest.setContext(context.name());
+    public static void setCategory(RepeatingQuest quest, Category category) {
+        quest.setCategory(category.name());
     }
 
     public static void setStartTime(RepeatingQuest quest, Time time) {
@@ -249,5 +252,13 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Challenge getChallenge() {
+        return challenge;
+    }
+
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 }

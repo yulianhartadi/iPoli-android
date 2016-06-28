@@ -88,8 +88,8 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
         RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();
-        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
+        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         rewardPersistenceService.findAll(this);
         return view;
     }
@@ -119,7 +119,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        rewardPersistenceService.close();
+        rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 

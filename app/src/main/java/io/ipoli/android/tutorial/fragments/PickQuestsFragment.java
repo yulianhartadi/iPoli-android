@@ -17,7 +17,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickQuestsAdapter;
@@ -51,47 +51,47 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements
     protected void initViewModels() {
         viewModels = new ArrayList<>();
 
-        Quest q = makeQuest("Try out iPoli", QuestContext.FUN);
+        Quest q = makeQuest("Try out iPoli", Category.FUN);
         Quest.setStartTime(q, Time.afterMinutes(5));
         viewModels.add(new PickQuestViewModel<>(q, q.getName(), true));
 
-        addViewModel("Take a walk", QuestContext.WELLNESS, "Take a walk for 25 min", 25);
-        addViewModel("Answer emails", QuestContext.WORK);
-        addViewModel("Make a lunch date", QuestContext.FUN);
-        addViewModel("Call dad", QuestContext.PERSONAL);
-        addViewModel("Cook a nice dinner", QuestContext.FUN);
-        addViewModel("Hit the gym", QuestContext.WELLNESS);
-        addViewModel("Plan a date night", QuestContext.FUN);
-        addViewModel("Call mom", QuestContext.PERSONAL);
-        addViewModel("Do laundry", QuestContext.CHORES);
-        addViewModel("Rent a bouncy castle", QuestContext.FUN);
-        addViewModel("Call plumber", QuestContext.CHORES);
-        addViewModel("Take my vitamin", QuestContext.WELLNESS);
-        addViewModel("Find dog sitter", QuestContext.CHORES);
-        addViewModel("Prep for presentation", QuestContext.WORK);
-        addViewModel("Check my weight", QuestContext.WELLNESS);
-        addViewModel("Play my favourite song and dance", QuestContext.FUN);
+        addViewModel("Take a walk", Category.WELLNESS, "Take a walk for 25 min", 25);
+        addViewModel("Answer emails", Category.WORK);
+        addViewModel("Make a lunch date", Category.FUN);
+        addViewModel("Call dad", Category.PERSONAL);
+        addViewModel("Cook a nice dinner", Category.FUN);
+        addViewModel("Hit the gym", Category.WELLNESS);
+        addViewModel("Plan a date night", Category.FUN);
+        addViewModel("Call mom", Category.PERSONAL);
+        addViewModel("Do laundry", Category.CHORES);
+        addViewModel("Rent a bouncy castle", Category.FUN);
+        addViewModel("Call plumber", Category.CHORES);
+        addViewModel("Take my vitamin", Category.WELLNESS);
+        addViewModel("Find dog sitter", Category.CHORES);
+        addViewModel("Prep for presentation", Category.WORK);
+        addViewModel("Check my weight", Category.WELLNESS);
+        addViewModel("Play my favourite song and dance", Category.FUN);
     }
 
-    private void addViewModel(String name, QuestContext context) {
-        addViewModel(name, context, false);
+    private void addViewModel(String name, Category category) {
+        addViewModel(name, category, false);
     }
 
-    private void addViewModel(String name, QuestContext context, boolean isSelected) {
-        Quest q = makeQuest(name, context);
+    private void addViewModel(String name, Category category, boolean isSelected) {
+        Quest q = makeQuest(name, category);
         viewModels.add(new PickQuestViewModel<>(q, name, isSelected));
     }
 
-    private void addViewModel(String name, QuestContext context, String text, int duration) {
-        Quest q = makeQuest(name, context);
+    private void addViewModel(String name, Category category, String text, int duration) {
+        Quest q = makeQuest(name, category);
         q.setDuration(duration);
         viewModels.add(new PickQuestViewModel<>(q, text));
     }
 
     @NonNull
-    private Quest makeQuest(String name, QuestContext context) {
+    private Quest makeQuest(String name, Category category) {
         Quest q = new Quest(name, DateUtils.now());
-        Quest.setContext(q, context);
+        Quest.setCategory(q, category);
         q.setRawText(name + " today");
         return q;
     }

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -32,6 +31,9 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -57,6 +59,7 @@ import rx.schedulers.Schedulers;
  */
 public class AppJobService extends JobService {
 
+    public static final String DEBUG_ADVERTISING_ID = "12345";
     @Inject
     iPoliAPIService apiService;
 
@@ -78,6 +81,7 @@ public class AppJobService extends JobService {
             Realm realm = Realm.getDefaultInstance();
             try {
                 PlayerPersistenceService playerPersistenceService = new RealmPlayerPersistenceService(realm);
+                ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
                 QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
                 RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
                 Player p = syncPlayer(playerPersistenceService);
@@ -85,11 +89,13 @@ public class AppJobService extends JobService {
                     return Observable.empty();
                 }
                 scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                syncChallenges(challengePersistenceService, p);
                 syncRemovedQuests(p);
-                syncRepeatingQuests(repeatingQuestPersistenceService, p);
-                syncQuests(questPersistenceService, repeatingQuestPersistenceService, p);
-                getRepeatingQuests(repeatingQuestPersistenceService, p);
-                getQuests(questPersistenceService, repeatingQuestPersistenceService, p);
+                syncRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
+                syncQuests(challengePersistenceService, questPersistenceService, repeatingQuestPersistenceService, p);
+                getChallenges(challengePersistenceService, p);
+                getRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
+                getQuests(challengePersistenceService, questPersistenceService, repeatingQuestPersistenceService, p);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
@@ -109,7 +115,6 @@ public class AppJobService extends JobService {
                 });
         return true;
     }
-
 
     private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         LocalDate currentDate = LocalDate.now();
@@ -186,7 +191,7 @@ public class AppJobService extends JobService {
             return idInfo.getId();
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                return UUID.randomUUID().toString();
+                return DEBUG_ADVERTISING_ID;
             }
             throw new RuntimeException(e);
         }
@@ -204,7 +209,41 @@ public class AppJobService extends JobService {
         localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
     }
 
-    private void syncQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+    private void syncChallenges(ChallengePersistenceService challengePersistenceService, Player player) throws IOException {
+        List<Challenge> challenges = challengePersistenceService.findAllWhoNeedSyncWithRemote();
+        if (challenges.isEmpty()) {
+            return;
+        }
+
+        List<String> localIds = new ArrayList<>();
+        for (Challenge c : challenges) {
+            localIds.add(getLocalIdForRemoteObject(c));
+            c.setId(isLocalOnly(c) ? null : c.getRemoteId());
+        }
+
+        RequestBody requestBody = createRequestBody().param("data", challenges).param("player_id", player.getRemoteId()).build();
+        List<Challenge> serverChallenges = apiService.syncChallenges(requestBody).execute().body();
+        for (int i = 0; i < serverChallenges.size(); i++) {
+            Challenge challenge = serverChallenges.get(i);
+            updateChallenge(challenge, localIds.get(i));
+        }
+        challengePersistenceService.saveSync(serverChallenges, false);
+    }
+
+    private Challenge updateChallenge(Challenge serverChallenge, String localId) {
+        serverChallenge.setSyncedWithRemote();
+        serverChallenge.setRemoteId(serverChallenge.getId());
+        serverChallenge.setId(localId);
+        if (serverChallenge.getExperience() == null) {
+            serverChallenge.setExperience(new ExperienceRewardGenerator().generate(serverChallenge));
+        }
+        if (serverChallenge.getCoins() == null) {
+            serverChallenge.setCoins(new CoinsRewardGenerator().generate(serverChallenge));
+        }
+        return serverChallenge;
+    }
+
+    private void syncQuests(ChallengePersistenceService challengePersistenceService, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<Quest> quests = questPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
             return;
@@ -216,12 +255,15 @@ public class AppJobService extends JobService {
             if (q.getRepeatingQuest() != null) {
                 q.getRepeatingQuest().setId(q.getRepeatingQuest().getRemoteId());
             }
+            if (q.getChallenge() != null) {
+                q.getChallenge().setId(q.getChallenge().getRemoteId());
+            }
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
         List<Quest> serverQuests = apiService.syncQuests(requestBody).execute().body();
         for (int i = 0; i < serverQuests.size(); i++) {
             Quest sq = serverQuests.get(i);
-            updateQuest(repeatingQuestPersistenceService, sq, localIds.get(i));
+            updateQuest(challengePersistenceService, repeatingQuestPersistenceService, sq, localIds.get(i));
         }
         questPersistenceService.saveSync(serverQuests, false);
     }
@@ -236,7 +278,7 @@ public class AppJobService extends JobService {
         return new JsonRequestBodyBuilder(getApplicationContext()).param(param, value).build();
     }
 
-    private void syncRepeatingQuests(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+    private void syncRepeatingQuests(ChallengePersistenceService challengePersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<RepeatingQuest> quests = repeatingQuestPersistenceService.findAllWhoNeedSyncWithRemote();
         if (quests.isEmpty()) {
             return;
@@ -245,24 +287,48 @@ public class AppJobService extends JobService {
         for (RepeatingQuest q : quests) {
             localIds.add(getLocalIdForRemoteObject(q));
             q.setId(isLocalOnly(q) ? null : q.getRemoteId());
+            if (q.getChallenge() != null) {
+                q.getChallenge().setId(q.getChallenge().getRemoteId());
+            }
         }
         RequestBody requestBody = createRequestBody().param("data", quests).param("player_id", player.getRemoteId()).build();
         List<RepeatingQuest> serverQuests = apiService.syncRepeatingQuests(requestBody).execute().body();
         for (int i = 0; i < serverQuests.size(); i++) {
             RepeatingQuest sq = serverQuests.get(i);
-            updateRepeatingQuest(sq, localIds.get(i));
+            updateRepeatingQuest(challengePersistenceService, sq, localIds.get(i));
         }
         repeatingQuestPersistenceService.saveSync(serverQuests, false);
     }
 
-    private RepeatingQuest updateRepeatingQuest(RepeatingQuest serverQuest, String localId) {
+    private RepeatingQuest updateRepeatingQuest(ChallengePersistenceService challengePersistenceService, RepeatingQuest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
+
+        if (serverQuest.getChallenge() != null) {
+            Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
+            if (challenge != null) {
+                serverQuest.setChallenge(challenge);
+            }
+        }
         return serverQuest;
     }
 
-    private void getRepeatingQuests(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+    private void getChallenges(ChallengePersistenceService challengePersistenceService, Player player) throws IOException {
+        List<Challenge> serverChallenges = apiService.getChallenges(player.getRemoteId()).execute().body();
+        List<Challenge> challengesToSave = new ArrayList<>();
+        for (Challenge sc : serverChallenges) {
+            Challenge challenge = challengePersistenceService.findByRemoteId(sc.getId());
+            if (challenge != null && sc.getUpdatedAt().getTime() <= challenge.getUpdatedAt().getTime()) {
+                continue;
+            }
+            String localId = getLocalIdForRemoteObject(challenge);
+            challengesToSave.add(updateChallenge(sc, localId));
+        }
+        challengePersistenceService.saveSync(challengesToSave, false);
+    }
+
+    private void getRepeatingQuests(ChallengePersistenceService challengePersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<RepeatingQuest> serverQuests = apiService.getRepeatingQuests(player.getRemoteId()).execute().body();
         List<RepeatingQuest> questsToSave = new ArrayList<>();
         for (RepeatingQuest sq : serverQuests) {
@@ -271,12 +337,12 @@ public class AppJobService extends JobService {
                 continue;
             }
             String localId = getLocalIdForRemoteObject(repeatingQuest);
-            questsToSave.add(updateRepeatingQuest(sq, localId));
+            questsToSave.add(updateRepeatingQuest(challengePersistenceService, sq, localId));
         }
         repeatingQuestPersistenceService.saveSync(questsToSave, false);
     }
 
-    private void getQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
+    private void getQuests(ChallengePersistenceService challengePersistenceService, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Player player) throws IOException {
         List<Quest> serverQuests = apiService.getQuests(player.getRemoteId()).execute().body();
         List<Quest> questsToSave = new ArrayList<>();
         for (Quest sq : serverQuests) {
@@ -285,12 +351,12 @@ public class AppJobService extends JobService {
                 continue;
             }
             String localId = getLocalIdForRemoteObject(quest);
-            questsToSave.add(updateQuest(repeatingQuestPersistenceService, sq, localId));
+            questsToSave.add(updateQuest(challengePersistenceService, repeatingQuestPersistenceService, sq, localId));
         }
         questPersistenceService.saveSync(questsToSave, false);
     }
 
-    private Quest updateQuest(RepeatingQuestPersistenceService repeatingQuestPersistenceService, Quest serverQuest, String localId) {
+    private Quest updateQuest(ChallengePersistenceService challengePersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Quest serverQuest, String localId) {
         serverQuest.setSyncedWithRemote();
         serverQuest.setRemoteId(serverQuest.getId());
         serverQuest.setId(localId);
@@ -306,6 +372,13 @@ public class AppJobService extends JobService {
                 serverQuest.setRepeatingQuest(repeatingQuest);
             }
         }
+        if (serverQuest.getChallenge() != null) {
+            Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
+            if (challenge != null) {
+                serverQuest.setChallenge(challenge);
+            }
+        }
+
         return serverQuest;
     }
 

@@ -23,7 +23,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
-import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
@@ -58,12 +57,12 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
         });
 
-        GradientDrawable drawable = (GradientDrawable) holder.indicator.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, vm.getContextColor()));
+        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicator.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
 
         if (vm.isStarted()) {
             Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
-            holder.indicator.startAnimation(blinkAnimation);
+            holder.categoryIndicator.startAnimation(blinkAnimation);
         }
 
         holder.name.setText(vm.getName());
@@ -79,9 +78,13 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
             }
         });
-        holder.schedule.setOnClickListener(v -> {
-            eventBus.post(new ScheduleQuestRequestEvent(vm));
-        });
+
+        holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
+        holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
+        holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
+//        holder.schedule.setOnClickListener(v -> {
+//            eventBus.post(new ScheduleQuestRequestEvent(vm));
+//        });
     }
 
     @Override
@@ -117,11 +120,20 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_context_indicator)
-        View indicator;
+        @BindView(R.id.quest_category_indicator)
+        View categoryIndicator;
 
-        @BindView(R.id.quest_schedule)
-        View schedule;
+        @BindView(R.id.quest_priority_indicator)
+        View priorityIndicator;
+
+        @BindView(R.id.quest_repeating_indicator)
+        View repeatingIndicator;
+
+        @BindView(R.id.quest_challenge_indicator)
+        View challengeIndicator;
+
+//        @BindView(R.id.quest_schedule)
+//        View schedule;
 
         public ViewHolder(View v) {
             super(v);

@@ -20,7 +20,7 @@ public class TimePickerFragment extends DialogFragment
 
     public static final String TAG = "time-picker-dialog";
     private static final String MINUTES_AFTER_MIDNIGHT = "minutes_after_midnight";
-    private static final String ENABLE_UNKNOWN_TIME_SELECTION = "disable_unknown_time_selection";
+    private static final String ENABLE_UNKNOWN_TIME_SELECTION = "enable_unknown_time_selection";
 
     private Time time;
     private boolean enableUnknownTimeSelection;

@@ -7,7 +7,7 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
@@ -35,7 +35,7 @@ public class PickRepeatingQuestsAdapter extends BasePickQuestAdapter<RepeatingQu
     }
 
     @Override
-    protected QuestContext getQuestContext(int adapterPosition) {
-        return RepeatingQuest.getContext(viewModels.get(adapterPosition).getQuest());
+    protected Category getQuestCategory(int adapterPosition) {
+        return RepeatingQuest.getCategory(viewModels.get(adapterPosition).getQuest());
     }
 }

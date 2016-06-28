@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.generators;
 
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -7,7 +8,9 @@ import io.ipoli.android.quest.data.Quest;
  * on 6/1/16.
  */
 public interface RewardGenerator {
+    long generate(Challenge challenge);
+
     long generate(Quest quest);
-    long generate();
+
     long generateForDailyChallenge();
 }

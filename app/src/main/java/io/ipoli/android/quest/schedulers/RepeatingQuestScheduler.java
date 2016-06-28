@@ -72,7 +72,7 @@ public class RepeatingQuestScheduler {
     public Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
         Quest quest = new Quest();
         quest.setName(repeatingQuest.getName());
-        quest.setContext(repeatingQuest.getContext());
+        quest.setCategory(repeatingQuest.getCategory());
         quest.setDuration(repeatingQuest.getDuration());
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);
@@ -86,6 +86,7 @@ public class RepeatingQuestScheduler {
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
+        quest.setChallenge(repeatingQuest.getChallenge());
         quest.setRepeatingQuest(repeatingQuest);
         return quest;
     }

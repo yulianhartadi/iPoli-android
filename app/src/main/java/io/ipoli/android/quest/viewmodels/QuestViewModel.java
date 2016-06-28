@@ -7,7 +7,7 @@ import android.support.annotation.DrawableRes;
 import java.util.Locale;
 
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.QuestContext;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -35,21 +35,21 @@ public class QuestViewModel {
     }
 
     @ColorRes
-    public int getContextColor() {
-        return getQuestContext().resLightColor;
+    public int getCategoryColor() {
+        return getQuestCategory().resLightColor;
     }
 
     @DrawableRes
-    public int getContextImage() {
-        return getQuestContext().whiteImage;
+    public int getCategoryImage() {
+        return getQuestCategory().whiteImage;
     }
 
     public String getDueDateText() {
         return DateFormatter.formatWithoutYear(quest.getEndDate());
     }
 
-    private QuestContext getQuestContext() {
-        return Quest.getContext(quest);
+    private Category getQuestCategory() {
+        return Quest.getCategory(quest);
     }
 
     public Quest getQuest() {
@@ -99,5 +99,9 @@ public class QuestViewModel {
 
     public boolean isMostImportant() {
         return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
+    }
+
+    public boolean isForChallenge() {
+        return quest.getChallenge() != null;
     }
 }
