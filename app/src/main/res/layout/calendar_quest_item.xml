@@ -74,7 +74,6 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_sword_black_24dp" />
 
-
             <android.support.v4.widget.Space
                 android:layout_width="16dp"
                 android:layout_height="wrap_content" />

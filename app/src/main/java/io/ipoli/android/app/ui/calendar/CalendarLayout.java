@@ -2,6 +2,7 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -80,11 +81,18 @@ public class CalendarLayout extends FrameLayout {
         params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
         params.topMargin = (int) y - params.height / 2;
         dragView.setLayoutParams(params);
+
+        TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
+        nameView.setText(calendarEvent.getName());
+
         if (calendarEvent.getDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(dragView);
         }
-        TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
-        nameView.setText(calendarEvent.getName());
+
+        if(calendarEvent.getDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
+            nameView.setSingleLine(true);
+            nameView.setEllipsize(TextUtils.TruncateAt.END);
+        }
 
         dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? VISIBLE : GONE);
         dragView.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? VISIBLE : GONE);
