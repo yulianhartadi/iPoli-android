@@ -62,4 +62,12 @@ public class Reminder extends RealmObject {
     public void setMinutesFromStart(long minutesFromStart) {
         this.minutesFromStart = minutesFromStart;
     }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
