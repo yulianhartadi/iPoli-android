@@ -7,9 +7,9 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
@@ -217,16 +217,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public List<Quest> findPlannedQuestsStartingAfter(LocalDate localDate) {
-        return findAll(where -> where
-                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(localDate))
-                .greaterThanOrEqualTo("startMinute", Time.now().toMinutesAfterMidnight())
-                .isNull("actualStart")
-                .isNull("completedAt")
-                .findAllSorted("endDate", Sort.ASCENDING, "startMinute", Sort.ASCENDING));
-    }
-
-    @Override
     public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener) {
         listenForChanges(where()
                 .greaterThanOrEqualTo("endDate", toStartOfDayUTC(startDate))
@@ -248,24 +238,32 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public void saveReminders(Quest quest, List<Reminder> reminders) {
         getRealm().executeTransaction(realm -> {
+            int notificationId = quest.getReminders() == null || quest.getReminders().isEmpty() ? new Random().nextInt() : quest.getReminders().get(0).getNotificationId();
             List<Reminder> remindersToSave = new ArrayList<>();
-                for(Reminder newReminder : reminders) {
-                    boolean isEdited = false;
-                    for(Reminder dbReminder : quest.getReminders()) {
-                        if(newReminder.getId().equals(dbReminder.getId())) {
-                            dbReminder.setMessage(newReminder.getMessage());
-                            dbReminder.setMinutesFromStart(newReminder.getMinutesFromStart());
-                            remindersToSave.add(dbReminder);
-                            isEdited = true;
-                            break;
-                        }
-                    }
-                    if(!isEdited) {
-                        remindersToSave.add(newReminder);
+            for (Reminder newReminder : reminders) {
+                boolean isEdited = false;
+                for (Reminder dbReminder : quest.getReminders()) {
+                    if (newReminder.getId().equals(dbReminder.getId())) {
+                        dbReminder.setMessage(newReminder.getMessage());
+                        dbReminder.setMinutesFromStart(newReminder.getMinutesFromStart());
+                        dbReminder.markUpdated();
+                        remindersToSave.add(dbReminder);
+                        isEdited = true;
+                        break;
                     }
                 }
-                quest.getReminders().clear();
-                quest.getReminders().addAll(remindersToSave);
+                if (!isEdited) {
+                    if (newReminder.getIntentId() == null) {
+                        newReminder.setIntentId(new Random().nextInt());
+                    }
+                    if (newReminder.getNotificationId() == null) {
+                        newReminder.setNotificationId(notificationId);
+                    }
+                    remindersToSave.add(newReminder);
+                }
+            }
+            quest.getReminders().clear();
+            quest.getReminders().addAll(remindersToSave);
         });
     }
 }

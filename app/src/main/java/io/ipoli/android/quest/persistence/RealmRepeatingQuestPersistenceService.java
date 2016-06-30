@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
@@ -81,19 +82,27 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     @Override
     public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
         getRealm().executeTransaction(realm -> {
+            int notificationId = repeatingQuest.getReminders() == null || repeatingQuest.getReminders().isEmpty() ? new Random().nextInt() : repeatingQuest.getReminders().get(0).getNotificationId();
             List<Reminder> remindersToSave = new ArrayList<>();
-            for(Reminder newReminder : reminders) {
+            for (Reminder newReminder : reminders) {
                 boolean isEdited = false;
-                for(Reminder dbReminder : repeatingQuest.getReminders()) {
-                    if(newReminder.getId().equals(dbReminder.getId())) {
+                for (Reminder dbReminder : repeatingQuest.getReminders()) {
+                    if (newReminder.getId().equals(dbReminder.getId())) {
                         dbReminder.setMessage(newReminder.getMessage());
                         dbReminder.setMinutesFromStart(newReminder.getMinutesFromStart());
+                        dbReminder.markUpdated();
                         remindersToSave.add(dbReminder);
                         isEdited = true;
                         break;
                     }
                 }
-                if(!isEdited) {
+                if (!isEdited) {
+                    if (newReminder.getIntentId() == null) {
+                        newReminder.setIntentId(new Random().nextInt());
+                    }
+                    if (newReminder.getNotificationId() == null) {
+                        newReminder.setNotificationId(notificationId);
+                    }
                     remindersToSave.add(newReminder);
                 }
             }

@@ -26,8 +26,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
 
-    List<Quest> findPlannedQuestsStartingAfter(LocalDate localDate);
-
     long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
     void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
