@@ -52,6 +52,13 @@
         <item name="android:layout_marginEnd">12dp</item>
     </style>
 
+    <style name="DialogContainer">
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style>
+
     <style name="Theme.iPoli.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.iPoli.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

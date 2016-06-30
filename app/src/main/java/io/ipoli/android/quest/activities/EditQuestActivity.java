@@ -65,6 +65,7 @@ import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
@@ -96,6 +97,7 @@ import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
+import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
@@ -121,7 +123,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
-        CategoryView.OnCategoryChangedListener{
+        CategoryView.OnCategoryChangedListener, EditReminderFragment.OnReminderCreatedListener {
 
     @Inject
     Bus eventBus;
@@ -557,9 +559,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
-    @OnClick(R.id.quest_reminders_container)
+    @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-
+        EditReminderFragment f = EditReminderFragment.newInstance(new Reminder(), this);
+        f.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_challenge_container)
@@ -614,6 +617,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateTimesPerDay(timesPerDay);
         eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
     }
+
+    @Override
+    public void onReminderCreated(Reminder reminder) {
+
+    }
+
 
     @Override
     public void onChallengePicked(String challengeId) {

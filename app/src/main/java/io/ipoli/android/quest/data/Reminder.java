@@ -21,7 +21,7 @@ public class Reminder extends RealmObject {
     private String message;
 
     @Required
-    private Integer minutesFromStart;
+    private Long minutesFromStart;
 
     @Required
     private Integer notificationId;
@@ -71,11 +71,11 @@ public class Reminder extends RealmObject {
         this.updatedAt = updatedAt;
     }
 
-    public int getMinutesFromStart() {
+    public long getMinutesFromStart() {
         return minutesFromStart;
     }
 
-    public void setMinutesFromStart(int minutesFromStart) {
+    public void setMinutesFromStart(long minutesFromStart) {
         this.minutesFromStart = minutesFromStart;
     }
 
