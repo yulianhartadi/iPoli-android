@@ -38,7 +38,7 @@ public class Reminder extends RealmObject {
     public Reminder() {
     }
 
-    public Reminder(int minutesFromStart, int notificationId, int intentId) {
+    public Reminder(long minutesFromStart, int notificationId, int intentId) {
         this.id = IDGenerator.generate();
         this.intentId = intentId;
         this.notificationId = notificationId;
