@@ -88,6 +88,8 @@ public interface Constants {
 
     boolean DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true;
 
+    int[] REMINDER_PREDEFINED_MINUTES = new int[]{0, 10, 15, 30, 60};
+
     Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
             DaysOfWeek.TUESDAY.getIsoOrder(),

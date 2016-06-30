@@ -561,9 +561,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        Reminder reminder = new Reminder();
-        reminder.setMessage("hi");
-        reminder.setMinutesFromStart(-90);
+        Reminder reminder = null;
+//        reminder = new Reminder();
+//        reminder.setMessage("hi");
+//        reminder.setMinutesFromStart(-90);
         EditReminderFragment f = EditReminderFragment.newInstance(reminder, this);
         f.show(getSupportFragmentManager());
     }

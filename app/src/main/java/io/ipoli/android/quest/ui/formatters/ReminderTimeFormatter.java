@@ -9,11 +9,17 @@ import java.util.concurrent.TimeUnit;
 public class ReminderTimeFormatter {
 
     public static String formatMinutesBeforeReadable(int minutes) {
-        long hours = TimeUnit.MINUTES.toHours(minutes);
-        long mins = minutes - hours * 60;
-        if (hours <= 0 && mins <= 0) {
+        if(minutes < 0) {
             return "";
         }
+
+        if(minutes == 0) {
+            return "At start";
+        }
+
+        long hours = TimeUnit.MINUTES.toHours(minutes);
+        long mins = minutes - hours * 60;
+
         if (hours > 0 && mins > 0) {
             return hours + "hours and " + mins + " minutes before";
         }

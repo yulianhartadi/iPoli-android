@@ -31,6 +31,8 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 
+import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
+
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/14/16.
@@ -71,13 +73,15 @@ public class EditReminderFragment extends DialogFragment {
     private Reminder reminder;
     private boolean isCustom = false;
 
-    int[] minutesBefore = new int[]{10, 15, 30, 60};
-
     private OnReminderCreatedListener reminderCreatedListener;
     private Unbinder unbinder;
 
     public interface OnReminderCreatedListener {
         void onReminderCreated(Reminder reminder);
+    }
+
+    public static EditReminderFragment newInstance(OnReminderCreatedListener reminderCreatedListener) {
+        return newInstance(null, reminderCreatedListener);
     }
 
     public static EditReminderFragment newInstance(Reminder reminder, OnReminderCreatedListener reminderCreatedListener) {
@@ -124,6 +128,9 @@ public class EditReminderFragment extends DialogFragment {
                 .setTitle(R.string.quest_reminders_question)
                 .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                    if(reminder == null) {
+                        reminder = new Reminder();
+                    }
                     String message = StringUtils.isEmpty(messageView.getText().toString()) ? null : messageView.getText().toString().trim();
                     long minutes = 0;
                     if (isCustom) {
@@ -135,7 +142,7 @@ public class EditReminderFragment extends DialogFragment {
                         long typeMinutes = TimeType.values()[customTimeTypesView.getSelectedItemPosition()].getMinutes();
                         minutes = value * typeMinutes;
                     } else {
-                        minutes = minutesBefore[predefinedTimesView.getSelectedItemPosition()];
+                        minutes = REMINDER_PREDEFINED_MINUTES[predefinedTimesView.getSelectedItemPosition()];
                     }
 
                     minutes = -minutes;
@@ -192,8 +199,8 @@ public class EditReminderFragment extends DialogFragment {
 
     private void initPredefinedTimes() {
         List<String> predefinedTimes = new ArrayList<>();
-        for (int i = 0; i < minutesBefore.length; i++) {
-            predefinedTimes.add(ReminderTimeFormatter.formatMinutesBeforeReadable(minutesBefore[i]));
+        for (int i = 0; i < REMINDER_PREDEFINED_MINUTES.length; i++) {
+            predefinedTimes.add(ReminderTimeFormatter.formatMinutesBeforeReadable(REMINDER_PREDEFINED_MINUTES[i]));
         }
         predefinedTimes.add("Custom");
 
