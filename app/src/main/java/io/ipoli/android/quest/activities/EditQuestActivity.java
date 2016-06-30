@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -240,6 +241,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         categoryView.changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
+        for(Reminder reminder : quest.getReminders()) {
+            addReminder(reminder);
+        }
     }
 
     private void onEditRepeatingQuest() {
@@ -255,6 +259,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
+        for(Reminder reminder : rq.getReminders()) {
+            addReminder(reminder);
+        }
     }
 
     private void onAddNewQuest() {
@@ -263,6 +270,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         populateChallenge(null);
+        //TODO set right ids
+        addReminder(new Reminder(0, new Random().nextInt(), new Random().nextInt()));
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -435,7 +444,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q, source));
+        eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -460,7 +469,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
+        eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
@@ -710,7 +719,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private boolean reminderWithSameTimeExists(Reminder reminder) {
         for(Reminder r : getReminders()) {
-            if(reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+            if(!reminder.getId().equals(r.getId()) && reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
                 return true;
             }
         }
@@ -785,7 +794,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
         q.setNote((String) noteText.getTag());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
-        eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
+
+        eventBus.post(new NewQuestEvent(q, getReminders(), EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -814,7 +824,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new NewRepeatingQuestEvent(rq));
+        eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
 

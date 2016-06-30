@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -118,9 +119,6 @@ public class EditReminderFragment extends DialogFragment {
                 .setTitle(R.string.quest_reminders_question)
                 .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    if (reminder == null) {
-                        reminder = new Reminder();
-                    }
                     String message = StringUtils.isEmpty(messageView.getText().toString()) ? null : messageView.getText().toString().trim();
                     long minutes = 0;
                     if (isCustom) {
@@ -136,8 +134,13 @@ public class EditReminderFragment extends DialogFragment {
                     }
 
                     minutes = -minutes;
-                    reminder.setMessage(message);
-                    reminder.setMinutesFromStart(minutes);
+                    if (reminder == null) {
+                        //TODO: generate ids
+                        reminder = new Reminder(minutes, 0, new Random().nextInt());
+                    } else {
+                        reminder.setMessage(message);
+                        reminder.setMinutesFromStart(minutes);
+                    }
                     reminderCreatedListener.onReminderCreated(reminder);
 
                 })
