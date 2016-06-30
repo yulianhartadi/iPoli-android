@@ -106,6 +106,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.category = Category.PERSONAL.name();
+        this.reminders = new RealmList<>();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.source = Constants.API_RESOURCE_SOURCE;

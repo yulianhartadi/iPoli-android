@@ -4,6 +4,7 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -245,8 +246,26 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public void addReminder(Quest quest, Reminder reminder) {
-        getRealm().executeTransaction(realm ->
-                quest.getReminders().add(reminder));
+    public void saveReminders(Quest quest, List<Reminder> reminders) {
+        getRealm().executeTransaction(realm -> {
+            List<Reminder> remindersToSave = new ArrayList<>();
+                for(Reminder newReminder : reminders) {
+                    boolean isEdited = false;
+                    for(Reminder dbReminder : quest.getReminders()) {
+                        if(newReminder.getId().equals(dbReminder.getId())) {
+                            dbReminder.setMessage(newReminder.getMessage());
+                            dbReminder.setMinutesFromStart(newReminder.getMinutesFromStart());
+                            remindersToSave.add(dbReminder);
+                            isEdited = true;
+                            break;
+                        }
+                    }
+                    if(!isEdited) {
+                        remindersToSave.add(newReminder);
+                    }
+                }
+                quest.getReminders().clear();
+                quest.getReminders().addAll(remindersToSave);
+        });
     }
 }

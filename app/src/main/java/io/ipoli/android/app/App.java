@@ -348,6 +348,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
+        questPersistenceService.saveReminders(e.quest, e.reminders);
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);
@@ -357,6 +358,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
+        questPersistenceService.saveReminders(e.quest, e.reminders);
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);
@@ -378,6 +380,7 @@ public class App extends MultiDexApplication {
         localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
         questPersistenceService.delete(questsToRemove).subscribe(ignored -> {
         }, Throwable::printStackTrace, () -> {
+            repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
             repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
             onQuestChanged();
         });
@@ -459,6 +462,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
+        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
         repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
     }
 

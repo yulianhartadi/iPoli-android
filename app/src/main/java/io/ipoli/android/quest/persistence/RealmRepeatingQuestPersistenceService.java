@@ -4,10 +4,12 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
@@ -74,5 +76,29 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         return findAllIncludingDeleted(where -> where
                 .equalTo("challenge.id", challenge.getId())
                 .findAll());
+    }
+
+    @Override
+    public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
+        getRealm().executeTransaction(realm -> {
+            List<Reminder> remindersToSave = new ArrayList<>();
+            for(Reminder newReminder : reminders) {
+                boolean isEdited = false;
+                for(Reminder dbReminder : repeatingQuest.getReminders()) {
+                    if(newReminder.getId().equals(dbReminder.getId())) {
+                        dbReminder.setMessage(newReminder.getMessage());
+                        dbReminder.setMinutesFromStart(newReminder.getMinutesFromStart());
+                        remindersToSave.add(dbReminder);
+                        isEdited = true;
+                        break;
+                    }
+                }
+                if(!isEdited) {
+                    remindersToSave.add(newReminder);
+                }
+            }
+            repeatingQuest.getReminders().clear();
+            repeatingQuest.getReminders().addAll(remindersToSave);
+        });
     }
 }

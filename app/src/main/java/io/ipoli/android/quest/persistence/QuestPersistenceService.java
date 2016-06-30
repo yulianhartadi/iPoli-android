@@ -52,5 +52,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
 
-    void addReminder(Quest quest, Reminder reminder);
+    void saveReminders(Quest quest, List<Reminder> reminders);
 }
