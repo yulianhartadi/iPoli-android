@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.app.share;
 
 import android.graphics.drawable.Drawable;
 

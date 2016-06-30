@@ -11,6 +11,7 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
@@ -153,9 +154,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
         return findAllIncludingDeleted(where -> where
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .beginGroup()
-                    .isNull("endDate")
-                    .or()
-                    .greaterThanOrEqualTo("endDate", startDateUtc)
+                .isNull("endDate")
+                .or()
+                .greaterThanOrEqualTo("endDate", startDateUtc)
                 .endGroup()
                 .findAll());
     }
@@ -188,9 +189,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .greaterThanOrEqualTo("endDate", startDateUTC)
                 .lessThan("endDate", endDateUTC)
                 .beginGroup()
-                    .isNull("completedAt")
-                    .or()
-                    .equalTo("priority", Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY)
+                .isNull("completedAt")
+                .or()
+                .equalTo("priority", Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY)
                 .endGroup()
                 .equalTo("allDay", false)
                 .findAllSortedAsync("startMinute", Sort.ASCENDING), listener);
@@ -241,5 +242,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .lessThan("completedAt", toStartOfDay(endDate))
                 .equalTo("allDay", false)
                 .findAllSorted("completedAt", Sort.ASCENDING));
+    }
+
+    @Override
+    public void addReminder(Quest quest, Reminder reminder) {
+        getRealm().executeTransaction(realm ->
+                quest.getReminders().add(reminder));
     }
 }

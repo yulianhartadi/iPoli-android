@@ -18,9 +18,10 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.realm.Realm;
@@ -42,16 +43,28 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        String reminderId = intent.getStringExtra(Constants.REMINDER_ID_EXTRA_KEY);
         Realm realm = Realm.getDefaultInstance();
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         Quest q = questPersistenceService.findById(questId);
         if (q == null) {
             return;
         }
-        showNotification(context, questId, q);
+        Reminder reminder = null;
+        for (Reminder r : q.getReminders()) {
+            if (r.getId().equals(reminderId)) {
+                reminder = r;
+                break;
+            }
+        }
+
+        if (reminder == null) {
+            return;
+        }
+        showNotification(context, questId, q, reminder);
     }
 
-    private void showNotification(Context context, String questId, Quest q) {
+    private void showNotification(Context context, String questId, Quest q, Reminder reminder) {
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
         remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
@@ -66,13 +79,12 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setContentTitle(name)
-                .setContentText("Ready to start?")
+                .setContentText(StringUtils.isEmpty(reminder.getMessage()) ? "Ready to start?" : reminder.getMessage())
                 .setContentIntent(pendingNotificationIntent)
-                .setShowWhen(false)
-                .setContentInfo(Time.of(q.getStartMinute()).toString())
+                .setShowWhen(true)
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setOnlyAlertOnce(true)
+                .setOnlyAlertOnce(false)
                 .setAutoCancel(true)
                 .addAction(R.drawable.ic_snooze_black_24dp, "SNOOZE", snoozeQuestPI)
                 .addAction(R.drawable.ic_play_arrow_black_24dp, "START", startQuestPI)
@@ -80,7 +92,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(Constants.REMIND_START_QUEST_NOTIFICATION_ID, builder.build());
+        notificationManagerCompat.notify(reminder.getNotificationId(), builder.build());
     }
 
 

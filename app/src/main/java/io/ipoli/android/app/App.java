@@ -1,6 +1,8 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetManager;
@@ -54,6 +56,7 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
@@ -76,6 +79,7 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -96,7 +100,7 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
-import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
+import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
@@ -181,7 +185,7 @@ public class App extends MultiDexApplication {
 
         moveIncompleteQuestsToInbox();
         registerServices();
-        scheduleNextReminder();
+//        scheduleNextReminder();
 
         LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
@@ -469,9 +473,8 @@ public class App extends MultiDexApplication {
                 questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                eventBus.post(new ServerSyncRequestEvent());
-            });
+            }, Throwable::printStackTrace, () ->
+                    eventBus.post(new ServerSyncRequestEvent()));
         } else {
 
             Observable.defer(() -> {
@@ -481,9 +484,8 @@ public class App extends MultiDexApplication {
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                eventBus.post(new ServerSyncRequestEvent());
-            });
+            }, Throwable::printStackTrace, () ->
+                    eventBus.post(new ServerSyncRequestEvent()));
         }
     }
 
@@ -518,7 +520,33 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
-        onQuestChanged();
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//        cancelScheduledReminder(alarm);
+
+        scheduleNextReminder(alarm, e.quest);
+    }
+
+    private void cancelScheduledReminder(AlarmManager alarm) {
+        alarm.cancel(getCancelPendingIntent(this));
+    }
+
+    private void scheduleNextReminder(AlarmManager alarm, Quest q) {
+        Date startDateTime = Quest.getStartDateTime(q);
+        if (startDateTime == null) {
+            return;
+        }
+        for (Reminder reminder : q.getReminders()) {
+            Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
+            i.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
+            i.putExtra(Constants.REMINDER_ID_EXTRA_KEY, reminder.getId());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getIntentId(), i, PendingIntent.FLAG_ONE_SHOT);
+            alarm.setExact(AlarmManager.RTC_WAKEUP, startDateTime.getTime() + TimeUnit.MINUTES.toMillis(reminder.getMinutesFromStart()), pendingIntent);
+        }
+    }
+
+    public PendingIntent getCancelPendingIntent(Context context) {
+        Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
+        return IntentUtils.getBroadcastPendingIntent(context, i);
     }
 
     @Subscribe
@@ -556,7 +584,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestChanged() {
-        scheduleNextReminder();
+//        scheduleNextReminder();
         updateWidgets();
     }
 
@@ -570,7 +598,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
-        scheduleNextReminder();
+//        scheduleNextReminder();
     }
 
     @Subscribe
@@ -631,10 +659,6 @@ public class App extends MultiDexApplication {
         return new JobInfo.Builder(dailySyncJobId,
                 new ComponentName(getPackageName(),
                         AppJobService.class.getName()));
-    }
-
-    private void scheduleNextReminder() {
-        sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
     }
 
     @Subscribe
@@ -720,7 +744,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
-        scheduleNextReminder();
+//        scheduleNextReminder();
         updateWidgets();
     }
 }

@@ -42,7 +42,6 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
         Quest q = getQuest(intent);
         q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
         return questPersistenceService.save(q).flatMap(quest -> {
-            scheduleNextQuestReminder(context);
             eventBus.post(new QuestSnoozedEvent(q));
             return Observable.empty();
         });
@@ -51,9 +50,5 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
     private Quest getQuest(Intent intent) {
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         return questPersistenceService.findById(questId);
-    }
-
-    private void scheduleNextQuestReminder(Context context) {
-        context.sendBroadcast(new Intent(ScheduleQuestReminderReceiver.ACTION_SCHEDULE_REMINDER));
     }
 }

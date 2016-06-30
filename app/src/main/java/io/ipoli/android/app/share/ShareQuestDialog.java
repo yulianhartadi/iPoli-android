@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.app.share;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,7 @@ import com.squareup.otto.Bus;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.quest.data.Quest;
 
