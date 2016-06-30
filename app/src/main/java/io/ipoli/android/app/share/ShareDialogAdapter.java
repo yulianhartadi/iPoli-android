@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.app.share;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import io.ipoli.android.R;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
