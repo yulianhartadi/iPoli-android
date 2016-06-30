@@ -111,15 +111,16 @@ public class EditReminderFragment extends DialogFragment {
         unbinder = ButterKnife.bind(this, view);
 
         if (reminder != null) {
-            if(!StringUtils.isEmpty(reminder.getMessage())) {
+            if (!StringUtils.isEmpty(reminder.getMessage())) {
                 messageView.setText(reminder.getMessage());
                 messageView.setSelection(reminder.getMessage().length());
             }
-            showCustomTimeForm();
-        } else {
-            initPredefinedTimes();
+            if(reminder.getMinutesFromStart() != 0) {
+                showCustomTimeForm();
+            }
         }
 
+        initPredefinedTimes();
         initCustomTimes();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
