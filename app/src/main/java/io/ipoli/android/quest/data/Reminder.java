@@ -16,16 +16,10 @@ public class Reminder extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private String title;
-    private String description;
+    private String message;
 
+    @Required
     private Integer minutesFromStart;
-
-    @Required
-    private Integer startMinute;
-
-    @Required
-    private Date startDate;
 
     @Required
     private Date createdAt;
@@ -43,38 +37,6 @@ public class Reminder extends RealmObject {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Integer getStartMinute() {
-        return startMinute;
-    }
-
-    public void setStartMinute(Integer startMinute) {
-        this.startMinute = startMinute;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
     }
 
     public Date getCreatedAt() {
