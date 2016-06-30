@@ -315,4 +315,5 @@
     <string name="help_dialog_open_challenges_options">Swipe challenge left to open the actions:</string>
     <string name="quest_reminders_question">When should you be reminded?</string>
     <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
+    <string name="do_not_remind">Do not remind</string>
 </resources>

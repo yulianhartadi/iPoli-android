@@ -98,8 +98,6 @@ public class EditReminderFragment extends DialogFragment {
             String reminderJson = getArguments().getString(REMINDER);
             if (!TextUtils.isEmpty(reminderJson)) {
                 reminder = new Gson().fromJson(reminderJson, Reminder.class);
-            } else {
-                reminder = new Reminder();
             }
         }
     }
@@ -113,6 +111,7 @@ public class EditReminderFragment extends DialogFragment {
 
         if (reminder != null) {
             messageView.setText(reminder.getMessage());
+            messageView.setSelection(reminder.getMessage().length());
             showCustomTimeForm();
         } else {
             initPredefinedTimes();
@@ -147,10 +146,13 @@ public class EditReminderFragment extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
-                })
-                .setNeutralButton(R.string.none, (dialogInterface, i) -> {
-
                 });
+
+        if (reminder != null) {
+            builder.setNeutralButton(R.string.do_not_remind, (dialogInterface, i) -> {
+                reminderCreatedListener.onReminderCreated(null);
+            });
+        }
         return builder.create();
 
     }
@@ -172,14 +174,14 @@ public class EditReminderFragment extends DialogFragment {
 
         int selectedPosition = 0;
         int value = 0;
-        if(reminder != null) {
-            long minutes = - reminder.getMinutesFromStart();
+        if (reminder != null) {
+            long minutes = -reminder.getMinutesFromStart();
             TimeType[] types = TimeType.values();
-            for(int i = types.length - 1; i >= 0; i--) {
+            for (int i = types.length - 1; i >= 0; i--) {
                 TimeType type = types[i];
-                if(minutes % type.getMinutes() == 0) {
+                if (minutes % type.getMinutes() == 0) {
                     selectedPosition = types[i].ordinal();
-                    value = (int) (minutes /type.getMinutes());
+                    value = (int) (minutes / type.getMinutes());
                     break;
                 }
             }
