@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -349,9 +348,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        int notificationId = new Random().nextInt();
-        questPersistenceService.addReminder(e.quest, new Reminder(-1, notificationId, new Random().nextInt()));
-        questPersistenceService.addReminder(e.quest, new Reminder(-2, notificationId, new Random().nextInt()));
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);
@@ -477,9 +473,8 @@ public class App extends MultiDexApplication {
                 questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                eventBus.post(new ServerSyncRequestEvent());
-            });
+            }, Throwable::printStackTrace, () ->
+                    eventBus.post(new ServerSyncRequestEvent()));
         } else {
 
             Observable.defer(() -> {
@@ -489,9 +484,8 @@ public class App extends MultiDexApplication {
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                eventBus.post(new ServerSyncRequestEvent());
-            });
+            }, Throwable::printStackTrace, () ->
+                    eventBus.post(new ServerSyncRequestEvent()));
         }
     }
 
