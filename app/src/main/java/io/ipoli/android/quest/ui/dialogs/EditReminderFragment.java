@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +29,8 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.quest.reminders.ReminderMinutesParser;
+import io.ipoli.android.quest.reminders.TimeOffsetType;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 
 import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
@@ -40,20 +42,6 @@ import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
 public class EditReminderFragment extends DialogFragment {
     private static final String TAG = "edit-reminder-dialog";
     private static final String REMINDER = "reminder";
-
-    enum TimeType {
-        MINUTES(1), HOURS(60), DAYS(TimeUnit.DAYS.toMinutes(1)), WEEKS(TimeUnit.DAYS.toMinutes(7));
-
-        private final long minutes;
-
-        TimeType(long minutes) {
-            this.minutes = minutes;
-        }
-
-        public long getMinutes() {
-            return minutes;
-        }
-    }
 
     @BindView(R.id.reminder_message)
     TextInputEditText messageView;
@@ -114,8 +102,10 @@ public class EditReminderFragment extends DialogFragment {
         unbinder = ButterKnife.bind(this, view);
 
         if (reminder != null) {
-            messageView.setText(reminder.getMessage());
-            messageView.setSelection(reminder.getMessage().length());
+            if(!StringUtils.isEmpty(reminder.getMessage())) {
+                messageView.setText(reminder.getMessage());
+                messageView.setSelection(reminder.getMessage().length());
+            }
             showCustomTimeForm();
         } else {
             initPredefinedTimes();
@@ -128,7 +118,7 @@ public class EditReminderFragment extends DialogFragment {
                 .setTitle(R.string.quest_reminders_question)
                 .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    if(reminder == null) {
+                    if (reminder == null) {
                         reminder = new Reminder();
                     }
                     String message = StringUtils.isEmpty(messageView.getText().toString()) ? null : messageView.getText().toString().trim();
@@ -139,7 +129,7 @@ public class EditReminderFragment extends DialogFragment {
                             return;
                         }
                         int value = Integer.valueOf(customTimeValue.getText().toString());
-                        long typeMinutes = TimeType.values()[customTimeTypesView.getSelectedItemPosition()].getMinutes();
+                        long typeMinutes = TimeOffsetType.values()[customTimeTypesView.getSelectedItemPosition()].getMinutes();
                         minutes = value * typeMinutes;
                     } else {
                         minutes = REMINDER_PREDEFINED_MINUTES[predefinedTimesView.getSelectedItemPosition()];
@@ -172,28 +162,19 @@ public class EditReminderFragment extends DialogFragment {
 
     private void initCustomTimes() {
         List<String> times = new ArrayList<>();
-        for (TimeType type : TimeType.values()) {
+        for (TimeOffsetType type : TimeOffsetType.values()) {
             times.add(type.name().toLowerCase() + " before");
         }
         ArrayAdapter<String> customTimeTypesAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, times);
         customTimeTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         customTimeTypesView.setAdapter(customTimeTypesAdapter);
 
-        int selectedPosition = 0;
-        int value = 0;
         if (reminder != null) {
-            long minutes = -reminder.getMinutesFromStart();
-            TimeType[] types = TimeType.values();
-            for (int i = types.length - 1; i >= 0; i--) {
-                TimeType type = types[i];
-                if (minutes % type.getMinutes() == 0) {
-                    selectedPosition = types[i].ordinal();
-                    value = (int) (minutes / type.getMinutes());
-                    break;
-                }
+            Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(- reminder.getMinutesFromStart());
+            if (parsedResult != null) {
+                customTimeValue.setText(String.valueOf(parsedResult.first));
+                customTimeTypesView.setSelection(parsedResult.second.ordinal());
             }
-            customTimeValue.setText(String.valueOf(value));
-            customTimeTypesView.setSelection(selectedPosition);
         }
     }
 

@@ -320,6 +320,12 @@
                 </LinearLayout>
             </RelativeLayout>
 
+            <LinearLayout
+                android:id="@+id/quest_reminders_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
             <RelativeLayout
                 android:id="@+id/quest_add_reminder_container"
                 android:layout_width="match_parent"

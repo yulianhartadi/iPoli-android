@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -89,6 +90,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.reminders.ReminderMinutesParser;
+import io.ipoli.android.quest.reminders.TimeOffsetType;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -106,6 +109,7 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
+import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -123,7 +127,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
-        CategoryView.OnCategoryChangedListener, EditReminderFragment.OnReminderCreatedListener {
+        CategoryView.OnCategoryChangedListener{
 
     @Inject
     Bus eventBus;
@@ -172,6 +176,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @BindView(R.id.quest_text_layout)
     TextInputLayout questTextLayout;
+
+    @BindView(R.id.quest_reminders_container)
+    ViewGroup remindersContainer;
 
     private BaseSuggestionsAdapter adapter;
 
@@ -561,12 +568,41 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        Reminder reminder = null;
-//        reminder = new Reminder();
-//        reminder.setMessage("hi");
-//        reminder.setMinutesFromStart(-90);
-        EditReminderFragment f = EditReminderFragment.newInstance(reminder, this);
+        EditReminderFragment f = EditReminderFragment.newInstance(reminder -> {
+            if(reminder != null) {
+                addReminder(reminder);
+            }
+        });
         f.show(getSupportFragmentManager());
+    }
+
+    private void addReminder(Reminder reminder) {
+        View v = getLayoutInflater().inflate(R.layout.quest_reminder_item, remindersContainer, false);
+        populateReminder(reminder, v);
+        remindersContainer.addView(v);
+
+        v.setOnClickListener(view -> {
+            EditReminderFragment f = EditReminderFragment.newInstance(reminder, editedReminder -> {
+                if(editedReminder == null) {
+                 remindersContainer.removeView(v);
+                 return;
+                }
+                populateReminder(editedReminder, v);
+            });
+            f.show(getSupportFragmentManager());
+        });
+    }
+
+    private void populateReminder(Reminder reminder, View reminderView) {
+        String text = "";
+        Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(- reminder.getMinutesFromStart());
+        if(parsedResult != null) {
+            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+        } else {
+            text = ReminderTimeFormatter.formatMinutesBeforeReadable(- reminder.getMinutesFromStart());
+        }
+        ((TextView)reminderView.findViewById(R.id.reminder_text)).setText(text);
+        reminderView.setTag(reminder);
     }
 
     @OnClick(R.id.quest_challenge_container)
@@ -621,12 +657,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateTimesPerDay(timesPerDay);
         eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
     }
-
-    @Override
-    public void onReminderCreated(Reminder reminder) {
-
-    }
-
 
     @Override
     public void onChallengePicked(String challengeId) {
