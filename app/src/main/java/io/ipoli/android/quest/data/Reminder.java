@@ -19,6 +19,8 @@ public class Reminder extends RealmObject {
     private String title;
     private String description;
 
+    private Integer minutesFromStart;
+
     @Required
     private Integer startMinute;
 
@@ -89,5 +91,13 @@ public class Reminder extends RealmObject {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public int getMinutesFromStart() {
+        return minutesFromStart;
+    }
+
+    public void setMinutesFromStart(int minutesFromStart) {
+        this.minutesFromStart = minutesFromStart;
     }
 }
