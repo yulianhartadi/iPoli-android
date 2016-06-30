@@ -198,6 +198,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private EditMode editMode;
 
+    private int notificationId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -241,8 +243,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         categoryView.changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
-        for(Reminder reminder : quest.getReminders()) {
-            addReminder(reminder);
+
+        if(quest.getReminders().isEmpty()) {
+            notificationId = new Random().nextInt();
+        } else {
+            notificationId = quest.getReminders().get(0).getNotificationId();
+            for (Reminder reminder : quest.getReminders()) {
+                addReminder(reminder);
+            }
         }
     }
 
@@ -259,8 +267,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
-        for(Reminder reminder : rq.getReminders()) {
-            addReminder(reminder);
+
+        if(rq.getReminders().isEmpty()) {
+            notificationId = new Random().nextInt();
+        } else {
+            notificationId = rq.getReminders().get(0).getNotificationId();
+            for (Reminder reminder : rq.getReminders()) {
+                addReminder(reminder);
+            }
         }
     }
 
@@ -270,8 +284,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         populateChallenge(null);
-        //TODO set right ids
-        addReminder(new Reminder(0, new Random().nextInt(), new Random().nextInt()));
+        notificationId = new Random().nextInt();
+        addReminder(new Reminder(0, notificationId, new Random().nextInt()));
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -578,7 +592,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        EditReminderFragment f = EditReminderFragment.newInstance(reminder -> {
+        EditReminderFragment f = EditReminderFragment.newInstance(notificationId, reminder -> {
             if(reminder != null) {
                 addReminder(reminder);
             }

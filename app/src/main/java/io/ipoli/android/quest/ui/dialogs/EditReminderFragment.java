@@ -43,6 +43,7 @@ import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
 public class EditReminderFragment extends DialogFragment {
     private static final String TAG = "edit-reminder-dialog";
     private static final String REMINDER = "reminder";
+    private static final String NOTIFICATION_ID = "notification_id";
 
     @BindView(R.id.reminder_message)
     TextInputEditText messageView;
@@ -60,6 +61,7 @@ public class EditReminderFragment extends DialogFragment {
     Spinner customTimeTypesView;
 
     private Reminder reminder;
+    private int notificationId;
     private boolean isCustom = false;
 
     private OnReminderCreatedListener reminderCreatedListener;
@@ -69,16 +71,21 @@ public class EditReminderFragment extends DialogFragment {
         void onReminderCreated(Reminder reminder);
     }
 
-    public static EditReminderFragment newInstance(OnReminderCreatedListener reminderCreatedListener) {
-        return newInstance(null, reminderCreatedListener);
+    public static EditReminderFragment newInstance(int notificationId, OnReminderCreatedListener reminderCreatedListener) {
+        return newInstance(notificationId, null, reminderCreatedListener);
     }
 
     public static EditReminderFragment newInstance(Reminder reminder, OnReminderCreatedListener reminderCreatedListener) {
+        return newInstance(reminder.getNotificationId(), reminder, reminderCreatedListener);
+    }
+
+    public static EditReminderFragment newInstance(int notificationId, Reminder reminder, OnReminderCreatedListener reminderCreatedListener) {
         EditReminderFragment fragment = new EditReminderFragment();
         Bundle args = new Bundle();
         if (reminder != null) {
             args.putString(REMINDER, new Gson().toJson(reminder));
         }
+        args.putInt(NOTIFICATION_ID, notificationId);
         fragment.setArguments(args);
         fragment.reminderCreatedListener = reminderCreatedListener;
         return fragment;
@@ -92,6 +99,7 @@ public class EditReminderFragment extends DialogFragment {
             if (!TextUtils.isEmpty(reminderJson)) {
                 reminder = new Gson().fromJson(reminderJson, Reminder.class);
             }
+            notificationId = getArguments().getInt(NOTIFICATION_ID);
         }
     }
 
@@ -135,8 +143,7 @@ public class EditReminderFragment extends DialogFragment {
 
                     minutes = -minutes;
                     if (reminder == null) {
-                        //TODO: generate ids
-                        reminder = new Reminder(minutes, 0, new Random().nextInt());
+                        reminder = new Reminder(minutes, notificationId, new Random().nextInt());
                     } else {
                         reminder.setMessage(message);
                         reminder.setMinutesFromStart(minutes);
