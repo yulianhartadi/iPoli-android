@@ -38,6 +38,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -576,33 +577,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         f.show(getSupportFragmentManager());
     }
 
-    private void addReminder(Reminder reminder) {
-        View v = getLayoutInflater().inflate(R.layout.quest_reminder_item, remindersContainer, false);
-        populateReminder(reminder, v);
-        remindersContainer.addView(v);
-
-        v.setOnClickListener(view -> {
-            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), editedReminder -> {
-                if(editedReminder == null) {
-                 remindersContainer.removeView(v);
-                 return;
-                }
-                populateReminder(editedReminder, v);
-            });
-            f.show(getSupportFragmentManager());
-        });
-    }
-
-    private void populateReminder(Reminder reminder, View reminderView) {
-        String text = "";
-        Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(- reminder.getMinutesFromStart());
-        if(parsedResult != null) {
-            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
-        }
-        ((TextView)reminderView.findViewById(R.id.reminder_text)).setText(text);
-        reminderView.setTag(reminder);
-    }
-
     @OnClick(R.id.quest_challenge_container)
     public void onChallengeClick(View view) {
         ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
@@ -714,6 +688,53 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         timesPerDayText.setTag(timesPerDay);
     }
 
+    private void addReminder(Reminder reminder) {
+        if(reminderWithSameTimeExists(reminder)) {
+            return;
+        }
+        View v = getLayoutInflater().inflate(R.layout.quest_reminder_item, remindersContainer, false);
+        populateReminder(reminder, v);
+        remindersContainer.addView(v);
+
+        v.setOnClickListener(view -> {
+            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), editedReminder -> {
+                if(editedReminder == null || reminderWithSameTimeExists(editedReminder)) {
+                    remindersContainer.removeView(v);
+                    return;
+                }
+                populateReminder(editedReminder, v);
+            });
+            f.show(getSupportFragmentManager());
+        });
+    }
+
+    private boolean reminderWithSameTimeExists(Reminder reminder) {
+        for(Reminder r : getReminders()) {
+            if(reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void populateReminder(Reminder reminder, View reminderView) {
+        String text = "";
+        Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
+        if(parsedResult != null) {
+            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+        }
+        ((TextView)reminderView.findViewById(R.id.reminder_text)).setText(text);
+        reminderView.setTag(reminder);
+    }
+
+    private List<Reminder> getReminders() {
+        List<Reminder> reminders = new ArrayList<>();
+        for(int i = 0; i < remindersContainer.getChildCount(); i++) {
+            reminders.add((Reminder) remindersContainer.getChildAt(i).getTag());
+        }
+        return reminders;
+    }
+
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
         setFrequencyText(recurrence);
@@ -727,7 +748,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
     }
-
 
     public void saveQuest() {
         String name = questText.getText().toString().trim();

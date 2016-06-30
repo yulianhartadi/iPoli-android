@@ -170,7 +170,7 @@ public class EditReminderFragment extends DialogFragment {
         customTimeTypesView.setAdapter(customTimeTypesAdapter);
 
         if (reminder != null) {
-            Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(- reminder.getMinutesFromStart());
+            Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
             if (parsedResult != null) {
                 customTimeValue.setText(String.valueOf(parsedResult.first));
                 customTimeTypesView.setSelection(parsedResult.second.ordinal());
