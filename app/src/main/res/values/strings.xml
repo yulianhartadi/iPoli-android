@@ -46,7 +46,7 @@
     <string name="next_7_days">next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
-    <string name="title_activity_add_quest">Add new Quest</string>
+    <string name="title_activity_add_quest">Add Quest</string>
     <string name="unknown_choice">Don\'t know</string>
     <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
@@ -266,7 +266,7 @@
     <string name="quest_start_time_question">When should it start?</string>
     <string name="quest_duration_question">For how long?</string>
     <string name="quest_times_per_day_question">How many times per day?</string>
-    <string name="quest_repeat_pattern_question">How often it should repeat?</string>
+    <string name="quest_repeat_pattern_question">How often should it repeat?</string>
     <string name="reward_description_question">Why do you want this reward?</string>
     <string name="reward_price_question">How much does it cost?</string>
     <string name="reward_saved">Reward saved</string>

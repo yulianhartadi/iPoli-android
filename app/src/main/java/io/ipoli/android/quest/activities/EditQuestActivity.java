@@ -557,6 +557,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_reminders_container)
+    public void onRemindersClicked(View view) {
+
+    }
+
     @OnClick(R.id.quest_challenge_container)
     public void onChallengeClick(View view) {
         ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
