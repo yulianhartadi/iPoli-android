@@ -27,7 +27,6 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
-import io.ipoli.android.quest.receivers.ScheduleQuestReminderReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
@@ -62,8 +61,6 @@ public interface AppComponent {
     void inject(App app);
 
     void inject(QuestActivity questActivity);
-
-    void inject(ScheduleQuestReminderReceiver scheduleQuestReminderReceiver);
 
     void inject(SnoozeQuestReceiver snoozeQuestReceiver);
 

@@ -107,6 +107,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     public Quest(String name, Date endDate) {
         this.id = IDGenerator.generate();
         this.name = name;
+        this.reminders = new RealmList<>();
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
         this.originalStartDate = DateUtils.getDate(endDate);
