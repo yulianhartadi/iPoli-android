@@ -289,9 +289,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:layout_gravity="center_horizontal">
 
                 <ImageView
                     android:id="@+id/quest_reminders_icon"

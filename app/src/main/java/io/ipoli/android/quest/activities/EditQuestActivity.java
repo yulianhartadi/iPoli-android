@@ -582,7 +582,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         remindersContainer.addView(v);
 
         v.setOnClickListener(view -> {
-            EditReminderFragment f = EditReminderFragment.newInstance(reminder, editedReminder -> {
+            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), editedReminder -> {
                 if(editedReminder == null) {
                  remindersContainer.removeView(v);
                  return;
@@ -598,8 +598,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(- reminder.getMinutesFromStart());
         if(parsedResult != null) {
             text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
-        } else {
-            text = ReminderTimeFormatter.formatMinutesBeforeReadable(- reminder.getMinutesFromStart());
         }
         ((TextView)reminderView.findViewById(R.id.reminder_text)).setText(text);
         reminderView.setTag(reminder);
