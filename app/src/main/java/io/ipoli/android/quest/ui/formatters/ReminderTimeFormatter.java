@@ -49,5 +49,4 @@ public class ReminderTimeFormatter {
 
         return timeValue + " " + type + " before";
     }
-
 }

@@ -316,4 +316,6 @@
     <string name="quest_reminders_question">When should you be reminded?</string>
     <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
     <string name="do_not_remind">Do not remind</string>
+    <string name="ready_to_start">Ready to start?</string>
+    <string name="snooze">SNOOZE</string>
 </resources>

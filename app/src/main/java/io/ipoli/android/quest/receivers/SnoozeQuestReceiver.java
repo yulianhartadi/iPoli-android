@@ -33,7 +33,7 @@ public class SnoozeQuestReceiver extends AsyncBroadcastReceiver {
     @Override
     protected Observable<Void> doOnReceive(Context context, Intent intent) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
+        notificationManagerCompat.cancel(intent.getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
 
         App.getAppComponent(context).inject(this);
 

@@ -22,4 +22,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     List<RepeatingQuest> findAllForChallenge(Challenge challenge);
 
     void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
+
+    void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders, boolean markUpdated);
 }

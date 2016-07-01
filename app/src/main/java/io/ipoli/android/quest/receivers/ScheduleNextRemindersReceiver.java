@@ -26,8 +26,7 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Realm realm = Realm.getDefaultInstance();
-        List<Reminder> reminders = getReminders(realm);
+        List<Reminder> reminders = getReminders();
         Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(context, i));
@@ -38,11 +37,13 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
         long alarmTime = reminders.get(0).getStartTime().getTime();
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-        realm.close();
     }
 
-    private List<Reminder> getReminders(Realm realm) {
-        return new RealmReminderPersistenceService(realm).findNextReminders();
+    private List<Reminder> getReminders() {
+        Realm realm = Realm.getDefaultInstance();
+        List<Reminder> reminders = new RealmReminderPersistenceService(realm).findNextReminders();
+        realm.close();
+        return reminders;
     }
 
     @NonNull

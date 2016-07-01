@@ -1,12 +1,10 @@
 package io.ipoli.android.quest.commands;
 
 import android.content.Context;
-import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -30,8 +28,6 @@ public class StartQuestCommand {
     }
 
     public Observable<Quest> execute() {
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(Constants.REMIND_START_QUEST_NOTIFICATION_ID);
         quest.setActualStart(DateUtils.nowUTC());
         return questPersistenceService.save(quest).flatMap(q -> {
             stopOtherRunningQuests(quest);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -147,6 +148,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             if (ACTION_QUEST_CANCELED.equals(action)) {
                 questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
             } else if (ACTION_START_QUEST.equals(action)) {
+                NotificationManagerCompat.from(this).cancel(getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
                 questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
             }
         }
