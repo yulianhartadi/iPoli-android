@@ -78,7 +78,6 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .findAll());
     }
 
-
     @Override
     public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
         saveReminders(repeatingQuest, reminders, true);
