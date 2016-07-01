@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.data;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.app.utils.DateUtils;
@@ -27,8 +28,7 @@ public class Reminder extends RealmObject implements RemoteObject<Reminder> {
     @Required
     private Integer notificationId;
 
-    @Required
-    private Integer intentId;
+    private Date startTime;
 
     @Required
     private Date createdAt;
@@ -43,9 +43,8 @@ public class Reminder extends RealmObject implements RemoteObject<Reminder> {
     public Reminder() {
     }
 
-    public Reminder(long minutesFromStart, int notificationId, int intentId) {
+    public Reminder(long minutesFromStart, int notificationId) {
         this.id = IDGenerator.generate();
-        this.intentId = intentId;
         this.notificationId = notificationId;
         this.minutesFromStart = minutesFromStart;
         createdAt = DateUtils.nowUTC();
@@ -141,15 +140,24 @@ public class Reminder extends RealmObject implements RemoteObject<Reminder> {
         return notificationId;
     }
 
-    public Integer getIntentId() {
-        return intentId;
-    }
-
-    public void setIntentId(int intentId) {
-        this.intentId = intentId;
-    }
-
     public void setNotificationId(int notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public void calculateStartTime(Quest quest) {
+        Date questStartTime = Quest.getStartDateTime(quest);
+        if (questStartTime == null) {
+            startTime = null;
+            return;
+        }
+        startTime = new Date(questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart()));
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 }

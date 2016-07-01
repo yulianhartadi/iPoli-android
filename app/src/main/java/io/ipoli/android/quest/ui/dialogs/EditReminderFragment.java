@@ -22,7 +22,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -144,7 +143,7 @@ public class EditReminderFragment extends DialogFragment {
 
                     minutes = -minutes;
                     if (reminder == null) {
-                        reminder = new Reminder(minutes, notificationId, new Random().nextInt());
+                        reminder = new Reminder(minutes, notificationId);
                     } else {
                         reminder.setMessage(message);
                         reminder.setMinutesFromStart(minutes);

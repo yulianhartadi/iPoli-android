@@ -285,7 +285,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateNoteText(null);
         populateChallenge(null);
         notificationId = new Random().nextInt();
-        addReminder(new Reminder(0, notificationId, new Random().nextInt()));
+        addReminder(new Reminder(0, notificationId));
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();

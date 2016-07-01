@@ -426,6 +426,11 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
     public void markDeleted() {
+        if (getReminders() != null) {
+            for (Reminder r : getReminders()) {
+                r.markDeleted();
+            }
+        }
         isDeleted = true;
         markUpdated();
     }

@@ -183,6 +183,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public Quest findByReminderId(String reminderId) {
+        return findOne(where -> where.equalTo("reminders.id", reminderId).findFirst());
+    }
+
+    @Override
     public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDatabaseChangedListener<Quest> listener) {
         Date startDateUTC = toStartOfDayUTC(date);
         Date endDateUTC = toStartOfDayUTC(date.plusDays(1));
@@ -253,9 +258,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                     }
                 }
                 if (!isEdited) {
-                    if (newReminder.getIntentId() == null) {
-                        newReminder.setIntentId(new Random().nextInt());
-                    }
                     if (newReminder.getNotificationId() == null) {
                         newReminder.setNotificationId(notificationId);
                     }

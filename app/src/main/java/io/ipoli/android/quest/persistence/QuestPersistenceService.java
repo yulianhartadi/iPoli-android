@@ -48,6 +48,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllForChallenge(Challenge challenge);
 
+    Quest findByReminderId(String reminderId);
+
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
 
     void saveReminders(Quest quest, List<Reminder> reminders);

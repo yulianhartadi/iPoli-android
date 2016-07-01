@@ -97,9 +97,6 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                     }
                 }
                 if (!isEdited) {
-                    if (newReminder.getIntentId() == null) {
-                        newReminder.setIntentId(new Random().nextInt());
-                    }
                     if (newReminder.getNotificationId() == null) {
                         newReminder.setNotificationId(notificationId);
                     }
