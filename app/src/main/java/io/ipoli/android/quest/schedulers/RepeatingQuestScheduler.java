@@ -88,6 +88,7 @@ public class RepeatingQuestScheduler {
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
         quest.setChallenge(repeatingQuest.getChallenge());
         quest.setRepeatingQuest(repeatingQuest);
+        quest.setReminders(repeatingQuest.getReminders());
         return quest;
     }
 
