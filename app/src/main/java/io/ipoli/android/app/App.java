@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
@@ -106,6 +107,7 @@ import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -388,6 +390,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         e.quest.markDeleted();
+        RealmList<Reminder> reminders = e.quest.getReminders();
+        if (reminders != null && !reminders.isEmpty()) {
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            for (Reminder reminder : reminders) {
+                notificationManagerCompat.cancel(reminder.getNotificationId());
+            }
+        }
         questPersistenceService.save(e.quest).subscribe();
     }
 
