@@ -27,8 +27,6 @@ public class RealmReminderPersistenceService extends BaseRealmPersistenceService
     public List<Reminder> findNextReminders() {
         getRealm().beginTransaction();
         Date nextReminderStartTime = where()
-                .equalTo("isDeleted", false)
-                .isNotNull("startTime")
                 .greaterThanOrEqualTo("startTime", new Date())
                 .minimumDate("startTime");
         getRealm().commitTransaction();

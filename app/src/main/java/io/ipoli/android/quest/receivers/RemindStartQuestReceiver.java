@@ -11,6 +11,8 @@ import android.support.v7.app.NotificationCompat;
 
 import com.squareup.otto.Bus;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -42,32 +44,33 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
-        String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        String reminderId = intent.getStringExtra(Constants.REMINDER_ID_EXTRA_KEY);
+        List<String> reminderIds = intent.getStringArrayListExtra(Constants.REMINDER_IDS_EXTRA_KEY);
         Realm realm = Realm.getDefaultInstance();
         questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        Quest q = questPersistenceService.findById(questId);
-        if (q == null) {
-            return;
-        }
-        Reminder reminder = null;
-        for (Reminder r : q.getReminders()) {
-            if (r.getId().equals(reminderId)) {
-                reminder = r;
-                break;
+        for (String reminderId : reminderIds) {
+            Quest q = questPersistenceService.findByReminderId(reminderId);
+            if (q == null) {
+                continue;
             }
-        }
+            Reminder reminder = null;
+            for (Reminder r : q.getReminders()) {
+                if (r.getId().equals(reminderId)) {
+                    reminder = r;
+                    break;
+                }
+            }
 
-        if (reminder == null) {
-            return;
+            if (reminder == null) {
+                continue;
+            }
+            showNotification(context, q, reminder);
         }
-        showNotification(context, questId, q, reminder);
     }
 
-    private void showNotification(Context context, String questId, Quest q, Reminder reminder) {
+    private void showNotification(Context context, Quest q, Reminder reminder) {
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
-        remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
         String name = q.getName();
 
         PendingIntent pendingNotificationIntent = ActivityIntentFactory.createWithParentStack(QuestActivity.class, remindStartQuestIntent, context);
