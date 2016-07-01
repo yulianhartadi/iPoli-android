@@ -14,7 +14,10 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -246,7 +249,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public void saveReminders(Quest quest, List<Reminder> reminders, boolean markUpdated) {
         getRealm().executeTransaction(realm -> {
-            if(markUpdated) {
+            if (markUpdated) {
                 for (Reminder r : reminders) {
                     r.markUpdated();
                 }
@@ -254,6 +257,34 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
             quest.getReminders().clear();
             quest.getReminders().addAll(reminders);
             quest.updateRemindersStartTime();
+        });
+    }
+
+    @Override
+    public Observable<Void> delete(List<Quest> objects) {
+        if (objects.isEmpty()) {
+            return Observable.empty();
+        }
+        return Observable.create(subscriber -> {
+            Realm realm = getRealm();
+            realm.executeTransactionAsync(backgroundRealm -> {
+                        RealmQuery<Quest> q = backgroundRealm.where(getRealmObjectClass());
+                        for (int i = 0; i < objects.size(); i++) {
+                            if (i > 0) {
+                                q = q.or();
+                            }
+                            q = q.equalTo("id", objects.get(i).getId());
+                        }
+                        RealmResults<Quest> results = q.findAll();
+                        for (Quest quest : results) {
+                            quest.getReminders().deleteAllFromRealm();
+                        }
+                        results.deleteAllFromRealm();
+                    },
+                    () -> {
+                        subscriber.onNext(null);
+                        subscriber.onCompleted();
+                    }, subscriber::onError);
         });
     }
 }
