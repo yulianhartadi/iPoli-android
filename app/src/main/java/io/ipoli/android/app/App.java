@@ -1,8 +1,6 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetManager;
@@ -56,7 +54,6 @@ import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
@@ -79,7 +76,6 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -100,7 +96,7 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
-import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
+import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.reminders.persistence.RealmReminderPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -185,7 +181,6 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
         challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
         playerPersistenceService = new RealmPlayerPersistenceService(realm);
-        reminderPersistenceService = new RealmReminderPersistenceService(realm);
 
         moveIncompleteQuestsToInbox();
         registerServices();
@@ -532,20 +527,7 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleNextReminder() {
-        List<Reminder> reminders = reminderPersistenceService.findNextReminders();
-        Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(this, i));
-        if (reminders.isEmpty()) {
-            return;
-        }
-        ArrayList<String> reminderIds = new ArrayList<>();
-        for (Reminder reminder : reminders) {
-            reminderIds.add(reminder.getId());
-        }
-        i.putStringArrayListExtra(Constants.REMINDER_ID_EXTRA_KEY, reminderIds);
-        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminders.get(0).getStartTime().getTime(), pendingIntent);
+        sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
     }
 
     @Subscribe

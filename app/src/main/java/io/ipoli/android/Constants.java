@@ -33,7 +33,7 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
-    String REMINDER_ID_EXTRA_KEY = "reminder_id";
+    String REMINDER_IDS_EXTRA_KEY = "reminder_id";
     String REMINDER_NOTIFICATION_ID_EXTRA_KEY = "reminder_notification_id";
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
 
