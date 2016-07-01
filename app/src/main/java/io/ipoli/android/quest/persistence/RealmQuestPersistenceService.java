@@ -266,6 +266,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
             }
             quest.getReminders().clear();
             quest.getReminders().addAll(remindersToSave);
+            quest.updateRemindersStartTime();
         });
     }
 }

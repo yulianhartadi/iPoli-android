@@ -157,6 +157,13 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
+        updateRemindersStartTime();
+    }
+
+    public void updateRemindersStartTime() {
+        for(Reminder r : getReminders()) {
+            r.calculateStartTime(this);
+        }
     }
 
     public RepeatingQuest getRepeatingQuest() {
@@ -450,6 +457,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+        updateRemindersStartTime();
     }
 
     public void setOriginalStartDate(Date originalStartDate) {
