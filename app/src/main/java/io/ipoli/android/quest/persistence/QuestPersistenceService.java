@@ -7,6 +7,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -24,8 +25,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     List<Quest> findAllPlannedAndStartedToday();
 
     List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
-
-    List<Quest> findPlannedQuestsStartingAfter(LocalDate localDate);
 
     long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
@@ -49,5 +48,12 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllForChallenge(Challenge challenge);
 
+    Quest findByReminderId(String reminderId);
+
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
+
+    void saveReminders(Quest quest, List<Reminder> reminders);
+
+    void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
+
 }

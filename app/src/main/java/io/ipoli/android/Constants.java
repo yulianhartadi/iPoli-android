@@ -19,7 +19,6 @@ public interface Constants {
 
     int EDIT_QUEST_RESULT_REQUEST_CODE = 11;
     int REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101;
-    int DAILY_CHALLENGE_COMPLETE_NOTIFICATION_ID = 102;
 
     int REMIND_START_QUEST_NOTIFICATION_ID = 103;
 
@@ -34,17 +33,22 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
+    String REMINDER_IDS_EXTRA_KEY = "reminder_id";
+    String REMINDER_NOTIFICATION_ID_EXTRA_KEY = "reminder_notification_id";
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
 
-    int CALENDAR_EVENT_MIN_DURATION = 15;
+    String REWARD_ID_EXTRA_KEY = "reward_id";
 
+    int CALENDAR_EVENT_MIN_DURATION = 15;
     int CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION = 20;
 
     int QUEST_MIN_DURATION = 10;
+
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
 
     int RESULT_REMOVED = 100;
     String KEY_APP_RUN_COUNT = "APP_RUN_COUNT";
+
     String KEY_APP_VERSION_CODE = "APP_VERSION_CODE";
 
     String KEY_PLAYER_REMOTE_ID = "PLAYER_REMOTE_ID";
@@ -54,8 +58,8 @@ public interface Constants {
     String KEY_REMOVED_QUESTS = "REMOVED_QUESTS";
 
     String KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS";
-
     String KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE = "DAILY_CHALLENGE_REMINDER_START_MINUTE";
+
     String KEY_DAILY_CHALLENGE_ENABLE_REMINDER = "DAILY_CHALLENGE_ENABLE_REMINDER";
 
     String KEY_DAILY_CHALLENGE_LAST_COMPLETED = "DAILY_CHALLENGE_LAST_COMPLETED";
@@ -67,25 +71,27 @@ public interface Constants {
     String API_RESOURCE_SOURCE = "ipoli-android";
 
     int MINIMUM_DELAY_SYNC_MINUTES = 5;
-
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
     int DEFAULT_PLAYER_XP = 0;
+
     int DEFAULT_PLAYER_LEVEL = 1;
 
     long DEFAULT_PLAYER_COINS = 10;
-    String REWARD_ID_EXTRA_KEY = "reward_id";
-
     int AVATAR_COUNT = 12;
     String AVATAR_NAME_EXTRA_KEY = "avatar_name";
-    String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
+    String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
+
     int DEFAULT_MIN_REWARD_PRICE = 100;
 
     int DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 10 * 60;
 
     boolean DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true;
+
+    int[] REMINDER_PREDEFINED_MINUTES = new int[]{0, 10, 15, 30, 60};
+
     Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
             DaysOfWeek.TUESDAY.getIsoOrder(),
@@ -93,7 +99,6 @@ public interface Constants {
             DaysOfWeek.THURSDAY.getIsoOrder(),
             DaysOfWeek.FRIDAY.getIsoOrder()
     }));
-
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
 

@@ -128,10 +128,10 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".quest.receivers.ScheduleQuestReminderReceiver"
+            android:name=".quest.receivers.ScheduleNextRemindersReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDER" />
+                <action android:name="io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDERS" />
             </intent-filter>
         </receiver>
         <receiver
@@ -174,13 +174,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="io.ipoli.android.intent.action.SHOW_DAILY_CHALLENGE_REMINDER" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".challenge.receivers.DailyChallengeCompleteReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="io.ipoli.android.intent.action.DAILY_CHALLENGE_COMPLETE" />
             </intent-filter>
         </receiver>
         <receiver

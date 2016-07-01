@@ -24,7 +24,8 @@ public class RealmPlayerPersistenceService extends BaseRealmPersistenceService<P
     @Override
     public void addAuthProvider(Player player, AuthProvider authProvider) {
         getRealm().executeTransaction(backgroundRealm ->
-                player.addAuthProvider(authProvider));
+                player.getAuthProviders().add(authProvider)
+        );
     }
 
     @Override

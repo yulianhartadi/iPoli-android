@@ -46,7 +46,7 @@
     <string name="next_7_days">next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
-    <string name="title_activity_add_quest">Add new Quest</string>
+    <string name="title_activity_add_quest">Add Quest</string>
     <string name="unknown_choice">Don\'t know</string>
     <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
@@ -266,7 +266,7 @@
     <string name="quest_start_time_question">When should it start?</string>
     <string name="quest_duration_question">For how long?</string>
     <string name="quest_times_per_day_question">How many times per day?</string>
-    <string name="quest_repeat_pattern_question">How often it should repeat?</string>
+    <string name="quest_repeat_pattern_question">How often should it repeat?</string>
     <string name="reward_description_question">Why do you want this reward?</string>
     <string name="reward_price_question">How much does it cost?</string>
     <string name="reward_saved">Reward saved</string>
@@ -313,4 +313,9 @@
     <string name="help_dialog_delete_challenge">Delete the challenge</string>
     <string name="help_dialog_challenges_title">Ready to achieve more?</string>
     <string name="help_dialog_open_challenges_options">Swipe challenge left to open the actions:</string>
+    <string name="quest_reminders_question">When should you be reminded?</string>
+    <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
+    <string name="do_not_remind">Do not remind</string>
+    <string name="ready_to_start">Ready to start?</string>
+    <string name="snooze">SNOOZE</string>
 </resources>

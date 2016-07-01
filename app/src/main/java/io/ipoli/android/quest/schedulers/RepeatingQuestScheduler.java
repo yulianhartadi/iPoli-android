@@ -19,9 +19,11 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
+import io.realm.RealmList;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -88,6 +90,14 @@ public class RepeatingQuestScheduler {
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
         quest.setChallenge(repeatingQuest.getChallenge());
         quest.setRepeatingQuest(repeatingQuest);
+        RealmList<Reminder> questReminders = new RealmList<>();
+        for (Reminder r : repeatingQuest.getReminders()) {
+            Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
+            questReminder.setMessage(r.getMessage());
+            questReminders.add(questReminder);
+        }
+        quest.setReminders(questReminders);
+        quest.updateRemindersStartTime();
         return quest;
     }
 

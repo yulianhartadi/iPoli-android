@@ -97,6 +97,22 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     private Recurrence recurrence;
 
+    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener) {
+        return newInstance(disableNoRepeat, listener, null);
+    }
+
+    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener, Recurrence recurrence) {
+        RecurrencePickerFragment fragment = new RecurrencePickerFragment();
+        fragment.recurrencePickerListener = listener;
+        Bundle args = new Bundle();
+        args.putBoolean(DISABLE_NO_REPEAT, disableNoRepeat);
+        if (recurrence != null) {
+            args.putString(RECURRENCE, new Gson().toJson(recurrence));
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -273,21 +289,5 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         }
         until.setText(text);
         until.setTag(date);
-    }
-
-    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener) {
-        return newInstance(disableNoRepeat, listener, null);
-    }
-
-    public static RecurrencePickerFragment newInstance(boolean disableNoRepeat, OnRecurrencePickedListener listener, Recurrence recurrence) {
-        RecurrencePickerFragment fragment = new RecurrencePickerFragment();
-        fragment.recurrencePickerListener = listener;
-        Bundle args = new Bundle();
-        args.putBoolean(DISABLE_NO_REPEAT, disableNoRepeat);
-        if (recurrence != null) {
-            args.putString(RECURRENCE, new Gson().toJson(recurrence));
-        }
-        fragment.setArguments(args);
-        return fragment;
     }
 }

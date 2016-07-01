@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -37,9 +38,11 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -65,6 +68,7 @@ import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
@@ -88,6 +92,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.reminders.ReminderMinutesParser;
+import io.ipoli.android.quest.reminders.TimeOffsetType;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
@@ -96,6 +102,7 @@ import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
+import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
@@ -104,6 +111,7 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
+import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -121,7 +129,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
-        CategoryView.OnCategoryChangedListener{
+        CategoryView.OnCategoryChangedListener {
 
     @Inject
     Bus eventBus;
@@ -171,6 +179,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_text_layout)
     TextInputLayout questTextLayout;
 
+    @BindView(R.id.quest_reminders_container)
+    ViewGroup remindersContainer;
+
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
@@ -186,6 +197,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
     private EditMode editMode;
+
+    private int notificationId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -230,6 +243,15 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         categoryView.changeCategory(Quest.getCategory(quest));
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
+
+        if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
+            notificationId = new Random().nextInt();
+        } else {
+            notificationId = quest.getReminders().get(0).getNotificationId();
+            for (Reminder reminder : quest.getReminders()) {
+                addReminder(reminder);
+            }
+        }
     }
 
     private void onEditRepeatingQuest() {
@@ -240,11 +262,27 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setText(rq.getName());
         questText.setSelection(rq.getName().length());
         populateDuration(rq.getDuration());
-        populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+        if (rq.getRecurrence().getTimesPerDay() > 1) {
+            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+        } else if (rq.getStartMinute() >= 0) {
+            populateStartTime(rq.getStartMinute());
+        } else {
+            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+            populateStartTime(-1);
+        }
         setFrequencyText(rq.getRecurrence());
         categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
+
+        if (rq.getReminders().isEmpty()) {
+            notificationId = new Random().nextInt();
+        } else {
+            notificationId = rq.getReminders().get(0).getNotificationId();
+            for (Reminder reminder : rq.getReminders()) {
+                addReminder(reminder);
+            }
+        }
     }
 
     private void onAddNewQuest() {
@@ -253,6 +291,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         populateChallenge(null);
+        notificationId = new Random().nextInt();
+        addReminder(new Reminder(0, notificationId));
         questText.setOnClickListener(v -> {
             int selStart = questText.getSelectionStart();
             String text = questText.getText().toString();
@@ -302,7 +342,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
             findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
-            findViewById(R.id.quest_start_time_container).setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
     }
@@ -425,7 +464,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateQuestEvent(q, source));
+        eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -447,10 +486,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
+        rq.getRecurrence().setTimesPerDay((int) timesPerDayText.getTag());
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
+        eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK);
         finish();
@@ -557,6 +597,16 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_add_reminder_container)
+    public void onRemindersClicked(View view) {
+        EditReminderFragment f = EditReminderFragment.newInstance(notificationId, reminder -> {
+            if (reminder != null) {
+                addReminder(reminder);
+            }
+        });
+        f.show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.quest_challenge_container)
     public void onChallengeClick(View view) {
         ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
@@ -629,8 +679,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private Challenge findChallenge(String challengeId) {
-        if(challengeId == null) {
-            return  null;
+        if (challengeId == null) {
+            return null;
         }
         ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
         return challengePersistenceService.findById(challengeId);
@@ -668,6 +718,53 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         timesPerDayText.setTag(timesPerDay);
     }
 
+    private void addReminder(Reminder reminder) {
+        if (reminderWithSameTimeExists(reminder)) {
+            return;
+        }
+        View v = getLayoutInflater().inflate(R.layout.quest_reminder_item, remindersContainer, false);
+        populateReminder(reminder, v);
+        remindersContainer.addView(v);
+
+        v.setOnClickListener(view -> {
+            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), editedReminder -> {
+                if (editedReminder == null || reminderWithSameTimeExists(editedReminder)) {
+                    remindersContainer.removeView(v);
+                    return;
+                }
+                populateReminder(editedReminder, v);
+            });
+            f.show(getSupportFragmentManager());
+        });
+    }
+
+    private boolean reminderWithSameTimeExists(Reminder reminder) {
+        for (Reminder r : getReminders()) {
+            if (!reminder.getId().equals(r.getId()) && reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void populateReminder(Reminder reminder, View reminderView) {
+        String text = "";
+        Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
+        if (parsedResult != null) {
+            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+        }
+        ((TextView) reminderView.findViewById(R.id.reminder_text)).setText(text);
+        reminderView.setTag(reminder);
+    }
+
+    private List<Reminder> getReminders() {
+        List<Reminder> reminders = new ArrayList<>();
+        for (int i = 0; i < remindersContainer.getChildCount(); i++) {
+            reminders.add((Reminder) remindersContainer.getChildAt(i).getTag());
+        }
+        return reminders;
+    }
+
     @Override
     public void onRecurrencePicked(Recurrence recurrence) {
         setFrequencyText(recurrence);
@@ -681,7 +778,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
     }
-
 
     public void saveQuest() {
         String name = questText.getText().toString().trim();
@@ -719,7 +815,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
         q.setNote((String) noteText.getTag());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
-        eventBus.post(new NewQuestEvent(q, EventSource.EDIT_QUEST));
+
+        eventBus.post(new NewQuestEvent(q, getReminders(), EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -748,7 +845,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
-        eventBus.post(new NewRepeatingQuestEvent(rq));
+        eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
 
@@ -874,7 +971,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onCategoryChanged(Category category) {
         colorLayout(category);
-        if(editMode == EditMode.EDIT_NEW_QUEST) {
+        if (editMode == EditMode.EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestCategoryChangedEvent(category));
         }
     }

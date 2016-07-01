@@ -1,6 +1,7 @@
-package io.ipoli.android.quest.persistence;
+package io.ipoli.android.reward.persistence;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.reward.data.Reward;
 import io.realm.Realm;
 

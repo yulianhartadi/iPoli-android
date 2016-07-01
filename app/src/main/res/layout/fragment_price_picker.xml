@@ -2,10 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="24dp"
-    android:paddingEnd="24dp"
-    android:paddingStart="24dp"
-    android:paddingTop="20dp">
+    style="@style/DialogContainer">
 
     <NumberPicker
         android:id="@+id/price_number_picker"

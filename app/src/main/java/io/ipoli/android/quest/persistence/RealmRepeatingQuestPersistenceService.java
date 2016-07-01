@@ -8,9 +8,11 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -74,5 +76,30 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         return findAllIncludingDeleted(where -> where
                 .equalTo("challenge.id", challenge.getId())
                 .findAll());
+    }
+
+    @Override
+    public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
+        saveReminders(repeatingQuest, reminders, true);
+    }
+
+    @Override
+    public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders, boolean markUpdated) {
+        getRealm().executeTransaction(realm -> {
+            if (markUpdated) {
+                for (Reminder r : reminders) {
+                    r.markUpdated();
+                }
+            }
+            if (repeatingQuest.getReminders() != null && !repeatingQuest.getReminders().isEmpty()) {
+                RealmList<Reminder> realmReminders = realm.where(getRealmObjectClass()).equalTo("id", repeatingQuest.getId()).findFirst().getReminders();
+                if (realmReminders != null) {
+                    realmReminders.deleteAllFromRealm();
+                }
+            }
+            RealmList<Reminder> reminderRealmList = new RealmList<>();
+            reminderRealmList.addAll(reminders);
+            repeatingQuest.setReminders(reminderRealmList);
+        });
     }
 }

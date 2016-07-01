@@ -138,10 +138,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         needsSyncWithRemote = false;
     }
 
-    public void addAuthProvider(AuthProvider authProvider) {
-        authProviders.add(authProvider);
-    }
-
     public List<AuthProvider> getAuthProviders() {
         return authProviders;
     }
