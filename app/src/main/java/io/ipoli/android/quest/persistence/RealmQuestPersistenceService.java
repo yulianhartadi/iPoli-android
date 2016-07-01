@@ -14,6 +14,7 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -254,8 +255,15 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                     r.markUpdated();
                 }
             }
-            quest.getReminders().clear();
-            quest.getReminders().addAll(reminders);
+            if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
+                RealmList<Reminder> realmReminders = realm.where(getRealmObjectClass()).equalTo("id", quest.getId()).findFirst().getReminders();
+                if (realmReminders != null) {
+                    realmReminders.deleteAllFromRealm();
+                }
+            }
+            RealmList<Reminder> reminderRealmList = new RealmList<>();
+            reminderRealmList.addAll(reminders);
+            quest.setReminders(reminderRealmList);
             quest.updateRemindersStartTime();
         });
     }
@@ -277,7 +285,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                         }
                         RealmResults<Quest> results = q.findAll();
                         for (Quest quest : results) {
-                            quest.getReminders().deleteAllFromRealm();
+                            if (quest.getReminders() != null) {
+                                quest.getReminders().deleteAllFromRealm();
+                            }
                         }
                         results.deleteAllFromRealm();
                     },
