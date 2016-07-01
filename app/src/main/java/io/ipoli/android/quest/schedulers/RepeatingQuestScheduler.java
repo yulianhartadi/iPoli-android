@@ -89,6 +89,7 @@ public class RepeatingQuestScheduler {
         quest.setChallenge(repeatingQuest.getChallenge());
         quest.setRepeatingQuest(repeatingQuest);
         quest.setReminders(repeatingQuest.getReminders());
+        quest.updateRemindersStartTime();
         return quest;
     }
 
