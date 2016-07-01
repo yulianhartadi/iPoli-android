@@ -262,7 +262,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setText(rq.getName());
         questText.setSelection(rq.getName().length());
         populateDuration(rq.getDuration());
-        populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+        if(rq.getRecurrence().getTimesPerDay() > 1) {
+            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+        } else if(rq.getStartMinute() >= 0) {
+            populateStartTime(rq.getStartMinute());
+        }
         setFrequencyText(rq.getRecurrence());
         categoryView.changeCategory(RepeatingQuest.getCategory(rq));
         populateNoteText(rq.getNote());
@@ -335,7 +339,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
             findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
-            findViewById(R.id.quest_start_time_container).setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
     }

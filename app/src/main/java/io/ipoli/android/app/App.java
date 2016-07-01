@@ -384,7 +384,6 @@ public class App extends MultiDexApplication {
         }, Throwable::printStackTrace, () -> {
             repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
             repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
-            onQuestChanged();
         });
     }
 
@@ -486,8 +485,10 @@ public class App extends MultiDexApplication {
                 questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
-            }, Throwable::printStackTrace, () ->
-                    eventBus.post(new ServerSyncRequestEvent()));
+            }, Throwable::printStackTrace, () -> {
+                onQuestChanged();
+                eventBus.post(new ServerSyncRequestEvent());
+            });
         } else {
 
             Observable.defer(() -> {
@@ -497,8 +498,10 @@ public class App extends MultiDexApplication {
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, () ->
-                    eventBus.post(new ServerSyncRequestEvent()));
+            }, Throwable::printStackTrace, () -> {
+                    onQuestChanged();
+                    eventBus.post(new ServerSyncRequestEvent());
+            });
         }
     }
 

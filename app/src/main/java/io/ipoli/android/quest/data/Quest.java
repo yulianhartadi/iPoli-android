@@ -161,6 +161,9 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
     public void updateRemindersStartTime() {
+        if(getReminders() == null) {
+            return;
+        }
         for(Reminder r : getReminders()) {
             r.calculateStartTime(this);
         }
