@@ -282,15 +282,15 @@ public class AppJobService extends JobService {
     }
 
     private void updateServerReminders(RealmList<Reminder> serverReminders, RealmList<Reminder> localReminders) {
-        int notificationId = !localReminders.isEmpty() ?
-                localReminders.get(0).getNotificationId() :
-                new Random().nextInt();
+        int notificationId = localReminders == null || localReminders.isEmpty() ?
+                new Random().nextInt() :
+                localReminders.get(0).getNotificationId();
 
         for (int j = 0; j < serverReminders.size(); j++) {
             Reminder sr = serverReminders.get(j);
             sr.setRemoteId(sr.getId());
 
-            if (j < localReminders.size()) {
+            if (localReminders != null && j < localReminders.size()) {
                 Reminder lr = localReminders.get(j);
                 sr.setId(lr.getId());
             } else {

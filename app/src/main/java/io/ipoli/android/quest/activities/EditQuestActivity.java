@@ -244,7 +244,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
 
-        if(quest.getReminders().isEmpty()) {
+        if(quest.getReminders() == null || quest.getReminders().isEmpty()) {
             notificationId = new Random().nextInt();
         } else {
             notificationId = quest.getReminders().get(0).getNotificationId();

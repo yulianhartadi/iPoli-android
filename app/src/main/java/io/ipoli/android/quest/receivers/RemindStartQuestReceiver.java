@@ -55,6 +55,9 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 continue;
             }
             Reminder reminder = null;
+            if (q.getReminders() == null) {
+                continue;
+            }
             for (Reminder r : q.getReminders()) {
                 if (r.getId().equals(reminderId)) {
                     reminder = r;
