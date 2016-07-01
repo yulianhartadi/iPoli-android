@@ -76,6 +76,7 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -347,6 +348,11 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
+        if (e.reminders != null) {
+            for (Reminder r : e.reminders) {
+                r.calculateStartTime(e.quest);
+            }
+        }
         questPersistenceService.saveReminders(e.quest, e.reminders);
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {

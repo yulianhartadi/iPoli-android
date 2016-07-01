@@ -47,6 +47,8 @@ public class Reminder extends RealmObject implements RemoteObject<Reminder> {
         this.id = IDGenerator.generate();
         this.notificationId = notificationId;
         this.minutesFromStart = minutesFromStart;
+        this.isDeleted = false;
+        this.needsSyncWithRemote = true;
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
     }
