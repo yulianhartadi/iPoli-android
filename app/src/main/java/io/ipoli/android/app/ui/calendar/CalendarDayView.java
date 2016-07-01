@@ -28,6 +28,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.ViewUtils;
@@ -223,7 +224,7 @@ public class CalendarDayView extends FrameLayout {
         final View eventView = adapter.getView(eventsContainer, position);
         RelativeLayout.LayoutParams qlp = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
         qlp.topMargin = getYPositionFor(calendarEvent.getStartMinute());
-        qlp.height = getHeightFor(calendarEvent.getDuration());
+        qlp.height = getHeightFor(Math.max(calendarEvent.getDuration(), Constants.CALENDAR_EVENT_MIN_DURATION));
         eventsContainer.addView(eventView, qlp);
         eventViewToCalendarEvent.put(eventView, calendarEvent);
     }
