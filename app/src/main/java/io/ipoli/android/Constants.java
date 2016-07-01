@@ -40,6 +40,8 @@ public interface Constants {
     String REWARD_ID_EXTRA_KEY = "reward_id";
 
     int CALENDAR_EVENT_MIN_DURATION = 15;
+    int CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION = 20;
+
     int QUEST_MIN_DURATION = 10;
 
     int MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT = 3;
