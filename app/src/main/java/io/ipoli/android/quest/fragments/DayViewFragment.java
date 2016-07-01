@@ -209,7 +209,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
 
     private void questsForFutureUpdated() {
-        List<Quest> quests = futureQuests;
+        List<Quest> quests = new ArrayList<>();
+        quests.addAll(futureQuests);
         quests.addAll(futurePlaceholderQuests);
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
         List<Quest> unscheduledQuests = new ArrayList<>();
