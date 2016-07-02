@@ -19,7 +19,7 @@ public class TimesPerDayTextSuggestionsProvider extends BaseSuggestionsProvider 
 
     @Override
     protected int getIcon() {
-        return R.drawable.ic_multiply_black_24dp_transparent;
+        return R.drawable.ic_calendar_multiple_black_24dp;
     }
 
     @Override
