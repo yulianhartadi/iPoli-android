@@ -47,7 +47,7 @@ public class MainSuggestionsProvider implements SuggestionsProvider {
             suggestions.add(new SuggestionDropDownItem(R.drawable.ic_repeat_black_24dp, "every ...", "every"));
         }
         if (!usedTypes.contains(MatcherType.TIME)) {
-            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_multiply_black_24dp_transparent, "times per day ...", "", TextEntityType.TIMES_PER_DAY));
+            suggestions.add(new SuggestionDropDownItem(R.drawable.ic_multiply_black_24dp_transparent, "times per ...", "", TextEntityType.FLEXIBLE));
         }
         return suggestions;
     }
