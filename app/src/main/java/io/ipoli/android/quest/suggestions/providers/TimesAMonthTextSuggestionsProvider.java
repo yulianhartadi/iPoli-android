@@ -9,13 +9,13 @@ import io.ipoli.android.R;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class TimesPerMonthTextSuggestionsProvider extends BaseSuggestionsProvider {
+public class TimesAMonthTextSuggestionsProvider extends BaseSuggestionsProvider {
 
     @Override
     protected List<String> getSuggestions() {
         List<String> suggestions = new ArrayList<>();
         for(int i = 2; i<=15; i++) {
-            suggestions.add(i + " times per month");
+            suggestions.add(i + " times a month");
         }
         return suggestions;
     }

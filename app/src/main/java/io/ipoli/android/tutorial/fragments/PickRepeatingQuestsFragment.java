@@ -53,7 +53,7 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
         addViewModel("Be mindful for 15 min every day", Category.WELLNESS);
         addViewModel("Review my day every Mon Tue Wed Thur and Fri at 22:00", Category.PERSONAL, true);
         addViewModel("Learn new language every day", Category.LEARNING);
-        addViewModel("Drink water 6 times per day every day", Category.WELLNESS);
+        addViewModel("Drink water 6 times a day every day", Category.WELLNESS);
         addViewModel("Floss every day", Category.WELLNESS);
         addViewModel("Read every day for 1 hour", Category.LEARNING);
         addViewModel("Go for a run every Tue and Thur", Category.WELLNESS);

@@ -310,10 +310,10 @@ public class QuestParserTest {
     }
 
     @Test
-    public void testHitEndTimesPerDay() {
-        String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sper\\sday)?(?:$|\\s)";
+    public void testHitEndTimesADay() {
+        String PATTERN = "(?:^|\\s)(\\d+)\\stimes(?:\\sa\\sday)?(?:$|\\s)";
         Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(" 4 times per");
+        Matcher m = p.matcher(" 4 times a");
         m.matches();
         assertTrue(m.hitEnd());
     }

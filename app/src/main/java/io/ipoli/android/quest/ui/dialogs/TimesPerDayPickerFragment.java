@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
+import io.ipoli.android.quest.parsers.TimesADayMatcher;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
@@ -81,7 +81,7 @@ public class TimesPerDayPickerFragment extends DialogFragment {
                    selectedTimesPerDayIndex = which;
                })
                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                   int timesPerDay = new TimesPerDayMatcher().parse(questTimesPerDay.get(selectedTimesPerDayIndex));
+                   int timesPerDay = new TimesADayMatcher().parse(questTimesPerDay.get(selectedTimesPerDayIndex));
                    timesPerDayPickedListener.onTimesPerDayPicked(timesPerDay);
                })
                .setNegativeButton(R.string.cancel, (dialog, which) -> {

@@ -5,18 +5,18 @@ import java.util.regex.Pattern;
 
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.TextEntityType;
-import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestionsProvider;
+import io.ipoli.android.quest.suggestions.providers.TimesAMonthTextSuggestionsProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class TimesPerDayMatcher extends BaseMatcher<Integer> {
-    private static final String PATTERN = "(?:^|\\s)([2-7])\\stimes(?:\\sper\\sday)+(?:$|\\s)";
+public class TimesAMonthMatcher extends BaseMatcher<Integer> {
+    private static final String PATTERN = "(?:^|\\s)([2-9]|1[0-5])\\stimes(?:\\sa\\smonth)+(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
-    public TimesPerDayMatcher() {
-        super(new TimesPerDayTextSuggestionsProvider());
+    public TimesAMonthMatcher() {
+        super(new TimesAMonthTextSuggestionsProvider());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TimesPerDayMatcher extends BaseMatcher<Integer> {
 
     @Override
     public TextEntityType getTextEntityType() {
-        return TextEntityType.TIMES_PER_DAY;
+        return TextEntityType.TIMES_PER_MONTH;
     }
 
     @Override

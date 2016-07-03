@@ -10,7 +10,7 @@ import io.ipoli.android.R;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/27/16.
  */
-public class TimesPerDayTextSuggestionsProvider extends BaseSuggestionsProvider {
+public class TimesADayTextSuggestionsProvider extends BaseSuggestionsProvider {
 
     @Override
     protected List<String> getSuggestions() {

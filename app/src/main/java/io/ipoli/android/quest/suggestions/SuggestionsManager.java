@@ -25,9 +25,8 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
-import io.ipoli.android.quest.parsers.TimesPerMonthMatcher;
-import io.ipoli.android.quest.parsers.TimesPerWeekMatcher;
+import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
+import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 import io.ipoli.android.quest.suggestions.providers.MainSuggestionsProvider;
 import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
 
@@ -56,9 +55,8 @@ public class SuggestionsManager {
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
             put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
             put(TextEntityType.FLEXIBLE, new FlexibleMatcher());
-            put(TextEntityType.TIMES_PER_DAY, new TimesPerDayMatcher());
-            put(TextEntityType.TIMES_PER_WEEK, new TimesPerWeekMatcher());
-            put(TextEntityType.TIMES_PER_MONTH, new TimesPerMonthMatcher());
+            put(TextEntityType.TIMES_PER_WEEK, new TimesAWeekMatcher());
+            put(TextEntityType.TIMES_PER_MONTH, new TimesAMonthMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());

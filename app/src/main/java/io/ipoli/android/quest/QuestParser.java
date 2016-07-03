@@ -20,7 +20,7 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
+import io.ipoli.android.quest.parsers.TimesADayMatcher;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -48,7 +48,7 @@ public class QuestParser {
     private final RecurrenceEveryDayMatcher everyDayMatcher = new RecurrenceEveryDayMatcher();
     private final RecurrenceDayOfWeekMatcher dayOfWeekMatcher = new RecurrenceDayOfWeekMatcher();
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
-    private final TimesPerDayMatcher timesPerDayMatcher = new TimesPerDayMatcher();
+    private final TimesADayMatcher timesADayMatcher = new TimesADayMatcher();
 
     public QuestParser(PrettyTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
@@ -70,7 +70,7 @@ public class QuestParser {
             result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
         }
 
-        Pair<Integer, String> timesPerDayPair = parseQuestPart(dueDatePair.second, timesPerDayMatcher);
+        Pair<Integer, String> timesPerDayPair = parseQuestPart(dueDatePair.second, timesADayMatcher);
         result.timesPerDay = Math.max(timesPerDayPair.first, 1);
 
         Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
@@ -125,7 +125,7 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         int startMinute = startTimePair.first;
 
-        Pair<Integer, String> timesPerDayPair = parseQuestPart(startTimePair.second, timesPerDayMatcher);
+        Pair<Integer, String> timesPerDayPair = parseQuestPart(startTimePair.second, timesADayMatcher);
         int timesPerDay = timesPerDayPair.first;
 
         Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
@@ -183,7 +183,7 @@ public class QuestParser {
     }
 
     public boolean isRepeatingQuest(String text) {
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
+        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesADayMatcher}) {
             if (matcher.match(text) != null) {
                 return true;
             }
