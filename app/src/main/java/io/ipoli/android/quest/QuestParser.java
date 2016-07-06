@@ -21,6 +21,8 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
 import io.ipoli.android.quest.parsers.TimesADayMatcher;
+import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
+import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -49,6 +51,8 @@ public class QuestParser {
     private final RecurrenceDayOfWeekMatcher dayOfWeekMatcher = new RecurrenceDayOfWeekMatcher();
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
     private final TimesADayMatcher timesADayMatcher = new TimesADayMatcher();
+    private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
+    private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
 
     public QuestParser(PrettyTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);

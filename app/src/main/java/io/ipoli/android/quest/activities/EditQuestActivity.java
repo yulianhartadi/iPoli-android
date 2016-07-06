@@ -795,7 +795,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-//        recurrence.setTimesPerDay((int) timesPerDayText.getTag());
         recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (recurrence.getRrule() == null) {
             if (endDateText.getTag() != null) {

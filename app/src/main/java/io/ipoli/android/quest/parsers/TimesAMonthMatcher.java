@@ -42,7 +42,7 @@ public class TimesAMonthMatcher extends BaseMatcher<Integer> {
 
     @Override
     public MatcherType getMatcherType() {
-        return MatcherType.TIME;
+        return MatcherType.DATE;
     }
 
     @Override
