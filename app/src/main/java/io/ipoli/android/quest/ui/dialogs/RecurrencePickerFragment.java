@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
@@ -106,6 +107,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @BindView(R.id.recurrence_flexible_count)
     Spinner flexibleCount;
 
+    @BindView(R.id.preferred_days_title)
+    TextView preferredDays;
+
     @BindView(R.id.recurrence_times_a_day)
     Spinner timesADay;
 
@@ -181,12 +185,15 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         if (isFlexible) {
             dayOfMonthContainer.setVisibility(View.GONE);
             flexibleCountContainer.setVisibility(View.VISIBLE);
+            preferredDays.setVisibility(View.VISIBLE);
             dayOfWeekContainer.setVisibility(View.VISIBLE);
             initFlexibleFrequencies();
             initFlexibleCount();
         } else {
-            dayOfMonthContainer.setVisibility(View.VISIBLE);
+            preferredDays.setVisibility(View.GONE);
             flexibleCountContainer.setVisibility(View.GONE);
+            dayOfWeekContainer.setVisibility(View.GONE);
+            dayOfMonthContainer.setVisibility(View.GONE);
             initDaysOfMonth();
             initFrequencies();
         }
