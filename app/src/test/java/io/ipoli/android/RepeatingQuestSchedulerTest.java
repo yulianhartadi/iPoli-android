@@ -183,7 +183,7 @@ public class RepeatingQuestSchedulerTest {
     }
 
     @Test
-    public void scheduleRepeatingQuestWithTimesPerDay() {
+    public void scheduleRepeatingQuestWithTimesADay() {
         Date today = toStartOfDayUTC(LocalDate.now());
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = new Recurrence(4);

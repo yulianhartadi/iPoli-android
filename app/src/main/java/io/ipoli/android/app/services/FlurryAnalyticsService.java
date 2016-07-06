@@ -67,7 +67,6 @@ import io.ipoli.android.quest.events.QuestNodePickedEvent;
 import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
-import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
@@ -552,11 +551,6 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onQuestDurationPicked(QuestDurationPickedEvent e) {
         log("quest_duration_picked", EventParams.of("mode", e.mode));
-    }
-
-    @Subscribe
-    public void onQuestTimesPerDayPicked(QuestTimesPerDayPickedEvent e) {
-        log("quest_times_per_day_picked", EventParams.of("mode", e.mode));
     }
 
     @Subscribe

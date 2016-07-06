@@ -28,14 +28,14 @@ public class RepeatingQuestViewModel {
     private final int completedCount;
     private final Recur recur;
     private final java.util.Date nextDate;
-    private final int timesPerDay;
+    private final int timesADay;
 
     public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, int completedCount, Recur recur, java.util.Date nextDate) {
         this.repeatingQuest = repeatingQuest;
         this.completedCount = completedCount;
         this.recur = recur;
         this.nextDate = nextDate;
-        this.timesPerDay = repeatingQuest.getRecurrence().getTimesPerDay();
+        this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
     }
 
     public String getName() {
@@ -53,11 +53,11 @@ public class RepeatingQuestViewModel {
     }
 
     public int getCompletedDailyCount() {
-        return (int) Math.floor((double) completedCount / (double) timesPerDay);
+        return (int) Math.floor((double) completedCount / (double) timesADay);
     }
 
     public int getRemainingDailyCount() {
-        return (int) Math.ceil((double) (getTotalCount() - completedCount) / (double) timesPerDay);
+        return (int) Math.ceil((double) (getTotalCount() - completedCount) / (double) timesADay);
     }
 
     private Category getQuestCategory() {
@@ -104,7 +104,7 @@ public class RepeatingQuestViewModel {
         java.util.Date from = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMinimumValue());
         java.util.Date to = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMaximumValue());
 
-        return recur.getDates(new DateTime(repeatingQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesPerDay;
+        return recur.getDates(new DateTime(repeatingQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesADay;
     }
 
     public String getRepeatText() {

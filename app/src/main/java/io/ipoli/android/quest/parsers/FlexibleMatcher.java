@@ -30,7 +30,7 @@ public class FlexibleMatcher extends BaseMatcher<Void> {
 
     @Override
     public MatcherType getMatcherType() {
-        return MatcherType.TIME;
+        return MatcherType.DATE;
     }
 
     @Override
