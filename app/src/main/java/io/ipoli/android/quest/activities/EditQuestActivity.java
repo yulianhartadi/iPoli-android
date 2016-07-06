@@ -83,7 +83,6 @@ import io.ipoli.android.quest.events.QuestDurationPickedEvent;
 import io.ipoli.android.quest.events.QuestNodePickedEvent;
 import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
 import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
-import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
@@ -106,13 +105,11 @@ import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.dialogs.TimesPerDayPickerFragment;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
-import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -125,7 +122,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         DatePickerFragment.OnDatePickedListener,
         RecurrencePickerFragment.OnRecurrencePickedListener,
         DurationPickerFragment.OnDurationPickedListener,
-        TimesPerDayPickerFragment.OnTimesPerDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
@@ -163,9 +159,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @BindView(R.id.quest_duration_value)
     TextView durationText;
-
-    @BindView(R.id.quest_times_per_day_value)
-    TextView timesPerDayText;
 
     @BindView(R.id.quest_repeat_pattern_value)
     TextView frequencyText;
@@ -261,13 +254,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         RepeatingQuest rq = questPersistenceService.findById(questId);
         questText.setText(rq.getName());
         questText.setSelection(rq.getName().length());
-        populateDuration(rq.getDuration());
-        if (rq.getRecurrence().getTimesPerDay() > 1) {
-            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
-        } else if (rq.getStartMinute() >= 0) {
+//        populateDuration(rq.getDuration());
+//        if (rq.getRecurrence().getTimesPerDay() > 1) {
+//            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+//        } else
+        if (rq.getStartMinute() >= 0) {
             populateStartTime(rq.getStartMinute());
         } else {
-            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
+//            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
             populateStartTime(-1);
         }
         setFrequencyText(rq.getRecurrence());
@@ -287,7 +281,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void onAddNewQuest() {
         changeEditMode(EditMode.ADD);
-        populateTimesPerDay(1);
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         populateChallenge(null);
@@ -337,7 +330,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (editMode == EditMode.EDIT_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
             findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
-            findViewById(R.id.quest_times_per_day_container).setVisibility(View.GONE);
         }
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
@@ -486,7 +478,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
-        rq.getRecurrence().setTimesPerDay((int) timesPerDayText.getTag());
+//        rq.getRecurrence().setTimesPerDay((int) timesPerDayText.getTag());
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
@@ -515,7 +507,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         populateStartTime(result.startMinute);
         populateDuration(Math.max(result.duration, Constants.QUEST_MIN_DURATION));
-        populateTimesPerDay(result.timesPerDay);
         populateFrequency(result);
 
         questText.setText(result.name);
@@ -578,16 +569,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             durationPickerFragment = DurationPickerFragment.newInstance(this);
         }
         durationPickerFragment.show(getSupportFragmentManager());
-    }
-
-    @OnClick(R.id.quest_times_per_day_container)
-    public void onTimesPerDayClick(View view) {
-        int timesPerDay = 1;
-        if (timesPerDayText.getTag() != null && (int) timesPerDayText.getTag() > 0) {
-            timesPerDay = (int) timesPerDayText.getTag();
-        }
-        TimesPerDayPickerFragment timesPerDayPickerFragment = TimesPerDayPickerFragment.newInstance(timesPerDay, this);
-        timesPerDayPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_frequency_container)
@@ -655,12 +636,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     @Override
-    public void onTimesPerDayPicked(int timesPerDay) {
-        populateTimesPerDay(timesPerDay);
-        eventBus.post(new QuestTimesPerDayPickedEvent(editMode.name().toLowerCase()));
-    }
-
-    @Override
     public void onChallengePicked(String challengeId) {
         Challenge challenge = findChallenge(challengeId);
         populateChallenge(challenge);
@@ -696,7 +671,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
-            populateTimesPerDay(1);
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
@@ -708,14 +682,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void populateDuration(int duration) {
         durationText.setText(DurationFormatter.formatReadable(duration));
         durationText.setTag(duration);
-    }
-
-    private void populateTimesPerDay(int timesPerDay) {
-        if (timesPerDay > 1) {
-            populateStartTime(-1);
-        }
-        timesPerDayText.setText(TimesPerDayFormatter.formatReadable(timesPerDay));
-        timesPerDayText.setTag(timesPerDay);
     }
 
     private void addReminder(Reminder reminder) {
@@ -830,7 +796,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-        recurrence.setTimesPerDay((int) timesPerDayText.getTag());
+//        recurrence.setTimesPerDay((int) timesPerDayText.getTag());
         recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (recurrence.getRrule() == null) {
             if (endDateText.getTag() != null) {
@@ -850,7 +816,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private boolean isRepeatingQuest() {
-        return frequencyText.getTag() != null || (int) timesPerDayText.getTag() > 1;
+        return frequencyText.getTag() != null;
     }
 
     private boolean hasStartTime(Quest q) {

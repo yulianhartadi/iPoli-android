@@ -14,7 +14,7 @@ import java.util.List;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.parsers.TimesADayMatcher;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.TimesPerDayFormatter;
+import io.ipoli.android.quest.ui.formatters.FlexibleTimesFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -63,7 +63,7 @@ public class TimesPerDayPickerFragment extends DialogFragment {
         selectedTimesPerDayIndex = -1;
         for (int i = 0; i < AVAILABLE_TIMES_PER_DAY.length; i++) {
             int t = AVAILABLE_TIMES_PER_DAY[i];
-            questTimesPerDay.add(TimesPerDayFormatter.formatReadable(t));
+            questTimesPerDay.add(FlexibleTimesFormatter.formatReadable(t));
             if (t == timesPerDay) {
                 selectedTimesPerDayIndex = i;
             }
