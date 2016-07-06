@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="How often?" />
+            android:text="@string/pick_flexible_count_title" />
 
         <Space
             android:layout_width="0dp"
@@ -88,7 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:text="Preferred days" />
+        android:text="@string/preferred_days" />
 
     <LinearLayout
         android:id="@+id/day_of_week_container"

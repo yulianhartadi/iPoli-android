@@ -92,6 +92,11 @@ public interface Constants {
 
     int[] REMINDER_PREDEFINED_MINUTES = new int[]{0, 10, 15, 30, 60};
 
+    int MIN_FLEXIBLE_TIMES_A_WEEK_COUNT = 2;
+    int MAX_FLEXIBLE_TIMES_A_WEEK_COUNT = 6;
+    int MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 2;
+    int MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15;
+
     Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
             DaysOfWeek.TUESDAY.getIsoOrder(),

@@ -318,4 +318,7 @@
     <string name="do_not_remind">Do not remind</string>
     <string name="ready_to_start">Ready to start?</string>
     <string name="snooze">SNOOZE</string>
+    <string name="recurrence_picker_title">Pick repeating pattern</string>
+    <string name="pick_flexible_count_title">How often?</string>
+    <string name="preferred_days">Preferred days</string>
 </resources>
