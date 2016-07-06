@@ -212,7 +212,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void initDays() {
-        if(recurrence.getRrule() == null) {
+        if (recurrence.getRrule() == null) {
             return;
         }
         try {
@@ -324,7 +324,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         int selectedPosition = 0;
         for (int i = 1; i <= 7; i++) {
             timesADayValues.add(FlexibleTimesFormatter.formatReadable(i));
-            if(recurrence.getTimesADay() == i) {
+            if (recurrence.getTimesADay() == i) {
                 selectedPosition = i - 1;
             }
         }
@@ -411,31 +411,26 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void setFlexibleValues(Recurrence.RecurrenceType recurrenceType) {
+        Recur recur = new Recur(Recur.WEEKLY, null);
         switch (recurrenceType) {
             case WEEKLY:
+                recur.setFrequency(Recur.WEEKLY);
                 recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
                 break;
             case MONTHLY:
+                recur.setFrequency(Recur.MONTHLY);
                 recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
                 break;
         }
 
         recurrence.setFlexibleCount(FlexibleTimesFormatter.parse(flexibleCount.getSelectedItem().toString()));
 
-        Recur recur = new Recur(Recur.WEEKLY, null);
         for (Map.Entry<WeekDay, Integer> entry : weekDayToCheckBoxId.entrySet()) {
             if (((CheckBox) view.findViewById(entry.getValue())).isChecked()) {
                 recur.getDayList().add(entry.getKey());
             }
         }
-        if(!recur.getDayList().isEmpty()) {
-            if(recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
-                recur.setFrequency(Recur.MONTHLY);
-            }
-            recurrence.setRrule(recur.toString());
-        } else {
-            recurrence.setRrule(null);
-        }
+        recurrence.setRrule(recur.toString());
     }
 
     private void setRrule(Recurrence.RecurrenceType recurrenceType) {

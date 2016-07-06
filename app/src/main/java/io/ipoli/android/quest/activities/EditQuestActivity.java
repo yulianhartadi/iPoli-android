@@ -37,6 +37,7 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -534,9 +535,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else if (result.timesAWeek > 0){
             recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
             recurrence.setFlexibleCount(result.timesAWeek);
+            Recur recur = new Recur(Recur.WEEKLY, null);
+            recurrence.setRrule(recur.toString());
         } else if (result.timesAMonth > 0) {
             recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
             recurrence.setFlexibleCount(result.timesAMonth);
+            Recur recur = new Recur(Recur.MONTHLY, null);
+            recurrence.setRrule(recur.toString());
         } else {
             recurrence = null;
         }

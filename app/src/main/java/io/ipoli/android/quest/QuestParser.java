@@ -69,7 +69,7 @@ public class QuestParser {
         result.startMinute = startTimePair.first;
 
         Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
-        if(dueDatePair.first != null) {
+        if (dueDatePair.first != null) {
             result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
         }
 
@@ -175,28 +175,24 @@ public class QuestParser {
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString());
             recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else if (timesAWeek > 0) {
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setFlexibleCount(timesAWeek);
+            Recur recur = new Recur(Recur.WEEKLY, null);
+            recurrence.setRrule(recur.toString());
+        } else if (timesAMonth > 0) {
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setFlexibleCount(timesAMonth);
+            Recur recur = new Recur(Recur.MONTHLY, null);
+            recurrence.setRrule(recur.toString());
         } else {
             recurrence.setRrule(null);
-            if (dueDate != null) {
-                recurrence.setDtstart(toStartOfDayUTC(new LocalDate(dueDate)));
-                recurrence.setDtend(toStartOfDayUTC(new LocalDate(dueDate)));
-            } else {
-                recurrence.setDtstart(null);
-                recurrence.setDtend(null);
-                if(timesAWeek > 0) {
-                    recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
-                    recurrence.setFlexibleCount(timesAWeek);
-                } else if(timesAMonth > 0) {
-                    recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
-                    recurrence.setFlexibleCount(timesAMonth);
-                }
-            }
         }
 
-        rq.setRecurrence(recurrence);
+    rq.setRecurrence(recurrence);
 
-        return rq;
-    }
+    return rq;
+}
 
     public boolean isRepeatingQuest(String text) {
         for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesAWeekMatcher, timesAMonthMatcher}) {
