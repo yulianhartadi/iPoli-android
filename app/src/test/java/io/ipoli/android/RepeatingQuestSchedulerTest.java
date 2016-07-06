@@ -218,6 +218,20 @@ public class RepeatingQuestSchedulerTest {
         assertThat(result.size(), is(3));
     }
 
+    @Test
+    public void scheduleFlexibleWeeklyQuestWithNoPreferredDays() {
+        LocalDate startOfWeek = LocalDate.now().dayOfWeek().withMinimumValue();
+        RepeatingQuest rq = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setFlexibleCount(3);
+        rq.setRecurrence(recurrence);
+        List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfWeek));
+        assertThat(result.size(), is(3));
+    }
+
     @NonNull
     private Recur createEveryDayRecur() {
         Recur recur = new Recur(Recur.WEEKLY, null);
