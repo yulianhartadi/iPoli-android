@@ -204,7 +204,7 @@ public class RepeatingQuestSchedulerTest {
     }
 
     @Test
-    public void scheduleFlexibleWeeklyQuestWithNotEnoughPrefferedDays() {
+    public void scheduleFlexibleWeeklyQuestWithNotEnoughPreferredDays() {
         LocalDate startOfWeek = LocalDate.now().dayOfWeek().withMinimumValue();
         RepeatingQuest rq = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
