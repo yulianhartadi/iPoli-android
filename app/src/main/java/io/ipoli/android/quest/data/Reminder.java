@@ -79,7 +79,6 @@ public class Reminder extends RealmObject implements RemoteObject<Reminder> {
         needsSyncWithRemote = false;
     }
 
-
     @Override
     public String getRemoteId() {
         return remoteId;
