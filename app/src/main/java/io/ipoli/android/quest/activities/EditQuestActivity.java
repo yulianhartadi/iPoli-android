@@ -531,6 +531,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else if (result.dayOfMonthRecurrence != null) {
             recurrence.setRrule(result.dayOfMonthRecurrence.toString());
             recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else if (result.timesAWeek > 0){
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setFlexibleCount(result.timesAWeek);
+        } else if (result.timesAMonth > 0) {
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setFlexibleCount(result.timesAMonth);
         } else {
             recurrence = null;
         }
