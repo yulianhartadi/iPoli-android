@@ -481,7 +481,7 @@ public class App extends MultiDexApplication {
         Recurrence recurrence = rq.getRecurrence();
         if (TextUtils.isEmpty(recurrence.getRrule())) {
             List<Quest> questsToCreate = new ArrayList<>();
-            for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+            for (int i = 0; i < recurrence.getTimesADay(); i++) {
                 questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {

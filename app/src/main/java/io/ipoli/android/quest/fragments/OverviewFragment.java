@@ -170,7 +170,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
     }
 
     private boolean hasDailyRrule(Quest q) {
-        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
+        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesADay() > 1;
     }
 
     @Override
@@ -197,7 +197,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
         for (String key : map.keySet()) {
             Quest q = map.get(key).get(0);
             RepeatingQuest rq = q.getRepeatingQuest();
-            int repeatCount = rq.getRecurrence().getTimesPerDay();
+            int repeatCount = rq.getRecurrence().getTimesADay();
             int remainingCount = map.get(key).size();
             viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
         }

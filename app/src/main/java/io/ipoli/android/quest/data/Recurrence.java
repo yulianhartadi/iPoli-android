@@ -20,7 +20,7 @@ public class Recurrence extends RealmObject {
     @PrimaryKey
     private String id;
 
-    private int timesPerDay;
+    private int timesADay;
     private int flexibleCount;
     private String preferredDays;
 
@@ -42,17 +42,17 @@ public class Recurrence extends RealmObject {
 
     }
 
-    public Recurrence(int timesPerDay) {
+    public Recurrence(int timesADay) {
         id = IDGenerator.generate();
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         setType(RecurrenceType.DAILY);
-        this.timesPerDay = timesPerDay;
+        this.timesADay = timesADay;
         this.flexibleCount = 0;
     }
 
-    public void setTimesPerDay(int timesPerDay) {
-        this.timesPerDay = timesPerDay;
+    public void setTimesADay(int timesADay) {
+        this.timesADay = timesADay;
     }
 
     public static Recurrence create() {
@@ -67,8 +67,8 @@ public class Recurrence extends RealmObject {
         return type;
     }
 
-    public int getTimesPerDay() {
-        return timesPerDay;
+    public int getTimesADay() {
+        return timesADay;
     }
 
     public String getRrule() {

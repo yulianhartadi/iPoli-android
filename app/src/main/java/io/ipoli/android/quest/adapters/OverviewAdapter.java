@@ -217,7 +217,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
             questHolder.remainingText.setText(vm.getRemainingText());
 
-            if (!vm.hasTimesPerDay()) {
+            if (!vm.hasTimesADay()) {
                 return;
             }
 

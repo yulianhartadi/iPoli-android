@@ -146,8 +146,8 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
 
             if (DateUtils.isTodayUTC(nextDate)) {
                 int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
-                int timesPerDay = recurrence.getTimesPerDay();
-                if (completedForToday >= timesPerDay) {
+                int timesADay = recurrence.getTimesADay();
+                if (completedForToday >= timesADay) {
                     Date tomorrowStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1));
                     nextDate = recur.getNextDate(seed, new DateTime(tomorrowStartOfDay.getTime()));
                     if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {

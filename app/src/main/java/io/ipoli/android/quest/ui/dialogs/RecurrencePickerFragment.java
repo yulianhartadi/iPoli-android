@@ -331,7 +331,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         int selectedPosition = 0;
         for (int i = 1; i <= 7; i++) {
             timesADayValues.add(FlexibleTimesFormatter.formatReadable(i));
-            if(recurrence.getTimesPerDay() == i) {
+            if(recurrence.getTimesADay() == i) {
                 selectedPosition = i - 1;
             }
         }
@@ -408,7 +408,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             recurrence.setPreferredDays(null);
         }
 
-        recurrence.setTimesPerDay(FlexibleTimesFormatter.parse(timesADay.getSelectedItem().toString()));
+        recurrence.setTimesADay(FlexibleTimesFormatter.parse(timesADay.getSelectedItem().toString()));
 
         if (until.getTag() != null) {
             Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));

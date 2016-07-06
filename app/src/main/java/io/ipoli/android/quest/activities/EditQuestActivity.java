@@ -671,7 +671,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
             if(frequencyText.getTag() != null) {
-                ((Recurrence)frequencyText.getTag()).setTimesPerDay(1);
+                ((Recurrence)frequencyText.getTag()).setTimesADay(1);
             }
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
@@ -742,7 +742,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void setFrequencyText(Recurrence recurrence) {
         if (recurrence != null) {
             populateEndDate(null);
-            if(recurrence.getTimesPerDay() > 1) {
+            if(recurrence.getTimesADay() > 1) {
                 populateStartTime(-1);
             }
         }

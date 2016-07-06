@@ -59,7 +59,7 @@ public class RepeatingQuestScheduler {
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
-            for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+            for (int i = 0; i < recurrence.getTimesADay(); i++) {
                 res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
             }
         }
