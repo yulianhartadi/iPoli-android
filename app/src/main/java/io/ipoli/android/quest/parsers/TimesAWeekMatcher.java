@@ -47,7 +47,7 @@ public class TimesAWeekMatcher extends BaseMatcher<Integer> {
 
     @Override
     public TextEntityType getTextEntityType() {
-        return TextEntityType.TIMES_PER_WEEK;
+        return TextEntityType.TIMES_A_WEEK;
     }
 
     @Override

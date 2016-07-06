@@ -75,53 +75,6 @@
     <string name="repeating_quest_saved">Repeating Quest saved</string>
     <string name="repeating_quest_next_datetime">Next: %s</string>
 
-    <string-array name="due_date_auto_completes">
-        <item>today</item>
-        <item>tomorrow</item>
-        <item>on 12 Feb</item>
-        <item>next Monday</item>
-        <item>after 3 days</item>
-        <item>in 2 months</item>
-    </string-array>
-
-    <string-array name="start_time_auto_completes">
-        <item>at 19:30</item>
-        <item>at 7 pm</item>
-        <item>at 9:00</item>
-        <item>at 12:00</item>
-        <item>at 20:00</item>
-        <item>at 22:00</item>
-    </string-array>
-
-    <string-array name="duration_auto_completes">
-        <item>for 10 min</item>
-        <item>for 15 min</item>
-        <item>for 30 min</item>
-        <item>for 1h</item>
-        <item>for 1h and 30m</item>
-        <item>for 5m</item>
-    </string-array>
-
-    <string-array name="quest_string_durations">
-        <item>15 min or less</item>
-        <item>30 min</item>
-        <item>45 min</item>
-        <item>1 hour</item>
-        <item>1h and 30 min</item>
-        <item>2 hours</item>
-        <item>3 hours</item>
-        <item>4 hours</item>
-    </string-array>
-
-    <string-array name="quest_times_per_day">
-        <item>2 times</item>
-        <item>3 times</item>
-        <item>4 times</item>
-        <item>5 times</item>
-        <item>6 times</item>
-        <item>7 times</item>
-    </string-array>
-
     <string-array name="growth_intervals">
         <item>Today</item>
         <item>Last 7 days</item>
@@ -190,7 +143,7 @@
     <string name="help_dialog_add_quest_start_time">Set start time</string>
     <string name="help_dialog_add_quest_duration">Adjust the duration</string>
     <string name="help_dialog_add_quest_repeating">Make your quest repeating. This will automatically categorize your task as Repeating Quest.</string>
-    <string name="help_dialog_add_quest_times_per_day">Set times per day repetition</string>
+    <string name="help_dialog_add_quest_times_count">Set how many times a week or month you want to do the quest</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>

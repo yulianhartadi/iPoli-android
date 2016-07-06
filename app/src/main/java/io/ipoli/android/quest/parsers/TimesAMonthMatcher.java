@@ -47,7 +47,7 @@ public class TimesAMonthMatcher extends BaseMatcher<Integer> {
 
     @Override
     public TextEntityType getTextEntityType() {
-        return TextEntityType.TIMES_PER_MONTH;
+        return TextEntityType.TIMES_A_MONTH;
     }
 
     @Override

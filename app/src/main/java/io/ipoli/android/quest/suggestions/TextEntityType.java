@@ -15,7 +15,7 @@ public enum TextEntityType {
     DURATION,
     START_TIME,
     FLEXIBLE,
-    TIMES_PER_WEEK,
-    TIMES_PER_MONTH;
+    TIMES_A_WEEK,
+    TIMES_A_MONTH;
 }
 

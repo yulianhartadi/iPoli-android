@@ -55,8 +55,8 @@ public class SuggestionsManager {
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
             put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
             put(TextEntityType.FLEXIBLE, new FlexibleMatcher());
-            put(TextEntityType.TIMES_PER_WEEK, new TimesAWeekMatcher());
-            put(TextEntityType.TIMES_PER_MONTH, new TimesAMonthMatcher());
+            put(TextEntityType.TIMES_A_WEEK, new TimesAWeekMatcher());
+            put(TextEntityType.TIMES_A_MONTH, new TimesAMonthMatcher());
             put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
             put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
