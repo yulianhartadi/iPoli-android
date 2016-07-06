@@ -4,15 +4,20 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateList;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDayList;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
@@ -34,6 +39,80 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 public class RepeatingQuestScheduler {
 
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        if (repeatingQuest.isFlexible()) {
+            return scheduleFlexibleQuest(repeatingQuest, startDate);
+        }
+        return scheduleFixedQuest(repeatingQuest, startDate);
+    }
+
+    private List<Quest> scheduleFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        int countForWeek = recurrence.getFlexibleCount();
+        LocalDate start = new LocalDate(startDate, DateTimeZone.UTC);
+        List<LocalDate> possibleDates = findPossibleDates(recurrence.getRrule(), countForWeek, start);
+        if (possibleDates.size() <= countForWeek) {
+            return scheduleForAllPossibleDates(repeatingQuest, recurrence, possibleDates);
+        }
+
+        Collections.shuffle(possibleDates);
+
+        List<Quest> result = new ArrayList<>();
+        for (int i = 0; i < countForWeek; i++) {
+            for (int j = 0; j < recurrence.getTimesADay(); j++) {
+                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(possibleDates.get(i))));
+            }
+        }
+        return result;
+    }
+
+    @NonNull
+    private List<Quest> scheduleForAllPossibleDates(RepeatingQuest repeatingQuest, Recurrence recurrence, List<LocalDate> possibleDates) {
+        List<Quest> result = new ArrayList<>();
+        for (LocalDate possibleDate : possibleDates) {
+            for (int i = 0; i < recurrence.getTimesADay(); i++) {
+                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(possibleDate)));
+            }
+        }
+        return result;
+    }
+
+    @NonNull
+    private List<LocalDate> findPossibleDates(String rrule, int countForWeek, LocalDate start) {
+        Set<LocalDate> possibleDates = new HashSet<>();
+
+        try {
+            WeekDayList weekDayList = new Recur(rrule).getDayList();
+
+            for (Object weekDayObj : weekDayList) {
+                WeekDay weekDay = (WeekDay) weekDayObj;
+                int calendarDay = WeekDay.getCalendarDay(weekDay);
+                if (weekDay.equals(WeekDay.SU)) {
+                    calendarDay = 7;
+                } else {
+                    calendarDay--;
+                }
+                LocalDate candidateDate = start.withDayOfWeek(calendarDay);
+                if (!candidateDate.isBefore(start)) {
+                    possibleDates.add(candidateDate);
+                }
+            }
+
+            if (weekDayList.size() < countForWeek) {
+                for (int i = start.getDayOfWeek(); i <= start.dayOfWeek().withMaximumValue().getDayOfWeek(); i++) {
+                    possibleDates.add(start.withDayOfWeek(i));
+                    if (possibleDates.size() == countForWeek) {
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList<>(possibleDates);
+    }
+
+    @NonNull
+    private List<Quest> scheduleFixedQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
         List<Quest> res = new ArrayList<>();
