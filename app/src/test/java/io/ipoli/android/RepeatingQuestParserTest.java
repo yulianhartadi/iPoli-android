@@ -57,28 +57,24 @@ public class RepeatingQuestParserTest {
     }
 
     @Test
-    public void parseWithTimesADay() {
-        RepeatingQuest rq = parse("Workout every day 4 times a day");
+    public void parseWithTimesAWeek() {
+        RepeatingQuest rq = parse("Workout 4 times a week");
         assertEquals("Workout", rq.getName());
-        assertThat(rq.getRecurrence().getTimesPerDay(), is(4));
+        assertThat(rq.getRecurrence().getFlexibleCount(), is(4));
     }
 
     @Test
-    public void parseWithDateAndTimesADay() {
-        RepeatingQuest rq = parse("Workout today 4 times a day");
+    public void parseWithTimesAMonth() {
+        RepeatingQuest rq = parse("Workout 12 times a month");
         assertEquals("Workout", rq.getName());
-        assertThat(rq.getRecurrence().getTimesPerDay(), is(4));
-        assertStartDate(rq, Calendar.getInstance());
+        assertThat(rq.getRecurrence().getFlexibleCount(), is(12));
     }
 
     @Test
-    public void parseWithDateAndTimesADayAndDuration() {
-        RepeatingQuest rq = parse("Workout tomorrow 2 times a day for 1h");
+    public void parseWithTimesAWeekAndDuration() {
+        RepeatingQuest rq = parse("Workout 2 times a week for 1h");
         assertEquals("Workout", rq.getName());
-        assertThat(rq.getRecurrence().getTimesPerDay(), is(2));
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, 1);
-        assertStartDate(rq, cal);
+        assertThat(rq.getRecurrence().getFlexibleCount(), is(2));
         assertEquals(60, rq.getDuration());
     }
 
