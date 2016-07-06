@@ -162,8 +162,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.fragment_recurrence_picker, null);
         unbinder = ButterKnife.bind(this, view);
-        isFlexible = recurrence.getFlexibleCount() > 0;
+        isFlexible = recurrence.isFlexible();
         flexibleRecurrence.setChecked(isFlexible);
+        initUI();
 
         builder.setView(view)
                 .setIcon(R.drawable.logo)

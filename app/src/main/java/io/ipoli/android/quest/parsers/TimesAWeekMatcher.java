@@ -12,7 +12,7 @@ import io.ipoli.android.quest.suggestions.providers.TimesAWeekTextSuggestionsPro
  * on 3/23/16.
  */
 public class TimesAWeekMatcher extends BaseMatcher<Integer> {
-    private static final String PATTERN = "(?:^|\\s)([2-6])\\stimes(?:\\sa\\sweek)+(?:$|\\s)";
+    private static final String PATTERN = "(?:^|\\s)([1-6])\\stime(s)?(?:\\sa\\sweek)+(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     public TimesAWeekMatcher() {

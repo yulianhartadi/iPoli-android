@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.ui.formatters.FlexibleTimesFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -16,7 +17,7 @@ public class TimesAMonthTextSuggestionsProvider extends BaseSuggestionsProvider 
     protected List<String> getSuggestions() {
         List<String> suggestions = new ArrayList<>();
         for(int i = Constants.MIN_FLEXIBLE_TIMES_A_MONTH_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_MONTH_COUNT; i++) {
-            suggestions.add(i + " times a month");
+            suggestions.add(FlexibleTimesFormatter.formatReadable(i) + " a month");
         }
         return suggestions;
     }
