@@ -48,7 +48,7 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
         viewModels = new ArrayList<>();
 
         addViewModel("Set today's goals every Mon Tue Wed Thur and Fri at 9:00", Category.PERSONAL, true);
-        addViewModel("Exercise every Mon Wed and Fri", Category.WELLNESS);
+        addViewModel("Exercise 3 times a week", Category.WELLNESS);
         addViewModel("Walk the dog every day", Category.FUN);
         addViewModel("Be mindful for 15 min every day", Category.WELLNESS);
         addViewModel("Review my day every Mon Tue Wed Thur and Fri at 22:00", Category.PERSONAL, true);
@@ -56,13 +56,12 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
         addViewModel("Drink water 6 times a day every day", Category.WELLNESS);
         addViewModel("Floss every day", Category.WELLNESS);
         addViewModel("Read every day for 1 hour", Category.LEARNING);
-        addViewModel("Go for a run every Tue and Thur", Category.WELLNESS);
+        addViewModel("Go for a run 2 times a week", Category.WELLNESS);
         addViewModel("Stretch every Mon Tue Wed Thur and Fri", Category.WELLNESS);
         addViewModel("Pay bills every 20th of the month", Category.CHORES);
         addViewModel("Answer emails every Mon Tue Wed Thur and Fri", Category.WORK);
         addViewModel("Call mom and dad every Sun", Category.PERSONAL);
         addViewModel("Do laundry every Sun", Category.CHORES);
-
     }
 
     private void addViewModel(String text, Category category) {

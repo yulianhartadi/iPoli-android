@@ -143,7 +143,7 @@
     <string name="help_dialog_add_quest_start_time">Set start time</string>
     <string name="help_dialog_add_quest_duration">Adjust the duration</string>
     <string name="help_dialog_add_quest_repeating">Make your quest repeating. This will automatically categorize your task as Repeating Quest.</string>
-    <string name="help_dialog_add_quest_times_count">Set how many times a week or month you want to do the quest</string>
+    <string name="help_dialog_add_quest_times_count">Set how many times a day/week/month you want to do the quest</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>

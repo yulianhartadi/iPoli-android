@@ -43,11 +43,10 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
         return findAll(where -> where.isNotNull("name")
                 .equalTo("allDay", false)
-                .isNotNull("recurrence.rrule")
                 .beginGroup()
-                .isNull("recurrence.dtend")
-                .or()
-                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                    .isNull("recurrence.dtend")
+                    .or()
+                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -56,11 +55,10 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     public void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener) {
         listenForChanges(where().isNotNull("name")
                 .equalTo("allDay", false)
-                .isNotNull("recurrence.rrule")
                 .beginGroup()
-                .isNull("recurrence.dtend")
-                .or()
-                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                    .isNull("recurrence.dtend")
+                    .or()
+                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
