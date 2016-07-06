@@ -47,7 +47,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.FlexibleTimesFormatter;
@@ -164,7 +163,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         view = inflater.inflate(R.layout.fragment_recurrence_picker, null);
         unbinder = ButterKnife.bind(this, view);
         isFlexible = recurrence.getFlexibleCount() > 0;
-        initUI();
+        flexibleRecurrence.setChecked(isFlexible);
 
         builder.setView(view)
                 .setIcon(R.drawable.logo)
@@ -185,16 +184,14 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     private void initUI() {
         if (isFlexible) {
-            flexibleRecurrence.setChecked(true);
             dayOfMonthContainer.setVisibility(View.GONE);
             flexibleCountContainer.setVisibility(View.VISIBLE);
             preferredDays.setVisibility(View.VISIBLE);
             dayOfWeekContainer.setVisibility(View.VISIBLE);
             initFlexibleFrequencies();
             initFlexibleCount();
-            initPreferredDays();
+            initDays();
         } else {
-            flexibleRecurrence.setChecked(false);
             preferredDays.setVisibility(View.GONE);
             flexibleCountContainer.setVisibility(View.GONE);
             dayOfWeekContainer.setVisibility(View.GONE);
@@ -207,19 +204,15 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         initUntilDate();
     }
 
-    private void initPreferredDays() {
-        if (StringUtils.isEmpty(recurrence.getPreferredDays())) {
+    private void initWeekDays() {
+        if (recurrence.getRecurrenceType() != Recurrence.RecurrenceType.WEEKLY) {
             return;
         }
-        String[] days = recurrence.getPreferredDays().split(";");
-        for (String day : days) {
-            WeekDay weekDay = new WeekDay(day);
-            ((CheckBox) view.findViewById(weekDayToCheckBoxId.get(weekDay))).setChecked(true);
-        }
+        initDays();
     }
 
-    private void initWeekDays() {
-        if (recurrence.getRecurrenceType() != Recurrence.RecurrenceType.WEEKLY || recurrence.getRrule() == null) {
+    private void initDays() {
+        if(recurrence.getRrule() == null) {
             return;
         }
         try {
@@ -248,7 +241,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     private void setSelectedDayOfMonth() {
         try {
             Recur recur = new Recur(recurrence.getRrule());
-            int daySelected = (int) recur.getMonthDayList().get(0);
+            int daySelected = !recur.getMonthDayList().isEmpty() ? (int) recur.getMonthDayList().get(0) : 1;
             dayOfMonth.setSelection(daySelected - 1, false);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -401,11 +394,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         Recurrence.RecurrenceType recurrenceType = (Recurrence.RecurrenceType) recurrenceFrequency.getTag();
         if (isFlexible) {
             setFlexibleValues(recurrenceType);
-            recurrence.setRrule(null);
         } else {
-            setRule(recurrenceType);
+            setRrule(recurrenceType);
             recurrence.setFlexibleCount(0);
-            recurrence.setPreferredDays(null);
         }
 
         recurrence.setTimesADay(FlexibleTimesFormatter.parse(timesADay.getSelectedItem().toString()));
@@ -431,18 +422,23 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
         recurrence.setFlexibleCount(FlexibleTimesFormatter.parse(flexibleCount.getSelectedItem().toString()));
 
-        String preferredDays = "";
+        Recur recur = new Recur(Recur.WEEKLY, null);
         for (Map.Entry<WeekDay, Integer> entry : weekDayToCheckBoxId.entrySet()) {
             if (((CheckBox) view.findViewById(entry.getValue())).isChecked()) {
-                preferredDays += entry.getKey() + ";";
+                recur.getDayList().add(entry.getKey());
             }
         }
-        if (!StringUtils.isEmpty(preferredDays)) {
-            recurrence.setPreferredDays(preferredDays);
+        if(!recur.getDayList().isEmpty()) {
+            if(recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                recur.setFrequency(Recur.MONTHLY);
+            }
+            recurrence.setRrule(recur.toString());
+        } else {
+            recurrence.setRrule(null);
         }
     }
 
-    private void setRule(Recurrence.RecurrenceType recurrenceType) {
+    private void setRrule(Recurrence.RecurrenceType recurrenceType) {
         Recur recur = new Recur(Recur.DAILY, null);
         switch (recurrenceType) {
             case DAILY:
