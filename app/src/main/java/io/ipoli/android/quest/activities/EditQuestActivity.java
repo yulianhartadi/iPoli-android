@@ -254,15 +254,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         RepeatingQuest rq = questPersistenceService.findById(questId);
         questText.setText(rq.getName());
         questText.setSelection(rq.getName().length());
-//        populateDuration(rq.getDuration());
-//        if (rq.getRecurrence().getTimesPerDay() > 1) {
-//            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
-//        } else
+        populateDuration(rq.getDuration());
         if (rq.getStartMinute() >= 0) {
             populateStartTime(rq.getStartMinute());
-        } else {
-//            populateTimesPerDay(rq.getRecurrence().getTimesPerDay());
-            populateStartTime(-1);
         }
         setFrequencyText(rq.getRecurrence());
         categoryView.changeCategory(RepeatingQuest.getCategory(rq));
@@ -478,7 +472,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
-//        rq.getRecurrence().setTimesPerDay((int) timesPerDayText.getTag());
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
@@ -671,6 +664,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
+            if(frequencyText.getTag() != null) {
+                ((Recurrence)frequencyText.getTag()).setTimesPerDay(1);
+            }
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
@@ -740,6 +736,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void setFrequencyText(Recurrence recurrence) {
         if (recurrence != null) {
             populateEndDate(null);
+            if(recurrence.getTimesPerDay() > 1) {
+                populateStartTime(-1);
+            }
         }
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
