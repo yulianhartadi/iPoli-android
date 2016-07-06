@@ -47,6 +47,20 @@ public class RepeatingQuestScheduler {
 
     private List<Quest> scheduleFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.WEEKLY) {
+            return scheduleWeeklyFlexibleQuest(repeatingQuest, startDate);
+        }
+        return scheduleMonthlyFlexibleQuest(repeatingQuest, startDate);
+    }
+
+    @NonNull
+    private List<Quest> scheduleMonthlyFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        return null;
+    }
+
+    @NonNull
+    private List<Quest> scheduleWeeklyFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
         int countForWeek = recurrence.getFlexibleCount();
         LocalDate start = new LocalDate(startDate, DateTimeZone.UTC);
         List<LocalDate> possibleDates = findPossibleDates(recurrence.getRrule(), countForWeek, start);
@@ -83,32 +97,42 @@ public class RepeatingQuestScheduler {
         try {
             WeekDayList weekDayList = new Recur(rrule).getDayList();
 
-            for (Object weekDayObj : weekDayList) {
-                WeekDay weekDay = (WeekDay) weekDayObj;
-                int calendarDay = WeekDay.getCalendarDay(weekDay);
-                if (weekDay.equals(WeekDay.SU)) {
-                    calendarDay = 7;
-                } else {
-                    calendarDay--;
-                }
-                LocalDate candidateDate = start.withDayOfWeek(calendarDay);
-                if (!candidateDate.isBefore(start)) {
-                    possibleDates.add(candidateDate);
-                }
-            }
-
+            addPreferredDays(start, possibleDates, weekDayList);
             if (weekDayList.size() < countForWeek) {
-                for (int i = start.getDayOfWeek(); i <= start.dayOfWeek().withMaximumValue().getDayOfWeek(); i++) {
-                    possibleDates.add(start.withDayOfWeek(i));
-                    if (possibleDates.size() == countForWeek) {
-                        break;
-                    }
-                }
+                addAdditionalDays(countForWeek, start, possibleDates);
             }
         } catch (Exception e) {
 
         }
-        return new ArrayList<>(possibleDates);
+        List<LocalDate> result = new ArrayList<>();
+        for (LocalDate possibleDate : possibleDates) {
+            if (!possibleDate.isBefore(start)) {
+                result.add(possibleDate);
+            }
+        }
+        return result;
+    }
+
+    private void addAdditionalDays(int countForWeek, LocalDate start, Set<LocalDate> possibleDates) {
+        for (int i = start.getDayOfWeek(); i <= start.dayOfWeek().withMaximumValue().getDayOfWeek(); i++) {
+            possibleDates.add(start.withDayOfWeek(i));
+            if (possibleDates.size() == countForWeek) {
+                return;
+            }
+        }
+    }
+
+    private void addPreferredDays(LocalDate start, Set<LocalDate> possibleDates, WeekDayList weekDayList) {
+        for (Object weekDayObj : weekDayList) {
+            WeekDay weekDay = (WeekDay) weekDayObj;
+            int calendarDay = WeekDay.getCalendarDay(weekDay);
+            if (weekDay.equals(WeekDay.SU)) {
+                calendarDay = 7;
+            } else {
+                calendarDay--;
+            }
+            possibleDates.add(start.withDayOfWeek(calendarDay));
+        }
     }
 
     @NonNull
