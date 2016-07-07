@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateList;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
@@ -15,6 +14,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
