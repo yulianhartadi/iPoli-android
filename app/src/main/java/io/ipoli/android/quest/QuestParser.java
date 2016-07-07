@@ -20,6 +20,7 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
+import io.ipoli.android.quest.parsers.TimesADayMatcher;
 import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
 import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 
@@ -121,7 +122,7 @@ public class QuestParser {
         return q;
     }
 
-    public RepeatingQuest parseRepeatingQuest(String text) {
+    public RepeatingQuest parseNotUserCreatedRepeatingQuest(String text) {
 
         String rawText = text;
 
@@ -131,7 +132,10 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         int startMinute = startTimePair.first;
 
-        Pair<Integer, String> timesAWeekPair = parseQuestPart(startTimePair.second, timesAWeekMatcher);
+        Pair<Integer, String> timesADayPair = parseQuestPart(startTimePair.second, new TimesADayMatcher());
+        int timesADay = Math.max(timesADayPair.first, 0);
+
+        Pair<Integer, String> timesAWeekPair = parseQuestPart(timesADayPair.second, timesAWeekMatcher);
         int timesAWeek = Math.max(timesAWeekPair.first, 0);
 
         Pair<Integer, String> timesAMonthPair = parseQuestPart(timesAWeekPair.second, timesAMonthMatcher);
@@ -189,6 +193,7 @@ public class QuestParser {
             recurrence.setRrule(null);
         }
 
+        recurrence.setTimesADay(Math.max(1, timesADay));
     rq.setRecurrence(recurrence);
 
     return rq;
