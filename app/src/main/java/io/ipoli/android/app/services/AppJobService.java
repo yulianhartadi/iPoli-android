@@ -92,7 +92,7 @@ public class AppJobService extends JobService {
                 if (p == null) {
                     return Observable.empty();
                 }
-                scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                scheduleRepeatingQuests(questPersistenceService, repeatingQuestPersistenceService);
                 syncChallenges(challengePersistenceService, p);
                 syncRemovedQuests(p);
                 syncRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
@@ -120,7 +120,7 @@ public class AppJobService extends JobService {
         return true;
     }
 
-    private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+    private void scheduleRepeatingQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
         new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }

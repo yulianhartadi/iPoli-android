@@ -242,7 +242,7 @@ public class App extends MultiDexApplication {
             RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
             List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
             QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            scheduleRepeatingQuestFor2WeeksAhead(repeatingQuests, questPersistenceService);
+            scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
             realm.close();
             return Observable.empty();
         });
@@ -485,7 +485,7 @@ public class App extends MultiDexApplication {
             Observable.defer(() -> {
                 Realm realm = Realm.getDefaultInstance();
                 QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
+                scheduleRepeatingQuest(rq, questPersistenceService);
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
@@ -514,13 +514,13 @@ public class App extends MultiDexApplication {
         return questPersistenceService.saveRemoteObjects(quests);
     }
 
-    private void scheduleRepeatingQuestFor2WeeksAhead(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         repeatingQuests.add(repeatingQuest);
-        scheduleRepeatingQuestFor2WeeksAhead(repeatingQuests, questPersistenceService);
+        scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
     }
 
-    private void scheduleRepeatingQuestFor2WeeksAhead(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuest(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
         new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
@@ -708,7 +708,7 @@ public class App extends MultiDexApplication {
             questPersistenceService.saveSync(quests);
             List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
             repeatingQuestPersistenceService.saveSync(repeatingQuests);
-            scheduleRepeatingQuestFor2WeeksAhead(repeatingQuests, questPersistenceService);
+            scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
             realm.close();
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
