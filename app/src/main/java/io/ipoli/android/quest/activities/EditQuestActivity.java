@@ -106,6 +106,7 @@ import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -532,7 +533,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else if (result.dayOfMonthRecurrence != null) {
             recurrence.setRrule(result.dayOfMonthRecurrence.toString());
             recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
-        } else if (result.timesAWeek > 0){
+        } else if (result.timesAWeek > 0) {
             recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
             recurrence.setFlexibleCount(result.timesAWeek);
             Recur recur = new Recur(Recur.WEEKLY, null);
@@ -584,10 +585,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        EditReminderFragment f = EditReminderFragment.newInstance(notificationId, reminder -> {
+        EditReminderFragment f = EditReminderFragment.newInstance(notificationId, (reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);
             }
+            eventBus.post(new QuestReminderPickedEvent(reminder, editMode.name(), this.editMode.name()));
         });
         f.show(getSupportFragmentManager());
     }
@@ -675,8 +677,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
-            if(frequencyText.getTag() != null) {
-                ((Recurrence)frequencyText.getTag()).setTimesADay(1);
+            if (frequencyText.getTag() != null) {
+                ((Recurrence) frequencyText.getTag()).setTimesADay(1);
             }
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
@@ -700,12 +702,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         remindersContainer.addView(v);
 
         v.setOnClickListener(view -> {
-            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), editedReminder -> {
+            EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), (editedReminder, mode) -> {
                 if (editedReminder == null || reminderWithSameTimeExists(editedReminder)) {
                     remindersContainer.removeView(v);
                     return;
                 }
                 populateReminder(editedReminder, v);
+                eventBus.post(new QuestReminderPickedEvent(editedReminder, editMode.name(), this.editMode.name()));
             });
             f.show(getSupportFragmentManager());
         });
@@ -747,7 +750,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void setFrequencyText(Recurrence recurrence) {
         if (recurrence != null) {
             populateEndDate(null);
-            if(recurrence.getTimesADay() > 1) {
+            if (recurrence.getTimesADay() > 1) {
                 populateStartTime(-1);
             }
         }

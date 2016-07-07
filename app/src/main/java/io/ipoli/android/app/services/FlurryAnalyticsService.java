@@ -31,6 +31,7 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
@@ -85,6 +86,7 @@ import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
+import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
@@ -556,6 +558,18 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
         log("quest_recurrence_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestReminderPicked(QuestReminderPickedEvent e) {
+        EventParams eventParams = EventParams.of("mode", e.questEditMode).add("reminderEditMode", e.reminderEditMode);
+        if (e.reminder != null) {
+            eventParams.add("minutes_from_start", e.reminder.getMinutesFromStart());
+            if (!StringUtils.isEmpty(e.reminder.getMessage())) {
+                eventParams.add("message", e.reminder.getMessage());
+            }
+        }
+        log("quest_reminder_picked", eventParams);
     }
 
     @Subscribe

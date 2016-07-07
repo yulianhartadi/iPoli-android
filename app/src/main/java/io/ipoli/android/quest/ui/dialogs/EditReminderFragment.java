@@ -63,22 +63,26 @@ public class EditReminderFragment extends DialogFragment {
     private int notificationId;
     private boolean isCustom = false;
 
-    private OnReminderCreatedListener reminderCreatedListener;
+    private OnReminderEditedListener reminderCreatedListener;
     private Unbinder unbinder;
 
-    public interface OnReminderCreatedListener {
-        void onReminderCreated(Reminder reminder);
+    public enum EditMode {CREATE, EDIT}
+
+    private EditMode editMode;
+
+    public interface OnReminderEditedListener {
+        void onReminderEdited(Reminder reminder, EditMode editMode);
     }
 
-    public static EditReminderFragment newInstance(int notificationId, OnReminderCreatedListener reminderCreatedListener) {
+    public static EditReminderFragment newInstance(int notificationId, OnReminderEditedListener reminderCreatedListener) {
         return newInstance(notificationId, null, reminderCreatedListener);
     }
 
-    public static EditReminderFragment newInstance(Reminder reminder, OnReminderCreatedListener reminderCreatedListener) {
+    public static EditReminderFragment newInstance(Reminder reminder, OnReminderEditedListener reminderCreatedListener) {
         return newInstance(reminder.getNotificationId(), reminder, reminderCreatedListener);
     }
 
-    public static EditReminderFragment newInstance(int notificationId, Reminder reminder, OnReminderCreatedListener reminderCreatedListener) {
+    public static EditReminderFragment newInstance(int notificationId, Reminder reminder, OnReminderEditedListener reminderCreatedListener) {
         EditReminderFragment fragment = new EditReminderFragment();
         Bundle args = new Bundle();
         if (reminder != null) {
@@ -97,6 +101,9 @@ public class EditReminderFragment extends DialogFragment {
             String reminderJson = getArguments().getString(REMINDER);
             if (!TextUtils.isEmpty(reminderJson)) {
                 reminder = new Gson().fromJson(reminderJson, Reminder.class);
+                editMode = EditMode.EDIT;
+            } else {
+                editMode = EditMode.CREATE;
             }
             notificationId = getArguments().getInt(NOTIFICATION_ID);
         }
@@ -114,7 +121,7 @@ public class EditReminderFragment extends DialogFragment {
                 messageView.setText(reminder.getMessage());
                 messageView.setSelection(reminder.getMessage().length());
             }
-            if(reminder.getMinutesFromStart() != 0) {
+            if (reminder.getMinutesFromStart() != 0) {
                 showCustomTimeForm();
             }
         }
@@ -148,7 +155,7 @@ public class EditReminderFragment extends DialogFragment {
                         reminder.setMessage(message);
                         reminder.setMinutesFromStart(minutes);
                     }
-                    reminderCreatedListener.onReminderCreated(reminder);
+                    reminderCreatedListener.onReminderEdited(reminder, editMode);
 
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
@@ -157,7 +164,7 @@ public class EditReminderFragment extends DialogFragment {
 
         if (reminder != null) {
             builder.setNeutralButton(R.string.do_not_remind, (dialogInterface, i) -> {
-                reminderCreatedListener.onReminderCreated(null);
+                reminderCreatedListener.onReminderEdited(null, editMode);
             });
         }
         return builder.create();
@@ -221,6 +228,4 @@ public class EditReminderFragment extends DialogFragment {
         unbinder.unbind();
         super.onDestroyView();
     }
-
-
 }
