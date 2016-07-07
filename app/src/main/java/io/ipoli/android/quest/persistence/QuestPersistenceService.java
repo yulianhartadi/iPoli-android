@@ -39,6 +39,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
 
+    long countAllScheduledForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
+
     List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
 
     Quest findByExternalSourceMappingId(String source, String sourceId);
@@ -57,5 +59,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
 
-    Date findNextUncompleteQuestEndDate(RepeatingQuest repeatingQuest);
+    Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 }

@@ -134,8 +134,8 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
             }
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
-            int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
-            Date nextDate = questPersistenceService.findNextUncompleteQuestEndDate(rq);
+            int totalCount = (int) questPersistenceService.countAllScheduledForRepeatingQuest(rq, from, to);
+            Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
             return new RepeatingQuestViewModel(rq, totalCount, completedCount, recur, nextDate);
         } catch (ParseException e) {
             return null;
