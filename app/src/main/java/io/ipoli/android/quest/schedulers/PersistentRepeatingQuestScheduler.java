@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.schedulers;
 
+import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
 import org.joda.time.DateTimeZone;
@@ -31,18 +32,36 @@ public class PersistentRepeatingQuestScheduler {
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
         for (RepeatingQuest rq : repeatingQuests) {
-            if (rq.isFlexible() && rq.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-                if (rq.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.WEEKLY) {
-
+            if (rq.isFlexible()) {
+                Recurrence.RecurrenceType recurrenceType = rq.getRecurrence().getRecurrenceType();
+                if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                    scheduleForMonth(rq, currentDate);
+                } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+                    for (Pair<LocalDate, LocalDate> weekPair : getBoundsFor4WeeksAhead(currentDate)) {
+                        saveQuestsInRange(rq, weekPair.first, weekPair.second, currentDate);
+                    }
                 }
             } else {
                 scheduleFor4WeeksAhead(rq, currentDate);
             }
         }
+
     }
 
-    private void scheduleFor4WeeksAhead(RepeatingQuest rq, LocalDate currentDate) {
+    private void scheduleForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
+        LocalDate startOfMonth = currentDate.dayOfMonth().withMinimumValue();
+        LocalDate endOfMonth = currentDate.dayOfMonth().withMaximumValue();
+        saveQuestsInRange(repeatingQuest, startOfMonth, endOfMonth, currentDate);
+    }
 
+    private void scheduleFor4WeeksAhead(RepeatingQuest repeatingQuest, LocalDate currentDate) {
+        for (Pair<LocalDate, LocalDate> weekPair : getBoundsFor4WeeksAhead(currentDate)) {
+            saveQuestsInRange(repeatingQuest, weekPair.first, weekPair.second);
+        }
+    }
+
+    @NonNull
+    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksAhead(LocalDate currentDate) {
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
 
@@ -53,17 +72,18 @@ public class PersistentRepeatingQuestScheduler {
             endOfWeek = endOfWeek.plusDays(7);
             weekBounds.add(new Pair<>(startOfWeek, endOfWeek));
         }
+        return weekBounds;
+    }
 
-        for (Pair<LocalDate, LocalDate> weekPair : weekBounds) {
-            saveQuestsInRange(rq, weekPair.first, weekPair.second);
+    private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate, LocalDate startDate) {
+        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(repeatingQuest, startOfPeriodDate, endOfPeriodDate);
+        if (createdQuestsCount == 0) {
+            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
+            questPersistenceService.saveSync(questsToCreate);
         }
     }
 
-    private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
-        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
-        if (createdQuestsCount == 0) {
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            questPersistenceService.saveSync(questsToCreate);
-        }
+    private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate) {
+        saveQuestsInRange(repeatingQuest, startOfPeriodDate, endOfPeriodDate, startOfPeriodDate);
     }
 }
