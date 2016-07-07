@@ -49,7 +49,7 @@ public class PersistentRepeatingQuestScheduler {
         List<Pair<LocalDate, LocalDate>> bounds = getBoundsFor4WeeksAhead(currentDate);
         for (int i = 0; i < bounds.size(); i++) {
             Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
-            // Start date is relevant only for the current week. Next week starts (naturally) at next first date of week.
+            // Start date is relevant only for the current week. Next week starts (naturally) at the start of the next week.
             LocalDate startDate = i == 0 ? currentDate : weekPair.first;
             saveQuestsInRange(rq, weekPair.first, weekPair.second, startDate);
         }
