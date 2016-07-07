@@ -24,12 +24,12 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,8 +75,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         put(WeekDay.SA, R.id.saturday);
         put(WeekDay.SU, R.id.sunday);
     }};
-    private List<String> frequencies = Arrays.asList(new String[]{"Daily", "Weekly", "Monthly"});
-    private List<String> flexibleFrequencies = Arrays.asList(new String[]{"Weekly", "Monthly"});
+    private List<String> frequencies = Arrays.asList("Daily", "Weekly", "Monthly");
+    private List<String> flexibleFrequencies = Arrays.asList("Weekly", "Monthly");
     private boolean isFlexible = false;
     private View view;
 
