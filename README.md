@@ -56,12 +56,12 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 * Smart Add - adding tasks using natural language
 * Recurrent tasks/habits
 * Background sync between device(s) and server
-* Automatic task scheduling - find the best slot (time) to start/do a task
+* Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
+* Sync with Google Calendar/Outlook (something else?)
 
 # Upcoming
 
-* Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
-* Sync with Google Calendar/Outlook (something else?)
+* Automatic task scheduling - find the best slot (time) to start/do a task
 
 # Libraries used
 
