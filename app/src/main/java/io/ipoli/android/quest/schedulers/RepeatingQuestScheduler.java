@@ -112,7 +112,7 @@ public class RepeatingQuestScheduler {
         possibleDateList = possibleDateList.subList(0, recurrence.getFlexibleCount());
 
         List<LocalDate> result = new ArrayList<>();
-        for(LocalDate possibleDate : possibleDateList) {
+        for (LocalDate possibleDate : possibleDateList) {
             if (!possibleDate.isBefore(start)) {
                 result.add(possibleDate);
             }
@@ -126,27 +126,13 @@ public class RepeatingQuestScheduler {
         int countForWeek = recurrence.getFlexibleCount();
         LocalDate start = new LocalDate(startDate, DateTimeZone.UTC);
         List<LocalDate> possibleDates = findPossibleDates(recurrence.getRrule(), countForWeek, start);
-        if (possibleDates.size() <= countForWeek * recurrence.getTimesADay()) {
-            return scheduleForAllPossibleDates(repeatingQuest, recurrence, possibleDates);
-        }
 
         Collections.shuffle(possibleDates, new Random(seed));
 
         List<Quest> result = new ArrayList<>();
-        for (int i = 0; i < countForWeek; i++) {
+        for (LocalDate endDate : possibleDates) {
             for (int j = 0; j < recurrence.getTimesADay(); j++) {
-                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(possibleDates.get(i))));
-            }
-        }
-        return result;
-    }
-
-    @NonNull
-    private List<Quest> scheduleForAllPossibleDates(RepeatingQuest repeatingQuest, Recurrence recurrence, List<LocalDate> possibleDates) {
-        List<Quest> result = new ArrayList<>();
-        for (LocalDate possibleDate : possibleDates) {
-            for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(possibleDate)));
+                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(endDate)));
             }
         }
         return result;
@@ -171,6 +157,9 @@ public class RepeatingQuestScheduler {
             if (!possibleDate.isBefore(start)) {
                 result.add(possibleDate);
             }
+        }
+        if (result.size() > countForWeek) {
+            return result.subList(0, countForWeek);
         }
         return result;
     }
