@@ -127,7 +127,9 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onNewRepeatingQuestAdded(NewRepeatingQuestEvent e) {
-        log("repeating_quest_created", EventParams.of("raw_text", e.repeatingQuest.getRawText()));
+        EventParams eventParams = EventParams.of("raw_text", e.repeatingQuest.getRawText());
+        eventParams.add("is_flexible", e.repeatingQuest.isFlexible() ? "true" : "false");
+        log("repeating_quest_created", eventParams);
     }
 
     @Subscribe
