@@ -29,6 +29,14 @@ public class EventParams {
         return this;
     }
 
+    public EventParams add(String key, int value) {
+        return add(key, String.valueOf(value));
+    }
+
+    public EventParams add(String key, long value) {
+        return add(key, String.valueOf(value));
+    }
+
     public Map<String, String> getParams() {
         return params;
     }

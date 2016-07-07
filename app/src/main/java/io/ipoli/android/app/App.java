@@ -209,6 +209,7 @@ public class App extends MultiDexApplication {
         });
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
+        updateWidgets();
 
 //        if (BuildConfig.DEBUG) {
 //            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -393,6 +394,7 @@ public class App extends MultiDexApplication {
 
     private void onQuestComplete(Quest quest, EventSource source) {
         updatePlayer(quest);
+        onQuestChanged();
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
