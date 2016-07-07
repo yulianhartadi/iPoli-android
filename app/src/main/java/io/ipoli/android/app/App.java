@@ -518,7 +518,6 @@ public class App extends MultiDexApplication {
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         repeatingQuests.add(repeatingQuest);
         scheduleRepeatingQuestFor2WeeksAhead(repeatingQuests, questPersistenceService);
-
     }
 
     private void scheduleRepeatingQuestFor2WeeksAhead(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
