@@ -86,17 +86,13 @@ public class RepeatingQuestScheduler {
         Set<LocalDate> possibleDates = new HashSet<>();
         List<LocalDate> allMonthDays = new ArrayList<>();
         for (int i = start.dayOfMonth().withMinimumValue().getDayOfMonth(); i <= start.dayOfMonth().withMaximumValue().getDayOfMonth(); i++) {
-            try {
-                WeekDayList weekDayList = new Recur(recurrence.getRrule()).getDayList();
-                LocalDate date = start.withDayOfMonth(i);
-                WeekDay weekDay = new WeekDay(date.dayOfWeek().getAsShortText().substring(0, 2).toUpperCase());
-                if (weekDayList.contains(weekDay)) {
-                    possibleDates.add(date);
-                }
-                allMonthDays.add(date);
-            } catch (Exception e) {
-
+            WeekDayList weekDayList = getWeekDayList(recurrence.getRrule());
+            LocalDate date = start.withDayOfMonth(i);
+            WeekDay weekDay = new WeekDay(date.dayOfWeek().getAsShortText().substring(0, 2).toUpperCase());
+            if (weekDayList.contains(weekDay)) {
+                possibleDates.add(date);
             }
+            allMonthDays.add(date);
         }
         if (possibleDates.size() < recurrence.getFlexibleCount()) {
             Collections.shuffle(allMonthDays, new Random(seed));
@@ -142,16 +138,12 @@ public class RepeatingQuestScheduler {
     private List<LocalDate> findPossibleDates(String rrule, int countForWeek, LocalDate start) {
         Set<LocalDate> possibleDates = new HashSet<>();
 
-        try {
-            WeekDayList weekDayList = new Recur(rrule).getDayList();
-
-            addPreferredDays(start, possibleDates, weekDayList);
-            if (weekDayList.size() < countForWeek) {
-                addAdditionalDays(countForWeek, start, possibleDates);
-            }
-        } catch (Exception e) {
-
+        WeekDayList weekDayList = getWeekDayList(rrule);
+        addPreferredDays(start, possibleDates, weekDayList);
+        if (weekDayList.size() < countForWeek) {
+            addAdditionalDays(countForWeek, start, possibleDates);
         }
+
         List<LocalDate> result = new ArrayList<>();
         for (LocalDate possibleDate : possibleDates) {
             if (!possibleDate.isBefore(start)) {
@@ -162,6 +154,15 @@ public class RepeatingQuestScheduler {
             return result.subList(0, countForWeek);
         }
         return result;
+    }
+
+    private WeekDayList getWeekDayList(String rrule) {
+        try {
+            return new Recur(rrule).getDayList();
+
+        } catch (Exception e) {
+            return new WeekDayList();
+        }
     }
 
     private void addAdditionalDays(int countForWeek, LocalDate start, Set<LocalDate> possibleDates) {

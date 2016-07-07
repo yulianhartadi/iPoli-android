@@ -107,7 +107,7 @@
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
     <string name="sync_android_calendars">Sync Calendars</string>
-    <string name="import_calendar_events_started">Your events will be available soon…</string>
+    <string name="import_calendar_events_started">Your quests will be available soon…</string>
     <string name="widget_journey_name">Daily Journey</string>
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
