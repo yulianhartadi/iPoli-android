@@ -15,7 +15,7 @@ public class FlexibleSuggestionsProvider implements SuggestionsProvider {
 
     @Override
     public List<SuggestionDropDownItem> filter(String text) {
-        int icon = R.drawable.ic_calendar_multiple_black_24dp;
+        int icon = R.drawable.ic_multiply_black_24dp_transparent;
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
             suggestions.add(new SuggestionDropDownItem(icon, "week...", "", TextEntityType.TIMES_A_WEEK, true, false));
             suggestions.add(new SuggestionDropDownItem(icon, "month...", "", TextEntityType.TIMES_A_MONTH, true, false));
