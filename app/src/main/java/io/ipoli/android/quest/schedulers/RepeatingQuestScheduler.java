@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import io.ipoli.android.Constants;
@@ -38,6 +39,16 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class RepeatingQuestScheduler {
 
+    private final long seed;
+
+    public RepeatingQuestScheduler() {
+        this(System.currentTimeMillis());
+    }
+
+    public RepeatingQuestScheduler(long seed) {
+        this.seed = seed;
+    }
+
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         if (repeatingQuest.isFlexible()) {
             return scheduleFlexibleQuest(repeatingQuest, startDate);
@@ -55,7 +66,58 @@ public class RepeatingQuestScheduler {
 
     @NonNull
     private List<Quest> scheduleMonthlyFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
-        return null;
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        LocalDate start = new LocalDate(startDate, DateTimeZone.UTC);
+        List<LocalDate> possibleDates = findMonthlyPossibleDates(recurrence, start);
+        List<Quest> result = new ArrayList<>();
+        for (LocalDate date : possibleDates) {
+            for (int j = 0; j < recurrence.getTimesADay(); j++) {
+                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(date)));
+            }
+            if (result.size() == recurrence.getFlexibleCount() * recurrence.getTimesADay()) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    @NonNull
+    private List<LocalDate> findMonthlyPossibleDates(Recurrence recurrence, LocalDate start) {
+        Set<LocalDate> possibleDates = new HashSet<>();
+        List<LocalDate> allMonthDays = new ArrayList<>();
+        for (int i = start.dayOfMonth().withMinimumValue().getDayOfMonth(); i <= start.dayOfMonth().withMaximumValue().getDayOfMonth(); i++) {
+            try {
+                WeekDayList weekDayList = new Recur(recurrence.getRrule()).getDayList();
+                LocalDate date = start.withDayOfMonth(i);
+                WeekDay weekDay = new WeekDay(date.dayOfWeek().getAsShortText().substring(0, 2).toUpperCase());
+                if (weekDayList.contains(weekDay)) {
+                    possibleDates.add(date);
+                }
+                allMonthDays.add(date);
+            } catch (Exception e) {
+
+            }
+        }
+        if (possibleDates.size() < recurrence.getFlexibleCount()) {
+            Collections.shuffle(allMonthDays, new Random(seed));
+            for (LocalDate monthDate : allMonthDays) {
+                possibleDates.add(monthDate);
+                if (possibleDates.size() == recurrence.getFlexibleCount()) {
+                    break;
+                }
+            }
+        }
+        List<LocalDate> possibleDateList = new ArrayList<>(possibleDates);
+        Collections.shuffle(possibleDateList, new Random(seed));
+        possibleDateList = possibleDateList.subList(0, recurrence.getFlexibleCount());
+
+        List<LocalDate> result = new ArrayList<>();
+        for(LocalDate possibleDate : possibleDateList) {
+            if (!possibleDate.isBefore(start)) {
+                result.add(possibleDate);
+            }
+        }
+        return result;
     }
 
     @NonNull
@@ -64,11 +126,11 @@ public class RepeatingQuestScheduler {
         int countForWeek = recurrence.getFlexibleCount();
         LocalDate start = new LocalDate(startDate, DateTimeZone.UTC);
         List<LocalDate> possibleDates = findPossibleDates(recurrence.getRrule(), countForWeek, start);
-        if (possibleDates.size() <= countForWeek) {
+        if (possibleDates.size() <= countForWeek * recurrence.getTimesADay()) {
             return scheduleForAllPossibleDates(repeatingQuest, recurrence, possibleDates);
         }
 
-        Collections.shuffle(possibleDates);
+        Collections.shuffle(possibleDates, new Random(seed));
 
         List<Quest> result = new ArrayList<>();
         for (int i = 0; i < countForWeek; i++) {
