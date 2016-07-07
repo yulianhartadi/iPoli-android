@@ -169,7 +169,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
         } else if (currentDateIsInTheFuture()) {
 
-            repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
+            repeatingQuestPersistenceService.findNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
                 futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
                 questsForFutureUpdated();
             });

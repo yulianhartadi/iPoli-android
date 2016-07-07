@@ -64,6 +64,19 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
+    public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener) {
+        listenForChanges(where().isNotNull("name")
+                .equalTo("allDay", false)
+                .equalTo("recurrence.flexibleCount", 0)
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAllAsync(), listener);
+    }
+
+    @Override
     public RepeatingQuest findByExternalSourceMappingId(String source, String sourceId) {
         return findOne(where -> where.equalTo("sourceMapping." + source, sourceId)
                 .findFirst());
