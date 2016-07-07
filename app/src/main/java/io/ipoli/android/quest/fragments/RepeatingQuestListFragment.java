@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
@@ -34,7 +33,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
@@ -127,7 +125,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
             Recur recur = new Recur(recurrence.getRrule());
 
             LocalDate from, to;
-            if (recur.getFrequency().equals(Recur.MONTHLY)) {
+            if (recur.getFrequency().equals(Recur.MONTHLY) && !rq.isFlexible()) {
                 from = LocalDate.now().dayOfMonth().withMinimumValue();
                 to = LocalDate.now().dayOfMonth().withMaximumValue();
             } else {
@@ -136,26 +134,9 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
             }
 
             int completedCount = (int) questPersistenceService.countCompletedQuests(rq, from, to);
-            Date todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now());
-
-            // we subtract 1 ms because getNextDate excludes equal dates
-            DateTime seed = new DateTime(recurrence.getDtstart().getTime() - 1);
-
-            DateTime startDate = new DateTime(todayStartOfDay.getTime());
-            java.util.Date nextDate = recur.getNextDate(seed, startDate);
-
-            if (DateUtils.isTodayUTC(nextDate)) {
-                int completedForToday = (int) questPersistenceService.countCompletedQuests(rq, LocalDate.now(), LocalDate.now());
-                int timesADay = recurrence.getTimesADay();
-                if (completedForToday >= timesADay) {
-                    Date tomorrowStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1));
-                    nextDate = recur.getNextDate(seed, new DateTime(tomorrowStartOfDay.getTime()));
-                    if (recurrence.getDtend() != null && nextDate.after(recurrence.getDtend())) {
-                        nextDate = null;
-                    }
-                }
-            }
-            return new RepeatingQuestViewModel(rq, completedCount, recur, nextDate);
+            int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
+            Date nextDate = questPersistenceService.findNextUncompleteQuestEndDate(rq);
+            return new RepeatingQuestViewModel(rq, totalCount, completedCount, recur, nextDate);
         } catch (ParseException e) {
             return null;
         }
