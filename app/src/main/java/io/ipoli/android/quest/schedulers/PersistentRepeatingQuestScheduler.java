@@ -35,20 +35,23 @@ public class PersistentRepeatingQuestScheduler {
             if (rq.isFlexible()) {
                 Recurrence.RecurrenceType recurrenceType = rq.getRecurrence().getRecurrenceType();
                 if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
-                    scheduleForMonth(rq, currentDate);
+                    scheduleFlexibleForMonth(rq, currentDate);
                 } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
-                    for (Pair<LocalDate, LocalDate> weekPair : getBoundsFor4WeeksAhead(currentDate)) {
-                        saveQuestsInRange(rq, weekPair.first, weekPair.second, currentDate);
-                    }
+                    scheduleFlexibleFor4WeeksAhead(currentDate, rq);
                 }
             } else {
                 scheduleFor4WeeksAhead(rq, currentDate);
             }
         }
-
     }
 
-    private void scheduleForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
+    private void scheduleFlexibleFor4WeeksAhead(LocalDate currentDate, RepeatingQuest rq) {
+        for (Pair<LocalDate, LocalDate> weekPair : getBoundsFor4WeeksAhead(currentDate)) {
+            saveQuestsInRange(rq, weekPair.first, weekPair.second, currentDate);
+        }
+    }
+
+    private void scheduleFlexibleForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
         LocalDate startOfMonth = currentDate.dayOfMonth().withMinimumValue();
         LocalDate endOfMonth = currentDate.dayOfMonth().withMaximumValue();
         saveQuestsInRange(repeatingQuest, startOfMonth, endOfMonth, currentDate);
