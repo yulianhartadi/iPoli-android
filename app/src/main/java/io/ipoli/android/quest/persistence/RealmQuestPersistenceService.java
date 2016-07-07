@@ -93,6 +93,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public Date findNextUncompleteQuestEndDate(RepeatingQuest repeatingQuest) {
+        List<Quest> quests = findAll(where -> where
+                .isNull("completedAt")
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(LocalDate.now()))
+                .findAllSorted("endDate"));
+        if(!quests.isEmpty()) {
+            return quests.get(0).getEndDate();
+        }
+        return null;
+    }
+
+    @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));

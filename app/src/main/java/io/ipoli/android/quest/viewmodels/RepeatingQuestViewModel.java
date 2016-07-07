@@ -3,11 +3,9 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -25,13 +23,15 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class RepeatingQuestViewModel {
 
     private final RepeatingQuest repeatingQuest;
+    private final int totalCount;
     private final int completedCount;
     private final Recur recur;
     private final java.util.Date nextDate;
     private final int timesADay;
 
-    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, int completedCount, Recur recur, java.util.Date nextDate) {
+    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, int totalCount, int completedCount, Recur recur, java.util.Date nextDate) {
         this.repeatingQuest = repeatingQuest;
+        this.totalCount = totalCount;
         this.completedCount = completedCount;
         this.recur = recur;
         this.nextDate = nextDate;
@@ -57,7 +57,7 @@ public class RepeatingQuestViewModel {
     }
 
     public int getRemainingDailyCount() {
-        return (int) Math.ceil((double) (getTotalCount() - completedCount) / (double) timesADay);
+        return (int) Math.ceil((double) (totalCount - completedCount) / (double) timesADay);
     }
 
     private Category getQuestCategory() {
@@ -74,7 +74,7 @@ public class RepeatingQuestViewModel {
             } else if (DateUtils.isTomorrowUTC(nextDate)) {
                 nextText = "Tomorrow";
             } else {
-                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(nextDate);
+                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(new LocalDate(nextDate, DateTimeZone.UTC).toDate());
             }
         }
 
@@ -94,17 +94,7 @@ public class RepeatingQuestViewModel {
     }
 
     public int getTotalCount() {
-        if (recur == null) {
-            return -1;
-        }
-        if (recur.getFrequency().equals(Recur.MONTHLY)) {
-            return 1;
-        }
-
-        java.util.Date from = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMinimumValue());
-        java.util.Date to = DateUtils.toStartOfDayUTC(LocalDate.now().dayOfWeek().withMaximumValue());
-
-        return recur.getDates(new DateTime(repeatingQuest.getRecurrence().getDtstart()), new Date(from), new Date(to), Value.DATE_TIME).size() * timesADay;
+        return totalCount;
     }
 
     public String getRepeatText() {
@@ -118,7 +108,7 @@ public class RepeatingQuestViewModel {
             return "Done";
         }
 
-        if (recur.getFrequency().equals(Recur.MONTHLY)) {
+        if (recur.getFrequency().equals(Recur.MONTHLY) && !repeatingQuest.isFlexible()) {
             return remainingCount + " more this month";
         }
 

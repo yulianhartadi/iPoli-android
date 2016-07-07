@@ -2,6 +2,7 @@ package io.ipoli.android.quest.persistence;
 
 import org.joda.time.LocalDate;
 
+import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
@@ -56,4 +57,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
 
+    Date findNextUncompleteQuestEndDate(RepeatingQuest repeatingQuest);
 }
