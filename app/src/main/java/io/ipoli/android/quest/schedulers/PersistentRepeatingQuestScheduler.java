@@ -1,8 +1,11 @@
 package io.ipoli.android.quest.schedulers;
 
+import android.support.v4.util.Pair;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
@@ -27,24 +30,33 @@ public class PersistentRepeatingQuestScheduler {
 
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
         for (RepeatingQuest rq : repeatingQuests) {
-            if (rq.isFlexible()) {
+            if (rq.isFlexible() && rq.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
                 if (rq.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.WEEKLY) {
 
                 }
             } else {
-                scheduleFixedFor4WeeksAhead(startOfWeek, endOfWeek, startOfNextWeek, endOfNextWeek, rq);
+                scheduleFor4WeeksAhead(rq, currentDate);
             }
         }
     }
 
-    private void scheduleFixedFor4WeeksAhead(LocalDate startOfWeek, LocalDate endOfWeek, LocalDate startOfNextWeek, LocalDate endOfNextWeek, RepeatingQuest rq) {
-        saveQuestsInRange(rq, startOfWeek, endOfWeek);
-        saveQuestsInRange(rq, startOfNextWeek, endOfNextWeek);
+    private void scheduleFor4WeeksAhead(RepeatingQuest rq, LocalDate currentDate) {
+
+        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(startOfWeek, endOfWeek));
+        for (int i = 0; i < 3; i++) {
+            startOfWeek = startOfWeek.plusDays(7);
+            endOfWeek = endOfWeek.plusDays(7);
+            weekBounds.add(new Pair<>(startOfWeek, endOfWeek));
+        }
+
+        for (Pair<LocalDate, LocalDate> weekPair : weekBounds) {
+            saveQuestsInRange(rq, weekPair.first, weekPair.second);
+        }
     }
 
     private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
