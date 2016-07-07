@@ -14,6 +14,8 @@ public enum TextEntityType {
     RECURRENT_DAY_OF_MONTH,
     DURATION,
     START_TIME,
-    TIMES_PER_DAY;
+    FLEXIBLE,
+    TIMES_A_WEEK,
+    TIMES_A_MONTH;
 }
 

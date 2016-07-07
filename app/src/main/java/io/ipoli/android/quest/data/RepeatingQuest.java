@@ -262,4 +262,8 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     public void setChallenge(Challenge challenge) {
         this.challenge = challenge;
     }
+
+    public boolean isFlexible() {
+        return getRecurrence().isFlexible();
+    }
 }

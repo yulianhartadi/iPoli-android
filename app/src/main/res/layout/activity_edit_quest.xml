@@ -207,46 +207,6 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/quest_times_per_day_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
-
-                <ImageView
-                    android:id="@+id/quest_times_per_day_icon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_multiply_black_24dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@id/quest_times_per_day_icon"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/quest_times_per_day_question"
-                        style="@style/TextAppearance.AppCompat.Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/quest_times_per_day_question" />
-
-                    <TextView
-                        android:id="@+id/quest_times_per_day_value"
-                        style="@style/TextAppearance.AppCompat.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/quest_frequency_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"

@@ -31,6 +31,7 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
@@ -67,7 +68,6 @@ import io.ipoli.android.quest.events.QuestNodePickedEvent;
 import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
-import io.ipoli.android.quest.events.QuestTimesPerDayPickedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
@@ -86,6 +86,7 @@ import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
+import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
@@ -126,7 +127,9 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onNewRepeatingQuestAdded(NewRepeatingQuestEvent e) {
-        log("repeating_quest_created", EventParams.of("raw_text", e.repeatingQuest.getRawText()));
+        EventParams eventParams = EventParams.of("raw_text", e.repeatingQuest.getRawText());
+        eventParams.add("is_flexible", e.repeatingQuest.isFlexible() ? "true" : "false");
+        log("repeating_quest_created", eventParams);
     }
 
     @Subscribe
@@ -555,13 +558,20 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onQuestTimesPerDayPicked(QuestTimesPerDayPickedEvent e) {
-        log("quest_times_per_day_picked", EventParams.of("mode", e.mode));
+    public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
+        log("quest_recurrence_picked", EventParams.of("mode", e.mode));
     }
 
     @Subscribe
-    public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
-        log("quest_recurrence_picked", EventParams.of("mode", e.mode));
+    public void onQuestReminderPicked(QuestReminderPickedEvent e) {
+        EventParams eventParams = EventParams.of("mode", e.questEditMode).add("reminderEditMode", e.reminderEditMode);
+        if (e.reminder != null) {
+            eventParams.add("minutes_from_start", e.reminder.getMinutesFromStart());
+            if (!StringUtils.isEmpty(e.reminder.getMessage())) {
+                eventParams.add("message", e.reminder.getMessage());
+            }
+        }
+        log("quest_reminder_picked", eventParams);
     }
 
     @Subscribe

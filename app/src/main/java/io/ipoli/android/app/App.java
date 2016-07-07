@@ -100,6 +100,7 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.reminders.persistence.RealmReminderPersistenceService;
+import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
@@ -241,20 +242,10 @@ public class App extends MultiDexApplication {
             RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
             List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
             QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            for (RepeatingQuest rq : repeatingQuests) {
-                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
-            }
+            scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
             realm.close();
             return Observable.empty();
         });
-    }
-
-    private void saveQuestsInRange(RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek, QuestPersistenceService questPersistenceService) {
-        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
-        if (createdQuestsCount == 0) {
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            questPersistenceService.saveSync(questsToCreate);
-        }
     }
 
     private void moveIncompleteQuestsToInbox() {
@@ -481,7 +472,7 @@ public class App extends MultiDexApplication {
         Recurrence recurrence = rq.getRecurrence();
         if (TextUtils.isEmpty(recurrence.getRrule())) {
             List<Quest> questsToCreate = new ArrayList<>();
-            for (int i = 0; i < recurrence.getTimesPerDay(); i++) {
+            for (int i = 0; i < recurrence.getTimesADay(); i++) {
                 questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
             }
             questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
@@ -494,13 +485,13 @@ public class App extends MultiDexApplication {
             Observable.defer(() -> {
                 Realm realm = Realm.getDefaultInstance();
                 QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
+                scheduleRepeatingQuest(rq, questPersistenceService);
                 realm.close();
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
             }, Throwable::printStackTrace, () -> {
-                    onQuestChanged();
-                    eventBus.post(new ServerSyncRequestEvent());
+                onQuestChanged();
+                eventBus.post(new ServerSyncRequestEvent());
             });
         }
     }
@@ -523,20 +514,20 @@ public class App extends MultiDexApplication {
         return questPersistenceService.saveRemoteObjects(quests);
     }
 
-    private void scheduleRepeatingQuestFor2WeeksAhead(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
-        saveQuestsInRange(repeatingQuest, startOfWeek, endOfWeek, questPersistenceService);
-        saveQuestsInRange(repeatingQuest, startOfNextWeek, endOfNextWeek, questPersistenceService);
+    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        repeatingQuests.add(repeatingQuest);
+        scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
+    }
+
+    private void scheduleRepeatingQuest(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
+        new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
-        scheduleNextReminder();
+        onQuestChanged();
     }
 
     private void scheduleNextReminder() {
@@ -592,7 +583,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
         eventBus.post(new ServerSyncRequestEvent());
-        scheduleNextReminder();
+        onQuestChanged();
     }
 
     @Subscribe
@@ -717,11 +708,7 @@ public class App extends MultiDexApplication {
             questPersistenceService.saveSync(quests);
             List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
             repeatingQuestPersistenceService.saveSync(repeatingQuests);
-
-            for (RepeatingQuest rq : repeatingQuests) {
-                scheduleRepeatingQuestFor2WeeksAhead(rq, questPersistenceService);
-            }
-
+            scheduleRepeatingQuest(repeatingQuests, questPersistenceService);
             realm.close();
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
@@ -738,7 +725,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
-        scheduleNextReminder();
-        updateWidgets();
+        onQuestChanged();
     }
 }

@@ -20,7 +20,9 @@ import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
 import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
-import io.ipoli.android.quest.parsers.TimesPerDayMatcher;
+import io.ipoli.android.quest.parsers.TimesADayMatcher;
+import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
+import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -36,7 +38,8 @@ public class QuestParser {
         public int duration;
         public int startMinute;
         public Date endDate;
-        public int timesPerDay;
+        public int timesAWeek;
+        public int timesAMonth;
         public Recur everyDayRecurrence;
         public Recur dayOfWeekRecurrence;
         public Recur dayOfMonthRecurrence;
@@ -48,7 +51,8 @@ public class QuestParser {
     private final RecurrenceEveryDayMatcher everyDayMatcher = new RecurrenceEveryDayMatcher();
     private final RecurrenceDayOfWeekMatcher dayOfWeekMatcher = new RecurrenceDayOfWeekMatcher();
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
-    private final TimesPerDayMatcher timesPerDayMatcher = new TimesPerDayMatcher();
+    private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
+    private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
 
     public QuestParser(PrettyTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
@@ -66,14 +70,17 @@ public class QuestParser {
         result.startMinute = startTimePair.first;
 
         Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
-        if(dueDatePair.first != null) {
+        if (dueDatePair.first != null) {
             result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
         }
 
-        Pair<Integer, String> timesPerDayPair = parseQuestPart(dueDatePair.second, timesPerDayMatcher);
-        result.timesPerDay = Math.max(timesPerDayPair.first, 1);
+        Pair<Integer, String> timesAWeekPair = parseQuestPart(dueDatePair.second, timesAWeekMatcher);
+        result.timesAWeek = Math.max(timesAWeekPair.first, 0);
 
-        Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
+        Pair<Integer, String> timesAMonthPair = parseQuestPart(timesAWeekPair.second, timesAMonthMatcher);
+        result.timesAMonth = Math.max(timesAMonthPair.first, 0);
+
+        Pair<Recur, String> everyDayPair = parseQuestPart(timesAMonthPair.second, everyDayMatcher);
         result.everyDayRecurrence = everyDayPair.first;
 
         Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayPair.second, dayOfWeekMatcher);
@@ -115,7 +122,7 @@ public class QuestParser {
         return q;
     }
 
-    public RepeatingQuest parseRepeatingQuest(String text) {
+    public RepeatingQuest parseNotUserCreatedRepeatingQuest(String text) {
 
         String rawText = text;
 
@@ -125,10 +132,16 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         int startMinute = startTimePair.first;
 
-        Pair<Integer, String> timesPerDayPair = parseQuestPart(startTimePair.second, timesPerDayMatcher);
-        int timesPerDay = timesPerDayPair.first;
+        Pair<Integer, String> timesADayPair = parseQuestPart(startTimePair.second, new TimesADayMatcher());
+        int timesADay = Math.max(timesADayPair.first, 0);
 
-        Pair<Recur, String> everyDayPair = parseQuestPart(timesPerDayPair.second, everyDayMatcher);
+        Pair<Integer, String> timesAWeekPair = parseQuestPart(timesADayPair.second, timesAWeekMatcher);
+        int timesAWeek = Math.max(timesAWeekPair.first, 0);
+
+        Pair<Integer, String> timesAMonthPair = parseQuestPart(timesAWeekPair.second, timesAMonthMatcher);
+        int timesAMonth = Math.max(timesAMonthPair.first, 0);
+
+        Pair<Recur, String> everyDayPair = parseQuestPart(timesAMonthPair.second, everyDayMatcher);
         Recur everyDayRecur = everyDayPair.first;
 
         Pair<Recur, String> dayOfWeekPair = parseQuestPart(everyDayPair.second, dayOfWeekMatcher);
@@ -155,7 +168,7 @@ public class QuestParser {
         rq.setName(name);
         rq.setDuration(duration);
         rq.setStartMinute(startMinute);
-        Recurrence recurrence = new Recurrence(Math.max(1, timesPerDay));
+        Recurrence recurrence = Recurrence.create();
         recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString());
@@ -166,24 +179,28 @@ public class QuestParser {
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString());
             recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+        } else if (timesAWeek > 0) {
+            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setFlexibleCount(timesAWeek);
+            Recur recur = new Recur(Recur.WEEKLY, null);
+            recurrence.setRrule(recur.toString());
+        } else if (timesAMonth > 0) {
+            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setFlexibleCount(timesAMonth);
+            Recur recur = new Recur(Recur.MONTHLY, null);
+            recurrence.setRrule(recur.toString());
         } else {
             recurrence.setRrule(null);
-            if (dueDate != null) {
-                recurrence.setDtstart(toStartOfDayUTC(new LocalDate(dueDate)));
-                recurrence.setDtend(toStartOfDayUTC(new LocalDate(dueDate)));
-            } else {
-                recurrence.setDtstart(null);
-                recurrence.setDtend(null);
-            }
         }
 
-        rq.setRecurrence(recurrence);
+        recurrence.setTimesADay(Math.max(1, timesADay));
+    rq.setRecurrence(recurrence);
 
-        return rq;
-    }
+    return rq;
+}
 
     public boolean isRepeatingQuest(String text) {
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesPerDayMatcher}) {
+        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesAWeekMatcher, timesAMonthMatcher}) {
             if (matcher.match(text) != null) {
                 return true;
             }

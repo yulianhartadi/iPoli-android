@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
-    android:layout_height="76dp"
+    android:layout_height="88dp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
@@ -68,10 +68,9 @@
             </FrameLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_alignTop="@id/quest_category_container"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="72dp"
                 android:orientation="vertical">
@@ -113,7 +112,7 @@
 
                 <TextView
                     android:id="@+id/quest_next_datetime"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </RelativeLayout>

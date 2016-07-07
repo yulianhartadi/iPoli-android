@@ -5,18 +5,17 @@ import java.util.regex.Pattern;
 
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.TextEntityType;
-import io.ipoli.android.quest.suggestions.providers.TimesPerDayTextSuggestionsProvider;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/23/16.
  */
-public class TimesPerDayMatcher extends BaseMatcher<Integer> {
-    private static final String PATTERN = "(?:^|\\s)([2-7])\\stimes(?:\\sper\\sday)?(?:$|\\s)";
+public class TimesADayMatcher extends BaseMatcher<Integer> {
+    private static final String PATTERN = "(?:^|\\s)([1-7])\\stime(s)?(?:\\sa\\sday)+(?:$|\\s)";
     Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
-    public TimesPerDayMatcher() {
-        super(new TimesPerDayTextSuggestionsProvider());
+    public TimesADayMatcher() {
+        super(null);
     }
 
     @Override
@@ -33,7 +32,7 @@ public class TimesPerDayMatcher extends BaseMatcher<Integer> {
         Matcher tpdm = pattern.matcher(text);
         if (tpdm.find()) {
             int tpd = Integer.valueOf(tpdm.group(1));
-            if(tpd > 1) {
+            if(tpd > 0) {
                 return tpd;
             }
         }
@@ -42,12 +41,12 @@ public class TimesPerDayMatcher extends BaseMatcher<Integer> {
 
     @Override
     public MatcherType getMatcherType() {
-        return MatcherType.TIME;
+        return null;
     }
 
     @Override
     public TextEntityType getTextEntityType() {
-        return TextEntityType.TIMES_PER_DAY;
+        return null;
     }
 
     @Override

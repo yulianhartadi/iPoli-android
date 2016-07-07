@@ -3,8 +3,6 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 
-import java.util.concurrent.TimeUnit;
-
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.quest.data.Quest;
@@ -42,10 +40,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public int getDuration() {
-        if(Quest.isCompleted(quest) && quest.getActualStart() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(quest.getCompletedAt().getTime() - quest.getActualStart().getTime());
-        }
-        return duration;
+        return quest.getActualDuration();
     }
 
     @Override

@@ -169,7 +169,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
         } else if (currentDateIsInTheFuture()) {
 
-            repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
+            repeatingQuestPersistenceService.findNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
                 futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
                 questsForFutureUpdated();
             });
@@ -443,7 +443,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
-        int duration = q.isIndicator() ? 3 : Math.max(q.getDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
+        int duration = q.isIndicator() ? 3 : Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
         return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 

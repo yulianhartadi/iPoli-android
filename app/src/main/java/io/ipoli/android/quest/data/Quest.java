@@ -391,7 +391,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
     public boolean repeatPerDayWithShortOrNoDuration() {
-        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesPerDay() > 1;
+        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesADay() > 1;
         boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
         return repeatsPerDay && hasShortOrNoDuration;
     }
@@ -489,5 +489,12 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     public void setChallenge(Challenge challenge) {
         this.challenge = challenge;
+    }
+
+    public int getActualDuration() {
+        if(Quest.isCompleted(this) && getActualStart() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt().getTime() - getActualStart().getTime());
+        }
+        return getDuration();
     }
 }

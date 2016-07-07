@@ -48,6 +48,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -91,7 +92,7 @@ public class AppJobService extends JobService {
                 if (p == null) {
                     return Observable.empty();
                 }
-                scheduleQuestsFor2WeeksAhead(questPersistenceService, repeatingQuestPersistenceService);
+                scheduleRepeatingQuests(questPersistenceService, repeatingQuestPersistenceService);
                 syncChallenges(challengePersistenceService, p);
                 syncRemovedQuests(p);
                 syncRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
@@ -119,25 +120,9 @@ public class AppJobService extends JobService {
         return true;
     }
 
-    private void scheduleQuestsFor2WeeksAhead(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
-        LocalDate startOfNextWeek = startOfWeek.plusDays(7);
-        LocalDate endOfNextWeek = endOfWeek.plusDays(7);
+    private void scheduleRepeatingQuests(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
-        for (RepeatingQuest rq : repeatingQuests) {
-            saveQuestsInRange(questPersistenceService, rq, startOfWeek, endOfWeek);
-            saveQuestsInRange(questPersistenceService, rq, startOfNextWeek, endOfNextWeek);
-        }
-    }
-
-    private void saveQuestsInRange(QuestPersistenceService questPersistenceService, RepeatingQuest rq, LocalDate startOfWeek, LocalDate endOfWeek) {
-        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, startOfWeek, endOfWeek);
-        if (createdQuestsCount == 0) {
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, DateUtils.toStartOfDayUTC(startOfWeek));
-            questPersistenceService.saveSync(questsToCreate);
-        }
+        new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     private Player syncPlayer(PlayerPersistenceService playerPersistenceService) throws IOException {
