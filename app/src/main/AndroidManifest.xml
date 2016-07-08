@@ -50,6 +50,7 @@
         </activity>
         <activity
             android:name=".quest.activities.QuestActivity"
+            android:label="@string/activity_quest_title"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data

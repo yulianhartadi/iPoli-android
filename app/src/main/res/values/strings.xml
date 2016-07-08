@@ -274,4 +274,5 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
+    <string name="activity_quest_title">Quest</string>
 </resources>
