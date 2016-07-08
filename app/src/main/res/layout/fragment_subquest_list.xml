@@ -5,9 +5,55 @@
     android:layout_height="match_parent"
     android:background="@color/md_white">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="AAAAA"/>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <io.ipoli.android.app.ui.EmptyStateRecyclerView
+                android:id="@+id/subquest_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/md_white"
+                android:scrollbars="vertical" />
+
+            <!--<android.support.design.widget.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/reminder_message"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Message (e.g. Don't be lazy)"
+                    android:inputType="text"
+                    android:maxLines="1" />fsdf
+            <!--</android.support.design.widget.TextInputLayout>-->
+
+            <RelativeLayout
+                android:id="@+id/quest_add_reminder_container"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="72dp"
+                    android:text="+ Add subquest"
+                    android:textColor="@color/colorAccent" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
