@@ -12,6 +12,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.Subquest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -293,6 +294,31 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public void saveSubquests(Quest quest, List<Subquest> subquests) {
+        saveSubquests(quest, subquests, true);
+    }
+
+    @Override
+    public void saveSubquests(Quest quest, List<Subquest> subquests, boolean markUpdated) {
+        getRealm().executeTransaction(realm -> {
+            if (markUpdated) {
+                for (Subquest sq : subquests) {
+                    sq.markUpdated();
+                }
+            }
+            if (quest.getSubquests() != null && !quest.getSubquests().isEmpty()) {
+                RealmList<Subquest> realmSubquests = realm.where(getRealmObjectClass()).equalTo("id", quest.getId()).findFirst().getSubquests();
+                if (realmSubquests != null) {
+                    realmSubquests.deleteAllFromRealm();
+                }
+            }
+            RealmList<Subquest> subquestRealmList = new RealmList<>();
+            subquestRealmList.addAll(subquests);
+            quest.setSubquests(subquestRealmList);
+        });
+    }
+
+    @Override
     public Observable<Void> delete(List<Quest> objects) {
         if (objects.isEmpty()) {
             return Observable.empty();
@@ -311,6 +337,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                         for (Quest quest : results) {
                             if (quest.getReminders() != null) {
                                 quest.getReminders().deleteAllFromRealm();
+                            }
+                            if(quest.getSubquests() != null) {
+                                quest.getSubquests().deleteAllFromRealm();
                             }
                         }
                         results.deleteAllFromRealm();

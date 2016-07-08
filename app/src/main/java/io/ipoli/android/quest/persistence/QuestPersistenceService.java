@@ -10,6 +10,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.Subquest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -58,6 +59,10 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void saveReminders(Quest quest, List<Reminder> reminders);
 
     void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
+
+    void saveSubquests(Quest quest, List<Subquest> subquests);
+
+    void saveSubquests(Quest quest, List<Subquest> subquests,  boolean markUpdated);
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 }
