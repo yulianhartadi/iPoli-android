@@ -32,9 +32,11 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.fragments.SubquestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -60,7 +62,7 @@ public class QuestActivity extends BaseActivity {
     Bus eventBus;
 
     QuestPersistenceService questPersistenceService;
-    private Quest quest;
+    private String questId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +87,8 @@ public class QuestActivity extends BaseActivity {
         viewPager.setCurrentItem(0);
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        quest = questPersistenceService.findById(questId);
+        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        Quest quest = questPersistenceService.findById(questId);
         setBackgroundColors(Quest.getCategory(quest));
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
@@ -128,8 +130,8 @@ public class QuestActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TimerFragment(), "");
-        adapter.addFragment(new TimerFragment(), "");
+        adapter.addFragment(new TimerFragment());
+        adapter.addFragment(new SubquestListFragment());
         viewPager.setAdapter(adapter);
     }
 
@@ -151,6 +153,13 @@ public class QuestActivity extends BaseActivity {
     }
 
     @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = questPersistenceService.findById(questId);
+        setBackgroundColors(Quest.getCategory(q));
+
+    }
+
+    @Subscribe
     public void onLevelDown(LevelDownEvent e) {
         showLevelDownMessage(e.newLevel);
     }
@@ -163,7 +172,6 @@ public class QuestActivity extends BaseActivity {
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> fragments = new ArrayList<>();
-        private final List<String> fragmentTitles = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -179,9 +187,8 @@ public class QuestActivity extends BaseActivity {
             return fragments.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(Fragment fragment) {
             fragments.add(fragment);
-            fragmentTitles.add(title);
         }
 
         @Override

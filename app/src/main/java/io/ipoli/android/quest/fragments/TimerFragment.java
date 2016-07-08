@@ -56,7 +56,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     Bus eventBus;
 
     @BindView(R.id.root_container)
-    ViewGroup rootContainer;
+    ViewGroup rootLayout;
 
     @BindView(R.id.quest_details_progress)
     ProgressBar timerProgress;
@@ -114,7 +114,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     }
 
     private void setBackgroundColors(Category category) {
-        rootContainer.setBackgroundColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
+        rootLayout.setBackgroundColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
         getActivity().getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
         getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
     }
