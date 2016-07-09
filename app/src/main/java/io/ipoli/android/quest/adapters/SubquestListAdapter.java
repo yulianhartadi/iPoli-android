@@ -9,7 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Subquest;
 
 /**
@@ -24,6 +29,7 @@ import io.ipoli.android.quest.data.Subquest;
  * on 4/28/16.
  */
 public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapter.ViewHolder> {
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
     protected Context context;
     protected final Bus evenBus;
     protected List<Subquest> subquests;
@@ -32,6 +38,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         this.context = context;
         this.evenBus = evenBus;
         this.subquests = subquests;
+        viewBinderHelper.setOpenOnlyOne(true);
     }
 
 
@@ -45,8 +52,21 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Subquest sq = subquests.get(holder.getAdapterPosition());
 
-        holder.name.setText(sq.getName());
+        viewBinderHelper.bind(holder.swipeLayout, sq.getId());
+        holder.swipeLayout.close(false);
 
+        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
+            @Override
+            public void onOpened(SwipeRevealLayout view) {
+                super.onOpened(view);
+                evenBus.post(new ItemActionsShownEvent(EventSource.SUBQUESTS));
+            }
+        });
+
+
+        holder.deleteSubquest.setOnClickListener(iv -> removeSubquest(holder.getAdapterPosition()));
+
+        holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(sq.isCompleted());
         if (sq.isCompleted()) {
@@ -70,6 +90,11 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
                 }
             });
         }
+    }
+
+    private void removeSubquest(int position) {
+        subquests.remove(position);
+        notifyItemRemoved(position);
     }
 
     private void showUnderline(TextInputEditText editText) {
@@ -97,6 +122,12 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
 
         @BindView(R.id.subquest_name)
         TextInputEditText name;
+
+        @BindView(R.id.swipe_layout)
+        public SwipeRevealLayout swipeLayout;
+
+        @BindView(R.id.delete_subquest)
+        public ImageButton deleteSubquest;
 
         public ViewHolder(View v) {
             super(v);

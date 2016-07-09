@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.fragments;
 
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -11,7 +12,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -129,6 +132,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         if (isFocused) {
             showUnderline(addSubquest);
             addSubquest.requestFocus();
+//            showKeyboard();
             if (text.equals(getString(R.string.add_sub_quest))) {
                 setAddSubquestInEditMode();
             }
@@ -179,6 +183,19 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         adapter.addSubquest(new Subquest(name));
         setAddSubquestInViewMode();
         addSubquest.clearFocus();
+        hideKeyboard();
+    }
+
+    protected void showKeyboard() {
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    protected void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 }
