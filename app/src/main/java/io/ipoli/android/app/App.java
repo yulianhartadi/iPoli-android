@@ -351,7 +351,9 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        questPersistenceService.saveReminders(e.quest, e.reminders);
+        if(e.reminders != null) {
+            questPersistenceService.saveReminders(e.quest, e.reminders);
+        }
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);

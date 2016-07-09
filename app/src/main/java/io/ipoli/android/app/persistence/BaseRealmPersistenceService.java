@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.ipoli.android.app.net.RemoteObject;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
@@ -19,10 +20,12 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
 
     private final Realm realm;
     private List<RealmResults<?>> realmResults;
+    private List<T> realmObjectResults;
 
     public BaseRealmPersistenceService(Realm realm) {
         this.realm = realm;
         this.realmResults = new ArrayList<>();
+        this.realmObjectResults = new ArrayList<>();
     }
 
     protected void listenForChanges(RealmResults<T> results, OnDatabaseChangedListener<T> listener) {
@@ -30,6 +33,15 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         results.addChangeListener(element -> {
             if (element.isLoaded()) {
                 listener.onDatabaseChanged(realm.copyFromRealm(element));
+            }
+        });
+    }
+
+    protected void listenForChanges(T result, OnSingleDatabaseObjectChangedListener<T> listener) {
+        realmObjectResults.add(result);
+        result.addChangeListener(element -> {
+            if (result != null) {
+                listener.onDatabaseObjectChanged(realm.copyFromRealm(result));
             }
         });
     }
@@ -207,6 +219,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         for (RealmResults<?> res : realmResults) {
             res.removeChangeListeners();
         }
+        for(T obj : realmObjectResults) {
+            obj.removeChangeListeners();
+        }
         realmResults.clear();
+        realmObjectResults.clear();
     }
 }

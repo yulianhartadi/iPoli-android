@@ -107,6 +107,13 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener) {
+        listenForChanges(where()
+                .equalTo("id", questId)
+                .findFirstAsync(), listener);
+    }
+
+    @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));
@@ -291,6 +298,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
             quest.setReminders(reminderRealmList);
             quest.updateRemindersStartTime();
         });
+    }
+
+    @Override
+    public void addSubquest(Quest quest, Subquest subquests) {
+        getRealm().executeTransaction(realm -> quest.getSubquests().add(subquests));
     }
 
     @Override

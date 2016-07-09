@@ -60,9 +60,13 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
 
+    void addSubquest(Quest quest, Subquest subquests);
+
     void saveSubquests(Quest quest, List<Subquest> subquests);
 
     void saveSubquests(Quest quest, List<Subquest> subquests,  boolean markUpdated);
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
+
+    void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener);
 }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,18 +28,21 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 
-public class SubquestListFragment extends BaseFragment implements View.OnFocusChangeListener {
+public class SubquestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnSingleDatabaseObjectChangedListener<Quest> {
 
     @Inject
     Bus eventBus;
@@ -57,6 +61,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
+    private String questId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,27 +76,29 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         subquestList.setLayoutManager(layoutManager);
 
         List<Subquest> subquests = new ArrayList<>();
-        subquests.add(new Subquest("Socks"));
-        subquests.add(new Subquest("Bananas"));
-        subquests.add(new Subquest("Crocodile"));
-        subquests.add(new Subquest("Apples"));
-        subquests.add(new Subquest("Cunka"));
-        subquests.add(new Subquest("Tomatoes"));
-        subquests.add(new Subquest("Ice cream"));
-        subquests.add(new Subquest("Pencil"));
-        subquests.add(new Subquest("Books"));
-        subquests.add(new Subquest("Chocolate"));
-        subquests.add(new Subquest("Milk"));
-        subquests.add(new Subquest("Ball"));
-        subquests.add(new Subquest("Table"));
+//        subquests.add(new Subquest("Socks"));
+//        subquests.add(new Subquest("Bananas"));
+//        subquests.add(new Subquest("Crocodile"));
+//        subquests.add(new Subquest("Apples"));
+//        subquests.add(new Subquest("Cunka"));
+//        subquests.add(new Subquest("Tomatoes"));
+//        subquests.add(new Subquest("Ice cream"));
+//        subquests.add(new Subquest("Pencil"));
+//        subquests.add(new Subquest("Books"));
+//        subquests.add(new Subquest("Chocolate"));
+//        subquests.add(new Subquest("Milk"));
+//        subquests.add(new Subquest("Ball"));
+//        subquests.add(new Subquest("Table"));
+
+        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questPersistenceService.findById(questId, this);
 
         adapter = new SubquestListAdapter(getContext(), eventBus, subquests);
         subquestList.setAdapter(adapter);
 
         hideUnderline(addSubquest);
         addSubquest.setOnFocusChangeListener(this);
-
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
 
         return view;
     }
@@ -142,7 +149,6 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
             if (StringUtils.isEmpty(text)) {
                 setAddSubquestInViewMode();
             }
-            addSubquest.clearFocus();
         }
     }
 
@@ -180,10 +186,17 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         if(StringUtils.isEmpty(name)) {
             return;
         }
-        adapter.addSubquest(new Subquest(name));
+        saveSubquest();
         setAddSubquestInViewMode();
+        //if many subquests focus is going to one of them after clearFocus()
         listContainer.requestFocus();
         hideKeyboard();
+    }
+
+    private void saveSubquest() {
+        Quest quest = questPersistenceService.findById(questId);
+        questPersistenceService.addSubquest(quest, new Subquest(addSubquest.getText().toString()));
+        questPersistenceService.save(quest).subscribe();
     }
 
     protected void showKeyboard() {
@@ -198,4 +211,9 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         }
     }
 
+    @Override
+    public void onDatabaseObjectChanged(Quest result) {
+        adapter.setSubquests(result.getSubquests());
+        Log.d("AAAAA", result.getSubquests().size() + "");
+    }
 }

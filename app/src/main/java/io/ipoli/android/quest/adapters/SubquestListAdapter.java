@@ -23,6 +23,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Subquest;
+import io.realm.RealmList;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -113,6 +114,12 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
     public void addSubquest(Subquest subquest) {
         subquests.add(subquest);
         notifyItemInserted(subquests.size() - 1);
+    }
+
+    public void setSubquests(RealmList<Subquest> subquests) {
+        this.subquests.clear();
+        this.subquests.addAll(subquests);
+        notifyDataSetChanged();
     }
 
 
