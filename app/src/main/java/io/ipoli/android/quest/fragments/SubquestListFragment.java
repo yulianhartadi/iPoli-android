@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +45,9 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
 
     @BindView(R.id.add_subquest)
     TextInputEditText addSubquest;
+
+    @BindView(R.id.list_container)
+    ViewGroup listContainer;
 
     @BindView(R.id.subquest_list)
     EmptyStateRecyclerView subquestList;
@@ -131,37 +133,35 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         String text = addSubquest.getText().toString();
         if (isFocused) {
             showUnderline(addSubquest);
-            addSubquest.requestFocus();
-//            showKeyboard();
             if (text.equals(getString(R.string.add_sub_quest))) {
                 setAddSubquestInEditMode();
             }
+            addSubquest.requestFocus();
         } else {
             hideUnderline(addSubquest);
             if (StringUtils.isEmpty(text)) {
                 setAddSubquestInViewMode();
             }
+            addSubquest.clearFocus();
         }
     }
 
     private void setAddSubquestInViewMode() {
         addSubquest.setText(getString(R.string.add_sub_quest));
         addSubquest.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-        addSubquest.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.add_subquest_text_size));
     }
 
     private void setAddSubquestInEditMode() {
         addSubquest.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        addSubquest.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.subquest_item_text_size));
         addSubquest.setText("");
     }
 
-    private void showUnderline(TextInputEditText editText) {
-        editText.getBackground().clearColorFilter();
+    private void showUnderline(View view) {
+        view.getBackground().clearColorFilter();
     }
 
-    private void hideUnderline(TextInputEditText editText) {
-        editText.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.transparent), PorterDuff.Mode.SRC_IN);
+    private void hideUnderline(View view) {
+        view.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.transparent), PorterDuff.Mode.SRC_IN);
     }
 
     @OnEditorAction(R.id.add_subquest)
@@ -182,7 +182,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         }
         adapter.addSubquest(new Subquest(name));
         setAddSubquestInViewMode();
-        addSubquest.clearFocus();
+        listContainer.requestFocus();
         hideKeyboard();
     }
 
