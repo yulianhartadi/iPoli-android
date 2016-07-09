@@ -301,8 +301,40 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public void addSubquest(Quest quest, Subquest subquests) {
-        getRealm().executeTransaction(realm -> quest.getSubquests().add(subquests));
+    public void addSubquest(Quest quest, Subquest subquest) {
+        getRealm().executeTransaction(realm -> quest.getSubquests().add(subquest));
+    }
+
+    @Override
+    public void deleteSubquest(Quest quest, Subquest subquest) {
+        getRealm().executeTransaction(realm -> {
+            Subquest sqToDelete = null;
+            for(Subquest s : quest.getSubquests()) {
+                if(s.getId().equals(subquest.getId())) {
+                    sqToDelete = s;
+                    break;
+                }
+            }
+            if(sqToDelete != null) {
+                quest.getSubquests().remove(sqToDelete);
+            }
+        });
+    }
+
+    @Override
+    public void updateSubquest(Quest quest, Subquest subquest) {
+        getRealm().executeTransaction(realm -> {
+            int position = -1;
+            for(int i = 0; i< quest.getSubquests().size(); i++) {
+                if(quest.getSubquests().get(i).getId().equals(subquest.getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if(position >= 0) {
+                quest.getSubquests().set(position, subquest);
+            }
+        });
     }
 
     @Override

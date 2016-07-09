@@ -7,17 +7,16 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,8 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.events.DeleteSubquestEvent;
+import io.ipoli.android.quest.events.UpdateSubquestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -62,6 +63,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
 
     private Unbinder unbinder;
     private String questId;
+    private Quest quest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,8 +92,8 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
 //        subquests.add(new Subquest("Ball"));
 //        subquests.add(new Subquest("Table"));
 
-        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, this);
 
         adapter = new SubquestListAdapter(getContext(), eventBus, subquests);
@@ -170,6 +172,14 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         view.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.transparent), PorterDuff.Mode.SRC_IN);
     }
 
+    protected void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
     @OnEditorAction(R.id.add_subquest)
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
@@ -194,26 +204,25 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
     }
 
     private void saveSubquest() {
-        Quest quest = questPersistenceService.findById(questId);
         questPersistenceService.addSubquest(quest, new Subquest(addSubquest.getText().toString()));
         questPersistenceService.save(quest).subscribe();
     }
 
-    protected void showKeyboard() {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    @Subscribe
+    public void onDeleteSubquest(DeleteSubquestEvent e) {
+        questPersistenceService.deleteSubquest(quest, e.subquest);
+        questPersistenceService.save(quest).subscribe();
     }
 
-    protected void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+    @Subscribe
+    public void onUpdateSubquest(UpdateSubquestEvent e) {
+        questPersistenceService.updateSubquest(quest, e.subquest);
+        questPersistenceService.save(quest).subscribe();
     }
 
     @Override
     public void onDatabaseObjectChanged(Quest result) {
+        quest = result;
         adapter.setSubquests(result.getSubquests());
-        Log.d("AAAAA", result.getSubquests().size() + "");
     }
 }

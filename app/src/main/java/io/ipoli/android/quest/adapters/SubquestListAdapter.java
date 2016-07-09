@@ -23,6 +23,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.events.DeleteSubquestEvent;
+import io.ipoli.android.quest.events.UpdateSubquestEvent;
 import io.realm.RealmList;
 
 /**
@@ -65,32 +67,31 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         });
 
 
-        holder.deleteSubquest.setOnClickListener(iv -> removeSubquest(holder.getAdapterPosition()));
+        holder.deleteSubquest.setOnClickListener(iv -> evenBus.post(new DeleteSubquestEvent(sq)));
 
         holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(sq.isCompleted());
-        if (sq.isCompleted()) {
-            holder.check.setEnabled(false);
-        } else {
-            holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    sq.setCompleted(true);
-                } else {
-                    sq.setCompleted(false);
-                }
-            });
+        holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                sq.setCompleted(true);
+            } else {
+                sq.setCompleted(false);
+            }
+            evenBus.post(new UpdateSubquestEvent(sq));
+        });
 
-            hideUnderline(holder.name);
-            holder.name.setOnFocusChangeListener((view, isFocused) -> {
-                if (isFocused) {
-                    showUnderline(holder.name);
-                    holder.name.requestFocus();
-                } else {
-                    hideUnderline(holder.name);
-                }
-            });
-        }
+        hideUnderline(holder.name);
+        holder.name.setOnFocusChangeListener((view, isFocused) -> {
+            if (isFocused) {
+                showUnderline(holder.name);
+                holder.name.requestFocus();
+            } else {
+                hideUnderline(holder.name);
+                sq.setName(holder.name.getText().toString());
+                evenBus.post(new UpdateSubquestEvent(sq));
+            }
+        });
     }
 
     private void removeSubquest(int position) {
