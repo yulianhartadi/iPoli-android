@@ -15,7 +15,7 @@ public class ViewUtils {
         return loc[1];
     }
 
-    public static float dpToPx(int dips, Resources resources) {
+    public static float dpToPx(float dips, Resources resources) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, resources.getDisplayMetrics());
     }
 }

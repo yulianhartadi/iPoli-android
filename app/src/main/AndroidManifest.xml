@@ -57,6 +57,15 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".quest.activities.RepeatingQuestActivity"
+            android:label="@string/title_activity_repeating_quest"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".reward.activities.EditRewardActivity"
             android:label="@string/title_activity_add_reward"
             android:parentActivityName=".MainActivity"

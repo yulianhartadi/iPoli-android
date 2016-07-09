@@ -21,6 +21,7 @@ import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
@@ -127,5 +128,7 @@ public interface AppComponent {
     void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
 
     void inject(ChallengePickerFragment challengePickerFragment);
+
+    void inject(RepeatingQuestActivity repeatingQuestActivity);
 }
 
