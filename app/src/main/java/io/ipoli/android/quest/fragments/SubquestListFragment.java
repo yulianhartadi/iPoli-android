@@ -20,7 +20,6 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
 import io.ipoli.android.quest.data.Subquest;
@@ -80,7 +79,7 @@ public class SubquestListFragment extends BaseFragment{
 
     @Override
     protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
+//        HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

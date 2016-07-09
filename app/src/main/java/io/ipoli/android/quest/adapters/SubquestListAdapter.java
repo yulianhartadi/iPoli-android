@@ -1,12 +1,14 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
@@ -47,7 +49,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(sq.isCompleted());
-        if(sq.isCompleted()) {
+        if (sq.isCompleted()) {
             holder.check.setEnabled(false);
         } else {
             holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -57,12 +59,21 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
                     sq.setCompleted(false);
                 }
             });
-            holder.itemView.setOnClickListener(view -> {
-                CheckBox cb = holder.check;
-                cb.setChecked(!cb.isChecked());
 
+            hideUnderline(holder.name);
+            holder.name.setOnFocusChangeListener((view, isFocused) -> {
+                if (isFocused) {
+                    holder.name.getBackground().clearColorFilter();
+                    holder.name.requestFocus();
+                } else {
+                    hideUnderline(holder.name);
+                }
             });
         }
+    }
+
+    private void hideUnderline(TextInputEditText editText) {
+        editText.getBackground().setColorFilter(ContextCompat.getColor(context, android.R.color.transparent), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -76,7 +87,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         CheckBox check;
 
         @BindView(R.id.subquest_name)
-        TextView name;
+        TextInputEditText name;
 
         public ViewHolder(View v) {
             super(v);
