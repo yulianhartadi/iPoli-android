@@ -23,8 +23,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Subquest;
-import io.ipoli.android.quest.events.DeleteSubquestEvent;
-import io.ipoli.android.quest.events.UpdateSubquestEvent;
 import io.realm.RealmList;
 
 /**
@@ -67,7 +65,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         });
 
 
-        holder.deleteSubquest.setOnClickListener(iv -> evenBus.post(new DeleteSubquestEvent(sq)));
+        holder.deleteSubquest.setOnClickListener(iv -> removeSubquest(holder.getAdapterPosition()));
 
         holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
@@ -78,7 +76,6 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
             } else {
                 sq.setCompleted(false);
             }
-            evenBus.post(new UpdateSubquestEvent(sq));
         });
 
         hideUnderline(holder.name);
@@ -89,7 +86,6 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
             } else {
                 hideUnderline(holder.name);
                 sq.setName(holder.name.getText().toString());
-                evenBus.post(new UpdateSubquestEvent(sq));
             }
         });
     }
@@ -121,6 +117,10 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         this.subquests.clear();
         this.subquests.addAll(subquests);
         notifyDataSetChanged();
+    }
+
+    public List<Subquest> getSubquests() {
+        return subquests;
     }
 
 

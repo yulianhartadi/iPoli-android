@@ -16,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +30,13 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Subquest;
-import io.ipoli.android.quest.events.DeleteSubquestEvent;
-import io.ipoli.android.quest.events.UpdateSubquestEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -130,8 +129,14 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
 
     @Override
     public void onPause() {
+        saveSubquests();
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    private void saveSubquests() {
+
+        eventBus.post(new UpdateQuestEvent(quest, adapter.getSubquests(), null, EventSource.SUBQUESTS));
     }
 
     @Override
@@ -196,28 +201,11 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         if(StringUtils.isEmpty(name)) {
             return;
         }
-        saveSubquest();
+        adapter.addSubquest(new Subquest(name));
         setAddSubquestInViewMode();
         //if many subquests focus is going to one of them after clearFocus()
         listContainer.requestFocus();
         hideKeyboard();
-    }
-
-    private void saveSubquest() {
-        questPersistenceService.addSubquest(quest, new Subquest(addSubquest.getText().toString()));
-        questPersistenceService.save(quest).subscribe();
-    }
-
-    @Subscribe
-    public void onDeleteSubquest(DeleteSubquestEvent e) {
-        questPersistenceService.deleteSubquest(quest, e.subquest);
-        questPersistenceService.save(quest).subscribe();
-    }
-
-    @Subscribe
-    public void onUpdateSubquest(UpdateSubquestEvent e) {
-        questPersistenceService.updateSubquest(quest, e.subquest);
-        questPersistenceService.save(quest).subscribe();
     }
 
     @Override
