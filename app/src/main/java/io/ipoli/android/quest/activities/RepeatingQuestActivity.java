@@ -3,6 +3,7 @@ package io.ipoli.android.quest.activities;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +33,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.ViewUtils;
+import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 
 /**
@@ -46,10 +48,13 @@ public class RepeatingQuestActivity extends BaseActivity {
     ViewGroup progressContainer;
 
     @BindView(R.id.repeating_quest_history)
-    BarChart mChart;
+    BarChart history;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.appbar)
+    AppBarLayout appBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,38 +99,44 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
 
 
-        mChart.setDescription("");
+        history.setDescription("");
+        history.setTouchEnabled(false);
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(60);
+        history.setMaxVisibleValueCount(60);
 
         // scaling can now only be done on x- and y-axis separately
-        mChart.setPinchZoom(false);
+        history.setPinchZoom(false);
 
-        mChart.setDrawGridBackground(false);
-        mChart.setDrawBarShadow(true);
+        history.setDrawGridBackground(false);
+        history.setDrawBarShadow(true);
 
-        mChart.setDrawValueAboveBar(false);
-        mChart.setDrawGridBackground(false);
+        history.setDrawValueAboveBar(false);
+        history.setDrawGridBackground(false);
 
         // change the position of the y-labels
-        YAxis leftAxis = mChart.getAxisLeft();
+        YAxis leftAxis = history.getAxisLeft();
         leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
         leftAxis.setAxisMaxValue(5);
         leftAxis.setEnabled(false);
-        mChart.getAxisRight().setEnabled(false);
+        history.getAxisRight().setEnabled(false);
 
-        XAxis xLabels = mChart.getXAxis();
+        XAxis xLabels = history.getXAxis();
         xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
         xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
         xLabels.setTextSize(12f);
         xLabels.setDrawAxisLine(false);
         xLabels.setDrawGridLines(false);
-//        mChart.getXAxis().setEnabled(false);
-        mChart.getLegend().setEnabled(false);
+//        history.getXAxis().setEnabled(false);
+        history.getLegend().setEnabled(false);
 
         setData(4);
+        Category category = Category.WELLNESS;
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
 
     }
 
@@ -151,7 +162,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         set1 = new BarDataSet(yVals1, "DataSet");
 //        set1.setBarSpacePercent(35f);
         set1.setColors(getColors());
-        set1.setBarShadowColor(ContextCompat.getColor(this, R.color.md_blue_100));
+        set1.setBarShadowColor(ContextCompat.getColor(this, R.color.md_green_100));
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
@@ -166,13 +177,13 @@ public class RepeatingQuestActivity extends BaseActivity {
             }
         });
 
-        mChart.setData(data);
+        history.setData(data);
 //        try {
 //            Thread.sleep(1000);
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        mChart.animateY(500);
+        history.animateY(500);
     }
 
     private int[] getColors() {
@@ -183,7 +194,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         int[] colors = new int[stacksize];
 
         for (int i = 0; i < stacksize; i++) {
-            colors[i] = ContextCompat.getColor(this, R.color.md_blue_300);
+            colors[i] = ContextCompat.getColor(this, R.color.md_green_300);
         }
 
         return colors;
