@@ -89,6 +89,7 @@ public class QuestActivity extends BaseActivity {
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         Quest quest = questPersistenceService.findById(questId);
+        ab.setTitle(quest.getName());
         setBackgroundColors(Quest.getCategory(quest));
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }

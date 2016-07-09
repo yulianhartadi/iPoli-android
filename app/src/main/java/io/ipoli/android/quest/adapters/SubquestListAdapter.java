@@ -63,13 +63,17 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
             hideUnderline(holder.name);
             holder.name.setOnFocusChangeListener((view, isFocused) -> {
                 if (isFocused) {
-                    holder.name.getBackground().clearColorFilter();
+                    showUnderline(holder.name);
                     holder.name.requestFocus();
                 } else {
                     hideUnderline(holder.name);
                 }
             });
         }
+    }
+
+    private void showUnderline(TextInputEditText editText) {
+        editText.getBackground().clearColorFilter();
     }
 
     private void hideUnderline(TextInputEditText editText) {
@@ -79,6 +83,11 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
     @Override
     public int getItemCount() {
         return subquests.size();
+    }
+
+    public void addSubquest(Subquest subquest) {
+        subquests.add(subquest);
+        notifyItemInserted(subquests.size() - 1);
     }
 
 

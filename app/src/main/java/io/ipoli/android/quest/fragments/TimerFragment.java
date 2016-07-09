@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
@@ -67,9 +66,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     @BindView(R.id.quest_details_time)
     Chronometer timer;
 
-    @BindView(R.id.quest_details_name)
-    TextView name;
-
     @BindView(R.id.quest_details_edit)
     ImageButton edit;
 
@@ -110,7 +106,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;
-        name.setText(quest.getName());
     }
 
     private void setBackgroundColors(Category category) {
