@@ -21,9 +21,10 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +72,9 @@ public class RepeatingQuestActivity extends BaseActivity {
     TextView nextScheduledDate;
 
     private RepeatingQuest repeatingQuest;
+    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private RealmQuestPersistenceService questPersistenceService;
+    public static final int BAR_COUNT = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +84,8 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
 
-        RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
 
         String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
         repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
@@ -138,7 +143,6 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
         nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
 
@@ -149,12 +153,6 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setupChart() {
         history.setDescription("");
         history.setTouchEnabled(false);
-
-        // if more than 60 entries are displayed in the chart, no values will be
-        // drawn
-        history.setMaxVisibleValueCount(60);
-
-        // scaling can now only be done on x- and y-axis separately
         history.setPinchZoom(false);
 
         history.setDrawGridBackground(false);
@@ -163,9 +161,8 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.setDrawValueAboveBar(false);
         history.setDrawGridBackground(false);
 
-        // change the position of the y-labels
         YAxis leftAxis = history.getAxisLeft();
-        leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true)
+        leftAxis.setAxisMinValue(0f);
         leftAxis.setAxisMaxValue(5);
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
@@ -176,10 +173,9 @@ public class RepeatingQuestActivity extends BaseActivity {
         xLabels.setTextSize(12f);
         xLabels.setDrawAxisLine(false);
         xLabels.setDrawGridLines(false);
-//        history.getXAxis().setEnabled(false);
         history.getLegend().setEnabled(false);
 
-        setData(4);
+        setHistoryData();
     }
 
     private void colorLayout(Category category) {
@@ -189,23 +185,33 @@ public class RepeatingQuestActivity extends BaseActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
 
-    private void setData(int count) {
+    private void setHistoryData() {
 
-        ArrayList<String> xVals = new ArrayList<>();
-        xVals.add("8 - 15 Jun");
-        xVals.add("16 - 23 Jun");
-        xVals.add("last week");
-        xVals.add("this week");
 
-        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        LocalDate startOfWeek = LocalDate.now().dayOfWeek().withMinimumValue();
+        LocalDate firstWeekStart = startOfWeek.minusDays(21);
+        LocalDate firstWeekEnd = firstWeekStart.dayOfWeek().withMaximumValue();
 
-        for (int i = 0; i < count; i++) {
-            yVals1.add(new BarEntry(Math.max(3, new Random().nextInt(5) + 1), i));
-        }
+        LocalDate secondWeekStart = firstWeekStart.plusDays(7);
+        LocalDate secondWeekEnd = secondWeekStart.dayOfWeek().withMaximumValue();
+
+        LocalDate lastWeekStart = secondWeekStart.plusDays(7);
+        LocalDate lastWeekEnd = lastWeekStart.dayOfWeek().withMaximumValue();
+
+        LocalDate thisWeekStart = lastWeekStart.plusDays(7);
+        LocalDate thisWeekEnd = thisWeekStart.dayOfWeek().withMaximumValue();
+
+        ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
+
+
+        yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, firstWeekStart, firstWeekEnd), 0));
+        yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, secondWeekStart, secondWeekEnd), 1));
+        yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, lastWeekStart, lastWeekEnd), 2));
+        yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, thisWeekStart, thisWeekEnd), 3));
 
         BarDataSet set1;
 
-        set1 = new BarDataSet(yVals1, "DataSet");
+        set1 = new BarDataSet(yValues, "DataSet");
 //        set1.setBarSpacePercent(35f);
         set1.setColors(getColors());
         set1.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
@@ -213,7 +219,13 @@ public class RepeatingQuestActivity extends BaseActivity {
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
 
-        BarData data = new BarData(xVals, dataSets);
+        ArrayList<String> xValues = new ArrayList<>();
+        xValues.add(getWeekRangeText(firstWeekStart, firstWeekEnd));
+        xValues.add(getWeekRangeText(secondWeekStart, secondWeekEnd));
+        xValues.add("last week");
+        xValues.add("this week");
+
+        BarData data = new BarData(xValues, dataSets);
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
         data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
@@ -222,18 +234,21 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.animateY(500);
     }
 
+    private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
+        if (weekStart.getMonthOfYear() == weekEnd.getMonthOfYear()) {
+            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        } else {
+            return weekStart.getDayOfMonth() + " " + weekStart.monthOfYear().getAsShortText() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        }
+    }
+
     private int[] getColors() {
 
-        int stacksize = 5;
-
-        // have as many colors as stack-values per entry
-        int[] colors = new int[stacksize];
-
+        int[] colors = new int[BAR_COUNT];
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-        for (int i = 0; i < stacksize; i++) {
+        for (int i = 0; i < BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
-
         return colors;
     }
 
