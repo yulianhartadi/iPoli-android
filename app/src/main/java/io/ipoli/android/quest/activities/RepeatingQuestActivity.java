@@ -22,6 +22,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -35,15 +36,15 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/9/16.
  */
 public class RepeatingQuestActivity extends BaseActivity {
-
-    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @BindView(R.id.repeating_quest_progress_container)
     ViewGroup progressContainer;
@@ -66,6 +67,9 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.quest_category_name)
     TextView categoryName;
 
+    @BindView(R.id.quest_next_scheduled_date)
+    TextView nextScheduledDate;
+
     private RepeatingQuest repeatingQuest;
 
     @Override
@@ -76,7 +80,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
 
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
         repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
@@ -97,12 +101,15 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
 
         eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+        displayRepeatingQuest();
+    }
+
+    private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
         LayoutInflater inflater = LayoutInflater.from(this);
         int completed = 3;
         int incomplete = 2;
-
 
         int progressColor = R.color.colorAccent;
         Category category = RepeatingQuest.getCategory(repeatingQuest);
@@ -130,6 +137,11 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
+
+        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
+        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
+
         colorLayout(category);
         setupChart();
     }
@@ -180,11 +192,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setData(int count) {
 
         ArrayList<String> xVals = new ArrayList<>();
-//        for (int i = 0; i < count; i++) {
-//            xVals.add(mMonths[i % 12]);
-//        }
-        xVals.add("8-15 Jun");
-        xVals.add("16-23 Jun");
+        xVals.add("8 - 15 Jun");
+        xVals.add("16 - 23 Jun");
         xVals.add("last week");
         xVals.add("this week");
 

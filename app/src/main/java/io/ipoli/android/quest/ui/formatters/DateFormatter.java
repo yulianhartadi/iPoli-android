@@ -32,6 +32,12 @@ public class DateFormatter {
         if (date == null) {
             return formatEmptyDate();
         }
+        if (DateUtils.isToday(date)) {
+            return "Today";
+        }
+        if (DateUtils.isTomorrow(date)) {
+            return "Tomorrow";
+        }
         DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         return DATE_NO_YEAR_FORMAT.format(date);
     }

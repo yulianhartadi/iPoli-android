@@ -120,12 +120,12 @@
                     android:src="@drawable/ic_event_white_24dp" />
 
                 <TextView
+                    android:id="@+id/quest_next_scheduled_date"
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="4dp"
-                    android:text="Tomorrow" />
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <LinearLayout
