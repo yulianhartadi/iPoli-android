@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -27,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -34,9 +36,11 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -157,5 +161,12 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
             }
         }
         repeatingQuestListAdapter.updateQuests(viewModels);
+    }
+
+    @Subscribe
+    public void onShowRepeatingQuestEvent(ShowRepeatingQuestEvent e) {
+        Intent i = new Intent(getActivity(), RepeatingQuestActivity.class);
+        i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
+        startActivity(i);
     }
 }

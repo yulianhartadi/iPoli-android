@@ -426,7 +426,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         Intent i = new Intent(getActivity(), QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivity(i);
-
     }
 
     @NonNull

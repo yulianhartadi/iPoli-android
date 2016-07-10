@@ -194,7 +194,10 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onShowRepeatingQuest(ShowRepeatingQuestEvent e) {
-        log("show_repeating_quest_request", e.repeatingQuest.getId(), e.repeatingQuest.getName());
+        log("show_repeating_quest",
+                EventParams.of("id", e.repeatingQuest.getId())
+                        .add("name", e.repeatingQuest.getName())
+                        .add("source", e.source.name()));
     }
 
     @Subscribe

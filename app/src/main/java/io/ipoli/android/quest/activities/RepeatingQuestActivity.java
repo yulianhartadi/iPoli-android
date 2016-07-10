@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -17,10 +19,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -32,8 +31,10 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 
 /**
@@ -56,13 +57,35 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.appbar)
     AppBarLayout appBar;
 
+    @BindView(R.id.quest_name)
+    TextView name;
+
+    @BindView(R.id.quest_category_image)
+    ImageView categoryImage;
+
+    @BindView(R.id.quest_category_name)
+    TextView categoryName;
+
+    private RepeatingQuest repeatingQuest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY))) {
-//            finish();
-//            return;
-//        }
+        if (getIntent() == null || StringUtils.isEmpty(getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY))) {
+            finish();
+            return;
+        }
+
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+
+        String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
+        repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
+
+        if (repeatingQuest == null) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_repeating_quest);
         ButterKnife.bind(this);
         appComponent().inject(this);
@@ -73,20 +96,27 @@ public class RepeatingQuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-
-        String repeatingQuestId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+        name.setText(repeatingQuest.getName());
 
         LayoutInflater inflater = LayoutInflater.from(this);
         int completed = 3;
         int incomplete = 2;
+
+
+        int progressColor = R.color.colorAccent;
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
+        if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
+            progressColor = R.color.colorAccentAlternative;
+        }
+
         for (int i = 1; i <= completed; i++) {
             View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_indicator_empty, progressContainer, false);
             GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
-            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1.5f, getResources()), Color.WHITE);
-            progressViewEmptyBackground.setColor(Color.WHITE);
+//            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1.5f, getResources()), Color.WHITE);
+            progressViewEmptyBackground.setColor(ContextCompat.getColor(this, progressColor));
+            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1.5f, getResources()), ContextCompat.getColor(this, progressColor));
             progressContainer.addView(progressViewEmpty);
         }
 
@@ -94,11 +124,17 @@ public class RepeatingQuestActivity extends BaseActivity {
             View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_indicator_empty, progressContainer, false);
             GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
             progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1.5f, getResources()), Color.WHITE);
-            progressViewEmptyBackground.setColor(Color.TRANSPARENT);
+            progressViewEmptyBackground.setColor(Color.WHITE);
             progressContainer.addView(progressViewEmpty);
         }
 
+        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryImage.setImageResource(category.whiteImage);
+        colorLayout(category);
+        setupChart();
+    }
 
+    private void setupChart() {
         history.setDescription("");
         history.setTouchEnabled(false);
 
@@ -132,12 +168,13 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.getLegend().setEnabled(false);
 
         setData(4);
-        Category category = Category.WELLNESS;
+    }
+
+    private void colorLayout(Category category) {
         appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
         toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
-
     }
 
     private void setData(int count) {
@@ -162,7 +199,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         set1 = new BarDataSet(yVals1, "DataSet");
 //        set1.setBarSpacePercent(35f);
         set1.setColors(getColors());
-        set1.setBarShadowColor(ContextCompat.getColor(this, R.color.md_green_100));
+        set1.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
         ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
         dataSets.add(set1);
@@ -170,19 +207,9 @@ public class RepeatingQuestActivity extends BaseActivity {
         BarData data = new BarData(xVals, dataSets);
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
-        data.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-                return String.valueOf((int) value);
-            }
-        });
+        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
 
         history.setData(data);
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         history.animateY(500);
     }
 
@@ -193,8 +220,9 @@ public class RepeatingQuestActivity extends BaseActivity {
         // have as many colors as stack-values per entry
         int[] colors = new int[stacksize];
 
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
         for (int i = 0; i < stacksize; i++) {
-            colors[i] = ContextCompat.getColor(this, R.color.md_green_300);
+            colors[i] = ContextCompat.getColor(this, category.color300);
         }
 
         return colors;
