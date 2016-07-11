@@ -49,7 +49,6 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         viewBinderHelper.setOpenOnlyOne(true);
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.subquest_list_item, parent, false);
