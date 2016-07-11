@@ -119,15 +119,50 @@ public class RepeatingQuestActivity extends BaseActivity {
         displayRepeatingQuest();
     }
 
+    private long findCompletedForCurrentInterval() {
+        LocalDate today = LocalDate.now();
+        if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return questPersistenceService.countCompletedQuests(repeatingQuest, today.dayOfMonth().withMinimumValue(), today.dayOfMonth().withMaximumValue());
+        } else {
+            return questPersistenceService.countCompletedQuests(repeatingQuest, today.dayOfWeek().withMinimumValue(), today.dayOfWeek().withMaximumValue());
+        }
+    }
+
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
+        showFrequencyProgress(category);
+
+        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+
+        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryImage.setImageResource(category.whiteImage);
+
+        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
+        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
+
+        colorLayout(category);
+        setupChart();
+    }
+
+    private void showFrequencyProgress(Category category) {
         LayoutInflater inflater = LayoutInflater.from(this);
-        int completed = 3;
-        int incomplete = 2;
+
+        int frequency = getFrequency();
+        long completed = findCompletedForCurrentInterval();
+        if (frequency > 7) {
+            TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
+            progressText.setText(completed + " completed this month");
+            progressContainer.addView(progressText);
+            return;
+        }
+
+
+        long incomplete = frequency - completed;
 
         int progressColor = R.color.colorAccent;
-        Category category = RepeatingQuest.getCategory(repeatingQuest);
+
         if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
             progressColor = R.color.colorAccentAlternative;
         }
@@ -148,17 +183,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             progressViewEmptyBackground.setColor(Color.WHITE);
             progressContainer.addView(progressViewEmpty);
         }
-
-        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
-
-        categoryName.setText(StringUtils.capitalize(category.name()));
-        categoryImage.setImageResource(category.whiteImage);
-
-        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
-
-        colorLayout(category);
-        setupChart();
     }
 
     private void setupChart() {
