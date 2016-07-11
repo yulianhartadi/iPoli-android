@@ -32,7 +32,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.adapters.SubquestListAdapter;
+import io.ipoli.android.quest.adapters.SubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
@@ -58,7 +58,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
     @BindView(R.id.subquest_list)
     EmptyStateRecyclerView subquestList;
 
-    private SubquestListAdapter adapter;
+    private SubQuestListAdapter adapter;
 
     QuestPersistenceService questPersistenceService;
 
@@ -82,7 +82,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, this);
 
-        adapter = new SubquestListAdapter(getContext(), eventBus, new ArrayList<>());
+        adapter = new SubQuestListAdapter(getContext(), eventBus, new ArrayList<>());
         subquestList.setAdapter(adapter);
 
         hideUnderline(addSubquest);

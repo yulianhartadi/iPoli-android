@@ -36,13 +36,13 @@ import io.realm.RealmList;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapter.ViewHolder> {
+public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapter.ViewHolder> {
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
     protected Context context;
     protected final Bus evenBus;
     protected List<SubQuest> subQuests;
 
-    public SubquestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
+    public SubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
         this.context = context;
         this.evenBus = evenBus;
         this.subQuests = subQuests;
