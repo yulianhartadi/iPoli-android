@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -240,9 +239,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         eventBus.post(new DoneQuestTapEvent(quest));
         stopTimer();
         eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
-        long experience = quest.getExperience();
-        long coins = quest.getCoins();
-        Toast.makeText(getContext(), getString(R.string.quest_complete, experience, coins), Toast.LENGTH_LONG).show();
         getActivity().finish();
     }
 

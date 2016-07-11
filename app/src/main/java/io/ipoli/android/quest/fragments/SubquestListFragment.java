@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
@@ -36,9 +37,10 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.subquests.AddSubquestTappedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubquestEvent;
-import io.ipoli.android.quest.events.UpdateQuestEvent;
+import io.ipoli.android.quest.events.subquests.SaveSubquestsRequestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -116,13 +118,19 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
 
     @Override
     public void onPause() {
-        saveSubquests();
+        if(getUserVisibleHint()) {
+            saveSubquests();
+        }
         eventBus.unregister(this);
         super.onPause();
     }
 
-    private void saveSubquests() {
+    @Subscribe
+    public void onSaveSubquestsRequest(SaveSubquestsRequestEvent e) {
+        saveSubquests();
+    }
 
+    private void saveSubquests() {
         eventBus.post(new UpdateQuestEvent(quest, adapter.getSubquests(), null, EventSource.SUBQUESTS));
     }
 

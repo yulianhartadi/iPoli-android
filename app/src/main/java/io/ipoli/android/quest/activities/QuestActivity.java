@@ -32,6 +32,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.subquests.SaveSubquestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubquestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -45,6 +46,8 @@ import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 public class QuestActivity extends BaseActivity {
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
     public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
+    private static final int TIMER_TAB_POSITION = 0;
+    private static final int SUBQUESTS_TAB_POSITION = 1;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -84,20 +87,16 @@ public class QuestActivity extends BaseActivity {
         initViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
-        viewPager.setCurrentItem(0);
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Quest quest = questPersistenceService.findById(questId);
-        ab.setTitle(quest.getName());
-        setBackgroundColors(Quest.getCategory(quest));
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
     private void initTabIcons() {
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_timer_white_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
-        colorNotSelectedTab(tabLayout.getTabAt(1));
+        tabLayout.getTabAt(TIMER_TAB_POSITION).setIcon(R.drawable.ic_timer_white_24dp);
+        tabLayout.getTabAt(SUBQUESTS_TAB_POSITION).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
+        colorNotSelectedTab(tabLayout.getTabAt(SUBQUESTS_TAB_POSITION));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -134,6 +133,25 @@ public class QuestActivity extends BaseActivity {
         adapter.addFragment(new TimerFragment());
         adapter.addFragment(new SubquestListFragment());
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(TIMER_TAB_POSITION);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position != SUBQUESTS_TAB_POSITION) {
+                    eventBus.post(new SaveSubquestsRequestEvent());
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void setBackgroundColors(Category category) {
@@ -145,6 +163,9 @@ public class QuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
+        Quest quest = questPersistenceService.findById(questId);
+        getSupportActionBar().setTitle(quest.getName());
+        setBackgroundColors(Quest.getCategory(quest));
     }
 
     @Override
