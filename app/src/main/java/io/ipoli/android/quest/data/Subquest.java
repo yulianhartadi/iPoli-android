@@ -13,7 +13,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class Subquest extends RealmObject implements RemoteObject<Subquest> {
+public class SubQuest extends RealmObject implements RemoteObject<SubQuest> {
 
     @Required
     @PrimaryKey
@@ -36,10 +36,10 @@ public class Subquest extends RealmObject implements RemoteObject<Subquest> {
     private String remoteId;
     private Boolean isDeleted;
 
-    public Subquest() {
+    public SubQuest() {
     }
 
-    public Subquest(String name) {
+    public SubQuest(String name) {
         this.id = IDGenerator.generate();
         this.name = name;
         this.isDeleted = false;

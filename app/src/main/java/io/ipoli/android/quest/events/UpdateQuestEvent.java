@@ -5,7 +5,7 @@ import java.util.List;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
-import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.data.SubQuest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -13,7 +13,7 @@ import io.ipoli.android.quest.data.Subquest;
  */
 public class UpdateQuestEvent {
     public final Quest quest;
-    public final List<Subquest> subquests;
+    public final List<SubQuest> subQuests;
     public final List<Reminder> reminders;
     public final EventSource source;
 
@@ -21,12 +21,12 @@ public class UpdateQuestEvent {
         this.quest = quest;
         this.reminders = reminders;
         this.source = source;
-        this.subquests = null;
+        this.subQuests = null;
     }
 
-    public UpdateQuestEvent(Quest quest, List<Subquest> subquests,  List<Reminder> reminders, EventSource source) {
+    public UpdateQuestEvent(Quest quest, List<SubQuest> subQuests, List<Reminder> reminders, EventSource source) {
         this.quest = quest;
-        this.subquests = subquests;
+        this.subQuests = subQuests;
         this.reminders = reminders;
         this.source = source;
     }

@@ -71,7 +71,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     private RealmList<Log> logs;
 
     private RealmList<Reminder> reminders;
-    private RealmList<Subquest> subquests;
+    private RealmList<SubQuest> subQuests;
     private RealmList<Tag> tags;
     private Integer difficulty;
 
@@ -109,7 +109,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.id = IDGenerator.generate();
         this.name = name;
         this.reminders = new RealmList<>();
-        this.subquests = new RealmList<>();
+        this.subQuests = new RealmList<>();
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
         this.originalStartDate = DateUtils.getDate(endDate);
@@ -145,12 +145,12 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.reminders = reminders;
     }
 
-    public RealmList<Subquest> getSubquests() {
-        return subquests;
+    public RealmList<SubQuest> getSubQuests() {
+        return subQuests;
     }
 
-    public void setSubquests(RealmList<Subquest> subquests) {
-        this.subquests = subquests;
+    public void setSubQuests(RealmList<SubQuest> subQuests) {
+        this.subQuests = subQuests;
     }
 
     public void setRawText(String rawText) {
@@ -451,8 +451,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
                 r.markDeleted();
             }
         }
-        if(getSubquests() != null) {
-            for(Subquest sq : getSubquests()) {
+        if(getSubQuests() != null) {
+            for(SubQuest sq : getSubQuests()) {
                 sq.markDeleted();
             }
         }
