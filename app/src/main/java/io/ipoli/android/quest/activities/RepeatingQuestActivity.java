@@ -23,7 +23,9 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
 import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +45,7 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -75,6 +78,9 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     @BindView(R.id.quest_next_scheduled_date)
     TextView nextScheduledDate;
+
+    @BindView(R.id.quest_frequency_interval)
+    TextView frequencyInterval;
 
     private RepeatingQuest repeatingQuest;
     private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
@@ -143,6 +149,8 @@ public class RepeatingQuestActivity extends BaseActivity {
             progressContainer.addView(progressViewEmpty);
         }
 
+        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
@@ -166,7 +174,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         YAxis leftAxis = history.getAxisLeft();
         leftAxis.setAxisMinValue(0f);
-        leftAxis.setAxisMaxValue(5);
+        leftAxis.setAxisMaxValue(getFrequency());
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
 
@@ -294,13 +302,31 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private int[] getColors() {
-
         int[] colors = new int[BAR_COUNT];
         Category category = RepeatingQuest.getCategory(repeatingQuest);
         for (int i = 0; i < BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
         return colors;
+    }
+
+    private int getFrequency() {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        if (recurrence.isFlexible()) {
+            return recurrence.getFlexibleCount();
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
+            return 7;
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return 1;
+        }
+        try {
+            Recur recur = new Recur(recurrence.getRrule());
+            return recur.getDayList().size();
+        } catch (ParseException e) {
+            return 0;
+        }
     }
 
 }
