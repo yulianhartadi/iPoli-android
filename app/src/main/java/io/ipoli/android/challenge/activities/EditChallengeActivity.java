@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -392,10 +391,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
             textView.setTag(text);
             textView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void showKeyboard() {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     @Override

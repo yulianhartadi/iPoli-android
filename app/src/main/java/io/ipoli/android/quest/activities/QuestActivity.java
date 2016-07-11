@@ -1,29 +1,29 @@
 package io.ipoli.android.quest.activities;
 
-import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NotificationManagerCompat;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.Chronometer;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
@@ -31,60 +31,41 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.commands.StartQuestCommand;
-import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.DoneQuestTapEvent;
-import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.StartQuestTapEvent;
-import io.ipoli.android.quest.events.StopQuestTapEvent;
+import io.ipoli.android.quest.events.subquests.SaveSubquestsRequestEvent;
+import io.ipoli.android.quest.fragments.SubquestListFragment;
+import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import io.ipoli.android.quest.ui.formatters.TimerFormatter;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/1/16.
  */
-public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener {
-
+public class QuestActivity extends BaseActivity {
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
     public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
+    private static final int TIMER_TAB_POSITION = 0;
+    private static final int SUBQUESTS_TAB_POSITION = 1;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
-    @BindView(R.id.quest_details_progress)
-    ProgressBar timerProgress;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindView(R.id.quest_details_timer)
-    FloatingActionButton timerButton;
+    @BindView(R.id.tabs)
+    TabLayout tabLayout;
 
-    @BindView(R.id.quest_details_time)
-    Chronometer timer;
-
-    @BindView(R.id.quest_details_name)
-    TextView name;
-
-    @BindView(R.id.quest_details_edit)
-    ImageButton edit;
-
-    QuestPersistenceService questPersistenceService;
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
 
     @Inject
     Bus eventBus;
 
-    private boolean questHasDuration;
-    private Quest quest;
-
-    private boolean isTimerRunning;
-    private int elapsedSeconds;
+    QuestPersistenceService questPersistenceService;
     private String questId;
-    private boolean afterOnCreate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +78,113 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         ButterKnife.bind(this);
         appComponent().inject(this);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
+        initViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+        initTabIcons();
+
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        afterOnCreate = true;
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
+    }
+
+    private void initTabIcons() {
+        tabLayout.getTabAt(TIMER_TAB_POSITION).setIcon(R.drawable.ic_timer_white_24dp);
+        tabLayout.getTabAt(SUBQUESTS_TAB_POSITION).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
+        colorNotSelectedTab(tabLayout.getTabAt(SUBQUESTS_TAB_POSITION));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                colorSelectedTab(tab);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                colorNotSelectedTab(tab);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
+
+    private void colorSelectedTab(TabLayout.Tab tab) {
+        colorTab(tab, R.color.md_white);
+    }
+
+    private void colorNotSelectedTab(TabLayout.Tab tab) {
+        colorTab(tab, R.color.md_light_text_54);
+    }
+
+    private void colorTab(TabLayout.Tab tab, @ColorRes int color) {
+        int tabIconColor = ContextCompat.getColor(this, color);
+        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+    }
+
+    private void initViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new TimerFragment());
+        adapter.addFragment(new SubquestListFragment());
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(TIMER_TAB_POSITION);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position != SUBQUESTS_TAB_POSITION) {
+                    eventBus.post(new SaveSubquestsRequestEvent());
+                }
+                hideKeyboard();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private void setBackgroundColors(Category category) {
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(this);
+        Quest quest = questPersistenceService.findById(questId);
+        getSupportActionBar().setTitle(quest.getName());
+        setBackgroundColors(Quest.getCategory(quest));
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        Quest q = questPersistenceService.findById(questId);
+        setBackgroundColors(Quest.getCategory(q));
+
+    }
+
+    @Subscribe
+    public void onLevelDown(LevelDownEvent e) {
+        showLevelDownMessage(e.newLevel);
     }
 
     @Override
@@ -110,203 +193,31 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         super.onDestroy();
     }
 
-    private void initUI() {
-        setBackgroundColors(Quest.getCategory(quest));
-        questHasDuration = quest.getDuration() > 0;
-        resetTimerUI();
-        elapsedSeconds = 0;
-        name.setText(quest.getName());
-    }
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> fragments = new ArrayList<>();
 
-    private void setBackgroundColors(Category category) {
-        rootContainer.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resDarkerColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkerColor));
-    }
-
-    private void resetTimerUI() {
-        timer.setBase(0);
-        int minuteDuration = questHasDuration ? quest.getDuration() : 0;
-        timer.setText(TimerFormatter.format(TimeUnit.MINUTES.toMillis(minuteDuration)));
-        timerProgress.setProgress(0);
-        long totalTime = questHasDuration ?
-                TimeUnit.MINUTES.toMillis(quest.getDuration()) :
-                TimeUnit.MINUTES.toMillis(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
-        timerProgress.setMax((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
-        timerProgress.setSecondaryProgress((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        eventBus.register(this);
-        Quest q = questPersistenceService.findById(questId);
-        Observable<Quest> questObservable = null;
-        if (afterOnCreate) {
-            afterOnCreate = false;
-            String action = getIntent().getAction();
-            if (ACTION_QUEST_CANCELED.equals(action)) {
-                questObservable = new StopQuestCommand(this, q, questPersistenceService).execute();
-            } else if (ACTION_START_QUEST.equals(action)) {
-                NotificationManagerCompat.from(this).cancel(getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-                questObservable = new StartQuestCommand(this, q, questPersistenceService).execute();
-            }
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
-        if (questObservable == null) {
-            questObservable = Observable.just(q);
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
         }
-        onQuestFound(questObservable);
-    }
 
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = questPersistenceService.findById(questId);
-        onQuestFound(Observable.just(q));
-    }
-
-    private void onQuestFound(Observable<Quest> questObservable) {
-        QuestNotificationScheduler.stopTimer(questId, this);
-        questObservable.subscribe(q -> {
-            this.quest = q;
-            initUI();
-            if (Quest.isStarted(quest)) {
-                elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
-                resumeTimer();
-                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-                edit.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    @Override
-    protected void onPause() {
-        eventBus.unregister(this);
-        if (isTimerRunning) {
-            stopTimer();
-            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStart().getTime());
-            boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
-            if (!isOverdue) {
-                QuestNotificationScheduler.scheduleUpdateTimer(questId, this);
-            }
+        @Override
+        public int getCount() {
+            return fragments.size();
         }
-        super.onPause();
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Constants.RESULT_REMOVED) {
-            finish();
+        public void addFragment(Fragment fragment) {
+            fragments.add(fragment);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return null;
         }
     }
 
-    private void startTimer() {
-        elapsedSeconds = 0;
-        resumeTimer();
-    }
-
-    private void resumeTimer() {
-        timer.setOnChronometerTickListener(this);
-        timer.start();
-        isTimerRunning = true;
-    }
-
-    private void stopTimer() {
-        timer.setOnChronometerTickListener(null);
-        timer.stop();
-        isTimerRunning = false;
-    }
-
-    @OnClick(R.id.quest_details_timer)
-    public void onTimerTap(View v) {
-        if (isTimerRunning) {
-            eventBus.post(new StopQuestTapEvent(quest));
-            stopTimer();
-            new StopQuestCommand(this, quest, questPersistenceService).execute().subscribe(q -> {
-                quest = q;
-                resetTimerUI();
-                timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
-                edit.setVisibility(View.VISIBLE);
-            });
-        } else {
-            eventBus.post(new StartQuestTapEvent(quest));
-            new StartQuestCommand(this, quest, questPersistenceService).execute().subscribe(q -> {
-                quest = q;
-                startTimer();
-                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-                edit.setVisibility(View.GONE);
-            });
-        }
-    }
-
-    @OnClick(R.id.quest_details_done)
-    public void onDoneTap(View v) {
-        eventBus.post(new DoneQuestTapEvent(quest));
-        stopTimer();
-        eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
-        long experience = quest.getExperience();
-        long coins = quest.getCoins();
-        Toast.makeText(this, getString(R.string.quest_complete, experience, coins), Toast.LENGTH_LONG).show();
-        finish();
-    }
-
-    @OnClick(R.id.quest_details_edit)
-    public void onEditTap(View v) {
-        eventBus.post(new EditQuestRequestEvent(quest, EventSource.QUEST));
-        Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        startActivityForResult(i, Constants.EDIT_QUEST_RESULT_REQUEST_CODE);
-    }
-
-    @Override
-    public void onChronometerTick(Chronometer chronometer) {
-        long nowMillis = quest.getActualStart().getTime() + TimeUnit.SECONDS.toMillis(elapsedSeconds);
-        long questDurationSeconds = TimeUnit.MINUTES.toSeconds(quest.getDuration());
-
-        timerProgress.setProgress((int) getTimerProgress(elapsedSeconds));
-
-        if (questHasDuration && isOverdue(questDurationSeconds)) {
-            showOverdueTime(questDurationSeconds);
-        } else if (questHasDuration) {
-            showCountDownTime(nowMillis);
-        } else {
-            showCountUpTime(nowMillis);
-        }
-
-        elapsedSeconds++;
-    }
-
-    @Subscribe
-    public void onLevelDown(LevelDownEvent e) {
-        showLevelDownMessage(e.newLevel);
-    }
-
-    private void showOverdueTime(long questDurationSeconds) {
-        long overdueMillis = TimeUnit.SECONDS.toMillis(elapsedSeconds - questDurationSeconds);
-        timer.setText("+" + TimerFormatter.format(overdueMillis));
-    }
-
-    private void showCountDownTime(long nowMillis) {
-        long endTimeMillis = quest.getActualStart().getTime() + TimeUnit.MINUTES.toMillis(quest.getDuration());
-        timer.setText(TimerFormatter.format(endTimeMillis - nowMillis));
-    }
-
-    private void showCountUpTime(long nowMillis) {
-        long timerMillis = nowMillis - quest.getActualStart().getTime();
-        timer.setText(TimerFormatter.format(timerMillis));
-    }
-
-    private boolean isOverdue(long questDurationSeconds) {
-        return questDurationSeconds < elapsedSeconds;
-    }
-
-    private long getTimerProgress(long elapsedSeconds) {
-        if (questHasDuration) {
-            // the progress is set to max if elapsed seconds is larger than max progress
-            return elapsedSeconds;
-        } else {
-            long defaultDurationSeconds = TimeUnit.MINUTES.toSeconds(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
-            return elapsedSeconds % defaultDurationSeconds;
-        }
-    }
 }
