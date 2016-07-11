@@ -275,7 +275,7 @@
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
     <string name="activity_quest_title">Quest</string>
-    <string name="add_sub_quest">Add sub quest</string>
+    <string name="add_sub_quest">Add sub-quest</string>
     <string name="help_dialog_quest_title">Manage your quest</string>
     <string name="help_dialog_quest_text1">From this screen you can:</string>
     <string name="help_dialog_quest_track_time">Use the timer to track how you spend your time</string>
