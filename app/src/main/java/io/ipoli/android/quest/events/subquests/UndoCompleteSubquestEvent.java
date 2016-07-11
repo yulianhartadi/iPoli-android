@@ -1,15 +1,15 @@
 package io.ipoli.android.quest.events.subquests;
 
-import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.data.SubQuest;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 7/11/16.
  */
 public class UndoCompleteSubquestEvent {
-    public final Subquest subquest;
+    public final SubQuest subQuest;
 
-    public UndoCompleteSubquestEvent(Subquest subquest) {
-        this.subquest = subquest;
+    public UndoCompleteSubquestEvent(SubQuest subQuest) {
+        this.subQuest = subQuest;
     }
 }

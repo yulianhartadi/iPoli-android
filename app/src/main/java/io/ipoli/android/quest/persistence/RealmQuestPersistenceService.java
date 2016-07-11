@@ -12,7 +12,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -301,27 +301,27 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public void saveSubquests(Quest quest, List<Subquest> subquests) {
-        saveSubquests(quest, subquests, true);
+    public void saveSubQuests(Quest quest, List<SubQuest> subQuests) {
+        saveSubQuests(quest, subQuests, true);
     }
 
     @Override
-    public void saveSubquests(Quest quest, List<Subquest> subquests, boolean markUpdated) {
+    public void saveSubQuests(Quest quest, List<SubQuest> subQuests, boolean markUpdated) {
         getRealm().executeTransaction(realm -> {
             if (markUpdated) {
-                for (Subquest sq : subquests) {
+                for (SubQuest sq : subQuests) {
                     sq.markUpdated();
                 }
             }
-            if (quest.getSubquests() != null && !quest.getSubquests().isEmpty()) {
-                RealmList<Subquest> realmSubquests = realm.where(getRealmObjectClass()).equalTo("id", quest.getId()).findFirst().getSubquests();
-                if (realmSubquests != null) {
-                    realmSubquests.deleteAllFromRealm();
+            if (quest.getSubQuests() != null && !quest.getSubQuests().isEmpty()) {
+                RealmList<SubQuest> realmSubQuests = realm.where(getRealmObjectClass()).equalTo("id", quest.getId()).findFirst().getSubQuests();
+                if (realmSubQuests != null) {
+                    realmSubQuests.deleteAllFromRealm();
                 }
             }
-            RealmList<Subquest> subquestRealmList = new RealmList<>();
-            subquestRealmList.addAll(subquests);
-            quest.setSubquests(subquestRealmList);
+            RealmList<SubQuest> subQuestRealmList = new RealmList<>();
+            subQuestRealmList.addAll(subQuests);
+            quest.setSubQuests(subQuestRealmList);
         });
     }
 
@@ -345,8 +345,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                             if (quest.getReminders() != null) {
                                 quest.getReminders().deleteAllFromRealm();
                             }
-                            if(quest.getSubquests() != null) {
-                                quest.getSubquests().deleteAllFromRealm();
+                            if(quest.getSubQuests() != null) {
+                                quest.getSubQuests().deleteAllFromRealm();
                             }
                         }
                         results.deleteAllFromRealm();
