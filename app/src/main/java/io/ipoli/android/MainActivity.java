@@ -66,7 +66,6 @@ import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
@@ -156,8 +155,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
-
-        startActivity(new Intent(this, RepeatingQuestActivity.class));
     }
 
     @Override
