@@ -648,30 +648,30 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNewSubquest(NewSubquestEvent e) {
         log("new_subquest", EventParams.create()
-        .add("name", e.subquest.getName())
+        .add("name", e.subQuest.getName())
         .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
     public void onDeleteSubquest(DeleteSubquestEvent e) {
         log("delete_subquest", EventParams.create()
-                .add("name", e.subquest.getName())
+                .add("name", e.subQuest.getName())
                 .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
     public void onCompleteSubquest(CompleteSubquestEvent e) {
-        log("complete_subquest", EventParams.of("name", e.subquest.getName()));
+        log("complete_subquest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
     public void onUndoCompleteSubquest(UndoCompleteSubquestEvent e) {
-        log("undo_completed_subquest", EventParams.of("name", e.subquest.getName()));
+        log("undo_completed_subquest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
     public void onUpdateSubquestName(UpdateSubquestNameEvent e) {
-        log("update_subquest_name", EventParams.of("name", e.subquest.getName()));
+        log("update_subquest_name", EventParams.of("name", e.subQuest.getName()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

@@ -33,7 +33,7 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.subquests.SaveSubquestsRequestEvent;
-import io.ipoli.android.quest.fragments.SubquestListFragment;
+import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -131,7 +131,7 @@ public class QuestActivity extends BaseActivity {
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new TimerFragment());
-        adapter.addFragment(new SubquestListFragment());
+        adapter.addFragment(new SubQuestListFragment());
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(TIMER_TAB_POSITION);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

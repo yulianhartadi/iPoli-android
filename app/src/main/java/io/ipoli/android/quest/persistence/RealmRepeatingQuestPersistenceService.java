@@ -10,7 +10,7 @@ import io.ipoli.android.app.persistence.BaseRealmPersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -91,6 +91,15 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
+    public void setReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
+        getRealm().executeTransaction(realm -> {
+            RealmList<Reminder> reminderRealmList = new RealmList<>();
+            reminderRealmList.addAll(reminders);
+            repeatingQuest.setReminders(reminderRealmList);
+        });
+    }
+
+    @Override
     public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
         saveReminders(repeatingQuest, reminders, true);
     }
@@ -116,27 +125,35 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    public void saveSubquests(RepeatingQuest repeatingQuest, List<Subquest> subquests) {
-        saveSubquests(repeatingQuest, subquests, true);
+    public void setSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests) {
+        getRealm().executeTransaction(realm -> {
+            RealmList<SubQuest> subquestRealmList = new RealmList<>();
+            subquestRealmList.addAll(subQuests);
+            repeatingQuest.setSubQuests(subquestRealmList);
+        });
+    }
+
+    public void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests) {
+        saveSubQuests(repeatingQuest, subQuests, true);
     }
 
     @Override
-    public void saveSubquests(RepeatingQuest repeatingQuest, List<Subquest> subquests, boolean markUpdated) {
+    public void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests, boolean markUpdated) {
         getRealm().executeTransaction(realm -> {
             if (markUpdated) {
-                for (Subquest sq : subquests) {
+                for (SubQuest sq : subQuests) {
                     sq.markUpdated();
                 }
             }
-            if (repeatingQuest.getSubquests() != null && !repeatingQuest.getSubquests().isEmpty()) {
-                RealmList<Subquest> realmSubquests = realm.where(getRealmObjectClass()).equalTo("id", repeatingQuest.getId()).findFirst().getSubquests();
-                if (realmSubquests != null) {
-                    realmSubquests.deleteAllFromRealm();
+            if (repeatingQuest.getSubQuests() != null && !repeatingQuest.getSubQuests().isEmpty()) {
+                RealmList<SubQuest> realmSubQuests = realm.where(getRealmObjectClass()).equalTo("id", repeatingQuest.getId()).findFirst().getSubQuests();
+                if (realmSubQuests != null) {
+                    realmSubQuests.deleteAllFromRealm();
                 }
             }
-            RealmList<Subquest> subquestRealmList = new RealmList<>();
-            subquestRealmList.addAll(subquests);
-            repeatingQuest.setSubquests(subquestRealmList);
+            RealmList<SubQuest> subQuestRealmList = new RealmList<>();
+            subQuestRealmList.addAll(subQuests);
+            repeatingQuest.setSubQuests(subQuestRealmList);
         });
     }
 }

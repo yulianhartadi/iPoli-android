@@ -25,7 +25,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.subquests.CompleteSubquestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubquestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubquestEvent;
@@ -36,19 +36,18 @@ import io.realm.RealmList;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapter.ViewHolder> {
+public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapter.ViewHolder> {
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
     protected Context context;
     protected final Bus evenBus;
-    protected List<Subquest> subquests;
+    protected List<SubQuest> subQuests;
 
-    public SubquestListAdapter(Context context, Bus evenBus, List<Subquest> subquests) {
+    public SubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
         this.context = context;
         this.evenBus = evenBus;
-        this.subquests = subquests;
+        this.subQuests = subQuests;
         viewBinderHelper.setOpenOnlyOne(true);
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -58,7 +57,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Subquest sq = subquests.get(holder.getAdapterPosition());
+        final SubQuest sq = subQuests.get(holder.getAdapterPosition());
 
         viewBinderHelper.bind(holder.swipeLayout, sq.getId());
         holder.swipeLayout.close(false);
@@ -114,7 +113,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
     }
 
     private void removeSubquest(int position) {
-        subquests.remove(position);
+        subQuests.remove(position);
         notifyItemRemoved(position);
     }
 
@@ -128,22 +127,22 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
 
     @Override
     public int getItemCount() {
-        return subquests.size();
+        return subQuests.size();
     }
 
-    public void addSubquest(Subquest subquest) {
-        subquests.add(subquest);
-        notifyItemInserted(subquests.size() - 1);
+    public void addSubquest(SubQuest subQuest) {
+        subQuests.add(subQuest);
+        notifyItemInserted(subQuests.size() - 1);
     }
 
-    public void setSubquests(RealmList<Subquest> subquests) {
-        this.subquests.clear();
-        this.subquests.addAll(subquests);
+    public void setSubQuests(RealmList<SubQuest> subQuests) {
+        this.subQuests.clear();
+        this.subQuests.addAll(subQuests);
         notifyDataSetChanged();
     }
 
-    public List<Subquest> getSubquests() {
-        return subquests;
+    public List<SubQuest> getSubQuests() {
+        return subQuests;
     }
 
 
