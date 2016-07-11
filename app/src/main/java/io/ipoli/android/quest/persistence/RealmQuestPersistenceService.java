@@ -275,6 +275,16 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public void setReminders(Quest quest, List<Reminder> reminders) {
+        getRealm().executeTransaction(realm -> {
+            RealmList<Reminder> reminderRealmList = new RealmList<>();
+            reminderRealmList.addAll(reminders);
+            quest.setReminders(reminderRealmList);
+            quest.updateRemindersStartTime();
+        });
+    }
+
+    @Override
     public void saveReminders(Quest quest, List<Reminder> reminders) {
         saveReminders(quest, reminders, true);
     }
@@ -301,12 +311,21 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public void saveSubquests(Quest quest, List<Subquest> subquests) {
-        saveSubquests(quest, subquests, true);
+    public void setSubQuests(Quest quest, List<Subquest> subquests) {
+        getRealm().executeTransaction(realm -> {
+           RealmList<Subquest> subquestRealmList = new RealmList<>();
+            subquestRealmList.addAll(subquests);
+            quest.setSubquests(subquestRealmList);
+        });
     }
 
     @Override
-    public void saveSubquests(Quest quest, List<Subquest> subquests, boolean markUpdated) {
+    public void saveSubQuests(Quest quest, List<Subquest> subquests) {
+        saveSubQuests(quest, subquests, true);
+    }
+
+    @Override
+    public void saveSubQuests(Quest quest, List<Subquest> subquests, boolean markUpdated) {
         getRealm().executeTransaction(realm -> {
             if (markUpdated) {
                 for (Subquest sq : subquests) {

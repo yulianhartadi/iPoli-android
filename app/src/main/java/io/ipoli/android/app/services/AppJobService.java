@@ -269,7 +269,7 @@ public class AppJobService extends JobService {
             updateServerReminders(sq.getReminders(), localQuest.getReminders());
             questPersistenceService.saveReminders(localQuest, sq.getReminders(), false);
             updateServerSubquests(sq.getSubquests(), localQuest.getSubquests());
-            questPersistenceService.saveSubquests(localQuest, sq.getSubquests(), false);
+            questPersistenceService.saveSubQuests(localQuest, sq.getSubquests(), false);
             updateQuest(challengePersistenceService, repeatingQuestPersistenceService, sq, localId);
         }
         questPersistenceService.saveSync(serverQuests, false);
@@ -340,7 +340,7 @@ public class AppJobService extends JobService {
             updateServerReminders(sq.getReminders(), repeatingQuest.getReminders());
             repeatingQuestPersistenceService.saveReminders(repeatingQuest, sq.getReminders(), false);
             updateServerSubquests(sq.getSubquests(), repeatingQuest.getSubquests());
-            repeatingQuestPersistenceService.saveSubquests(repeatingQuest, sq.getSubquests(), false);
+            repeatingQuestPersistenceService.saveSubQuests(repeatingQuest, sq.getSubquests(), false);
             updateRepeatingQuest(challengePersistenceService, sq, localIds.get(i));
         }
         repeatingQuestPersistenceService.saveSync(serverQuests, false);
@@ -387,7 +387,7 @@ public class AppJobService extends JobService {
                 updateServerReminders(sq.getReminders(), repeatingQuest.getReminders());
                 repeatingQuestPersistenceService.saveReminders(repeatingQuest, sq.getReminders(), false);
                 updateServerSubquests(sq.getSubquests(), repeatingQuest.getSubquests());
-                repeatingQuestPersistenceService.saveSubquests(repeatingQuest, sq.getSubquests(), false);
+                repeatingQuestPersistenceService.saveSubQuests(repeatingQuest, sq.getSubquests(), false);
             } else {
                 int notificationId = new Random().nextInt();
                 for (Reminder r : sq.getReminders()) {
@@ -395,13 +395,13 @@ public class AppJobService extends JobService {
                     r.setId(IDGenerator.generate());
                     r.setNotificationId(notificationId);
                 }
-                repeatingQuestPersistenceService.saveReminders(sq, sq.getReminders(), false);
+                repeatingQuestPersistenceService.setReminders(sq, sq.getReminders());
 
                 for(Subquest s : sq.getSubquests()) {
                     s.setRemoteId(s.getId());
                     s.setId(IDGenerator.generate());
                 }
-                repeatingQuestPersistenceService.saveSubquests(repeatingQuest, sq.getSubquests(), false);
+                repeatingQuestPersistenceService.setSubQuests(sq, sq.getSubquests());
             }
             questsToSave.add(updateRepeatingQuest(challengePersistenceService, sq, localId));
         }
@@ -421,7 +421,7 @@ public class AppJobService extends JobService {
                 updateServerReminders(sq.getReminders(), quest.getReminders());
                 questPersistenceService.saveReminders(quest, sq.getReminders(), false);
                 updateServerSubquests(sq.getSubquests(), quest.getSubquests());
-                questPersistenceService.saveSubquests(quest, sq.getSubquests(), false);
+                questPersistenceService.saveSubQuests(quest, sq.getSubquests(), false);
             } else {
                 int notificationId = new Random().nextInt();
                 for (Reminder r : sq.getReminders()) {
@@ -429,13 +429,13 @@ public class AppJobService extends JobService {
                     r.setId(IDGenerator.generate());
                     r.setNotificationId(notificationId);
                 }
-                questPersistenceService.saveReminders(sq, sq.getReminders(), false);
+                questPersistenceService.setReminders(sq, sq.getReminders());
 
                 for(Subquest s : sq.getSubquests()) {
                     s.setRemoteId(s.getId());
                     s.setId(IDGenerator.generate());
                 }
-                questPersistenceService.saveSubquests(sq, sq.getSubquests(), false);
+                questPersistenceService.setSubQuests(sq, sq.getSubquests());
             }
             questsToSave.add(updateQuest(challengePersistenceService, repeatingQuestPersistenceService, sq, localId));
         }
