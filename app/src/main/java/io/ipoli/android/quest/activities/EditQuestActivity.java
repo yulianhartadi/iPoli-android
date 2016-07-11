@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.activities;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -508,18 +506,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setSelection(result.name.length());
         questText.clearFocus();
         hideKeyboard();
-    }
-
-    private void showKeyboard() {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-    }
-
-    private void hideKeyboard() {
-        View view = getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 
     private void populateFrequency(QuestParser.QuestParserResult result) {

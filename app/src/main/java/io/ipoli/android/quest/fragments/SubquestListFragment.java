@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.fragments;
 
 
-import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -173,14 +171,6 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         view.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.transparent), PorterDuff.Mode.SRC_IN);
     }
 
-    protected void hideKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
     @OnEditorAction(R.id.add_subquest)
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
@@ -201,10 +191,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         Subquest sq = new Subquest(name);
         adapter.addSubquest(sq);
         eventBus.post(new NewSubquestEvent(sq, EventSource.SUBQUESTS));
-        setAddSubquestInViewMode();
-        //if many subquests focus is going to one of them after clearFocus()
-        listContainer.requestFocus();
-        hideKeyboard();
+        setAddSubquestInEditMode();
     }
 
     @Override

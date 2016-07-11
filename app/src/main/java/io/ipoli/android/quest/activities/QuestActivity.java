@@ -145,6 +145,7 @@ public class QuestActivity extends BaseActivity {
                 if(position != SUBQUESTS_TAB_POSITION) {
                     eventBus.post(new SaveSubquestsRequestEvent());
                 }
+                hideKeyboard();
             }
 
             @Override
