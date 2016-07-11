@@ -98,12 +98,12 @@
                     android:src="@drawable/ic_timer_white_24dp" />
 
                 <TextView
+                    android:id="@+id/quest_interval_duration"
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="4dp"
-                    android:text="4h 35m" />
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
             <LinearLayout

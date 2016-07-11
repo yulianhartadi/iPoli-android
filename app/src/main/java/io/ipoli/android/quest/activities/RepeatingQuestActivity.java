@@ -40,11 +40,13 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 
 /**
@@ -81,6 +83,9 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     @BindView(R.id.quest_frequency_interval)
     TextView frequencyInterval;
+
+    @BindView(R.id.quest_interval_duration)
+    TextView intervalDuration;
 
     private RepeatingQuest repeatingQuest;
     private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
@@ -119,20 +124,29 @@ public class RepeatingQuestActivity extends BaseActivity {
         displayRepeatingQuest();
     }
 
-    private long findCompletedForCurrentInterval() {
+    private Pair<LocalDate, LocalDate> getCurrentInterval() {
         LocalDate today = LocalDate.now();
         if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            return questPersistenceService.countCompletedQuests(repeatingQuest, today.dayOfMonth().withMinimumValue(), today.dayOfMonth().withMaximumValue());
+            return new Pair<>(today.dayOfMonth().withMinimumValue(), today.dayOfMonth().withMaximumValue());
         } else {
-            return questPersistenceService.countCompletedQuests(repeatingQuest, today.dayOfWeek().withMinimumValue(), today.dayOfWeek().withMaximumValue());
+            return new Pair<>(today.dayOfWeek().withMinimumValue(), today.dayOfWeek().withMaximumValue());
         }
+    }
+
+    private long findCompletedForCurrentInterval() {
+        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
+        return questPersistenceService.countCompletedQuests(repeatingQuest, interval.first, interval.second);
     }
 
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-        showFrequencyProgress(category);
+        long completed = findCompletedForCurrentInterval();
+        showFrequencyProgress(category, completed);
+
+        int timeSpent = (int) getTotalTimeSpent(completed);
+        intervalDuration.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
@@ -146,11 +160,21 @@ public class RepeatingQuestActivity extends BaseActivity {
         setupChart();
     }
 
-    private void showFrequencyProgress(Category category) {
+    private long getTotalTimeSpent(long completed) {
+        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
+        List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest, interval.first, interval.second);
+
+        long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
+        for (Quest completedQuest : completedWithStartTime) {
+            totalTime += completedQuest.getActualDuration();
+        }
+        return totalTime;
+    }
+
+    private void showFrequencyProgress(Category category, long completed) {
         LayoutInflater inflater = LayoutInflater.from(this);
 
         int frequency = getFrequency();
-        long completed = findCompletedForCurrentInterval();
         if (frequency > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
             progressText.setText(completed + " completed this month");
