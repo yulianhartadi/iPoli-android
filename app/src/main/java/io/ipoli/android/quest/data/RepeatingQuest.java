@@ -47,7 +47,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     private Integer duration;
     private RealmList<Reminder> reminders;
-    private RealmList<Subquest> subquests;
+    private RealmList<SubQuest> subQuests;
 
     private Recurrence recurrence;
 
@@ -108,7 +108,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.updatedAt = DateUtils.nowUTC();
         this.category = Category.PERSONAL.name();
         this.reminders = new RealmList<>();
-        this.subquests = new RealmList<>();
+        this.subQuests = new RealmList<>();
         this.flexibleStartTime = false;
         this.needsSyncWithRemote = true;
         this.source = Constants.API_RESOURCE_SOURCE;
@@ -173,12 +173,12 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         setUpdatedAt(DateUtils.nowUTC());
     }
 
-    public RealmList<Subquest> getSubquests() {
-        return subquests;
+    public RealmList<SubQuest> getSubQuests() {
+        return subQuests;
     }
 
-    public void setSubquests(RealmList<Subquest> subquests) {
-        this.subquests = subquests;
+    public void setSubQuests(RealmList<SubQuest> subQuests) {
+        this.subQuests = subQuests;
     }
 
     public Date getUpdatedAt() {
@@ -253,8 +253,8 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
                 r.markDeleted();
             }
         }
-        if(getSubquests() != null) {
-            for(Subquest sq : getSubquests()) {
+        if(getSubQuests() != null) {
+            for(SubQuest sq : getSubQuests()) {
                 sq.markDeleted();
             }
         }

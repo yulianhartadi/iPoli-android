@@ -354,8 +354,8 @@ public class App extends MultiDexApplication {
         if(e.reminders != null) {
             questPersistenceService.saveReminders(e.quest, e.reminders);
         }
-        if(e.subquests != null) {
-            questPersistenceService.saveSubquests(e.quest, e.subquests);
+        if(e.subQuests != null) {
+            questPersistenceService.saveSubQuests(e.quest, e.subQuests);
         }
         questPersistenceService.save(e.quest).subscribe(quest -> {
             if (Quest.isCompleted(quest)) {
