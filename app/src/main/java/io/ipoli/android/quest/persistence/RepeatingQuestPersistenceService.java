@@ -6,6 +6,7 @@ import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.Subquest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,4 +27,8 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
 
     void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders, boolean markUpdated);
+
+    void saveSubquests(RepeatingQuest repeatingQuest, List<Subquest> subquests);
+
+    void saveSubquests(RepeatingQuest repeatingQuest, List<Subquest> subquests, boolean markUpdated);
 }
