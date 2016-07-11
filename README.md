@@ -6,9 +6,9 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # How does it look like?
 
-<img src="./github/screens/welcome.png" width="280px"/>
 <img src="./github/screens/calendar.png" width="280px"/>
-<img src="./github/screens/overview.png" width="280px"/>
+<img src="./github/screens/edit.png" width="280px"/>
+<img src="./github/screens/growth.png" width="280px"/>
 
 # Want to watch it in action?
 
@@ -56,12 +56,12 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 * Smart Add - adding tasks using natural language
 * Recurrent tasks/habits
 * Background sync between device(s) and server
-* Automatic task scheduling - find the best slot (time) to start/do a task
+* Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
+* Sync with Google Calendar/Outlook (something else?)
 
 # Upcoming
 
-* Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
-* Sync with Google Calendar/Outlook (something else?)
+* Automatic task scheduling - find the best slot (time) to start/do a task
 
 # Libraries used
 
