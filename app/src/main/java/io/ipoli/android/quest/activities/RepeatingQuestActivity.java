@@ -236,9 +236,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, monthPair.first, monthPair.second), i));
         }
 
-        BarDataSet dataSet;
-
-        dataSet = new BarDataSet(yValues, "DataSet");
+        BarDataSet dataSet = new BarDataSet(yValues, "DataSet");
         dataSet.setColors(getColors());
         dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
@@ -260,12 +258,10 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, weekPair.first, weekPair.second), i));
+            yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, weekPair.first, weekPair.second.plusDays(1)), i));
         }
 
-        BarDataSet dataSet;
-
-        dataSet = new BarDataSet(yValues, "DataSet");
+        BarDataSet dataSet = new BarDataSet(yValues, "DataSet");
         dataSet.setColors(getColors());
         dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
@@ -279,7 +275,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     @NonNull
     private List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
-        LocalDate monthStart = currentDate.minusMonths(4).dayOfMonth().withMinimumValue();
+        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
         LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
 
         List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
@@ -300,8 +296,8 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
         weekBounds.add(new Pair<>(weekStart, weekEnd));
         for (int i = 0; i < 3; i++) {
-            weekStart = weekStart.minusDays(7);
-            weekEnd = weekEnd.minusDays(7);
+            weekStart = weekStart.plusDays(7);
+            weekEnd = weekEnd.plusDays(7);
             weekBounds.add(new Pair<>(weekStart, weekEnd));
         }
         return weekBounds;
