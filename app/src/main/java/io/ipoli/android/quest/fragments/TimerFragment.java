@@ -30,6 +30,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -99,6 +100,11 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     @Override
     protected boolean useOptionsMenu() {
         return true;
+    }
+
+    @Override
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_quest, R.string.help_dialog_quest_title, "quest").show(getActivity().getSupportFragmentManager());
     }
 
     private void initUI() {
