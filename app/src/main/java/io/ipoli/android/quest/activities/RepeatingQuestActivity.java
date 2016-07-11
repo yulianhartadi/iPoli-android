@@ -50,6 +50,8 @@ import io.ipoli.android.quest.ui.formatters.DateFormatter;
  */
 public class RepeatingQuestActivity extends BaseActivity {
 
+    public static final int BAR_COUNT = 4;
+
     @BindView(R.id.repeating_quest_progress_container)
     ViewGroup progressContainer;
 
@@ -77,7 +79,6 @@ public class RepeatingQuestActivity extends BaseActivity {
     private RepeatingQuest repeatingQuest;
     private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
     private RealmQuestPersistenceService questPersistenceService;
-    public static final int BAR_COUNT = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,7 +197,29 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void setMonthlyHistoryData() {
+        List<BarEntry> yValues = new ArrayList<>();
+        List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
+        for (int i = 0; i < BAR_COUNT; i++) {
+            Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
+            yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, monthPair.first, monthPair.second), i));
+        }
 
+        BarDataSet dataSet;
+
+        dataSet = new BarDataSet(yValues, "DataSet");
+        dataSet.setColors(getColors());
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+
+        List<String> xValues = new ArrayList<>();
+        xValues.add(getMonthText(monthPairs.get(0).first));
+        xValues.add(getMonthText(monthPairs.get(1).first));
+        xValues.add(getMonthText(monthPairs.get(2).first));
+        xValues.add("this month");
+        setHistoryData(dataSet, xValues);
+    }
+
+    private String getMonthText(LocalDate date) {
+        return date.monthOfYear().getAsShortText();
     }
 
     private void setWeeklyHistoryData() {
@@ -220,6 +243,21 @@ public class RepeatingQuestActivity extends BaseActivity {
         xValues.add("last week");
         xValues.add("this week");
         setHistoryData(dataSet, xValues);
+    }
+
+    @NonNull
+    private List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
+        LocalDate monthStart = currentDate.minusMonths(4).dayOfMonth().withMinimumValue();
+        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
+        monthBounds.add(new Pair<>(monthStart, monthEnd));
+        for (int i = 0; i < 3; i++) {
+            monthStart = monthStart.plusMonths(1);
+            monthEnd = monthStart.dayOfMonth().withMaximumValue();
+            monthBounds.add(new Pair<>(monthStart, monthEnd));
+        }
+        return monthBounds;
     }
 
     @NonNull
