@@ -15,6 +15,7 @@ import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -22,6 +23,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Subquest;
 import io.realm.RealmList;
 
@@ -72,9 +74,11 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         holder.check.setChecked(sq.isCompleted());
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                sq.setCompleted(true);
+                sq.setCompletedAt(new Date());
+                sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
             } else {
-                sq.setCompleted(false);
+                sq.setCompletedAt(null);
+                sq.setCompletedAtMinute(null);
             }
         });
 

@@ -22,7 +22,9 @@ public class Subquest extends RealmObject implements RemoteObject<Subquest> {
     @Required
     private String name;
 
-    private boolean isCompleted;
+    private Date completedAt;
+
+    private Integer completedAtMinute;
 
     @Required
     private Date createdAt;
@@ -40,7 +42,6 @@ public class Subquest extends RealmObject implements RemoteObject<Subquest> {
     public Subquest(String name) {
         this.id = IDGenerator.generate();
         this.name = name;
-        this.isCompleted = false;
         this.isDeleted = false;
         this.needsSyncWithRemote = true;
         createdAt = DateUtils.nowUTC();
@@ -123,11 +124,23 @@ public class Subquest extends RealmObject implements RemoteObject<Subquest> {
         this.name = name;
     }
 
-    public boolean isCompleted() {
-        return isCompleted;
+    public Date getCompletedAt() {
+        return completedAt;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public void setCompletedAt(Date completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    public Integer getCompletedAtMinute() {
+        return completedAtMinute;
+    }
+
+    public void setCompletedAtMinute(Integer completedAtMinute) {
+        this.completedAtMinute = completedAtMinute;
+    }
+
+    public boolean isCompleted() {
+        return getCompletedAt() != null;
     }
 }
