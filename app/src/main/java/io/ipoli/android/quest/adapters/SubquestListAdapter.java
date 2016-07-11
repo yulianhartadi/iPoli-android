@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
@@ -25,8 +26,8 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Subquest;
-import io.ipoli.android.quest.events.subquests.DeleteSubquestEvent;
 import io.ipoli.android.quest.events.subquests.CompleteSubquestEvent;
+import io.ipoli.android.quest.events.subquests.DeleteSubquestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubquestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubquestNameEvent;
 import io.realm.RealmList;
@@ -78,22 +79,28 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
 
         holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
-        holder.check.setChecked(sq.isCompleted());
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 sq.setCompletedAt(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+                holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 evenBus.post(new CompleteSubquestEvent(sq));
             } else {
                 sq.setCompletedAt(null);
                 sq.setCompletedAtMinute(null);
+                holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                 evenBus.post(new UndoCompleteSubquestEvent(sq));
             }
         });
+        holder.check.setChecked(sq.isCompleted());
 
         hideUnderline(holder.name);
         holder.name.setOnFocusChangeListener((view, isFocused) -> {
             if (isFocused) {
+                if(sq.isCompleted()) {
+                    holder.name.clearFocus();
+                    return;
+                }
                 showUnderline(holder.name);
                 holder.name.requestFocus();
             } else {
