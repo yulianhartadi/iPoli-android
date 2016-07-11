@@ -84,11 +84,13 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
                 sq.setCompletedAt(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
                 holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                holder.name.setEnabled(false);
                 evenBus.post(new CompleteSubquestEvent(sq));
             } else {
                 sq.setCompletedAt(null);
                 sq.setCompletedAtMinute(null);
                 holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                holder.name.setEnabled(true);
                 evenBus.post(new UndoCompleteSubquestEvent(sq));
             }
         });
