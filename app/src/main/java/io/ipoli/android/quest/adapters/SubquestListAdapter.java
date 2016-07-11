@@ -25,6 +25,10 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.events.subquests.DeleteSubquestEvent;
+import io.ipoli.android.quest.events.subquests.CompleteSubquestEvent;
+import io.ipoli.android.quest.events.subquests.UndoCompleteSubquestEvent;
+import io.ipoli.android.quest.events.subquests.UpdateSubquestNameEvent;
 import io.realm.RealmList;
 
 /**
@@ -67,7 +71,10 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
         });
 
 
-        holder.deleteSubquest.setOnClickListener(iv -> removeSubquest(holder.getAdapterPosition()));
+        holder.deleteSubquest.setOnClickListener(iv -> {
+            removeSubquest(holder.getAdapterPosition());
+            evenBus.post(new DeleteSubquestEvent(sq, EventSource.SUBQUESTS));
+        });
 
         holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
@@ -76,9 +83,11 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
             if (isChecked) {
                 sq.setCompletedAt(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+                evenBus.post(new CompleteSubquestEvent(sq));
             } else {
                 sq.setCompletedAt(null);
                 sq.setCompletedAtMinute(null);
+                evenBus.post(new UndoCompleteSubquestEvent(sq));
             }
         });
 
@@ -90,6 +99,7 @@ public class SubquestListAdapter extends RecyclerView.Adapter<SubquestListAdapte
             } else {
                 hideUnderline(holder.name);
                 sq.setName(holder.name.getText().toString());
+                evenBus.post(new UpdateSubquestNameEvent(sq));
             }
         });
     }

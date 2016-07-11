@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -37,6 +36,8 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.SubquestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Subquest;
+import io.ipoli.android.quest.events.subquests.AddSubquestTappedEvent;
+import io.ipoli.android.quest.events.subquests.NewSubquestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -77,26 +78,11 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subquestList.setLayoutManager(layoutManager);
 
-        List<Subquest> subquests = new ArrayList<>();
-//        subquests.add(new Subquest("Socks"));
-//        subquests.add(new Subquest("Bananas"));
-//        subquests.add(new Subquest("Crocodile"));
-//        subquests.add(new Subquest("Apples"));
-//        subquests.add(new Subquest("Cunka"));
-//        subquests.add(new Subquest("Tomatoes"));
-//        subquests.add(new Subquest("Ice cream"));
-//        subquests.add(new Subquest("Pencil"));
-//        subquests.add(new Subquest("Books"));
-//        subquests.add(new Subquest("Chocolate"));
-//        subquests.add(new Subquest("Milk"));
-//        subquests.add(new Subquest("Ball"));
-//        subquests.add(new Subquest("Table"));
-
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, this);
 
-        adapter = new SubquestListAdapter(getContext(), eventBus, subquests);
+        adapter = new SubquestListAdapter(getContext(), eventBus, new ArrayList<>());
         subquestList.setAdapter(adapter);
 
         hideUnderline(addSubquest);
@@ -152,6 +138,7 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
                 setAddSubquestInEditMode();
             }
             addSubquest.requestFocus();
+            eventBus.post(new AddSubquestTappedEvent(EventSource.SUBQUESTS));
         } else {
             hideUnderline(addSubquest);
             if (StringUtils.isEmpty(text)) {
@@ -202,7 +189,10 @@ public class SubquestListFragment extends BaseFragment implements View.OnFocusCh
         if(StringUtils.isEmpty(name)) {
             return;
         }
-        adapter.addSubquest(new Subquest(name));
+
+        Subquest sq = new Subquest(name);
+        adapter.addSubquest(sq);
+        eventBus.post(new NewSubquestEvent(sq, EventSource.SUBQUESTS));
         setAddSubquestInViewMode();
         //if many subquests focus is going to one of them after clearFocus()
         listContainer.requestFocus();
