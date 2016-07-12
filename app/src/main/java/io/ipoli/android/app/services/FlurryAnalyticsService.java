@@ -200,7 +200,10 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onShowRepeatingQuest(ShowRepeatingQuestEvent e) {
-        log("show_repeating_quest_request", e.repeatingQuest.getId(), e.repeatingQuest.getName());
+        log("show_repeating_quest",
+                EventParams.of("id", e.repeatingQuest.getId())
+                        .add("name", e.repeatingQuest.getName())
+                        .add("source", e.source.name()));
     }
 
     @Subscribe
@@ -638,37 +641,37 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onAddSubquestTapped(AddSubquestTappedEvent e) {
-        log("add_subquest_tapped", e.source);
+    public void onAddSubQuestTapped(AddSubquestTappedEvent e) {
+        log("add_sub_quest_tapped", e.source);
     }
 
     @Subscribe
-    public void onNewSubquest(NewSubquestEvent e) {
-        log("new_subquest", EventParams.create()
+    public void onNewSubQuest(NewSubquestEvent e) {
+        log("new_sub_quest", EventParams.create()
         .add("name", e.subQuest.getName())
         .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onDeleteSubquest(DeleteSubquestEvent e) {
-        log("delete_subquest", EventParams.create()
+    public void onDeleteSubQuest(DeleteSubquestEvent e) {
+        log("delete_sub_quest", EventParams.create()
                 .add("name", e.subQuest.getName())
                 .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onCompleteSubquest(CompleteSubquestEvent e) {
-        log("complete_subquest", EventParams.of("name", e.subQuest.getName()));
+    public void onCompleteSubQuest(CompleteSubquestEvent e) {
+        log("complete_sub_quest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
-    public void onUndoCompleteSubquest(UndoCompleteSubquestEvent e) {
-        log("undo_completed_subquest", EventParams.of("name", e.subQuest.getName()));
+    public void onUndoCompleteSubQuest(UndoCompleteSubquestEvent e) {
+        log("undo_completed_sub_quest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
-    public void onUpdateSubquestName(UpdateSubquestNameEvent e) {
-        log("update_subquest_name", EventParams.of("name", e.subQuest.getName()));
+    public void onUpdateSubQuestName(UpdateSubquestNameEvent e) {
+        log("update_sub_quest_name", EventParams.of("name", e.subQuest.getName()));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

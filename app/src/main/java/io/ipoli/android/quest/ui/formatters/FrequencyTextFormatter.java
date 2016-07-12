@@ -14,4 +14,12 @@ public class FrequencyTextFormatter {
         }
         return StringUtils.capitalize(recurrence.getRecurrenceType().name());
     }
+
+    public static String formatInterval(int frequency, Recurrence recurrence) {
+        String times = frequency == 1 ? "time" : "times";
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return frequency + " " + times + " a month";
+        }
+        return frequency + " " + times + " a week";
+    }
 }

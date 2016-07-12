@@ -47,7 +47,7 @@ public class QuestActivity extends BaseActivity {
     public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
     public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
     private static final int TIMER_TAB_POSITION = 0;
-    private static final int SUBQUESTS_TAB_POSITION = 1;
+    private static final int SUB_QUESTS_TAB_POSITION = 1;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -95,8 +95,8 @@ public class QuestActivity extends BaseActivity {
 
     private void initTabIcons() {
         tabLayout.getTabAt(TIMER_TAB_POSITION).setIcon(R.drawable.ic_timer_white_24dp);
-        tabLayout.getTabAt(SUBQUESTS_TAB_POSITION).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
-        colorNotSelectedTab(tabLayout.getTabAt(SUBQUESTS_TAB_POSITION));
+        tabLayout.getTabAt(SUB_QUESTS_TAB_POSITION).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
+        colorNotSelectedTab(tabLayout.getTabAt(SUB_QUESTS_TAB_POSITION));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -142,7 +142,7 @@ public class QuestActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position != SUBQUESTS_TAB_POSITION) {
+                if(position != SUB_QUESTS_TAB_POSITION) {
                     eventBus.post(new SaveSubquestsRequestEvent());
                 }
                 hideKeyboard();
@@ -179,18 +179,11 @@ public class QuestActivity extends BaseActivity {
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = questPersistenceService.findById(questId);
         setBackgroundColors(Quest.getCategory(q));
-
     }
 
     @Subscribe
     public void onLevelDown(LevelDownEvent e) {
         showLevelDownMessage(e.newLevel);
-    }
-
-    @Override
-    protected void onDestroy() {
-        questPersistenceService.removeAllListeners();
-        super.onDestroy();
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -219,5 +212,4 @@ public class QuestActivity extends BaseActivity {
             return null;
         }
     }
-
 }

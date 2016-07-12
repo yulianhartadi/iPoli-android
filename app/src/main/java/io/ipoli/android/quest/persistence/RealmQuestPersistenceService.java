@@ -53,6 +53,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest) {
+        return findAll(where -> where
+                .isNotNull("actualStart")
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .findAll());
+    }
+
+    @Override
     protected void onObjectSaved(Quest object) {
         eventBus.post(new QuestSavedEvent(object));
     }
@@ -68,7 +76,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public List<Quest> findAllPlannedAndStartedToday() {
-
         LocalDate today = LocalDate.now();
 
         Date startOfToday = toStartOfDayUTC(today);
@@ -85,9 +92,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
         getRealm().beginTransaction();
         long count = where()
-                .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .between("endDate", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
+                .between("completedAt", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countCompletedQuests(RepeatingQuest repeatingQuest) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .isNotNull("completedAt")
                 .count();
         getRealm().commitTransaction();
         return count;
@@ -100,7 +117,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .greaterThanOrEqualTo("endDate", toStartOfDayUTC(LocalDate.now()))
                 .findAllSorted("endDate"));
-        if(!quests.isEmpty()) {
+        if (!quests.isEmpty()) {
             return quests.get(0).getEndDate();
         }
         return null;
@@ -313,7 +330,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     @Override
     public void setSubQuests(Quest quest, List<SubQuest> subQuests) {
         getRealm().executeTransaction(realm -> {
-           RealmList<SubQuest> subquestRealmList = new RealmList<>();
+            RealmList<SubQuest> subquestRealmList = new RealmList<>();
             subquestRealmList.addAll(subQuests);
             quest.setSubQuests(subquestRealmList);
         });
@@ -363,7 +380,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                             if (quest.getReminders() != null) {
                                 quest.getReminders().deleteAllFromRealm();
                             }
-                            if(quest.getSubQuests() != null) {
+                            if (quest.getSubQuests() != null) {
                                 quest.getSubQuests().deleteAllFromRealm();
                             }
                         }

@@ -27,6 +27,7 @@ import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
+import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
@@ -81,7 +82,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         });
 
         questHolder.contentLayout.setOnClickListener(view ->
-                eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS)));
+                eventBus.post(new ShowRepeatingQuestEvent(rq, EventSource.REPEATING_QUESTS)));
 
         questHolder.name.setText(vm.getName());
 

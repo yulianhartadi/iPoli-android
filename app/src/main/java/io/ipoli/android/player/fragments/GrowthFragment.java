@@ -159,6 +159,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         experienceChart.setDrawValueAboveBar(true);
 
         experienceChart.setDescription("");
+        experienceChart.setTouchEnabled(false);
         experienceChart.setPinchZoom(false);
 
         experienceChart.setDrawGridBackground(false);
@@ -253,6 +254,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void setUpTimeSpentChart(List<Quest> quests) {
+        timeSpentChart.setTouchEnabled(false);
         timeSpentChart.setExtraOffsets(5, 0, 5, 5);
 
         timeSpentChart.setDragDecelerationFrictionCoef(0.95f);

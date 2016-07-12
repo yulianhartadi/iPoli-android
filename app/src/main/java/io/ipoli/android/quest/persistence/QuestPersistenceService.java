@@ -28,7 +28,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
 
+    List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest);
+
     long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
+
+    long countCompletedQuests(RepeatingQuest repeatingQuest);
 
     void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
 
@@ -60,7 +64,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveReminders(Quest quest, List<Reminder> reminders);
 
-    void saveReminders(Quest quest, List<Reminder> reminders,  boolean markUpdated);
+    void saveReminders(Quest quest, List<Reminder> reminders, boolean markUpdated);
 
     void setSubQuests(Quest quest, List<SubQuest> subquests);
 

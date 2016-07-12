@@ -63,25 +63,29 @@ public class DurationFormatter {
         if (duration <= Constants.QUEST_MIN_DURATION) {
             return Constants.QUEST_MIN_DURATION + " min or less";
         }
-        return doFormatShort(duration);
+        return doFormatShort(duration, "and");
     }
 
-    public static String formatShort(int duration) {
+    public static String formatShort(int duration, String separator) {
         if (duration < 0) {
             return "";
         }
-        return doFormatShort(duration);
+        return doFormatShort(duration, separator);
+    }
+
+    public static String formatShort(int duration) {
+        return formatShort(duration, "and");
     }
 
     @NonNull
-    private static String doFormatShort(int duration) {
+    private static String doFormatShort(int duration, String separator) {
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
         if (hours <= 0 && mins <= 0) {
             return "";
         }
         if (hours > 0 && mins > 0) {
-            return hours + "h and " + mins + " m";
+            return hours + "h " + separator + " " + mins + "m";
         }
 
         if (hours > 0 && mins == 0) {

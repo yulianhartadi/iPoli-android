@@ -34,7 +34,7 @@
     <string name="hours">%02d</string>
     <string name="minutes">%02d</string>
     <string name="start">Start</string>
-    <string name="edit">Edit</string>
+    <string name="edit">EDIT</string>
     <string name="stop">Stop</string>
     <string name="quest_item_full_duration">%1$d h %2$d m</string>
     <string name="quest_item_minutes_duration">%d min</string>
@@ -274,10 +274,17 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
+    <string name="title_activity_repeating_quest" />
     <string name="activity_quest_title">Quest</string>
     <string name="add_sub_quest">Add sub-quest</string>
     <string name="help_dialog_quest_title">Manage your quest</string>
     <string name="help_dialog_quest_text1">From this screen you can:</string>
     <string name="help_dialog_quest_track_time">Use the timer to track how you spend your time</string>
     <string name="help_dialog_quest_subquests">Create and manage checklist for your quest</string>
+    <string name="history">History</string>
+    <string name="help_dialog_repeating_quest_title">Track your progress</string>
+    <string name="help_dialog_repeating_quest_text1">Check how you are doing with your repeating quest</string>
+    <string name="help_dialog_repeating_quest_duration">How much time you\'ve spent on this quest</string>
+    <string name="help_dialog_repeating_quest_next">When is the next quest</string>
+    <string name="help_dialog_repeating_quest_streak">Streak counter. The higher your streak, the more XP and coins you will receive when completing the quest.</string>
 </resources>
