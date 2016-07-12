@@ -183,21 +183,25 @@ public class RepeatingQuestActivity extends BaseActivity {
         long completed = findCompletedForCurrentInterval();
         showFrequencyProgress(category, completed);
 
+        displaySummaryStats(category, completed);
+
+        colorLayout(category);
+        setupChart();
+    }
+
+    private void displaySummaryStats(Category category, long completed) {
+        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryImage.setImageResource(category.whiteImage);
+
         int timeSpent = (int) getTotalTimeSpent(completed);
         intervalDuration.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
-        categoryName.setText(StringUtils.capitalize(category.name()));
-        categoryImage.setImageResource(category.whiteImage);
-
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
         nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
 
         streak.setText(String.valueOf(getCurrentStreak()));
-
-        colorLayout(category);
-        setupChart();
     }
 
     private long getTotalTimeSpent(long completed) {
