@@ -85,7 +85,7 @@ public class DurationFormatter {
             return "";
         }
         if (hours > 0 && mins > 0) {
-            return hours + "h " + separator + " " + mins + " m";
+            return hours + "h " + separator + " " + mins + "m";
         }
 
         if (hours > 0 && mins == 0) {
