@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
@@ -73,6 +74,9 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
+
+    @BindView(R.id.toolbar_collapsing_container)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     @BindView(R.id.quest_name)
     TextView name;
@@ -279,6 +283,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void colorLayout(Category category) {
         appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
         toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
     }
