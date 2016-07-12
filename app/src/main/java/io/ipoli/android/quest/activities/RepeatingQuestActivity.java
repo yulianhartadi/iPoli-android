@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -213,6 +214,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.setDescription("");
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
+        history.setExtraBottomOffset(10);
 
         history.setDrawGridBackground(false);
         history.setDrawBarShadow(true);
@@ -229,9 +231,11 @@ public class RepeatingQuestActivity extends BaseActivity {
         XAxis xLabels = history.getXAxis();
         xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
         xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
+        xLabels.setLabelsToSkip(0);
         xLabels.setTextSize(12f);
         xLabels.setDrawAxisLine(false);
         xLabels.setDrawGridLines(false);
+        xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
         setHistoryData();
@@ -331,10 +335,16 @@ public class RepeatingQuestActivity extends BaseActivity {
         BarData data = new BarData(xValues, dataSet);
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
-        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf((int) value));
+        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (value == 0) {
+                return "";
+            }
+            return String.valueOf((int) value);
+        });
 
         history.setData(data);
-        history.animateY(500);
+        history.invalidate();
+        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
