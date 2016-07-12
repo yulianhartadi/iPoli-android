@@ -424,21 +424,14 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCurrentStreak() {
-        if (repeatingQuest.isFlexible()) {
-            return getFlexibleStreak();
-        }
-        return getFixedStreak();
-    }
-
-    private long getFlexibleStreak() {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            return getMonthlyFlexibleStreak();
+            return getMonthlyStreak();
         }
-        return getWeeklyFlexibleStreak();
+        return getWeeklyStreak();
     }
 
-    private long getMonthlyFlexibleStreak() {
+    private long getMonthlyStreak() {
         LocalDate monthStart = LocalDate.now().dayOfMonth().withMinimumValue();
         LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
         long streak = questPersistenceService.countCompletedQuests(repeatingQuest, monthStart, monthEnd);
@@ -455,7 +448,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         return streak;
     }
 
-    private long getWeeklyFlexibleStreak() {
+    private long getWeeklyStreak() {
         LocalDate weekStart = LocalDate.now().dayOfWeek().withMinimumValue();
         LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
         long streak = questPersistenceService.countCompletedQuests(repeatingQuest, weekStart, weekEnd);
@@ -470,10 +463,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             streak += completed;
         }
         return streak;
-    }
-
-    private long getFixedStreak() {
-        return 0;
     }
 
 }
