@@ -104,8 +104,8 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     public long countCompletedQuests(RepeatingQuest repeatingQuest) {
         getRealm().beginTransaction();
         long count = where()
-                .isNotNull("completedAt")
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
+                .isNotNull("completedAt")
                 .count();
         getRealm().commitTransaction();
         return count;
