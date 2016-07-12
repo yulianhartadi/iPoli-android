@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,6 +41,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.Category;
@@ -103,17 +107,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
 
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-
-        String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
-
-        if (repeatingQuest == null) {
-            finish();
-            return;
-        }
-
         setContentView(R.layout.activity_repeating_quest);
         ButterKnife.bind(this);
         appComponent().inject(this);
@@ -122,6 +115,43 @@ public class RepeatingQuestActivity extends BaseActivity {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+        }
+
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.repeating_quest_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                Intent i = new Intent(this, EditQuestActivity.class);
+                i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, repeatingQuest.getId());
+                startActivity(i);
+                finish();
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
+        repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
+
+        if (repeatingQuest == null) {
+            finish();
+            return;
         }
 
         eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
