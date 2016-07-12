@@ -226,7 +226,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
 
-
         long incomplete = frequency - completed;
 
         int progressColor = R.color.colorAccent;
@@ -325,7 +324,6 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void setWeeklyHistoryData() {
-
         List<BarEntry> yValues = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < BAR_COUNT; i++) {

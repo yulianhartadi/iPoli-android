@@ -76,7 +76,6 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
 
     @Override
     public List<Quest> findAllPlannedAndStartedToday() {
-
         LocalDate today = LocalDate.now();
 
         Date startOfToday = toStartOfDayUTC(today);
