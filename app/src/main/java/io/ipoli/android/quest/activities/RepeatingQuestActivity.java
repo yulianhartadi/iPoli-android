@@ -193,7 +193,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        int timeSpent = (int) getTotalTimeSpent(completed);
+        int timeSpent = (int) getTotalTimeSpent();
         intervalDuration.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
@@ -204,9 +204,9 @@ public class RepeatingQuestActivity extends BaseActivity {
         streak.setText(String.valueOf(getCurrentStreak()));
     }
 
-    private long getTotalTimeSpent(long completed) {
-        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
-        List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest, interval.first, interval.second);
+    private long getTotalTimeSpent() {
+        long completed = questPersistenceService.countCompletedQuests(repeatingQuest);
+        List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest);
 
         long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
         for (Quest completedQuest : completedWithStartTime) {
