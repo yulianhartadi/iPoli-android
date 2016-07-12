@@ -173,7 +173,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private long findCompletedForCurrentInterval() {
         Pair<LocalDate, LocalDate> interval = getCurrentInterval();
-        return questPersistenceService.countCompletedQuests(repeatingQuest, interval.first, interval.second);
+        return getCompletedForRange(interval.first, interval.second);
     }
 
     private void displayRepeatingQuest() {
@@ -301,10 +301,10 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
         for (int i = 0; i < BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
-            yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, monthPair.first, monthPair.second), i));
+            yValues.add(new BarEntry(getCompletedForRange(monthPair.first, monthPair.second), i));
         }
 
-        BarDataSet dataSet = new BarDataSet(yValues, "DataSet");
+        BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
         dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
@@ -326,10 +326,10 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(questPersistenceService.countCompletedQuests(repeatingQuest, weekPair.first, weekPair.second.plusDays(1)), i));
+            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second.plusDays(1)), i));
         }
 
-        BarDataSet dataSet = new BarDataSet(yValues, "DataSet");
+        BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
         dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
@@ -434,12 +434,12 @@ public class RepeatingQuestActivity extends BaseActivity {
     private long getMonthlyStreak() {
         LocalDate monthStart = LocalDate.now().dayOfMonth().withMinimumValue();
         LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-        long streak = questPersistenceService.countCompletedQuests(repeatingQuest, monthStart, monthEnd);
+        long streak = getCompletedForRange(monthStart, monthEnd);
         int frequency = getFrequency();
         while (true) {
             monthStart = monthStart.minusMonths(1);
             monthEnd = monthStart.dayOfMonth().withMaximumValue();
-            long completed = questPersistenceService.countCompletedQuests(repeatingQuest, monthStart, monthEnd);
+            long completed = getCompletedForRange(monthStart, monthEnd);
             if (completed < frequency) {
                 break;
             }
@@ -451,18 +451,22 @@ public class RepeatingQuestActivity extends BaseActivity {
     private long getWeeklyStreak() {
         LocalDate weekStart = LocalDate.now().dayOfWeek().withMinimumValue();
         LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-        long streak = questPersistenceService.countCompletedQuests(repeatingQuest, weekStart, weekEnd);
+        long streak = getCompletedForRange(weekStart, weekEnd);
         int frequency = getFrequency();
         while (true) {
             weekStart = weekStart.minusWeeks(1);
             weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            long completed = questPersistenceService.countCompletedQuests(repeatingQuest, weekStart, weekEnd);
+            long completed = getCompletedForRange(weekStart, weekEnd);
             if (completed < frequency) {
                 break;
             }
             streak += completed;
         }
         return streak;
+    }
+
+    private long getCompletedForRange(LocalDate start, LocalDate end) {
+        return questPersistenceService.countCompletedQuests(repeatingQuest, start, end);
     }
 
 }
