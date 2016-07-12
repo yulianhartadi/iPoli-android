@@ -141,7 +141,7 @@ public class RepeatingQuestActivity extends BaseActivity {
                 finish();
                 return true;
             case R.id.action_help:
-                HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quest, R.string.help_dialog_repeating_quest_title, "repeating_quest").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
