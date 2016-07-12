@@ -257,7 +257,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.setDescription("");
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
-        history.setExtraBottomOffset(10);
+        history.setExtraBottomOffset(20);
 
         history.setDrawGridBackground(false);
         history.setDrawBarShadow(true);
@@ -275,7 +275,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
         xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
         xLabels.setLabelsToSkip(0);
-        xLabels.setTextSize(12f);
+        xLabels.setTextSize(13f);
         xLabels.setDrawAxisLine(false);
         xLabels.setDrawGridLines(false);
         xLabels.setYOffset(5);
