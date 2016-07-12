@@ -281,4 +281,5 @@
     <string name="help_dialog_quest_text1">From this screen you can:</string>
     <string name="help_dialog_quest_track_time">Use the timer to track how you spend your time</string>
     <string name="help_dialog_quest_subquests">Create and manage checklist for your quest</string>
+    <string name="history">History</string>
 </resources>

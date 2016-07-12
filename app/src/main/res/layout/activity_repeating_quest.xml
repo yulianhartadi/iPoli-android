@@ -142,12 +142,12 @@
                     android:src="@drawable/ic_streak_white_24dp" />
 
                 <TextView
+                    android:id="@+id/quest_streak"
                     style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="4dp"
-                    android:text="34" />
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -167,7 +167,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:gravity="center_vertical"
-            android:text="History"
+            android:text="@string/history"
             android:textColor="@color/colorAccent" />
 
         <com.github.mikephil.charting.charts.BarChart
