@@ -47,7 +47,7 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
-import io.ipoli.android.quest.events.subquests.AddSubquestTappedEvent;
+import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
@@ -641,7 +641,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onAddSubQuestTapped(AddSubquestTappedEvent e) {
+    public void onAddSubQuestTapped(AddSubQuestTappedEvent e) {
         log("add_sub_quest_tapped", e.source);
     }
 

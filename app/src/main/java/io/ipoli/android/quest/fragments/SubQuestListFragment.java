@@ -36,7 +36,7 @@ import io.ipoli.android.quest.adapters.SubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
-import io.ipoli.android.quest.events.subquests.AddSubquestTappedEvent;
+import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubquestEvent;
 import io.ipoli.android.quest.events.subquests.SaveSubquestsRequestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
@@ -144,7 +144,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
                 setAddSubquestInEditMode();
             }
             addSubQuest.requestFocus();
-            eventBus.post(new AddSubquestTappedEvent(EventSource.SUBQUESTS));
+            eventBus.post(new AddSubQuestTappedEvent(EventSource.SUBQUESTS));
         } else {
             hideUnderline(addSubQuest);
             if (StringUtils.isEmpty(text)) {

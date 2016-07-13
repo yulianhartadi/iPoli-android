@@ -6,10 +6,10 @@ import io.ipoli.android.app.events.EventSource;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 7/11/16.
  */
-public class AddSubquestTappedEvent {
+public class AddSubQuestTappedEvent {
     public final EventSource source;
 
-    public AddSubquestTappedEvent(EventSource source) {
+    public AddSubQuestTappedEvent(EventSource source) {
         this.source = source;
     }
 }
