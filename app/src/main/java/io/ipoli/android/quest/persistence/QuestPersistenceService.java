@@ -66,7 +66,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveReminders(Quest quest, List<Reminder> reminders, boolean markUpdated);
 
-    void setSubQuests(Quest quest, List<SubQuest> subquests);
+    void setSubQuests(Quest quest, List<SubQuest> subQuests);
 
     void saveSubQuests(Quest quest, List<SubQuest> subQuests);
 

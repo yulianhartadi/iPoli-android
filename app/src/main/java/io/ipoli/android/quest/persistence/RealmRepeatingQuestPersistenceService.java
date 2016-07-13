@@ -127,9 +127,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     @Override
     public void setSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests) {
         getRealm().executeTransaction(realm -> {
-            RealmList<SubQuest> subquestRealmList = new RealmList<>();
-            subquestRealmList.addAll(subQuests);
-            repeatingQuest.setSubQuests(subquestRealmList);
+            RealmList<SubQuest> subQuestRealmList = new RealmList<>();
+            subQuestRealmList.addAll(subQuests);
+            repeatingQuest.setSubQuests(subQuestRealmList);
         });
     }
 

@@ -4,6 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="unscheduled_quest_item_height">48dp</dimen>
-    <dimen name="subquest_item_text_size">16sp</dimen>
-    <dimen name="add_subquest_text_size">14sp</dimen>
+    <dimen name="sub_quest_item_text_size">16sp</dimen>
 </resources>

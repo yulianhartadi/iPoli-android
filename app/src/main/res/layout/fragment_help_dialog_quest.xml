@@ -49,6 +49,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="@string/help_dialog_quest_subquests" />
+            android:text="@string/help_dialog_quest_sub_quests" />
     </LinearLayout>
 </LinearLayout>

@@ -51,7 +51,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.subquest_list_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_quest_list_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -147,16 +147,16 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.subquest_check)
+        @BindView(R.id.sub_quest_check)
         CheckBox check;
 
-        @BindView(R.id.subquest_name)
+        @BindView(R.id.sub_quest_name)
         TextInputEditText name;
 
         @BindView(R.id.swipe_layout)
         public SwipeRevealLayout swipeLayout;
 
-        @BindView(R.id.delete_subquest)
+        @BindView(R.id.delete_sub_quest)
         public ImageButton deleteSubquest;
 
         public ViewHolder(View v) {

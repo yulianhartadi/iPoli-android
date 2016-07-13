@@ -30,7 +30,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders, boolean markUpdated);
 
-    void setSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subquests);
+    void setSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests);
 
     void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests);
 
