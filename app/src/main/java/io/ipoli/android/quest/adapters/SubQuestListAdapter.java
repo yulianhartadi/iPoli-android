@@ -26,10 +26,10 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.SubQuest;
-import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvents;
-import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvents;
-import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvents;
-import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvents;
+import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.realm.RealmList;
 
 /**
@@ -73,7 +73,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
 
         holder.deleteSubquest.setOnClickListener(iv -> {
             removeSubquest(holder.getAdapterPosition());
-            evenBus.post(new DeleteSubQuestEvents(sq, EventSource.SUBQUESTS));
+            evenBus.post(new DeleteSubQuestEvent(sq, EventSource.SUBQUESTS));
         });
 
         holder.name.setText(sq.getName());
@@ -84,13 +84,13 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
                 holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 holder.name.setEnabled(false);
-                evenBus.post(new CompleteSubQuestEvents(sq));
+                evenBus.post(new CompleteSubQuestEvent(sq));
             } else {
                 sq.setCompletedAt(null);
                 sq.setCompletedAtMinute(null);
                 holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                 holder.name.setEnabled(true);
-                evenBus.post(new UndoCompleteSubQuestEvents(sq));
+                evenBus.post(new UndoCompleteSubQuestEvent(sq));
             }
         });
         holder.check.setChecked(sq.isCompleted());
@@ -107,7 +107,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
             } else {
                 hideUnderline(holder.name);
                 sq.setName(holder.name.getText().toString());
-                evenBus.post(new UpdateSubQuestNameEvents(sq));
+                evenBus.post(new UpdateSubQuestNameEvent(sq));
             }
         });
     }

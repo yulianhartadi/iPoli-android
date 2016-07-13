@@ -47,20 +47,20 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
-import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvents;
+import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvents;
+import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
-import io.ipoli.android.quest.events.subquests.NewSubQuestEvents;
+import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.QuestCategoryUpdatedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestDatePickedEvent;
@@ -79,16 +79,16 @@ import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
-import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvents;
+import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
-import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvents;
+import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.events.UpdateQuestEndDateRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestStartTimeRequestEvent;
-import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvents;
+import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
@@ -641,36 +641,36 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onAddSubQuestTapped(AddSubQuestTappedEvents e) {
+    public void onAddSubQuestTapped(AddSubQuestTappedEvent e) {
         log("add_sub_quest_tapped", e.source);
     }
 
     @Subscribe
-    public void onNewSubQuest(NewSubQuestEvents e) {
+    public void onNewSubQuest(NewSubQuestEvent e) {
         log("new_sub_quest", EventParams.create()
         .add("name", e.subQuest.getName())
         .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onDeleteSubQuest(DeleteSubQuestEvents e) {
+    public void onDeleteSubQuest(DeleteSubQuestEvent e) {
         log("delete_sub_quest", EventParams.create()
                 .add("name", e.subQuest.getName())
                 .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onCompleteSubQuest(CompleteSubQuestEvents e) {
+    public void onCompleteSubQuest(CompleteSubQuestEvent e) {
         log("complete_sub_quest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
-    public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvents e) {
+    public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvent e) {
         log("undo_completed_sub_quest", EventParams.of("name", e.subQuest.getName()));
     }
 
     @Subscribe
-    public void onUpdateSubQuestName(UpdateSubQuestNameEvents e) {
+    public void onUpdateSubQuestName(UpdateSubQuestNameEvent e) {
         log("update_sub_quest_name", EventParams.of("name", e.subQuest.getName()));
     }
 

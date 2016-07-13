@@ -32,7 +32,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvents;
+import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -143,7 +143,7 @@ public class QuestActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 if(position != SUB_QUESTS_TAB_POSITION) {
-                    eventBus.post(new SaveSubQuestsRequestEvents());
+                    eventBus.post(new SaveSubQuestsRequestEvent());
                 }
                 hideKeyboard();
             }

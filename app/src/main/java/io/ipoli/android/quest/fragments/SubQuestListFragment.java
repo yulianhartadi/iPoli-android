@@ -36,9 +36,9 @@ import io.ipoli.android.quest.adapters.SubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
-import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvents;
-import io.ipoli.android.quest.events.subquests.NewSubQuestEvents;
-import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvents;
+import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
+import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
@@ -124,7 +124,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     }
 
     @Subscribe
-    public void onSaveSubquestsRequest(SaveSubQuestsRequestEvents e) {
+    public void onSaveSubquestsRequest(SaveSubQuestsRequestEvent e) {
         saveSubquests();
     }
 
@@ -144,7 +144,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
                 setAddSubquestInEditMode();
             }
             addSubQuest.requestFocus();
-            eventBus.post(new AddSubQuestTappedEvents(EventSource.SUBQUESTS));
+            eventBus.post(new AddSubQuestTappedEvent(EventSource.SUBQUESTS));
         } else {
             hideUnderline(addSubQuest);
             if (StringUtils.isEmpty(text)) {
@@ -190,7 +190,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
         SubQuest sq = new SubQuest(name);
         adapter.addSubquest(sq);
-        eventBus.post(new NewSubQuestEvents(sq, EventSource.SUBQUESTS));
+        eventBus.post(new NewSubQuestEvent(sq, EventSource.SUBQUESTS));
         setAddSubquestInEditMode();
     }
 
