@@ -22,10 +22,29 @@ import io.ipoli.android.app.BaseFragment;
  */
 public class ChallengeStatsFragment extends BaseFragment {
 
+    private static final String CHALLENGE_ID = "challenge_id";
     private Unbinder unbinder;
 
     @Inject
     Bus eventBus;
+
+    private String challengeId;
+
+    public static ChallengeStatsFragment newInstance(String challengeId) {
+        ChallengeStatsFragment fragment = new ChallengeStatsFragment();
+        Bundle args = new Bundle();
+        args.putString(CHALLENGE_ID, challengeId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            challengeId = getArguments().getString(CHALLENGE_ID);
+        }
+    }
 
     @Nullable
     @Override

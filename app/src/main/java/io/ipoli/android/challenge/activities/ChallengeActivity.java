@@ -29,6 +29,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
@@ -39,7 +40,7 @@ import io.ipoli.android.quest.Category;
  * on 2/1/16.
  */
 public class ChallengeActivity extends BaseActivity {
-    private static final int DETAILS_TAB_POSITION = 0;
+    private static final int STATS_TAB_POSITION = 0;
     private static final int QUESTS_TAB_POSITION = 1;
 
     @BindView(R.id.root_container)
@@ -77,17 +78,17 @@ public class ChallengeActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
         initViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
 
         challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
-        challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
         eventBus.post(new ScreenShownEvent(EventSource.CHALLENGE));
     }
 
     private void initTabIcons() {
-        tabLayout.getTabAt(DETAILS_TAB_POSITION).setIcon(R.drawable.ic_growth_white_24dp);
+        tabLayout.getTabAt(STATS_TAB_POSITION).setIcon(R.drawable.ic_bar_chart_white_24dp);
         tabLayout.getTabAt(QUESTS_TAB_POSITION).setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
         colorNotSelectedTab(tabLayout.getTabAt(QUESTS_TAB_POSITION));
 
@@ -123,10 +124,10 @@ public class ChallengeActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ChallengeStatsFragment());
-        adapter.addFragment(new ChallengeStatsFragment());
+        adapter.addFragment(ChallengeStatsFragment.newInstance(challengeId));
+        adapter.addFragment(ChallengeQuestListFragment.newInstance(challengeId));
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(DETAILS_TAB_POSITION);
+        viewPager.setCurrentItem(STATS_TAB_POSITION);
     }
 
     private void setBackgroundColors(Category category) {
