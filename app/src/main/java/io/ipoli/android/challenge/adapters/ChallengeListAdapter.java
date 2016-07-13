@@ -23,6 +23,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
@@ -63,7 +64,7 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
         drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
 
         holder.contentLayout.setOnClickListener(view ->
-                eventBus.post(new EditChallengeRequestEvent(challenge, EventSource.CHALLENGES)));
+                eventBus.post(new ShowChallengeEvent(challenge, EventSource.CHALLENGES)));
 
         holder.contextIndicatorImage.setImageResource(category.whiteImage);
 

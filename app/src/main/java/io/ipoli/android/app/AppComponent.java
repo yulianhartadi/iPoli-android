@@ -14,9 +14,11 @@ import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
+import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -136,5 +138,9 @@ public interface AppComponent {
     void inject(TimerFragment timerFragment);
 
     void inject(SubQuestListFragment subQuestListFragment);
+
+    void inject(ChallengeActivity challengeActivity);
+
+    void inject(ChallengeStatsFragment challengeStatsFragment);
 }
 
