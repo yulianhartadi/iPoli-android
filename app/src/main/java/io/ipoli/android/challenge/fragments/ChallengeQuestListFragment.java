@@ -22,7 +22,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
@@ -108,9 +107,8 @@ public class ChallengeQuestListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        Challenge challenge = challengePersistenceService.findById(challengeId);
-        List<Quest> quests = questPersistenceService.findAllForChallenge(challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(challenge);
+        List<Quest> quests = questPersistenceService.findNotCompletedNotRepeatingForChallenge(challengeId);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveForChallenge(challengeId);
         List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
         for(Quest q : quests) {
             viewModels.add(new ChallengeQuestViewModel(q.getId(), q.getName(), Quest.getCategory(q), false));

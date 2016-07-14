@@ -91,6 +91,18 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
+    public List<RepeatingQuest> findActiveForChallenge(String challengeId) {
+        return findAll(where -> where
+                .equalTo("challenge.id", challengeId)
+                .beginGroup()
+                    .isNull("recurrence.dtend")
+                    .or()
+                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAll());
+    }
+
+    @Override
     public void setReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
         getRealm().executeTransaction(realm -> {
             RealmList<Reminder> reminderRealmList = new RealmList<>();

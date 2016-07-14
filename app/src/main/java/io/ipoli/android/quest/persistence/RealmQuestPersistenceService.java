@@ -131,6 +131,15 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public List<Quest> findNotCompletedNotRepeatingForChallenge(String challengeId) {
+        return findAll(where -> where
+                .equalTo("challenge.id", challengeId)
+                .isNull("completedAt")
+                .isNull("repeatingQuest")
+                .findAll());
+    }
+
+    @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener) {
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));
