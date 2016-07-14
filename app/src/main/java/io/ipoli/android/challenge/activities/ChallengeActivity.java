@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
@@ -28,7 +27,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
@@ -64,10 +62,10 @@ public class ChallengeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
-            finish();
-            return;
-        }
+//        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
+//            finish();
+//            return;
+//        }
         setContentView(R.layout.activity_challenge);
         ButterKnife.bind(this);
         appComponent().inject(this);
@@ -139,9 +137,10 @@ public class ChallengeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        Challenge challenge = challengePersistenceService.findById(challengeId);
-        getSupportActionBar().setTitle(challenge.getName());
-        setBackgroundColors(challenge.getCategory());
+//        Challenge challenge = challengePersistenceService.findById(challengeId);
+//        getSupportActionBar().setTitle(challenge.getName());
+//        setBackgroundColors(challenge.getCategory());
+        getSupportActionBar().setTitle("Take my PhD exam");
     }
 
     @Override

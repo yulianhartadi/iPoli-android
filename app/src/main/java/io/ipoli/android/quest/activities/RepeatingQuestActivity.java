@@ -61,8 +61,6 @@ import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
  */
 public class RepeatingQuestActivity extends BaseActivity {
 
-    public static final int BAR_COUNT = 4;
-
     @BindView(R.id.repeating_quest_progress_container)
     ViewGroup progressContainer;
 
@@ -302,7 +300,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setMonthlyHistoryData() {
         List<BarEntry> yValues = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
-        for (int i = 0; i < BAR_COUNT; i++) {
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
             yValues.add(new BarEntry(getCompletedForRange(monthPair.first, monthPair.second), i));
         }
@@ -326,7 +324,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setWeeklyHistoryData() {
         List<BarEntry> yValues = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
-        for (int i = 0; i < BAR_COUNT; i++) {
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
             yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second.plusDays(1)), i));
         }
@@ -398,9 +396,9 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private int[] getColors() {
-        int[] colors = new int[BAR_COUNT];
+        int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-        for (int i = 0; i < BAR_COUNT; i++) {
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
         return colors;

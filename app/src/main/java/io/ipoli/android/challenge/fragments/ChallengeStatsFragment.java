@@ -1,17 +1,39 @@
 package io.ipoli.android.challenge.fragments;
 
+import android.animation.ObjectAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ProgressBar;
 
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
+
+import org.joda.time.LocalDate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -27,6 +49,12 @@ public class ChallengeStatsFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
+
+    @BindView(R.id.challenge_history)
+    BarChart history;
+
+    @BindView(R.id.challenge_progress)
+    ProgressBar progress;
 
     private String challengeId;
 
@@ -54,7 +82,103 @@ public class ChallengeStatsFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
+
+        setupChart();
         return view;
+    }
+
+    private void setupChart() {
+        history.setDescription("");
+        history.setTouchEnabled(false);
+        history.setPinchZoom(false);
+        history.setExtraBottomOffset(20);
+
+        history.setDrawGridBackground(false);
+        history.setDrawBarShadow(true);
+
+        history.setDrawValueAboveBar(false);
+        history.setDrawGridBackground(false);
+
+        YAxis leftAxis = history.getAxisLeft();
+        leftAxis.setAxisMinValue(0f);
+        leftAxis.setEnabled(false);
+        history.getAxisRight().setEnabled(false);
+
+        XAxis xLabels = history.getXAxis();
+        xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xLabels.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xLabels.setLabelsToSkip(0);
+        xLabels.setTextSize(13f);
+        xLabels.setDrawAxisLine(false);
+        xLabels.setDrawGridLines(false);
+        xLabels.setYOffset(5);
+        history.getLegend().setEnabled(false);
+
+
+        List<BarEntry> yValues = new ArrayList<>();
+        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
+            Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
+            yValues.add(new BarEntry(new Random().nextInt(10), i));
+        }
+
+        BarDataSet dataSet = new BarDataSet(yValues, "");
+        dataSet.setColors(getColors());
+        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), R.color.md_blue_100));
+
+        List<String> xValues = new ArrayList<>();
+        xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
+        xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
+        xValues.add("last week");
+        xValues.add("this week");
+        setHistoryData(dataSet, xValues);
+    }
+
+    private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
+        BarData data = new BarData(xValues, dataSet);
+        data.setValueTextSize(14f);
+        data.setValueTextColor(Color.WHITE);
+        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (value == 0) {
+                return "";
+            }
+            return String.valueOf((int) value);
+        });
+
+        history.setData(data);
+        history.invalidate();
+        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
+    }
+
+    private int[] getColors() {
+        int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
+            colors[i] = ContextCompat.getColor(getContext(), R.color.md_blue_300);
+        }
+        return colors;
+    }
+
+    @NonNull
+    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
+        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
+        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(weekStart, weekEnd));
+        for (int i = 0; i < 3; i++) {
+            weekStart = weekStart.plusWeeks(1);
+            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekBounds.add(new Pair<>(weekStart, weekEnd));
+        }
+        return weekBounds;
+    }
+
+    private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
+        if (weekStart.getMonthOfYear() == weekEnd.getMonthOfYear()) {
+            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        } else {
+            return weekStart.getDayOfMonth() + " " + weekStart.monthOfYear().getAsShortText() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        }
     }
 
     @Override
@@ -71,6 +195,10 @@ public class ChallengeStatsFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, 75);
+        animation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
     }
 
     @Override

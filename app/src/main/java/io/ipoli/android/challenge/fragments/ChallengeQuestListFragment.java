@@ -25,8 +25,6 @@ import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
@@ -107,15 +105,15 @@ public class ChallengeQuestListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        List<Quest> quests = questPersistenceService.findNotCompletedNotRepeatingForChallenge(challengeId);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveForChallenge(challengeId);
+//        List<Quest> quests = questPersistenceService.findNotCompletedNotRepeatingForChallenge(challengeId);
+//        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveForChallenge(challengeId);
         List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
-        for(Quest q : quests) {
-            viewModels.add(new ChallengeQuestViewModel(q.getId(), q.getName(), Quest.getCategory(q), false));
-        }
-        for(RepeatingQuest rq : repeatingQuests) {
-            viewModels.add(new ChallengeQuestViewModel(rq.getId(), rq.getName(), RepeatingQuest.getCategory(rq), true));
-        }
+//        for(Quest q : quests) {
+//            viewModels.add(new ChallengeQuestViewModel(q.getId(), q.getName(), Quest.getCategory(q), false));
+//        }
+//        for(RepeatingQuest rq : repeatingQuests) {
+//            viewModels.add(new ChallengeQuestViewModel(rq.getId(), rq.getName(), RepeatingQuest.getCategory(rq), true));
+//        }
 
         adapter = new ChallengeQuestListAdapter(getContext(), viewModels, eventBus);
         questList.setAdapter(adapter);
