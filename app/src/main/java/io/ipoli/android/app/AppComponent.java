@@ -19,7 +19,7 @@ import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
-import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
+import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -142,7 +142,7 @@ public interface AppComponent {
 
     void inject(ChallengeActivity challengeActivity);
 
-    void inject(ChallengeStatsFragment challengeStatsFragment);
+    void inject(ChallengeOverviewFragment challengeOverviewFragment);
 
     void inject(ChallengeQuestListFragment challengeQuestListFragment);
 }

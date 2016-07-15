@@ -31,7 +31,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
-import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
+import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.quest.Category;
@@ -129,7 +129,7 @@ public class ChallengeActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(ChallengeStatsFragment.newInstance());
+        adapter.addFragment(ChallengeOverviewFragment.newInstance());
         adapter.addFragment(ChallengeQuestListFragment.newInstance(challengeId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(STATS_TAB_POSITION);

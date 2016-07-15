@@ -90,7 +90,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
+    public long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
         getRealm().beginTransaction();
         long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
@@ -101,7 +101,18 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(RepeatingQuest repeatingQuest) {
+    public long countCompleted(Challenge challenge, LocalDate fromDate, LocalDate toDate) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .between("completedAt", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countCompleted(RepeatingQuest repeatingQuest) {
         getRealm().beginTransaction();
         long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())

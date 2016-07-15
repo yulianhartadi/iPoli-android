@@ -29,7 +29,6 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -54,7 +53,7 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class ChallengeStatsFragment extends BaseFragment {
+public class ChallengeOverviewFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
@@ -87,15 +86,13 @@ public class ChallengeStatsFragment extends BaseFragment {
 
     private Challenge challenge;
 
-    public static ChallengeStatsFragment newInstance() {
-        return new ChallengeStatsFragment();
-    }
+    private RealmQuestPersistenceService questPersistenceService;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_challenge_stats, container, false);
+        View view = inflater.inflate(R.layout.fragment_challenge_overview, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
@@ -115,7 +112,7 @@ public class ChallengeStatsFragment extends BaseFragment {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(challenge);
         nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled)));
 
@@ -168,7 +165,7 @@ public class ChallengeStatsFragment extends BaseFragment {
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(new Random().nextInt(10), i));
+            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
@@ -181,6 +178,10 @@ public class ChallengeStatsFragment extends BaseFragment {
         xValues.add("last week");
         xValues.add("this week");
         setHistoryData(dataSet, xValues);
+    }
+
+    private long getCompletedForRange(LocalDate start, LocalDate end) {
+        return questPersistenceService.countCompleted(challenge, start, end);
     }
 
     private void setHistoryData(BarDataSet dataSet, List<String> xValues) {

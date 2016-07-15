@@ -203,7 +203,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getTotalTimeSpent() {
-        long completed = questPersistenceService.countCompletedQuests(repeatingQuest);
+        long completed = questPersistenceService.countCompleted(repeatingQuest);
         List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest);
 
         long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
@@ -326,7 +326,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second.plusDays(1)), i));
+            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
@@ -466,7 +466,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompletedQuests(repeatingQuest, start, end);
+        return questPersistenceService.countCompleted(repeatingQuest, start, end);
     }
 
 }
