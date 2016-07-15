@@ -36,7 +36,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests, boolean markUpdated);
 
-    List<RepeatingQuest> findActiveForChallenge(String challengeId);
+    void findActiveForChallenge(String challengeId, OnDatabaseChangedListener<RepeatingQuest> listener);
 
     List<RepeatingQuest> findActiveNotForChallenge(String query, String challengeId);
 }

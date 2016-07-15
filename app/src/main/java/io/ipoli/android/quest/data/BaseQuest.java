@@ -8,5 +8,8 @@ import io.ipoli.android.quest.Category;
  */
 public interface BaseQuest {
 
+    String getId();
+    String getName();
     Category getCategory();
+
 }

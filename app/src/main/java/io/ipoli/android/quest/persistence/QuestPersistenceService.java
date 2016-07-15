@@ -78,7 +78,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener);
 
-    List<Quest> findIncompleteNotRepeatingForChallenge(String challengeId);
+    void findIncompleteNotRepeatingForChallenge(String challengeId, OnDatabaseChangedListener<Quest> listener);
 
     List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, String challengeId);
 

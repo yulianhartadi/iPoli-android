@@ -163,12 +163,12 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public List<Quest> findIncompleteNotRepeatingForChallenge(String challengeId) {
-        return findAll(where -> where
+    public void findIncompleteNotRepeatingForChallenge(String challengeId, OnDatabaseChangedListener<Quest> listener) {
+        listenForChanges(where()
                 .equalTo("challenge.id", challengeId)
                 .isNull("completedAt")
                 .isNull("repeatingQuest")
-                .findAll());
+                .findAllAsync(), listener);
     }
 
     @Override

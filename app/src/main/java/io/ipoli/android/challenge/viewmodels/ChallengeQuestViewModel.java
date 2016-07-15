@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.viewmodels;
 
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.BaseQuest;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -8,47 +9,28 @@ import io.ipoli.android.quest.Category;
  */
 public class ChallengeQuestViewModel {
 
-    private String id;
-    private String name;
-    private Category category;
+    private final BaseQuest baseQuest;
     private boolean isRepeating;
 
-    public ChallengeQuestViewModel(String id, String name, Category category, boolean isRepeating) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
+    public ChallengeQuestViewModel(BaseQuest baseQuest, boolean isRepeating) {
+        this.baseQuest = baseQuest;
         this.isRepeating = isRepeating;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public BaseQuest getBaseQuest() {
+        return baseQuest;
     }
 
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return baseQuest.getName();
     }
 
     public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
+        return baseQuest.getCategory();
     }
 
     public boolean isRepeating() {
         return isRepeating;
     }
 
-    public void setRepeating(boolean repeating) {
-        isRepeating = repeating;
-    }
 }
