@@ -8,6 +8,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.Date;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -127,7 +128,7 @@ public class QuestParser {
         String rawText = text;
 
         Pair<Integer, String> durationPair = parseQuestPart(text, durationMatcher);
-        int duration = durationPair.first;
+        int duration = Math.max(durationPair.first, Constants.QUEST_MIN_DURATION);
 
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         int startMinute = startTimePair.first;
