@@ -30,6 +30,10 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -44,9 +48,11 @@ import io.ipoli.android.tutorial.PickQuestViewModel;
  */
 public class PickChallengeQuestsActivity extends BaseActivity {
 
+    public static final int MIN_FILTER_QUERY_LEN = 3;
     @Inject
     Bus eventBus;
 
+    private ChallengePersistenceService challengePersistenceService;
     private QuestPersistenceService questPersistenceService;
     private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
@@ -82,14 +88,13 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         }
 
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
-
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-
         adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
         questList.setAdapter(adapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
@@ -138,7 +143,9 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        challengePersistenceService.removeAllListeners();
         questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 
@@ -167,7 +174,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
                     return true;
                 }
 
-                if(newText.trim().length() < 3) {
+                if(newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
 
@@ -184,12 +191,42 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-//                saveQuests();
+                saveQuests();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_pick_daily_challenge_quests, R.string.help_dialog_pick_daily_challenge_quests_title, "pick_daily_challenge_quests").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveQuests() {
+        List<BaseQuest> baseQuests = adapter.getSelectedBaseQuests();
+        if(baseQuests.isEmpty()) {
+            return;
+        }
+        Challenge challenge = challengePersistenceService.findById(challengeId);
+
+        List<Quest> quests = new ArrayList<>();
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        for(BaseQuest bq : baseQuests) {
+            if(bq instanceof Quest) {
+                Quest q = (Quest) bq;
+                q.setChallenge(challenge);
+                quests.add(q);
+            } else {
+                RepeatingQuest rq = (RepeatingQuest) bq;
+                rq.setChallenge(challenge);
+                repeatingQuests.add(rq);
+            }
+        }
+
+        if(!quests.isEmpty()) {
+            questPersistenceService.save(quests).subscribe();
+        }
+        if(!repeatingQuests.isEmpty()) {
+            repeatingQuestPersistenceService.save(repeatingQuests).subscribe();
+        }
+        finish();
     }
 }

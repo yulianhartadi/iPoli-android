@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
@@ -62,10 +63,10 @@ public class ChallengeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
-//            finish();
-//            return;
-//        }
+        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_challenge);
         ButterKnife.bind(this);
         appComponent().inject(this);

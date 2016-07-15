@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,13 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
+import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
+import io.ipoli.android.quest.data.BaseQuest;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
@@ -58,6 +63,8 @@ public class ChallengeQuestListFragment extends BaseFragment {
     private ChallengePersistenceService challengePersistenceService;
     private QuestPersistenceService questPersistenceService;
     private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private List<Quest> quests = new ArrayList<>();
+    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
 
     public static ChallengeQuestListFragment newInstance(String challengeId) {
         ChallengeQuestListFragment fragment = new ChallengeQuestListFragment();
@@ -86,13 +93,35 @@ public class ChallengeQuestListFragment extends BaseFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
-        questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
+        questList.setEmptyView(rootLayout, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+        adapter = new ChallengeQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
+        questList.setAdapter(adapter);
 
         challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
+        questPersistenceService.findIncompleteNotRepeatingForChallenge(challengeId, results -> {
+            quests = results;
+            onQuestListUpdated();
+        });
+        repeatingQuestPersistenceService.findActiveForChallenge(challengeId, results -> {
+            repeatingQuests = results;
+            onQuestListUpdated();
+
+        });
         return view;
+    }
+
+    private void onQuestListUpdated() {
+        List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
+        for(Quest q : quests) {
+            viewModels.add(new ChallengeQuestViewModel(q, false));
+        }
+        for(RepeatingQuest rq : repeatingQuests) {
+            viewModels.add(new ChallengeQuestViewModel(rq, true));
+        }
+        adapter.setViewModels(viewModels);
     }
 
     @Override
@@ -109,18 +138,6 @@ public class ChallengeQuestListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-//        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingForChallenge(challengeId);
-//        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveForChallenge(challengeId);
-        List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
-//        for(Quest q : quests) {
-//            viewModels.add(new ChallengeQuestViewModel(q.getId(), q.getName(), Quest.getCategory(q), false));
-//        }
-//        for(RepeatingQuest rq : repeatingQuests) {
-//            viewModels.add(new ChallengeQuestViewModel(rq.getId(), rq.getName(), RepeatingQuest.getCategory(rq), true));
-//        }
-
-        adapter = new ChallengeQuestListAdapter(getContext(), viewModels, eventBus);
-        questList.setAdapter(adapter);
     }
 
     @OnClick(R.id.add_quests)
@@ -128,6 +145,20 @@ public class ChallengeQuestListFragment extends BaseFragment {
         Intent intent = new Intent(getContext(), PickChallengeQuestsActivity.class);
         intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId);
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
+        BaseQuest bq = e.baseQuest;
+        if(bq instanceof Quest) {
+            Quest q = (Quest) bq;
+            q.setChallenge(null);
+            questPersistenceService.save(q).subscribe();
+        } else {
+            RepeatingQuest rq = (RepeatingQuest) bq;
+            rq.setChallenge(null);
+            repeatingQuestPersistenceService.save(rq).subscribe();
+        }
     }
 
     @Override

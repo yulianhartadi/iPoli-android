@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
 import io.ipoli.android.quest.Category;
 
@@ -32,7 +33,7 @@ import io.ipoli.android.quest.Category;
 public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQuestListAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<ChallengeQuestViewModel> viewModels;
+    private List<ChallengeQuestViewModel> viewModels;
     private final Bus eventBus;
 
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
@@ -52,7 +53,7 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ChallengeQuestViewModel vm = viewModels.get(position);
-        viewBinderHelper.bind(holder.swipeLayout, vm.getId());
+        viewBinderHelper.bind(holder.swipeLayout, vm.getBaseQuest().getId());
 
         Category category = vm.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
@@ -70,12 +71,17 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
         });
         holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
 
-//        holder.deleteChallengeQuests.setOnClickListener(v -> eventBus.post(new DeleteChallengeRequestEvent(vm, EventSource.CHALLENGES)));
+        holder.deleteChallengeQuests.setOnClickListener(v -> eventBus.post(new RemoveBaseQuestFromChallengeEvent(vm.getBaseQuest())));
     }
 
     @Override
     public int getItemCount() {
         return viewModels.size();
+    }
+
+    public void setViewModels(List<ChallengeQuestViewModel> viewModels) {
+        this.viewModels = viewModels;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
