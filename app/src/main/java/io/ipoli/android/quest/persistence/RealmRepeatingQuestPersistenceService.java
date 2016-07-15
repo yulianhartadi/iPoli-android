@@ -92,9 +92,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    public void findActiveForChallenge(String challengeId, OnDatabaseChangedListener<RepeatingQuest> listener) {
+    public void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<RepeatingQuest> listener) {
         listenForChanges(where()
-                .equalTo("challenge.id", challengeId)
+                .equalTo("challenge.id", challenge.getId())
                 .beginGroup()
                     .isNull("recurrence.dtend")
                     .or()
@@ -104,10 +104,10 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
-    public List<RepeatingQuest> findActiveNotForChallenge(String query, String challengeId) {
+    public List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge) {
         return findAll(where -> where
                 .contains("name", query, Case.INSENSITIVE)
-                .notEqualTo("challenge.id", challengeId)
+                .notEqualTo("challenge.id", challenge.getId())
                 .beginGroup()
                     .isNull("recurrence.dtend")
                     .or()
