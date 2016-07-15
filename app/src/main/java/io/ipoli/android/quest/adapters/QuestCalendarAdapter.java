@@ -90,7 +90,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
-        Category category = Quest.getCategory(q);
+        Category category = q.getCategory();
         v.findViewById(R.id.quest_background).setBackgroundResource(category.resLightColor);
         v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.resLightColor);
 
@@ -155,7 +155,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @NonNull
     private CheckBox createCheckBox(Quest q, Context context) {
-        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(Quest.getCategory(q))));
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(q.getCategory())));
         LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int marginEndDP = 16;

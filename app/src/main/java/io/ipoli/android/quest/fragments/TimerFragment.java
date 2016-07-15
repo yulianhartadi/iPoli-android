@@ -107,7 +107,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     }
 
     private void initUI() {
-        setBackgroundColors(Quest.getCategory(quest));
+        setBackgroundColors(quest.getCategory());
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;

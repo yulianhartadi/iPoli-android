@@ -61,7 +61,7 @@ public class RepeatingQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return RepeatingQuest.getCategory(repeatingQuest);
+        return repeatingQuest.getCategory();
     }
 
     public String getNextText() {

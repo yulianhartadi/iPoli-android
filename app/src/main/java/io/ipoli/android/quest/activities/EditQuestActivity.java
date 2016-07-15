@@ -232,7 +232,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         } else {
             populateEndDate(null);
         }
-        categoryView.changeCategory(Quest.getCategory(quest));
+        categoryView.changeCategory(quest.getCategory());
         populateNoteText(quest.getNote());
         populateChallenge(quest.getChallenge());
 
@@ -258,7 +258,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             populateStartTime(rq.getStartMinute());
         }
         setFrequencyText(rq.getRecurrence());
-        categoryView.changeCategory(RepeatingQuest.getCategory(rq));
+        categoryView.changeCategory(rq.getCategory());
         populateNoteText(rq.getNote());
         populateChallenge(rq.getChallenge());
 

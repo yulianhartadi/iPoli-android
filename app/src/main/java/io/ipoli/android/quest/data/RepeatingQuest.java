@@ -147,10 +147,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.category = category.name();
     }
 
-    public static Category getCategory(RepeatingQuest quest) {
-        return quest.getCategory();
-    }
-
     public static void setStartTime(RepeatingQuest quest, Time time) {
         if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());

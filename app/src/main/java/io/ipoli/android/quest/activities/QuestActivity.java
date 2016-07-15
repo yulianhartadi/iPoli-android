@@ -166,7 +166,7 @@ public class QuestActivity extends BaseActivity {
         eventBus.register(this);
         Quest quest = questPersistenceService.findById(questId);
         getSupportActionBar().setTitle(quest.getName());
-        setBackgroundColors(Quest.getCategory(quest));
+        setBackgroundColors(quest.getCategory());
     }
 
     @Override
@@ -178,7 +178,7 @@ public class QuestActivity extends BaseActivity {
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = questPersistenceService.findById(questId);
-        setBackgroundColors(Quest.getCategory(q));
+        setBackgroundColors(q.getCategory());
     }
 
     @Subscribe

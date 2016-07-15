@@ -272,10 +272,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.category = category.name();
     }
 
-    public static Category getCategory(Quest quest) {
-        return quest.getCategory();
-    }
-
     public static Date getStartDateTime(Quest quest) {
         if (quest.getStartMinute() < 0 || quest.getEndDate() == null) {
             return null;
