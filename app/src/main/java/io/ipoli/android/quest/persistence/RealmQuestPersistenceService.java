@@ -125,6 +125,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public Date findNextUncompletedQuestEndDate(Challenge challenge) {
+        List<Quest> quests = findAll(where -> where
+                .isNull("completedAt")
+                .equalTo("repeatingQuest.id", challenge.getId())
+                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(LocalDate.now()))
+                .findAllSorted("endDate"));
+        if (!quests.isEmpty()) {
+            return quests.get(0).getEndDate();
+        }
+        return null;
+    }
+
+    @Override
     public void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener) {
         listenForChanges(where()
                 .equalTo("id", questId)
@@ -138,6 +151,14 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
                 .notEqualTo("challenge.id", challengeId)
                 .isNull("completedAt")
                 .isNull("repeatingQuest")
+                .findAll());
+    }
+
+    @Override
+    public List<Quest> findAllCompleted(Challenge challenge) {
+        return findAll(where -> where
+                .notEqualTo("challenge.id", challenge.getId())
+                .isNotNull("completedAt")
                 .findAll());
     }
 
