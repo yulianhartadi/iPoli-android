@@ -27,6 +27,7 @@ import com.squareup.otto.Bus;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -43,6 +44,11 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -70,6 +76,15 @@ public class ChallengeStatsFragment extends BaseFragment {
     @BindView(R.id.challenge_category_name)
     TextView categoryName;
 
+    @BindView(R.id.challenge_next_scheduled_date)
+    TextView nextScheduledDate;
+
+    @BindView(R.id.challenge_due_date)
+    TextView dueDate;
+
+    @BindView(R.id.challenge_total_time_spent)
+    TextView totalTimeSpent;
+
     private Challenge challenge;
 
     @Nullable
@@ -95,6 +110,26 @@ public class ChallengeStatsFragment extends BaseFragment {
 
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
+
+        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(challenge);
+        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled)));
+
+        dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
+
+        int timeSpent = (int) getTotalTimeSpent(questPersistenceService);
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+    }
+
+    private long getTotalTimeSpent(QuestPersistenceService questPersistenceService) {
+
+        List<Quest> completed = questPersistenceService.findAllCompleted(challenge);
+
+        long totalTime = 0;
+        for (Quest completedQuest : completed) {
+            totalTime += completedQuest.getActualDuration();
+        }
+        return totalTime;
     }
 
     private void setupChart() {

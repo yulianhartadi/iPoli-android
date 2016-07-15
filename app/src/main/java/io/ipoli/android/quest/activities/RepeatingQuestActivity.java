@@ -91,8 +91,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.quest_frequency_interval)
     TextView frequencyInterval;
 
-    @BindView(R.id.quest_interval_duration)
-    TextView intervalDuration;
+    @BindView(R.id.quest_total_time_spent)
+    TextView totalTimeSpent;
 
     @BindView(R.id.quest_streak)
     TextView streak;
@@ -192,12 +192,12 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryImage.setImageResource(category.whiteImage);
 
         int timeSpent = (int) getTotalTimeSpent();
-        intervalDuration.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
+        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
 
         streak.setText(String.valueOf(getCurrentStreak()));
     }

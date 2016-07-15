@@ -12,12 +12,13 @@ import io.ipoli.android.app.utils.DateUtils;
  * on 1/28/16.
  */
 public class DateFormatter {
+    public static final String DEFAULT_EMPTY_VALUE = "Don't know";
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("dd MMM yy", Locale.getDefault());
     private static SimpleDateFormat DATE_NO_YEAR_FORMAT = new SimpleDateFormat("dd MMM", Locale.getDefault());
 
     public static String format(Date date) {
         if (date == null) {
-            return formatEmptyDate();
+            return DEFAULT_EMPTY_VALUE;
         }
         if (DateUtils.isToday(date)) {
             return "Today";
@@ -28,9 +29,9 @@ public class DateFormatter {
         return DEFAULT_DATE_FORMAT.format(date);
     }
 
-    public static String formatWithoutYear(Date date) {
+    public static String formatWithoutYear(Date date, String emptyValue) {
         if (date == null) {
-            return formatEmptyDate();
+            return emptyValue;
         }
         if (DateUtils.isToday(date)) {
             return "Today";
@@ -42,7 +43,7 @@ public class DateFormatter {
         return DATE_NO_YEAR_FORMAT.format(date);
     }
 
-    private static String formatEmptyDate() {
-        return "Don't know";
+    public static String formatWithoutYear(Date date) {
+        return formatWithoutYear(date, DEFAULT_EMPTY_VALUE);
     }
 }
