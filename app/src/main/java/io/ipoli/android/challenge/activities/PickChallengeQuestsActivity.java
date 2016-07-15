@@ -1,25 +1,39 @@
 package io.ipoli.android.challenge.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -30,7 +44,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    QuestPersistenceService questPersistenceService;
+    private QuestPersistenceService questPersistenceService;
+    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -41,10 +56,16 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @BindView(R.id.result_list)
     EmptyStateRecyclerView questList;
 
-//    private BasePickQuestAdapter<Quest> pickQuestsAdapter;
+    private String challengeId;
+
+    private ChallengePickQuestListAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
+            finish();
+            return;
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_challenge_quests);
         ButterKnife.bind(this);
@@ -57,14 +78,60 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-//        pickQuestsAdapter = new PickTutorialQuestsAdapter(this, eventBus, new ArrayList<>());
-//        questList.setAdapter(pickQuestsAdapter);
-//        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-//        questPersistenceService.findAllIncompleteOrMostImportantForDate(LocalDate.now(), this);
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+
+        List<PickQuestViewModel> viewModels = createInitialViewModels();
+        adapter = new ChallengePickQuestListAdapter(this, eventBus, viewModels, true);
+        questList.setAdapter(adapter);
+        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+
+    }
+
+    @NonNull
+    private List<PickQuestViewModel> createInitialViewModels() {
+        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(challengeId);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(challengeId);
+        List<PickQuestViewModel> viewModels = new ArrayList<>();
+        for(Quest q : quests) {
+            viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+        }
+        for(RepeatingQuest rq : repeatingQuests) {
+            viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
+        }
+
+        Collections.sort(viewModels, (vm1, vm2) -> {
+            Date d1 = vm1.getStartDate();
+            Date d2 = vm2.getStartDate();
+            if(d1 == null && d2 == null) {
+                return -1;
+            }
+
+            if(d1 == null) {
+                return 1;
+            }
+
+            if(d2 == null) {
+                return -1;
+            }
+
+            if(d1.after(d2)) {
+                return -1;
+            }
+
+            if(d2.after(d1)) {
+                return 1;
+            }
+
+            return 0;
+        });
+        return viewModels;
     }
 
     @Override

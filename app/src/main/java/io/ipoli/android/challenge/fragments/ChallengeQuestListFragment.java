@@ -1,5 +1,6 @@
 package io.ipoli.android.challenge.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +17,14 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
@@ -105,7 +109,7 @@ public class ChallengeQuestListFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-//        List<Quest> quests = questPersistenceService.findNotCompletedNotRepeatingForChallenge(challengeId);
+//        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingForChallenge(challengeId);
 //        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveForChallenge(challengeId);
         List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
 //        for(Quest q : quests) {
@@ -117,6 +121,13 @@ public class ChallengeQuestListFragment extends BaseFragment {
 
         adapter = new ChallengeQuestListAdapter(getContext(), viewModels, eventBus);
         questList.setAdapter(adapter);
+    }
+
+    @OnClick(R.id.add_quests)
+    public void onAddQuestsClick(View v) {
+        Intent intent = new Intent(getContext(), PickChallengeQuestsActivity.class);
+        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId);
+        startActivity(intent);
     }
 
     @Override

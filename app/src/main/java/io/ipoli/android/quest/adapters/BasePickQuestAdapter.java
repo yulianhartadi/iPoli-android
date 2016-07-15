@@ -31,11 +31,17 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
     protected Context context;
     protected final Bus evenBus;
     protected List<PickQuestViewModel> viewModels;
+    private final boolean isRepeatingIndicatorVisible;
 
     public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels) {
+        this(context, evenBus, viewModels, false);
+    }
+
+    public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels, boolean isRepeatingIndicatorVisible) {
         this.context = context;
         this.evenBus = evenBus;
         this.viewModels = viewModels;
+        this.isRepeatingIndicatorVisible = isRepeatingIndicatorVisible;
     }
 
 
@@ -55,10 +61,11 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(vm.getText());
+        holder.repeatingIndicator.setVisibility(isRepeatingIndicatorVisible && vm.isRepeating() ? View.VISIBLE : View.GONE);
 
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(vm.isSelected());
-        if(vm.isCompleted()) {
+        if (vm.isCompleted()) {
             holder.check.setEnabled(false);
         } else {
             holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -116,6 +123,9 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
 
         @BindView(R.id.quest_category_indicator_image)
         public ImageView categoryIndicatorImage;
+
+        @BindView(R.id.quest_repeating_indicator)
+        ImageView repeatingIndicator;
 
         public ViewHolder(View v) {
             super(v);

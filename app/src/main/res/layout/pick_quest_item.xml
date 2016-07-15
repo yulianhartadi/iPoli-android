@@ -36,11 +36,21 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="72dp"
-        android:layout_toStartOf="@+id/quest_check"
+        android:layout_toStartOf="@+id/quest_repeating_indicator"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/md_dark_text_87"
         android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/quest_repeating_indicator"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_toStartOf="@+id/quest_check"
+        android:src="@drawable/ic_repeating_quest_24dp"
+        android:visibility="gone" />
 
     <CheckBox
         android:id="@id/quest_check"

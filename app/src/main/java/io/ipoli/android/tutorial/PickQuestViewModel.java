@@ -1,5 +1,7 @@
 package io.ipoli.android.tutorial;
 
+import java.util.Date;
+
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.BaseQuest;
 
@@ -9,10 +11,11 @@ import io.ipoli.android.quest.data.BaseQuest;
  */
 public class PickQuestViewModel {
     private String text;
-    private final boolean isRepeating;
+    private boolean isRepeating;
     private BaseQuest baseQuest;
     private boolean isSelected;
     private boolean isCompleted;
+    private Date startDate;
 
     public PickQuestViewModel(BaseQuest baseQuest, String text) {
         this(baseQuest, text, false, false);
@@ -22,10 +25,19 @@ public class PickQuestViewModel {
         this(baseQuest, text, isSelected, false);
     }
 
+    public PickQuestViewModel(BaseQuest baseQuest, String text, Date startDate, boolean isRepeating) {
+        this(baseQuest, text, startDate, false, isRepeating);
+    }
+
     public PickQuestViewModel(BaseQuest baseQuest, String text, boolean isSelected, boolean isRepeating) {
+        this(baseQuest, text, null, isSelected, isRepeating);
+    }
+
+    public PickQuestViewModel(BaseQuest baseQuest, String text, Date startDate, boolean isSelected, boolean isRepeating) {
         this.baseQuest = baseQuest;
         this.isSelected = isSelected;
         this.text = text;
+        this.startDate = startDate;
         this.isRepeating = isRepeating;
         this.isCompleted = false;
     }
@@ -64,5 +76,9 @@ public class PickQuestViewModel {
 
     public boolean isRepeating() {
         return isRepeating;
+    }
+
+    public Date getStartDate() {
+        return startDate;
     }
 }
