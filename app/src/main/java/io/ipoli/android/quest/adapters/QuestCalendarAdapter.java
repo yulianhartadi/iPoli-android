@@ -91,8 +91,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
         Category category = q.getCategory();
-        v.findViewById(R.id.quest_background).setBackgroundResource(category.resLightColor);
-        v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.resLightColor);
+        v.findViewById(R.id.quest_background).setBackgroundResource(category.color500);
+        v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.color500);
 
         TextView name = (TextView) v.findViewById(R.id.quest_text);
         name.setText(q.getName());

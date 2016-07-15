@@ -64,7 +64,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         Category category = q.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        drawable.setColor(ContextCompat.getColor(context, category.color500));
 
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));

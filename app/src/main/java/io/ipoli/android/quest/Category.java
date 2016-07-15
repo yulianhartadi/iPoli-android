@@ -19,7 +19,7 @@ public enum Category {
     CHORES(R.color.md_brown_50, R.color.md_brown_100, R.color.md_brown_300, R.color.md_brown_500, R.color.md_brown_700, R.color.md_brown_800, R.drawable.ic_context_chores_white, R.drawable.ic_context_chores_brown);
 
     @ColorRes
-    public final int backgroundColor;
+    public final int color50;
 
     @ColorRes
     public final int color100;
@@ -28,13 +28,13 @@ public enum Category {
     public final int color300;
 
     @ColorRes
-    public final int resLightColor;
+    public final int color500;
 
     @ColorRes
-    public final int resDarkColor;
+    public final int color700;
 
     @ColorRes
-    public final int resDarkerColor;
+    public final int color800;
 
     @DrawableRes
     public final int whiteImage;
@@ -42,13 +42,13 @@ public enum Category {
     @DrawableRes
     public final int colorfulImage;
 
-    Category(@ColorRes int backgroundColor, @ColorRes int color100, @ColorRes int color300, @ColorRes int resLightColor, @ColorRes int resDarkColor, int resDarkerColor, int whiteImage, int colorfulImage) {
-        this.backgroundColor = backgroundColor;
+    Category(@ColorRes int color50, @ColorRes int color100, @ColorRes int color300, @ColorRes int color500, @ColorRes int color700, int color800, int whiteImage, int colorfulImage) {
+        this.color50 = color50;
         this.color100 = color100;
         this.color300 = color300;
-        this.resLightColor = resLightColor;
-        this.resDarkColor = resDarkColor;
-        this.resDarkerColor = resDarkerColor;
+        this.color500 = color500;
+        this.color700 = color700;
+        this.color800 = color800;
         this.whiteImage = whiteImage;
         this.colorfulImage = colorfulImage;
     }

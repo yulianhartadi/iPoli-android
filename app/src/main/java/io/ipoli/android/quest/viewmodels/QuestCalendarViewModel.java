@@ -29,7 +29,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         } else {
             this.duration = Math.max(Constants.CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         }
-        this.backgroundColor = quest.getCategory().backgroundColor;
+        this.backgroundColor = quest.getCategory().color50;
         this.startTime = quest.getStartMinute();
     }
 

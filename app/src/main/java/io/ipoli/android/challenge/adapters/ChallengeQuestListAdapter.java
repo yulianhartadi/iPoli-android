@@ -56,7 +56,7 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
 
         Category category = vm.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        drawable.setColor(ContextCompat.getColor(context, category.color500));
 
         holder.contextIndicatorImage.setImageResource(category.whiteImage);
 

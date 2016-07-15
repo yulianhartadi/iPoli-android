@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -37,6 +39,10 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.activities.ChallengeActivity;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.Category;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -44,7 +50,6 @@ import io.ipoli.android.app.BaseFragment;
  */
 public class ChallengeStatsFragment extends BaseFragment {
 
-    private static final String CHALLENGE_ID = "challenge_id";
     private Unbinder unbinder;
 
     @Inject
@@ -56,22 +61,19 @@ public class ChallengeStatsFragment extends BaseFragment {
     @BindView(R.id.challenge_progress)
     ProgressBar progress;
 
-    private String challengeId;
+    @BindView(R.id.challenge_summary_stats_container)
+    ViewGroup summaryStatsContainer;
 
-    public static ChallengeStatsFragment newInstance(String challengeId) {
-        ChallengeStatsFragment fragment = new ChallengeStatsFragment();
-        Bundle args = new Bundle();
-        args.putString(CHALLENGE_ID, challengeId);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    @BindView(R.id.challenge_category_image)
+    ImageView categoryImage;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            challengeId = getArguments().getString(CHALLENGE_ID);
-        }
+    @BindView(R.id.challenge_category_name)
+    TextView categoryName;
+
+    private Challenge challenge;
+
+    public static ChallengeStatsFragment newInstance() {
+        return new ChallengeStatsFragment();
     }
 
     @Nullable
@@ -82,9 +84,21 @@ public class ChallengeStatsFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
+        challenge = ((ChallengeActivity) getActivity()).getChallenge();
+
+        showSummaryStats();
 
         setupChart();
         return view;
+    }
+
+    private void showSummaryStats() {
+        Category category = challenge.getCategory();
+
+        summaryStatsContainer.setBackgroundResource(category.color500);
+
+        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryImage.setImageResource(category.whiteImage);
     }
 
     private void setupChart() {
@@ -124,7 +138,7 @@ public class ChallengeStatsFragment extends BaseFragment {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), R.color.md_blue_100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), challenge.getCategory().color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
@@ -153,7 +167,7 @@ public class ChallengeStatsFragment extends BaseFragment {
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            colors[i] = ContextCompat.getColor(getContext(), R.color.md_blue_300);
+            colors[i] = ContextCompat.getColor(getContext(), challenge.getCategory().color300);
         }
         return colors;
     }
@@ -210,7 +224,6 @@ public class ChallengeStatsFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-//        rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 }

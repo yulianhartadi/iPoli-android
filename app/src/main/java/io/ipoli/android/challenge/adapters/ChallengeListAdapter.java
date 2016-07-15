@@ -61,7 +61,7 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
 
         Category category = challenge.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        drawable.setColor(ContextCompat.getColor(context, category.color500));
 
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new ShowChallengeEvent(challenge, EventSource.CHALLENGES)));

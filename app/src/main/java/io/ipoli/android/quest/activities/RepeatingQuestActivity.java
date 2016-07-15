@@ -181,13 +181,13 @@ public class RepeatingQuestActivity extends BaseActivity {
         long completed = findCompletedForCurrentInterval();
         showFrequencyProgress(category, completed);
 
-        displaySummaryStats(category, completed);
+        displaySummaryStats(category);
 
         colorLayout(category);
         setupChart();
     }
 
-    private void displaySummaryStats(Category category, long completed) {
+    private void displaySummaryStats(Category category) {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
@@ -282,11 +282,11 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void colorLayout(Category category) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
     private void setHistoryData() {

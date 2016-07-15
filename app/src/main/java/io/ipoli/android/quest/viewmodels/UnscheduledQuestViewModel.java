@@ -29,7 +29,7 @@ public class UnscheduledQuestViewModel {
 
     @ColorRes
     public int getCategoryColor() {
-        return getQuestCategory().resLightColor;
+        return getQuestCategory().color500;
     }
 
     private Category getQuestCategory() {

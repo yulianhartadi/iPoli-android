@@ -3,6 +3,7 @@ package io.ipoli.android.challenge.activities;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
@@ -27,6 +29,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeStatsFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
@@ -44,6 +47,9 @@ public class ChallengeActivity extends BaseActivity {
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
+    @BindView(R.id.appbar)
+    AppBarLayout appBar;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -58,14 +64,15 @@ public class ChallengeActivity extends BaseActivity {
 
     ChallengePersistenceService challengePersistenceService;
     private String challengeId;
+    private Challenge challenge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
-//            finish();
-//            return;
-//        }
+        if (getIntent() == null || TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_challenge);
         ButterKnife.bind(this);
         appComponent().inject(this);
@@ -122,31 +129,41 @@ public class ChallengeActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(ChallengeStatsFragment.newInstance(challengeId));
+        adapter.addFragment(ChallengeStatsFragment.newInstance());
         adapter.addFragment(ChallengeQuestListFragment.newInstance(challengeId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(STATS_TAB_POSITION);
     }
 
     private void setBackgroundColors(Category category) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-//        Challenge challenge = challengePersistenceService.findById(challengeId);
-//        getSupportActionBar().setTitle(challenge.getName());
-//        setBackgroundColors(challenge.getCategory());
-        getSupportActionBar().setTitle("Take my PhD exam");
+        challenge = challengePersistenceService.findById(challengeId);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(challenge.getName());
+        }
+        setBackgroundColors(challenge.getCategory());
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    public Challenge getChallenge() {
+        return challenge;
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
