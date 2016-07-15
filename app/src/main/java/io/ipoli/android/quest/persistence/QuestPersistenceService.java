@@ -78,5 +78,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findIncompleteNotRepeatingForChallenge(String challengeId);
 
-    List<Quest> findIncompleteNotRepeatingNotForChallenge(String challengeId);
+    List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, String challengeId);
 }

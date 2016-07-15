@@ -78,7 +78,7 @@
         </activity>
         <activity
             android:name=".challenge.activities.PickChallengeQuestsActivity"
-            android:label="@string/title_activity_challenge"
+            android:label="@string/title_pick_challenge_quests_activity"
             android:parentActivityName=".challenge.activities.ChallengeActivity"
             android:screenOrientation="portrait">
             <meta-data

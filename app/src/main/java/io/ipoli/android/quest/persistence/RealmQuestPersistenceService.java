@@ -14,6 +14,7 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
@@ -131,8 +132,9 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public List<Quest> findIncompleteNotRepeatingNotForChallenge(String challengeId) {
+    public List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, String challengeId) {
         return findAll(where -> where
+                .contains("name", query, Case.INSENSITIVE)
                 .notEqualTo("challenge.id", challengeId)
                 .isNull("completedAt")
                 .isNull("repeatingQuest")

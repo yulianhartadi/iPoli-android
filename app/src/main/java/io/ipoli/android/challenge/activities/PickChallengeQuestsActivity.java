@@ -3,8 +3,10 @@ package io.ipoli.android.challenge.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -87,45 +90,44 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
-        List<PickQuestViewModel> viewModels = createInitialViewModels();
-        adapter = new ChallengePickQuestListAdapter(this, eventBus, viewModels, true);
+        adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
         questList.setAdapter(adapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
 
     }
 
     @NonNull
-    private List<PickQuestViewModel> createInitialViewModels() {
-        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(challengeId);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(challengeId);
+    private List<PickQuestViewModel> filter(String query) {
+        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challengeId);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim() ,challengeId);
         List<PickQuestViewModel> viewModels = new ArrayList<>();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
         }
-        for(RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : repeatingQuests) {
             viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
         }
 
         Collections.sort(viewModels, (vm1, vm2) -> {
             Date d1 = vm1.getStartDate();
             Date d2 = vm2.getStartDate();
-            if(d1 == null && d2 == null) {
+            if (d1 == null && d2 == null) {
                 return -1;
             }
 
-            if(d1 == null) {
+            if (d1 == null) {
                 return 1;
             }
 
-            if(d2 == null) {
+            if (d2 == null) {
                 return -1;
             }
 
-            if(d1.after(d2)) {
+            if (d1.after(d2)) {
                 return -1;
             }
 
-            if(d2.after(d1)) {
+            if (d2.after(d1)) {
                 return 1;
             }
 
@@ -149,7 +151,32 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.daily_challenge_quests_menu, menu);
+        getMenuInflater().inflate(R.menu.pick_challenge_quests_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(StringUtils.isEmpty(newText)) {
+                    adapter.setViewModels(filter(""));
+                    return true;
+                }
+
+                if(newText.trim().length() < 3) {
+                    return true;
+                }
+
+                adapter.setViewModels(filter(newText.trim()));
+
+                return true;
+            }
+        });
+
         return true;
     }
 

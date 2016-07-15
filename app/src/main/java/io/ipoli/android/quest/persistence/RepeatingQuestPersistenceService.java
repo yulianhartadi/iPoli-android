@@ -38,5 +38,5 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     List<RepeatingQuest> findActiveForChallenge(String challengeId);
 
-    List<RepeatingQuest> findActiveNotForChallenge(String challengeId);
+    List<RepeatingQuest> findActiveNotForChallenge(String query, String challengeId);
 }
