@@ -72,10 +72,6 @@ public class ChallengeStatsFragment extends BaseFragment {
 
     private Challenge challenge;
 
-    public static ChallengeStatsFragment newInstance() {
-        return new ChallengeStatsFragment();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

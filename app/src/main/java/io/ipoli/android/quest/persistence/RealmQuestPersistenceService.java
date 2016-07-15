@@ -132,19 +132,19 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, String challengeId) {
+    public List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge) {
         return findAll(where -> where
                 .contains("name", query, Case.INSENSITIVE)
-                .notEqualTo("challenge.id", challengeId)
+                .notEqualTo("challenge.id", challenge.getId())
                 .isNull("completedAt")
                 .isNull("repeatingQuest")
                 .findAll());
     }
 
     @Override
-    public void findIncompleteNotRepeatingForChallenge(String challengeId, OnDatabaseChangedListener<Quest> listener) {
+    public void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<Quest> listener) {
         listenForChanges(where()
-                .equalTo("challenge.id", challengeId)
+                .equalTo("challenge.id", challenge.getId())
                 .isNull("completedAt")
                 .isNull("repeatingQuest")
                 .findAllAsync(), listener);

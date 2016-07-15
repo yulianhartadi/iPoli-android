@@ -65,9 +65,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @BindView(R.id.result_list)
     EmptyStateRecyclerView questList;
 
-    private String challengeId;
-
     private ChallengePickQuestListAdapter adapter;
+    private Challenge challenge;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,10 +86,10 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
         challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+        challenge = challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -103,8 +102,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
     @NonNull
     private List<PickQuestViewModel> filter(String query) {
-        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challengeId);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim() ,challengeId);
+        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim() ,challenge);
         List<PickQuestViewModel> viewModels = new ArrayList<>();
         for (Quest q : quests) {
             viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
@@ -205,7 +204,6 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         if(baseQuests.isEmpty()) {
             return;
         }
-        Challenge challenge = challengePersistenceService.findById(challengeId);
 
         List<Quest> quests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();

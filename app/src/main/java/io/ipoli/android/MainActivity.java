@@ -56,7 +56,6 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -157,9 +156,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
 
-        Intent intent = new Intent(this, ChallengeActivity.class);
-        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, "8c450f56-3ebf-4dce-88d0-74a31368eae0");
-        startActivity(intent);
+//        Intent intent = new Intent(this, ChallengeActivity.class);
+//        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, "8c450f56-3ebf-4dce-88d0-74a31368eae0");
+//        startActivity(intent);
     }
 
     @Override
