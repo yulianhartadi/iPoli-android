@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import android.text.TextUtils;
-
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -30,7 +28,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class Quest extends RealmObject implements RemoteObject<Quest>, RewardProvider {
+public class Quest extends RealmObject implements RemoteObject<Quest>, RewardProvider, BaseQuest {
 
     public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
     public static final int DEFAULT_NO_PRIORITY_VALUE = -1;
@@ -266,20 +264,16 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.id = id;
     }
 
-    public String getCategory() {
-        return TextUtils.isEmpty(category) ? Category.PERSONAL.name() : category;
+    public Category getCategory() {
+        return Category.valueOf(category);
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategory(Category category) {
+        this.category = category.name();
     }
 
     public static Category getCategory(Quest quest) {
-        return Category.valueOf(quest.getCategory());
-    }
-
-    public static void setCategory(Quest quest, Category category) {
-        quest.setCategory(category.name());
+        return quest.getCategory();
     }
 
     public static Date getStartDateTime(Quest quest) {

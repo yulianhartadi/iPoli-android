@@ -19,7 +19,7 @@ import io.realm.annotations.Required;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class RepeatingQuest extends RealmObject implements RemoteObject<RepeatingQuest> {
+public class RepeatingQuest extends RealmObject implements RemoteObject<RepeatingQuest>, BaseQuest {
 
     @Required
     @PrimaryKey
@@ -139,20 +139,16 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.id = id;
     }
 
-    public String getCategory() {
-        return category == null || category.isEmpty() ? Category.PERSONAL.name() : category;
+    public Category getCategory() {
+        return Category.valueOf(category);
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategory(Category category) {
+        this.category = category.name();
     }
 
     public static Category getCategory(RepeatingQuest quest) {
-        return Category.valueOf(quest.getCategory());
-    }
-
-    public static void setCategory(RepeatingQuest quest, Category category) {
-        quest.setCategory(category.name());
+        return quest.getCategory();
     }
 
     public static void setStartTime(RepeatingQuest quest, Time time) {

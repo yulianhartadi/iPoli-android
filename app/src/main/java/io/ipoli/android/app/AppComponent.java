@@ -44,8 +44,8 @@ import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
-import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
-import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 
 /**
@@ -92,9 +92,9 @@ public interface AppComponent {
 
     void inject(TutorialActivity tutorialActivity);
 
-    void inject(PickRepeatingQuestsFragment pickRepeatingQuestsFragment);
+    void inject(PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment);
 
-    void inject(PickQuestsFragment pickQuestsFragment);
+    void inject(PickTutorailQuestsFragment pickTutorailQuestsFragment);
 
     void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 

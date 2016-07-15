@@ -1,4 +1,4 @@
-package io.ipoli.android.tutorial.adapters;
+package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -20,18 +20,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BasePickQuestAdapter.ViewHolder> {
+public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePickQuestAdapter.ViewHolder> {
     protected Context context;
     protected final Bus evenBus;
-    protected List<PickQuestViewModel<T>> viewModels;
+    protected List<PickQuestViewModel> viewModels;
 
-    public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel<T>> viewModels) {
+    public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels) {
         this.context = context;
         this.evenBus = evenBus;
         this.viewModels = viewModels;
@@ -48,7 +49,7 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PickQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-        Category category = getQuestCategory(holder.getAdapterPosition());
+        Category category = vm.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
@@ -82,13 +83,11 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
 
     protected abstract void sendQuestSelectedEvent(int adapterPosition);
 
-    protected abstract Category getQuestCategory(int adapterPosition);
-
-    public List<T> getSelectedQuests() {
-        List<T> selectedQuests = new ArrayList<>();
+    public List<BaseQuest> getSelectedBaseQuests() {
+        List<BaseQuest> selectedQuests = new ArrayList<>();
         for (PickQuestViewModel vm : viewModels) {
             if (vm.isSelected()) {
-                selectedQuests.add((T) vm.getQuest());
+                selectedQuests.add(vm.getBaseQuest());
             }
         }
         return selectedQuests;
@@ -99,7 +98,7 @@ public abstract class BasePickQuestAdapter<T> extends RecyclerView.Adapter<BaseP
         return viewModels.size();
     }
 
-    public void setViewModels(List<PickQuestViewModel<T>> viewModels) {
+    public void setViewModels(List<PickQuestViewModel> viewModels) {
         this.viewModels = viewModels;
         notifyDataSetChanged();
 

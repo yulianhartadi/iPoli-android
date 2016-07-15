@@ -20,14 +20,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.quest.adapters.BasePickQuestAdapter;
 import io.ipoli.android.tutorial.PickQuestViewModel;
-import io.ipoli.android.tutorial.adapters.BasePickQuestAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public abstract class BasePickQuestsFragment<T> extends Fragment implements ISlideBackgroundColorHolder {
+public abstract class BaseTutorialPickQuestsFragment<T> extends Fragment implements ISlideBackgroundColorHolder {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -35,8 +35,8 @@ public abstract class BasePickQuestsFragment<T> extends Fragment implements ISli
     @BindView(R.id.quests_list)
     RecyclerView questList;
 
-    protected BasePickQuestAdapter<T> pickQuestsAdapter;
-    protected List<PickQuestViewModel<T>> viewModels = new ArrayList<>();
+    protected BasePickQuestAdapter pickQuestsAdapter;
+    protected List<PickQuestViewModel> viewModels = new ArrayList<>();
     private Unbinder unbinder;
     private View contentView;
 
@@ -65,7 +65,7 @@ public abstract class BasePickQuestsFragment<T> extends Fragment implements ISli
     protected abstract int getTitleRes();
 
     public List<T> getSelectedQuests() {
-        return pickQuestsAdapter.getSelectedQuests();
+        return (List<T>) pickQuestsAdapter.getSelectedBaseQuests();
     }
 
     @Override

@@ -16,13 +16,13 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
-import io.ipoli.android.tutorial.adapters.PickRepeatingQuestsAdapter;
+import io.ipoli.android.tutorial.adapters.PickTutorialRepeatingQuestsAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<RepeatingQuest> {
+public class PickTutorialRepeatingQuestsFragment extends BaseTutorialPickQuestsFragment<RepeatingQuest> {
 
     @Inject
     Bus eventBus;
@@ -40,7 +40,7 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
 
     @Override
     protected void initAdapter() {
-        pickQuestsAdapter = new PickRepeatingQuestsAdapter(getContext(), eventBus, viewModels);
+        pickQuestsAdapter = new PickTutorialRepeatingQuestsAdapter(getContext(), eventBus, viewModels);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class PickRepeatingQuestsFragment extends BasePickQuestsFragment<Repeatin
 
     private void addViewModel(String text, Category category, boolean isSelected) {
         RepeatingQuest rq = new RepeatingQuest(text);
-        RepeatingQuest.setCategory(rq, category);
-        viewModels.add(new PickQuestViewModel<>(rq, text, isSelected));
+        rq.setCategory(category);
+        viewModels.add(new PickQuestViewModel(rq, text, isSelected, true));
     }
 
     @Override

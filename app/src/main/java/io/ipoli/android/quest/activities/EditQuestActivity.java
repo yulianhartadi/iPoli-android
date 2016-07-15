@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -447,7 +446,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setCategory(categoryView.getSelectedCategory().name());
+        q.setCategory(categoryView.getSelectedCategory());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
         q.setNote((String) noteText.getTag());
         eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
@@ -472,7 +471,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         rq.setRecurrence((Recurrence) frequencyText.getTag());
-        rq.setCategory(categoryView.getSelectedCategory().name());
+        rq.setCategory(categoryView.getSelectedCategory());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
@@ -777,7 +776,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCompletedAt(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
-        q.setCategory(categoryView.getSelectedCategory().name());
+        q.setCategory(categoryView.getSelectedCategory());
         q.setNote((String) noteText.getTag());
         q.setChallenge(findChallenge((String) challengeValue.getTag()));
 
@@ -806,7 +805,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
         }
         rq.setRecurrence(recurrence);
-        rq.setCategory(categoryView.getSelectedCategory().name());
+        rq.setCategory(categoryView.getSelectedCategory());
         rq.setChallenge(findChallenge((String) challengeValue.getTag()));
         rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
