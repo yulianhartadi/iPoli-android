@@ -129,7 +129,7 @@ public class ChallengeActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(ChallengeOverviewFragment.newInstance());
+        adapter.addFragment(new ChallengeOverviewFragment());
         adapter.addFragment(ChallengeQuestListFragment.newInstance(challengeId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(STATS_TAB_POSITION);
