@@ -5,9 +5,9 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/challenge_summary_stats_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_blue_500"
         android:orientation="vertical">
 
         <RelativeLayout

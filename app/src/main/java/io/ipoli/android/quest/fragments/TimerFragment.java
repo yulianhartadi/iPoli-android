@@ -114,9 +114,9 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     }
 
     private void setBackgroundColors(Category category) {
-        rootLayout.setBackgroundColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
-        getActivity().getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
-        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
+        rootLayout.setBackgroundColor(ContextCompat.getColor(getContext(), category.color800));
+        getActivity().getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), category.color800));
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), category.color800));
     }
 
     private void resetTimerUI() {

@@ -36,7 +36,7 @@ public class QuestViewModel {
 
     @ColorRes
     public int getCategoryColor() {
-        return getQuestCategory().resLightColor;
+        return getQuestCategory().color500;
     }
 
     @DrawableRes

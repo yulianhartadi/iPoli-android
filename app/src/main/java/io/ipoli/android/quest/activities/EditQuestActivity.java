@@ -940,11 +940,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private void colorLayout(Category category) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
 

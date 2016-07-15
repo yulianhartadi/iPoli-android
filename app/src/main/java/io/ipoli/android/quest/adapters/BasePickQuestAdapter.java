@@ -57,7 +57,7 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
 
         Category category = vm.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.resLightColor));
+        drawable.setColor(ContextCompat.getColor(context, category.color500));
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(vm.getText());

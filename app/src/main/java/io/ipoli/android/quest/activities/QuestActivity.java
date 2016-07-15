@@ -156,8 +156,8 @@ public class QuestActivity extends BaseActivity {
     }
 
     private void setBackgroundColors(Category category) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
-        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color800));
+        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.color800));
     }
 
     @Override
