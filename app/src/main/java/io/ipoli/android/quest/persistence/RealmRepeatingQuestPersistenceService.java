@@ -46,9 +46,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         return findAll(where -> where.isNotNull("name")
                 .equalTo("allDay", false)
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -58,9 +58,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         listenForChanges(where().isNotNull("name")
                 .equalTo("allDay", false)
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
@@ -96,9 +96,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         listenForChanges(where()
                 .equalTo("challenge.id", challenge.getId())
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
@@ -109,10 +109,17 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
                 .contains("name", query, Case.INSENSITIVE)
                 .notEqualTo("challenge.id", challenge.getId())
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
+                .findAll());
+    }
+
+    @Override
+    public List<RepeatingQuest> findNotDeleted(Challenge challenge) {
+        return findAll(where -> where
+                .equalTo("challenge.id", challenge.getId())
                 .findAll());
     }
 

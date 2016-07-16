@@ -39,4 +39,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<RepeatingQuest> listener);
 
     List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge);
+
+    List<RepeatingQuest> findNotDeleted(Challenge challenge);
 }

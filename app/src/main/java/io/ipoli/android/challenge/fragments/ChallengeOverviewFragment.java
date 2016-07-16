@@ -24,11 +24,15 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -39,13 +43,17 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -59,6 +67,12 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
+
+    @BindView(R.id.challenge_progress_fraction)
+    TextView progressFraction;
+
+    @BindView(R.id.challenge_progress_percent)
+    TextView progressPercent;
 
     @BindView(R.id.challenge_history)
     BarChart history;
@@ -87,6 +101,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
     private Challenge challenge;
 
     private RealmQuestPersistenceService questPersistenceService;
+    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Nullable
     @Override
@@ -98,10 +113,86 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
         challenge = ((ChallengeActivity) getActivity()).getChallenge();
 
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
+
+        showProgress();
         showSummaryStats();
 
         setupChart();
         return view;
+    }
+
+    private void showProgress() {
+
+        Date challengeEnd = challenge.getEndDate();
+        LocalDate today = LocalDate.now();
+        LocalDate scheduledQuestsEndDate = today.plusWeeks(3).dayOfWeek().withMaximumValue();
+
+        long completed = questPersistenceService.countCompleted(challenge);
+        long totalCount = 0;
+
+        if (notAllQuestsAreScheduledForChallenge(challengeEnd, scheduledQuestsEndDate)) {
+            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotDeleted(challenge);
+            Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
+
+            totalCount += questPersistenceService.countNotRepeating(challenge);
+            for (RepeatingQuest rq : repeatingQuests) {
+                Recurrence recurrence = rq.getRecurrence();
+                Date rqStart = recurrence.getDtstart();
+                Date rqEnd = recurrence.getDtend();
+
+                Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
+                Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
+
+                float questsPerDayCoeff = 0;
+
+                Recurrence.RecurrenceType recurrenceType = recurrence.getRecurrenceType();
+                if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                    if (recurrence.isFlexible()) {
+                        questsPerDayCoeff = recurrence.getFlexibleCount() / 31f;
+                    } else {
+                        questsPerDayCoeff = 1f / 31f;
+                    }
+                } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+                    if (recurrence.isFlexible()) {
+                        questsPerDayCoeff = recurrence.getFlexibleCount() / 7f;
+                    } else {
+                        try {
+                            questsPerDayCoeff = new Recur(recurrence.getRrule()).getDayList().size() / 7f;
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    questsPerDayCoeff = 1f;
+                }
+
+                questsPerDayCoeff *= recurrence.getTimesADay();
+
+                int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
+                totalCount += Math.ceil(dayCount * questsPerDayCoeff);
+            }
+        } else {
+            totalCount = questPersistenceService.countNotDeleted(challenge);
+        }
+
+        progressFraction.setText(completed + " / " + totalCount);
+
+        int percentDone = Math.round((completed / (float) totalCount) * 100);
+
+        progressPercent.setText(String.valueOf(percentDone) + "% done");
+        progress.setProgress(percentDone);
+
+        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
+        int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
+        animation.setDuration(animationTime);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
+    }
+
+    private boolean notAllQuestsAreScheduledForChallenge(Date challengeEnd, LocalDate scheduledQuestsEndDate) {
+        return new LocalDate(challengeEnd, DateTimeZone.UTC).isAfter(scheduledQuestsEndDate);
     }
 
     private void showSummaryStats() {
@@ -112,7 +203,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(challenge);
         nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled)));
 
@@ -245,10 +336,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, 75);
-        animation.setDuration(getResources().getInteger(android.R.integer.config_longAnimTime));
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.start();
+
     }
 
     @Override

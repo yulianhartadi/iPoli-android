@@ -112,11 +112,33 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public long countCompleted(Challenge challenge) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .isNotNull("completedAt")
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
     public long countCompleted(RepeatingQuest repeatingQuest) {
         getRealm().beginTransaction();
         long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .isNotNull("completedAt")
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countNotRepeating(Challenge challenge) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .isNull("repeatingQuest")
                 .count();
         getRealm().commitTransaction();
         return count;
@@ -313,11 +335,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countAllScheduledForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+    public long countNotDeleted(Challenge challenge) {
         getRealm().beginTransaction();
         long count = where()
-                .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .between("endDate", toStartOfDayUTC(startDate), toStartOfDayUTC(endDate))
+                .equalTo("challenge.id", challenge.getId())
+                .equalTo("isDeleted", false)
                 .count();
         getRealm().commitTransaction();
         return count;

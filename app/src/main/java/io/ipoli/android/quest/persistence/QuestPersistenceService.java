@@ -44,8 +44,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
 
-    long countAllScheduledForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
-
     List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
 
     Quest findByExternalSourceMappingId(String source, String sourceId);
@@ -85,4 +83,10 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     List<Quest> findAllCompleted(Challenge challenge);
 
     long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
+
+    long countCompleted(Challenge challenge);
+
+    long countNotRepeating(Challenge challenge);
+
+    long countNotDeleted(Challenge challenge);
 }
