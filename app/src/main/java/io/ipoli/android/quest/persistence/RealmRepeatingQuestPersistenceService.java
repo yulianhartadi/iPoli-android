@@ -12,6 +12,8 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestsSavedEvent;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
 
@@ -41,13 +43,18 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     }
 
     @Override
+    protected void onObjectsSaved(List<RepeatingQuest> objects) {
+        eventBus.post(new RepeatingQuestsSavedEvent(objects));
+    }
+
+    @Override
     public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
         return findAll(where -> where.isNotNull("name")
                 .equalTo("allDay", false)
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAll());
     }
@@ -57,9 +64,9 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
         listenForChanges(where().isNotNull("name")
                 .equalTo("allDay", false)
                 .beginGroup()
-                    .isNull("recurrence.dtend")
-                    .or()
-                    .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
                 .endGroup()
                 .findAllAsync(), listener);
     }
@@ -86,6 +93,38 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     @Override
     public List<RepeatingQuest> findAllForChallenge(Challenge challenge) {
         return findAllIncludingDeleted(where -> where
+                .equalTo("challenge.id", challenge.getId())
+                .findAll());
+    }
+
+    @Override
+    public void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<RepeatingQuest> listener) {
+        listenForChanges(where()
+                .equalTo("challenge.id", challenge.getId())
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAllAsync(), listener);
+    }
+
+    @Override
+    public List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge) {
+        return findAll(where -> where
+                .contains("name", query, Case.INSENSITIVE)
+                .notEqualTo("challenge.id", challenge.getId())
+                .beginGroup()
+                .isNull("recurrence.dtend")
+                .or()
+                .greaterThanOrEqualTo("recurrence.dtend", toStartOfDayUTC(LocalDate.now()))
+                .endGroup()
+                .findAll());
+    }
+
+    @Override
+    public List<RepeatingQuest> findNotDeleted(Challenge challenge) {
+        return findAll(where -> where
                 .equalTo("challenge.id", challenge.getId())
                 .findAll());
     }

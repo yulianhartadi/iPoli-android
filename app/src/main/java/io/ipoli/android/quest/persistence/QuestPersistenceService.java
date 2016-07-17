@@ -30,9 +30,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest);
 
-    long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
+    long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
-    long countCompletedQuests(RepeatingQuest repeatingQuest);
+    long countCompleted(RepeatingQuest repeatingQuest);
 
     void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
 
@@ -43,8 +43,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
 
     long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
-
-    long countAllScheduledForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
 
     List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
 
@@ -74,5 +72,21 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 
+    Date findNextUncompletedQuestEndDate(Challenge challenge);
+
     void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener);
+
+    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<Quest> listener);
+
+    List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
+
+    List<Quest> findAllCompleted(Challenge challenge);
+
+    long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
+
+    long countCompleted(Challenge challenge);
+
+    long countNotRepeating(Challenge challenge);
+
+    long countNotDeleted(Challenge challenge);
 }

@@ -84,12 +84,13 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+
         initViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
@@ -130,8 +131,8 @@ public class QuestActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TimerFragment());
-        adapter.addFragment(new SubQuestListFragment());
+        adapter.addFragment(TimerFragment.newInstance(questId));
+        adapter.addFragment(SubQuestListFragment.newInstance(questId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(TIMER_TAB_POSITION);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -156,8 +157,8 @@ public class QuestActivity extends BaseActivity {
     }
 
     private void setBackgroundColors(Category category) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
-        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.resDarkerColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color800));
+        tabLayout.setBackgroundColor(ContextCompat.getColor(this, category.color800));
     }
 
     @Override
@@ -166,7 +167,7 @@ public class QuestActivity extends BaseActivity {
         eventBus.register(this);
         Quest quest = questPersistenceService.findById(questId);
         getSupportActionBar().setTitle(quest.getName());
-        setBackgroundColors(Quest.getCategory(quest));
+        setBackgroundColors(quest.getCategory());
     }
 
     @Override
@@ -178,7 +179,7 @@ public class QuestActivity extends BaseActivity {
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = questPersistenceService.findById(questId);
-        setBackgroundColors(Quest.getCategory(q));
+        setBackgroundColors(q.getCategory());
     }
 
     @Subscribe

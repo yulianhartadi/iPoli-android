@@ -24,7 +24,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -46,6 +45,7 @@ import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnSingleDatabaseObjectChangedListener<Quest> {
 
+    private static final String QUEST_ID_KEY = "quest_id";
     @Inject
     Bus eventBus;
 
@@ -79,7 +79,6 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         subQuestList.setLayoutManager(layoutManager);
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, this);
 
         adapter = new SubQuestListAdapter(getContext(), eventBus, new ArrayList<>());
@@ -89,6 +88,22 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         addSubQuest.setOnFocusChangeListener(this);
 
         return view;
+    }
+
+    public static SubQuestListFragment newInstance(String questId) {
+        SubQuestListFragment fragment = new SubQuestListFragment();
+        Bundle args = new Bundle();
+        args.putString(QUEST_ID_KEY, questId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            questId = getArguments().getString(QUEST_ID_KEY);
+        }
     }
 
     @Override

@@ -7,8 +7,7 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.adapters.BasePickQuestAdapter;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
@@ -17,10 +16,10 @@ import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickQuestsAdapter extends BasePickQuestAdapter<Quest> {
+public class PickTutorialQuestsAdapter extends BasePickQuestAdapter {
 
 
-    public PickQuestsAdapter(Context context, Bus eventBus, List<PickQuestViewModel<Quest>> viewModels) {
+    public PickTutorialQuestsAdapter(Context context, Bus eventBus, List<PickQuestViewModel> viewModels) {
         super(context, eventBus, viewModels);
     }
 
@@ -32,10 +31,5 @@ public class PickQuestsAdapter extends BasePickQuestAdapter<Quest> {
     @Override
     protected void sendQuestSelectedEvent(int adapterPosition) {
         evenBus.post(new PredefinedQuestSelectedEvent(viewModels.get(adapterPosition).getText(), EventSource.TUTORIAL));
-    }
-
-    @Override
-    protected Category getQuestCategory(int adapterPosition) {
-        return Quest.getCategory(viewModels.get(adapterPosition).getQuest());
     }
 }

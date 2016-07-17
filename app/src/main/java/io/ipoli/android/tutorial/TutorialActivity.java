@@ -39,8 +39,8 @@ import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.tutorial.fragments.PickQuestsFragment;
-import io.ipoli.android.tutorial.fragments.PickRepeatingQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
 import io.realm.Realm;
@@ -54,8 +54,8 @@ public class TutorialActivity extends AppIntro2 {
     @Inject
     Bus eventBus;
 
-    private PickRepeatingQuestsFragment pickRepeatingQuestsFragment;
-    private PickQuestsFragment pickQuestsFragment;
+    private PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment;
+    private PickTutorailQuestsFragment pickTutorailQuestsFragment;
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
@@ -88,10 +88,10 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_purple_500));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
-        pickQuestsFragment = new PickQuestsFragment();
-        addSlide(pickQuestsFragment);
-        pickRepeatingQuestsFragment = new PickRepeatingQuestsFragment();
-        addSlide(pickRepeatingQuestsFragment);
+        pickTutorailQuestsFragment = new PickTutorailQuestsFragment();
+        addSlide(pickTutorailQuestsFragment);
+        pickTutorialRepeatingQuestsFragment = new PickTutorialRepeatingQuestsFragment();
+        addSlide(pickTutorialRepeatingQuestsFragment);
 
         lifecycleSubject.onNext(ActivityEvent.CREATE);
         setImmersiveMode(true, true);
@@ -101,8 +101,8 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-        List<Quest> selectedQuests = pickQuestsFragment.getSelectedQuests();
-        List<RepeatingQuest> selectedRepeatingQuests = pickRepeatingQuestsFragment.getSelectedQuests();
+        List<Quest> selectedQuests = pickTutorailQuestsFragment.getSelectedQuests();
+        List<RepeatingQuest> selectedRepeatingQuests = pickTutorialRepeatingQuestsFragment.getSelectedQuests();
 
         Observable.defer(() -> {
             Realm realm = Realm.getDefaultInstance();

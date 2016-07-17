@@ -30,10 +30,12 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.adapters.ChallengeListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
+import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
@@ -126,6 +128,13 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
     @Subscribe
     public void onEditChallengeRequest(EditChallengeRequestEvent e) {
         Intent i = new Intent(getActivity(), EditChallengeActivity.class);
+        i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, e.challenge.getId());
+        startActivity(i);
+    }
+
+    @Subscribe
+    public void onShowChallenge(ShowChallengeEvent e) {
+        Intent i = new Intent(getActivity(), ChallengeActivity.class);
         i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, e.challenge.getId());
         startActivity(i);
     }

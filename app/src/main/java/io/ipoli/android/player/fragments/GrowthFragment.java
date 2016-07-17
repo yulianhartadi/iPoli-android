@@ -301,7 +301,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         Set<Category> usedCategories = new TreeSet<>();
         for (Quest q : quests) {
-            Category category = Quest.getCategory(q);
+            Category category = q.getCategory();
             if (!groupedByCategory.containsKey(category)) {
                 groupedByCategory.put(category, new ArrayList<>());
             }
@@ -313,7 +313,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         List<Integer> colors = new ArrayList<>();
         for (Category usedCategory : usedCategories) {
             xVals.add(StringUtils.capitalize(usedCategory.name()));
-            colors.add(getColor(usedCategory.resLightColor));
+            colors.add(getColor(usedCategory.color500));
         }
 
         int index = 0;

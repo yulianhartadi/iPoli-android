@@ -61,8 +61,6 @@ import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
  */
 public class RepeatingQuestActivity extends BaseActivity {
 
-    public static final int BAR_COUNT = 4;
-
     @BindView(R.id.repeating_quest_progress_container)
     ViewGroup progressContainer;
 
@@ -93,8 +91,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.quest_frequency_interval)
     TextView frequencyInterval;
 
-    @BindView(R.id.quest_interval_duration)
-    TextView intervalDuration;
+    @BindView(R.id.quest_total_time_spent)
+    TextView totalTimeSpent;
 
     @BindView(R.id.quest_streak)
     TextView streak;
@@ -179,33 +177,33 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
-        Category category = RepeatingQuest.getCategory(repeatingQuest);
+        Category category = repeatingQuest.getCategory();
         long completed = findCompletedForCurrentInterval();
         showFrequencyProgress(category, completed);
 
-        displaySummaryStats(category, completed);
+        displaySummaryStats(category);
 
         colorLayout(category);
         setupChart();
     }
 
-    private void displaySummaryStats(Category category, long completed) {
+    private void displaySummaryStats(Category category) {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
         int timeSpent = (int) getTotalTimeSpent();
-        intervalDuration.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
         Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate));
+        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
 
         streak.setText(String.valueOf(getCurrentStreak()));
     }
 
     private long getTotalTimeSpent() {
-        long completed = questPersistenceService.countCompletedQuests(repeatingQuest);
+        long completed = questPersistenceService.countCompleted(repeatingQuest);
         List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest);
 
         long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
@@ -284,11 +282,11 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void colorLayout(Category category) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.resLightColor));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.resLightColor));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.resDarkColor));
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
     private void setHistoryData() {
@@ -302,14 +300,14 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setMonthlyHistoryData() {
         List<BarEntry> yValues = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
-        for (int i = 0; i < BAR_COUNT; i++) {
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
             yValues.add(new BarEntry(getCompletedForRange(monthPair.first, monthPair.second), i));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getMonthText(monthPairs.get(0).first));
@@ -326,14 +324,14 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void setWeeklyHistoryData() {
         List<BarEntry> yValues = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
-        for (int i = 0; i < BAR_COUNT; i++) {
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second.plusDays(1)), i));
+            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
@@ -398,9 +396,9 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private int[] getColors() {
-        int[] colors = new int[BAR_COUNT];
-        Category category = RepeatingQuest.getCategory(repeatingQuest);
-        for (int i = 0; i < BAR_COUNT; i++) {
+        int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
+        Category category = repeatingQuest.getCategory();
+        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
         return colors;
@@ -468,7 +466,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompletedQuests(repeatingQuest, start, end);
+        return questPersistenceService.countCompleted(repeatingQuest, start, end);
     }
 
 }

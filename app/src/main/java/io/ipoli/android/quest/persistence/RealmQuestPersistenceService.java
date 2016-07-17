@@ -14,6 +14,8 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
@@ -66,6 +68,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    protected void onObjectsSaved(List<Quest> objects) {
+        eventBus.post(new QuestsSavedEvent(objects));
+    }
+
+    @Override
     public void findAllUnplanned(OnDatabaseChangedListener<Quest> listener) {
         listenForChanges(where()
                 .isNull("endDate")
@@ -89,7 +96,7 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
+    public long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate) {
         getRealm().beginTransaction();
         long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
@@ -100,11 +107,44 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countCompletedQuests(RepeatingQuest repeatingQuest) {
+    public long countCompleted(Challenge challenge, LocalDate fromDate, LocalDate toDate) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .between("completedAt", toStartOfDayUTC(fromDate), toStartOfDayUTC(toDate))
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countCompleted(Challenge challenge) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .isNotNull("completedAt")
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countCompleted(RepeatingQuest repeatingQuest) {
         getRealm().beginTransaction();
         long count = where()
                 .equalTo("repeatingQuest.id", repeatingQuest.getId())
                 .isNotNull("completedAt")
+                .count();
+        getRealm().commitTransaction();
+        return count;
+    }
+
+    @Override
+    public long countNotRepeating(Challenge challenge) {
+        getRealm().beginTransaction();
+        long count = where()
+                .equalTo("challenge.id", challenge.getId())
+                .isNull("repeatingQuest")
                 .count();
         getRealm().commitTransaction();
         return count;
@@ -124,10 +164,49 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
+    public Date findNextUncompletedQuestEndDate(Challenge challenge) {
+        List<Quest> quests = findAll(where -> where
+                .isNull("completedAt")
+                .equalTo("repeatingQuest.id", challenge.getId())
+                .greaterThanOrEqualTo("endDate", toStartOfDayUTC(LocalDate.now()))
+                .findAllSorted("endDate"));
+        if (!quests.isEmpty()) {
+            return quests.get(0).getEndDate();
+        }
+        return null;
+    }
+
+    @Override
     public void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener) {
         listenForChanges(where()
                 .equalTo("id", questId)
                 .findFirstAsync(), listener);
+    }
+
+    @Override
+    public List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge) {
+        return findAll(where -> where
+                .contains("name", query, Case.INSENSITIVE)
+                .notEqualTo("challenge.id", challenge.getId())
+                .isNull("completedAt")
+                .isNull("repeatingQuest")
+                .findAll());
+    }
+
+    @Override
+    public void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<Quest> listener) {
+        listenForChanges(where()
+                .equalTo("challenge.id", challenge.getId())
+                .isNull("completedAt")
+                .isNull("repeatingQuest")
+                .findAllAsync(), listener);
+    }
+
+    public List<Quest> findAllCompleted(Challenge challenge) {
+        return findAll(where -> where
+                .notEqualTo("challenge.id", challenge.getId())
+                .isNotNull("completedAt")
+                .findAll());
     }
 
     @Override
@@ -262,11 +341,11 @@ public class RealmQuestPersistenceService extends BaseRealmPersistenceService<Qu
     }
 
     @Override
-    public long countAllScheduledForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+    public long countNotDeleted(Challenge challenge) {
         getRealm().beginTransaction();
         long count = where()
-                .equalTo("repeatingQuest.id", repeatingQuest.getId())
-                .between("endDate", toStartOfDayUTC(startDate), toStartOfDayUTC(endDate))
+                .equalTo("challenge.id", challenge.getId())
+                .equalTo("isDeleted", false)
                 .count();
         getRealm().commitTransaction();
         return count;

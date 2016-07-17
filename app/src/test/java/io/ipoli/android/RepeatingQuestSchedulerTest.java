@@ -484,7 +484,7 @@ public class RepeatingQuestSchedulerTest {
     @NonNull
     private RepeatingQuest createRepeatingQuest() {
         RepeatingQuest repeatingQuest = new RepeatingQuest("Test");
-        RepeatingQuest.setCategory(repeatingQuest, Category.CHORES);
+        repeatingQuest.setCategory(Category.CHORES);
         return repeatingQuest;
     }
 }

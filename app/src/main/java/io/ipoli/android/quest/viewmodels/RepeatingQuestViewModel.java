@@ -44,7 +44,7 @@ public class RepeatingQuestViewModel {
 
     @ColorRes
     public int getCategoryColor() {
-        return getQuestCategory().resLightColor;
+        return getQuestCategory().color500;
     }
 
     @DrawableRes
@@ -61,7 +61,7 @@ public class RepeatingQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return RepeatingQuest.getCategory(repeatingQuest);
+        return repeatingQuest.getCategory();
     }
 
     public String getNextText() {

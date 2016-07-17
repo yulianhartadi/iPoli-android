@@ -105,6 +105,8 @@ public interface Constants {
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
 
+    int DEFAULT_BAR_COUNT = 4;
+
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

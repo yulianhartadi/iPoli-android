@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
@@ -20,13 +21,13 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
-import io.ipoli.android.tutorial.adapters.PickQuestsAdapter;
+import io.ipoli.android.tutorial.adapters.PickTutorialQuestsAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements ISlideBackgroundColorHolder {
+public class PickTutorailQuestsFragment extends BaseTutorialPickQuestsFragment<Quest> implements ISlideBackgroundColorHolder {
     @Inject
     Bus eventBus;
     private int backgroundColor;
@@ -44,7 +45,7 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements
 
     @Override
     protected void initAdapter() {
-        pickQuestsAdapter = new PickQuestsAdapter(getContext(), eventBus, viewModels);
+        pickQuestsAdapter = new PickTutorialQuestsAdapter(getContext(), eventBus, viewModels);
     }
 
     @Override
@@ -53,7 +54,8 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements
 
         Quest q = makeQuest("Try out iPoli", Category.FUN);
         Quest.setStartTime(q, Time.afterMinutes(5));
-        viewModels.add(new PickQuestViewModel<>(q, q.getName(), true));
+        q.setDuration(Constants.QUEST_MIN_DURATION);
+        viewModels.add(new PickQuestViewModel(q, q.getName(), true));
 
         addViewModel("Take a walk", Category.WELLNESS, "Take a walk for 25 min", 25);
         addViewModel("Answer emails", Category.WORK);
@@ -79,19 +81,20 @@ public class PickQuestsFragment extends BasePickQuestsFragment<Quest> implements
 
     private void addViewModel(String name, Category category, boolean isSelected) {
         Quest q = makeQuest(name, category);
-        viewModels.add(new PickQuestViewModel<>(q, name, isSelected));
+        q.setDuration(Constants.QUEST_MIN_DURATION);
+        viewModels.add(new PickQuestViewModel(q, name, isSelected));
     }
 
     private void addViewModel(String name, Category category, String text, int duration) {
         Quest q = makeQuest(name, category);
         q.setDuration(duration);
-        viewModels.add(new PickQuestViewModel<>(q, text));
+        viewModels.add(new PickQuestViewModel(q, text));
     }
 
     @NonNull
     private Quest makeQuest(String name, Category category) {
         Quest q = new Quest(name, DateUtils.now());
-        Quest.setCategory(q, category);
+        q.setCategory(category);
         q.setRawText(name + " today");
         return q;
     }

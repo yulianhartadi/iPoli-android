@@ -49,7 +49,7 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
 public class TimerFragment extends BaseFragment implements Chronometer.OnChronometerTickListener{
-
+    public static final String QUEST_ID_KEY = "quest_id";
 
     @Inject
     Bus eventBus;
@@ -90,10 +90,24 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         App.getAppComponent(getContext()).inject(this);
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-
-        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         afterOnCreate = true;
         return view;
+    }
+
+    public static TimerFragment newInstance(String questId) {
+        TimerFragment fragment = new TimerFragment();
+        Bundle args = new Bundle();
+        args.putString(QUEST_ID_KEY, questId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            questId = getArguments().getString(QUEST_ID_KEY);
+        }
     }
 
     @Override
@@ -107,16 +121,16 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     }
 
     private void initUI() {
-        setBackgroundColors(Quest.getCategory(quest));
+        setBackgroundColors(quest.getCategory());
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;
     }
 
     private void setBackgroundColors(Category category) {
-        rootLayout.setBackgroundColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
-        getActivity().getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
-        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), category.resDarkerColor));
+        rootLayout.setBackgroundColor(ContextCompat.getColor(getContext(), category.color800));
+        getActivity().getWindow().setNavigationBarColor(ContextCompat.getColor(getContext(), category.color800));
+        getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), category.color800));
     }
 
     private void resetTimerUI() {

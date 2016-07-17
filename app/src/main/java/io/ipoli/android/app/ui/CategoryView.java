@@ -60,7 +60,7 @@ public class CategoryView extends LinearLayout {
         for (int i = 0; i < categoryContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
-            drawable.setColor(ContextCompat.getColor(context, categories[i].resLightColor));
+            drawable.setColor(ContextCompat.getColor(context, categories[i].color500));
 
             final Category category = categories[i];
             iv.setOnClickListener(view -> {
