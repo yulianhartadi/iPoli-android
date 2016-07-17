@@ -16,6 +16,7 @@ import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
+import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
@@ -145,5 +146,7 @@ public interface AppComponent {
     void inject(ChallengeOverviewFragment challengeOverviewFragment);
 
     void inject(ChallengeQuestListFragment challengeQuestListFragment);
+
+    void inject(PickChallengeQuestsActivity pickChallengeQuestsActivity);
 }
 

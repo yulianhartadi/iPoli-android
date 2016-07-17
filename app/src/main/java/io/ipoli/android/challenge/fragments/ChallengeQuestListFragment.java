@@ -100,10 +100,10 @@ public class ChallengeQuestListFragment extends BaseFragment {
 
     private void onQuestListUpdated() {
         List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             viewModels.add(new ChallengeQuestViewModel(q, false));
         }
-        for(RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : repeatingQuests) {
             viewModels.add(new ChallengeQuestViewModel(rq, true));
         }
         adapter.setViewModels(viewModels);
@@ -135,14 +135,14 @@ public class ChallengeQuestListFragment extends BaseFragment {
     @Subscribe
     public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
         BaseQuest bq = e.baseQuest;
-        if(bq instanceof Quest) {
+        if (bq instanceof Quest) {
             Quest q = (Quest) bq;
             q.setChallenge(null);
-            questPersistenceService.save(q).subscribe();
+            questPersistenceService.save(q).compose(bindToLifecycle()).subscribe();
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
             rq.setChallenge(null);
-            repeatingQuestPersistenceService.save(rq).subscribe();
+            repeatingQuestPersistenceService.save(rq).compose(bindToLifecycle()).subscribe();
         }
     }
 

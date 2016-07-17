@@ -12,6 +12,7 @@ import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestsSavedEvent;
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -39,6 +40,11 @@ public class RealmRepeatingQuestPersistenceService extends BaseRealmPersistenceS
     @Override
     protected void onObjectSaved(RepeatingQuest object) {
         eventBus.post(new RepeatingQuestSavedEvent(object));
+    }
+
+    @Override
+    protected void onObjectsSaved(List<RepeatingQuest> objects) {
+        eventBus.post(new RepeatingQuestsSavedEvent(objects));
     }
 
     @Override

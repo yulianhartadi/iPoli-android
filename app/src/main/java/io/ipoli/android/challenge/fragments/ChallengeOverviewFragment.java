@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -53,9 +54,13 @@ import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
+import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
+import io.ipoli.android.quest.persistence.events.RepeatingQuestsSavedEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -118,11 +123,15 @@ public class ChallengeOverviewFragment extends BaseFragment {
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
+        displayChallenge();
+
+        return view;
+    }
+
+    private void displayChallenge() {
         showProgress();
         showSummaryStats();
-
         setupChart();
-        return view;
     }
 
     private void showProgress() {
@@ -359,5 +368,25 @@ public class ChallengeOverviewFragment extends BaseFragment {
     public void onDestroyView() {
         unbinder.unbind();
         super.onDestroyView();
+    }
+
+    @Subscribe
+    public void onQuestSaved(QuestSavedEvent e) {
+        displayChallenge();
+    }
+
+    @Subscribe
+    public void onQuestsSaved(QuestsSavedEvent e) {
+        displayChallenge();
+    }
+
+    @Subscribe
+    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
+        displayChallenge();
+    }
+
+    @Subscribe
+    public void onRepeatingQuestsSaved(RepeatingQuestsSavedEvent e) {
+        displayChallenge();
     }
 }

@@ -49,6 +49,7 @@ import io.ipoli.android.tutorial.PickQuestViewModel;
 public class PickChallengeQuestsActivity extends BaseActivity {
 
     public static final int MIN_FILTER_QUERY_LEN = 3;
+
     @Inject
     Bus eventBus;
 
@@ -103,7 +104,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @NonNull
     private List<PickQuestViewModel> filter(String query) {
         List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim() ,challenge);
+        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge);
         List<PickQuestViewModel> viewModels = new ArrayList<>();
         for (Quest q : quests) {
             viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
@@ -169,12 +170,12 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(StringUtils.isEmpty(newText)) {
+                if (StringUtils.isEmpty(newText)) {
                     adapter.setViewModels(filter(""));
                     return true;
                 }
 
-                if(newText.trim().length() < MIN_FILTER_QUERY_LEN) {
+                if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
 
@@ -202,14 +203,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
     private void saveQuests() {
         List<BaseQuest> baseQuests = adapter.getSelectedBaseQuests();
-        if(baseQuests.isEmpty()) {
+        if (baseQuests.isEmpty()) {
             return;
         }
 
         List<Quest> quests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        for(BaseQuest bq : baseQuests) {
-            if(bq instanceof Quest) {
+        for (BaseQuest bq : baseQuests) {
+            if (bq instanceof Quest) {
                 Quest q = (Quest) bq;
                 q.setChallenge(challenge);
                 quests.add(q);
@@ -220,11 +221,11 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             }
         }
 
-        if(!quests.isEmpty()) {
-            questPersistenceService.save(quests).subscribe();
+        if (!quests.isEmpty()) {
+            questPersistenceService.save(quests).compose(bindToLifecycle()).subscribe();
         }
-        if(!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.save(repeatingQuests).subscribe();
+        if (!repeatingQuests.isEmpty()) {
+            repeatingQuestPersistenceService.save(repeatingQuests).compose(bindToLifecycle()).subscribe();
         }
         finish();
     }
