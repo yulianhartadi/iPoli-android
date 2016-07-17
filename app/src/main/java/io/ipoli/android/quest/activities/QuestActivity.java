@@ -84,12 +84,13 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+
         initViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
@@ -130,8 +131,8 @@ public class QuestActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TimerFragment());
-        adapter.addFragment(new SubQuestListFragment());
+        adapter.addFragment(TimerFragment.newInstance(questId));
+        adapter.addFragment(SubQuestListFragment.newInstance(questId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(TIMER_TAB_POSITION);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
