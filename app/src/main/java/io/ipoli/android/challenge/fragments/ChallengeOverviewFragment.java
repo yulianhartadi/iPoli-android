@@ -156,33 +156,10 @@ public class ChallengeOverviewFragment extends BaseFragment {
                 Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
                 Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
 
-                float questsPerDayCoeff = 0;
-
-                Recurrence.RecurrenceType recurrenceType = recurrence.getRecurrenceType();
-                if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
-                    if (recurrence.isFlexible()) {
-                        questsPerDayCoeff = recurrence.getFlexibleCount() / 31f;
-                    } else {
-                        questsPerDayCoeff = 1f / 31f;
-                    }
-                } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
-                    if (recurrence.isFlexible()) {
-                        questsPerDayCoeff = recurrence.getFlexibleCount() / 7f;
-                    } else {
-                        try {
-                            questsPerDayCoeff = new Recur(recurrence.getRrule()).getDayList().size() / 7f;
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    questsPerDayCoeff = 1f;
-                }
-
-                questsPerDayCoeff *= recurrence.getTimesADay();
+                float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
 
                 int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
-                totalCount += Math.ceil(dayCount * questsPerDayCoeff);
+                totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
             }
         } else {
             totalCount = questPersistenceService.countNotDeleted(challenge);
@@ -208,6 +185,29 @@ public class ChallengeOverviewFragment extends BaseFragment {
         animation.setDuration(animationTime);
         animation.setInterpolator(new DecelerateInterpolator());
         animation.start();
+    }
+
+    private float calculateQuestsPerDayCoefficient(Recurrence recurrence) {
+        Recurrence.RecurrenceType recurrenceType = recurrence.getRecurrenceType();
+        if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+            if (recurrence.isFlexible()) {
+                return recurrence.getFlexibleCount() / 31f;
+            } else {
+                return 1f / 31f;
+            }
+        } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+            if (recurrence.isFlexible()) {
+                return recurrence.getFlexibleCount() / 7f;
+            } else {
+                try {
+                    return new Recur(recurrence.getRrule()).getDayList().size() / 7f;
+                } catch (ParseException e) {
+                    return 0.0f;
+                }
+            }
+        } else {
+            return 1f;
+        }
     }
 
     private boolean notAllQuestsAreScheduledForChallenge(Date challengeEnd, LocalDate scheduledQuestsEndDate) {
