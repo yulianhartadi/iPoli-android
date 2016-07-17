@@ -45,6 +45,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -124,6 +126,8 @@ public class ChallengeOverviewFragment extends BaseFragment {
         repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         displayChallenge();
+
+        eventBus.post(new ScreenShownEvent(EventSource.CHALLENGE_OVERVIEW));
 
         return view;
     }
