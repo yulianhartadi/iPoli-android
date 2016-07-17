@@ -26,12 +26,15 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
+import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -98,6 +101,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
         questList.setAdapter(adapter);
 
+        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
     }
 
     @NonNull
@@ -194,6 +198,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         if (baseQuests.isEmpty()) {
             return;
         }
+
+        eventBus.post(new QuestsPickedForChallengeEvent(baseQuests.size()));
 
         List<Quest> quests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();

@@ -18,6 +18,10 @@ public class EventParams {
         return new EventParams();
     }
 
+    public static EventParams of(String key, int value) {
+        return of(key, String.valueOf(value));
+    }
+
     public static EventParams of(String key, String value) {
         EventParams eventParams = new EventParams();
         eventParams.params.put(key, value);

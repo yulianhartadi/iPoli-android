@@ -66,7 +66,7 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
             @Override
             public void onOpened(SwipeRevealLayout view) {
                 super.onOpened(view);
-                eventBus.post(new ItemActionsShownEvent(EventSource.CHALLENGES));
+                eventBus.post(new ItemActionsShownEvent(EventSource.CHALLENGE_QUEST_LIST));
             }
         });
         holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
