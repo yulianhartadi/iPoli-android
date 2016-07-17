@@ -155,10 +155,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         updatePlayerInDrawer();
-
-//        Intent intent = new Intent(this, ChallengeActivity.class);
-//        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, "217f7c4c-a6f4-4b9a-955e-3755c71594d7");
-//        startActivity(intent);
     }
 
     @Override
