@@ -163,9 +163,6 @@ public class ChallengeActivity extends BaseActivity {
                 startActivity(i);
                 finish();
                 return true;
-            case R.id.action_help:
-//                HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quest, R.string.help_dialog_repeating_quest_title, "repeating_quest").show(getSupportFragmentManager());
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }

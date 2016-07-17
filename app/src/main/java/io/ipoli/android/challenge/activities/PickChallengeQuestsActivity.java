@@ -151,6 +151,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        menu.findItem(R.id.action_help).setVisible(false);
         return true;
     }
 

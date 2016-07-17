@@ -44,6 +44,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
@@ -338,7 +339,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
     @Override
     protected void showHelpDialog() {
-//        HelpDialog.newInstance(R.layout.fragment_help_dialog_rewards, R.string.help_dialog_rewards_title, "rewards").show(getActivity().getSupportFragmentManager());
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_challenge, R.string.help_dialog_challenge_title, "challenge").show(getActivity().getSupportFragmentManager());
     }
 
     @Override

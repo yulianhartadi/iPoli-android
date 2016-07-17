@@ -291,4 +291,11 @@
     <string name="action_search">Search</string>
     <string name="title_pick_challenge_quests_activity">Select quests</string>
     <string name="unscheduled">Unscheduled</string>
+    <string name="help_dialog_challenge_title">Track your challenge</string>
+    <string name="help_dialog_challenge_text1">Check your progress and how you are doing with your challenge.</string>
+    <string name="help_dialog_challenge_text2">Track how many quests you\'ve completed and how many remain.</string>
+    <string name="help_dialog_challenge_spent_time">How much time you\'ve spent on this challenge</string>
+    <string name="help_dialog_challenge_next">When is the next quest for the challenge</string>
+    <string name="help_dialog_challenge_due_date">Due date for the challenge</string>
+    <string name="help_dialog_challenge_quest_list">List of remaining quests. Add more or swipe left to remove one.</string>
 </resources>
