@@ -49,7 +49,7 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 import rx.Observable;
 
 public class TimerFragment extends BaseFragment implements Chronometer.OnChronometerTickListener{
-
+    public static final String QUEST_ID_KEY = "quest_id";
 
     @Inject
     Bus eventBus;
@@ -90,10 +90,24 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         App.getAppComponent(getContext()).inject(this);
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-
-        questId = getActivity().getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         afterOnCreate = true;
         return view;
+    }
+
+    public static TimerFragment newInstance(String questId) {
+        TimerFragment fragment = new TimerFragment();
+        Bundle args = new Bundle();
+        args.putString(QUEST_ID_KEY, questId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            questId = getArguments().getString(QUEST_ID_KEY);
+        }
     }
 
     @Override
