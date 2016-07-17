@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.fragments;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -182,6 +183,14 @@ public class ChallengeOverviewFragment extends BaseFragment {
         int percentDone = Math.round((completed / (float) totalCount) * 100);
 
         progressPercent.setText(String.valueOf(percentDone) + "% done");
+
+        int progressColor = R.color.colorAccent;
+
+        Category category = challenge.getCategory();
+        if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
+            progressColor = R.color.colorAccentAlternative;
+        }
+        progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(getContext(), progressColor), PorterDuff.Mode.SRC_IN);
         progress.setProgress(percentDone);
 
         ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
