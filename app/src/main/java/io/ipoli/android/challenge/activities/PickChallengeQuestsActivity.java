@@ -95,9 +95,9 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
+        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
         adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
         questList.setAdapter(adapter);
-        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
 
     }
 
@@ -120,20 +120,12 @@ public class PickChallengeQuestsActivity extends BaseActivity {
                 return -1;
             }
 
-            if (d1 == null) {
+            if (d1 == null || d2.after(d1)) {
                 return 1;
             }
 
-            if (d2 == null) {
+            if (d2 == null || d1.after(d2)) {
                 return -1;
-            }
-
-            if (d1.after(d2)) {
-                return -1;
-            }
-
-            if (d2.after(d1)) {
-                return 1;
             }
 
             return 0;
