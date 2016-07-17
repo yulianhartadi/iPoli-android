@@ -99,7 +99,6 @@ import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
-import io.ipoli.android.quest.reminders.persistence.RealmReminderPersistenceService;
 import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -144,8 +143,6 @@ public class App extends MultiDexApplication {
     private ChallengePersistenceService challengePersistenceService;
 
     private PlayerPersistenceService playerPersistenceService;
-
-    private RealmReminderPersistenceService reminderPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
