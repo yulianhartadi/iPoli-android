@@ -19,7 +19,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     private int duration;
     private final int backgroundColor;
     private final Quest quest;
-    private int startTime;
+    private int startMinute;
 
     public QuestCalendarViewModel(Quest quest) {
         this.quest = quest;
@@ -30,12 +30,12 @@ public class QuestCalendarViewModel implements CalendarEvent {
             this.duration = Math.max(Constants.CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         }
         this.backgroundColor = quest.getCategory().color50;
-        this.startTime = quest.getStartMinute();
+        this.startMinute = quest.getActualStartMinute();
     }
 
     @Override
     public int getStartMinute() {
-        return quest.getActualStartMinute();
+        return startMinute;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public void setStartMinute(int startMinute) {
-        this.startTime = startMinute;
+        this.startMinute = startMinute;
     }
 
     @Override
