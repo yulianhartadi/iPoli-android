@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -36,7 +37,11 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
         i.putStringArrayListExtra(Constants.REMINDER_IDS_EXTRA_KEY, getReminderIds(reminders));
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
         long alarmTime = reminders.get(0).getStartTime().getTime();
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        if (Build.VERSION.SDK_INT > 22) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
     }
 
     private List<Reminder> getReminders() {

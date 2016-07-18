@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -51,8 +52,12 @@ public class QuestNotificationScheduler {
 
     public static void scheduleDone(String questId, long scheduleTimeMillis, Context context) {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.setExact(AlarmManager.RTC_WAKEUP, scheduleTimeMillis,
-                getShowDonePendingIntent(questId, context));
+        PendingIntent showDonePendingIntent = getShowDonePendingIntent(questId, context);
+        if (Build.VERSION.SDK_INT > 22) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, scheduleTimeMillis, showDonePendingIntent);
+        } else {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, scheduleTimeMillis, showDonePendingIntent);
+        }
     }
 
     public static void stopDone(String questId, Context context) {
