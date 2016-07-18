@@ -34,6 +34,10 @@ public interface PersistenceService<T extends RealmObject & RemoteObject> {
 
     T findByRemoteId(String id);
 
+    T findAnyById(String id);
+
+    T findAnyByRemoteId(String id);
+
     Observable<Void> delete(List<T> objects);
 
     void removeAllListeners();
