@@ -441,8 +441,8 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
                 r.markDeleted();
             }
         }
-        if(getSubQuests() != null) {
-            for(SubQuest sq : getSubQuests()) {
+        if (getSubQuests() != null) {
+            for (SubQuest sq : getSubQuests()) {
                 sq.markDeleted();
             }
         }
@@ -497,9 +497,16 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
     public int getActualDuration() {
-        if(Quest.isCompleted(this) && getActualStart() != null) {
+        if (Quest.isCompleted(this) && getActualStart() != null) {
             return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt().getTime() - getActualStart().getTime());
         }
         return getDuration();
+    }
+
+    public int getActualStartMinute() {
+        if (Quest.isCompleted(this) && getActualStart() != null) {
+            return getCompletedAtMinute() - getActualDuration();
+        }
+        return startMinute;
     }
 }

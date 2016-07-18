@@ -35,7 +35,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public int getStartMinute() {
-        return startTime;
+        return quest.getActualStartMinute();
     }
 
     @Override
