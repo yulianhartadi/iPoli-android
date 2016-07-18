@@ -78,7 +78,7 @@ public class CalendarLayout extends FrameLayout {
         View dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
         dragView.setBackgroundResource(calendarEvent.getBackgroundColor());
         CalendarLayout.LayoutParams params = (CalendarLayout.LayoutParams) dragView.getLayoutParams();
-        params.height = calendarDayView.getHeightFor(calendarEvent.getDuration());
+        params.height = calendarDayView.getHeightFor(Math.max(calendarEvent.getDuration(), Constants.CALENDAR_EVENT_MIN_DURATION));
         params.topMargin = (int) y - params.height / 2;
         dragView.setLayoutParams(params);
 
@@ -89,7 +89,7 @@ public class CalendarLayout extends FrameLayout {
             adjustQuestDetailsView(dragView);
         }
 
-        if(calendarEvent.getDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
+        if (calendarEvent.getDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
             nameView.setSingleLine(true);
             nameView.setEllipsize(TextUtils.TruncateAt.END);
         }
