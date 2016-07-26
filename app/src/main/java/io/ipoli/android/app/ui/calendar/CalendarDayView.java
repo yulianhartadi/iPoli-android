@@ -2,20 +2,17 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -50,8 +47,8 @@ public class CalendarDayView extends FrameLayout {
 
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
-    private RecyclerView hourCellContainer;
-    private RelativeLayout timelineContainer;
+
+    public NestedScrollView scrollView;
 
     public CalendarDayView(Context context) {
         super(context);
@@ -87,108 +84,60 @@ public class CalendarDayView extends FrameLayout {
         hourHeight = getScreenHeight(context) / HOURS_PER_SCREEN;
         minuteHeight = hourHeight / 60.0f;
 
+
         LayoutInflater inflater = LayoutInflater.from(context);
-
-        hourCellContainer = initHourCellsContainer(context);
-        hourCellContainer.addOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int yOffset = hourCellContainer.computeVerticalScrollOffset();
-                timelineContainer.scrollTo(0, yOffset);
-                eventsContainer.scrollTo(0, yOffset);
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
-        addView(hourCellContainer);
-        timelineContainer = initTimeLineContainer(context, inflater);
-        addView(timelineContainer);
+        FrameLayout mainContainer = initMainContainer(context);
+        mainContainer.addView(initHourCellsContainer(context, inflater));
+        mainContainer.addView(initTimeLineContainer(context, inflater));
         eventsContainer = initEventsContainer(context);
-        addView(eventsContainer);
+        mainContainer.addView(eventsContainer);
+
+        addView(initScrollView(context, mainContainer));
+    }
+
+    private NestedScrollView initScrollView(Context context, FrameLayout mainContainer) {
+        scrollView = new NestedScrollView(context);
+        scrollView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollView.setVerticalScrollBarEnabled(true);
+        scrollView.addView(mainContainer);
+        return scrollView;
     }
 
     @NonNull
-    private RecyclerView initHourCellsContainer(Context context) {
+    private FrameLayout initMainContainer(Context context) {
+        FrameLayout mainContainer = new FrameLayout(context);
+        mainContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        return mainContainer;
+    }
 
-        RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
+    @NonNull
+    private LinearLayout initHourCellsContainer(Context context, LayoutInflater inflater) {
+        LinearLayout hourCellsContainer = new LinearLayout(context);
+        hourCellsContainer.setOrientation(LinearLayout.VERTICAL);
+        hourCellsContainer.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        List<String> hours = new ArrayList<>();
         for (int i = 0; i < HOURS_IN_A_DAY; i++) {
-            hours.add(String.format(Locale.getDefault(), "%02d:00", i));
+            hourCellsContainer.addView(initHourCell(i, hourCellsContainer, inflater));
         }
-        recyclerView.setAdapter(new HourCellAdapter(hours));
-        recyclerView.setHasFixedSize(true);
-        return recyclerView;
+        return hourCellsContainer;
+    }
+
+    @NonNull
+    private View initHourCell(int hour, LinearLayout hourCellsContainer, LayoutInflater inflater) {
+        View hourCell = inflater.inflate(R.layout.calendar_hour_cell, hourCellsContainer, false);
+        if (hour > 0) {
+            TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
+            tv.setText(String.format(Locale.getDefault(), "%02d:00", hour));
+        }
+        ViewGroup.LayoutParams hcp = hourCell.getLayoutParams();
+        hcp.height = hourHeight;
+        hourCell.setLayoutParams(hcp);
+        return hourCell;
     }
 
     private RelativeLayout initEventsContainer(Context context) {
 
-        ViewConfiguration vc = ViewConfiguration.get(context);
-        final int touchSlop = vc.getScaledTouchSlop();
-
-        RelativeLayout eventsContainer = new RelativeLayout(context) {
-
-            // Intercept scroll events and pass them to the hour cell container
-
-            public float lastYPosition;
-            public int yDistance;
-            public boolean isScrolling;
-
-            private float downY;
-
-            @Override
-            public boolean onInterceptTouchEvent(MotionEvent ev) {
-
-                final int action = MotionEventCompat.getActionMasked(ev);
-
-                if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-                    isScrolling = false;
-                    return false;
-                } else if (action == MotionEvent.ACTION_DOWN) {
-                    downY = ev.getRawY();
-                    lastYPosition = ev.getRawY();
-                    isScrolling = false;
-                } else if (action == MotionEvent.ACTION_MOVE) {
-                    if (isScrolling) {
-                        return true;
-                    }
-
-                    yDistance = calculateAbsDistanceY(ev, downY);
-
-                    if (yDistance > touchSlop) {
-                        isScrolling = true;
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onTouchEvent(MotionEvent ev) {
-                final int action = MotionEventCompat.getActionMasked(ev);
-                if (action == MotionEvent.ACTION_MOVE) {
-                    int yScroll = (int) (lastYPosition - ev.getRawY());
-                    hourCellContainer.scrollBy(0, yScroll);
-                    lastYPosition = ev.getRawY();
-                    return true;
-                }
-
-                return super.onTouchEvent(ev);
-            }
-
-            private int calculateAbsDistanceY(MotionEvent ev, float yPosition) {
-                return (int) (Math.abs(ev.getRawY() - yPosition));
-            }
-        };
-
+        eventsContainer = new RelativeLayout(context);
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
     }
@@ -292,26 +241,32 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private int getRelativeY(int y, int yOffset) {
-        return Math.max(0, hourCellContainer.computeVerticalScrollOffset() + y - yOffset);
+        return Math.max(0, scrollView.getScrollY() + y - yOffset);
     }
 
     public void scrollToNow() {
-        Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        hour = Math.max(0, hour - TOP_PADDING_HOURS);
-        hourCellContainer.scrollToPosition(hour);
+        scrollView.post(() -> {
+            Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            hour = Math.max(0, hour - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.scrollTo(scrollView.getScrollX(), 0);
+            } else {
+                int minutes = c.get(Calendar.MINUTE);
+                scrollView.scrollTo(scrollView.getScrollX(), getYPositionFor(hour, minutes));
+            }
+        });
     }
 
     public void smoothScrollToTime(final Time time) {
-
-        int currentVisibleHour = ((LinearLayoutManager) hourCellContainer.getLayoutManager()).findFirstVisibleItemPosition();
-        int hour = time.getHours();
-        if (currentVisibleHour < hour) {
-            hour = Math.min(HOURS_IN_A_DAY - 1, Math.max(0, hour + TOP_PADDING_HOURS));
-        } else {
-            hour = Math.min(HOURS_IN_A_DAY - 1, Math.max(0, hour - TOP_PADDING_HOURS));
-        }
-        hourCellContainer.smoothScrollToPosition(hour);
+        scrollView.post(() -> {
+            int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+            if (hour == 0) {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+            } else {
+                scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
+            }
+        });
     }
 
     public void removeAllEvents() {
