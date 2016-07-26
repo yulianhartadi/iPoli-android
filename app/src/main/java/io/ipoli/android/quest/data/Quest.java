@@ -505,7 +505,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     public int getActualStartMinute() {
         if (Quest.isCompleted(this) && getActualStart() != null) {
-            return getCompletedAtMinute() - getActualDuration();
+            return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
     }
