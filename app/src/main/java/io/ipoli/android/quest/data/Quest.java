@@ -507,6 +507,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         if (Quest.isCompleted(this) && getActualStart() != null) {
             return getCompletedAtMinute() - getActualDuration();
         }
-        return startMinute;
+        return getStartMinute();
     }
 }

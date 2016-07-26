@@ -54,7 +54,6 @@ import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.realm.Realm;
 import io.realm.RealmList;
 import okhttp3.RequestBody;
-import retrofit2.http.HEAD;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -266,7 +265,7 @@ public class AppJobService extends JobService {
         for (int i = 0; i < serverQuests.size(); i++) {
             Quest sq = serverQuests.get(i);
             String localId = localIds.get(i);
-            Quest localQuest = questPersistenceService.findById(localId);
+            Quest localQuest = questPersistenceService.findAnyById(localId);
             updateServerReminders(sq.getReminders(), localQuest.getReminders());
             questPersistenceService.saveReminders(localQuest, sq.getReminders(), false);
             updateServerSubquests(sq.getSubQuests(), localQuest.getSubQuests());
@@ -337,7 +336,7 @@ public class AppJobService extends JobService {
         for (int i = 0; i < serverQuests.size(); i++) {
             RepeatingQuest sq = serverQuests.get(i);
             String localId = localIds.get(i);
-            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findById(localId);
+            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findAnyById(localId);
             updateServerReminders(sq.getReminders(), repeatingQuest.getReminders());
             repeatingQuestPersistenceService.saveReminders(repeatingQuest, sq.getReminders(), false);
             updateServerSubquests(sq.getSubQuests(), repeatingQuest.getSubQuests());
@@ -353,7 +352,7 @@ public class AppJobService extends JobService {
         serverQuest.setId(localId);
 
         if (serverQuest.getChallenge() != null) {
-            Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
+            Challenge challenge = challengePersistenceService.findAnyByRemoteId(serverQuest.getChallenge().getId());
             if (challenge != null) {
                 serverQuest.setChallenge(challenge);
             }
@@ -365,7 +364,7 @@ public class AppJobService extends JobService {
         List<Challenge> serverChallenges = apiService.getChallenges(player.getRemoteId()).execute().body();
         List<Challenge> challengesToSave = new ArrayList<>();
         for (Challenge sc : serverChallenges) {
-            Challenge challenge = challengePersistenceService.findByRemoteId(sc.getId());
+            Challenge challenge = challengePersistenceService.findAnyByRemoteId(sc.getId());
             if (challenge != null && sc.getUpdatedAt().getTime() <= challenge.getUpdatedAt().getTime()) {
                 continue;
             }
@@ -379,7 +378,7 @@ public class AppJobService extends JobService {
         List<RepeatingQuest> serverQuests = apiService.getRepeatingQuests(player.getRemoteId()).execute().body();
         List<RepeatingQuest> questsToSave = new ArrayList<>();
         for (RepeatingQuest sq : serverQuests) {
-            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteId(sq.getId());
+            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findAnyByRemoteId(sq.getId());
             if (repeatingQuest != null && sq.getUpdatedAt().getTime() <= repeatingQuest.getUpdatedAt().getTime()) {
                 continue;
             }
@@ -413,7 +412,7 @@ public class AppJobService extends JobService {
         List<Quest> serverQuests = apiService.getQuests(player.getRemoteId()).execute().body();
         List<Quest> questsToSave = new ArrayList<>();
         for (Quest sq : serverQuests) {
-            Quest quest = questPersistenceService.findByRemoteId(sq.getId());
+            Quest quest = questPersistenceService.findAnyByRemoteId(sq.getId());
             if (quest != null && sq.getUpdatedAt().getTime() <= quest.getUpdatedAt().getTime()) {
                 continue;
             }
@@ -454,13 +453,13 @@ public class AppJobService extends JobService {
             serverQuest.setCoins(new CoinsRewardGenerator().generate(serverQuest));
         }
         if (serverQuest.getRepeatingQuest() != null) {
-            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByRemoteId(serverQuest.getRepeatingQuest().getId());
+            RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findAnyByRemoteId(serverQuest.getRepeatingQuest().getId());
             if (repeatingQuest != null) {
                 serverQuest.setRepeatingQuest(repeatingQuest);
             }
         }
         if (serverQuest.getChallenge() != null) {
-            Challenge challenge = challengePersistenceService.findByRemoteId(serverQuest.getChallenge().getId());
+            Challenge challenge = challengePersistenceService.findAnyByRemoteId(serverQuest.getChallenge().getId());
             if (challenge != null) {
                 serverQuest.setChallenge(challenge);
             }

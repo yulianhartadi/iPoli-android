@@ -185,8 +185,18 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
     }
 
     @Override
+    public T findAnyById(String id) {
+        return findOneIncludingDeleted(where -> where.equalTo("id", id).findFirst());
+    }
+
+    @Override
     public T findByRemoteId(String id) {
         return findOne(where -> where.equalTo("remoteId", id).findFirst());
+    }
+
+    @Override
+    public T findAnyByRemoteId(String id) {
+        return findOneIncludingDeleted(where -> where.equalTo("remoteId", id).findFirst());
     }
 
     @Override
@@ -206,6 +216,10 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         return new RealmFindOneCommand<T>(queryBuilder, where(), getRealm()).execute();
     }
 
+    protected T findOneIncludingDeleted(RealmFindOneQueryBuilder<T> queryBuilder) {
+        return new RealmFindOneCommand<T>(queryBuilder, whereIncludingDeleted(), getRealm()).execute();
+    }
+
     protected List<T> findAll(RealmFindAllQueryBuilder<T> queryBuilder) {
         return new RealmFindAllCommand<T>(queryBuilder, where(), getRealm()).execute();
     }
@@ -219,7 +233,7 @@ public abstract class BaseRealmPersistenceService<T extends RealmObject & Remote
         for (RealmResults<?> res : realmResults) {
             res.removeChangeListeners();
         }
-        for(T obj : realmObjectResults) {
+        for (T obj : realmObjectResults) {
             obj.removeChangeListeners();
         }
         realmResults.clear();
