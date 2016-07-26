@@ -123,11 +123,19 @@ public class PickChallengeQuestsActivity extends BaseActivity {
                 return -1;
             }
 
-            if (d1 == null || d2.after(d1)) {
+            if (d1 == null) {
                 return 1;
             }
 
-            if (d2 == null || d1.after(d2)) {
+            if (d2 == null) {
+                return -1;
+            }
+
+            if (d2.after(d1)) {
+                return 1;
+            }
+
+            if (d1.after(d2)) {
                 return -1;
             }
 
