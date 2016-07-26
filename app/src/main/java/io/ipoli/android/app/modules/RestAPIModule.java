@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -15,8 +16,8 @@ import dagger.Provides;
 import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.net.UtcDateTypeAdapter;
+import io.ipoli.android.app.net.iPoliAPIService;
 import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.realm.RealmObject;
 import okhttp3.OkHttpClient;
@@ -106,13 +107,22 @@ public class RestAPIModule {
     public OkHttpClient provideHttpClient() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient.Builder builder = new OkHttpClient.Builder().addInterceptor(chain -> {
-            Request request = chain.request().newBuilder()
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("X-Api-Key", APIConstants.API_KEY)
-                    .build();
-            return chain.proceed(request);
-        });
+
+        int connectTimeout = BuildConfig.DEBUG ? 0 : APIConstants.PROD_CONNECT_TIMEOUT_MINUTES;
+        int readTimeout = BuildConfig.DEBUG ? 1 : APIConstants.PROD_READ_TIMEOUT_MINUTES;
+        int writeTimeout = BuildConfig.DEBUG ? 1 : APIConstants.PROD_WRITE_TIMEOUT_MINUTES;
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                .connectTimeout(connectTimeout, TimeUnit.MINUTES)
+                .readTimeout(readTimeout, TimeUnit.MINUTES)
+                .writeTimeout(writeTimeout, TimeUnit.MINUTES)
+                .addInterceptor(chain -> {
+                    Request request = chain.request().newBuilder()
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("X-Api-Key", APIConstants.API_KEY)
+                            .build();
+                    return chain.proceed(request);
+                });
         if (BuildConfig.DEBUG) {
             builder.addInterceptor(logging);
         }
