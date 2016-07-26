@@ -3,7 +3,6 @@ package io.ipoli.android.app.ui.calendar;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -23,8 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
@@ -340,47 +337,5 @@ public class CalendarDayView extends FrameLayout {
 
     public void hideTimeLine() {
         timeLine.setVisibility(GONE);
-    }
-
-    public class HourCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final List<String> hours;
-
-        public HourCellAdapter(List<String> hours) {
-            this.hours = hours;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                          int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            View view = inflater.inflate(R.layout.calendar_hour_cell, parent, false);
-            ViewGroup.LayoutParams hcp = view.getLayoutParams();
-            hcp.height = hourHeight;
-            view.setLayoutParams(hcp);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-            ViewHolder vh = (ViewHolder) holder;
-            String text = hours.get(vh.getAdapterPosition());
-            vh.timeLabel.setText(text);
-        }
-
-        @Override
-        public int getItemCount() {
-            return hours.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            @BindView(R.id.time_label)
-            TextView timeLabel;
-
-            public ViewHolder(View v) {
-                super(v);
-                ButterKnife.bind(this, v);
-            }
-        }
     }
 }
