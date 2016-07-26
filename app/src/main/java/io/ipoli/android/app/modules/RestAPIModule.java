@@ -120,6 +120,7 @@ public class RestAPIModule {
                     Request request = chain.request().newBuilder()
                             .addHeader("Content-Type", "application/json")
                             .addHeader("X-Api-Key", APIConstants.API_KEY)
+                            .addHeader("X-Client-Version", String.valueOf(BuildConfig.VERSION_CODE))
                             .build();
                     return chain.proceed(request);
                 });
