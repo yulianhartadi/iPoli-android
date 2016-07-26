@@ -93,7 +93,6 @@ public class AppJobService extends JobService {
                 if (p == null) {
                     return Observable.empty();
                 }
-                scheduleRepeatingQuests(questPersistenceService, repeatingQuestPersistenceService);
                 syncChallenges(challengePersistenceService, p);
                 syncRemovedQuests(p);
                 syncRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
@@ -101,6 +100,7 @@ public class AppJobService extends JobService {
                 getChallenges(challengePersistenceService, p);
                 getRepeatingQuests(challengePersistenceService, repeatingQuestPersistenceService, p);
                 getQuests(challengePersistenceService, questPersistenceService, repeatingQuestPersistenceService, p);
+                scheduleRepeatingQuests(questPersistenceService, repeatingQuestPersistenceService);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
