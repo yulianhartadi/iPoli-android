@@ -11,7 +11,7 @@ import android.content.Intent;
 public class IntentUtils {
 
     public static PendingIntent getBroadcastPendingIntent(Context context, Intent intent, int requestCode) {
-        return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent getBroadcastPendingIntent(Context context, Intent intent) {
