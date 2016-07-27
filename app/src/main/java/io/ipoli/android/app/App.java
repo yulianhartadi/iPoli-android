@@ -1,8 +1,6 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +28,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -50,7 +46,6 @@ import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
@@ -191,7 +186,6 @@ public class App extends MultiDexApplication {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleDailyChallenge();
-            scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             FlurryAgent.onStartSession(this);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
@@ -603,49 +597,6 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(e.id, this);
         eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
-    }
-
-    @Subscribe
-    public void onSyncRequest(ServerSyncRequestEvent e) {
-        scheduleJob(defaultSyncJob()
-                .build());
-    }
-
-    private void scheduleJob(JobInfo job) {
-        getJobScheduler().schedule(job);
-    }
-
-    private JobScheduler getJobScheduler() {
-        return (JobScheduler)
-                getSystemService(Context.JOB_SCHEDULER_SERVICE);
-    }
-
-    @Subscribe
-    public void onForceSyncRequest(ForceServerSyncRequestEvent e) {
-        scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
-                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
-                        setOverrideDeadline(1).build());
-    }
-
-    private JobInfo.Builder defaultSyncJob() {
-        return createJobBuilder(SYNC_JOB_ID).setPersisted(true)
-                .setMinimumLatency(TimeUnit.MINUTES.toMillis(Constants.MINIMUM_DELAY_SYNC_MINUTES))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
-    }
-
-    private JobInfo dailySyncJob() {
-        return createJobBuilder(DAILY_SYNC_JOB_ID).setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setRequiresDeviceIdle(true)
-                .setPeriodic(TimeUnit.HOURS.toMillis(24)).build();
-    }
-
-    @NonNull
-    private JobInfo.Builder createJobBuilder(int dailySyncJobId) {
-        return new JobInfo.Builder(dailySyncJobId,
-                new ComponentName(getPackageName(),
-                        AppJobService.class.getName()));
     }
 
     @Subscribe

@@ -13,7 +13,6 @@ import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
-import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
@@ -80,8 +79,6 @@ public interface AppComponent {
     void inject(BaseActivity baseActivity);
 
     void inject(MainActivity mainActivity);
-
-    void inject(AppJobService appJobService);
 
     void inject(DayViewFragment dayViewFragment);
 

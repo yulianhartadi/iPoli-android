@@ -12,6 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -32,12 +37,11 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
-import io.ipoli.android.reward.persistence.RealmRewardPersistenceService;
-import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
@@ -56,8 +60,6 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     @Inject
     Bus eventBus;
-
-    RewardPersistenceService rewardPersistenceService;
 
     PlayerPersistenceService playerPersistenceService;
 
@@ -88,9 +90,30 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
         RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        DatabaseReference rewardsRef = database.getReference("players/" + LocalStorage.of(getContext()).readString(Constants.KEY_PLAYER_REMOTE_ID) + "/rewards");
+        rewardsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Reward> rewards = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Reward reward = snapshot.getValue(Reward.class);
+                    reward.setId(snapshot.getKey());
+                    rewards.add(reward);
+                }
+                updateRewards(rewards);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
-        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
-        rewardPersistenceService.findAll(this);
+//        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
+//        rewardPersistenceService.findAll(this);
         return view;
     }
 
@@ -119,7 +142,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        rewardPersistenceService.removeAllListeners();
+//        rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 
@@ -156,9 +179,9 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
         e.reward.markDeleted();
-        rewardPersistenceService.save(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
-            Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
-        });
+//        rewardPersistenceService.save(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
+//            Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
+//        });
     }
 
     @Override

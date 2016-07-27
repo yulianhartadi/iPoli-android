@@ -26,12 +26,16 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -56,6 +60,7 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -127,11 +132,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+        LocalStorage localStorage = LocalStorage.of(this);
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_REMOTE_ID))) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference reference = database.getReference("players");
+            DatabaseReference ref = reference.push();
+            Map<String, String> player = new HashMap<>();
+            player.put("name", "Polisan");
+            ref.setValue(player);
+            localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, ref.getKey());
+        }
 
         questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
 
-        LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();

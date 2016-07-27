@@ -11,3 +11,4 @@ art/
 *.iml
 *APIConstants.java
 *AnalyticsConstants.java
+app/google-services.json
