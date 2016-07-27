@@ -38,15 +38,12 @@ public class FirebasePlayerPersistenceService implements PlayerPersistenceServic
 
     @Override
     public void save(Player player) {
-        if (StringUtils.isEmpty(player.getId())) {
-            DatabaseReference playersRef = database.getReference("players");
-            DatabaseReference playerRef = playersRef.push();
-            playerRef.setValue(player);
-            player.setId(playerRef.getKey());
-        } else {
-            DatabaseReference playerRef = database.getReference("players").child(playerId);
-            playerRef.setValue(player);
-        }
+        DatabaseReference playersRef = database.getReference("players");
+        DatabaseReference playerRef = StringUtils.isEmpty(player.getId()) ?
+                playersRef.push() :
+                playersRef.child(playerId);
+        playerRef.setValue(player);
+        player.setId(playerRef.getKey());
     }
 
     @Override
