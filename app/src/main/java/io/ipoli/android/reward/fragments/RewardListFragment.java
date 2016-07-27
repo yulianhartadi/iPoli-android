@@ -93,7 +93,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        DatabaseReference rewardsRef = database.getReference("players/" + LocalStorage.of(getContext()).readString(Constants.KEY_PLAYER_REMOTE_ID) + "/rewards");
+        DatabaseReference rewardsRef = database.getReference("players").child(LocalStorage.of(getContext()).readString(Constants.KEY_PLAYER_REMOTE_ID)).child("rewards");
         rewardsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
