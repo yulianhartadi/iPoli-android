@@ -13,8 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -28,11 +26,12 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.reward.data.Reward;
+import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.formatters.PriceFormatter;
+import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.ui.dialogs.PricePickerFragment;
 
 /**
@@ -59,6 +58,9 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     private boolean isEdit = false;
     private Reward reward;
 
+    @Inject
+    RewardPersistenceService rewardPersistenceService;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +78,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             eventBus.post(new ScreenShownEvent(EventSource.EDIT_REWARD));
             setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
-//            reward = rewardPersistenceService.findById(rewardId);
+            reward = rewardPersistenceService.findById(rewardId);
             initUI();
         } else {
             eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
@@ -195,18 +197,9 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             reward.setDescription(description);
         }
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        DatabaseReference rewards = database.getReference("players/" + LocalStorage.of(this).readString(Constants.KEY_PLAYER_REMOTE_ID) + "/rewards");
-        DatabaseReference rewardRef = rewards.push();
-
-        rewardRef.setValue(reward);
+        rewardPersistenceService.save(reward);
+        eventBus.post(new NewRewardSavedEvent(reward));
+        Toast.makeText(this, R.string.reward_saved, Toast.LENGTH_SHORT).show();
         finish();
-
-//        rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(reward -> {
-//            eventBus.post(new NewRewardSavedEvent(reward));
-//            Toast.makeText(this, R.string.reward_saved, Toast.LENGTH_SHORT).show();
-//            finish();
-//        });
     }
 }

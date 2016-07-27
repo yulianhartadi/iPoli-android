@@ -34,7 +34,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(T obj) {
-        DatabaseReference collectionRef = database.getReference("players").child(playerId).child(getCollectionName());
+        DatabaseReference collectionRef = getPlayerReference().child(getCollectionName());
         DatabaseReference objRef = collectionRef.push();
         objRef.setValue(obj);
         obj.setId(objRef.getKey());
