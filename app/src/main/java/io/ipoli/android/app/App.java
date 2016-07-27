@@ -122,13 +122,17 @@ public class App extends MultiDexApplication {
     @Inject
     AnalyticsService analyticsService;
 
-    private QuestPersistenceService questPersistenceService;
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
-    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    private ChallengePersistenceService challengePersistenceService;
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
-    private PlayerPersistenceService playerPersistenceService;
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override

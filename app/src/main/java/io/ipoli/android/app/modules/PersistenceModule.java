@@ -16,6 +16,8 @@ import io.ipoli.android.quest.persistence.FirebaseQuestPersistenceService;
 import io.ipoli.android.quest.persistence.FirebaseRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.reward.persistence.FirebaseRewardPersistenceService;
+import io.ipoli.android.reward.persistence.RewardPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -46,6 +48,12 @@ public class PersistenceModule {
     @Singleton
     public ChallengePersistenceService provideChallengePersistenceService(Context context, Bus eventBus) {
         return new FirebaseChallengePersistenceService(context, eventBus);
+    }
+
+    @Provides
+    @Singleton
+    public RewardPersistenceService provideRewardPersistenceService(Context context, Bus eventBus) {
+        return new FirebaseRewardPersistenceService(context, eventBus);
     }
 
 }

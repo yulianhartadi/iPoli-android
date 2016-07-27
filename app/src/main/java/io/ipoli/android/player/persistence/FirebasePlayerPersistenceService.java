@@ -18,6 +18,7 @@ import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
  */
 public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceService<Player> implements PlayerPersistenceService {
 
+
     public FirebasePlayerPersistenceService(Context context, Bus eventBus) {
         super(context, eventBus);
     }
@@ -41,6 +42,8 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
 
             }
         };
+
+
         playerRef.addListenerForSingleValueEvent(valueEventListener);
     }
 }
