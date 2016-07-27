@@ -47,7 +47,6 @@ import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
@@ -97,6 +96,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     List<TextView> reasonTextViews;
 
     private EditMode editMode;
+
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -255,7 +257,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     private Challenge findChallenge() {
         String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
         return challengePersistenceService.findById(challengeId);
     }
 

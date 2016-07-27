@@ -18,8 +18,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
-import io.realm.Realm;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -32,8 +30,8 @@ public class ChallengePickerFragment extends DialogFragment {
     @Inject
     Bus eventBus;
 
-    private Realm realm;
-    private ChallengePersistenceService challengePersistenceService;
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
     private String challengeId;
     private int selectedChallengeIndex;
@@ -62,8 +60,6 @@ public class ChallengePickerFragment extends DialogFragment {
             challengeId = getArguments().getString(CHALLENGE_ID);
         }
 
-        realm = Realm.getDefaultInstance();
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
     }
 
     @NonNull
@@ -98,12 +94,6 @@ public class ChallengePickerFragment extends DialogFragment {
                 });
         return builder.create();
 
-    }
-
-    @Override
-    public void onDestroyView() {
-        realm.close();
-        super.onDestroyView();
     }
 
     public void show(FragmentManager fragmentManager) {

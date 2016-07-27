@@ -43,12 +43,10 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
-public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<RepeatingQuest> {
+public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<List<RepeatingQuest>> {
 
     @Inject
     Bus eventBus;
@@ -62,8 +60,10 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private RepeatingQuestListAdapter repeatingQuestListAdapter;
@@ -86,8 +86,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
         repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this);
         return view;
     }

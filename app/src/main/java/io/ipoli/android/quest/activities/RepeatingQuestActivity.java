@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
@@ -49,8 +51,8 @@ import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
@@ -98,8 +100,12 @@ public class RepeatingQuestActivity extends BaseActivity {
     TextView streak;
 
     private RepeatingQuest repeatingQuest;
-    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
-    private RealmQuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +125,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
     }
 
     @Override

@@ -8,9 +8,8 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
-import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.SchedulerModule;
-import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
@@ -18,8 +17,8 @@ import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
-import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
+import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -57,8 +56,8 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
         modules = {
                 AppModule.class,
                 BusModule.class,
+                PersistenceModule.class,
                 AnalyticsModule.class,
-                RestAPIModule.class,
                 SchedulerModule.class
         }
 )
@@ -93,8 +92,6 @@ public interface AppComponent {
     void inject(PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment);
 
     void inject(PickTutorailQuestsFragment pickTutorailQuestsFragment);
-
-    void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 
     void inject(CalendarFragment calendarFragment);
 

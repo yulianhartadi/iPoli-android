@@ -34,8 +34,6 @@ import com.squareup.otto.Subscribe;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -69,7 +67,6 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -81,7 +78,6 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
@@ -117,8 +113,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     Fragment currentFragment;
@@ -137,14 +135,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference reference = database.getReference("players");
             DatabaseReference ref = reference.push();
-            Map<String, String> player = new HashMap<>();
-            player.put("name", "Polisan");
+            Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
+            player.setCoins(Constants.DEFAULT_PLAYER_COINS);
             ref.setValue(player);
             localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, ref.getKey());
         }
-
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
 
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
@@ -159,7 +154,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        startCalendar();
+//        startCalendar();
+        changeCurrentFragment(new RewardListFragment());
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -192,26 +188,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        Player player = playerPersistenceService.find();
-        View header = navigationView.getHeaderView(0);
-        TextView level = (TextView) header.findViewById(R.id.player_level);
-        level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
+        playerPersistenceService.find(player -> {
+            View header = navigationView.getHeaderView(0);
+            TextView level = (TextView) header.findViewById(R.id.player_level);
+            level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
 
-        TextView coins = (TextView) header.findViewById(R.id.player_coins);
-        coins.setText(String.valueOf(player.getCoins()));
+            TextView coins = (TextView) header.findViewById(R.id.player_coins);
+            coins.setText(String.valueOf(player.getCoins()));
 
-        ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-        experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
-        experienceBar.setProgress(getCurrentProgress(player));
+            ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+            experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+            experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
-        avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-        avatarView.setOnClickListener(v -> {
-            eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
+            CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+            avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+            avatarView.setOnClickListener(v -> {
+                eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
+            });
+
+            TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+            currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
         });
-
-        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
-        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
     }
 
     private int getCurrentProgress(Player player) {
@@ -498,9 +495,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                Player player = playerPersistenceService.find();
-                player.setAvatar(avatar);
-                playerPersistenceService.saveSync(player);
+                playerPersistenceService.find(player -> {
+                    player.setAvatar(avatar);
+                    playerPersistenceService.save(player);
+                });
             }
         }
     }

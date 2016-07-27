@@ -27,10 +27,8 @@ import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.reminders.ReminderMinutesParser;
 import io.ipoli.android.quest.reminders.TimeOffsetType;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -43,12 +41,13 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
         List<String> reminderIds = intent.getStringArrayListExtra(Constants.REMINDER_IDS_EXTRA_KEY);
-        Realm realm = Realm.getDefaultInstance();
-        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         for (String reminderId : reminderIds) {
             Quest q = questPersistenceService.findByReminderId(reminderId);
             if (q == null) {
@@ -70,7 +69,6 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
             }
             showNotification(context, q, reminder);
         }
-        realm.close();
         context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
     }
 

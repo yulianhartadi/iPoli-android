@@ -40,7 +40,6 @@ import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 
 public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnSingleDatabaseObjectChangedListener<Quest> {
@@ -60,6 +59,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     private SubQuestListAdapter adapter;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -78,7 +78,6 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subQuestList.setLayoutManager(layoutManager);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questPersistenceService.findById(questId, this);
 
         adapter = new SubQuestListAdapter(getContext(), eventBus, new ArrayList<>());

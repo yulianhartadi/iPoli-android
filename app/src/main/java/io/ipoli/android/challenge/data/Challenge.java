@@ -3,27 +3,18 @@ package io.ipoli.android.challenge.data;
 import java.util.Date;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class Challenge extends RealmObject implements RemoteObject<Challenge>, RewardProvider {
+public class Challenge extends PersistedObject implements RewardProvider {
 
-    @Required
-    @PrimaryKey
-    private String id;
-
-    @Required
     private String name;
 
     private String category;
@@ -47,75 +38,24 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
 
     private String source;
 
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
-    private Boolean needsSyncWithRemote;
-    private String remoteId;
-    private Boolean isDeleted;
-
     public Challenge() {
     }
 
     public Challenge(String name) {
-        this.id = IDGenerator.generate();
         this.name = name;
         this.category = Category.PERSONAL.name();
         this.source = Constants.API_RESOURCE_SOURCE;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.needsSyncWithRemote = true;
         this.isDeleted = false;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
     }
 
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getName() {
@@ -249,23 +189,7 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
     }
 
     @Override
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    @Override
-    public boolean isDeleted() {
+    public boolean getIsDeleted() {
         return isDeleted;
-    }
-
-    @Override
-    public void markDeleted() {
-        isDeleted = true;
-        markUpdated();
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
     }
 }

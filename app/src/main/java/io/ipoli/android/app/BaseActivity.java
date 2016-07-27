@@ -26,7 +26,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,7 +35,6 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Inject
     protected Bus eventBus;
-    private Realm realm;
 
     protected AppComponent appComponent() {
         return App.getAppComponent(this);
@@ -45,18 +43,7 @@ public class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
         appComponent().inject(this);
-    }
-
-    protected Realm getRealm() {
-        return realm;
-    }
-
-    @Override
-    protected void onDestroy() {
-        realm.close();
-        super.onDestroy();
     }
 
     @Override

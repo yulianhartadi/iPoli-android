@@ -58,8 +58,7 @@ import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestsSavedEvent;
@@ -109,8 +108,11 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
     private Challenge challenge;
 
-    private RealmQuestPersistenceService questPersistenceService;
-    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Nullable
     @Override
@@ -121,9 +123,6 @@ public class ChallengeOverviewFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
 
         challenge = ((ChallengeActivity) getActivity()).getChallenge();
-
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         displayChallenge();
 

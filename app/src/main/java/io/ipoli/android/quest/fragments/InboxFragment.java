@@ -37,9 +37,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
-public class InboxFragment extends BaseFragment implements OnDatabaseChangedListener<Quest> {
+public class InboxFragment extends BaseFragment implements OnDatabaseChangedListener<List<Quest>> {
 
     @Inject
     Bus eventBus;
@@ -53,6 +52,7 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -76,7 +76,6 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(inboxAdapter);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questPersistenceService.findAllUnplanned(this);
         return view;
     }
@@ -119,9 +118,8 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         q.setEndDateFromLocal(new Date());
-        questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
-            Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
-        });
+        questPersistenceService.save(q);
+        Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
     }
 
     @Override

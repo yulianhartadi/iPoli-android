@@ -23,9 +23,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.realm.Realm;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -34,6 +33,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
@@ -47,10 +49,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     @Override
     public void onDataSetChanged() {
         quests.clear();
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         quests.addAll(questPersistenceService.findAllNonAllDayIncompleteForDateSync(new LocalDate()));
-        realm.close();
     }
 
     @Override
@@ -65,7 +64,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public RemoteViews getViewAt(int position) {
-        if(position >= getCount()) {
+        if (position >= getCount()) {
             return getLoadingView();
         }
 

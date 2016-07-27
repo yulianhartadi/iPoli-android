@@ -34,7 +34,6 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.quest.Category;
 
 /**
@@ -63,7 +62,9 @@ public class ChallengeActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
     ChallengePersistenceService challengePersistenceService;
+
     private String challengeId;
     private Challenge challenge;
 
@@ -88,8 +89,6 @@ public class ChallengeActivity extends BaseActivity {
         initViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
-
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
     }
 
     private void initTabIcons() {

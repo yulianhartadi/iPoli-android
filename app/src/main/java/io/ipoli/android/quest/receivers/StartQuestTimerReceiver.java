@@ -23,9 +23,7 @@ import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -40,6 +38,7 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Override
@@ -48,11 +47,8 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Realm realm = Realm.getDefaultInstance();
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         Quest q = questPersistenceService.findById(questId);
         showQuestTimerNotification(q);
-        realm.close();
     }
 
     private void showQuestTimerNotification(Quest q) {

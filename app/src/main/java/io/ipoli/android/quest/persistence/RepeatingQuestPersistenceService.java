@@ -6,7 +6,6 @@ import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.SubQuest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -16,27 +15,17 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests();
 
-    void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener);
+    void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<List<RepeatingQuest>> listener);
 
-    void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<RepeatingQuest> listener);
+    void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<List<RepeatingQuest>> listener);
 
     RepeatingQuest findByExternalSourceMappingId(String source, String sourceId);
 
     List<RepeatingQuest> findAllForChallenge(Challenge challenge);
 
-    void setReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
-
     void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
 
-    void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders, boolean markUpdated);
-
-    void setSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests);
-
-    void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests);
-
-    void saveSubQuests(RepeatingQuest repeatingQuest, List<SubQuest> subQuests, boolean markUpdated);
-
-    void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<RepeatingQuest> listener);
+    void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<List<RepeatingQuest>> listener);
 
     List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge);
 

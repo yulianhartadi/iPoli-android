@@ -1,30 +1,22 @@
 package io.ipoli.android.reward.data;
 
-import com.google.firebase.database.Exclude;
-
 import java.util.Date;
 
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class Reward {
+public class Reward extends PersistedObject {
 
-    private String id;
 
     private String name;
 
     private String description;
 
     private Integer price;
-
-    private Date createdAt;
-
-    private Date updatedAt;
-
-    private boolean isDeleted;
 
     public Reward() {
     }
@@ -37,29 +29,12 @@ public class Reward {
         isDeleted = false;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Exclude
-    public String getId() {
-        return id;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getName() {
@@ -88,10 +63,5 @@ public class Reward {
 
     public boolean getIsDeleted() {
         return isDeleted;
-    }
-
-    public void markDeleted() {
-        updatedAt = DateUtils.nowUTC();
-        isDeleted = true;
     }
 }

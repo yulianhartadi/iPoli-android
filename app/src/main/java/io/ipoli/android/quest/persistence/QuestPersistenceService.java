@@ -18,9 +18,9 @@ import io.ipoli.android.quest.data.SubQuest;
  */
 public interface QuestPersistenceService extends PersistenceService<Quest> {
 
-    void findAllUnplanned(OnDatabaseChangedListener<Quest> listener);
+    void findAllUnplanned(OnDatabaseChangedListener<List<Quest>> listener);
 
-    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener);
+    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<List<Quest>> listener);
 
     List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 
@@ -34,11 +34,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countCompleted(RepeatingQuest repeatingQuest);
 
-    void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
 
     List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
 
@@ -56,19 +56,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByReminderId(String reminderId);
 
-    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
-
-    void setReminders(Quest quest, List<Reminder> reminders);
+    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<List<Quest>> listener);
 
     void saveReminders(Quest quest, List<Reminder> reminders);
 
-    void saveReminders(Quest quest, List<Reminder> reminders, boolean markUpdated);
-
-    void setSubQuests(Quest quest, List<SubQuest> subQuests);
-
     void saveSubQuests(Quest quest, List<SubQuest> subQuests);
-
-    void saveSubQuests(Quest quest, List<SubQuest> subQuests, boolean markUpdated);
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 
@@ -76,7 +68,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener);
 
-    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<Quest> listener);
+    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener);
 
     List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
 

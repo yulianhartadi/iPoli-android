@@ -38,18 +38,18 @@ import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/22/16.
  */
-public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDatabaseChangedListener<Quest> {
+public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDatabaseChangedListener<List<Quest>> {
 
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     @BindView(R.id.root_container)
@@ -71,7 +71,6 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         setContentView(R.layout.activity_pick_daily_challenge_quests);
         ButterKnife.bind(this);
         appComponent().inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -154,7 +153,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         }
         questsToSave.addAll(selectedQuests);
 
-        questPersistenceService.save(questsToSave).subscribe();
+        questPersistenceService.save(questsToSave);
 
         if (!selectedBaseQuests.isEmpty()) {
             Toast.makeText(this, R.string.miq_saved, Toast.LENGTH_LONG).show();
@@ -176,7 +175,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
                 vm.select();
                 previouslySelectedQuests.add(q);
             }
-            if(Quest.isCompleted(q)) {
+            if (Quest.isCompleted(q)) {
                 vm.markCompleted();
             }
             viewModels.add(vm);

@@ -42,13 +42,11 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
-import rx.Observable;
 
-public class TimerFragment extends BaseFragment implements Chronometer.OnChronometerTickListener{
+public class TimerFragment extends BaseFragment implements Chronometer.OnChronometerTickListener {
     public static final String QUEST_ID_KEY = "quest_id";
 
     @Inject
@@ -69,6 +67,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     @BindView(R.id.quest_details_edit)
     ImageButton edit;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -89,7 +88,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         afterOnCreate = true;
         return view;
     }
@@ -105,7 +103,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             questId = getArguments().getString(QUEST_ID_KEY);
         }
     }
@@ -150,41 +148,35 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         super.onResume();
         eventBus.register(this);
         Quest q = questPersistenceService.findById(questId);
-        Observable<Quest> questObservable = null;
         if (afterOnCreate) {
             afterOnCreate = false;
             String action = getActivity().getIntent().getAction();
             if (QuestActivity.ACTION_QUEST_CANCELED.equals(action)) {
-                questObservable = new StopQuestCommand(getContext(), q, questPersistenceService).execute();
+                new StopQuestCommand(getContext(), q, questPersistenceService).execute();
             } else if (QuestActivity.ACTION_START_QUEST.equals(action)) {
                 NotificationManagerCompat.from(getContext()).cancel(getActivity().getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-                questObservable = new StartQuestCommand(getContext(), q, questPersistenceService).execute();
+                new StartQuestCommand(getContext(), q, questPersistenceService).execute();
             }
         }
-        if (questObservable == null) {
-            questObservable = Observable.just(q);
-        }
-        onQuestFound(questObservable);
+        onQuestFound(q);
     }
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
         Quest q = questPersistenceService.findById(questId);
-        onQuestFound(Observable.just(q));
+        onQuestFound(q);
     }
 
-    private void onQuestFound(Observable<Quest> questObservable) {
+    private void onQuestFound(Quest q) {
         QuestNotificationScheduler.stopTimer(questId, getContext());
-        questObservable.subscribe(q -> {
-            this.quest = q;
-            initUI();
-            if (Quest.isStarted(quest)) {
-                elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
-                resumeTimer();
-                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-                edit.setVisibility(View.GONE);
-            }
-        });
+        this.quest = q;
+        initUI();
+        if (Quest.isStarted(quest)) {
+            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
+            resumeTimer();
+            timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
+            edit.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -231,20 +223,16 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         if (isTimerRunning) {
             eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
-            new StopQuestCommand(getContext(), quest, questPersistenceService).execute().subscribe(q -> {
-                quest = q;
-                resetTimerUI();
-                timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
-                edit.setVisibility(View.VISIBLE);
-            });
+            new StopQuestCommand(getContext(), quest, questPersistenceService).execute();
+            resetTimerUI();
+            timerButton.setImageResource(R.drawable.ic_play_arrow_white_32dp);
+            edit.setVisibility(View.VISIBLE);
         } else {
             eventBus.post(new StartQuestTapEvent(quest));
-            new StartQuestCommand(getContext(), quest, questPersistenceService).execute().subscribe(q -> {
-                quest = q;
-                startTimer();
-                timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
-                edit.setVisibility(View.GONE);
-            });
+            new StartQuestCommand(getContext(), quest, questPersistenceService).execute();
+            startTimer();
+            timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
+            edit.setVisibility(View.GONE);
         }
     }
 

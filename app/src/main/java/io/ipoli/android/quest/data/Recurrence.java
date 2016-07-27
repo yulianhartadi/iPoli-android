@@ -2,23 +2,16 @@ package io.ipoli.android.quest.data;
 
 import java.util.Date;
 
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/8/16.
  */
-public class Recurrence extends RealmObject {
+public class Recurrence extends PersistedObject {
 
     public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
-
-    @Required
-    @PrimaryKey
-    private String id;
 
     private int timesADay;
     private int flexibleCount;
@@ -32,17 +25,12 @@ public class Recurrence extends RealmObject {
     private Date dtstart;
     private Date dtend;
     private String type;
-    @Required
-    private Date createdAt;
-    @Required
-    private Date updatedAt;
 
     public Recurrence() {
 
     }
 
     public Recurrence(int timesADay) {
-        id = IDGenerator.generate();
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
         setType(RecurrenceType.DAILY);
@@ -118,28 +106,17 @@ public class Recurrence extends RealmObject {
         this.dtend = dtend;
     }
 
+    @Override
+    public boolean getIsDeleted() {
+        return isDeleted;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public int getFlexibleCount() {
@@ -149,7 +126,7 @@ public class Recurrence extends RealmObject {
     public void setFlexibleCount(int flexibleCount) {
         this.flexibleCount = flexibleCount;
     }
-    
+
     public RecurrenceType getRecurrenceType() {
         return RecurrenceType.valueOf(type);
     }

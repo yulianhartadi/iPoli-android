@@ -2,10 +2,9 @@ package io.ipoli.android.quest.commands;
 
 import android.content.Context;
 
-import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import rx.Observable;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,11 +22,9 @@ public class StopQuestCommand {
         this.questPersistenceService = questPersistenceService;
     }
 
-    public Observable<Quest> execute() {
+    public void execute() {
         quest.setActualStart(null);
-        return questPersistenceService.save(quest).flatMap(q -> {
-            QuestNotificationScheduler.stopAll(q.getId(), context);
-            return Observable.just(q);
-        });
+        questPersistenceService.save(quest);
+            QuestNotificationScheduler.stopAll(quest.getId(), context);
     }
 }

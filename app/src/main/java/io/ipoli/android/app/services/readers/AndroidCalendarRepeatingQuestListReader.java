@@ -44,7 +44,6 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
             if (foundRepeatingQuest != null) {
                 repeatingQuest.setId(foundRepeatingQuest.getId());
                 repeatingQuest.setCreatedAt(foundRepeatingQuest.getCreatedAt());
-                repeatingQuest.setRemoteId(foundRepeatingQuest.getRemoteId());
             }
             repeatingQuest.setName(e.title);
             repeatingQuest.setSource(Constants.SOURCE_ANDROID_CALENDAR);

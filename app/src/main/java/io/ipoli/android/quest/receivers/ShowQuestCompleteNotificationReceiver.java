@@ -17,11 +17,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.realm.Realm;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -34,6 +32,7 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private NotificationCompat.Builder createNotificationBuilder(Context context, Quest q) {
@@ -67,12 +66,9 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         QuestNotificationScheduler.stopTimer(questId, context);
-        Realm realm = Realm.getDefaultInstance();
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
         Quest q = questPersistenceService.findById(questId);
         NotificationCompat.Builder builder = createNotificationBuilder(context, q);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(Constants.QUEST_COMPLETE_NOTIFICATION_ID, builder.build());
-        realm.close();
     }
 }

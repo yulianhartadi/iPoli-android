@@ -14,8 +14,6 @@ import java.util.List;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.data.Reminder;
-import io.ipoli.android.quest.reminders.persistence.RealmReminderPersistenceService;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -45,10 +43,7 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
     }
 
     private List<Reminder> getReminders() {
-        Realm realm = Realm.getDefaultInstance();
-        List<Reminder> reminders = new RealmReminderPersistenceService(realm).findNextReminders();
-        realm.close();
-        return reminders;
+        return new ArrayList<>();
     }
 
     @NonNull

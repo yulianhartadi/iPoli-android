@@ -37,7 +37,6 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 
@@ -45,7 +44,7 @@ import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class ChallengeListFragment extends BaseFragment implements OnDatabaseChangedListener<Challenge> {
+public class ChallengeListFragment extends BaseFragment implements OnDatabaseChangedListener<List<Challenge>> {
 
     private Unbinder unbinder;
 
@@ -60,7 +59,9 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private ChallengePersistenceService challengePersistenceService;
+
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
     @Nullable
     @Override
@@ -79,7 +80,6 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
         ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), new ArrayList<>(), eventBus);
         challengeList.setAdapter(adapter);
 
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
         challengePersistenceService.findAllNotCompleted(this);
 
         return view;
@@ -143,7 +143,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
     public void onChallengeCompleted(ChallengeCompletedEvent e) {
         Snackbar
                 .make(rootLayout,
-                        getString(R.string.challenge_complete, e.challenge.getExperience(), e.challenge.getCoins()),
+                        getString(R.string.challenge_complete, e.challenge.getName()),
                         Snackbar.LENGTH_LONG).show();
     }
 }

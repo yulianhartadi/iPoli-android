@@ -38,9 +38,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
@@ -54,13 +52,14 @@ import io.ipoli.android.reward.viewmodels.RewardViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends BaseFragment implements OnDatabaseChangedListener<Reward> {
+public class RewardListFragment extends BaseFragment implements OnDatabaseChangedListener<List<Reward>> {
 
     private Unbinder unbinder;
 
     @Inject
     Bus eventBus;
 
+    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.reward_list)
@@ -111,9 +110,6 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
             }
         });
-        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
-//        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
-//        rewardPersistenceService.findAll(this);
         return view;
     }
 
@@ -154,15 +150,17 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
-        Player player = playerPersistenceService.find();
-        if (player.getCoins() - r.getPrice() < 0) {
-            showTooExpensiveMessage();
-            return;
-        }
-        player.removeCoins(r.getPrice());
-        playerPersistenceService.saveSync(player);
-        updateRewards(rewards);
-        Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
+        playerPersistenceService.find(player -> {
+            if (player.getCoins() - r.getPrice() < 0) {
+                showTooExpensiveMessage();
+                return;
+            }
+            player.removeCoins(r.getPrice());
+            playerPersistenceService.save(player);
+            updateRewards(rewards);
+            Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
+
+        });
     }
 
     private void showTooExpensiveMessage() {
@@ -192,11 +190,12 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
 
     private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
-        Player player = playerPersistenceService.find();
-        for (Reward r : rewards) {
-            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
-        }
-        RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
-        rewardList.setAdapter(rewardListAdapter);
+        playerPersistenceService.find(player -> {
+            for (Reward r : rewards) {
+                rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
+            }
+            RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+            rewardList.setAdapter(rewardListAdapter);
+        });
     }
 }

@@ -46,7 +46,6 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
             if (foundQuest != null) {
                 q.setId(foundQuest.getId());
                 q.setCreatedAt(foundQuest.getCreatedAt());
-                q.setRemoteId(foundQuest.getRemoteId());
             }
             DateTimeZone timeZone = DateTimeZone.getDefault();
             if(!TextUtils.isEmpty(e.eventTimeZone)) {

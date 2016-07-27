@@ -33,14 +33,11 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
@@ -55,9 +52,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    private ChallengePersistenceService challengePersistenceService;
-    private QuestPersistenceService questPersistenceService;
-    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -81,17 +83,12 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         setContentView(R.layout.activity_pick_challenge_quests);
         ButterKnife.bind(this);
         appComponent().inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
         challenge = challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -224,10 +221,10 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         }
 
         if (!quests.isEmpty()) {
-            questPersistenceService.save(quests).compose(bindToLifecycle()).subscribe();
+            questPersistenceService.save(quests);
         }
         if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.save(repeatingQuests).compose(bindToLifecycle()).subscribe();
+            repeatingQuestPersistenceService.save(repeatingQuests);
         }
         finish();
     }

@@ -36,7 +36,6 @@ import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 
 /**
@@ -64,7 +63,9 @@ public class QuestActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
+
     private String questId;
 
     @Override
@@ -84,7 +85,6 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 
         initViewPager(viewPager);

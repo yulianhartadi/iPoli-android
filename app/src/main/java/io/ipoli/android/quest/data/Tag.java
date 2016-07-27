@@ -2,25 +2,15 @@ package io.ipoli.android.quest.data;
 
 import java.util.Date;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
+import io.ipoli.android.app.persistence.PersistedObject;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class Tag extends RealmObject {
+public class Tag extends PersistedObject {
 
-    @Required
-    @PrimaryKey
     private String name;
-
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
 
     public Tag() {
     }
@@ -33,19 +23,16 @@ public class Tag extends RealmObject {
         this.name = name;
     }
 
+    @Override
+    public boolean getIsDeleted() {
+        return isDeleted;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

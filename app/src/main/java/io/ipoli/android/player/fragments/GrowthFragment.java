@@ -59,7 +59,6 @@ import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -94,6 +93,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -107,7 +107,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         ((MainActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {

@@ -30,7 +30,6 @@ import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
-import io.realm.RealmList;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -135,7 +134,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         notifyItemInserted(subQuests.size() - 1);
     }
 
-    public void setSubQuests(RealmList<SubQuest> subQuests) {
+    public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests.clear();
         this.subQuests.addAll(subQuests);
         notifyDataSetChanged();

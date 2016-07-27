@@ -86,7 +86,7 @@ public class PersistentRepeatingQuestScheduler {
         long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(repeatingQuest, startOfPeriodDate, endOfPeriodDate);
         if (createdQuestsCount == 0) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
-            questPersistenceService.saveSync(questsToCreate);
+            questPersistenceService.save(questsToCreate);
         }
     }
 

@@ -5,16 +5,14 @@ import com.google.firebase.database.Exclude;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class Reminder {
-
-    private String id;
+public class Reminder extends PersistedObject {
 
     private String message;
 
@@ -25,17 +23,10 @@ public class Reminder {
 
     private Date startTime;
 
-    private Date createdAt;
-
-    private Date updatedAt;
-
-    private Boolean isDeleted;
-
     public Reminder() {
     }
 
     public Reminder(long minutesFromStart, int notificationId) {
-        this.id = IDGenerator.generate();
         this.notificationId = notificationId;
         this.minutesFromStart = minutesFromStart;
         this.isDeleted = false;
@@ -43,38 +34,16 @@ public class Reminder {
         updatedAt = DateUtils.nowUTC();
     }
 
-    @Exclude
-    public String getId() {
-        return id;
-    }
-
     public boolean getIsDeleted() {
         return isDeleted;
-    }
-
-    public void markDeleted() {
-        isDeleted = true;
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public long getMinutesFromStart() {

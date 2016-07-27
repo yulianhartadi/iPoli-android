@@ -1,29 +1,22 @@
 package io.ipoli.android.quest.data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class RepeatingQuest extends RealmObject implements RemoteObject<RepeatingQuest>, BaseQuest {
+public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
-    @Required
-    @PrimaryKey
-    private String id;
     private String rawText;
 
     private String name;
@@ -34,20 +27,14 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     private Integer priority;
 
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
     private Integer startMinute;
 
     private String preferredStartTime;
     private Boolean flexibleStartTime;
 
     private Integer duration;
-    private RealmList<Reminder> reminders;
-    private RealmList<SubQuest> subQuests;
+    private List<Reminder> reminders;
+    private List<SubQuest> subQuests;
 
     private Recurrence recurrence;
 
@@ -57,11 +44,7 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     private String source;
 
-    private boolean needsSyncWithRemote;
-    private String remoteId;
-
     private SourceMapping sourceMapping;
-    private boolean isDeleted;
 
     public RepeatingQuest() {
     }
@@ -70,11 +53,11 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
-    public RealmList<Reminder> getReminders() {
+    public List<Reminder> getReminders() {
         return reminders;
     }
 
-    public void setReminders(RealmList<Reminder> reminders) {
+    public void setReminders(List<Reminder> reminders) {
         this.reminders = reminders;
     }
 
@@ -102,15 +85,11 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
     }
 
     public RepeatingQuest(String rawText) {
-        this.id = IDGenerator.generate();
         this.rawText = rawText;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
         this.category = Category.PERSONAL.name();
-        this.reminders = new RealmList<>();
-        this.subQuests = new RealmList<>();
         this.flexibleStartTime = false;
-        this.needsSyncWithRemote = true;
         this.source = Constants.API_RESOURCE_SOURCE;
         this.isDeleted = false;
     }
@@ -159,17 +138,11 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         return startMinute != null ? startMinute : -1;
     }
 
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    public RealmList<SubQuest> getSubQuests() {
+    public List<SubQuest> getSubQuests() {
         return subQuests;
     }
 
-    public void setSubQuests(RealmList<SubQuest> subQuests) {
+    public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests = subQuests;
     }
 
@@ -179,6 +152,11 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public boolean getIsDeleted() {
+        return isDeleted;
     }
 
     public Recurrence getRecurrence() {
@@ -197,21 +175,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
         this.source = source;
     }
 
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
     public SourceMapping getSourceMapping() {
         return sourceMapping;
     }
@@ -226,37 +189,6 @@ public class RepeatingQuest extends RealmObject implements RemoteObject<Repeatin
 
     public void setAllDay(boolean allDay) {
         this.allDay = allDay;
-    }
-
-    @Override
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    @Override
-    public void markDeleted() {
-        if (getReminders() != null) {
-            for (Reminder r : getReminders()) {
-                r.markDeleted();
-            }
-        }
-        if(getSubQuests() != null) {
-            for(SubQuest sq : getSubQuests()) {
-                sq.markDeleted();
-            }
-        }
-        isDeleted = true;
-        markUpdated();
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
     }
 
     public String getNote() {

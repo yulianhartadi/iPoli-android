@@ -59,7 +59,6 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
@@ -86,8 +85,6 @@ import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.reminders.ReminderMinutesParser;
 import io.ipoli.android.quest.reminders.TimeOffsetType;
@@ -174,6 +171,15 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_reminders_container)
     ViewGroup remindersContainer;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
     private BaseSuggestionsAdapter adapter;
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
@@ -221,7 +227,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void onEditQuest() {
         changeEditMode(EditMode.EDIT_QUEST);
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
+
         Quest quest = questPersistenceService.findById(questId);
         questText.setText(quest.getName());
         questText.setSelection(quest.getName().length());
@@ -249,8 +255,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void onEditRepeatingQuest() {
         changeEditMode(EditMode.EDIT_REPEATING_QUEST);
         String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        RepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        RepeatingQuest rq = questPersistenceService.findById(questId);
+
+        RepeatingQuest rq = repeatingQuestPersistenceService.findById(questId);
         questText.setText(rq.getName());
         questText.setSelection(rq.getName().length());
         populateDuration(rq.getDuration());
@@ -371,7 +377,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             case R.id.action_delete:
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_quest_title)).setMessage(getString(R.string.dialog_delete_quest_message)).create();
                 if (editMode == EditMode.EDIT_QUEST) {
-                    QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
                     String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
                     Quest quest = questPersistenceService.findById(questId);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
@@ -385,9 +390,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                     });
                     d.show();
                 } else if (editMode == EditMode.EDIT_REPEATING_QUEST) {
-                    RepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
                     String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-                    RepeatingQuest repeatingQuest = questPersistenceService.findById(questId);
+                    RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findById(questId);
                     d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                         eventBus.post(new DeleteRepeatingQuestRequestEvent(repeatingQuest, EventSource.EDIT_QUEST));
                         Toast.makeText(this, R.string.repeating_quest_deleted, Toast.LENGTH_SHORT).show();
@@ -427,7 +431,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             return;
         }
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         Quest q = questPersistenceService.findById(questId);
         q.setName(name);
         q.setEndDateFromLocal((Date) endDateText.getTag());
@@ -465,8 +468,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             return;
         }
         String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        RealmRepeatingQuestPersistenceService questPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        RepeatingQuest rq = questPersistenceService.findById(questId);
+        RepeatingQuest rq = repeatingQuestPersistenceService.findById(questId);
         rq.setName(name);
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
@@ -648,7 +650,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (challengeId == null) {
             return null;
         }
-        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+
         return challengePersistenceService.findById(challengeId);
     }
 
