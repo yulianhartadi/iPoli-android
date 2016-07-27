@@ -89,16 +89,18 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        challenge = challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY));
+        challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY), challenge -> {
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        questList.setLayoutManager(layoutManager);
-        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
-        questList.setAdapter(adapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            questList.setLayoutManager(layoutManager);
+            questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+            adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
+            questList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+            eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+
+        });
     }
 
     @NonNull

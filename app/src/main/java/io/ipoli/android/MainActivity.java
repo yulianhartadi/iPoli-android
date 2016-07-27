@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        playerPersistenceService.find(player -> {
+        playerPersistenceService.listenForChanges(player -> {
             View header = navigationView.getHeaderView(0);
             TextView level = (TextView) header.findViewById(R.id.player_level);
             level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
@@ -230,9 +230,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (isFromAction(ACTION_QUEST_COMPLETE)) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
-            Quest quest = questPersistenceService.findById(questId);
-            startCalendar();
-            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
+            questPersistenceService.findById(questId, quest -> {
+                startCalendar();
+                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
+            });
         } else if (isFromAction(ACTION_ADD_QUEST_FROM_WIDGET)) {
             eventBus.post(new AddQuestRequestEvent(EventSource.WIDGET));
             setIntent(null);

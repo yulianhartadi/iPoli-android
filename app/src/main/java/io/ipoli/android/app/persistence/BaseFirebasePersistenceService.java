@@ -2,6 +2,8 @@ package io.ipoli.android.app.persistence;
 
 import android.content.Context;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -13,6 +15,7 @@ import java.util.Map;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -46,8 +49,22 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
-    public T findById(String id) {
-        return null;
+    public void findById(String id, OnDatabaseChangedListener<T> listener) {
+        DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onDatabaseChanged(dataSnapshot.getValue(getModelClass()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+
+        dbRef.addListenerForSingleValueEvent(valueEventListener);
     }
 
     @Override
@@ -61,6 +78,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             ref.removeEventListener(valueListeners.get(ref));
         }
     }
+
+    protected abstract Class<T> getModelClass();
 
     protected abstract String getCollectionName();
 

@@ -38,11 +38,11 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
-import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
+import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 
-public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnSingleDatabaseObjectChangedListener<Quest> {
+public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnDatabaseChangedListener<Quest> {
 
     private static final String QUEST_ID_KEY = "quest_id";
     @Inject
@@ -100,7 +100,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             questId = getArguments().getString(QUEST_ID_KEY);
         }
     }
@@ -130,7 +130,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     @Override
     public void onPause() {
-        if(getUserVisibleHint()) {
+        if (getUserVisibleHint()) {
             saveSubquests();
         }
         eventBus.unregister(this);
@@ -148,7 +148,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     @Override
     public void onFocusChange(View view, boolean isFocused) {
-        if(addSubQuest == null) {
+        if (addSubQuest == null) {
             return;
         }
         String text = addSubQuest.getText().toString();
@@ -198,7 +198,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     private void addSubquest() {
         String name = addSubQuest.getText().toString();
-        if(StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             return;
         }
 
@@ -209,7 +209,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     }
 
     @Override
-    public void onDatabaseObjectChanged(Quest result) {
+    public void onDatabaseChanged(Quest result) {
         quest = result;
         adapter.setSubQuests(result.getSubQuests());
     }

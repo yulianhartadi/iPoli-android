@@ -21,6 +21,11 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     }
 
     @Override
+    protected Class<Challenge> getModelClass() {
+        return Challenge.class;
+    }
+
+    @Override
     protected String getCollectionName() {
         return "challenges";
     }

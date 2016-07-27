@@ -27,6 +27,11 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
+    protected Class<Reward> getModelClass() {
+        return Reward.class;
+    }
+
+    @Override
     protected String getCollectionName() {
         return "rewards";
     }

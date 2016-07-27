@@ -147,24 +147,28 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        Quest q = questPersistenceService.findById(questId);
-        if (afterOnCreate) {
-            afterOnCreate = false;
-            String action = getActivity().getIntent().getAction();
-            if (QuestActivity.ACTION_QUEST_CANCELED.equals(action)) {
-                new StopQuestCommand(getContext(), q, questPersistenceService).execute();
-            } else if (QuestActivity.ACTION_START_QUEST.equals(action)) {
-                NotificationManagerCompat.from(getContext()).cancel(getActivity().getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-                new StartQuestCommand(getContext(), q, questPersistenceService).execute();
+        questPersistenceService.findById(questId, q -> {
+
+
+            if (afterOnCreate) {
+                afterOnCreate = false;
+                String action = getActivity().getIntent().getAction();
+                if (QuestActivity.ACTION_QUEST_CANCELED.equals(action)) {
+                    new StopQuestCommand(getContext(), q, questPersistenceService).execute();
+                } else if (QuestActivity.ACTION_START_QUEST.equals(action)) {
+                    NotificationManagerCompat.from(getContext()).cancel(getActivity().getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
+                    new StartQuestCommand(getContext(), q, questPersistenceService).execute();
+                }
             }
-        }
-        onQuestFound(q);
+            onQuestFound(q);
+        });
     }
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = questPersistenceService.findById(questId);
-        onQuestFound(q);
+        questPersistenceService.findById(questId, q -> {
+            onQuestFound(q);
+        });
     }
 
     private void onQuestFound(Quest q) {

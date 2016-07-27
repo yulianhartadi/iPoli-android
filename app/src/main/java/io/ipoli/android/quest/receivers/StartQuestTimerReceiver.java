@@ -43,12 +43,15 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        PendingResult result = goAsync();
         this.context = context;
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Quest q = questPersistenceService.findById(questId);
-        showQuestTimerNotification(q);
+        questPersistenceService.findById(questId, q -> {
+            showQuestTimerNotification(q);
+            result.finish();
+        });
     }
 
     private void showQuestTimerNotification(Quest q) {

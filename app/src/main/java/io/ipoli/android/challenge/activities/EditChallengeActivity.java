@@ -153,23 +153,25 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         editMode = EditMode.EDIT;
         toolbarTitle.setText(R.string.title_edit_challenge);
 
-        Challenge challenge = findChallenge();
+        String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+        challengePersistenceService.findById(challengeId, challenge -> {
 
-        nameText.setText(challenge.getName());
-        nameText.setSelection(challenge.getName().length());
-        categoryView.changeCategory(challenge.getCategory());
-        populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
-                challenge.getExpectedResult1(),
-                challenge.getExpectedResult2(),
-                challenge.getExpectedResult3()
-        })));
-        populateReasons(new ArrayList<>(Arrays.asList(new String[]{
-                challenge.getReason1(),
-                challenge.getReason2(),
-                challenge.getReason3()
-        })));
-        populateEndDate(challenge.getEndDate());
-        populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
+            nameText.setText(challenge.getName());
+            nameText.setSelection(challenge.getName().length());
+            categoryView.changeCategory(challenge.getCategory());
+            populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
+                    challenge.getExpectedResult1(),
+                    challenge.getExpectedResult2(),
+                    challenge.getExpectedResult3()
+            })));
+            populateReasons(new ArrayList<>(Arrays.asList(new String[]{
+                    challenge.getReason1(),
+                    challenge.getReason2(),
+                    challenge.getReason3()
+            })));
+            populateEndDate(challenge.getEndDate());
+            populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
+        });
     }
 
     @Override
@@ -195,17 +197,19 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                         .setTitle(getString(R.string.dialog_delete_challenge_title))
                         .setMessage(getString(R.string.dialog_delete_challenge_message))
                         .create();
-                Challenge challenge = findChallenge();
-                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));
-                    Toast.makeText(this, R.string.challenge_deleted, Toast.LENGTH_SHORT).show();
-                    setResult(Constants.RESULT_REMOVED);
-                    finish();
+                String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+                challengePersistenceService.findById(challengeId, challenge -> {
+                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
+                        eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));
+                        Toast.makeText(this, R.string.challenge_deleted, Toast.LENGTH_SHORT).show();
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
+                        eventBus.post(new CancelDeleteChallengeEvent(challenge, EventSource.EDIT_CHALLENGE));
+                    });
+                    d.show();
                 });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                    eventBus.post(new CancelDeleteChallengeEvent(challenge, EventSource.EDIT_CHALLENGE));
-                });
-                d.show();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
@@ -249,15 +253,13 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void updateChallenge(EventSource source) {
-        Challenge challenge = findChallenge();
-        challenge.setName(nameText.getText().toString().trim());
-        populateChallengeFromForm(challenge);
-        eventBus.post(new UpdateChallengeEvent(challenge, source));
-    }
-
-    private Challenge findChallenge() {
         String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        return challengePersistenceService.findById(challengeId);
+        challengePersistenceService.findById(challengeId, challenge -> {
+            challenge.setName(nameText.getText().toString().trim());
+            populateChallengeFromForm(challenge);
+            eventBus.post(new UpdateChallengeEvent(challenge, source));
+        });
+
     }
 
     private void populateChallengeFromForm(Challenge challenge) {

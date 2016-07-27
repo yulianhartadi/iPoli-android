@@ -167,11 +167,12 @@ public class ChallengeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        challenge = challengePersistenceService.findById(challengeId);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(challenge.getName());
-        }
-        setBackgroundColors(challenge.getCategory());
+        challengePersistenceService.findById(challengeId, challenge -> {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(challenge.getName());
+            }
+            setBackgroundColors(challenge.getCategory());
+        });
     }
 
     @Override

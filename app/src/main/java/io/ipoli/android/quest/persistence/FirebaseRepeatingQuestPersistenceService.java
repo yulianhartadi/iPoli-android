@@ -22,8 +22,13 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
+    protected Class<RepeatingQuest> getModelClass() {
+        return RepeatingQuest.class;
+    }
+
+    @Override
     protected String getCollectionName() {
-        return null;
+        return "repeating-quests";
     }
 
 

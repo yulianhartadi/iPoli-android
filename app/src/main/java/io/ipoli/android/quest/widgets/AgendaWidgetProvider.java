@@ -25,7 +25,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -85,11 +84,12 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     }
 
     private void onQuestComplete(String questId) {
-        Quest quest = questPersistenceService.findById(questId);
-        if (quest == null) {
-            return;
-        }
-        eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.WIDGET));
+        questPersistenceService.findById(questId, quest -> {
+            if (quest == null) {
+                return;
+            }
+            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.WIDGET));
+        });
     }
 
     @Override

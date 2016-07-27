@@ -31,7 +31,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.Category;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
@@ -143,7 +142,7 @@ public class QuestActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position != SUB_QUESTS_TAB_POSITION) {
+                if (position != SUB_QUESTS_TAB_POSITION) {
                     eventBus.post(new SaveSubQuestsRequestEvent());
                 }
                 hideKeyboard();
@@ -165,9 +164,11 @@ public class QuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        Quest quest = questPersistenceService.findById(questId);
-        getSupportActionBar().setTitle(quest.getName());
-        setBackgroundColors(quest.getCategory());
+
+        questPersistenceService.findById(questId, quest -> {
+            getSupportActionBar().setTitle(quest.getName());
+            setBackgroundColors(quest.getCategory());
+        });
     }
 
     @Override
@@ -178,8 +179,7 @@ public class QuestActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = questPersistenceService.findById(questId);
-        setBackgroundColors(q.getCategory());
+        setBackgroundColors(e.quest.getCategory());
     }
 
     @Subscribe

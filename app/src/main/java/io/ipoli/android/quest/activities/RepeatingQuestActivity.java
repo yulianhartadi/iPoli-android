@@ -153,15 +153,15 @@ public class RepeatingQuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
+        repeatingQuestPersistenceService.findById(repeatingQuestId, repeatingQuest -> {
+            if (repeatingQuest == null) {
+                finish();
+                return;
+            }
 
-        if (repeatingQuest == null) {
-            finish();
-            return;
-        }
-
-        eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
-        displayRepeatingQuest();
+            eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+            displayRepeatingQuest();
+        });
     }
 
     private Pair<LocalDate, LocalDate> getCurrentInterval() {

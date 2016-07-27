@@ -27,8 +27,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    protected Class<Quest> getModelClass() {
+        return Quest.class;
+    }
+
+    @Override
     protected String getCollectionName() {
-        return null;
+        return "quests";
     }
 
     @Override
@@ -149,11 +154,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public Date findNextUncompletedQuestEndDate(Challenge challenge) {
         return null;
-    }
-
-    @Override
-    public void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener) {
-
     }
 
     @Override
