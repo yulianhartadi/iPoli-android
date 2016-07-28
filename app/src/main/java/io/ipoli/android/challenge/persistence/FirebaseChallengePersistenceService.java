@@ -47,9 +47,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
                     if(snapshot.hasChild("completedAt")) {
                         continue;
                     }
-                    Challenge c = snapshot.getValue(getModelClass());
-                    c.setId(snapshot.getKey());
-                    challenges.add(c);
+                    challenges.add(snapshot.getValue(getModelClass()));
                 }
                 listener.onDatabaseChanged(challenges);
             }

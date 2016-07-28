@@ -22,13 +22,12 @@ import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
+import io.ipoli.android.reminders.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -234,7 +233,6 @@ public class RepeatingQuestScheduler {
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
         quest.setOriginalStartDate(endDate);
-        quest.setId(IDGenerator.generate());
         quest.setCreatedAt(DateUtils.nowUTC());
         quest.setUpdatedAt(DateUtils.nowUTC());
         quest.setFlexibleStartTime(false);

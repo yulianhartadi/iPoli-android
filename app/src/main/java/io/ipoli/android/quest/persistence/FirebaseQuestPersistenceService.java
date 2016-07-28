@@ -103,9 +103,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Quest> quests = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Quest q = snapshot.getValue(getModelClass());
-                    q.setId(snapshot.getKey());
-                    quests.add(q);
+                    quests.add(snapshot.getValue(getModelClass()));
                 }
 
                 listener.onDatabaseChanged(quests);

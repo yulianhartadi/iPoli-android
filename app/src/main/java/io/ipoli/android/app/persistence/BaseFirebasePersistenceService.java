@@ -58,11 +58,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                T foundObject = dataSnapshot.getValue(getModelClass());
-                if (foundObject != null) {
-                    foundObject.setId(id);
-                }
-                listener.onDatabaseChanged(foundObject);
+                listener.onDatabaseChanged(dataSnapshot.getValue(getModelClass()));
             }
 
             @Override
