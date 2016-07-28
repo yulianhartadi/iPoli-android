@@ -4,12 +4,14 @@ import android.content.Context;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -23,6 +25,13 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
 
     public FirebaseRewardPersistenceService(Context context, Bus eventBus) {
         super(context, eventBus);
+    }
+
+    @Override
+    protected GenericTypeIndicator<Map<String, Reward>> getGenericMapIndicator() {
+        return new GenericTypeIndicator<Map<String, Reward>>() {
+
+        };
     }
 
     @Override
