@@ -224,25 +224,20 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() == 0) {
-                    listener.onDataChanged(null);
-                    return;
-                }
-                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {};
-                List<Quest> quests = new ArrayList<>(dataSnapshot.getValue(t).values());
+                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
                 Date startDate = toStartOfDayUTC(LocalDate.now());
                 Date nextDate = null;
-                for(Quest q : quests) {
-                    if(q.getEndDate() == null) {
+                for (Quest q : quests) {
+                    if (q.getEndDate() == null) {
                         continue;
                     }
-                    if(q.getEndDate().before(startDate)) {
+                    if (q.getEndDate().before(startDate)) {
                         continue;
                     }
-                    if(nextDate == null) {
+                    if (nextDate == null) {
                         nextDate = q.getEndDate();
                     }
-                    if(q.getEndDate().before(nextDate)) {
+                    if (q.getEndDate().before(nextDate)) {
                         nextDate = q.getEndDate();
                     }
                 }
