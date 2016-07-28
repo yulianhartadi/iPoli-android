@@ -16,7 +16,7 @@ import java.util.Map;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -52,13 +52,13 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
-    public void findById(String id, OnDatabaseChangedListener<T> listener) {
+    public void findById(String id, OnDataChangedListener<T> listener) {
         DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
 //        Query query = dbRef.orderByChild("isDeleted").equalTo(false);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDatabaseChanged(dataSnapshot.getValue(getModelClass()));
+                listener.onDataChanged(dataSnapshot.getValue(getModelClass()));
             }
 
             @Override

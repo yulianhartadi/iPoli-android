@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.data.Reward;
 
 /**
@@ -36,7 +36,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
-    public void findAll(OnDatabaseChangedListener<List<Reward>> listener) {
+    public void findAll(OnDataChangedListener<List<Reward>> listener) {
         Query query = getCollectionReference().orderByChild("isDeleted").equalTo(false);
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -48,7 +48,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
                     reward.setId(snapshot.getKey());
                     rewards.add(reward);
                 }
-                listener.onDatabaseChanged(rewards);
+                listener.onDataChanged(rewards);
             }
 
             @Override

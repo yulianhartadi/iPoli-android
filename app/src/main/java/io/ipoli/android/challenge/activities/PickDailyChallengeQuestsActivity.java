@@ -36,7 +36,7 @@ import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
@@ -44,7 +44,7 @@ import io.ipoli.android.tutorial.PickQuestViewModel;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/22/16.
  */
-public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDatabaseChangedListener<List<Quest>> {
+public class PickDailyChallengeQuestsActivity extends BaseActivity implements OnDataChangedListener<List<Quest>> {
 
     @Inject
     Bus eventBus;
@@ -163,7 +163,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     }
 
     @Override
-    public void onDatabaseChanged(List<Quest> quests) {
+    public void onDataChanged(List<Quest> quests) {
         previouslySelectedQuests.clear();
         List<PickQuestViewModel> viewModels = new ArrayList<>();
         for (Quest q : quests) {

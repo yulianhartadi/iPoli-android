@@ -18,9 +18,9 @@ import io.ipoli.android.quest.data.SubQuest;
  */
 public interface QuestPersistenceService extends PersistenceService<Quest> {
 
-    void listenForUnplanned(OnDatabaseChangedListener<List<Quest>> listener);
+    void listenForUnplanned(OnDataChangedListener<List<Quest>> listener);
 
-    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<List<Quest>> listener);
+    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
     List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
 
@@ -34,11 +34,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countCompleted(RepeatingQuest repeatingQuest);
 
-    void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
+    void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
+    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener);
+    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
     List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
 
@@ -56,7 +56,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByReminderId(String reminderId);
 
-    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<List<Quest>> listener);
+    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
     void saveReminders(Quest quest, List<Reminder> reminders);
 
@@ -66,17 +66,17 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Date findNextUncompletedQuestEndDate(Challenge challenge);
 
-    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener);
+    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
     List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
 
-    void findAllCompleted(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener);
+    void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
     long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
 
-    void countCompleted(Challenge challenge, OnDatabaseChangedListener<Long> listener);
+    void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener);
 
-    void countNotRepeating(Challenge challenge, OnDatabaseChangedListener<Long> listener);
+    void countNotRepeating(Challenge challenge, OnDataChangedListener<Long> listener);
 
-    void countNotDeleted(Challenge challenge, OnDatabaseChangedListener<Long> listener);
+    void countNotDeleted(Challenge challenge, OnDataChangedListener<Long> listener);
 }

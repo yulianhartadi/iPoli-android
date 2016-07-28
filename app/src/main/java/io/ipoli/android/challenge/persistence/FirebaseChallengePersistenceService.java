@@ -13,7 +13,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,7 +36,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     }
 
     @Override
-    public void findAllNotCompleted(OnDatabaseChangedListener<List<Challenge>> listener) {
+    public void findAllNotCompleted(OnDataChangedListener<List<Challenge>> listener) {
         Query query = getCollectionReference().orderByChild("endDate/time");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -49,7 +49,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
                     }
                     challenges.add(snapshot.getValue(getModelClass()));
                 }
-                listener.onDatabaseChanged(challenges);
+                listener.onDataChanged(challenges);
             }
 
             @Override

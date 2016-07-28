@@ -38,11 +38,11 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 
-public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnDatabaseChangedListener<Quest> {
+public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnDataChangedListener<Quest> {
 
     private static final String QUEST_ID_KEY = "quest_id";
     @Inject
@@ -209,7 +209,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     }
 
     @Override
-    public void onDatabaseChanged(Quest result) {
+    public void onDataChanged(Quest result) {
         quest = result;
         adapter.setSubQuests(result.getSubQuests());
     }

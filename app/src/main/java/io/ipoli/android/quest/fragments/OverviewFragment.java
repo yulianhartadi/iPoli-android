@@ -50,11 +50,11 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends BaseFragment implements OnDatabaseChangedListener<List<Quest>> {
+public class OverviewFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
     @Inject
     Bus eventBus;
 
@@ -172,7 +172,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
     }
 
     @Override
-    public void onDatabaseChanged(List<Quest> quests) {
+    public void onDataChanged(List<Quest> quests) {
         List<QuestViewModel> viewModels = new ArrayList<>();
         List<Quest> recurrent = new ArrayList<>();
         for (Quest q : quests) {

@@ -41,12 +41,12 @@ import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
-public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<List<RepeatingQuest>> {
+public class RepeatingQuestListFragment extends BaseFragment implements OnDataChangedListener<List<RepeatingQuest>> {
 
     @Inject
     Bus eventBus;
@@ -150,7 +150,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
     }
 
     @Override
-    public void onDatabaseChanged(List<RepeatingQuest> quests) {
+    public void onDataChanged(List<RepeatingQuest> quests) {
         List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
             RepeatingQuestViewModel vm = createViewModel(rq);

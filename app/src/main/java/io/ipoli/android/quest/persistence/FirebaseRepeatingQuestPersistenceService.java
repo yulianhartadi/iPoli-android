@@ -43,12 +43,12 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findAllNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<List<RepeatingQuest>> listener) {
+    public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
 
     }
 
     @Override
-    public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDatabaseChangedListener<List<RepeatingQuest>> listener) {
+    public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
 
     }
 
@@ -68,7 +68,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findActiveForChallenge(Challenge challenge, OnDatabaseChangedListener<List<RepeatingQuest>> listener) {
+    public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
 
     }
 
@@ -78,7 +78,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findNotDeleted(Challenge challenge, OnDatabaseChangedListener<List<RepeatingQuest>> listener) {
+    public void findNotDeleted(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -90,7 +90,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
                     rq.setId(snapshot.getKey());
                     repeatingQuests.add(rq);
                 }
-                listener.onDatabaseChanged(repeatingQuests);
+                listener.onDataChanged(repeatingQuests);
             }
 
             @Override
