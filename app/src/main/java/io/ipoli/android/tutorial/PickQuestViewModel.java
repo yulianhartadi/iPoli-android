@@ -2,7 +2,7 @@ package io.ipoli.android.tutorial;
 
 import java.util.Date;
 
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.BaseQuest;
 
 /**

@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.ui.events;
 
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

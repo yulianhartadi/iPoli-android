@@ -1,12 +1,11 @@
-package io.ipoli.android.quest.data;
-
-import com.google.firebase.database.Exclude;
+package io.ipoli.android.reminders.data;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -18,7 +17,6 @@ public class Reminder extends PersistedObject {
 
     private Long minutesFromStart;
 
-    @Exclude
     private Integer notificationId;
 
     private Date startTime;

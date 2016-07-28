@@ -1,4 +1,4 @@
-package io.ipoli.android.quest;
+package io.ipoli.android.quest.data;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;

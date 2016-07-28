@@ -34,7 +34,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

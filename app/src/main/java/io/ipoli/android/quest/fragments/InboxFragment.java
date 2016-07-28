@@ -76,7 +76,7 @@ public class InboxFragment extends BaseFragment implements OnDatabaseChangedList
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(inboxAdapter);
 
-        questPersistenceService.findAllUnplanned(this);
+        questPersistenceService.listenForUnplanned(this);
         return view;
     }
 

@@ -69,7 +69,6 @@ import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -94,6 +93,7 @@ import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import me.everything.providers.android.calendar.Calendar;
@@ -108,9 +108,6 @@ import rx.schedulers.Schedulers;
  * on 1/7/16.
  */
 public class App extends MultiDexApplication {
-
-    private static final int SYNC_JOB_ID = 1;
-    private static final int DAILY_SYNC_JOB_ID = 2;
 
     private static AppComponent appComponent;
 
@@ -318,7 +315,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        questPersistenceService.saveReminders(e.quest, e.reminders);
+        e.quest.setReminders(e.reminders);
         questPersistenceService.save(e.quest);
         if (Quest.isCompleted(e.quest)) {
             onQuestComplete(e.quest, e.source);

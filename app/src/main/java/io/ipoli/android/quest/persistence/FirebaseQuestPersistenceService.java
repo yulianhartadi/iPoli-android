@@ -12,7 +12,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 
@@ -37,7 +37,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllUnplanned(OnDatabaseChangedListener<List<Quest>> listener) {
+    public void listenForUnplanned(OnDatabaseChangedListener<List<Quest>> listener) {
 
     }
 

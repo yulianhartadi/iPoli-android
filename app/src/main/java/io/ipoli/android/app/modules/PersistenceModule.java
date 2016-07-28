@@ -55,5 +55,4 @@ public class PersistenceModule {
     public RewardPersistenceService provideRewardPersistenceService(Context context, Bus eventBus) {
         return new FirebaseRewardPersistenceService(context, eventBus);
     }
-
 }
