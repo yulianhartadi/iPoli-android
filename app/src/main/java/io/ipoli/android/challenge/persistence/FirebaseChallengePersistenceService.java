@@ -60,10 +60,4 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
         valueListeners.put(query.getRef(), valueEventListener);
         query.addValueEventListener(valueEventListener);
     }
-
-    @Override
-    public List<Challenge> findAllNotCompleted() {
-        return null;
-    }
-
 }

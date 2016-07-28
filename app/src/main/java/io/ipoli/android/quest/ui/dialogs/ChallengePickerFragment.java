@@ -37,6 +37,7 @@ public class ChallengePickerFragment extends DialogFragment {
     private int selectedChallengeIndex;
 
     private OnChallengePickedListener challengePickedListener;
+    private List<Challenge> challenges;
 
     public interface OnChallengePickedListener {
         void onChallengePicked(String challengeId);
@@ -54,7 +55,7 @@ public class ChallengePickerFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getAppComponent(getContext()).inject(this);
+
 
         if (getArguments() != null) {
             challengeId = getArguments().getString(CHALLENGE_ID);
@@ -66,11 +67,11 @@ public class ChallengePickerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         selectedChallengeIndex = -1;
-        List<Challenge> challenges = challengePersistenceService.findAllNotCompleted();
+
         String[] names = new String[challenges.size()];
         for (int i = 0; i < challenges.size(); i++) {
             names[i] = challenges.get(i).getName();
-            if(challenges.get(i).getId().equals(challengeId)) {
+            if (challenges.get(i).getId().equals(challengeId)) {
                 selectedChallengeIndex = i;
             }
         }
@@ -82,7 +83,7 @@ public class ChallengePickerFragment extends DialogFragment {
                     selectedChallengeIndex = which;
                 })
                 .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
-                    if(selectedChallengeIndex >= 0) {
+                    if (selectedChallengeIndex >= 0) {
                         challengePickedListener.onChallengePicked(challenges.get(selectedChallengeIndex).getId());
                     }
                 })
@@ -93,11 +94,14 @@ public class ChallengePickerFragment extends DialogFragment {
                     challengePickedListener.onChallengePicked(null);
                 });
         return builder.create();
-
     }
 
     public void show(FragmentManager fragmentManager) {
-        show(fragmentManager, TAG);
+        App.getAppComponent(getContext()).inject(this);
+        challengePersistenceService.findAllNotCompleted(challenges -> {
+            this.challenges = challenges;
+            show(fragmentManager, TAG);
+        });
     }
 
 }

@@ -89,8 +89,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();
         }
-        GenericTypeIndicator<Map<String, T>> t = new GenericTypeIndicator<Map<String, T>>() {
-        };
+        GenericTypeIndicator<Map<String, T>> t = new GenericTypeIndicator<Map<String, T>>() {};
         return new ArrayList<>(dataSnapshot.getValue(t).values());
     }
 
