@@ -8,9 +8,9 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,7 +22,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
+    void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
     List<Quest> findAllPlannedAndStartedToday();
 

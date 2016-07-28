@@ -65,8 +65,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate) {
-        return null;
+    public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        DatabaseReference collectionReference = getCollectionReference();
+        Query query = collectionReference.orderByChild("completedAt/time").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
+        listenForSingleChange(query, createListListener(listener));
     }
 
     @Override
@@ -146,6 +148,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     private void listenForQuery(Query query, ValueEventListener valueListener) {
         valueListeners.put(query.getRef(), valueListener);
         query.addValueEventListener(valueListener);
+    }
+
+    private void listenForSingleChange(Query query, ValueEventListener valueListener) {
+        query.addListenerForSingleValueEvent(valueListener);
     }
 
     @Override

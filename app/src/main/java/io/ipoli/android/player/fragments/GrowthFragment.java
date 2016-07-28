@@ -130,18 +130,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1));
-
-        if (quests.isEmpty()) {
-            chartContainer.setVisibility(View.GONE);
-            emptyViewContainer.setVisibility(View.VISIBLE);
-        } else {
-            chartContainer.setVisibility(View.VISIBLE);
-            emptyViewContainer.setVisibility(View.GONE);
-            setUpSummaryStats(quests);
-            setUpTimeSpentChart(quests);
-            setUpExperienceChart(quests, dayCount);
-        }
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1), quests -> {
+            if (quests.isEmpty()) {
+                chartContainer.setVisibility(View.GONE);
+                emptyViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                chartContainer.setVisibility(View.VISIBLE);
+                emptyViewContainer.setVisibility(View.GONE);
+                setUpSummaryStats(quests);
+                setUpTimeSpentChart(quests);
+                setUpExperienceChart(quests, dayCount);
+            }
+        });
     }
 
     private void setUpSummaryStats(List<Quest> quests) {
