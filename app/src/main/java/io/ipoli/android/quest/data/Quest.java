@@ -6,6 +6,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -118,6 +119,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public List<SubQuest> getSubQuests() {
+        if (subQuests == null) {
+            return new ArrayList<>();
+        }
         return subQuests;
     }
 
