@@ -61,6 +61,6 @@ public class UnscheduledQuestViewModel {
     }
 
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

@@ -91,6 +91,10 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected abstract String getCollectionName();
 
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
+    }
+
     protected DatabaseReference getPlayerReference() {
         return database.getReference("players").child(playerId);
     }

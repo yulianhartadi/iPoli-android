@@ -231,16 +231,15 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 
-        int timeSpent = (int) getTotalTimeSpent(questPersistenceService);
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        questPersistenceService.findAllCompleted(challenge, quests -> {
+            int timeSpent = (int) getTotalTimeSpent(quests);
+            totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        });
     }
 
-    private long getTotalTimeSpent(QuestPersistenceService questPersistenceService) {
-
-        List<Quest> completed = questPersistenceService.findAllCompleted(challenge);
-
+    private long getTotalTimeSpent(List<Quest> completedQuests) {
         long totalTime = 0;
-        for (Quest completedQuest : completed) {
+        for (Quest completedQuest : completedQuests) {
             totalTime += completedQuest.getActualDuration();
         }
         return totalTime;

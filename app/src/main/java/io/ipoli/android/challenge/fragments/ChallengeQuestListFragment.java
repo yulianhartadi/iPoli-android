@@ -140,11 +140,11 @@ public class ChallengeQuestListFragment extends BaseFragment {
         BaseQuest bq = e.baseQuest;
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
-            q.setChallenge(null);
+            q.setChallengeId(null);
             questPersistenceService.save(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
-            rq.setChallenge(null);
+            rq.setChallengeId(null);
             repeatingQuestPersistenceService.save(rq);
         }
     }

@@ -8,7 +8,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 
 /**
@@ -40,7 +39,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private String note;
 
-    private Challenge challenge;
+    private String challengeId;
 
     private String source;
 
@@ -204,12 +203,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.note = note;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public String getChallengeId() {
+        return challengeId;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setChallengeId(String challengeId) {
+        this.challengeId = challengeId;
     }
 
     public boolean isFlexible() {

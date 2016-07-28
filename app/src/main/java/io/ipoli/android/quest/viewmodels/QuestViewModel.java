@@ -102,6 +102,6 @@ public class QuestViewModel {
     }
 
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

@@ -240,7 +240,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             categoryView.changeCategory(quest.getCategory());
             populateNoteText(quest.getNote());
-            populateChallenge(quest.getChallenge());
+            challengePersistenceService.findById(quest.getChallengeId(), challenge -> populateChallenge(challenge));
 
             if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
                 notificationId = new Random().nextInt();
@@ -267,7 +267,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             setFrequencyText(rq.getRecurrence());
             categoryView.changeCategory(rq.getCategory());
             populateNoteText(rq.getNote());
-            populateChallenge(rq.getChallenge());
+            challengePersistenceService.findById(rq.getChallengeId(), challenge -> populateChallenge(challenge));
 
             if (rq.getReminders().isEmpty()) {
                 notificationId = new Random().nextInt();
@@ -454,7 +454,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 q.setCompletedAtMinute(completedAtMinute);
             }
             q.setCategory(categoryView.getSelectedCategory());
-            q.setChallenge(findChallenge((String) challengeValue.getTag()));
+            q.setChallengeId((String) challengeValue.getTag());
             q.setNote((String) noteText.getTag());
             eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
             if (q.getEndDate() != null) {
@@ -479,7 +479,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
             rq.setRecurrence((Recurrence) frequencyText.getTag());
             rq.setCategory(categoryView.getSelectedCategory());
-            rq.setChallenge(findChallenge((String) challengeValue.getTag()));
+            rq.setChallengeId((String) challengeValue.getTag());
             rq.setNote((String) noteText.getTag());
             eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
             Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
@@ -636,10 +636,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @Override
     public void onChallengePicked(String challengeId) {
-        Challenge challenge = findChallenge(challengeId);
-        populateChallenge(challenge);
-        String name = challenge != null ? challenge.getName() : getString(R.string.none);
-        eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
+        challengePersistenceService.findById(challengeId, challenge -> {
+            populateChallenge(challenge);
+            String name = challenge != null ? challenge.getName() : getString(R.string.none);
+            eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
+        });
     }
 
     private void populateChallenge(Challenge challenge) {
@@ -650,15 +651,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             challengeValue.setText(R.string.none);
             challengeValue.setTag(null);
         }
-    }
-
-    private Challenge findChallenge(String challengeId) {
-        return  null;
-//        if (challengeId == null) {
-//            return null;
-//        }
-//
-//        return challengePersistenceService.findById(challengeId);
     }
 
     private void populateEndDate(Date date) {
@@ -787,7 +779,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setCategory(categoryView.getSelectedCategory());
         q.setNote((String) noteText.getTag());
-        q.setChallenge(findChallenge((String) challengeValue.getTag()));
+        q.setChallengeId((String) challengeValue.getTag());
 
         eventBus.post(new NewQuestEvent(q, getReminders(), EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
@@ -815,7 +807,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         rq.setRecurrence(recurrence);
         rq.setCategory(categoryView.getSelectedCategory());
-        rq.setChallenge(findChallenge((String) challengeValue.getTag()));
+        rq.setChallengeId((String) challengeValue.getTag());
         rq.setNote((String) noteText.getTag());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();

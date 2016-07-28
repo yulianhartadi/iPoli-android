@@ -14,7 +14,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
@@ -60,7 +59,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private Date actualStart;
 
-    private Challenge challenge;
+    private String challengeId;
 
     private Long coins;
     private Long experience;
@@ -418,12 +417,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.note = note;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public String getChallengeId() {
+        return challengeId;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setChallengeId(String challengeId) {
+        this.challengeId = challengeId;
     }
 
     public int getActualDuration() {

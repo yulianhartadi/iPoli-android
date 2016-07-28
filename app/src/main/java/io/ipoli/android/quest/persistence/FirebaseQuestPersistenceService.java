@@ -167,8 +167,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllCompleted(Challenge challenge) {
-        return null;
+    public void findAllCompleted(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener) {
+//        Query query = getCollectionReference().orderByChild("challengeId")
+
     }
 
     @Override

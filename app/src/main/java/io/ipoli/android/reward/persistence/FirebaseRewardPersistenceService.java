@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
@@ -38,10 +37,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
 
     @Override
     public void findAll(OnDatabaseChangedListener<List<Reward>> listener) {
-        DatabaseReference playerRef = getPlayerReference();
-        DatabaseReference rewardsRef = playerRef.child(getCollectionName());
-
-        Query query = rewardsRef.orderByChild("isDeleted").equalTo(false);
+        Query query = getCollectionReference().orderByChild("isDeleted").equalTo(false);
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override

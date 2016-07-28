@@ -213,11 +213,11 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         for (BaseQuest bq : baseQuests) {
             if (bq instanceof Quest) {
                 Quest q = (Quest) bq;
-                q.setChallenge(challenge);
+                q.setChallengeId(challenge.getId());
                 quests.add(q);
             } else {
                 RepeatingQuest rq = (RepeatingQuest) bq;
-                rq.setChallenge(challenge);
+                rq.setChallengeId(challenge.getId());
                 repeatingQuests.add(rq);
             }
         }

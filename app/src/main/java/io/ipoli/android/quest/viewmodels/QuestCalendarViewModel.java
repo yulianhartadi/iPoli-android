@@ -88,6 +88,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

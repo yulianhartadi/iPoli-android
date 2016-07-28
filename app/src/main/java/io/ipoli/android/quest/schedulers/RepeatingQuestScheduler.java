@@ -241,7 +241,7 @@ public class RepeatingQuestScheduler {
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
-        quest.setChallenge(repeatingQuest.getChallenge());
+        quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setRepeatingQuest(repeatingQuest);
         List<Reminder> questReminders = new ArrayList<>();
         for (Reminder r : repeatingQuest.getReminders()) {

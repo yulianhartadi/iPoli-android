@@ -512,11 +512,11 @@ public class App extends MultiDexApplication {
         List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(e.challenge);
 
         for (Quest quest : quests) {
-            quest.setChallenge(null);
+            quest.setChallengeId(null);
         }
 
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            repeatingQuest.setChallenge(null);
+            repeatingQuest.setChallengeId(null);
         }
 
         questPersistenceService.save(quests);

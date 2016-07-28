@@ -70,7 +70,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
 
-    List<Quest> findAllCompleted(Challenge challenge);
+    void findAllCompleted(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener);
 
     long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
 
