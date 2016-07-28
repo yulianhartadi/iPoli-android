@@ -34,6 +34,21 @@ public class Reminder extends PersistedObject {
         updatedAt = DateUtils.nowUTC();
     }
 
+    @Override
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public void setIsDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
     public boolean getIsDeleted() {
         return isDeleted;
     }

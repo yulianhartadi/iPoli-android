@@ -23,17 +23,11 @@ public abstract class PersistedObject {
         return id;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+    public abstract void setCreatedAt(Date createdAt);
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public abstract void setUpdatedAt(Date updatedAt);
 
-    public void setIsDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
+    public abstract void setIsDeleted(boolean deleted);
 
     public abstract boolean getIsDeleted();
 

@@ -283,7 +283,6 @@ public class App extends MultiDexApplication {
     public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
         Quest quest = e.quest;
         // @TODO remove old logs
-        quest.getLogs().clear();
         quest.setDifficulty(null);
         quest.setActualStart(null);
         quest.setCompletedAt(null);

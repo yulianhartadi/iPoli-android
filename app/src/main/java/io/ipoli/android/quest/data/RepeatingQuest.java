@@ -155,6 +155,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @Override
+    public void setIsDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
+    @Override
     public boolean getIsDeleted() {
         return isDeleted;
     }

@@ -51,11 +51,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Date endDate;
     private RepeatingQuest repeatingQuest;
 
-    private List<Log> logs;
-
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
-    private List<Tag> tags;
     private Integer difficulty;
 
     private Date completedAt;
@@ -107,10 +104,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return;
         }
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
-    }
-
-    public void setLogs(List<Log> logs) {
-        this.logs = logs;
     }
 
     public List<Reminder> getReminders() {
@@ -219,6 +212,16 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.createdAt = createdAt;
     }
 
+    @Override
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public void setIsDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -301,18 +304,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public int getStartMinute() {
         return startMinute != null ? startMinute : -1;
-    }
-
-    public List<Log> getLogs() {
-        return logs;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public String getSource() {

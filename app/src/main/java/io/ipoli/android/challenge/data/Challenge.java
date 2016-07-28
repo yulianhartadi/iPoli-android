@@ -189,6 +189,21 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @Override
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public void setIsDeleted(boolean deleted) {
+        this.isDeleted = deleted;
+    }
+
+    @Override
     public boolean getIsDeleted() {
         return isDeleted;
     }

@@ -68,4 +68,12 @@ public class Reward extends PersistedObject {
     public void setIsDeleted(boolean deleted) {
         isDeleted = deleted;
     }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }
