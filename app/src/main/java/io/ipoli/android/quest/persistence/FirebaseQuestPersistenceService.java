@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
@@ -14,6 +15,7 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
@@ -33,6 +35,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     public FirebaseQuestPersistenceService(Context context, Bus eventBus) {
         super(context, eventBus);
+    }
+
+    @Override
+    protected GenericTypeIndicator<Map<String, Quest>> getGenericMapIndicator() {
+        return new GenericTypeIndicator<Map<String, Quest>>() {
+
+        };
     }
 
     @Override
