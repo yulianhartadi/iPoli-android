@@ -64,7 +64,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 
-    Date findNextUncompletedQuestEndDate(Challenge challenge);
+    void findNextUncompletedQuestEndDate(Challenge challenge, OnDatabaseChangedListener<Date> listener);
 
     void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
