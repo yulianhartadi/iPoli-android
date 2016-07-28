@@ -74,9 +74,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
 
-    long countCompleted(Challenge challenge);
+    void countCompleted(Challenge challenge, OnDatabaseChangedListener<Long> listener);
 
-    long countNotRepeating(Challenge challenge);
+    void countNotRepeating(Challenge challenge, OnDatabaseChangedListener<Long> listener);
 
-    long countNotDeleted(Challenge challenge);
+    void countNotDeleted(Challenge challenge, OnDatabaseChangedListener<Long> listener);
 }

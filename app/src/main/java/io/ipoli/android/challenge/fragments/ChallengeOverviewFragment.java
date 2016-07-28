@@ -137,57 +137,68 @@ public class ChallengeOverviewFragment extends BaseFragment {
         setupChart();
     }
 
-    private void showProgress() {
+    private long totalCount = 0;
 
+    private void showProgress() {
+        totalCount = 0;
         Date challengeEnd = challenge.getEndDate();
         LocalDate today = LocalDate.now();
         LocalDate scheduledQuestsEndDate = today.plusWeeks(3).dayOfWeek().withMaximumValue();
 
-        long completed = questPersistenceService.countCompleted(challenge);
-        long totalCount = 0;
-
         if (notAllQuestsAreScheduledForChallenge(challengeEnd, scheduledQuestsEndDate)) {
-            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotDeleted(challenge);
-            Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
+            repeatingQuestPersistenceService.findNotDeleted(challenge, repeatingQuests -> {
+                Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
+                for (RepeatingQuest rq : repeatingQuests) {
+                    Recurrence recurrence = rq.getRecurrence();
+                    Date rqStart = recurrence.getDtstart();
+                    Date rqEnd = recurrence.getDtend();
 
-            totalCount += questPersistenceService.countNotRepeating(challenge);
-            for (RepeatingQuest rq : repeatingQuests) {
-                Recurrence recurrence = rq.getRecurrence();
-                Date rqStart = recurrence.getDtstart();
-                Date rqEnd = recurrence.getDtend();
+                    Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
+                    Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
 
-                Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
-                Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
+                    float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
 
-                float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
-
-                int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
-                totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
-            }
+                    int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
+                    totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
+                }
+                questPersistenceService.countNotRepeating(challenge, count -> {
+                    totalCount += count;
+                    populateProgress();
+                });
+            });
         } else {
-            totalCount = questPersistenceService.countNotDeleted(challenge);
+            questPersistenceService.countNotDeleted(challenge, count -> {
+                totalCount = count;
+                populateProgress();
+            });
         }
 
-        progressFraction.setText(completed + " / " + totalCount);
+    }
 
-        int percentDone = Math.round((completed / (float) totalCount) * 100);
+    private void populateProgress() {
+       questPersistenceService.countCompleted(challenge, completed -> {
+           progressFraction.setText(completed + " / " + totalCount);
 
-        progressPercent.setText(String.valueOf(percentDone) + "% done");
+           int percentDone = Math.round((completed / (float) totalCount) * 100);
 
-        int progressColor = R.color.colorAccent;
+           progressPercent.setText(String.valueOf(percentDone) + "% done");
 
-        Category category = Challenge.getCategory(challenge);
-        if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
-            progressColor = R.color.colorAccentAlternative;
-        }
-        progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(getContext(), progressColor), PorterDuff.Mode.SRC_IN);
-        progress.setProgress(percentDone);
+           int progressColor = R.color.colorAccent;
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
-        int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
-        animation.setDuration(animationTime);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.start();
+           Category category = Challenge.getCategory(challenge);
+           if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
+               progressColor = R.color.colorAccentAlternative;
+           }
+           progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(getContext(), progressColor), PorterDuff.Mode.SRC_IN);
+           progress.setProgress(percentDone);
+
+           ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
+           int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
+           animation.setDuration(animationTime);
+           animation.setInterpolator(new DecelerateInterpolator());
+           animation.start();
+       });
+
     }
 
     private float calculateQuestsPerDayCoefficient(Recurrence recurrence) {

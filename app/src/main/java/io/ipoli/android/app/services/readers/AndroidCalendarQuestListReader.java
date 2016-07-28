@@ -69,8 +69,8 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
             if (TextUtils.isEmpty(e.originalId)) {
                 continue;
             }
-            RepeatingQuest h = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId);
-            q.setRepeatingQuest(h);
+            RepeatingQuest rq = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId);
+            q.setRepeatingQuest(rq);
         }
         return res;
     }
