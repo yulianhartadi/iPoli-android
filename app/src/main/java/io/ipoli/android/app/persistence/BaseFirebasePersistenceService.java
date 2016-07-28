@@ -42,8 +42,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         DatabaseReference objRef = StringUtils.isEmpty(obj.getId()) ?
                 collectionRef.push() :
                 collectionRef.child(obj.getId());
-        objRef.setValue(obj);
         obj.setId(objRef.getKey());
+        objRef.setValue(obj);
     }
 
     @Override
