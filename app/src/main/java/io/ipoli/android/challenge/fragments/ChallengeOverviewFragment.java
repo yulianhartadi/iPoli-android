@@ -236,9 +236,9 @@ public class ChallengeOverviewFragment extends BaseFragment {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
+        questPersistenceService.findNextUncompletedQuestEndDate(challenge, nextDate ->
+                nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled))));
 
-        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(challenge);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled)));
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 

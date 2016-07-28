@@ -188,8 +188,34 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public Date findNextUncompletedQuestEndDate(Challenge challenge) {
-        return null;
+    public void findNextUncompletedQuestEndDate(Challenge challenge, OnDatabaseChangedListener<Date> listener) {
+        Query query = getCollectionReference()
+                .equalTo(challenge.getId(), "challengeId")
+                .orderByChild("endDate/time")
+                .startAt(toStartOfDayUTC(LocalDate.now()).getTime());
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                List<Quest> quests = new ArrayList<>();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    if(!snapshot.hasChild("completedAt")) {
+//                        continue;
+//                    }
+//                    Quest quest = snapshot.getValue(getModelClass());
+//                    quest.setId(snapshot.getKey());
+//                    quests.add(quest);
+//                }
+                listener.onDatabaseChanged(new Date());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        query.addListenerForSingleValueEvent(valueEventListener);
     }
 
     @Override
