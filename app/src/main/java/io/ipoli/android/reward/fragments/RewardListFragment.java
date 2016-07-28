@@ -157,9 +157,8 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
         e.reward.markDeleted();
-//        rewardPersistenceService.save(e.reward).compose(bindToLifecycle()).subscribe(rewardId -> {
-//            Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
-//        });
+        rewardPersistenceService.save(e.reward);
+        Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
     }
 
     @Override
