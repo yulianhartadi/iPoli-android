@@ -49,8 +49,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private Date endDate;
 
-    @Exclude
     private RepeatingQuest repeatingQuest;
+
+    private String repeatingQuestId;
 
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
@@ -156,6 +157,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
+        repeatingQuestId = repeatingQuest.getId();
     }
 
     public boolean isAllDay() {
@@ -416,6 +418,14 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setChallengeId(String challengeId) {
         this.challengeId = challengeId;
+    }
+
+    public String getRepeatingQuestId() {
+        return repeatingQuestId;
+    }
+
+    public void setRepeatingQuestId(String repeatingQuestId) {
+        this.repeatingQuestId = repeatingQuestId;
     }
 
     @Exclude

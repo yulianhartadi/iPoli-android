@@ -29,5 +29,5 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge);
 
-    List<RepeatingQuest> findNotDeleted(Challenge challenge);
+    void findNotDeleted(Challenge challenge, OnDatabaseChangedListener<List<RepeatingQuest>> listener);
 }
