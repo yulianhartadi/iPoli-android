@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -172,7 +173,7 @@ public class App extends MultiDexApplication {
 //        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
 //        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
 //        playerPersistenceService = new RealmPlayerPersistenceService(realm);
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        moveIncompleteQuestsToInbox();
         registerServices();
 //        scheduleNextReminder();

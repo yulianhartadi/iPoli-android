@@ -18,6 +18,8 @@ public class Reward extends PersistedObject {
 
     private Integer price;
 
+    private boolean isDeleted;
+
     public Reward() {
     }
 
@@ -63,5 +65,9 @@ public class Reward extends PersistedObject {
 
     public boolean getIsDeleted() {
         return isDeleted;
+    }
+
+    public void setIsDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

@@ -6,7 +6,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
@@ -39,11 +38,10 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(T obj) {
-
         DatabaseReference collectionRef = getPlayerReference().child(getCollectionName());
         DatabaseReference objRef = StringUtils.isEmpty(obj.getId()) ?
                 collectionRef.push() :
-                collectionRef.child(playerId);
+                collectionRef.child(obj.getId());
         objRef.setValue(obj);
         obj.setId(objRef.getKey());
     }
@@ -56,11 +54,15 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     @Override
     public void findById(String id, OnDatabaseChangedListener<T> listener) {
         DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
-        Query query = dbRef.orderByChild("isDeleted").equalTo(false);
+//        Query query = dbRef.orderByChild("isDeleted").equalTo(false);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDatabaseChanged(dataSnapshot.getValue(getModelClass()));
+                T foundObject = dataSnapshot.getValue(getModelClass());
+                if (foundObject != null) {
+                    foundObject.setId(id);
+                }
+                listener.onDatabaseChanged(foundObject);
             }
 
             @Override
@@ -70,7 +72,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
 
 
-        query.addListenerForSingleValueEvent(valueEventListener);
+        dbRef.addListenerForSingleValueEvent(valueEventListener);
     }
 
     @Override
