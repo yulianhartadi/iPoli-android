@@ -276,33 +276,42 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findNextUncompletedQuestEndDate(Challenge challenge, OnDataChangedListener<Date> listener) {
-        Query query = getCollectionReference()
-                .equalTo(challenge.getId(), "challengeId")
-                .orderByChild("endDate/time")
-                .startAt(toStartOfDayUTC(LocalDate.now()).getTime());
+        Query query = getCollectionReference().orderByChild("challengeId")
+                .equalTo(challenge.getId());
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                List<Quest> quests = new ArrayList<>();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    if(!snapshot.hasChild("completedAt")) {
-//                        continue;
-//                    }
-//                    Quest quest = snapshot.getValue(getModelClass());
-//                    quest.setId(snapshot.getKey());
-//                    quests.add(quest);
-//                }
-                listener.onDataChanged(new Date());
+                if(dataSnapshot.getChildrenCount() == 0) {
+                    listener.onDataChanged(null);
+                    return;
+                }
+                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {};
+                List<Quest> quests = new ArrayList<>(dataSnapshot.getValue(t).values());
+                Date startDate = toStartOfDayUTC(LocalDate.now());
+                Date nextDate = null;
+                for(Quest q : quests) {
+                    if(q.getEndDate() == null) {
+                        continue;
+                    }
+                    if(q.getEndDate().before(startDate)) {
+                        continue;
+                    }
+                    if(nextDate == null) {
+                        nextDate = q.getEndDate();
+                    }
+                    if(q.getEndDate().before(nextDate)) {
+                        nextDate = q.getEndDate();
+                    }
+                }
+                listener.onDataChanged(nextDate);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        });
     }
 
     @Override
