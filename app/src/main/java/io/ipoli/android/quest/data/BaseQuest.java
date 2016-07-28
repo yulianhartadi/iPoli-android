@@ -8,6 +8,6 @@ public interface BaseQuest {
 
     String getId();
     String getName();
-    Category getCategory();
+    String getCategory();
 
 }

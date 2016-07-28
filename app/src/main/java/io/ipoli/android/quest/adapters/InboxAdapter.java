@@ -62,7 +62,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         final Quest q = quests.get(position);
         viewBinderHelper.bind(holder.swipeLayout, q.getId());
 
-        Category category = q.getCategory();
+        Category category = Quest.getCategory(q);
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, category.color500));
 

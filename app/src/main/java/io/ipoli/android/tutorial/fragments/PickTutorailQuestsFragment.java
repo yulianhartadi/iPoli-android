@@ -94,7 +94,7 @@ public class PickTutorailQuestsFragment extends BaseTutorialPickQuestsFragment<Q
     @NonNull
     private Quest makeQuest(String name, Category category) {
         Quest q = new Quest(name, DateUtils.now());
-        q.setCategory(category);
+        q.setCategory(category.name());
         q.setRawText(name + " today");
         return q;
     }

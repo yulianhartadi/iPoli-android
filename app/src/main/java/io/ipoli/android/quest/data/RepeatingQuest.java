@@ -117,12 +117,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.id = id;
     }
 
-    public Category getCategory() {
-        return Category.valueOf(category);
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category.name();
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public static void setStartTime(RepeatingQuest quest, Time time) {
@@ -213,5 +213,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
+    }
+
+    public static Category getCategory(RepeatingQuest repeatingQuest) {
+        return Category.valueOf(repeatingQuest.getName());
     }
 }

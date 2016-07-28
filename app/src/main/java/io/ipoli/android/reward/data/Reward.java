@@ -69,6 +69,16 @@ public class Reward extends PersistedObject {
         isDeleted = deleted;
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }

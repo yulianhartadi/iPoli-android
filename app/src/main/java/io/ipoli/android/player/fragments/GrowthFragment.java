@@ -300,7 +300,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         Set<Category> usedCategories = new TreeSet<>();
         for (Quest q : quests) {
-            Category category = q.getCategory();
+            Category category = Quest.getCategory(q);
             if (!groupedByCategory.containsKey(category)) {
                 groupedByCategory.put(category, new ArrayList<>());
             }

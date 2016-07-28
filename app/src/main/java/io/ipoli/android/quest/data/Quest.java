@@ -210,6 +210,16 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.name = name;
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
@@ -237,12 +247,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         updateRemindersStartTime();
     }
 
-    public Category getCategory() {
-        return Category.valueOf(category);
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category.name();
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public static Date getStartDateTime(Quest quest) {
@@ -432,5 +442,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
+    }
+
+    public static Category getCategory(Quest quest) {
+        return Category.valueOf(quest.getCategory());
     }
 }

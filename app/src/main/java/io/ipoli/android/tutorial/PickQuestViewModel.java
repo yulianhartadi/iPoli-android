@@ -71,7 +71,7 @@ public class PickQuestViewModel {
     }
 
     public Category getCategory() {
-        return baseQuest.getCategory();
+        return Category.valueOf(baseQuest.getCategory());
     }
 
     public boolean isRepeating() {
