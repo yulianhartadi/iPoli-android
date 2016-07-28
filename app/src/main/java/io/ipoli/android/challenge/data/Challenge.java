@@ -172,12 +172,16 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.experience = experience;
     }
 
-    public Category getCategory() {
-        return Category.valueOf(category);
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category.name();
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public static Category getCategory(Challenge challenge) {
+        return Category.valueOf(challenge.getCategory());
     }
 
     public String getSource() {

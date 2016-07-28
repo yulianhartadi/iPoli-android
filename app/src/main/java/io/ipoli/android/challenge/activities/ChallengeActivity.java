@@ -171,7 +171,7 @@ public class ChallengeActivity extends BaseActivity {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(challenge.getName());
             }
-            setBackgroundColors(challenge.getCategory());
+            setBackgroundColors(Challenge.getCategory(challenge));
         });
     }
 
