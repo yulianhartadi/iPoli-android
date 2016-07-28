@@ -48,7 +48,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Reward> rewards = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Reward reward = snapshot.getValue(Reward.class);
+                    Reward reward = snapshot.getValue(getModelClass());
                     reward.setId(snapshot.getKey());
                     rewards.add(reward);
                 }

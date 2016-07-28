@@ -176,7 +176,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
         int progressColor = R.color.colorAccent;
 
-        Category category = challenge.getCategory();
+        Category category = Challenge.getCategory(challenge);
         if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
             progressColor = R.color.colorAccentAlternative;
         }
@@ -218,7 +218,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
     }
 
     private void showSummaryStats() {
-        Category category = challenge.getCategory();
+        Category category = Challenge.getCategory(challenge);
 
         summaryStatsContainer.setBackgroundResource(category.color500);
 
@@ -283,7 +283,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), challenge.getCategory().color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
@@ -316,7 +316,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            colors[i] = ContextCompat.getColor(getContext(), challenge.getCategory().color300);
+            colors[i] = ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color300);
         }
         return colors;
     }

@@ -158,7 +158,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
             nameText.setText(challenge.getName());
             nameText.setSelection(challenge.getName().length());
-            categoryView.changeCategory(challenge.getCategory());
+            categoryView.changeCategory(Challenge.getCategory(challenge));
             populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
                     challenge.getExpectedResult1(),
                     challenge.getExpectedResult2(),
@@ -263,7 +263,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void populateChallengeFromForm(Challenge challenge) {
-        challenge.setCategory(categoryView.getSelectedCategory());
+        challenge.setCategory(categoryView.getSelectedCategory().name());
 
         challenge.setExpectedResult1((String) expectedResultTextViews.get(0).getTag());
         challenge.setExpectedResult2((String) expectedResultTextViews.get(1).getTag());

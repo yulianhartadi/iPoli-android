@@ -59,7 +59,7 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
         final Challenge challenge = challenges.get(position);
         viewBinderHelper.bind(holder.swipeLayout, challenge.getId());
 
-        Category category = challenge.getCategory();
+        Category category = Challenge.getCategory(challenge);
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, category.color500));
 

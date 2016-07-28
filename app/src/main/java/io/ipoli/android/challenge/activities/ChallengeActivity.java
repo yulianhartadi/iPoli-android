@@ -86,9 +86,16 @@ public class ChallengeActivity extends BaseActivity {
         }
 
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        initViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
-        initTabIcons();
+        challengePersistenceService.findById(challengeId, challenge -> {
+            this.challenge = challenge;
+            initViewPager(viewPager);
+            tabLayout.setupWithViewPager(viewPager);
+            initTabIcons();
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(challenge.getName());
+            }
+            setBackgroundColors(Challenge.getCategory(challenge));
+        });
     }
 
     private void initTabIcons() {
@@ -167,12 +174,6 @@ public class ChallengeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        challengePersistenceService.findById(challengeId, challenge -> {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(challenge.getName());
-            }
-            setBackgroundColors(challenge.getCategory());
-        });
     }
 
     @Override
