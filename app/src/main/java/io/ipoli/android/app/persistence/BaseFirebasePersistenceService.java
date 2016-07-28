@@ -6,9 +6,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +83,29 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         for (DatabaseReference ref : valueListeners.keySet()) {
             ref.removeEventListener(valueListeners.get(ref));
         }
+    }
+
+    protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
+        if (dataSnapshot.getChildrenCount() == 0) {
+            return new ArrayList<>();
+        }
+        GenericTypeIndicator<Map<String, T>> t = new GenericTypeIndicator<Map<String, T>>() {
+        };
+        return new ArrayList<>(dataSnapshot.getValue(t).values());
+    }
+
+    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onDataChanged(getListFromMapSnapshot(dataSnapshot));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
     }
 
     protected abstract Class<T> getModelClass();
