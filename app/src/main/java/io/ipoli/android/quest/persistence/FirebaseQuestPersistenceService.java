@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
@@ -14,6 +15,7 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
@@ -46,12 +48,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForUnplanned(OnDatabaseChangedListener<List<Quest>> listener) {
+    public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
 
     }
 
     @Override
-    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
 
     }
 
@@ -86,26 +88,28 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
 
-        Date startDate = toStartOfDay(currentDate);
-        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        List<Quest> endDateQuests = new ArrayList<>();
+        List<Quest> completedQuests = new ArrayList<>();
         Date startDateUTC = toStartOfDayUTC(currentDate);
-        Date endDateUTC = toStartOfDayUTC(currentDate.plusDays(1));
 
-        DatabaseReference ref = getCollectionReference();
+        DatabaseReference collectionReference = getCollectionReference();
 
-        Query endAt = ref.orderByChild("endDate/time").startAt(startDateUTC.getTime()).endAt(endDateUTC.getTime());
+        Query endAt = collectionReference.orderByChild("endDate/time").equalTo(startDateUTC.getTime());
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        ValueEventListener endAtValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Quest> quests = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    quests.add(snapshot.getValue(getModelClass()));
-                }
+                endDateQuests.clear();
 
-                listener.onDatabaseChanged(quests);
+                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {
+                };
+                endDateQuests.addAll(dataSnapshot.getValue(t).values());
+
+                List<Quest> result = new ArrayList<>(endDateQuests);
+                result.addAll(completedQuests);
+                listener.onDataChanged(result);
             }
 
             @Override
@@ -113,18 +117,68 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
             }
         };
-        valueListeners.put(endAt.getRef(), valueEventListener);
-        endAt.addValueEventListener(valueEventListener);
+        valueListeners.put(endAt.getRef(), endAtValueListener);
+        endAt.addValueEventListener(endAtValueListener);
+
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+
+        Query completedAt = collectionReference.orderByChild("completedAt/time").startAt(startDate.getTime()).endAt(endDate.getTime());
+
+        ValueEventListener completedAtValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                completedQuests.clear();
+
+                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {
+                };
+
+                completedQuests.addAll(dataSnapshot.getValue(t).values());
+
+                List<Quest> result = new ArrayList<>(completedQuests);
+                result.addAll(endDateQuests);
+                listener.onDataChanged(result);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        valueListeners.put(completedAt.getRef(), completedAtValueListener);
+        completedAt.addValueEventListener(completedAtValueListener);
     }
 
     @Override
-    public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
 
     }
 
     @Override
-    public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
+        Date currentDateUtc = toStartOfDayUTC(currentDate);
 
+        DatabaseReference collectionReference = getCollectionReference();
+
+        Query endAt = collectionReference.orderByChild("endDate/time").equalTo(currentDateUtc.getTime());
+
+        ValueEventListener endAtValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Quest> quests = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    quests.add(snapshot.getValue(getModelClass()));
+                }
+                listener.onDataChanged(quests);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        valueListeners.put(endAt.getRef(), endAtValueListener);
+        endAt.addValueEventListener(endAtValueListener);
     }
 
     @Override
@@ -168,7 +222,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener) {
 
     }
 
@@ -219,7 +273,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
 
     }
 
@@ -229,7 +283,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllCompleted(Challenge challenge, OnDatabaseChangedListener<List<Quest>> listener) {
+    public void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -237,14 +291,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Quest> quests = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(!snapshot.hasChild("completedAt")) {
+                    if (!snapshot.hasChild("completedAt")) {
                         continue;
                     }
                     Quest quest = snapshot.getValue(getModelClass());
                     quest.setId(snapshot.getKey());
                     quests.add(quest);
                 }
-                listener.onDatabaseChanged(quests);
+                listener.onDataChanged(quests);
             }
 
             @Override
@@ -262,7 +316,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countCompleted(Challenge challenge, OnDatabaseChangedListener<Long> listener) {
+    public void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -270,12 +324,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long count = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(!snapshot.hasChild("completedAt")) {
+                    if (!snapshot.hasChild("completedAt")) {
                         continue;
                     }
-                    count ++;
+                    count++;
                 }
-                listener.onDatabaseChanged(count);
+                listener.onDataChanged(count);
             }
 
             @Override
@@ -288,7 +342,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countNotRepeating(Challenge challenge, OnDatabaseChangedListener<Long> listener) {
+    public void countNotRepeating(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
@@ -296,12 +350,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             public void onDataChange(DataSnapshot dataSnapshot) {
                 long count = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(snapshot.hasChild("repeatingQuest")) {
+                    if (snapshot.hasChild("repeatingQuest")) {
                         continue;
                     }
-                    count ++;
+                    count++;
                 }
-                listener.onDatabaseChanged(count);
+                listener.onDataChanged(count);
             }
 
             @Override
@@ -314,13 +368,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countNotDeleted(Challenge challenge, OnDatabaseChangedListener<Long> listener) {
+    public void countNotDeleted(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDatabaseChanged(dataSnapshot.getChildrenCount());
+                listener.onDataChanged(dataSnapshot.getChildrenCount());
             }
 
             @Override

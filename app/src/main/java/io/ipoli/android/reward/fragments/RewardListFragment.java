@@ -33,7 +33,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
@@ -47,7 +47,7 @@ import io.ipoli.android.reward.viewmodels.RewardViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class RewardListFragment extends BaseFragment implements OnDatabaseChangedListener<List<Reward>> {
+public class RewardListFragment extends BaseFragment implements OnDataChangedListener<List<Reward>> {
 
     private Unbinder unbinder;
 
@@ -162,7 +162,7 @@ public class RewardListFragment extends BaseFragment implements OnDatabaseChange
     }
 
     @Override
-    public void onDatabaseChanged(List<Reward> rewards) {
+    public void onDataChanged(List<Reward> rewards) {
         this.rewards = rewards;
         updateRewards(rewards);
     }

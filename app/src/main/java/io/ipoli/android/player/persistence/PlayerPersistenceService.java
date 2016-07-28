@@ -1,7 +1,7 @@
 package io.ipoli.android.player.persistence;
 
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -11,9 +11,9 @@ public interface PlayerPersistenceService {
 
     void save(Player player);
 
-    void find(OnDatabaseChangedListener<Player> listener);
+    void find(OnDataChangedListener<Player> listener);
 
-    void listenForChanges(OnDatabaseChangedListener<Player> listener);
+    void listenForChanges(OnDataChangedListener<Player> listener);
 
     void removeAllListeners();
 }

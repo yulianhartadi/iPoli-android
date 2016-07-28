@@ -16,7 +16,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -47,12 +47,12 @@ public class FirebasePlayerPersistenceService implements PlayerPersistenceServic
     }
 
     @Override
-    public void find(OnDatabaseChangedListener<Player> listener) {
+    public void find(OnDataChangedListener<Player> listener) {
         DatabaseReference playerRef = database.getReference("players").child(playerId);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDatabaseChanged(dataSnapshot.getValue(Player.class));
+                listener.onDataChanged(dataSnapshot.getValue(Player.class));
             }
 
             @Override
@@ -66,12 +66,12 @@ public class FirebasePlayerPersistenceService implements PlayerPersistenceServic
     }
 
     @Override
-    public void listenForChanges(OnDatabaseChangedListener<Player> listener) {
+    public void listenForChanges(OnDataChangedListener<Player> listener) {
         DatabaseReference playerRef = database.getReference("players").child(playerId);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDatabaseChanged(dataSnapshot.getValue(Player.class));
+                listener.onDataChanged(dataSnapshot.getValue(Player.class));
             }
 
             @Override

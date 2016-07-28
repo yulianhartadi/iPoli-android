@@ -38,13 +38,13 @@ import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class ChallengeListFragment extends BaseFragment implements OnDatabaseChangedListener<List<Challenge>> {
+public class ChallengeListFragment extends BaseFragment implements OnDataChangedListener<List<Challenge>> {
 
     private Unbinder unbinder;
 
@@ -120,7 +120,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDatabaseCha
     }
 
     @Override
-    public void onDatabaseChanged(List<Challenge> results) {
+    public void onDataChanged(List<Challenge> results) {
         ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), results, eventBus);
         challengeList.setAdapter(adapter);
     }
