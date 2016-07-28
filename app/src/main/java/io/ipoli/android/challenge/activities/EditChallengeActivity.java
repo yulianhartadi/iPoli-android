@@ -52,7 +52,7 @@ import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;

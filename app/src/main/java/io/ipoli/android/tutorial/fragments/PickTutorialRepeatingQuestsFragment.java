@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickTutorialRepeatingQuestsAdapter;

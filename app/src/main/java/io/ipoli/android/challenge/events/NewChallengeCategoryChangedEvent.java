@@ -1,6 +1,6 @@
 package io.ipoli.android.challenge.events;
 
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

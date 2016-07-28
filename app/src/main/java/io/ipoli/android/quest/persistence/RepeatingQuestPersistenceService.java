@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**

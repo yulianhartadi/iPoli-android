@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.reminders;
+package io.ipoli.android.reminders;
 
 import java.util.concurrent.TimeUnit;
 

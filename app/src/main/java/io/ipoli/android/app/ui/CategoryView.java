@@ -15,7 +15,7 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

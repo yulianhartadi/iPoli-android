@@ -3,7 +3,7 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.text.TextUtils;
 
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**

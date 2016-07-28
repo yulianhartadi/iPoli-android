@@ -28,9 +28,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.data.Reminder;
-import io.ipoli.android.quest.reminders.ReminderMinutesParser;
-import io.ipoli.android.quest.reminders.TimeOffsetType;
+import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.reminders.ReminderMinutesParser;
+import io.ipoli.android.reminders.TimeOffsetType;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 
 import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;

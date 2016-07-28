@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

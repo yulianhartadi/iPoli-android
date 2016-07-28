@@ -24,7 +24,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

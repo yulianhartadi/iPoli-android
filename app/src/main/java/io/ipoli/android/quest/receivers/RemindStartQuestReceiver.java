@@ -25,10 +25,10 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.reminders.ReminderMinutesParser;
-import io.ipoli.android.quest.reminders.TimeOffsetType;
+import io.ipoli.android.reminders.ReminderMinutesParser;
+import io.ipoli.android.reminders.TimeOffsetType;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

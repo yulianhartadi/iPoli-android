@@ -13,7 +13,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.quest.data.Reminder;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

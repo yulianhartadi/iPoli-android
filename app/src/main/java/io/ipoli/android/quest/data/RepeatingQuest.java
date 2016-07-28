@@ -8,7 +8,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

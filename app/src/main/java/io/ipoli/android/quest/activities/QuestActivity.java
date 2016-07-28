@@ -30,7 +30,7 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
