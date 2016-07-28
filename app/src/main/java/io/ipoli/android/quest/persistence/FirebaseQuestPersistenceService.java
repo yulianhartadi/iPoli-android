@@ -151,7 +151,33 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        DatabaseReference collectionReference = getCollectionReference();
 
+        Query completedAt = collectionReference.orderByChild("completedAt/time").startAt(startDate.getTime()).endAt(endDate.getTime());
+
+        ValueEventListener completedAtValueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    listener.onDataChanged(new ArrayList<>());
+                    return;
+                }
+
+                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {
+                };
+                listener.onDataChanged(new ArrayList<>(dataSnapshot.getValue(t).values()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        valueListeners.put(completedAt.getRef(), completedAtValueListener);
+        completedAt.addValueEventListener(completedAtValueListener);
     }
 
     @Override
