@@ -15,7 +15,6 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -37,9 +36,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ForceServerSyncRequestEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
-import io.ipoli.android.app.events.ServerSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -170,7 +167,7 @@ public class App extends MultiDexApplication {
 //        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
 //        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
 //        playerPersistenceService = new RealmPlayerPersistenceService(realm);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        moveIncompleteQuestsToInbox();
         registerServices();
 //        scheduleNextReminder();
@@ -184,13 +181,8 @@ public class App extends MultiDexApplication {
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             FlurryAgent.onEndSession(this);
         }
-        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () -> {
-            if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
-                eventBus.post(new ForceServerSyncRequestEvent());
-            }
-            localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-        });
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+//        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
 
@@ -448,7 +440,6 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(questsToCreate);
             onQuestChanged();
-            eventBus.post(new ServerSyncRequestEvent());
 
         } else {
 
@@ -456,10 +447,7 @@ public class App extends MultiDexApplication {
                 scheduleRepeatingQuest(rq, questPersistenceService);
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                onQuestChanged();
-                eventBus.post(new ServerSyncRequestEvent());
-            });
+            }, Throwable::printStackTrace, this::onQuestChanged);
         }
     }
 
@@ -493,7 +481,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
     }
 
@@ -548,7 +535,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
-        eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
     }
 
@@ -565,7 +551,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onQuestDeleted(QuestDeletedEvent e) {
         QuestNotificationScheduler.stopAll(e.id, this);
-        eventBus.post(new ServerSyncRequestEvent());
         onQuestChanged();
     }
 
@@ -574,14 +559,12 @@ public class App extends MultiDexApplication {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
-            eventBus.post(new ForceServerSyncRequestEvent());
             return;
         }
 
         syncCalendars().subscribe(o -> {
         }, Throwable::printStackTrace, () -> {
             eventBus.post(new SyncCompleteEvent());
-            eventBus.post(new ForceServerSyncRequestEvent());
         });
 
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
@@ -20,6 +21,9 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.reminders.data.Reminder;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -84,6 +88,35 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<List<Quest>> listener) {
 
+        Date startDate = toStartOfDay(currentDate);
+        Date endDate = toStartOfDay(currentDate.plusDays(1));
+        Date startDateUTC = toStartOfDayUTC(currentDate);
+        Date endDateUTC = toStartOfDayUTC(currentDate.plusDays(1));
+
+        DatabaseReference ref = getCollectionReference();
+
+        Query endAt = ref.orderByChild("endDate/time").startAt(startDateUTC.getTime()).endAt(endDateUTC.getTime());
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Quest> quests = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Quest q = snapshot.getValue(getModelClass());
+                    q.setId(snapshot.getKey());
+                    quests.add(q);
+                }
+
+                listener.onDatabaseChanged(quests);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        valueListeners.put(endAt.getRef(), valueEventListener);
+        endAt.addValueEventListener(valueEventListener);
     }
 
     @Override

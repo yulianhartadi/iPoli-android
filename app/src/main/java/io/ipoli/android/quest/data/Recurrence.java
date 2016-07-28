@@ -107,6 +107,16 @@ public class Recurrence extends PersistedObject {
     }
 
     @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }

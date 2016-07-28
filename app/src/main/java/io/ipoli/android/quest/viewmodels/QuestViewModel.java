@@ -49,7 +49,7 @@ public class QuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return quest.getCategory();
+        return Quest.getCategory(quest);
     }
 
     public Quest getQuest() {

@@ -15,13 +15,9 @@ public abstract class PersistedObject {
     protected Date updatedAt;
     protected boolean isDeleted;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public abstract void setId(String id);
 
-    public String getId() {
-        return id;
-    }
+    public abstract String getId();
 
     public abstract void setCreatedAt(Date createdAt);
 

@@ -31,6 +31,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
@@ -167,7 +168,7 @@ public class QuestActivity extends BaseActivity {
 
         questPersistenceService.findById(questId, quest -> {
             getSupportActionBar().setTitle(quest.getName());
-            setBackgroundColors(quest.getCategory());
+            setBackgroundColors(Quest.getCategory(quest));
         });
     }
 
@@ -179,7 +180,7 @@ public class QuestActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestSaved(QuestSavedEvent e) {
-        setBackgroundColors(e.quest.getCategory());
+        setBackgroundColors(Quest.getCategory(e.quest));
     }
 
     @Subscribe

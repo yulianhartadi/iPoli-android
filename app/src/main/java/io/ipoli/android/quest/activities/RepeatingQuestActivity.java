@@ -181,7 +181,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
-        Category category = repeatingQuest.getCategory();
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
         long completed = findCompletedForCurrentInterval();
         showFrequencyProgress(category, completed);
 
@@ -311,7 +311,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getMonthText(monthPairs.get(0).first));
@@ -335,7 +335,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
@@ -401,7 +401,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
-        Category category = repeatingQuest.getCategory();
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
