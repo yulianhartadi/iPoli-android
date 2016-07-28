@@ -101,6 +101,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         ValueEventListener endAtValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() == 0) {
+                    listener.onDataChanged(new ArrayList<>());
+                    return;
+                }
                 endDateQuests.clear();
 
                 GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {
@@ -128,10 +132,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         ValueEventListener completedAtValueListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() == 0) {
+                    listener.onDataChanged(new ArrayList<>());
+                    return;
+                }
                 completedQuests.clear();
 
-                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {
-                };
+                GenericTypeIndicator<Map<String, Quest>> t = new GenericTypeIndicator<Map<String, Quest>>() {};
 
                 completedQuests.addAll(dataSnapshot.getValue(t).values());
 
