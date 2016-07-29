@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -33,7 +35,7 @@ public class Recurrence extends PersistedObject {
     public Recurrence(int timesADay) {
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
-        setType(RecurrenceType.DAILY);
+        setRecurrenceType(RecurrenceType.DAILY);
         this.timesADay = timesADay;
         this.flexibleCount = 0;
     }
@@ -46,8 +48,13 @@ public class Recurrence extends PersistedObject {
         return new Recurrence(1);
     }
 
-    public void setType(RecurrenceType type) {
+    @Exclude
+    public void setRecurrenceType(RecurrenceType type) {
         this.type = type.name();
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getType() {
@@ -142,6 +149,7 @@ public class Recurrence extends PersistedObject {
         this.flexibleCount = flexibleCount;
     }
 
+    @Exclude
     public RecurrenceType getRecurrenceType() {
         return RecurrenceType.valueOf(type);
     }

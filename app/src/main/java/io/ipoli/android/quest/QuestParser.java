@@ -173,20 +173,20 @@ public class QuestParser {
         recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString());
-            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfWeekRecur != null) {
             recurrence.setRrule(dayOfWeekRecur.toString());
-            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString());
-            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
         } else if (timesAWeek > 0) {
-            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
             recurrence.setFlexibleCount(timesAWeek);
             Recur recur = new Recur(Recur.WEEKLY, null);
             recurrence.setRrule(recur.toString());
         } else if (timesAMonth > 0) {
-            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
             recurrence.setFlexibleCount(timesAMonth);
             Recur recur = new Recur(Recur.MONTHLY, null);
             recurrence.setRrule(recur.toString());

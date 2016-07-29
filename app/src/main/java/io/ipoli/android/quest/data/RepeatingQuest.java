@@ -205,6 +205,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public static Category getCategory(RepeatingQuest repeatingQuest) {
-        return Category.valueOf(repeatingQuest.getName());
+        return Category.valueOf(repeatingQuest.getCategory());
     }
 }

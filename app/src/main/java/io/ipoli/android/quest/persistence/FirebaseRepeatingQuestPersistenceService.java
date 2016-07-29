@@ -54,13 +54,13 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(false, "allDay");
+        Query query = getCollectionReference().orderByChild("allDay").equalTo(false);
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
     public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(false, "allDay");
+        Query query = getCollectionReference().orderByChild("allDay").equalTo(false);
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 

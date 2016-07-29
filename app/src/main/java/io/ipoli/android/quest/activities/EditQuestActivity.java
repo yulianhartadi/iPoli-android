@@ -519,20 +519,20 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         Recurrence recurrence = Recurrence.create();
         if (result.everyDayRecurrence != null) {
             recurrence.setRrule(result.everyDayRecurrence.toString());
-            recurrence.setType(Recurrence.RecurrenceType.DAILY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
         } else if (result.dayOfWeekRecurrence != null) {
             recurrence.setRrule(result.dayOfWeekRecurrence.toString());
-            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         } else if (result.dayOfMonthRecurrence != null) {
             recurrence.setRrule(result.dayOfMonthRecurrence.toString());
-            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
         } else if (result.timesAWeek > 0) {
-            recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
             recurrence.setFlexibleCount(result.timesAWeek);
             Recur recur = new Recur(Recur.WEEKLY, null);
             recurrence.setRrule(recur.toString());
         } else if (result.timesAMonth > 0) {
-            recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
             recurrence.setFlexibleCount(result.timesAMonth);
             Recur recur = new Recur(Recur.MONTHLY, null);
             recurrence.setRrule(recur.toString());
