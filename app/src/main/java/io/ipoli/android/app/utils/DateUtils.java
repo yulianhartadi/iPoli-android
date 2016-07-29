@@ -1,5 +1,8 @@
 package io.ipoli.android.app.utils;
 
+import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -127,5 +130,20 @@ public class DateUtils {
             return null;
         }
         return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
+    }
+
+    @NonNull
+    public static List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
+        LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();
+        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(weekStart, weekEnd));
+        for (int i = 0; i < weeks - 1; i++) {
+            weekStart = weekStart.plusWeeks(1);
+            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekBounds.add(new Pair<>(weekStart, weekEnd));
+        }
+        return weekBounds;
     }
 }

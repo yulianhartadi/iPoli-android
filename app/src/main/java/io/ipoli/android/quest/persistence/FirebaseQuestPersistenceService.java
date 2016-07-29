@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,11 +19,13 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.reminders.data.Reminder;
+import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -283,7 +286,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countCompletedByWeek(Challenge challenge, LocalDate start, LocalDate end, OnDataChangedListener<List<Long>> listener) {
+    public void countCompletedByWeek(Challenge challenge, int weeks, OnDataChangedListener<List<Long>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId")
                 .equalTo(challenge.getId());
 
@@ -291,6 +294,16 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
+                List<Long> counts = new ArrayList<>();
+                List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), weeks);
+                for (int i = 0; i < weeks; i++) {
+                    Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
+                    Integer count = Observable.from(quests).filter(
+                            q -> isBetweenDatesFilter(q.getCompletedAt(), weekPair.first, weekPair.second))
+                            .count().toBlocking().single();
+                    counts.add(Long.valueOf(count));
+                }
+                listener.onDataChanged(counts);
             }
 
             @Override
@@ -298,6 +311,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
             }
         });
+    }
+
+    private boolean isBetweenDatesFilter(Date date, LocalDate start, LocalDate end) {
+        return date != null && !date.before(toStartOfDay(start)) && !date.after(toStartOfDay(end));
     }
 
     @Override

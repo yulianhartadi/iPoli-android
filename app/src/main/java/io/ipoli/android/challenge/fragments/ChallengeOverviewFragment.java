@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
@@ -283,29 +282,25 @@ public class ChallengeOverviewFragment extends BaseFragment {
         xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
+        questPersistenceService.countCompletedByWeek(challenge, Constants.DEFAULT_BAR_COUNT, counts -> {
+            List<BarEntry> yValues = new ArrayList<>();
+            List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
+            for (int i = 0; i < counts.size(); i++) {
+                yValues.add(new BarEntry(counts.get(i), i));
+            }
 
-        List<BarEntry> yValues = new ArrayList<>();
-        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
-        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
-        }
+            BarDataSet dataSet = new BarDataSet(yValues, "");
+            dataSet.setColors(getColors());
+            dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color100));
 
-        BarDataSet dataSet = new BarDataSet(yValues, "");
-        dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color100));
+            List<String> xValues = new ArrayList<>();
+            xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
+            xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
+            xValues.add("last week");
+            xValues.add("this week");
+            setHistoryData(dataSet, xValues);
+        });
 
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
-        xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
-        xValues.add("last week");
-        xValues.add("this week");
-        setHistoryData(dataSet, xValues);
-    }
-
-    private long getCompletedForRange(LocalDate start, LocalDate end) {
-//        return questPersistenceService.countCompletedByWeek(challenge, start, end);
-        return 0;
     }
 
     private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
@@ -330,21 +325,6 @@ public class ChallengeOverviewFragment extends BaseFragment {
             colors[i] = ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color300);
         }
         return colors;
-    }
-
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
-        LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < weeks - 1; i++) {
-            weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            weekBounds.add(new Pair<>(weekStart, weekEnd));
-        }
-        return weekBounds;
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
