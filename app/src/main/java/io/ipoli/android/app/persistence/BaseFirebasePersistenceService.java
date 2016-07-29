@@ -20,6 +20,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -77,6 +78,47 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         }
     }
 
+    protected abstract Class<T> getModelClass();
+
+    protected abstract String getCollectionName();
+
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
+    }
+
+    protected DatabaseReference getPlayerReference() {
+        return database.getReference("players").child(playerId);
+    }
+
+    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {
+        listenForQuery(query, createListListener(listener));
+    }
+
+    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
+        listenForQuery(query, createListListener(listener, queryFilter));
+    }
+
+    protected void listenForModelChange(Query query, OnDataChangedListener<T> listener) {
+        listenForQuery(query, createModelListener(listener));
+    }
+
+    protected void listenForQuery(Query query, ValueEventListener valueListener) {
+        valueListeners.put(query.getRef(), valueListener);
+        query.addValueEventListener(valueListener);
+    }
+
+    protected void listenForSingleChange(Query query, ValueEventListener valueListener) {
+        query.addListenerForSingleValueEvent(valueListener);
+    }
+
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
+        query.addListenerForSingleValueEvent(createListListener(listener));
+    }
+
+    protected void listenForSingleModelChange(Query query, OnDataChangedListener<T> listener) {
+        query.addListenerForSingleValueEvent(createModelListener(listener));
+    }
+
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();
@@ -88,10 +130,20 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract GenericTypeIndicator<Map<String, T>> getGenericMapIndicator();
 
     protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
+        return createListListener(listener, null);
+    }
+
+    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(getListFromMapSnapshot(dataSnapshot));
+                List<T> data = getListFromMapSnapshot(dataSnapshot);
+                if (queryFilter == null) {
+                    listener.onDataChanged(data);
+                    return;
+                }
+                List<T> filteredData = queryFilter.filter(Observable.from(data)).toList().toBlocking().single();
+                listener.onDataChanged(filteredData);
             }
 
             @Override
@@ -115,32 +167,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected abstract Class<T> getModelClass();
-
-    protected abstract String getCollectionName();
-
-    protected DatabaseReference getCollectionReference() {
-        return getPlayerReference().child(getCollectionName());
-    }
-
-    protected DatabaseReference getPlayerReference() {
-        return database.getReference("players").child(playerId);
-    }
-
-    protected void listenForQuery(Query query, ValueEventListener valueListener) {
-        valueListeners.put(query.getRef(), valueListener);
-        query.addValueEventListener(valueListener);
-    }
-
-    protected void listenForSingleChange(Query query, ValueEventListener valueListener) {
-        query.addListenerForSingleValueEvent(valueListener);
-    }
-
-    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
-        query.addListenerForSingleValueEvent(createListListener(listener));
-    }
-
-    protected void listenForSingleModelChange(Query query, OnDataChangedListener<T> listener) {
-        query.addListenerForSingleValueEvent(createModelListener(listener));
+    public interface QueryFilter<T> {
+        Observable<T> filter(Observable<T> data);
     }
 }

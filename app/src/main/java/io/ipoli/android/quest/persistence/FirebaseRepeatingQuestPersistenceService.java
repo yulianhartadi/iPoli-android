@@ -2,11 +2,8 @@ package io.ipoli.android.quest.persistence;
 
 import android.content.Context;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -17,7 +14,6 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -34,7 +30,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     protected GenericTypeIndicator<Map<String, RepeatingQuest>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, RepeatingQuest>>() {
-
         };
     }
 
@@ -48,7 +43,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         return "repeating-quests";
     }
 
-
     @Override
     public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
         return null;
@@ -61,7 +55,11 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-
+        Query query = getCollectionReference().equalTo(0, "recurrence/flexibleCount");
+        listenForListChange(query, listener, data ->
+                data.filter(rq -> rq.getRecurrence().getDtend() == null
+                        || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
+        );
     }
 
     @Override
@@ -79,21 +77,10 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-        listenForQuery(query, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<RepeatingQuest> repeatingQuests = getListFromMapSnapshot(dataSnapshot);
-                List<RepeatingQuest> filtered = Observable.from(repeatingQuests)
-                        .filter(rq -> rq.getRecurrence().getDtend() == null || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
-                        .toList().toBlocking().single();
-                listener.onDataChanged(filtered);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        listenForListChange(query, listener, data ->
+                data.filter(rq -> rq.getRecurrence().getDtend() == null
+                        || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
+        );
     }
 
     @Override
