@@ -26,7 +26,6 @@ import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -117,12 +116,12 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
     private void deleteEvents(List<Event> events) {
         for (Event e : events) {
             if (isRepeatingAndroidCalendarEvent(e)) {
-                RepeatingQuest repeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
-                if (repeatingQuest == null) {
-                    continue;
-                }
-                repeatingQuest.markDeleted();
-                repeatingQuestPersistenceService.save(repeatingQuest);
+                repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), repeatingQuest -> {
+                    if (repeatingQuest == null) {
+                        return;
+                    }
+                    repeatingQuestPersistenceService.delete(repeatingQuest);
+                });
             } else {
                 Quest quest = questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
                 if (quest == null) {

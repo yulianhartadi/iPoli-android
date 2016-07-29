@@ -61,6 +61,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
+    public void delete(T object) {
+
+    }
+
+    @Override
     public void delete(List<T> objects) {
 
     }

@@ -16,6 +16,8 @@ public interface PersistenceService<T extends PersistedObject> {
 
     void findById(String id, OnDataChangedListener<T> listener);
 
+    void delete(T object);
+
     void delete(List<T> objects);
 
     void removeAllListeners();
