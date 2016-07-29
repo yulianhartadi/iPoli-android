@@ -26,7 +26,6 @@ public class Reward extends PersistedObject {
         this.price = price;
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
-        isDeleted = false;
     }
 
     public Date getCreatedAt() {
@@ -59,14 +58,6 @@ public class Reward extends PersistedObject {
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(boolean deleted) {
-        isDeleted = deleted;
     }
 
     @Override

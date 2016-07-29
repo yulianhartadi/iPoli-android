@@ -1,7 +1,5 @@
 package io.ipoli.android.player;
 
-import com.google.firebase.database.Exclude;
-
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -14,8 +12,6 @@ import io.ipoli.android.app.utils.DateUtils;
  */
 public class Player extends PersistedObject {
 
-    @Exclude
-    private String id;
     private String experience;
     private Integer level;
     private Long coins;
@@ -26,8 +22,6 @@ public class Player extends PersistedObject {
 
     private Date updatedAt;
 
-    private boolean isDeleted;
-
     public Player() {
     }
 
@@ -37,7 +31,6 @@ public class Player extends PersistedObject {
         this.avatar = avatar;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.isDeleted = false;
     }
 
     public String getId() {
@@ -78,16 +71,6 @@ public class Player extends PersistedObject {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-    }
-
-    @Override
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 
     public void setCreatedAt(Date createdAt) {

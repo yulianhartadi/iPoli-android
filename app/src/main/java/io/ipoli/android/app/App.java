@@ -340,7 +340,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
-        e.quest.markDeleted();
         List<Reminder> reminders = e.quest.getReminders();
         if (reminders != null && !reminders.isEmpty()) {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
@@ -348,7 +347,7 @@ public class App extends MultiDexApplication {
                 notificationManagerCompat.cancel(reminder.getNotificationId());
             }
         }
-        questPersistenceService.save(e.quest);
+        questPersistenceService.delete(e.quest);
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
@@ -452,19 +451,17 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        repeatingQuest.markDeleted();
         markQuestsDeleted(repeatingQuest);
-        repeatingQuestPersistenceService.save(repeatingQuest);
+        repeatingQuestPersistenceService.delete(repeatingQuest);
     }
 
     private void markQuestsDeleted(RepeatingQuest repeatingQuest) {
         List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
         for (Quest q : quests) {
             if (!Quest.isCompleted(q)) {
-                q.markDeleted();
+                questPersistenceService.delete(q);
             }
         }
-        questPersistenceService.save(quests);
     }
 
     private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
@@ -488,8 +485,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        e.challenge.markDeleted();
-        challengePersistenceService.save(e.challenge);
         List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
 
         for (Quest quest : quests) {
@@ -502,9 +497,10 @@ public class App extends MultiDexApplication {
             for (RepeatingQuest repeatingQuest : repeatingQuests) {
                 repeatingQuest.setChallengeId(null);
             }
-
             repeatingQuestPersistenceService.save(repeatingQuests);
         });
+
+        challengePersistenceService.delete(e.challenge);
     }
 
     @Subscribe

@@ -156,8 +156,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
 
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
-        e.reward.markDeleted();
-        rewardPersistenceService.save(e.reward);
+        rewardPersistenceService.delete(e.reward);
         Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
     }
 

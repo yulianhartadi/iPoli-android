@@ -2,11 +2,8 @@ package io.ipoli.android.player.persistence;
 
 import android.content.Context;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
 import java.util.Map;
@@ -27,40 +24,14 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
 
     @Override
     public void find(OnDataChangedListener<Player> listener) {
-        DatabaseReference playerRef = database.getReference("players").child(playerId);
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getValue(Player.class));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-
-        playerRef.addListenerForSingleValueEvent(valueEventListener);
+        DatabaseReference playerRef = getCollectionReference().child(playerId);
+        listenForSingleModelChange(playerRef, listener);
     }
 
     @Override
-    public void listenForChanges(OnDataChangedListener<Player> listener) {
-        DatabaseReference playerRef = database.getReference("players").child(playerId);
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getValue(Player.class));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        valueListeners.put(playerRef, valueEventListener);
-        playerRef.addValueEventListener(valueEventListener);
+    public void listen(OnDataChangedListener<Player> listener) {
+        DatabaseReference playerRef = getCollectionReference().child(playerId);
+        listenForModelChange(playerRef, listener);
     }
 
     @Override
