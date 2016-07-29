@@ -3,6 +3,7 @@ package io.ipoli.android.quest.persistence;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.squareup.otto.Bus;
@@ -28,6 +29,11 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     public FirebaseRepeatingQuestPersistenceService(Context context, Bus eventBus) {
         super(context, eventBus);
+    }
+
+    @Override
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
     }
 
     @Override

@@ -63,7 +63,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object) {
-
+        getCollectionReference();
     }
 
     @Override
@@ -82,9 +82,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected abstract String getCollectionName();
 
-    protected DatabaseReference getCollectionReference() {
-        return getPlayerReference().child(getCollectionName());
-    }
+    protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
         return database.getReference("players").child(playerId);

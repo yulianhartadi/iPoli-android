@@ -54,6 +54,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
+    }
+
+    @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data.filter(
                 q -> q.getEndDate() == null && q.getActualStart() == null && q.getCompletedAt() == null
