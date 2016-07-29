@@ -195,26 +195,21 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        int timeSpent = (int) getTotalTimeSpent();
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
-
-        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
-
-        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
-
-        streak.setText(String.valueOf(getCurrentStreak()));
-    }
-
-    private long getTotalTimeSpent() {
         long completed = questPersistenceService.countCompleted(repeatingQuest);
-        List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest);
+        questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
+            long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
+            for (Quest completedQuest : completedWithStartTime) {
+                timeSpent += completedQuest.getActualDuration();
+            }
+            totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
 
-        long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
-        for (Quest completedQuest : completedWithStartTime) {
-            totalTime += completedQuest.getActualDuration();
-        }
-        return totalTime;
+            frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+
+            Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
+            nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+
+            streak.setText(String.valueOf(getCurrentStreak()));
+        });
     }
 
     private void showFrequencyProgress(Category category, long completed) {

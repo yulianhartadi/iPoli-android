@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.persistence;
 
 import android.content.Context;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.squareup.otto.Bus;
@@ -25,9 +26,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
 
     @Override
     protected GenericTypeIndicator<Map<String, Challenge>> getGenericMapIndicator() {
-        return new GenericTypeIndicator<Map<String, Challenge>>() {
-
-        };
+        return new GenericTypeIndicator<Map<String, Challenge>>() {};
     }
 
     @Override
@@ -38,6 +37,11 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     @Override
     protected String getCollectionName() {
         return "challenges";
+    }
+
+    @Override
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
     }
 
     @Override

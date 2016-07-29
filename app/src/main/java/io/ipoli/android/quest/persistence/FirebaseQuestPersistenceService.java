@@ -54,6 +54,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
+    }
+
+    @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data.filter(
                 q -> q.getEndDate() == null && q.getActualStart() == null && q.getCompletedAt() == null
@@ -79,13 +84,15 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllIncompleteToDosBefore(LocalDate localDate) {
-        return null;
+    public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("endDate/time").endAt(toStartOfDayUTC(date).getTime());
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAt() == null));
     }
 
     @Override
-    public List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest) {
-        return null;
+    public void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getActualStart() != null && q.getCompletedAt() != null));
     }
 
     @Override

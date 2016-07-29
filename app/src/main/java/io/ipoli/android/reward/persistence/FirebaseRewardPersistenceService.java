@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -32,6 +33,11 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
         return new GenericTypeIndicator<Map<String, Reward>>() {
 
         };
+    }
+
+    @Override
+    protected DatabaseReference getCollectionReference() {
+        return getPlayerReference().child(getCollectionName());
     }
 
     @Override
