@@ -144,6 +144,10 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         listenForQuery(query, createListListener(listener, queryFilter));
     }
 
+    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
+        listenForQuery(query, createSortedListListener(listener, queryFilter, querySort));
+    }
+
     protected void listenForModelChange(Query query, OnDataChangedListener<T> listener) {
         listenForQuery(query, createModelListener(listener));
     }
@@ -222,6 +226,27 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
+    protected ValueEventListener createSortedListListener(OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<T> data = getListFromMapSnapshot(dataSnapshot);
+                if (queryFilter == null) {
+                    listener.onDataChanged(data);
+                    return;
+                }
+                List<T> filteredData = queryFilter.filter(Observable.from(data))
+                        .toSortedList((t, t2) -> {return querySort.sort(t, t2);}).toBlocking().single();
+                listener.onDataChanged(filteredData);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
     protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener) {
         return createCountListener(listener, null);
     }
@@ -262,5 +287,9 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     public interface QueryFilter<T> {
         Observable<T> filter(Observable<T> data);
+    }
+
+    public interface QuerySort<T> {
+        int sort(T obj1, T obj2);
     }
 }
