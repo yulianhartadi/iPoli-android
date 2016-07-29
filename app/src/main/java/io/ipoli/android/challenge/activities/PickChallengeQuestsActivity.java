@@ -90,60 +90,60 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         }
 
         challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY), challenge -> {
-
+            this.challenge = challenge;
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             questList.setLayoutManager(layoutManager);
             questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-            adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
-            questList.setAdapter(adapter);
+            filter("", viewModels -> {
+                adapter = new ChallengePickQuestListAdapter(PickChallengeQuestsActivity.this, eventBus, viewModels, true);
+                questList.setAdapter(adapter);
+            });
 
             eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
-
         });
     }
 
     @NonNull
-    private List<PickQuestViewModel> filter(String query) {
-        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge);
-        repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
-            List<PickQuestViewModel> viewModels = new ArrayList<>();
-            for (Quest q : quests) {
-                viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
-            }
-            for (RepeatingQuest rq : repeatingQuests) {
-                viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
-            }
-
-            Collections.sort(viewModels, (vm1, vm2) -> {
-                Date d1 = vm1.getStartDate();
-                Date d2 = vm2.getStartDate();
-                if (d1 == null && d2 == null) {
-                    return -1;
+    private void filter(String query, FilterListener filterListener) {
+        questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge, quests -> {
+            repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
+                List<PickQuestViewModel> viewModels = new ArrayList<>();
+                for (Quest q : quests) {
+                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+                }
+                for (RepeatingQuest rq : repeatingQuests) {
+                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
                 }
 
-                if (d1 == null) {
-                    return 1;
-                }
+                Collections.sort(viewModels, (vm1, vm2) -> {
+                    Date d1 = vm1.getStartDate();
+                    Date d2 = vm2.getStartDate();
+                    if (d1 == null && d2 == null) {
+                        return -1;
+                    }
 
-                if (d2 == null) {
-                    return -1;
-                }
+                    if (d1 == null) {
+                        return 1;
+                    }
 
-                if (d2.after(d1)) {
-                    return 1;
-                }
+                    if (d2 == null) {
+                        return -1;
+                    }
 
-                if (d1.after(d2)) {
-                    return -1;
-                }
+                    if (d2.after(d1)) {
+                        return 1;
+                    }
 
-                return 0;
+                    if (d1.after(d2)) {
+                        return -1;
+                    }
+
+                    return 0;
+                });
+                filterListener.onFilterCompleted(viewModels);
             });
-//            return viewModels;
         });
-
-        return new ArrayList<>();
     }
 
     @Override
@@ -176,16 +176,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (StringUtils.isEmpty(newText)) {
-                    adapter.setViewModels(filter(""));
+                    filter("", viewModels -> adapter.setViewModels(viewModels));
                     return true;
                 }
 
                 if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
-
-                adapter.setViewModels(filter(newText.trim()));
-
+                filter(newText.trim(), viewModels -> adapter.setViewModels(viewModels));
                 return true;
             }
         });
@@ -232,5 +230,9 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             repeatingQuestPersistenceService.save(repeatingQuests);
         }
         finish();
+    }
+
+    public interface FilterListener {
+        void onFilterCompleted(List<PickQuestViewModel> viewModels);
     }
 }
