@@ -132,7 +132,7 @@ public class App extends MultiDexApplication {
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers());
+            scheduleQuestsFor4WeeksAhead();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             moveIncompleteQuestsToInbox();
             updateWidgets();
@@ -212,11 +212,9 @@ public class App extends MultiDexApplication {
         scheduleDailyChallenge();
     }
 
-    private Observable<Void> scheduleQuestsFor4WeeksAhead() {
-        return Observable.defer(() -> {
-            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+    private void scheduleQuestsFor4WeeksAhead() {
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
             scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
-            return Observable.empty();
         });
     }
 
@@ -252,9 +250,8 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe(quests -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new SyncCompleteEvent()));
+        scheduleQuestsFor4WeeksAhead();
+        eventBus.post(new SyncCompleteEvent());
     }
 
     @Subscribe
@@ -336,7 +333,7 @@ public class App extends MultiDexApplication {
             QuestNotificationScheduler.stopAll(quest.getId(), this);
         }
         questPersistenceService.delete(questsToRemove);
-        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
+        e.repeatingQuest.setReminders(e.reminders);
         repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
@@ -424,7 +421,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
-        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
+        e.repeatingQuest.setReminders(e.reminders);
         repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
@@ -493,18 +490,20 @@ public class App extends MultiDexApplication {
         e.challenge.markDeleted();
         challengePersistenceService.save(e.challenge);
         List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(e.challenge);
 
         for (Quest quest : quests) {
             quest.setChallengeId(null);
         }
 
-        for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            repeatingQuest.setChallengeId(null);
-        }
-
         questPersistenceService.save(quests);
-        repeatingQuestPersistenceService.save(repeatingQuests);
+
+        repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
+            for (RepeatingQuest repeatingQuest : repeatingQuests) {
+                repeatingQuest.setChallengeId(null);
+            }
+
+            repeatingQuestPersistenceService.save(repeatingQuests);
+        });
     }
 
     @Subscribe

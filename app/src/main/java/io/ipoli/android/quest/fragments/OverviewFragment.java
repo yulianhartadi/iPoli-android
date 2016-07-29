@@ -90,7 +90,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
-        questPersistenceService.findPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
+        questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
         return view;
     }
 

@@ -1,22 +1,24 @@
 package io.ipoli.android.quest.persistence;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
+import org.joda.time.LocalDate;
+
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.reminders.data.Reminder;
+import rx.Observable;
+import rx.functions.Func1;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -31,7 +33,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     protected GenericTypeIndicator<Map<String, RepeatingQuest>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, RepeatingQuest>>() {
-
         };
     }
 
@@ -45,69 +46,65 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         return "repeating-quests";
     }
 
-
     @Override
-    public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
-        return null;
+    public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(false, "allDay");
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
-    public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-
+    public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(false, "allDay");
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
     public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-
+        Query query = getCollectionReference().orderByChild("recurrence/flexibleCount").equalTo(0);
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
-    public RepeatingQuest findByExternalSourceMappingId(String source, String sourceId) {
-        return null;
+    public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener) {
+        Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
+        listenForSingleModelChange(query, listener);
     }
 
     @Override
-    public List<RepeatingQuest> findAllForChallenge(Challenge challenge) {
-        return null;
-    }
-
-    @Override
-    public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
-
+    public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        listenForSingleListChange(query, listener);
     }
 
     @Override
     public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-
-    }
-
-    @Override
-    public List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge) {
-        return null;
-    }
-
-    @Override
-    public void findNotDeleted(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+    }
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    RepeatingQuest rq = snapshot.getValue(getModelClass());
-                    rq.setId(snapshot.getKey());
-                    repeatingQuests.add(rq);
-                }
-                listener.onDataChanged(repeatingQuests);
-            }
+    @Override
+    public void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        listenForSingleListChange(getCollectionReference(), listener, data -> data
+                .filter(rq -> !rq.getChallengeId().equals(challenge.getId()))
+                .filter(rq -> rq.getName().toLowerCase().contains(query.toLowerCase()))
+                .filter(activeRepeatingQuestFilter())
+        );
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+    @Override
+    public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        listenForSingleChange(query, createListListener(listener));
+    }
 
-            }
-        };
+    @NonNull
+    private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
+        return data.filter(activeRepeatingQuestFilter());
+    }
 
-        query.addListenerForSingleValueEvent(valueEventListener);
+    @NonNull
+    private Func1<RepeatingQuest, Boolean> activeRepeatingQuestFilter() {
+        return rq -> rq.getRecurrence().getDtend() == null
+                || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
     }
 }

@@ -40,35 +40,36 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
                 continue;
             }
             RepeatingQuest repeatingQuest = new RepeatingQuest("");
-            RepeatingQuest foundRepeatingQuest = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
-            if (foundRepeatingQuest != null) {
-                repeatingQuest.setId(foundRepeatingQuest.getId());
-                repeatingQuest.setCreatedAt(foundRepeatingQuest.getCreatedAt());
-            }
-            repeatingQuest.setName(e.title);
-            repeatingQuest.setSource(Constants.SOURCE_ANDROID_CALENDAR);
-            repeatingQuest.setAllDay(e.allDay);
+            repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), foundRepeatingQuest -> {
+                if (foundRepeatingQuest != null) {
+                    repeatingQuest.setId(foundRepeatingQuest.getId());
+                    repeatingQuest.setCreatedAt(foundRepeatingQuest.getCreatedAt());
+                }
+                repeatingQuest.setName(e.title);
+                repeatingQuest.setSource(Constants.SOURCE_ANDROID_CALENDAR);
+                repeatingQuest.setAllDay(e.allDay);
 
-            DateTimeZone timeZone = DateTimeZone.getDefault();
-            if(!TextUtils.isEmpty(e.eventTimeZone)) {
-                timeZone = DateTimeZone.forID(e.eventTimeZone);
-            }
-            DateTime startDateTime = new DateTime(e.dTStart, timeZone);
-            repeatingQuest.setStartMinute(startDateTime.getMinuteOfDay());
-            Dur dur = new Dur(e.duration);
-            repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
-            Recurrence recurrence = Recurrence.create();
-            recurrence.setRrule(e.rRule);
-            recurrence.setRdate(e.rDate);
-            if(e.dTStart > 0) {
-                recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
-            }
-            if(e.dTend > 0) {
-                recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
-            }
-            repeatingQuest.setRecurrence(recurrence);
-            repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
-            res.add(repeatingQuest);
+                DateTimeZone timeZone = DateTimeZone.getDefault();
+                if (!TextUtils.isEmpty(e.eventTimeZone)) {
+                    timeZone = DateTimeZone.forID(e.eventTimeZone);
+                }
+                DateTime startDateTime = new DateTime(e.dTStart, timeZone);
+                repeatingQuest.setStartMinute(startDateTime.getMinuteOfDay());
+                Dur dur = new Dur(e.duration);
+                repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
+                Recurrence recurrence = Recurrence.create();
+                recurrence.setRrule(e.rRule);
+                recurrence.setRdate(e.rDate);
+                if (e.dTStart > 0) {
+                    recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
+                }
+                if (e.dTend > 0) {
+                    recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
+                }
+                repeatingQuest.setRecurrence(recurrence);
+                repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
+                res.add(repeatingQuest);
+            });
         }
         return res;
     }

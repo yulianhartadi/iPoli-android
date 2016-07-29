@@ -106,41 +106,44 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @NonNull
     private List<PickQuestViewModel> filter(String query) {
         List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge);
-        List<PickQuestViewModel> viewModels = new ArrayList<>();
-        for (Quest q : quests) {
-            viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
-        }
-        for (RepeatingQuest rq : repeatingQuests) {
-            viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
-        }
-
-        Collections.sort(viewModels, (vm1, vm2) -> {
-            Date d1 = vm1.getStartDate();
-            Date d2 = vm2.getStartDate();
-            if (d1 == null && d2 == null) {
-                return -1;
+        repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
+            List<PickQuestViewModel> viewModels = new ArrayList<>();
+            for (Quest q : quests) {
+                viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+            }
+            for (RepeatingQuest rq : repeatingQuests) {
+                viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
             }
 
-            if (d1 == null) {
-                return 1;
-            }
+            Collections.sort(viewModels, (vm1, vm2) -> {
+                Date d1 = vm1.getStartDate();
+                Date d2 = vm2.getStartDate();
+                if (d1 == null && d2 == null) {
+                    return -1;
+                }
 
-            if (d2 == null) {
-                return -1;
-            }
+                if (d1 == null) {
+                    return 1;
+                }
 
-            if (d2.after(d1)) {
-                return 1;
-            }
+                if (d2 == null) {
+                    return -1;
+                }
 
-            if (d1.after(d2)) {
-                return -1;
-            }
+                if (d2.after(d1)) {
+                    return 1;
+                }
 
-            return 0;
+                if (d1.after(d2)) {
+                    return -1;
+                }
+
+                return 0;
+            });
+//            return viewModels;
         });
-        return viewModels;
+
+        return new ArrayList<>();
     }
 
     @Override

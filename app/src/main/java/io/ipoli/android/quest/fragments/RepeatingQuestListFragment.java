@@ -86,7 +86,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(repeatingQuestListAdapter);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this);
+        repeatingQuestPersistenceService.listenForAllNonAllDayActiveRepeatingQuests(this);
         return view;
     }
 

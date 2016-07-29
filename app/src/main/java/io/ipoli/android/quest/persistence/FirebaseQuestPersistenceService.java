@@ -40,7 +40,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     protected GenericTypeIndicator<Map<String, Quest>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, Quest>>() {
-
         };
     }
 
@@ -56,12 +55,15 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
-
+        listenForListChange(getCollectionReference(), listener, data -> data.filter(
+                q -> q.getEndDate() == null && q.getActualStart() == null && q.getCompletedAt() == null
+        ));
     }
 
     @Override
-    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-
+    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("endDate/time").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
     }
 
     @Override
@@ -145,14 +147,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         });
     }
 
-    private void listenForQuery(Query query, ValueEventListener valueListener) {
-        valueListeners.put(query.getRef(), valueListener);
-        query.addValueEventListener(valueListener);
-    }
-
-    private void listenForSingleChange(Query query, ValueEventListener valueListener) {
-        query.addListenerForSingleValueEvent(valueListener);
-    }
 
     @Override
     public void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
@@ -288,9 +282,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                     if (!snapshot.hasChild("completedAt")) {
                         continue;
                     }
-                    Quest quest = snapshot.getValue(getModelClass());
-                    quest.setId(snapshot.getKey());
-                    quests.add(quest);
+                    quests.add(snapshot.getValue(getModelClass()));
                 }
                 listener.onDataChanged(quests);
             }

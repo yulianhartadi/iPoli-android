@@ -146,7 +146,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
         LocalDate scheduledQuestsEndDate = today.plusWeeks(3).dayOfWeek().withMaximumValue();
 
         if (notAllQuestsAreScheduledForChallenge(challengeEnd, scheduledQuestsEndDate)) {
-            repeatingQuestPersistenceService.findNotDeleted(challenge, repeatingQuests -> {
+            repeatingQuestPersistenceService.findByChallenge(challenge, repeatingQuests -> {
                 Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
                 for (RepeatingQuest rq : repeatingQuests) {
                     Recurrence recurrence = rq.getRecurrence();

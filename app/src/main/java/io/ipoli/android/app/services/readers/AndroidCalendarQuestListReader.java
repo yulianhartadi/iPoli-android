@@ -14,7 +14,6 @@ import java.util.List;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -48,7 +47,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
                 q.setCreatedAt(foundQuest.getCreatedAt());
             }
             DateTimeZone timeZone = DateTimeZone.getDefault();
-            if(!TextUtils.isEmpty(e.eventTimeZone)) {
+            if (!TextUtils.isEmpty(e.eventTimeZone)) {
                 timeZone = DateTimeZone.forID(e.eventTimeZone);
             }
             DateTime startDateTime = new DateTime(e.dTStart, timeZone);
@@ -69,8 +68,7 @@ public class AndroidCalendarQuestListReader implements AndroidCalendarListReader
             if (TextUtils.isEmpty(e.originalId)) {
                 continue;
             }
-            RepeatingQuest rq = repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId);
-            q.setRepeatingQuest(rq);
+            repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId, q::setRepeatingQuest);
         }
         return res;
     }

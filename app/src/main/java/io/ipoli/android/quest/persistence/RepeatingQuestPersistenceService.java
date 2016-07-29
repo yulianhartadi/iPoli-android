@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -13,21 +12,19 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public interface RepeatingQuestPersistenceService extends PersistenceService<RepeatingQuest> {
 
-    List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests();
-
     void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
+
+    void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    RepeatingQuest findByExternalSourceMappingId(String source, String sourceId);
+    void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener);
 
-    List<RepeatingQuest> findAllForChallenge(Challenge challenge);
-
-    void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
+    void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge);
+    void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void findNotDeleted(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
+    void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 }
