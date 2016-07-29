@@ -135,10 +135,13 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
                 to = LocalDate.now().dayOfWeek().withMaximumValue();
             }
 
-            int completedCount = (int) questPersistenceService.countCompleted(rq, from, to);
-            int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
-            Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
-            return new RepeatingQuestViewModel(rq, totalCount, completedCount, recur, nextDate);
+            questPersistenceService.countCompleted(rq.getId(), from, to, completedCount -> {
+                int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
+                Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
+                new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate);
+            });
+
+            return null;
         } catch (ParseException e) {
             return null;
         }

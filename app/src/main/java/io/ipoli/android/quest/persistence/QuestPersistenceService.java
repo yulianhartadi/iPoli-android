@@ -28,9 +28,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
-    long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
+    void countCompleted(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener);
 
-    long countCompleted(RepeatingQuest repeatingQuest);
+    void countCompleted(String repeatingQuestId, OnDataChangedListener<Long> listener);
 
     void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
@@ -48,7 +48,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
 
-    long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
+    void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
     void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
