@@ -24,7 +24,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge);
+    void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 }

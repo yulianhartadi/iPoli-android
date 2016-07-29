@@ -16,6 +16,7 @@ import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
+import rx.functions.Func1;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -57,12 +58,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
-    @NonNull
-    private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
-        return data.filter(rq -> rq.getRecurrence().getDtend() == null
-                || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime());
-    }
-
     @Override
     public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(0, "recurrence/flexibleCount");
@@ -88,13 +83,28 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public List<RepeatingQuest> findActiveNotForChallenge(String query, Challenge challenge) {
-        return null;
+    public void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        listenForSingleListChange(getCollectionReference(), listener, data -> data
+                .filter(rq -> !rq.getChallengeId().equals(challenge.getId()))
+                .filter(rq -> rq.getName().toLowerCase().contains(query.toLowerCase()))
+                .filter(activeRepeatingQuestFilter())
+        );
     }
 
     @Override
     public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
         listenForSingleChange(query, createListListener(listener));
+    }
+
+    @NonNull
+    private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
+        return data.filter(activeRepeatingQuestFilter());
+    }
+
+    @NonNull
+    private Func1<RepeatingQuest, Boolean> activeRepeatingQuestFilter() {
+        return rq -> rq.getRecurrence().getDtend() == null
+                || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
     }
 }

@@ -111,8 +111,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(valueListener);
     }
 
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
+        query.addListenerForSingleValueEvent(createListListener(listener, queryFilter));
+    }
+
     protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
-        query.addListenerForSingleValueEvent(createListListener(listener));
+        listenForSingleListChange(query, listener, null);
     }
 
     protected void listenForSingleModelChange(Query query, OnDataChangedListener<T> listener) {
