@@ -297,8 +297,21 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public long countCompleted(Challenge challenge, LocalDate start, LocalDate end) {
-        return 0;
+    public void countCompletedByWeek(Challenge challenge, LocalDate start, LocalDate end, OnDataChangedListener<List<Long>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId")
+                .equalTo(challenge.getId());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

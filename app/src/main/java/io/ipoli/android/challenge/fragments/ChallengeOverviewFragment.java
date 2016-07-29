@@ -285,7 +285,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
 
         List<BarEntry> yValues = new ArrayList<>();
-        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
+        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
             yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
@@ -304,7 +304,8 @@ public class ChallengeOverviewFragment extends BaseFragment {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompleted(challenge, start, end);
+//        return questPersistenceService.countCompletedByWeek(challenge, start, end);
+        return 0;
     }
 
     private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
@@ -332,13 +333,13 @@ public class ChallengeOverviewFragment extends BaseFragment {
     }
 
     @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
-        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
+    private List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
+        LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();
         LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
 
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
         weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < weeks - 1; i++) {
             weekStart = weekStart.plusWeeks(1);
             weekEnd = weekStart.dayOfWeek().withMaximumValue();
             weekBounds.add(new Pair<>(weekStart, weekEnd));
