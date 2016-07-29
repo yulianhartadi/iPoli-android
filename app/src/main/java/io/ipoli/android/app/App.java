@@ -341,14 +341,14 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        List<Quest> questsToRemove = questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest);
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        for (Quest quest : questsToRemove) {
-            QuestNotificationScheduler.stopAll(quest.getId(), this);
-        }
-        questPersistenceService.delete(questsToRemove);
-        e.repeatingQuest.setReminders(e.reminders);
-        repeatingQuestPersistenceService.save(e.repeatingQuest);
+        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest.getId(), questsToRemove -> {
+            for (Quest quest : questsToRemove) {
+                QuestNotificationScheduler.stopAll(quest.getId(), this);
+            }
+            questPersistenceService.delete(questsToRemove);
+            e.repeatingQuest.setReminders(e.reminders);
+            repeatingQuestPersistenceService.save(e.repeatingQuest);
+        });
     }
 
     @Subscribe

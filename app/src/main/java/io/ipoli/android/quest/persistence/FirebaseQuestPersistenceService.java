@@ -207,8 +207,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest) {
-        return null;
+    public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getEndDate() == null || q.getEndDate().equals(toStartOfDayUTC(startDate))));
     }
 
     @Override

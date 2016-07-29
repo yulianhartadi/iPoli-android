@@ -46,7 +46,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByExternalSourceMappingId(String source, String sourceId);
 
-    List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
+    void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
