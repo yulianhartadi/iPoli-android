@@ -195,20 +195,21 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        long completed = questPersistenceService.countCompleted(repeatingQuest);
-        questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
-            long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
-            for (Quest completedQuest : completedWithStartTime) {
-                timeSpent += completedQuest.getActualDuration();
-            }
-            totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
+        questPersistenceService.countCompleted(repeatingQuest.getId(), completed -> {
+            questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
+                long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
+                for (Quest completedQuest : completedWithStartTime) {
+                    timeSpent += completedQuest.getActualDuration();
+                }
+                totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
 
-            frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+                frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
-            Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-            nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+                Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
+                nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
 
-            streak.setText(String.valueOf(getCurrentStreak()));
+                streak.setText(String.valueOf(getCurrentStreak()));
+            });
         });
     }
 
@@ -465,7 +466,10 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompleted(repeatingQuest, start, end);
+        questPersistenceService.countCompleted(repeatingQuest.getId(), start, end, count -> {
+
+        });
+        return 0;
     }
 
 }
