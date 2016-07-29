@@ -7,6 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
@@ -119,5 +120,14 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected DatabaseReference getPlayerReference() {
         return database.getReference("players").child(playerId);
+    }
+
+    protected void listenForQuery(Query query, ValueEventListener valueListener) {
+        valueListeners.put(query.getRef(), valueListener);
+        query.addValueEventListener(valueListener);
+    }
+
+    protected void listenForSingleChange(Query query, ValueEventListener valueListener) {
+        query.addListenerForSingleValueEvent(valueListener);
     }
 }

@@ -9,7 +9,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
+import org.joda.time.LocalDate;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,9 @@ import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminders.data.Reminder;
+import rx.Observable;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -78,7 +82,22 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        listenForQuery(query, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<RepeatingQuest> repeatingQuests = getListFromMapSnapshot(dataSnapshot);
+                List<RepeatingQuest> filtered = Observable.from(repeatingQuests)
+                        .filter(rq -> rq.getRecurrence().getDtend() == null || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
+                        .toList().toBlocking().single();
+                listener.onDataChanged(filtered);
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -87,27 +106,8 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findNotDeleted(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+    public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    RepeatingQuest rq = snapshot.getValue(getModelClass());
-                    rq.setId(snapshot.getKey());
-                    repeatingQuests.add(rq);
-                }
-                listener.onDataChanged(repeatingQuests);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleChange(query, createListListener(listener));
     }
 }
