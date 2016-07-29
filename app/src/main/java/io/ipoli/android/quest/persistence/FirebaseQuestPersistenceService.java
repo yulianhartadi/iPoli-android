@@ -68,14 +68,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        DatabaseReference collectionReference = getCollectionReference();
-        Query query = collectionReference.orderByChild("completedAt/time").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
-        listenForSingleChange(query, createListListener(listener));
+        Query query = getCollectionReference().orderByChild("completedAt/time").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
+        listenForSingleListChange(query, listener);
     }
 
     @Override
-    public List<Quest> findAllPlannedAndStartedToday() {
-        return null;
+    public void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("endDate/time").equalTo(toStartOfDayUTC(LocalDate.now()).getTime());
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
     }
 
     @Override

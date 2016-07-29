@@ -24,7 +24,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllPlannedAndStartedToday();
+    void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener);
 
     List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
 

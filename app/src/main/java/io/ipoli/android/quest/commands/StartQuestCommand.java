@@ -2,7 +2,6 @@ package io.ipoli.android.quest.commands;
 
 import android.content.Context;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.app.utils.DateUtils;
@@ -40,12 +39,13 @@ public class StartQuestCommand {
     }
 
     private void stopOtherRunningQuests(Quest q) {
-        List<Quest> quests = questPersistenceService.findAllPlannedAndStartedToday();
-        for (Quest cq : quests) {
-            if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                cq.setActualStart(null);
-                questPersistenceService.save(cq);
+        questPersistenceService.findAllPlannedAndStartedToday(quests -> {
+            for (Quest cq : quests) {
+                if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
+                    cq.setActualStart(null);
+                    questPersistenceService.save(cq);
+                }
             }
-        }
+        });
     }
 }
