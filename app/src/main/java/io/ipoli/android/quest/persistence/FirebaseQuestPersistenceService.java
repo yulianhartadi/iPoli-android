@@ -180,8 +180,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest) {
-        return null;
+    public void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        listenForSingleListChange(query, listener);
     }
 
     @Override

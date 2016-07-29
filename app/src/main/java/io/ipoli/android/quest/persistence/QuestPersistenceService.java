@@ -38,7 +38,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
+    void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
 

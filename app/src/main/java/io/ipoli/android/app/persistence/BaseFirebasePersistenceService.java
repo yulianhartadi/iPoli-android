@@ -34,8 +34,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected final FirebaseDatabase database;
     protected final String playerId;
     protected final Bus eventBus;
-    protected Map<DatabaseReference, ValueEventListener> valueListeners;
-    protected Map<DatabaseReference, ChildEventListener> childListeners;
+    protected Map<Query, ValueEventListener> valueListeners;
+    protected Map<Query, ChildEventListener> childListeners;
 
     public BaseFirebasePersistenceService(Context context, Bus eventBus) {
         this.eventBus = eventBus;
@@ -86,8 +86,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void removeAllListeners() {
-        for (DatabaseReference ref : valueListeners.keySet()) {
-            ref.removeEventListener(valueListeners.get(ref));
+        for (Query query : valueListeners.keySet()) {
+            query.removeEventListener(valueListeners.get(query));
+        }
+
+        for (Query query : childListeners.keySet()) {
+            query.removeEventListener(childListeners.get(query));
         }
     }
 
@@ -122,7 +126,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
             }
         };
-        childListeners.put(query.getRef(), childListener);
+        childListeners.put(query, childListener);
         query.addChildEventListener(childListener);
     }
 
@@ -153,7 +157,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     protected void listenForQuery(Query query, ValueEventListener valueListener) {
-        valueListeners.put(query.getRef(), valueListener);
+        valueListeners.put(query, valueListener);
         query.addValueEventListener(valueListener);
     }
 
