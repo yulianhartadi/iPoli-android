@@ -123,6 +123,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +189,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return;
         }
         playerPersistenceService.listenForChanges(player -> {
+            this.player = player;
             View header = navigationView.getHeaderView(0);
             TextView level = (TextView) header.findViewById(R.id.player_level);
             level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
@@ -495,10 +497,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                playerPersistenceService.find(player -> {
-                    player.setAvatar(avatar);
-                    playerPersistenceService.save(player);
-                });
+                player.setAvatar(avatar);
+                playerPersistenceService.save(player);
             }
         }
     }

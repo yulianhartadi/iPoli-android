@@ -25,9 +25,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
 
     @Override
     protected GenericTypeIndicator<Map<String, Reward>> getGenericMapIndicator() {
-        return new GenericTypeIndicator<Map<String, Reward>>() {
-
-        };
+        return new GenericTypeIndicator<Map<String, Reward>>() {};
     }
 
     @Override
