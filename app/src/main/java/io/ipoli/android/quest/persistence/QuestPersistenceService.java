@@ -62,7 +62,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
+    void findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
     void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 

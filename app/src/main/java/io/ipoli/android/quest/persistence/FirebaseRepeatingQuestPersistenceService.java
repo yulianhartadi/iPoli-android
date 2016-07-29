@@ -89,10 +89,10 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+    public void findActiveNotForChallenge(String searchText, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         listenForSingleListChange(getCollectionReference(), listener, data -> data
-                .filter(rq -> !rq.getChallengeId().equals(challenge.getId()))
-                .filter(rq -> rq.getName().toLowerCase().contains(query.toLowerCase()))
+                .filter(rq -> !challenge.getId().equals(rq.getChallengeId()))
+                .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase()))
                 .filter(activeRepeatingQuestFilter())
         );
     }
