@@ -17,7 +17,6 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.reminders.data.Reminder;
 import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -71,13 +70,9 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public List<RepeatingQuest> findAllForChallenge(Challenge challenge) {
-        return null;
-    }
-
-    @Override
-    public void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
-
+    public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        listenForSingleListChange(query, listener);
     }
 
     @Override

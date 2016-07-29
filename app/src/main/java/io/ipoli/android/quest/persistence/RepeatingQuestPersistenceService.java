@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -21,9 +20,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     RepeatingQuest findByExternalSourceMappingId(String source, String sourceId);
 
-    List<RepeatingQuest> findAllForChallenge(Challenge challenge);
-
-    void saveReminders(RepeatingQuest repeatingQuest, List<Reminder> reminders);
+    void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 

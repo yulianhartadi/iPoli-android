@@ -57,21 +57,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     @Override
     public void findById(String id, OnDataChangedListener<T> listener) {
         DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
-//        Query query = dbRef.orderByChild("isDeleted").equalTo(false);
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getValue(getModelClass()));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-
-        dbRef.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleModelChange(dbRef, listener);
     }
 
     @Override
@@ -110,6 +96,20 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
+    protected ValueEventListener createModelListener(OnDataChangedListener<T> listener) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onDataChanged(dataSnapshot.getValue(getModelClass()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
     protected abstract Class<T> getModelClass();
 
     protected abstract String getCollectionName();
@@ -129,5 +129,13 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected void listenForSingleChange(Query query, ValueEventListener valueListener) {
         query.addListenerForSingleValueEvent(valueListener);
+    }
+
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
+        query.addListenerForSingleValueEvent(createListListener(listener));
+    }
+
+    protected void listenForSingleModelChange(Query query, OnDataChangedListener<T> listener) {
+        query.addListenerForSingleValueEvent(createModelListener(listener));
     }
 }

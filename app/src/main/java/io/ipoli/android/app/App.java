@@ -336,7 +336,7 @@ public class App extends MultiDexApplication {
             QuestNotificationScheduler.stopAll(quest.getId(), this);
         }
         questPersistenceService.delete(questsToRemove);
-        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
+        e.repeatingQuest.setReminders(e.reminders);
         repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
@@ -424,7 +424,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
-        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
+        e.repeatingQuest.setReminders(e.reminders);
         repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
@@ -493,18 +493,20 @@ public class App extends MultiDexApplication {
         e.challenge.markDeleted();
         challengePersistenceService.save(e.challenge);
         List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(e.challenge);
 
         for (Quest quest : quests) {
             quest.setChallengeId(null);
         }
 
-        for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            repeatingQuest.setChallengeId(null);
-        }
-
         questPersistenceService.save(quests);
-        repeatingQuestPersistenceService.save(repeatingQuests);
+
+        repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
+            for (RepeatingQuest repeatingQuest : repeatingQuests) {
+                repeatingQuest.setChallengeId(null);
+            }
+
+            repeatingQuestPersistenceService.save(repeatingQuests);
+        });
     }
 
     @Subscribe
