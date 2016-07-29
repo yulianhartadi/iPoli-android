@@ -26,7 +26,14 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
 
     @Override
     protected GenericTypeIndicator<Map<String, Challenge>> getGenericMapIndicator() {
-        return new GenericTypeIndicator<Map<String, Challenge>>() {};
+        return new GenericTypeIndicator<Map<String, Challenge>>() {
+        };
+    }
+
+    @Override
+    protected GenericTypeIndicator<List<Challenge>> getGenericListIndicator() {
+        return new GenericTypeIndicator<List<Challenge>>() {
+        };
     }
 
     @Override

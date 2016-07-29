@@ -73,12 +73,12 @@ import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
+import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
@@ -201,6 +201,25 @@ public class App extends MultiDexApplication {
 //                    .build());
 //        }
 
+        repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
+            @Override
+            public void onNew(List<RepeatingQuest> data) {
+                for (RepeatingQuest rq : data) {
+                    onRepeatingQuestSaved(rq);
+                }
+            }
+
+            @Override
+            public void onChanged(List<RepeatingQuest> data) {
+
+            }
+
+            @Override
+            public void onDeleted() {
+
+            }
+        });
+
     }
 
     private void scheduleDailyChallenge() {
@@ -213,9 +232,7 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleQuestsFor4WeeksAhead() {
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
-            scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
-        });
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this::scheduleRepeatingQuests);
     }
 
     private void moveIncompleteQuestsToInbox() {
@@ -421,23 +438,17 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
-    @Subscribe
-    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
-        RepeatingQuest rq = e.repeatingQuest;
-
-        Recurrence recurrence = rq.getRecurrence();
+    public void onRepeatingQuestSaved(RepeatingQuest repeatingQuest) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
         if (TextUtils.isEmpty(recurrence.getRrule())) {
             List<Quest> questsToCreate = new ArrayList<>();
             for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
+                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(repeatingQuest, recurrence.getDtstart()));
             }
             questPersistenceService.save(questsToCreate);
-            onQuestChanged();
-
         } else {
-
             Observable.defer(() -> {
-                scheduleRepeatingQuest(rq, questPersistenceService);
+                scheduleRepeatingQuest(repeatingQuest);
                 return Observable.empty();
             }).compose(applyAndroidSchedulers()).subscribe(quests -> {
             }, Throwable::printStackTrace, this::onQuestChanged);
@@ -460,13 +471,13 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest) {
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         repeatingQuests.add(repeatingQuest);
-        scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
+        scheduleRepeatingQuests(repeatingQuests);
     }
 
-    private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
         new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
@@ -603,7 +614,7 @@ public class App extends MultiDexApplication {
             questPersistenceService.save(quests);
             List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
             repeatingQuestPersistenceService.save(repeatingQuests);
-            scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
+            scheduleRepeatingQuests(repeatingQuests);
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
     }

@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.squareup.otto.Bus;
 
+import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
@@ -53,6 +54,12 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
     protected GenericTypeIndicator<Map<String, Player>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, Player>>() {
 
+        };
+    }
+
+    @Override
+    protected GenericTypeIndicator<List<Player>> getGenericListIndicator() {
+        return new GenericTypeIndicator<List<Player>>() {
         };
     }
 }
