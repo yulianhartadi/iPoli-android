@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
@@ -27,31 +25,26 @@ import io.ipoli.android.reward.persistence.RewardPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    @Singleton
     public QuestPersistenceService provideQuestPersistenceService(Context context, Bus eventBus) {
         return new FirebaseQuestPersistenceService(context, eventBus);
     }
 
     @Provides
-    @Singleton
     public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Context context, Bus eventBus) {
         return new FirebaseRepeatingQuestPersistenceService(context, eventBus);
     }
 
     @Provides
-    @Singleton
     public PlayerPersistenceService providePlayerPersistenceService(Context context, Bus eventBus) {
         return new FirebasePlayerPersistenceService(context, eventBus);
     }
 
     @Provides
-    @Singleton
     public ChallengePersistenceService provideChallengePersistenceService(Context context, Bus eventBus) {
         return new FirebaseChallengePersistenceService(context, eventBus);
     }
 
     @Provides
-    @Singleton
     public RewardPersistenceService provideRewardPersistenceService(Context context, Bus eventBus) {
         return new FirebaseRewardPersistenceService(context, eventBus);
     }
