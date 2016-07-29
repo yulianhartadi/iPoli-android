@@ -95,8 +95,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             questList.setLayoutManager(layoutManager);
             questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-            filter("", pickQuestViewModels -> {
-                adapter = new ChallengePickQuestListAdapter(PickChallengeQuestsActivity.this, eventBus, pickQuestViewModels, true);
+            filter("", viewModels -> {
+                adapter = new ChallengePickQuestListAdapter(PickChallengeQuestsActivity.this, eventBus, viewModels, true);
                 questList.setAdapter(adapter);
             });
 
@@ -176,14 +176,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (StringUtils.isEmpty(newText)) {
-                    filter("", pickQuestViewModels -> adapter.setViewModels(pickQuestViewModels));
+                    filter("", viewModels -> adapter.setViewModels(viewModels));
                     return true;
                 }
 
                 if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
-                filter(newText.trim(), pickQuestViewModels -> adapter.setViewModels(pickQuestViewModels));
+                filter(newText.trim(), viewModels -> adapter.setViewModels(viewModels));
                 return true;
             }
         });
@@ -233,6 +233,6 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     }
 
     public interface FilterListener {
-        void onFilterCompleted(List<PickQuestViewModel> pickQuestViewModels);
+        void onFilterCompleted(List<PickQuestViewModel> viewModels);
     }
 }
