@@ -9,8 +9,6 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -23,11 +21,14 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
  */
 public class PersistentRepeatingQuestScheduler {
 
-    @Inject
-    RepeatingQuestScheduler repeatingQuestScheduler;
+    private final RepeatingQuestScheduler repeatingQuestScheduler;
 
-    @Inject
-    QuestPersistenceService questPersistenceService;
+    private final QuestPersistenceService questPersistenceService;
+
+    public PersistentRepeatingQuestScheduler(RepeatingQuestScheduler repeatingQuestScheduler, QuestPersistenceService questPersistenceService) {
+        this.repeatingQuestScheduler = repeatingQuestScheduler;
+        this.questPersistenceService = questPersistenceService;
+    }
 
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);

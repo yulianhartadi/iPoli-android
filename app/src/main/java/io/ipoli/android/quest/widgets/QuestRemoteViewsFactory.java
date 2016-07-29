@@ -49,7 +49,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     @Override
     public void onDataSetChanged() {
         quests.clear();
-        quests.addAll(questPersistenceService.findAllNonAllDayIncompleteForDateSync(new LocalDate()));
+        quests.addAll(questPersistenceService.findAllNonAllDayIncompleteForDate(new LocalDate()));
     }
 
     @Override

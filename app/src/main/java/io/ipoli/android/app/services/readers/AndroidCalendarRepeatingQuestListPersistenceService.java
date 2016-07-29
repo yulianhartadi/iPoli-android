@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Recurrence;
@@ -27,8 +25,11 @@ import me.everything.providers.android.calendar.Event;
  */
 public class AndroidCalendarRepeatingQuestListPersistenceService implements AndroidCalendarListPersistenceService<RepeatingQuest> {
 
-    @Inject
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    public AndroidCalendarRepeatingQuestListPersistenceService(RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+    }
 
     @Override
     public void save(List<Event> events) {

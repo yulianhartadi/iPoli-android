@@ -183,7 +183,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return currentDate.isBefore(new LocalDate());
     }
 
-    @NonNull
     private void getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests, PlaceholderQuestsListener listener) {
         List<Quest> res = new ArrayList<>();
         for (int i = 0; i < repeatingQuests.size(); i++) {
