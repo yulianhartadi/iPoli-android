@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
@@ -14,6 +15,7 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -45,16 +47,26 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(false, "allDay");
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+    }
 
+    @Override
+    public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().equalTo(false, "allDay");
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+    }
+
+    @NonNull
+    private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
+        return data.filter(rq -> rq.getRecurrence().getDtend() == null
+                || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime());
     }
 
     @Override
     public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(0, "recurrence/flexibleCount");
-        listenForListChange(query, listener, data ->
-                data.filter(rq -> rq.getRecurrence().getDtend() == null
-                        || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
-        );
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
@@ -72,10 +84,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-        listenForListChange(query, listener, data ->
-                data.filter(rq -> rq.getRecurrence().getDtend() == null
-                        || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
-        );
+        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
