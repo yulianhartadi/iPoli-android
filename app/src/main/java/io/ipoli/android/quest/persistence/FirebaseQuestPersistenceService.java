@@ -23,8 +23,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.SubQuest;
-import io.ipoli.android.reminders.data.Reminder;
 import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -217,16 +215,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener) {
-
-    }
-
-    @Override
-    public void saveReminders(Quest quest, List<Reminder> reminders) {
-
-    }
-
-    @Override
-    public void saveSubQuests(Quest quest, List<SubQuest> subQuests) {
 
     }
 

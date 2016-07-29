@@ -9,8 +9,6 @@ import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.SubQuest;
-import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,10 +55,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     Quest findByReminderId(String reminderId);
 
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
-
-    void saveReminders(Quest quest, List<Reminder> reminders);
-
-    void saveSubQuests(Quest quest, List<SubQuest> subQuests);
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 

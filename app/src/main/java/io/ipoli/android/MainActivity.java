@@ -26,8 +26,6 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -133,13 +131,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ButterKnife.bind(this);
         LocalStorage localStorage = LocalStorage.of(this);
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_REMOTE_ID))) {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference reference = database.getReference("players");
-            DatabaseReference ref = reference.push();
             Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
             player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-            ref.setValue(player);
-            localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, ref.getKey());
+            playerPersistenceService.save(player);
+            localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, player.getId());
         }
 
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {

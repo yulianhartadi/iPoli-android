@@ -33,12 +33,14 @@ public class Player extends PersistedObject {
         this.updatedAt = DateUtils.nowUTC();
     }
 
-    public String getId() {
-        return id;
-    }
-
+    @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     public String getExperience() {
