@@ -213,10 +213,14 @@ public class RepeatingQuestScheduler {
 
         for (Object obj : dates) {
             for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+                res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date)obj)));
             }
         }
         return res;
+    }
+
+    private java.util.Date toJavaDate(Date date) {
+        return new java.util.Date(date.getTime());
     }
 
     @NonNull
@@ -286,7 +290,7 @@ public class RepeatingQuestScheduler {
 
 
         for (Object obj : dates) {
-            res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+            res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
         }
         return res;
     }
