@@ -61,8 +61,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-
+    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("endDate/time").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
     }
 
     @Override
