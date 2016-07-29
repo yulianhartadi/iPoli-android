@@ -211,8 +211,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllForChallenge(Challenge challenge) {
-        return null;
+    public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+        listenForSingleListChange(query, listener);
     }
 
     @Override

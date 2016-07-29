@@ -68,6 +68,10 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void findById(String id, OnDataChangedListener<T> listener) {
+        if(StringUtils.isEmpty(id)) {
+            listener.onDataChanged(null);
+            return;
+        }
         DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
         listenForSingleModelChange(dbRef, listener);
     }
@@ -169,6 +173,10 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createListListener(listener, queryFilter));
     }
 
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
+        query.addListenerForSingleValueEvent(createSortedListListener(listener, queryFilter, querySort));
+    }
+
     protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
         listenForSingleListChange(query, listener, null);
     }
@@ -235,12 +243,17 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<T> data = getListFromMapSnapshot(dataSnapshot);
-                if (queryFilter == null) {
-                    listener.onDataChanged(data);
-                    return;
+                Observable<T> observableData = Observable.from(data);
+                if (queryFilter != null) {
+                    observableData = queryFilter.filter(observableData);
                 }
-                List<T> filteredData = queryFilter.filter(Observable.from(data))
-                        .toSortedList((t, t2) -> {return querySort.sort(t, t2);}).toBlocking().single();
+
+                List<T> filteredData;
+                if(querySort != null) {
+                    filteredData = observableData.toSortedList((t, t2) -> {return querySort.sort(t, t2);}).toBlocking().single();
+                } else {
+                    filteredData = observableData.toSortedList().toBlocking().single();
+                }
                 listener.onDataChanged(filteredData);
             }
 

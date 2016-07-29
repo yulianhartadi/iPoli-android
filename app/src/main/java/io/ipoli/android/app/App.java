@@ -493,22 +493,22 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
-
-        for (Quest quest : quests) {
-            quest.setChallengeId(null);
-        }
-
-        questPersistenceService.save(quests);
-
-        repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
-            for (RepeatingQuest repeatingQuest : repeatingQuests) {
-                repeatingQuest.setChallengeId(null);
+        questPersistenceService.findAllForChallenge(e.challenge, quests -> {
+            for (Quest quest : quests) {
+                quest.setChallengeId(null);
             }
-            repeatingQuestPersistenceService.save(repeatingQuests);
-        });
 
-        challengePersistenceService.delete(e.challenge);
+            questPersistenceService.save(quests);
+
+            repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
+                for (RepeatingQuest repeatingQuest : repeatingQuests) {
+                    repeatingQuest.setChallengeId(null);
+                }
+                repeatingQuestPersistenceService.save(repeatingQuests);
+            });
+
+            challengePersistenceService.delete(e.challenge);
+        });
     }
 
     @Subscribe

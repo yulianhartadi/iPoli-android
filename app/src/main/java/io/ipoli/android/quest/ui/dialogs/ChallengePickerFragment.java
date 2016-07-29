@@ -104,4 +104,9 @@ public class ChallengePickerFragment extends DialogFragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        challengePersistenceService.removeAllListeners();
+        super.onDestroyView();
+    }
 }

@@ -50,7 +50,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
 
-    List<Quest> findAllForChallenge(Challenge challenge);
+    void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
     Quest findByReminderId(String reminderId);
 
