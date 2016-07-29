@@ -219,19 +219,20 @@ public class App extends MultiDexApplication {
     }
 
     private void moveIncompleteQuestsToInbox() {
-        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate());
-        for (Quest q : quests) {
-            if (q.isStarted()) {
-                q.setEndDateFromLocal(new Date());
-                q.setStartMinute(0);
-            } else {
-                q.setEndDate(null);
+        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate(), quests -> {
+            for (Quest q : quests) {
+                if (q.isStarted()) {
+                    q.setEndDateFromLocal(new Date());
+                    q.setStartMinute(0);
+                } else {
+                    q.setEndDate(null);
+                }
+                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                    q.setPriority(null);
+                }
+                questPersistenceService.save(q);
             }
-            if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
-                q.setPriority(null);
-            }
-            questPersistenceService.save(q);
-        }
+        });
     }
 
     private void registerServices() {

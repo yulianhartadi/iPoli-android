@@ -26,9 +26,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
+    void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest);
+    void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
 
