@@ -26,13 +26,13 @@ public class StartQuestCommand {
     }
 
     public Quest execute() {
-        quest.setActualStart(DateUtils.nowUTC());
+        quest.setActualStartDate(DateUtils.nowUTC());
         questPersistenceService.save(quest);
         stopOtherRunningQuests(quest);
 
         if (quest.getDuration() > 0) {
             long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-            long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
+            long showDoneAtMillis = quest.getActualStartDate().getTime() + durationMillis;
             QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
         }
         return quest;
@@ -42,7 +42,7 @@ public class StartQuestCommand {
         questPersistenceService.findAllPlannedAndStartedToday(quests -> {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                    cq.setActualStart(null);
+                    cq.setActualStartDate(null);
                     questPersistenceService.save(cq);
                 }
             }

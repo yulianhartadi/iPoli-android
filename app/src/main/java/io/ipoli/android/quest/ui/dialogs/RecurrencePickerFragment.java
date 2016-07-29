@@ -250,8 +250,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void initUntilDate() {
-        if (recurrence.getDtend() != null) {
-            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtend(), DateTimeZone.UTC));
+        if (recurrence.getDtendDate() != null) {
+            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtendDate(), DateTimeZone.UTC));
             until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DateFormatter.format(dtend));
             until.setTag(dtend);
         }
@@ -404,7 +404,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
         if (until.getTag() != null) {
             Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));
-            recurrence.setDtend(dtEnd);
+            recurrence.setDtendDate(dtEnd);
         } else {
             recurrence.setDtend(null);
         }

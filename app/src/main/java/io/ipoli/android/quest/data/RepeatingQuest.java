@@ -2,7 +2,6 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -87,8 +86,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public RepeatingQuest(String rawText) {
         this.rawText = rawText;
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
@@ -102,11 +101,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.name = name;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
@@ -146,11 +145,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.subQuests = subQuests;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 

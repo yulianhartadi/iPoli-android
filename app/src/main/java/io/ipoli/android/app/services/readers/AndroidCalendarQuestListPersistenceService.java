@@ -59,8 +59,8 @@ public class AndroidCalendarQuestListPersistenceService implements AndroidCalend
                 q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
 
                 if (endDateTime.toLocalDate().isBefore(new LocalDate())) {
-                    q.setCompletedAt(new Date(e.dTend));
-                    q.setCompletedAtMinute(Time.of(q.getCompletedAt()).toMinutesAfterMidnight());
+                    q.setCompletedAtDate(new Date(e.dTend));
+                    q.setCompletedAtMinute(Time.of(q.getCompletedAtDate()).toMinutesAfterMidnight());
                 }
                 if (TextUtils.isEmpty(e.originalId)) {
                     questPersistenceService.save(q);

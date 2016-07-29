@@ -67,46 +67,46 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data.filter(
-                q -> q.getEndDate() == null && q.getActualStart() == null && q.getCompletedAt() == null
+                q -> q.getEndDate() == null && q.getActualStartDate() == null && q.getCompletedAtDate() == null
         ));
     }
 
     @Override
     public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("endDate/time").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
+        Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
     }
 
     @Override
     public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("completedAt/time").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
+        Query query = getCollectionReference().orderByChild("completedAt").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
         listenForSingleListChange(query, listener);
     }
 
     @Override
     public void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("endDate/time").equalTo(toStartOfDayUTC(LocalDate.now()).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
+        Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(LocalDate.now()).getTime());
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
     }
 
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("endDate/time").endAt(toStartOfDayUTC(date).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAt() == null));
+        Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date).getTime());
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAtDate() == null));
     }
 
     @Override
     public void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getActualStart() != null && q.getCompletedAt() != null));
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getActualStartDate() != null && q.getCompletedAtDate() != null));
     }
 
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
-        listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAt() != null
-                        && quest.getCompletedAt().getTime() >= toStartOfDayUTC(fromDate).getTime()
-                        && quest.getCompletedAt().getTime() <= toStartOfDayUTC(toDate).getTime()
+        listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
+                        && quest.getCompletedAtDate().getTime() >= toStartOfDayUTC(fromDate).getTime()
+                        && quest.getCompletedAtDate().getTime() <= toStartOfDayUTC(toDate).getTime()
                 )
         );
     }
@@ -126,7 +126,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
         DatabaseReference collectionReference = getCollectionReference();
 
-        Query endAt = collectionReference.orderByChild("endDate/time").equalTo(startDateUTC.getTime());
+        Query endAt = collectionReference.orderByChild("end").equalTo(startDateUTC.getTime());
 
         listenForQuery(endAt, new ValueEventListener() {
             @Override
@@ -147,7 +147,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));
 
-        Query completedAt = collectionReference.orderByChild("completedAt/time").startAt(startDate.getTime()).endAt(endDate.getTime());
+        Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
 
         listenForQuery(completedAt, new ValueEventListener() {
             @Override
@@ -172,7 +172,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));
         DatabaseReference collectionReference = getCollectionReference();
-        Query completedAt = collectionReference.orderByChild("completedAt/time").startAt(startDate.getTime()).endAt(endDate.getTime());
+        Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
         listenForQuery(completedAt, createListListener(listener));
     }
 
@@ -180,7 +180,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         Date currentDateUtc = toStartOfDayUTC(currentDate);
         DatabaseReference collectionReference = getCollectionReference();
-        Query endAt = collectionReference.orderByChild("endDate/time").equalTo(currentDateUtc.getTime());
+        Query endAt = collectionReference.orderByChild("end").equalTo(currentDateUtc.getTime());
         listenForQuery(endAt, createListListener(listener));
     }
 
@@ -216,8 +216,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("endDate/time").equalTo(toStartOfDayUTC(date).getTime());
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null && q.getPriority() == priority));
+        Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(date).getTime());
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null && q.getPriority() == priority));
     }
 
     @Override
@@ -233,10 +233,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("endDate/time").equalTo(toStartOfDayUTC(date).getTime());
+        Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(date).getTime());
         listenForListChange(query, listener, data -> data
                         .filter(q -> !q.isAllDay())
-                        .filter(q -> q.getCompletedAt() == null || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY),
+                        .filter(q -> q.getCompletedAtDate() == null || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY),
                 (q1, q2) -> Integer.compare(q1.getStartMinute(), q2.getStartMinute()));
     }
 
@@ -311,14 +311,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null && q.getRepeatingQuest() == null));
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && q.getRepeatingQuest() == null));
     }
 
     @Override
     public void findIncompleteNotRepeatingNotForChallenge(String searchText, String challengeId, OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data
                 .filter(q -> !challengeId.equals(q.getChallengeId()))
-                .filter(q -> q.getCompletedAt() == null)
+                .filter(q -> q.getCompletedAtDate() == null)
                 .filter(q -> q.getRepeatingQuest() == null)
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
     }
@@ -326,7 +326,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllCompleted(String challengeId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null));
     }
 
     @Override
@@ -343,7 +343,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 for (int i = 0; i < weeks; i++) {
                     Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
                     Integer count = Observable.from(quests).filter(
-                            q -> isBetweenDatesFilter(q.getCompletedAt(), weekPair.first, weekPair.second))
+                            q -> isBetweenDatesFilter(q.getCompletedAtDate(), weekPair.first, weekPair.second))
                             .count().toBlocking().single();
                     counts.add(Long.valueOf(count));
                 }
@@ -364,7 +364,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countCompletedForChallenge(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null));
     }
 
     @Override

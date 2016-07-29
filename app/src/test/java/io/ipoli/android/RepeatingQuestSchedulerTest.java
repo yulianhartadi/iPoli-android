@@ -80,7 +80,7 @@ public class RepeatingQuestSchedulerTest {
     @NonNull
     private Recurrence createWeeklyRecurrence(Date start) {
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(start);
+        recurrence.setDtstartDate(start);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.WE);
@@ -94,7 +94,7 @@ public class RepeatingQuestSchedulerTest {
         Date today = toStartOfDayUTC(LocalDate.now());
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(today);
+        recurrence.setDtstartDate(today);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
@@ -107,7 +107,7 @@ public class RepeatingQuestSchedulerTest {
         Date startOfMonth = toStartOfDayUTC(LocalDate.now().withDayOfMonth(1));
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(startOfMonth);
+        recurrence.setDtstartDate(startOfMonth);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(13);
         recurrence.setRrule(recur.toString());
@@ -121,7 +121,7 @@ public class RepeatingQuestSchedulerTest {
         Date midOfMonth = toStartOfDayUTC(LocalDate.now().withDayOfMonth(15));
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(midOfMonth);
+        recurrence.setDtstartDate(midOfMonth);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(13);
         recurrence.setRrule(recur.toString());
@@ -135,7 +135,7 @@ public class RepeatingQuestSchedulerTest {
         Date today = toStartOfDayUTC(LocalDate.now());
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(today);
+        recurrence.setDtstartDate(today);
         Recur recur = createEveryDayRecur();
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
@@ -149,7 +149,7 @@ public class RepeatingQuestSchedulerTest {
         Date endOfWeek = toStartOfDayUTC(LocalDate.now().dayOfWeek().withMaximumValue());
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstart(startOfWeek);
+        recurrence.setDtstartDate(startOfWeek);
         Recur recur = createEveryDayRecur();
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
@@ -162,7 +162,7 @@ public class RepeatingQuestSchedulerTest {
         Date today = toStartOfDayUTC(LocalDate.now());
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = new Recurrence(4);
-        recurrence.setDtstart(today);
+        recurrence.setDtstartDate(today);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
@@ -175,9 +175,9 @@ public class RepeatingQuestSchedulerTest {
         RepeatingQuest rq = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
         LocalDate startOfWeek = LocalDate.now().dayOfWeek().withMinimumValue();
-        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfWeek));
         LocalDate tomorrow = startOfWeek.plusDays(1);
-        recurrence.setDtend(toStartOfDayUTC(tomorrow));
+        recurrence.setDtendDate(toStartOfDayUTC(tomorrow));
         Recur recur = createEveryDayRecur();
         recurrence.setRrule(recur.toString());
         rq.setRecurrence(recurrence);
@@ -192,7 +192,7 @@ public class RepeatingQuestSchedulerTest {
         Recurrence recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setRrule(createEveryDayRecur().toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfWeek));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfWeek));
@@ -206,7 +206,7 @@ public class RepeatingQuestSchedulerTest {
         Recurrence recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setRrule(createEveryDayRecur().toString());
-        recurrence.setDtstart(toStartOfDayUTC(endOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(endOfWeek));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(endOfWeek));
@@ -222,7 +222,7 @@ public class RepeatingQuestSchedulerTest {
         Recur recur = new Recur(Recur.WEEKLY, null);
         recur.getDayList().add(WeekDay.WE);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfWeek));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfWeek));
@@ -237,7 +237,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfWeek));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfWeek));
@@ -254,7 +254,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.TU);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(endOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(endOfWeek));
         recurrence.setFlexibleCount(2);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(endOfWeek));
@@ -271,7 +271,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.TU);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(saturday));
+        recurrence.setDtstartDate(toStartOfDayUTC(saturday));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(saturday));
@@ -286,7 +286,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setTimesADay(3);
         recurrence.setRrule(createEveryDayRecur().toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfWeek));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfWeek));
         recurrence.setFlexibleCount(3);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfWeek));
@@ -301,7 +301,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));
@@ -321,7 +321,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.TH);
         recur.getDayList().add(WeekDay.FR);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));
@@ -343,7 +343,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.TU);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));
@@ -371,7 +371,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));
@@ -399,7 +399,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.TH);
         recur.getDayList().add(WeekDay.FR);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));
@@ -419,7 +419,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(middleOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(middleOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(middleOfMonth));
@@ -441,7 +441,7 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.WE);
         recur.getDayList().add(WeekDay.TH);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstart(toStartOfDayUTC(middleMonday));
+        recurrence.setDtstartDate(toStartOfDayUTC(middleMonday));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(middleMonday));
@@ -461,7 +461,7 @@ public class RepeatingQuestSchedulerTest {
         Recur recur = new Recur(Recur.MONTHLY, null);
         recurrence.setRrule(recur.toString());
         recurrence.setTimesADay(3);
-        recurrence.setDtstart(toStartOfDayUTC(startOfMonth));
+        recurrence.setDtstartDate(toStartOfDayUTC(startOfMonth));
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
         List<Quest> result = repeatingQuestScheduler.schedule(rq, toStartOfDayUTC(startOfMonth));

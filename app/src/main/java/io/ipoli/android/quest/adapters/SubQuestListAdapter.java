@@ -79,13 +79,13 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                sq.setCompletedAt(new Date());
+                sq.setCompletedAtDate(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
                 holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 holder.name.setEnabled(false);
                 evenBus.post(new CompleteSubQuestEvent(sq));
             } else {
-                sq.setCompletedAt(null);
+                sq.setCompletedAtDate(null);
                 sq.setCompletedAtMinute(null);
                 holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                 holder.name.setEnabled(true);

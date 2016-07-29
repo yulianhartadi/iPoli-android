@@ -218,7 +218,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
 
         for (Quest q : quests) {
-            Date dateKey = new LocalDate(q.getCompletedAt().getTime()).toDate();
+            Date dateKey = new LocalDate(q.getCompletedAtDate().getTime()).toDate();
             groupedByDate.get(dateKey).add(q);
         }
 
@@ -353,8 +353,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private int getDurationForCompletedQuest(Quest q) {
-        if (q.getActualStart() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
+        if (q.getActualStartDate() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAtDate().getTime() - q.getActualStartDate().getTime());
         } else {
             return Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION);
         }

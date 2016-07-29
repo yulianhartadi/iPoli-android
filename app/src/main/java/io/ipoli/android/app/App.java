@@ -250,7 +250,7 @@ public class App extends MultiDexApplication {
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
         QuestNotificationScheduler.stopAll(q.getId(), this);
-        q.setCompletedAt(new Date());
+        q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         questPersistenceService.save(q);
         onQuestComplete(q, e.source);
@@ -262,8 +262,8 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         // @TODO remove old logs
         quest.setDifficulty(null);
-        quest.setActualStart(null);
-        quest.setCompletedAt(null);
+        quest.setActualStartDate(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedAtMinute(null);
 
         if (quest.isScheduledForThePast()) {
@@ -418,7 +418,7 @@ public class App extends MultiDexApplication {
         if (TextUtils.isEmpty(recurrence.getRrule())) {
             List<Quest> questsToCreate = new ArrayList<>();
             for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(repeatingQuest, recurrence.getDtstart()));
+                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(repeatingQuest, recurrence.getDtstartDate()));
             }
             questPersistenceService.save(questsToCreate);
         } else {
@@ -489,7 +489,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
         Challenge challenge = e.challenge;
-        challenge.setCompletedAt(new Date());
+        challenge.setCompletedAtDate(new Date());
         challengePersistenceService.save(challenge);
         onChallengeComplete(challenge, e.source);
     }

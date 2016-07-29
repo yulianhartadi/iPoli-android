@@ -450,7 +450,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                     completedAtMinute = q.getStartMinute();
                 }
                 c.add(Calendar.MINUTE, completedAtMinute);
-                q.setCompletedAt(c.getTime());
+                q.setCompletedAtDate(c.getTime());
                 q.setCompletedAtMinute(completedAtMinute);
             }
             q.setCategory(categoryView.getSelectedCategory().name());
@@ -774,7 +774,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 completedAtMinute = q.getStartMinute();
             }
             c.add(Calendar.MINUTE, completedAtMinute);
-            q.setCompletedAt(c.getTime());
+            q.setCompletedAtDate(c.getTime());
             q.setCompletedAtMinute(completedAtMinute);
         }
         q.setCategory(categoryView.getSelectedCategory().name());
@@ -795,13 +795,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-        recurrence.setDtstart(toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtstartDate(toStartOfDayUTC(LocalDate.now()));
         if (recurrence.getRrule() == null) {
             if (endDateText.getTag() != null) {
-                recurrence.setDtstart(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-                recurrence.setDtend(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+                recurrence.setDtstartDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+                recurrence.setDtendDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
             } else {
-                recurrence.setDtstart(null);
+                recurrence.setDtstartDate(null);
                 recurrence.setDtend(null);
             }
         }

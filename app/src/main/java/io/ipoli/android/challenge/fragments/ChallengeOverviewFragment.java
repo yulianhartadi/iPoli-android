@@ -149,8 +149,8 @@ public class ChallengeOverviewFragment extends BaseFragment {
                 Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
                 for (RepeatingQuest rq : repeatingQuests) {
                     Recurrence recurrence = rq.getRecurrence();
-                    Date rqStart = recurrence.getDtstart();
-                    Date rqEnd = recurrence.getDtend();
+                    Date rqStart = recurrence.getDtstartDate();
+                    Date rqEnd = recurrence.getDtendDate();
 
                     Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
                     Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;

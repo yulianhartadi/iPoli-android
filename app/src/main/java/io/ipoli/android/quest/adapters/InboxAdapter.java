@@ -17,6 +17,7 @@ import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -72,7 +73,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(q.getName());
-        holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
+        holder.createdAt.setText(prettyTime.format(new Date(q.getCreatedAt())));
         holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
             @Override
             public void onOpened(SwipeRevealLayout view) {

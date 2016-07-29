@@ -43,7 +43,7 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
                 .setContentIntent(getPendingIntent(context, q.getId()))
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setWhen(q.getActualStart().getTime())
+                .setWhen(q.getActualStartDate().getTime())
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)

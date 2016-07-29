@@ -176,7 +176,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         this.quest = q;
         initUI();
         if (Quest.isStarted(quest)) {
-            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStart().getTime());
+            elapsedSeconds = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - quest.getActualStartDate().getTime());
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
             edit.setVisibility(View.GONE);
@@ -188,7 +188,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         eventBus.unregister(this);
         if (isTimerRunning) {
             stopTimer();
-            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStart().getTime());
+            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStartDate().getTime());
             boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
             if (!isOverdue) {
                 QuestNotificationScheduler.scheduleUpdateTimer(questId, getContext());
@@ -258,7 +258,7 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
 
     @Override
     public void onChronometerTick(Chronometer chronometer) {
-        long nowMillis = quest.getActualStart().getTime() + TimeUnit.SECONDS.toMillis(elapsedSeconds);
+        long nowMillis = quest.getActualStartDate().getTime() + TimeUnit.SECONDS.toMillis(elapsedSeconds);
         long questDurationSeconds = TimeUnit.MINUTES.toSeconds(quest.getDuration());
 
         timerProgress.setProgress((int) getTimerProgress(elapsedSeconds));
@@ -280,12 +280,12 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
     }
 
     private void showCountDownTime(long nowMillis) {
-        long endTimeMillis = quest.getActualStart().getTime() + TimeUnit.MINUTES.toMillis(quest.getDuration());
+        long endTimeMillis = quest.getActualStartDate().getTime() + TimeUnit.MINUTES.toMillis(quest.getDuration());
         timer.setText(TimerFormatter.format(endTimeMillis - nowMillis));
     }
 
     private void showCountUpTime(long nowMillis) {
-        long timerMillis = nowMillis - quest.getActualStart().getTime();
+        long timerMillis = nowMillis - quest.getActualStartDate().getTime();
         timer.setText(TimerFormatter.format(timerMillis));
     }
 

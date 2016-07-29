@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import java.util.Date;
-
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -18,13 +16,13 @@ public class SourceMapping extends PersistedObject {
 
     public static SourceMapping fromGoogleCalendar(long eventId) {
         SourceMapping sourceMapping = new SourceMapping();
-        sourceMapping.createdAt = DateUtils.nowUTC();
-        sourceMapping.updatedAt = DateUtils.nowUTC();
+        sourceMapping.setCreatedAt(DateUtils.nowUTC().getTime());
+        sourceMapping.setUpdatedAt(DateUtils.nowUTC().getTime());
         sourceMapping.androidCalendar = String.valueOf(eventId);
         return sourceMapping;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
@@ -39,16 +37,17 @@ public class SourceMapping extends PersistedObject {
     }
 
     @Override
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getCreatedAt() {
+    @Override
+    public Long getCreatedAt() {
         return createdAt;
     }
 

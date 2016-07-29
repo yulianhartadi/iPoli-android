@@ -1,5 +1,7 @@
 package io.ipoli.android.reminders.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +21,7 @@ public class Reminder extends PersistedObject {
 
     private Integer notificationId;
 
-    private Date startTime;
+    private Long start;
 
     public Reminder() {
     }
@@ -27,8 +29,8 @@ public class Reminder extends PersistedObject {
     public Reminder(long minutesFromStart, int notificationId) {
         this.notificationId = notificationId;
         this.minutesFromStart = minutesFromStart;
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
     @Override
@@ -42,20 +44,20 @@ public class Reminder extends PersistedObject {
     }
 
     @Override
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
@@ -86,17 +88,27 @@ public class Reminder extends PersistedObject {
     public void calculateStartTime(Quest quest) {
         Date questStartTime = Quest.getStartDateTime(quest);
         if (questStartTime == null) {
-            startTime = null;
+            start = null;
             return;
         }
-        startTime = new Date(questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart()));
+        start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart());
     }
 
+    @Exclude
     public Date getStartTime() {
-        return startTime;
+        return start != null ? new Date(start) : null;
     }
 
+    @Exclude
     public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+        start = startTime != null ? startTime.getTime() : null;
+    }
+
+    public Long getStart() {
+        return start;
+    }
+
+    public void setStart(Long start) {
+        this.start = start;
     }
 }

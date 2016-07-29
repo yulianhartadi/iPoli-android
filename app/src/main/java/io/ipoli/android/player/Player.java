@@ -1,7 +1,6 @@
 package io.ipoli.android.player;
 
 import java.math.BigInteger;
-import java.util.Date;
 
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
@@ -18,10 +17,6 @@ public class Player extends PersistedObject {
     private String avatar;
     private String timezone;
 
-    private Date createdAt;
-
-    private Date updatedAt;
-
     public Player() {
     }
 
@@ -29,8 +24,8 @@ public class Player extends PersistedObject {
         this.experience = experience;
         this.level = level;
         this.avatar = avatar;
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
     @Override
@@ -67,19 +62,19 @@ public class Player extends PersistedObject {
         this.avatar = avatar;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 

@@ -199,8 +199,8 @@ public class RepeatingQuestScheduler {
         } catch (ParseException e) {
             return res;
         }
-        if (recurrence.getDtend() != null) {
-            recur.setUntil(new Date(recurrence.getDtend()));
+        if (recurrence.getDtendDate() != null) {
+            recur.setUntil(new Date(recurrence.getDtendDate()));
         }
 
         if (recur.getFrequency().equals(Recur.YEARLY)) {
@@ -208,7 +208,7 @@ public class RepeatingQuestScheduler {
         }
 
         java.util.Date endDate = getEndDate(recur, startDate);
-        DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstartDate()),
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
@@ -237,8 +237,8 @@ public class RepeatingQuestScheduler {
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
         quest.setOriginalStartDate(endDate);
-        quest.setCreatedAt(DateUtils.nowUTC());
-        quest.setUpdatedAt(DateUtils.nowUTC());
+        quest.setCreatedAt(DateUtils.nowUTC().getTime());
+        quest.setUpdatedAt(DateUtils.nowUTC().getTime());
         quest.setFlexibleStartTime(false);
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
@@ -284,7 +284,7 @@ public class RepeatingQuestScheduler {
         if (recur.getFrequency().equals(Recur.YEARLY)) {
             return res;
         }
-        DateList dates = recur.getDates(new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(recurrence.getDtstartDate()),
                 new Date(from),
                 getPeriodEnd(to), Value.DATE);
 

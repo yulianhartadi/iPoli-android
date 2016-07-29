@@ -58,10 +58,10 @@ public class AndroidCalendarRepeatingQuestListPersistenceService implements Andr
                 recurrence.setRrule(e.rRule);
                 recurrence.setRdate(e.rDate);
                 if (e.dTStart > 0) {
-                    recurrence.setDtstart(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
+                    recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
                 }
                 if (e.dTend > 0) {
-                    recurrence.setDtend(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
+                    recurrence.setDtendDate(DateUtils.toStartOfDayUTC(new LocalDate(e.dTend, DateTimeZone.UTC)));
                 }
                 repeatingQuest.setRecurrence(recurrence);
                 repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));

@@ -1,7 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import java.util.Date;
-
 import io.ipoli.android.app.utils.DateUtils;
 
 /**
@@ -11,23 +9,23 @@ import io.ipoli.android.app.utils.DateUtils;
 public abstract class PersistedObject {
 
     protected String id;
-    protected Date createdAt;
-    protected Date updatedAt;
+    protected Long createdAt;
+    protected Long updatedAt;
 
     public abstract void setId(String id);
 
     public abstract String getId();
 
-    public abstract void setCreatedAt(Date createdAt);
+    public abstract void setCreatedAt(Long createdAt);
 
-    public abstract void setUpdatedAt(Date updatedAt);
+    public abstract void setUpdatedAt(Long updatedAt);
 
 
-    public abstract Date getCreatedAt();
+    public abstract Long getCreatedAt();
 
-    public abstract Date getUpdatedAt();
+    public abstract Long getUpdatedAt();
 
     public void markUpdated() {
-        setUpdatedAt(DateUtils.nowUTC());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 }

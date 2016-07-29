@@ -45,10 +45,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Boolean flexibleStartTime;
 
     private Integer duration;
-    private Date startDate;
-    private Date originalStartDate;
 
-    private Date endDate;
+    private Long start;
+    private Long originalStart;
+    private Long end;
 
     private RepeatingQuest repeatingQuest;
 
@@ -58,10 +58,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private List<SubQuest> subQuests;
     private Integer difficulty;
 
-    private Date completedAt;
+    private Long completedAt;
     private Integer completedAtMinute;
 
-    private Date actualStart;
+    private Long actualStart;
 
     private String challengeId;
 
@@ -88,10 +88,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.name = name;
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
-        this.originalStartDate = DateUtils.getDate(endDate);
+        setOriginalStartDate(endDate);
         this.setStartMinute(null);
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.experience = new ExperienceRewardGenerator().generate(this);
@@ -178,17 +178,69 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.priority = priority;
     }
 
-    @Override
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
+    @Exclude
     public Date getStartDate() {
-        return startDate;
+        return start != null ?  new Date(start) : null;
     }
 
+    @Exclude
+    public void setStartDate(Date startDate) {
+        start = startDate != null ? startDate.getTime() : null;
+    }
+
+    public Long getStart() {
+        return start;
+    }
+
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    @Exclude
     public void setStartDateFromLocal(Date startDate) {
         setStartDate(DateUtils.getDate(startDate));
+    }
+
+    @Exclude
+    public void setOriginalStartDate(Date originalStartDate) {
+        originalStart = originalStartDate != null ? originalStartDate.getTime() : null;
+    }
+
+    @Exclude
+    public Date getOriginalStartDate() {
+        return originalStart != null ? new Date(originalStart) : null;
+    }
+
+    public Long getOriginalStart() {
+        return originalStart;
+    }
+
+    public void setOriginalStart(long originalStart) {
+        this.originalStart = originalStart;
+    }
+
+    @Exclude
+    public Date getEndDate() {
+        return end != null ? new Date(end) : null;
+    }
+
+    @Exclude
+    public void setEndDate(Date endDate) {
+        end = endDate != null ? endDate.getTime() : null;
+    }
+
+    @Exclude
+    public void setEndDateFromLocal(Date endDate) {
+        setEndDate(DateUtils.getDate(endDate));
+        updateRemindersStartTime();
+    }
+
+    public Long getEnd() {
+        return end;
+    }
+
+    public void setEnd(Long end) {
+        this.end = end;
     }
 
     public static Time getStartTime(Quest quest) {
@@ -224,26 +276,22 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return id;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public Date getCreatedAt() {
+    @Override
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Long getCreatedAt() {
         return createdAt;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDateFromLocal(Date endDate) {
-        setEndDate(DateUtils.getDate(endDate));
-        updateRemindersStartTime();
     }
 
     public String getCategory() {
@@ -262,11 +310,21 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
     }
 
-    public Date getActualStart() {
+    @Exclude
+    public Date getActualStartDate() {
+        return actualStart != null ? new Date(actualStart) : null;
+    }
+
+    @Exclude
+    public void setActualStartDate(Date actualStartDate) {
+        actualStart = actualStartDate != null ? actualStartDate.getTime() : null;
+    }
+
+    public Long getActualStart() {
         return actualStart;
     }
 
-    public void setActualStart(Date actualStart) {
+    public void setActualStart(Long actualStart) {
         this.actualStart = actualStart;
     }
 
@@ -278,20 +336,30 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.completedAtMinute = completedAtMinute;
     }
 
-    public Date getCompletedAt() {
+    @Exclude
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    public Long getCompletedAt() {
         return completedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
+    public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
     }
 
     public static boolean isStarted(Quest quest) {
-        return quest.getActualStart() != null && quest.getCompletedAt() == null;
+        return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
     public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAt() != null;
+        return quest.getCompletedAtDate() != null;
     }
 
     public static void setStartTime(Quest quest, Time time) {
@@ -341,7 +409,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public boolean isIndicator() {
-        boolean isCompleted = getCompletedAt() != null;
+        boolean isCompleted = getCompletedAtDate() != null;
         return isCompleted && repeatPerDayWithShortOrNoDuration();
     }
 
@@ -385,18 +453,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.flexibleStartTime = flexibleStartTime;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setOriginalStartDate(Date originalStartDate) {
-        this.originalStartDate = originalStartDate;
-    }
-
     @Exclude
     public boolean isPlaceholder() {
         return isPlaceholder;
@@ -431,21 +487,17 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.repeatingQuestId = repeatingQuestId;
     }
 
-    public Date getOriginalStartDate() {
-        return originalStartDate;
-    }
-
     @Exclude
     public int getActualDuration() {
-        if (Quest.isCompleted(this) && getActualStart() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt().getTime() - getActualStart().getTime());
+        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAtDate().getTime() - getActualStartDate().getTime());
         }
         return getDuration();
     }
 
     @Exclude
     public int getActualStartMinute() {
-        if (Quest.isCompleted(this) && getActualStart() != null) {
+        if (Quest.isCompleted(this) && getActualStartDate() != null) {
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();

@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -13,7 +15,7 @@ public class SubQuest extends PersistedObject {
 
     private String name;
 
-    private Date completedAt;
+    private Long completedAt;
 
     private Integer completedAtMinute;
 
@@ -22,15 +24,15 @@ public class SubQuest extends PersistedObject {
 
     public SubQuest(String name) {
         this.name = name;
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
@@ -42,11 +44,21 @@ public class SubQuest extends PersistedObject {
         this.name = name;
     }
 
-    public Date getCompletedAt() {
+    @Exclude
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    public Long getCompletedAt() {
         return completedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
+    public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
     }
 
@@ -59,7 +71,7 @@ public class SubQuest extends PersistedObject {
     }
 
     public boolean isCompleted() {
-        return getCompletedAt() != null;
+        return getCompletedAtDate() != null;
     }
 
     @Override
@@ -73,12 +85,12 @@ public class SubQuest extends PersistedObject {
     }
 
     @Override
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

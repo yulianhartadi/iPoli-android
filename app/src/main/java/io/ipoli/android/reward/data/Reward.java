@@ -1,7 +1,5 @@
 package io.ipoli.android.reward.data;
 
-import java.util.Date;
-
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -24,15 +22,15 @@ public class Reward extends PersistedObject {
     public Reward(String name, Integer price) {
         this.name = name;
         this.price = price;
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
@@ -70,11 +68,11 @@ public class Reward extends PersistedObject {
         return id;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -111,7 +111,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
                     viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
                 }
                 for (RepeatingQuest rq : repeatingQuests) {
-                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
+                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
                 }
 
                 Collections.sort(viewModels, (vm1, vm2) -> {

@@ -1,5 +1,7 @@
 package io.ipoli.android.challenge.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 
 import io.ipoli.android.Constants;
@@ -29,9 +31,9 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     private Integer difficulty;
 
-    private Date endDate;
+    private Long end;
 
-    private Date completedAt;
+    private Long completedAt;
 
     private Long coins;
     private Long experience;
@@ -45,15 +47,15 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.name = name;
         this.category = Category.PERSONAL.name();
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
@@ -139,19 +141,39 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.difficulty = difficulty;
     }
 
+    @Exclude
     public Date getEndDate() {
-        return endDate;
+        return end != null ? new Date(end) : null;
     }
 
+    @Exclude
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+        end = endDate != null ? endDate.getTime() : null;
     }
 
-    public Date getCompletedAt() {
+    public Long getEnd() {
+        return end;
+    }
+
+    public void setEnd(Long end) {
+        this.end = end;
+    }
+
+    @Exclude
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    public Long getCompletedAt() {
         return completedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
+    public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
     }
 
@@ -202,12 +224,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @Override
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     @Override
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

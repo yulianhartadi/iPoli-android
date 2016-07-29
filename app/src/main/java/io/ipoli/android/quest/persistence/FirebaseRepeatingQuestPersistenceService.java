@@ -116,7 +116,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @NonNull
     private Func1<RepeatingQuest, Boolean> activeRepeatingQuestFilter() {
-        return rq -> rq.getRecurrence().getDtend() == null
-                || rq.getRecurrence().getDtend().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
+        return rq -> rq.getRecurrence().getDtendDate() == null
+                || rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
     }
 }
