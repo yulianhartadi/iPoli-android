@@ -6,6 +6,7 @@ import dagger.Component;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.AndroidCalendarPersistenceModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.PersistenceModule;
@@ -58,6 +59,7 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
                 BusModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
+                AndroidCalendarPersistenceModule.class,
                 SchedulerModule.class
         }
 )

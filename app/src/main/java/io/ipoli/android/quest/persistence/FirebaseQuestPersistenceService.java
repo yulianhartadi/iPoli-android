@@ -201,8 +201,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public Quest findByExternalSourceMappingId(String source, String sourceId) {
-        return null;
+    public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<Quest> listener) {
+        Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
+        listenForSingleModelChange(query, listener);
     }
 
     @Override

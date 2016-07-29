@@ -43,8 +43,8 @@ import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
-import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
-import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
+import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
+import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
@@ -115,6 +115,9 @@ public class App extends MultiDexApplication {
     RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
+    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
+
+    @Inject
     AnalyticsService analyticsService;
 
     @Inject
@@ -128,6 +131,12 @@ public class App extends MultiDexApplication {
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
+
+    @Inject
+    AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -480,7 +489,7 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
-        new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
+        persistentRepeatingQuestScheduler.schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     @Subscribe
@@ -589,8 +598,6 @@ public class App extends MultiDexApplication {
 
     private Observable<Object> syncCalendars() {
         return Observable.defer(() -> {
-            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
             CalendarProvider provider = new CalendarProvider(this);
             List<Calendar> calendars = provider.getCalendars().getList();
             LocalStorage localStorage = LocalStorage.of(this);
@@ -612,11 +619,8 @@ public class App extends MultiDexApplication {
                 }
             }
             localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-            List<Quest> quests = questReader.read(nonRepeating);
-            questPersistenceService.save(quests);
-            List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
-            repeatingQuestPersistenceService.save(repeatingQuests);
-            scheduleRepeatingQuests(repeatingQuests);
+            androidCalendarQuestService.save(nonRepeating);
+            androidCalendarRepeatingQuestService.save(repeating);
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
     }

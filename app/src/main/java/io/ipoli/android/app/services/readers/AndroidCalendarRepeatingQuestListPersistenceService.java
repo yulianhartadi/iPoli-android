@@ -7,10 +7,11 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
@@ -24,17 +25,13 @@ import me.everything.providers.android.calendar.Event;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/11/16.
  */
-public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarListReader<RepeatingQuest> {
+public class AndroidCalendarRepeatingQuestListPersistenceService implements AndroidCalendarListPersistenceService<RepeatingQuest> {
 
-    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
-
-    public AndroidCalendarRepeatingQuestListReader(RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
-        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
-    }
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Override
-    public List<RepeatingQuest> read(List<Event> events) {
-        List<RepeatingQuest> res = new ArrayList<>();
+    public void save(List<Event> events) {
         for (Event e : events) {
             if (e.allDay || e.deleted) {
                 continue;
@@ -68,9 +65,8 @@ public class AndroidCalendarRepeatingQuestListReader implements AndroidCalendarL
                 }
                 repeatingQuest.setRecurrence(recurrence);
                 repeatingQuest.setSourceMapping(SourceMapping.fromGoogleCalendar(e.id));
-                res.add(repeatingQuest);
+                repeatingQuestPersistenceService.save(repeatingQuest);
             });
         }
-        return res;
     }
 }

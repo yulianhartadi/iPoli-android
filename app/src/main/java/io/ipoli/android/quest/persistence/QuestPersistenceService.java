@@ -43,7 +43,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
 
-    Quest findByExternalSourceMappingId(String source, String sourceId);
+    void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<Quest> listener);
 
     void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
