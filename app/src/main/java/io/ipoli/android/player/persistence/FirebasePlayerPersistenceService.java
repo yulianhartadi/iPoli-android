@@ -29,7 +29,7 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
-    public void listenForChanges(OnDataChangedListener<Player> listener) {
+    public void listen(OnDataChangedListener<Player> listener) {
         DatabaseReference playerRef = getCollectionReference().child(playerId);
         listenForModelChange(playerRef, listener);
     }

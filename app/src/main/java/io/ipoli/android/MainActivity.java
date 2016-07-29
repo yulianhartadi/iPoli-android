@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        playerPersistenceService.listenForChanges(player -> {
+        playerPersistenceService.listen(player -> {
             this.player = player;
             View header = navigationView.getHeaderView(0);
             TextView level = (TextView) header.findViewById(R.id.player_level);

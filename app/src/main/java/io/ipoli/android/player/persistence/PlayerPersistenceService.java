@@ -13,7 +13,7 @@ public interface PlayerPersistenceService {
 
     void find(OnDataChangedListener<Player> listener);
 
-    void listenForChanges(OnDataChangedListener<Player> listener);
+    void listen(OnDataChangedListener<Player> listener);
 
     void removeAllListeners();
 }
