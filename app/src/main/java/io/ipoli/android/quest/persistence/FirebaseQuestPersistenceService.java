@@ -40,7 +40,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     protected GenericTypeIndicator<Map<String, Quest>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, Quest>>() {
-
         };
     }
 
@@ -56,7 +55,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
-
+        listenForListChange(getCollectionReference(), listener, data -> data.filter(
+                q -> q.getEndDate() == null && q.getActualStart() == null && q.getCompletedAt() == null
+        ));
     }
 
     @Override

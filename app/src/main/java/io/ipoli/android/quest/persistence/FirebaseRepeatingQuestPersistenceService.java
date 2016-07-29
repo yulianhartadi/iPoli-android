@@ -60,13 +60,13 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(0, "recurrence/flexibleCount");
+        Query query = getCollectionReference().orderByChild("recurrence/flexibleCount").equalTo(0);
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
     @Override
     public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener) {
-        Query query = getCollectionReference().equalTo(sourceId, "sourceMapping/" + source);
+        Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
         listenForSingleModelChange(query, listener);
     }
 
