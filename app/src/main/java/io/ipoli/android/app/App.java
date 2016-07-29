@@ -384,20 +384,21 @@ public class App extends MultiDexApplication {
         if (!challengeDays.contains(currentDayOfWeek)) {
             return;
         }
-        long questCount = questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now());
-        if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
-            return;
-        }
-        localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
+        questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now(), questCount -> {
+            if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+                return;
+            }
+            localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
 
-        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
-        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
-        Challenge dailyChallenge = new Challenge();
-        dailyChallenge.setExperience(xp);
-        dailyChallenge.setCoins(coins);
-        updatePlayer(dailyChallenge);
-        showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
-        eventBus.post(new DailyChallengeCompleteEvent());
+            long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
+            long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+            Challenge dailyChallenge = new Challenge();
+            dailyChallenge.setExperience(xp);
+            dailyChallenge.setCoins(coins);
+            updatePlayer(dailyChallenge);
+            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
+            eventBus.post(new DailyChallengeCompleteEvent());
+        });
     }
 
     private void showChallengeCompleteDialog(String title, long xp, long coins) {

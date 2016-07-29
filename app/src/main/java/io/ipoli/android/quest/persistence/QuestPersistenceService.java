@@ -48,7 +48,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
 
-    long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
+    void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
     List<Quest> findAllForChallenge(Challenge challenge);
 
