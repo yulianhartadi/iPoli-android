@@ -52,7 +52,9 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(List<T> objects) {
-
+        for(T obj : objects) {
+            save(obj);
+        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -200,6 +202,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.challengeId = challengeId;
     }
 
+    @Exclude
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
     }
