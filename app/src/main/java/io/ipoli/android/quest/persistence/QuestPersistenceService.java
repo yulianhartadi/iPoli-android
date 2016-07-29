@@ -72,7 +72,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
 
-    long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
+    void countCompletedByWeek(Challenge challenge, LocalDate start, LocalDate end, OnDataChangedListener<List<Long>> listener);
 
     void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener);
 
