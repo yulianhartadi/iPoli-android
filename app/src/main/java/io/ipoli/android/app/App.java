@@ -463,12 +463,13 @@ public class App extends MultiDexApplication {
     }
 
     private void markQuestsDeleted(RepeatingQuest repeatingQuest) {
-        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
-        for (Quest q : quests) {
-            if (!Quest.isCompleted(q)) {
-                questPersistenceService.delete(q);
+        questPersistenceService.findAllForRepeatingQuest(repeatingQuest.getId(), quests -> {
+            for (Quest q : quests) {
+                if (!Quest.isCompleted(q)) {
+                    questPersistenceService.delete(q);
+                }
             }
-        }
+        });
     }
 
     private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest) {
