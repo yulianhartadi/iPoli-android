@@ -87,7 +87,7 @@ public class ChallengeQuestListFragment extends BaseFragment {
         adapter = new ChallengeQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(adapter);
 
-        questPersistenceService.findIncompleteNotRepeatingForChallenge(challenge, results -> {
+        questPersistenceService.findIncompleteNotRepeatingForChallenge(challenge.getId(), results -> {
             quests = results;
             onQuestListUpdated();
         });

@@ -160,13 +160,13 @@ public class ChallengeOverviewFragment extends BaseFragment {
                     int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
                     totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
                 }
-                questPersistenceService.countNotRepeating(challenge, count -> {
+                questPersistenceService.countNotRepeating(challenge.getId(), count -> {
                     totalCount += count;
                     populateProgress();
                 });
             });
         } else {
-            questPersistenceService.countNotDeleted(challenge, count -> {
+            questPersistenceService.countNotDeleted(challenge.getId(), count -> {
                 totalCount = count;
                 populateProgress();
             });
@@ -175,7 +175,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
     }
 
     private void populateProgress() {
-       questPersistenceService.countCompleted(challenge, completed -> {
+       questPersistenceService.countCompletedForChallenge(challenge.getId(), completed -> {
            progressFraction.setText(completed + " / " + totalCount);
 
            int percentDone = Math.round((completed / (float) totalCount) * 100);
@@ -235,13 +235,13 @@ public class ChallengeOverviewFragment extends BaseFragment {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        questPersistenceService.findNextUncompletedQuestEndDate(challenge, nextDate ->
+        questPersistenceService.findNextUncompletedQuestEndDate(challenge.getId(), nextDate ->
                 nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled))));
 
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 
-        questPersistenceService.findAllCompleted(challenge, quests -> {
+        questPersistenceService.findAllCompleted(challenge.getId(), quests -> {
             int timeSpent = (int) getTotalTimeSpent(quests);
             totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
         });
@@ -282,7 +282,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
         xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
-        questPersistenceService.countCompletedByWeek(challenge, Constants.DEFAULT_BAR_COUNT, counts -> {
+        questPersistenceService.countCompletedByWeek(challenge.getId(), Constants.DEFAULT_BAR_COUNT, counts -> {
             List<BarEntry> yValues = new ArrayList<>();
             List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
             for (int i = 0; i < counts.size(); i++) {

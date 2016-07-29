@@ -22,10 +22,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.services.events.SyncCompleteEvent;
-import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
-import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
+import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
+import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -43,6 +42,12 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
+
+    @Inject
+    AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
 
     @Inject
     Bus eventBus;
@@ -95,8 +100,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
     }
 
     private void createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
-        AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-        AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
         List<Event> repeating = new ArrayList<>();
         List<Event> nonRepeating = new ArrayList<>();
         CalendarProvider calendarProvider = new CalendarProvider(context);
@@ -109,8 +112,8 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
             }
         }
 
-        questPersistenceService.save(questReader.read(nonRepeating));
-        repeatingQuestPersistenceService.save(repeatingQuestReader.read(repeating));
+        androidCalendarQuestService.save(nonRepeating);
+        androidCalendarRepeatingQuestService.save(repeating);
     }
 
     private void deleteEvents(List<Event> events) {
@@ -123,11 +126,12 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
                     repeatingQuestPersistenceService.delete(repeatingQuest);
                 });
             } else {
-                Quest quest = questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id));
-                if (quest == null) {
-                    continue;
-                }
-                questPersistenceService.delete(quest);
+                questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), quest -> {
+                    if (quest == null) {
+                        return;
+                    }
+                    questPersistenceService.delete(quest);
+                });
             }
         }
     }

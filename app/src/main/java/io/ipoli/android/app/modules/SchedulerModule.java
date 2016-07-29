@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 
 /**
@@ -17,5 +18,11 @@ public class SchedulerModule {
     @Singleton
     public RepeatingQuestScheduler provideRepeatingQuestScheduler() {
         return new RepeatingQuestScheduler();
+    }
+
+    @Provides
+    @Singleton
+    public PersistentRepeatingQuestScheduler providePersistentRepeatingQuestScheduler() {
+        return new PersistentRepeatingQuestScheduler();
     }
 }
