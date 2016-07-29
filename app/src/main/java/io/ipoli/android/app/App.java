@@ -155,27 +155,7 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-//        RealmConfiguration config = new RealmConfiguration.Builder(this)
-//                .schemaVersion(BuildConfig.VERSION_CODE)
-//                .deleteRealmIfMigrationNeeded()
-//                .initialData(realm -> {
-//                    Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-//                    player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-//                    realm.copyToRealm(player);
-//                })
-////                .migration((realm, oldVersion, newVersion) -> {
-////
-////                })
-//                .build();
-//        Realm.setDefaultConfiguration(config);
-
         getAppComponent(this).inject(this);
-
-//        Realm realm = Realm.getDefaultInstance();
-//        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-//        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-//        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
-//        playerPersistenceService = new RealmPlayerPersistenceService(realm);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        moveIncompleteQuestsToInbox();
         registerServices();
@@ -194,21 +174,6 @@ public class App extends MultiDexApplication {
 //        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
-
-//        if (BuildConfig.DEBUG) {
-//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//                    .detectDiskReads()
-//                    .detectDiskWrites()
-//                    .detectNetwork()   // or .detectAll() for all detectable problems
-//                    .penaltyLog()
-//                    .build());
-//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//                    .detectLeakedSqlLiteObjects()
-//                    .detectLeakedClosableObjects()
-//                    .penaltyLog()
-//                    .penaltyDeath()
-//                    .build());
-//        }
 
         repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
             @Override
