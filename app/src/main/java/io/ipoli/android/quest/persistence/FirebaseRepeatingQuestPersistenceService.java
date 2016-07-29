@@ -100,7 +100,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-        listenForSingleChange(query, createListListener(listener));
+        listenForSingleListChange(query, listener);
     }
 
     @NonNull
