@@ -27,7 +27,6 @@ public class Reminder extends PersistedObject {
     public Reminder(long minutesFromStart, int notificationId) {
         this.notificationId = notificationId;
         this.minutesFromStart = minutesFromStart;
-        this.isDeleted = false;
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
     }
@@ -50,15 +49,6 @@ public class Reminder extends PersistedObject {
     @Override
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-    }
-
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 
     public Date getCreatedAt() {

@@ -90,7 +90,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.isDeleted = false;
     }
 
     public String getName() {
@@ -151,16 +150,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-    }
-
-    @Override
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 
     public Recurrence getRecurrence() {

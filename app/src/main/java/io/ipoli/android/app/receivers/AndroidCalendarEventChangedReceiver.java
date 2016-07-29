@@ -127,8 +127,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
                 if (quest == null) {
                     continue;
                 }
-                quest.markDeleted();
-                questPersistenceService.save(quest);
+                questPersistenceService.delete(quest);
             }
         }
     }

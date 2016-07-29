@@ -47,7 +47,6 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         this.createdAt = DateUtils.nowUTC();
         this.updatedAt = DateUtils.nowUTC();
-        this.isDeleted = false;
     }
 
     public Date getCreatedAt() {
@@ -210,15 +209,5 @@ public class Challenge extends PersistedObject implements RewardProvider {
     @Override
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-    }
-
-    @Override
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 }

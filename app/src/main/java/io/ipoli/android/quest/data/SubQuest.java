@@ -22,14 +22,8 @@ public class SubQuest extends PersistedObject {
 
     public SubQuest(String name) {
         this.name = name;
-        this.isDeleted = false;
         createdAt = DateUtils.nowUTC();
         updatedAt = DateUtils.nowUTC();
-    }
-
-    @Override
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 
     public Date getCreatedAt() {
@@ -86,9 +80,5 @@ public class SubQuest extends PersistedObject {
     @Override
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public void setIsDeleted(boolean deleted) {
-        isDeleted = deleted;
     }
 }

@@ -126,16 +126,6 @@ public class Recurrence extends PersistedObject {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
-    }
-
-    @Override
-    public boolean getIsDeleted() {
-        return isDeleted;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }

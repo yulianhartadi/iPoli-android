@@ -73,7 +73,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private String source;
 
     private SourceMapping sourceMapping;
-    private boolean isDeleted;
 
     @Exclude
     private boolean isPlaceholder;
@@ -98,7 +97,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.experience = new ExperienceRewardGenerator().generate(this);
         this.coins = new CoinsRewardGenerator().generate(this);
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.isDeleted = false;
     }
 
     public void setDuration(Integer duration) {
@@ -233,11 +231,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Override
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setIsDeleted(boolean deleted) {
-        this.isDeleted = deleted;
     }
 
     public Date getCreatedAt() {
@@ -386,10 +379,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setExperience(long experience) {
         this.experience = experience;
-    }
-
-    public boolean getIsDeleted() {
-        return isDeleted;
     }
 
     public void setFlexibleStartTime(boolean flexibleStartTime) {
