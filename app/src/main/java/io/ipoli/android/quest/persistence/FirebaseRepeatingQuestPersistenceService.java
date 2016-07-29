@@ -44,11 +44,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests() {
-        return null;
-    }
-
-    @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
 
     }

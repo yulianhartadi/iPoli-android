@@ -132,7 +132,7 @@ public class App extends MultiDexApplication {
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers());
+            scheduleQuestsFor4WeeksAhead();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             moveIncompleteQuestsToInbox();
             updateWidgets();
@@ -212,11 +212,9 @@ public class App extends MultiDexApplication {
         scheduleDailyChallenge();
     }
 
-    private Observable<Void> scheduleQuestsFor4WeeksAhead() {
-        return Observable.defer(() -> {
-            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
+    private void scheduleQuestsFor4WeeksAhead() {
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(repeatingQuests -> {
             scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
-            return Observable.empty();
         });
     }
 
@@ -252,9 +250,8 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe(quests -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new SyncCompleteEvent()));
+        scheduleQuestsFor4WeeksAhead();
+        eventBus.post(new SyncCompleteEvent());
     }
 
     @Subscribe

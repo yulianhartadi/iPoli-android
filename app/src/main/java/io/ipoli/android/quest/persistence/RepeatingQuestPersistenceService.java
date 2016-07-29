@@ -12,8 +12,6 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public interface RepeatingQuestPersistenceService extends PersistenceService<RepeatingQuest> {
 
-    List<RepeatingQuest> findAllNonAllDayActiveRepeatingQuests();
-
     void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
