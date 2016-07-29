@@ -135,7 +135,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
                 to = LocalDate.now().dayOfWeek().withMaximumValue();
             }
 
-            questPersistenceService.countCompleted(rq.getId(), from, to, completedCount -> {
+            questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount -> {
                 int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
                 Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
                 new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate);

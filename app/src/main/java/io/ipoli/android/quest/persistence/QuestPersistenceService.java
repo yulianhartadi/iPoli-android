@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
@@ -28,9 +27,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
-    void countCompleted(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener);
+    void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener);
 
-    void countCompleted(String repeatingQuestId, OnDataChangedListener<Long> listener);
+    void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener);
 
     void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
@@ -50,7 +49,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
-    void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
+    void findAllForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
     Quest findByReminderId(String reminderId);
 
@@ -58,19 +57,19 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
 
-    void findNextUncompletedQuestEndDate(Challenge challenge, OnDataChangedListener<Date> listener);
+    void findNextUncompletedQuestEndDate(String challengeId, OnDataChangedListener<Date> listener);
 
-    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
+    void findIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<Quest>> listener);
+    void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener);
+    void findAllCompleted(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void countCompletedByWeek(Challenge challenge, int weeks, OnDataChangedListener<List<Long>> listener);
+    void countCompletedByWeek(String challengeId, int weeks, OnDataChangedListener<List<Long>> listener);
 
-    void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener);
+    void countCompletedForChallenge(String challengeId, OnDataChangedListener<Long> listener);
 
-    void countNotRepeating(Challenge challenge, OnDataChangedListener<Long> listener);
+    void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener);
 
-    void countNotDeleted(Challenge challenge, OnDataChangedListener<Long> listener);
+    void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener);
 }

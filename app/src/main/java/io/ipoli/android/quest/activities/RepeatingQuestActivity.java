@@ -195,7 +195,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        questPersistenceService.countCompleted(repeatingQuest.getId(), completed -> {
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), completed -> {
             questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
                 long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
                 for (Quest completedQuest : completedWithStartTime) {
@@ -466,7 +466,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        questPersistenceService.countCompleted(repeatingQuest.getId(), start, end, count -> {
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
 
         });
         return 0;

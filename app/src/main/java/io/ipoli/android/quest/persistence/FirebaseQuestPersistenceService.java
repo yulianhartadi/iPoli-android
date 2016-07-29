@@ -20,7 +20,6 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
@@ -103,7 +102,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countCompleted(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
+    public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAt() != null
                         && quest.getCompletedAt().getTime() >= toStartOfDayUTC(fromDate).getTime()
@@ -113,7 +112,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countCompleted(String repeatingQuestId, OnDataChangedListener<Long> listener) {
+    public void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForCountChange(query, listener);
     }
@@ -219,8 +218,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void findAllForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleListChange(query, listener);
     }
 
@@ -244,9 +243,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findNextUncompletedQuestEndDate(Challenge challenge, OnDataChangedListener<Date> listener) {
+    public void findNextUncompletedQuestEndDate(String challengeId, OnDataChangedListener<Date> listener) {
         Query query = getCollectionReference().orderByChild("challengeId")
-                .equalTo(challenge.getId());
+                .equalTo(challengeId);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -278,30 +277,30 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void findIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null && q.getRepeatingQuest() == null));
     }
 
     @Override
-    public void findIncompleteNotRepeatingNotForChallenge(String searchText, Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
+    public void findIncompleteNotRepeatingNotForChallenge(String searchText, String challengeId, OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data
-                .filter(q -> !challenge.getId().equals(q.getChallengeId()))
+                .filter(q -> !challengeId.equals(q.getChallengeId()))
                 .filter(q -> q.getCompletedAt() == null)
                 .filter(q -> q.getRepeatingQuest() == null)
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
     }
 
     @Override
-    public void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void findAllCompleted(String challengeId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
     }
 
     @Override
-    public void countCompletedByWeek(Challenge challenge, int weeks, OnDataChangedListener<List<Long>> listener) {
+    public void countCompletedByWeek(String challengeId, int weeks, OnDataChangedListener<List<Long>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId")
-                .equalTo(challenge.getId());
+                .equalTo(challengeId);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -331,20 +330,20 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void countCompletedForChallenge(String challengeId, OnDataChangedListener<Long> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
     }
 
     @Override
-    public void countNotRepeating(Challenge challenge, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null));
     }
 
     @Override
-    public void countNotDeleted(Challenge challenge, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener);
     }
 }

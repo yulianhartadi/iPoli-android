@@ -106,7 +106,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
     @NonNull
     private void filter(String query, FilterListener filterListener) {
-        questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge, quests -> {
+        questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge.getId(), quests -> {
             repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
                 List<PickQuestViewModel> viewModels = new ArrayList<>();
                 for (Quest q : quests) {

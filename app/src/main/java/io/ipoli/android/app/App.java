@@ -494,7 +494,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        questPersistenceService.findAllForChallenge(e.challenge, quests -> {
+        questPersistenceService.findAllForChallenge(e.challenge.getId(), quests -> {
             for (Quest quest : quests) {
                 quest.setChallengeId(null);
             }
