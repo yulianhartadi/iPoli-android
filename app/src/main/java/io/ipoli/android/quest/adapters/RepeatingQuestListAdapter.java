@@ -130,6 +130,16 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        viewModels.clear();
+        notifyDataSetChanged();
+    }
+
+    public void add(RepeatingQuestViewModel viewModel) {
+        viewModels.add(viewModel);
+        notifyItemInserted(viewModels.size() - 1);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)

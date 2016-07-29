@@ -192,8 +192,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
-        return 0;
+    public void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuest.getId());
+        listenForSingleCountChange(query, listener, data -> data
+                .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
     }
 
     @Override
@@ -238,8 +240,37 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest) {
-        return null;
+    public void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId")
+                .equalTo(repeatingQuest.getId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
+                Date startDate = toStartOfDayUTC(LocalDate.now());
+                Date nextDate = null;
+                for (Quest q : quests) {
+                    if (q.getEndDate() == null) {
+                        continue;
+                    }
+                    if (q.getEndDate().before(startDate)) {
+                        continue;
+                    }
+                    if (nextDate == null) {
+                        nextDate = q.getEndDate();
+                    }
+                    if (q.getEndDate().before(nextDate)) {
+                        nextDate = q.getEndDate();
+                    }
+                }
+                listener.onDataChanged(nextDate);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -326,7 +357,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private boolean isBetweenDatesFilter(Date date, LocalDate start, LocalDate end) {
-        return date != null && !date.before(toStartOfDay(start)) && !date.after(toStartOfDay(end));
+        return date != null && !date.before(toStartOfDayUTC(start)) && !date.after(toStartOfDayUTC(end));
     }
 
     @Override

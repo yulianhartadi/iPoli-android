@@ -32,7 +32,6 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -158,7 +157,7 @@ public class RepeatingQuestActivity extends BaseActivity {
                 finish();
                 return;
             }
-
+            this.repeatingQuest = repeatingQuest;
             eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
             displayRepeatingQuest();
         });
@@ -205,8 +204,9 @@ public class RepeatingQuestActivity extends BaseActivity {
 
                 frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
-                Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-                nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+                questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest, nextDate -> {
+                    nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+                });
 
                 streak.setText(String.valueOf(getCurrentStreak()));
             });

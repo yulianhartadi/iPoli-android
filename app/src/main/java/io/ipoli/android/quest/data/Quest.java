@@ -431,6 +431,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.repeatingQuestId = repeatingQuestId;
     }
 
+    public Date getOriginalStartDate() {
+        return originalStartDate;
+    }
+
     @Exclude
     public int getActualDuration() {
         if (Quest.isCompleted(this) && getActualStart() != null) {

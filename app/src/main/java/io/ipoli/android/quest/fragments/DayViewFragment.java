@@ -162,8 +162,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         } else if (currentDateIsInTheFuture()) {
 
             repeatingQuestPersistenceService.findNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
-                futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
-                questsForFutureUpdated();
+                getPlaceholderQuestsFromRepeatingQuests(repeatingQuests, quests -> {
+                    futurePlaceholderQuests = quests;
+                    questsForFutureUpdated();
+                });
             });
 
             questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate, quests -> {
@@ -182,21 +184,27 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     @NonNull
-    private List<Quest> getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
+    private void getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests, PlaceholderQuestsListener listener) {
         List<Quest> res = new ArrayList<>();
-        for (RepeatingQuest rq : repeatingQuests) {
-            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate);
-            if (createdQuestsCount == 0) {
-                List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
-                        DateUtils.toStartOfDayUTC(currentDate),
-                        DateUtils.toStartOfDayUTC(currentDate));
-                res.addAll(questsToCreate);
-            }
+        for (int i = 0; i < repeatingQuests.size(); i++) {
+            RepeatingQuest rq = repeatingQuests.get(i);
+            boolean isLast = i == repeatingQuests.size() - 1;
+            questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate, createdQuestsCount -> {
+                if (createdQuestsCount == 0) {
+                    List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
+                            DateUtils.toStartOfDayUTC(currentDate),
+                            DateUtils.toStartOfDayUTC(currentDate));
+                    res.addAll(questsToCreate);
+                }
+                if(isLast) {
+                    for (Quest q : res) {
+                        q.setPlaceholder(true);
+                    }
+                    listener.onPlaceholderQuestsCreated(res);
+                }
+            });
         }
-        for (Quest q : res) {
-            q.setPlaceholder(true);
-        }
-        return res;
+
     }
 
 
@@ -400,7 +408,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void saveQuest(Quest q) {
-         questPersistenceService.save(q);
+        questPersistenceService.save(q);
     }
 
     @Override
@@ -462,5 +470,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         public List<QuestCalendarViewModel> getCalendarEvents() {
             return calendarEvents;
         }
+    }
+
+    private interface PlaceholderQuestsListener {
+        void onPlaceholderQuestsCreated(List<Quest> quests);
     }
 }

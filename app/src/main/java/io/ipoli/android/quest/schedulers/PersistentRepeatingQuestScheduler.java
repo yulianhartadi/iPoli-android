@@ -83,11 +83,12 @@ public class PersistentRepeatingQuestScheduler {
     }
 
     private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate, LocalDate startDate) {
-        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(repeatingQuest, startOfPeriodDate, endOfPeriodDate);
-        if (createdQuestsCount == 0) {
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
-            questPersistenceService.save(questsToCreate);
-        }
+        questPersistenceService.countAllForRepeatingQuest(repeatingQuest, startOfPeriodDate, endOfPeriodDate, createdQuestsCount -> {
+            if (createdQuestsCount == 0) {
+                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
+                questPersistenceService.save(questsToCreate);
+            }
+        });
     }
 
     private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate) {

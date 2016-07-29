@@ -19,7 +19,6 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -121,7 +120,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
     }
 
     @Nullable
-    private RepeatingQuestViewModel createViewModel(RepeatingQuest rq) {
+    private void createViewModel(RepeatingQuest rq, ViewModelListener listener) {
         try {
             Recurrence recurrence = rq.getRecurrence();
             Recur recur = new Recur(recurrence.getRrule());
@@ -136,14 +135,15 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
             }
 
             questPersistenceService.countCompleted(rq.getId(), from, to, completedCount -> {
-                int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
-                Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
-                new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate);
+                questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount -> {
+                    questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
+                        listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate));
+                    });
+                });
             });
 
-            return null;
         } catch (ParseException e) {
-            return null;
+            listener.onViewModelCreated(null);
         }
     }
 
@@ -154,14 +154,14 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
 
     @Override
     public void onDataChanged(List<RepeatingQuest> quests) {
-        List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
+        repeatingQuestListAdapter.clear();
         for (RepeatingQuest rq : quests) {
-            RepeatingQuestViewModel vm = createViewModel(rq);
-            if (vm != null) {
-                viewModels.add(vm);
-            }
+            createViewModel(rq, vm -> {
+                if (vm != null) {
+                    repeatingQuestListAdapter.add(vm);
+                }
+            });
         }
-        repeatingQuestListAdapter.updateQuests(viewModels);
     }
 
     @Subscribe
@@ -169,5 +169,9 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         Intent i = new Intent(getActivity(), RepeatingQuestActivity.class);
         i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
+    }
+
+    private interface ViewModelListener {
+        void onViewModelCreated(RepeatingQuestViewModel viewModel);
     }
 }
