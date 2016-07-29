@@ -123,6 +123,23 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createModelListener(listener));
     }
 
+    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener) {
+        listenForQuery(query, createCountListener(listener));
+    }
+
+    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
+        listenForQuery(query, createCountListener(listener, queryFilter));
+    }
+
+    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener) {
+        query.addListenerForSingleValueEvent(createCountListener(listener));
+    }
+
+    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
+        query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
+    }
+
+
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();
@@ -148,6 +165,30 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 }
                 List<T> filteredData = queryFilter.filter(Observable.from(data)).toList().toBlocking().single();
                 listener.onDataChanged(filteredData);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener) {
+        return createCountListener(listener, null);
+    }
+
+    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (queryFilter == null) {
+                    listener.onDataChanged(dataSnapshot.getChildrenCount());
+                    return;
+                }
+                List<T> data = getListFromMapSnapshot(dataSnapshot);
+                List<T> filteredData = queryFilter.filter(Observable.from(data)).toList().toBlocking().single();
+                listener.onDataChanged(Long.valueOf(filteredData.size()));
             }
 
             @Override

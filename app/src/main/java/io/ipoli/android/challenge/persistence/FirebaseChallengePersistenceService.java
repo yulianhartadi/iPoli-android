@@ -2,14 +2,10 @@ package io.ipoli.android.challenge.persistence;
 
 import android.content.Context;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,26 +43,6 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     @Override
     public void findAllNotCompleted(OnDataChangedListener<List<Challenge>> listener) {
         Query query = getCollectionReference().orderByChild("endDate/time");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Challenge> challenges = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.hasChild("completedAt")) {
-                        continue;
-                    }
-                    challenges.add(snapshot.getValue(getModelClass()));
-                }
-                listener.onDataChanged(challenges);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        valueListeners.put(query.getRef(), valueEventListener);
-        query.addValueEventListener(valueEventListener);
+        listenForListChange(query, listener, data -> data.filter(c -> c.getCompletedAt() == null));
     }
 }

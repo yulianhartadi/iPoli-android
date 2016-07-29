@@ -229,7 +229,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void findNextUncompletedQuestEndDate(Challenge challenge, OnDataChangedListener<Date> listener) {
         Query query = getCollectionReference().orderByChild("challengeId")
                 .equalTo(challenge.getId());
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -273,27 +272,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllCompleted(Challenge challenge, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Quest> quests = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.hasChild("completedAt")) {
-                        continue;
-                    }
-                    quests.add(snapshot.getValue(getModelClass()));
-                }
-                listener.onDataChanged(quests);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
     }
 
     @Override
@@ -317,71 +296,18 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countCompleted(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = 0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.hasChild("completedAt")) {
-                        continue;
-                    }
-                    count++;
-                }
-                listener.onDataChanged(count);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAt() != null));
     }
 
     @Override
     public void countNotRepeating(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = 0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.hasChild("repeatingQuest")) {
-                        continue;
-                    }
-                    count++;
-                }
-                listener.onDataChanged(count);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null));
     }
 
     @Override
     public void countNotDeleted(Challenge challenge, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
-
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getChildrenCount());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        query.addListenerForSingleValueEvent(valueEventListener);
+        listenForSingleCountChange(query, listener);
     }
 }
