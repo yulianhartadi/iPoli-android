@@ -6,6 +6,8 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -16,13 +18,13 @@ public class AndroidCalendarPersistenceModule {
 
     @Provides
     @Singleton
-    public AndroidCalendarQuestListPersistenceService provideQuestListReader() {
-        return new AndroidCalendarQuestListPersistenceService();
+    public AndroidCalendarQuestListPersistenceService provideQuestListReader(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+        return new AndroidCalendarQuestListPersistenceService(questPersistenceService, repeatingQuestPersistenceService);
     }
 
     @Provides
     @Singleton
-    public AndroidCalendarRepeatingQuestListPersistenceService provideRepeatingQuestListReader() {
-        return new AndroidCalendarRepeatingQuestListPersistenceService();
+    public AndroidCalendarRepeatingQuestListPersistenceService provideRepeatingQuestListReader(RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+        return new AndroidCalendarRepeatingQuestListPersistenceService(repeatingQuestPersistenceService);
     }
 }

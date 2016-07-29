@@ -10,8 +10,6 @@ import org.joda.time.Minutes;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
@@ -26,11 +24,14 @@ import me.everything.providers.android.calendar.Event;
  */
 public class AndroidCalendarQuestListPersistenceService implements AndroidCalendarListPersistenceService<Quest> {
 
-    @Inject
-    QuestPersistenceService questPersistenceService;
 
-    @Inject
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private final QuestPersistenceService questPersistenceService;
+    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    public AndroidCalendarQuestListPersistenceService(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+        this.questPersistenceService = questPersistenceService;
+        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+    }
 
     @Override
     public void save(List<Event> events) {

@@ -198,7 +198,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate) {
+    public List<Quest> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
         return null;
     }
 

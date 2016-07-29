@@ -157,7 +157,7 @@ public class App extends MultiDexApplication {
 
         getAppComponent(this).inject(this);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-//        moveIncompleteQuestsToInbox();
+        moveIncompleteQuestsToInbox();
         registerServices();
 //        scheduleNextReminder();
 
@@ -260,7 +260,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
         Quest quest = e.quest;
-        // @TODO remove old logs
         quest.setDifficulty(null);
         quest.setActualStart(null);
         quest.setCompletedAt(null);
@@ -422,11 +421,7 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(questsToCreate);
         } else {
-            Observable.defer(() -> {
-                scheduleRepeatingQuest(repeatingQuest);
-                return Observable.empty();
-            }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, this::onQuestChanged);
+            scheduleRepeatingQuest(repeatingQuest);
         }
     }
 
