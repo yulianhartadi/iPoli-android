@@ -203,7 +203,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         }
 
         SubQuest sq = new SubQuest(name);
-        adapter.addSubquest(sq);
+        adapter.addSubQuest(sq);
         eventBus.post(new NewSubQuestEvent(sq, EventSource.SUBQUESTS));
         setAddSubquestInEditMode();
     }

@@ -71,7 +71,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+    public void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("recurrence/flexibleCount").equalTo(0);
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }

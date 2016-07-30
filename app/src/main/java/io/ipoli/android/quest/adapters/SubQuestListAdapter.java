@@ -129,7 +129,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         return subQuests.size();
     }
 
-    public void addSubquest(SubQuest subQuest) {
+    public void addSubQuest(SubQuest subQuest) {
         subQuests.add(subQuest);
         notifyItemInserted(subQuests.size() - 1);
     }

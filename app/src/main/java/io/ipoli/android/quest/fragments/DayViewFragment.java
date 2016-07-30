@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -57,6 +56,7 @@ import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
@@ -86,6 +86,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
+
+    @Inject
+    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
 
     private int movingQuestPosition;
 
@@ -158,22 +161,22 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         if (currentDateIsInThePast()) {
-            questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
+            questPersistenceService.listenForAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
         } else if (currentDateIsInTheFuture()) {
 
-            repeatingQuestPersistenceService.findNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
+            repeatingQuestPersistenceService.listenForNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
                 getPlaceholderQuestsFromRepeatingQuests(repeatingQuests, quests -> {
                     futurePlaceholderQuests = quests;
                     questsForFutureUpdated();
                 });
             });
 
-            questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate, quests -> {
+            questPersistenceService.listenForAllNonAllDayIncompleteForDate(currentDate, quests -> {
                 futureQuests = quests;
                 questsForFutureUpdated();
             });
         } else {
-            questPersistenceService.findAllNonAllDayForDate(currentDate, this::questsForPresentUpdated);
+            questPersistenceService.listenForAllNonAllDayForDate(currentDate, this::questsForPresentUpdated);
         }
 
         return view;
@@ -195,7 +198,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                             DateUtils.toStartOfDayUTC(currentDate));
                     res.addAll(questsToCreate);
                 }
-                if(isLast) {
+                if (isLast) {
                     for (Quest q : res) {
                         q.setPlaceholder(true);
                     }
@@ -427,17 +430,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         startActivity(i);
     }
 
-    @NonNull
     private Quest savePlaceholderQuest(Quest quest) {
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        List<Quest> quests = repeatingQuestScheduler.schedule(quest.getRepeatingQuest(), DateUtils.toStartOfDayUTC(startOfWeek));
-        questPersistenceService.save(quests);
-        for (Quest q : quests) {
-            if (quest.getStartDate().equals(q.getStartDate())) {
-                return q;
-            }
-        }
-        return quest;
+        return persistentRepeatingQuestScheduler.schedulePlaceholderQuest(quest, quest.getRepeatingQuest(), startOfWeek);
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {

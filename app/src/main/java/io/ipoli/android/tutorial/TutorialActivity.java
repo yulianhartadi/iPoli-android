@@ -30,7 +30,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
@@ -125,7 +124,6 @@ public class TutorialActivity extends AppIntro2 {
                 .subscribe(ignored -> {
                         }, error -> finish(),
                         () -> {
-                            eventBus.post(new ScheduleRepeatingQuestsEvent());
                             eventBus.post(new TutorialDoneEvent());
                             Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
                             finish();

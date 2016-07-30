@@ -16,7 +16,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void findNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
+    void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener);
 

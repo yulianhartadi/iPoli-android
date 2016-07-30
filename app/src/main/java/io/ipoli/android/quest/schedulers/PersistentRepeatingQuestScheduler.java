@@ -23,6 +23,9 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
  */
 public class PersistentRepeatingQuestScheduler {
 
+    public static final int PERIOD_ONE_WEEK = 1;
+    public static final int PERIOD_FOUR_WEEKS = 4;
+
     private final RepeatingQuestScheduler repeatingQuestScheduler;
 
     private final QuestPersistenceService questPersistenceService;
@@ -33,6 +36,12 @@ public class PersistentRepeatingQuestScheduler {
         this.repeatingQuestScheduler = repeatingQuestScheduler;
         this.questPersistenceService = questPersistenceService;
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+    }
+
+    public void schedule(RepeatingQuest repeatingQuest, Date startDate, int period) {
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        repeatingQuests.add(repeatingQuest);
+        schedule(repeatingQuests, startDate);
     }
 
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
@@ -100,5 +109,19 @@ public class PersistentRepeatingQuestScheduler {
 
     private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate) {
         saveQuestsInRange(repeatingQuest, startOfPeriodDate, endOfPeriodDate, startOfPeriodDate);
+    }
+
+    public Quest schedulePlaceholderQuest(Quest quest, RepeatingQuest repeatingQuest, LocalDate startDate) {
+        List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
+        questPersistenceService.save(questsToCreate);
+        repeatingQuest.addScheduledPeriodEndDate(DateUtils.toStartOfDayUTC(startDate.dayOfWeek().withMaximumValue()));
+        repeatingQuestPersistenceService.save(repeatingQuest);
+        for (Quest q : questsToCreate) {
+            if (quest.getStartDate().equals(q.getStartDate())) {
+                quest.setId(q.getId());
+                return quest;
+            }
+        }
+        return null;
     }
 }
