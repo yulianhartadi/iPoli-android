@@ -163,10 +163,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         questPersistenceService.removeAllListeners();
         playerPersistenceService.removeAllListeners();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override

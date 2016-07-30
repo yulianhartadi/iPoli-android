@@ -145,11 +145,11 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         challengePersistenceService.removeAllListeners();
         questPersistenceService.removeAllListeners();
         repeatingQuestPersistenceService.removeAllListeners();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override

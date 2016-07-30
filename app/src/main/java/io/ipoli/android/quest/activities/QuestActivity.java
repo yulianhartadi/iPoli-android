@@ -176,9 +176,9 @@ public class QuestActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         questPersistenceService.removeAllListeners();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Subscribe
