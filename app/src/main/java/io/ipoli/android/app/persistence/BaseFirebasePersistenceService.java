@@ -106,9 +106,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(List<T> objects) {
+        DatabaseReference collectionRef = getCollectionReference();
+        Map<String, Object> data = new HashMap<>();
         for (T obj : objects) {
-            delete(obj);
+            data.put(obj.getId(), null);
         }
+        collectionRef.updateChildren(data);
     }
 
     @Override
