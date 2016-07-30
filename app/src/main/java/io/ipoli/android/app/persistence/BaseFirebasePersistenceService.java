@@ -61,14 +61,27 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(List<T> objects) {
+
+//        DatabaseReference collectionRef = getCollectionReference();
+//        Map<String, Object> data = new HashMap<>();
         for (T obj : objects) {
+//            boolean isNew = StringUtils.isEmpty(obj.getId());
+//            if (isNew) {
+//                String id = collectionRef.push().getKey();
+//                obj.setId(id);
+//                data.put(id, obj);
+//            } else {
+//                obj.markUpdated();
+//                data.put(obj.getId(), obj);
+//            }
             save(obj);
         }
+//        collectionRef.updateChildren(data);
     }
 
     @Override
     public void findById(String id, OnDataChangedListener<T> listener) {
-        if(StringUtils.isEmpty(id)) {
+        if (StringUtils.isEmpty(id)) {
             listener.onDataChanged(null);
             return;
         }
@@ -78,7 +91,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void listenById(String id, OnDataChangedListener<T> listener) {
-        if(StringUtils.isEmpty(id)) {
+        if (StringUtils.isEmpty(id)) {
             listener.onDataChanged(null);
             return;
         }
@@ -259,7 +272,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 }
 
                 List<T> filteredData;
-                if(querySort != null) {
+                if (querySort != null) {
                     filteredData = observableData.toSortedList(querySort::sort).toBlocking().single();
                 } else {
                     filteredData = observableData.toSortedList().toBlocking().single();

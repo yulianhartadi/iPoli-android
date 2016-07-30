@@ -52,8 +52,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private RepeatingQuest repeatingQuest;
 
-    private String repeatingQuestId;
-
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
     private Integer difficulty;
@@ -75,7 +73,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private SourceMapping sourceMapping;
 
     @Exclude
-    private boolean isPlaceholder;
+    private transient boolean isPlaceholder;
 
     public Quest() {
     }
@@ -159,7 +157,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
-        repeatingQuestId = repeatingQuest.getId();
     }
 
     public boolean isAllDay() {
@@ -180,7 +177,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public Date getStartDate() {
-        return start != null ?  new Date(start) : null;
+        return start != null ? new Date(start) : null;
     }
 
     @Exclude
@@ -449,8 +446,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.experience = experience;
     }
 
-    public void setFlexibleStartTime(boolean flexibleStartTime) {
+    public void setFlexibleStartTime(Boolean flexibleStartTime) {
         this.flexibleStartTime = flexibleStartTime;
+    }
+
+    public Boolean getFlexibleStartTime() {
+        return flexibleStartTime;
     }
 
     @Exclude
@@ -477,14 +478,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setChallengeId(String challengeId) {
         this.challengeId = challengeId;
-    }
-
-    public String getRepeatingQuestId() {
-        return repeatingQuestId;
-    }
-
-    public void setRepeatingQuestId(String repeatingQuestId) {
-        this.repeatingQuestId = repeatingQuestId;
     }
 
     @Exclude

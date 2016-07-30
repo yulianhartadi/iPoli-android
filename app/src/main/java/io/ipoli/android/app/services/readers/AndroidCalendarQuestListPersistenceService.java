@@ -69,7 +69,6 @@ public class AndroidCalendarQuestListPersistenceService implements AndroidCalend
                 }
                 repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, e.originalId, rq -> {
                     q.setRepeatingQuest(rq);
-                    q.setRepeatingQuestId(rq.getId());
                     questPersistenceService.save(q);
                 });
             });

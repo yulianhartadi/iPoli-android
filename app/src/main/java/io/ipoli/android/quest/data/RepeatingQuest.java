@@ -225,6 +225,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public Map<String, Boolean> getScheduledPeriodEndDates() {
+        if (scheduledPeriodEndDates == null) {
+            return new HashMap<>();
+        }
         return scheduledPeriodEndDates;
     }
 

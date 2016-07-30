@@ -9,12 +9,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,13 +101,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().child("repeatingQuest").orderByChild("id").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getActualStartDate() != null && q.getCompletedAtDate() != null));
     }
 
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
         listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
                         && quest.getCompletedAtDate().getTime() >= toStartOfDayUTC(fromDate).getTime()
                         && quest.getCompletedAtDate().getTime() <= toStartOfDayUTC(toDate).getTime()
@@ -113,7 +117,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
         listenForCountChange(query, listener);
     }
 
@@ -186,13 +190,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
     }
 
     @Override
     public void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuest.getId());
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuest.getId());
         listenForSingleCountChange(query, listener, data -> data
                 .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
     }
@@ -210,7 +214,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getEndDate() == null || !q.getEndDate().before(toStartOfDayUTC(startDate))));
     }
 
@@ -242,7 +246,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId")
+        Query query = getCollectionReference().orderByChild("repeatingQuest/id")
                 .equalTo(repeatingQuest.getId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -377,5 +381,32 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener);
+    }
+
+    @Override
+    public void save(List<Quest> objects) {
+        Gson gson = new Gson();
+        String json = gson.toJson(objects);
+        Type type = new TypeToken<List<Map<String, Object>>>() {
+        }.getType();
+        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
+        DatabaseReference collectionRef = getCollectionReference();
+        Map<String, Object> data = new HashMap<>();
+        for (Map<String, Object> objMap : objMaps) {
+//            String json = gson.toJson(obj);
+
+//            Map<String, Object> objMap = gson.fromJson(json, type);
+            boolean isNew = !objMap.containsKey("id");
+            if (isNew) {
+                String id = collectionRef.push().getKey();
+                objMap.put("id", id);
+                data.put(id, objMap);
+            } else {
+//                obj.markUpdated();
+                objMap.put("updatedAt", new Date().getTime());
+                data.put(objMap.get("id").toString(), objMap);
+            }
+        }
+        collectionRef.updateChildren(data);
     }
 }

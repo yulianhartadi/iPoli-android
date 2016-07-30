@@ -23,9 +23,6 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
  */
 public class PersistentRepeatingQuestScheduler {
 
-    public static final int PERIOD_ONE_WEEK = 1;
-    public static final int PERIOD_FOUR_WEEKS = 4;
-
     private final RepeatingQuestScheduler repeatingQuestScheduler;
 
     private final QuestPersistenceService questPersistenceService;

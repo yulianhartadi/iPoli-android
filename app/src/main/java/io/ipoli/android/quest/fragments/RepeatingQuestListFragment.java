@@ -64,7 +64,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private RepeatingQuestListAdapter repeatingQuestListAdapter;
     private Unbinder unbinder;
 
     @Override
@@ -81,9 +80,9 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
-        questList.setAdapter(repeatingQuestListAdapter);
+        RepeatingQuestListAdapter repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
+        questList.setAdapter(repeatingQuestListAdapter);
         repeatingQuestPersistenceService.listenForAllNonAllDayActiveRepeatingQuests(this);
         return view;
     }
@@ -135,8 +134,8 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
             questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount ->
                     questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount ->
                             questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
-                        listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate));
-                    })));
+                                listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate));
+                            })));
 
         } catch (ParseException e) {
             listener.onViewModelCreated(null);
@@ -150,11 +149,14 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
 
     @Override
     public void onDataChanged(List<RepeatingQuest> quests) {
-        repeatingQuestListAdapter.clear();
+        List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
             createViewModel(rq, vm -> {
-                if (vm != null) {
-                    repeatingQuestListAdapter.add(vm);
+                viewModels.add(vm);
+
+                if (viewModels.size() == quests.size()) {
+                    RepeatingQuestListAdapter rewardListAdapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
+                    questList.setAdapter(rewardListAdapter);
                 }
             });
         }

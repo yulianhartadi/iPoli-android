@@ -329,7 +329,6 @@ public class App extends MultiDexApplication {
                 }
             }
             rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            repeatingQuestPersistenceService.save(rq);
             scheduleRepeatingQuest(rq);
         });
     }
