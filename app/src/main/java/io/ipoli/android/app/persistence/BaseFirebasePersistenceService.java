@@ -250,7 +250,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
                 List<T> filteredData;
                 if(querySort != null) {
-                    filteredData = observableData.toSortedList((t, t2) -> {return querySort.sort(t, t2);}).toBlocking().single();
+                    filteredData = observableData.toSortedList(querySort::sort).toBlocking().single();
                 } else {
                     filteredData = observableData.toSortedList().toBlocking().single();
                 }

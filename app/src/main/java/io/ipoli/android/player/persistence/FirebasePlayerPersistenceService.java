@@ -42,8 +42,8 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             playerData.put("experience", player.getExperience());
             playerData.put("level", player.getLevel());
             playerData.put("avatar", player.getAvatar());
-//            playerData.put("updatedAt", player.getUpdatedAt());
-//            playerData.put("createdAt", player.getCreatedAt());
+            playerData.put("updatedAt", player.getUpdatedAt());
+            playerData.put("createdAt", player.getCreatedAt());
             objRef.updateChildren(playerData);
         }
     }
