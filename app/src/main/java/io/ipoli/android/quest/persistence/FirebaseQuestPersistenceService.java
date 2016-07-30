@@ -91,7 +91,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date).getTime());
+        Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date.minusDays(1)).getTime());
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAtDate() == null));
     }
 

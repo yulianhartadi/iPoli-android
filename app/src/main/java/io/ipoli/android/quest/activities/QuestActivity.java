@@ -66,8 +66,6 @@ public class QuestActivity extends BaseActivity {
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    private String questId;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,13 +83,17 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 
-        initViewPager(viewPager);
+        questPersistenceService.listenById(questId, quest -> {
+            getSupportActionBar().setTitle(quest.getName());
+            setBackgroundColors(Quest.getCategory(quest));
+            eventBus.post(new ScreenShownEvent(EventSource.QUEST));
+        });
+
+        initViewPager(viewPager, questId);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
-
-        eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
     private void initTabIcons() {
@@ -129,7 +131,7 @@ public class QuestActivity extends BaseActivity {
         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
     }
 
-    private void initViewPager(ViewPager viewPager) {
+    private void initViewPager(ViewPager viewPager, String questId) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(TimerFragment.newInstance(questId));
         adapter.addFragment(SubQuestListFragment.newInstance(questId));
@@ -165,17 +167,18 @@ public class QuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-
-        questPersistenceService.findById(questId, quest -> {
-            getSupportActionBar().setTitle(quest.getName());
-            setBackgroundColors(Quest.getCategory(quest));
-        });
     }
 
     @Override
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        questPersistenceService.removeAllListeners();
+        super.onDestroy();
     }
 
     @Subscribe
