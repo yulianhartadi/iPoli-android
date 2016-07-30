@@ -10,8 +10,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,22 +64,25 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(List<T> objects) {
-
-//        DatabaseReference collectionRef = getCollectionReference();
-//        Map<String, Object> data = new HashMap<>();
-        for (T obj : objects) {
-//            boolean isNew = StringUtils.isEmpty(obj.getId());
-//            if (isNew) {
-//                String id = collectionRef.push().getKey();
-//                obj.setId(id);
-//                data.put(id, obj);
-//            } else {
-//                obj.markUpdated();
-//                data.put(obj.getId(), obj);
-//            }
-            save(obj);
+        Gson gson = new Gson();
+        String json = gson.toJson(objects);
+        Type type = new TypeToken<List<Map<String, Object>>>() {
+        }.getType();
+        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
+        DatabaseReference collectionRef = getCollectionReference();
+        Map<String, Object> data = new HashMap<>();
+        for (Map<String, Object> objMap : objMaps) {
+            boolean isNew = !objMap.containsKey("id");
+            if (isNew) {
+                String id = collectionRef.push().getKey();
+                objMap.put("id", id);
+                data.put(id, objMap);
+            } else {
+                objMap.put("updatedAt", new Date().getTime());
+                data.put(objMap.get("id").toString(), objMap);
+            }
         }
-//        collectionRef.updateChildren(data);
+        collectionRef.updateChildren(data);
     }
 
     @Override

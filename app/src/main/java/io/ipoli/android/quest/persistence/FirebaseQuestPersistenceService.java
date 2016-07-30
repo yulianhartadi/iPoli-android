@@ -9,16 +9,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -381,32 +377,5 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener);
-    }
-
-    @Override
-    public void save(List<Quest> objects) {
-        Gson gson = new Gson();
-        String json = gson.toJson(objects);
-        Type type = new TypeToken<List<Map<String, Object>>>() {
-        }.getType();
-        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (Map<String, Object> objMap : objMaps) {
-//            String json = gson.toJson(obj);
-
-//            Map<String, Object> objMap = gson.fromJson(json, type);
-            boolean isNew = !objMap.containsKey("id");
-            if (isNew) {
-                String id = collectionRef.push().getKey();
-                objMap.put("id", id);
-                data.put(id, objMap);
-            } else {
-//                obj.markUpdated();
-                objMap.put("updatedAt", new Date().getTime());
-                data.put(objMap.get("id").toString(), objMap);
-            }
-        }
-        collectionRef.updateChildren(data);
     }
 }
