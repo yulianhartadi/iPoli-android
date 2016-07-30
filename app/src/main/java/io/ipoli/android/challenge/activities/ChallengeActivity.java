@@ -86,7 +86,7 @@ public class ChallengeActivity extends BaseActivity {
         }
 
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        challengePersistenceService.findById(challengeId, challenge -> {
+        challengePersistenceService.listenById(challengeId, challenge -> {
             this.challenge = challenge;
             initViewPager(viewPager);
             tabLayout.setupWithViewPager(viewPager);

@@ -77,6 +77,16 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
+    public void listenById(String id, OnDataChangedListener<T> listener) {
+        if(StringUtils.isEmpty(id)) {
+            listener.onDataChanged(null);
+            return;
+        }
+        DatabaseReference dbRef = getPlayerReference().child(getCollectionName()).child(id);
+        listenForModelChange(dbRef, listener);
+    }
+
+    @Override
     public void delete(T object) {
         getCollectionReference().child(object.getId()).removeValue();
     }
