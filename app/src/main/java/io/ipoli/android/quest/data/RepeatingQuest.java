@@ -2,6 +2,7 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +46,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private String source;
 
     private SourceMapping sourceMapping;
+
+    private HashMap<Long, Boolean> scheduledDates;
 
     public RepeatingQuest() {
     }
