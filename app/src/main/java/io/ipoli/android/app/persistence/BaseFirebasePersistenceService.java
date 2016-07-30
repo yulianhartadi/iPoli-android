@@ -71,10 +71,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         List<Map<String, Object>> objMaps = gson.fromJson(json, type);
         DatabaseReference collectionRef = getCollectionReference();
         Map<String, Object> data = new HashMap<>();
-        for (Map<String, Object> objMap : objMaps) {
+        for (int i = 0; i < objMaps.size(); i++) {
+            Map<String, Object> objMap = objMaps.get(i);
             boolean isNew = !objMap.containsKey("id");
             if (isNew) {
                 String id = collectionRef.push().getKey();
+                objects.get(i).setId(id);
                 objMap.put("id", id);
                 data.put(id, objMap);
             } else {
