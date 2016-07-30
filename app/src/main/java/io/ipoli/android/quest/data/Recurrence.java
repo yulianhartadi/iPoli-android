@@ -174,6 +174,7 @@ public class Recurrence extends PersistedObject {
         return RecurrenceType.valueOf(type);
     }
 
+    @Exclude
     public boolean isFlexible() {
         return flexibleCount > 0;
     }

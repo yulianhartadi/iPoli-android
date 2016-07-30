@@ -2,8 +2,10 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
@@ -47,7 +49,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private SourceMapping sourceMapping;
 
-    private HashMap<Long, Boolean> scheduledDates;
+    private Map<String, Boolean> scheduledPeriodEndDates;
 
     public RepeatingQuest() {
     }
@@ -94,6 +96,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+        this.scheduledPeriodEndDates = new HashMap<>();
     }
 
     public String getName() {
@@ -205,11 +208,35 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @Exclude
+    public void addScheduledPeriodEndDate(Date date) {
+        if (scheduledPeriodEndDates == null) {
+            scheduledPeriodEndDates = new HashMap<>();
+        }
+        scheduledPeriodEndDates.put(String.valueOf(date.getTime()), true);
+    }
+
+    @Exclude
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
     }
 
     public static Category getCategory(RepeatingQuest repeatingQuest) {
         return Category.valueOf(repeatingQuest.getCategory());
+    }
+
+    public Map<String, Boolean> getScheduledPeriodEndDates() {
+        return scheduledPeriodEndDates;
+    }
+
+    public void setScheduledPeriodEndDates(HashMap<String, Boolean> scheduledPeriodEndDates) {
+        this.scheduledPeriodEndDates = scheduledPeriodEndDates;
+    }
+
+    @Exclude
+    public boolean shouldBeScheduledForPeriod(Date periodEnd) {
+        if (scheduledPeriodEndDates == null) {
+            return true;
+        }
+        return !scheduledPeriodEndDates.containsKey(String.valueOf(periodEnd.getTime()));
     }
 }

@@ -1,5 +1,7 @@
 package io.ipoli.android.player;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 import java.math.BigInteger;
 
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -9,6 +11,7 @@ import io.ipoli.android.app.utils.DateUtils;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
+@IgnoreExtraProperties
 public class Player extends PersistedObject {
 
     private String experience;

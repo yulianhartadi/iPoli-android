@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -119,7 +118,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         super.onPause();
     }
 
-    @Nullable
     private void createViewModel(RepeatingQuest rq, ViewModelListener listener) {
         try {
             Recurrence recurrence = rq.getRecurrence();

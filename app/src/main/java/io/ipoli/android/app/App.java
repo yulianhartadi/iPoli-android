@@ -65,7 +65,6 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -314,13 +313,24 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest.getId(), questsToRemove -> {
+        RepeatingQuest rq = e.repeatingQuest;
+        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
             for (Quest quest : questsToRemove) {
                 QuestNotificationScheduler.stopAll(quest.getId(), this);
             }
             questPersistenceService.delete(questsToRemove);
-            e.repeatingQuest.setReminders(e.reminders);
-            repeatingQuestPersistenceService.save(e.repeatingQuest);
+            rq.setReminders(e.reminders);
+
+            long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
+            List<String> periodsToDelete = new ArrayList<>();
+            for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
+                if (Long.valueOf(periodEnd) >= todayStartOfDay) {
+                    periodsToDelete.add(periodEnd);
+                }
+            }
+            rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
+            repeatingQuestPersistenceService.save(rq);
+            scheduleRepeatingQuest(rq);
         });
     }
 
@@ -413,32 +423,19 @@ public class App extends MultiDexApplication {
     }
 
     public void onRepeatingQuestSaved(RepeatingQuest repeatingQuest) {
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (TextUtils.isEmpty(recurrence.getRrule())) {
-            List<Quest> questsToCreate = new ArrayList<>();
-            for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(repeatingQuest, recurrence.getDtstartDate()));
-            }
-            questPersistenceService.save(questsToCreate);
-        } else {
-            scheduleRepeatingQuest(repeatingQuest);
-        }
+        scheduleRepeatingQuest(repeatingQuest);
     }
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        markQuestsDeleted(repeatingQuest);
+        deleteQuestsForRepeating(repeatingQuest);
         repeatingQuestPersistenceService.delete(repeatingQuest);
     }
 
-    private void markQuestsDeleted(RepeatingQuest repeatingQuest) {
-        questPersistenceService.findAllForRepeatingQuest(repeatingQuest.getId(), quests -> {
-            for (Quest q : quests) {
-                if (!Quest.isCompleted(q)) {
-                    questPersistenceService.delete(q);
-                }
-            }
+    private void deleteQuestsForRepeating(RepeatingQuest repeatingQuest) {
+        questPersistenceService.findAllNotCompletedForRepeatingQuest(repeatingQuest.getId(), quests -> {
+            questPersistenceService.delete(quests);
         });
     }
 
