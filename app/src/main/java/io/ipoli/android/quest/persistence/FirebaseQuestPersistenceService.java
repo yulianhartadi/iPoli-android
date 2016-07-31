@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.content.Context;
 import android.support.v4.util.Pair;
 
 import com.google.firebase.database.DataSnapshot;
@@ -9,6 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
@@ -33,8 +34,8 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceService<Quest> implements QuestPersistenceService {
 
-    public FirebaseQuestPersistenceService(Context context, Bus eventBus) {
-        super(context, eventBus);
+    public FirebaseQuestPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
+        super(localStorage, eventBus, gson);
     }
 
     @Override
@@ -178,10 +179,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Date currentDateUtc = toStartOfDayUTC(currentDate);
-        DatabaseReference collectionReference = getCollectionReference();
-        Query endAt = collectionReference.orderByChild("end").equalTo(currentDateUtc.getTime());
-        listenForQuery(endAt, createListListener(listener));
+        Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(currentDate).getTime());
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
     }
 
     @Override
@@ -195,11 +194,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuest.getId());
         listenForSingleCountChange(query, listener, data -> data
                 .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
-    }
-
-    @Override
-    public List<Quest> findAllNonAllDayIncompleteForDate(LocalDate currentDate) {
-        return null;
     }
 
     @Override

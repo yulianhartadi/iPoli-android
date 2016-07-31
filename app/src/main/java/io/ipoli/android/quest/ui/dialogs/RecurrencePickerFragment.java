@@ -86,6 +86,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     @Inject
     Bus eventBus;
+    
+    @Inject
+    Gson gson;
 
     @BindView(R.id.recurrence_flexibility)
     Switch flexibleRecurrence;
@@ -147,7 +150,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         Bundle args = getArguments();
         String recurrenceJson = args.getString(RECURRENCE);
         if (!TextUtils.isEmpty(recurrenceJson)) {
-            recurrence = new Gson().fromJson(recurrenceJson, Recurrence.class);
+            recurrence = gson.fromJson(recurrenceJson, Recurrence.class);
         } else {
             recurrence = Recurrence.create();
         }

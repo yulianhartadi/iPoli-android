@@ -112,6 +112,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     Bus eventBus;
 
     @Inject
+    LocalStorage localStorage;
+
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Inject
@@ -129,12 +132,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
-        LocalStorage localStorage = LocalStorage.of(this);
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_REMOTE_ID))) {
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
             player.setCoins(Constants.DEFAULT_PLAYER_COINS);
             playerPersistenceService.save(player);
-            localStorage.saveString(Constants.KEY_PLAYER_REMOTE_ID, player.getId());
+            localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
         }
 
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -284,7 +286,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private boolean shouldShowRateDialog() {
-        LocalStorage localStorage = LocalStorage.of(this);
         int appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
         if (isRateDialogShown || appRun < RateDialogConstants.MIN_APP_RUN_FOR_RATE_DIALOG ||
                 !localStorage.readBool(RateDialogConstants.KEY_SHOULD_SHOW_RATE_DIALOG, true)) {

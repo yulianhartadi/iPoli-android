@@ -1,16 +1,16 @@
 package io.ipoli.android.challenge.persistence;
 
-import android.content.Context;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
@@ -20,8 +20,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class FirebaseChallengePersistenceService extends BaseFirebasePersistenceService<Challenge> implements ChallengePersistenceService {
 
-    public FirebaseChallengePersistenceService(Context context, Bus eventBus) {
-        super(context, eventBus);
+    public FirebaseChallengePersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
+        super(localStorage, eventBus, gson);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import android.content.Context;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,13 +37,15 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected final FirebaseDatabase database;
     protected final String playerId;
     protected final Bus eventBus;
+    private final Gson gson;
     protected Map<Query, ValueEventListener> valueListeners;
     protected Map<Query, ChildEventListener> childListeners;
 
-    public BaseFirebasePersistenceService(Context context, Bus eventBus) {
+    public BaseFirebasePersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
         this.eventBus = eventBus;
+        this.gson = gson;
         this.database = FirebaseDatabase.getInstance();
-        this.playerId = LocalStorage.of(context).readString(Constants.KEY_PLAYER_REMOTE_ID);
+        this.playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
     }
@@ -66,7 +66,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(List<T> objects) {
-        Gson gson = new Gson();
         String json = gson.toJson(objects);
         Type type = new TypeToken<List<Map<String, Object>>>() {
         }.getType();

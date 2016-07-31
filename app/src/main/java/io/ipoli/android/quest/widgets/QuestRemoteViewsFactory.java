@@ -9,10 +9,11 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -29,10 +31,16 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
-    private final List<Quest> quests = new ArrayList<>();
+    private List<Quest> quests = new ArrayList<>();
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    Gson gson;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -48,8 +56,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        quests.clear();
-        quests.addAll(questPersistenceService.findAllNonAllDayIncompleteForDate(new LocalDate()));
+        Type type = new TypeToken<List<Quest>>() {
+        }.getType();
+        quests = gson.fromJson(localStorage.readString(Constants.WIDGET_AGENDA_QUESTS), type);
     }
 
     @Override

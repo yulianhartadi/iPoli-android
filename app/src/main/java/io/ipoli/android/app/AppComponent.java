@@ -9,6 +9,8 @@ import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarPersistenceModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
+import io.ipoli.android.app.modules.JsonModule;
+import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
@@ -20,6 +22,8 @@ import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
+import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
+import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -37,6 +41,7 @@ import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
@@ -57,6 +62,8 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
         modules = {
                 AppModule.class,
                 BusModule.class,
+                JsonModule.class,
+                LocalStorageModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 AndroidCalendarPersistenceModule.class,
@@ -144,5 +151,11 @@ public interface AppComponent {
     void inject(ChallengeQuestListFragment challengeQuestListFragment);
 
     void inject(PickChallengeQuestsActivity pickChallengeQuestsActivity);
+
+    void inject(EditReminderFragment editReminderFragment);
+
+    void inject(ScheduleDailyChallengeReminderReceiver scheduleDailyChallengeReminderReceiver);
+
+    void inject(DailyChallengeReminderReceiver dailyChallengeReminderReceiver);
 }
 

@@ -52,6 +52,9 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
+    LocalStorage localStorage;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ContextCompat.checkSelfPermission(context,
@@ -62,7 +65,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
         App.getAppComponent(context).inject(this);
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
-        LocalStorage localStorage = LocalStorage.of(context);
         Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
         List<Event> dirtyEvents = new ArrayList<>();
         List<Event> deletedEvents = new ArrayList<>();

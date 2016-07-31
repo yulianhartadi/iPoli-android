@@ -41,8 +41,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener);
 
-    List<Quest> findAllNonAllDayIncompleteForDate(LocalDate currentDate);
-
     void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<Quest> listener);
 
     void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);

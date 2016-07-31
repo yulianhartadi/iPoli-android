@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -111,6 +112,12 @@ public class App extends MultiDexApplication {
     Bus eventBus;
 
     @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    Gson gson;
+
+    @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
@@ -143,9 +150,16 @@ public class App extends MultiDexApplication {
             scheduleQuestsFor4WeeksAhead();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             moveIncompleteQuestsToInbox();
-            updateWidgets();
+            listenForChanges();
         }
     };
+
+    private void listenForChanges() {
+        questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
+        listenForWidgetQuestsChange();
+        listenForRepeatingQuestChange();
+    }
 
     @Override
     public void onCreate() {
@@ -160,7 +174,6 @@ public class App extends MultiDexApplication {
         registerServices();
 //        scheduleNextReminder();
 
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleDailyChallenge();
@@ -173,7 +186,11 @@ public class App extends MultiDexApplication {
 //        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
+        listenForChanges();
 
+    }
+
+    private void listenForRepeatingQuestChange() {
         repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
             @Override
             public void onNew(List<RepeatingQuest> data) {
@@ -192,7 +209,6 @@ public class App extends MultiDexApplication {
 
             }
         });
-
     }
 
     private void scheduleDailyChallenge() {
@@ -354,7 +370,6 @@ public class App extends MultiDexApplication {
         if (quest.getPriority() != Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
             return;
         }
-        LocalStorage localStorage = LocalStorage.of(this);
         Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
         Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
         boolean isCompletedForToday = todayUtc.equals(lastCompleted);
@@ -493,14 +508,16 @@ public class App extends MultiDexApplication {
 
     private void onQuestChanged() {
         scheduleNextReminder();
-        updateWidgets();
     }
 
-    private void updateWidgets() {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                new ComponentName(this, AgendaWidgetProvider.class));
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
+    private void listenForWidgetQuestsChange() {
+        questPersistenceService.listenForAllNonAllDayIncompleteForDate(new LocalDate(), quests -> {
+            localStorage.saveString(Constants.WIDGET_AGENDA_QUESTS, gson.toJson(quests));
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                    new ComponentName(this, AgendaWidgetProvider.class));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
+        });
     }
 
     @Subscribe
@@ -556,7 +573,6 @@ public class App extends MultiDexApplication {
         return Observable.defer(() -> {
             CalendarProvider provider = new CalendarProvider(this);
             List<Calendar> calendars = provider.getCalendars().getList();
-            LocalStorage localStorage = LocalStorage.of(this);
             Set<String> calendarIds = new HashSet<>();
             List<Event> repeating = new ArrayList<>();
             List<Event> nonRepeating = new ArrayList<>();

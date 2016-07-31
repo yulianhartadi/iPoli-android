@@ -49,7 +49,7 @@ public interface Constants {
 
     String KEY_APP_VERSION_CODE = "APP_VERSION_CODE";
 
-    String KEY_PLAYER_REMOTE_ID = "PLAYER_REMOTE_ID";
+    String KEY_PLAYER_ID = "PLAYER_REMOTE_ID";
 
     String KEY_SELECTED_ANDROID_CALENDARS = "SELECTED_ANDROID_CALENDARS";
 
@@ -106,6 +106,7 @@ public interface Constants {
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
 
     int DEFAULT_BAR_COUNT = 4;
+    String WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
 
 
     enum DaysOfWeek {

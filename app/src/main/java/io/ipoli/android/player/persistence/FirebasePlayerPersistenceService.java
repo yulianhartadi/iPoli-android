@@ -1,9 +1,8 @@
 package io.ipoli.android.player.persistence;
 
-import android.content.Context;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -21,8 +21,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceService<Player> implements PlayerPersistenceService {
 
-    public FirebasePlayerPersistenceService(Context context, Bus eventBus) {
-        super(context, eventBus);
+    public FirebasePlayerPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
+        super(localStorage, eventBus, gson);
     }
 
     @Override

@@ -10,7 +10,10 @@ import org.joda.time.LocalDate;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
@@ -23,11 +26,14 @@ public class ScheduleDailyChallengeReminderReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER = "io.ipoli.android.intent.action.SCHEDULE_DAILY_CHALLENGE_REMINDER";
 
+    @Inject
+    LocalStorage localStorage;
+
     @Override
     public void onReceive(Context context, Intent intent) {
+        App.getAppComponent(context).inject(this);
         PendingIntent repeatingIntent = IntentUtils.getBroadcastPendingIntent(context, getDailyChallengeReminderIntent());
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        LocalStorage localStorage = LocalStorage.of(context);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
         long firstTriggerMillis = LocalDate.now().toDateTimeAtStartOfDay().getMillis() + Time.of(startMinute).toMillisAfterMidnight();
         if (timeIsInThePast(firstTriggerMillis)) {

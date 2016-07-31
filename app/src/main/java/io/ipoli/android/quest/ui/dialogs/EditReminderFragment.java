@@ -23,15 +23,18 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.reminders.ReminderMinutesParser;
 import io.ipoli.android.reminders.TimeOffsetType;
-import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.reminders.data.Reminder;
 
 import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
 
@@ -43,6 +46,9 @@ public class EditReminderFragment extends DialogFragment {
     private static final String TAG = "edit-reminder-dialog";
     private static final String REMINDER = "reminder";
     private static final String NOTIFICATION_ID = "notification_id";
+
+    @Inject
+    Gson gson;
 
     @BindView(R.id.reminder_message)
     TextInputEditText messageView;
@@ -97,10 +103,11 @@ public class EditReminderFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getAppComponent(getContext()).inject(this);
         if (getArguments() != null) {
             String reminderJson = getArguments().getString(REMINDER);
             if (!TextUtils.isEmpty(reminderJson)) {
-                reminder = new Gson().fromJson(reminderJson, Reminder.class);
+                reminder = gson.fromJson(reminderJson, Reminder.class);
                 editMode = EditMode.EDIT;
             } else {
                 editMode = EditMode.CREATE;
@@ -197,8 +204,8 @@ public class EditReminderFragment extends DialogFragment {
 
     private void initPredefinedTimes() {
         List<String> predefinedTimes = new ArrayList<>();
-        for (int i = 0; i < REMINDER_PREDEFINED_MINUTES.length; i++) {
-            predefinedTimes.add(ReminderTimeFormatter.formatMinutesBeforeReadable(REMINDER_PREDEFINED_MINUTES[i]));
+        for (int REMINDER_PREDEFINED_MINUTE : REMINDER_PREDEFINED_MINUTES) {
+            predefinedTimes.add(ReminderTimeFormatter.formatMinutesBeforeReadable(REMINDER_PREDEFINED_MINUTE));
         }
         predefinedTimes.add("Custom");
 
