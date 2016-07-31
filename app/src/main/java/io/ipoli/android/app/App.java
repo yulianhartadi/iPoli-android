@@ -203,7 +203,7 @@ public class App extends MultiDexApplication {
             FlurryAgent.onEndSession(this);
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-//        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
+        scheduleQuestsFor4WeeksAhead();
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
         listenForChanges();
