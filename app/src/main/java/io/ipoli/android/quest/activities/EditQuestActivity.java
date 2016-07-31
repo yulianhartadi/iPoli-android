@@ -702,7 +702,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private boolean reminderWithSameTimeExists(Reminder reminder) {
         for (Reminder r : getReminders()) {
-            if (!reminder.getId().equals(r.getId()) && reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+            if (reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
                 return true;
             }
         }

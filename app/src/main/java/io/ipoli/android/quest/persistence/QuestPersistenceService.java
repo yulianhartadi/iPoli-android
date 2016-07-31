@@ -8,6 +8,7 @@ import java.util.List;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -70,4 +71,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener);
 
     void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener);
+
+    void saveWithNewReminders(Quest quest, List<Reminder> newReminders);
+
 }

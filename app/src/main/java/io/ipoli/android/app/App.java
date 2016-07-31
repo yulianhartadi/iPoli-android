@@ -187,7 +187,6 @@ public class App extends MultiDexApplication {
 
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
         listenForChanges();
-
     }
 
     private void listenForRepeatingQuestChange() {
@@ -310,18 +309,18 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        e.quest.setReminders(e.reminders);
-        questPersistenceService.save(e.quest);
-        if (Quest.isCompleted(e.quest)) {
-            onQuestComplete(e.quest, e.source);
+        Quest quest = e.quest;
+        quest.setReminders(e.reminders);
+        questPersistenceService.save(quest);
+        if (Quest.isCompleted(quest)) {
+            onQuestComplete(quest, e.source);
         }
     }
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        e.quest.setReminders(e.reminders);
         e.quest.setSubQuests(e.subQuests);
-        questPersistenceService.save(e.quest);
+        questPersistenceService.saveWithNewReminders(e.quest, e.reminders);
         if (Quest.isCompleted(e.quest)) {
             onQuestComplete(e.quest, e.source);
         }

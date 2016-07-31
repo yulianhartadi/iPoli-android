@@ -252,7 +252,6 @@ public class RepeatingQuestScheduler {
             questReminders.add(questReminder);
         }
         quest.setReminders(questReminders);
-        quest.updateRemindersStartTime();
         return quest;
     }
 

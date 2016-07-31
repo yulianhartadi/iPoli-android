@@ -111,7 +111,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setReminders(List<Reminder> reminders) {
         this.reminders = reminders;
-        updateRemindersStartTime();
     }
 
     public List<SubQuest> getSubQuests() {
@@ -139,16 +138,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
-        updateRemindersStartTime();
-    }
-
-    public void updateRemindersStartTime() {
-        if (getReminders() == null) {
-            return;
-        }
-        for (Reminder r : getReminders()) {
-            r.calculateStartTime(this);
-        }
     }
 
     public RepeatingQuest getRepeatingQuest() {
@@ -229,7 +218,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public void setEndDateFromLocal(Date endDate) {
         setEndDate(DateUtils.getDate(endDate));
-        updateRemindersStartTime();
     }
 
     public Long getEnd() {

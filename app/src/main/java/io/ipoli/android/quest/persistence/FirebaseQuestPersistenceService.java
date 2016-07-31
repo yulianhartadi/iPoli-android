@@ -15,14 +15,17 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.reminders.data.Reminder;
 import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
@@ -371,5 +374,111 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForSingleCountChange(query, listener);
+    }
+
+    @Override
+    public void save(Quest quest) {
+        boolean shouldCreate = StringUtils.isEmpty(quest.getId());
+        List<Long> oldStartTimes = new ArrayList<>();
+        if (quest.getReminders() != null) {
+            for (Reminder r : quest.getReminders()) {
+                oldStartTimes.add(r.getStart());
+                r.calculateStartTime(quest);
+            }
+        }
+        super.save(quest);
+        DatabaseReference remindersRef = getPlayerReference().child("reminders");
+
+        if (shouldCreate) {
+            if (quest.getEndDate() == null || quest.getCompletedAt() != null || quest.getStartMinute() < 0) {
+                return;
+            }
+            Map<String, Object> data = new HashMap<>();
+            addNewReminders(data, quest);
+            remindersRef.updateChildren(data);
+        } else {
+            Map<String, Object> data = new HashMap<>();
+            removeOldReminders(quest, oldStartTimes, data);
+            addNewRemindersIfNeeded(data, quest);
+            remindersRef.updateChildren(data);
+        }
+    }
+
+    @Override
+    public void save(List<Quest> quests) {
+        List<Boolean> shouldCreate = new ArrayList<>();
+        List<List<Long>> allOldStartTimes = new ArrayList<>();
+        for (Quest quest : quests) {
+            shouldCreate.add(StringUtils.isEmpty(quest.getId()));
+            List<Long> oldStartTimes = new ArrayList<>();
+            if (quest.getReminders() != null) {
+                for (Reminder r : quest.getReminders()) {
+                    oldStartTimes.add(r.getStart());
+                    r.calculateStartTime(quest);
+                }
+            }
+            allOldStartTimes.add(oldStartTimes);
+        }
+        super.save(quests);
+        DatabaseReference remindersRef = getPlayerReference().child("reminders");
+        Map<String, Object> data = new HashMap<>();
+        for (int i = 0; i < quests.size(); i++) {
+            Quest quest = quests.get(i);
+
+            if (shouldCreate.get(i)) {
+                if (quest.getEndDate() == null || quest.getCompletedAt() != null || quest.getStartMinute() < 0) {
+                    continue;
+                }
+                addNewReminders(data, quest);
+            } else {
+                removeOldReminders(quest, allOldStartTimes.get(i), data);
+                addNewRemindersIfNeeded(data, quest);
+            }
+        }
+        remindersRef.updateChildren(data);
+    }
+
+    public void saveWithNewReminders(Quest quest, List<Reminder> newReminders) {
+        List<Long> oldStartTimes = new ArrayList<>();
+        if (quest.getReminders() != null) {
+            for (Reminder r : quest.getReminders()) {
+                oldStartTimes.add(r.getStart());
+            }
+        }
+        quest.setReminders(newReminders);
+        if (quest.getReminders() != null) {
+            for (Reminder r : quest.getReminders()) {
+                r.calculateStartTime(quest);
+            }
+        }
+        super.save(quest);
+
+        Map<String, Object> data = new HashMap<>();
+        removeOldReminders(quest, oldStartTimes, data);
+        addNewRemindersIfNeeded(data, quest);
+        DatabaseReference remindersRef = getPlayerReference().child("reminders");
+        remindersRef.updateChildren(data);
+    }
+
+    private void addNewRemindersIfNeeded(Map<String, Object> data, Quest quest) {
+        if (quest.getEndDate() != null || quest.getCompletedAt() == null || quest.getStartMinute() >= 0) {
+            addNewReminders(data, quest);
+        }
+    }
+
+    private void addNewReminders(Map<String, Object> data, Quest quest) {
+        for (Reminder reminder : quest.getReminders()) {
+            Map<String, Boolean> d = new HashMap<>();
+            d.put(quest.getId(), true);
+            data.put(String.valueOf(reminder.getStart()), d);
+        }
+    }
+
+    private void removeOldReminders(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
+        for (long startTime : oldStartTimes) {
+            Map<String, Boolean> d = new HashMap<>();
+            d.put(quest.getId(), null);
+            data.put(String.valueOf(startTime), d);
+        }
     }
 }
