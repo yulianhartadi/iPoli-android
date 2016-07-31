@@ -425,7 +425,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             remindersRef.updateChildren(data);
         } else {
             Map<String, Object> data = new HashMap<>();
-            removeOldReminders(quest, oldStartTimes, data);
+            addOldReminders(quest, oldStartTimes, data);
             addNewRemindersIfNeeded(data, quest);
             remindersRef.updateChildren(data);
         }
@@ -458,7 +458,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 }
                 addNewReminders(data, quest);
             } else {
-                removeOldReminders(quest, allOldStartTimes.get(i), data);
+                addOldReminders(quest, allOldStartTimes.get(i), data);
                 addNewRemindersIfNeeded(data, quest);
             }
         }
@@ -481,7 +481,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         super.save(quest);
 
         Map<String, Object> data = new HashMap<>();
-        removeOldReminders(quest, oldStartTimes, data);
+        addOldReminders(quest, oldStartTimes, data);
         addNewRemindersIfNeeded(data, quest);
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
         remindersRef.updateChildren(data);
@@ -525,8 +525,45 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener) {
         getPlayerReference().child("reminders").child(String.valueOf(startTime)).setValue(null, (databaseError, databaseReference) -> {
-            listener.onComplete();
+            if (listener != null) {
+                listener.onComplete();
+            }
         });
+    }
+
+    @Override
+    public void delete(Quest quest) {
+        if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
+            Map<String, Object> data = new HashMap<>();
+            List<Long> startTimes = new ArrayList<>();
+            for (Reminder r : quest.getReminders()) {
+                startTimes.add(r.getStart());
+            }
+            addOldReminders(quest, startTimes, data);
+            DatabaseReference remindersRef = getPlayerReference().child("reminders");
+            remindersRef.updateChildren(data);
+        }
+        super.delete(quest);
+    }
+
+    @Override
+    public void delete(List<Quest> quests) {
+        Map<String, Object> data = new HashMap<>();
+        for (Quest quest : quests) {
+            if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
+                List<Long> startTimes = new ArrayList<>();
+                for (Reminder r : quest.getReminders()) {
+                    startTimes.add(r.getStart());
+                }
+                addOldReminders(quest, startTimes, data);
+            }
+        }
+
+        if (!data.isEmpty()) {
+            DatabaseReference remindersRef = getPlayerReference().child("reminders");
+            remindersRef.updateChildren(data);
+        }
+        super.delete(quests);
     }
 
     private void addNewRemindersIfNeeded(Map<String, Object> data, Quest quest) {
@@ -543,7 +580,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
     }
 
-    private void removeOldReminders(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
+    private void addOldReminders(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
         for (long startTime : oldStartTimes) {
             Map<String, Boolean> d = new HashMap<>();
             d.put(quest.getId(), null);
