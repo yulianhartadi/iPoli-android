@@ -159,6 +159,26 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.removeAllListeners();
         listenForWidgetQuestsChange();
         listenForRepeatingQuestChange();
+        listenForReminderChange();
+    }
+
+    private void listenForReminderChange() {
+        questPersistenceService.listenForReminderChange(new OnChangeListener<Void>() {
+            @Override
+            public void onNew(Void data) {
+                scheduleNextReminder();
+            }
+
+            @Override
+            public void onChanged(Void data) {
+                scheduleNextReminder();
+            }
+
+            @Override
+            public void onDeleted() {
+                scheduleNextReminder();
+            }
+        });
     }
 
     @Override
@@ -172,7 +192,7 @@ public class App extends MultiDexApplication {
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         moveIncompleteQuestsToInbox();
         registerServices();
-//        scheduleNextReminder();
+        scheduleNextReminder();
 
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {

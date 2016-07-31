@@ -37,6 +37,7 @@ import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
+import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
@@ -157,5 +158,7 @@ public interface AppComponent {
     void inject(ScheduleDailyChallengeReminderReceiver scheduleDailyChallengeReminderReceiver);
 
     void inject(DailyChallengeReminderReceiver dailyChallengeReminderReceiver);
+
+    void inject(ScheduleNextRemindersReceiver scheduleNextRemindersReceiver);
 }
 

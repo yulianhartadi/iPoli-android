@@ -2,6 +2,7 @@ package io.ipoli.android.quest.persistence;
 
 import android.support.v4.util.Pair;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -226,6 +227,32 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public Quest findByReminderId(String reminderId) {
         return null;
+    }
+
+    @Override
+    public void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener) {
+        Query query = getPlayerReference().child("reminders").orderByKey().startAt(String.valueOf(new Date().getTime())).limitToFirst(1);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    listener.onDataChanged(null);
+                    return;
+                }
+                GenericTypeIndicator<Map<String, Map<String, Boolean>>> indicator = new GenericTypeIndicator<Map<String, Map<String, Boolean>>>() {
+                };
+                Map<String, Map<String, Boolean>> value = dataSnapshot.getValue(indicator);
+                String startTimeKey = value.keySet().iterator().next();
+                ReminderStart reminderStart = new ReminderStart(Long.valueOf(startTimeKey), new ArrayList<>(value.get(startTimeKey).keySet()));
+                listener.onDataChanged(reminderStart);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -458,6 +485,48 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         addNewRemindersIfNeeded(data, quest);
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
         remindersRef.updateChildren(data);
+    }
+
+    @Override
+    public void listenForReminderChange(OnChangeListener<Void> onChangeListener) {
+        Query query = getPlayerReference().child("reminders");
+
+        ChildEventListener childListener = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
+                onChangeListener.onNew(null);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
+                onChangeListener.onChanged(null);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                onChangeListener.onDeleted();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        childListeners.put(query, childListener);
+        query.addChildEventListener(childListener);
+    }
+
+    @Override
+    public void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener) {
+        getPlayerReference().child("reminders").child(String.valueOf(startTime)).setValue(null, (databaseError, databaseReference) -> {
+            listener.onComplete();
+        });
     }
 
     private void addNewRemindersIfNeeded(Map<String, Object> data, Quest quest) {

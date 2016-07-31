@@ -14,6 +14,7 @@ import com.squareup.otto.Bus;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -25,10 +26,10 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.reminders.ReminderMinutesParser;
 import io.ipoli.android.reminders.TimeOffsetType;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -46,30 +47,45 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        PendingResult result = goAsync();
         App.getAppComponent(context).inject(this);
-        List<String> reminderIds = intent.getStringArrayListExtra(Constants.REMINDER_IDS_EXTRA_KEY);
-        for (String reminderId : reminderIds) {
-            Quest q = questPersistenceService.findByReminderId(reminderId);
-            if (q == null) {
-                continue;
-            }
-            Reminder reminder = null;
-            if (q.getReminders() == null) {
-                continue;
-            }
-            for (Reminder r : q.getReminders()) {
-                if (r.getId().equals(reminderId)) {
-                    reminder = r;
-                    break;
+        List<String> questIds = intent.getStringArrayListExtra(Constants.QUEST_IDS_EXTRA_KEY);
+        long startTime = intent.getLongExtra(Constants.REMINDER_START_TIME, 0);
+        new Thread() {
+            @Override
+            public void run() {
+                CountDownLatch latch = new CountDownLatch(questIds.size());
+                for (String questId : questIds) {
+                    questPersistenceService.findById(questId, quest -> {
+                        Reminder reminder = null;
+                        for (Reminder r : quest.getReminders()) {
+                            if (r.getStart() == startTime) {
+                                reminder = r;
+                                break;
+                            }
+                        }
+                        if (reminder == null) {
+                            latch.countDown();
+                            return;
+                        }
+                        showNotification(context, quest, reminder);
+                        latch.countDown();
+                    });
+
+
+                }
+                try {
+                    latch.await();
+                    questPersistenceService.deleteRemindersAtTime(startTime, () -> {
+                        context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+                        result.finish();
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    result.finish();
                 }
             }
-
-            if (reminder == null) {
-                continue;
-            }
-            showNotification(context, q, reminder);
-        }
-        context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+        }.start();
     }
 
     private void showNotification(Context context, Quest q, Reminder reminder) {

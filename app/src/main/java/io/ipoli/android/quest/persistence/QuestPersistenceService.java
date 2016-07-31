@@ -52,6 +52,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findByReminderId(String reminderId);
 
+    void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener);
+
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
     void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener);
@@ -74,4 +76,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveWithNewReminders(Quest quest, List<Reminder> newReminders);
 
+    void listenForReminderChange(OnChangeListener<Void> onChangeListener);
+
+    void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener);
 }
