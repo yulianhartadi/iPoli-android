@@ -34,6 +34,8 @@ import rx.Observable;
  */
 public abstract class BaseFirebasePersistenceService<T extends PersistedObject> implements PersistenceService<T> {
 
+    public static String API_VERSION = "v0";
+
     protected final FirebaseDatabase database;
     protected final String playerId;
     protected final Bus eventBus;
@@ -175,7 +177,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
-        return database.getReference("players").child(playerId);
+        return database.getReference(API_VERSION).child("players").child(playerId);
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {

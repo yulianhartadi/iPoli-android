@@ -72,7 +72,7 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
 
     @Override
     protected DatabaseReference getCollectionReference() {
-        return database.getReference(getCollectionName());
+        return database.getReference(API_VERSION).child(getCollectionName());
     }
 
     @Override
