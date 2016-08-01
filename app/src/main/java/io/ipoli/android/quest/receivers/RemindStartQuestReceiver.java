@@ -47,10 +47,14 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        PendingResult result = goAsync();
         App.getAppComponent(context).inject(this);
         List<String> questIds = intent.getStringArrayListExtra(Constants.QUEST_IDS_EXTRA_KEY);
+        if (questIds.isEmpty()) {
+            context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+            return;
+        }
         long startTime = intent.getLongExtra(Constants.REMINDER_START_TIME, 0);
+        PendingResult result = goAsync();
         new Thread() {
             @Override
             public void run() {
