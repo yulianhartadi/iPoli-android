@@ -206,9 +206,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 }
             });
         }
-
     }
-
 
     private void questsForFutureUpdated() {
         List<Quest> quests = new ArrayList<>();
@@ -334,7 +332,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     void updateSchedule(Schedule schedule) {
-        if (calendarContainer.isInEditMode()) {
+        if (calendarContainer == null || calendarContainer.isInEditMode()) {
             return;
         }
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
