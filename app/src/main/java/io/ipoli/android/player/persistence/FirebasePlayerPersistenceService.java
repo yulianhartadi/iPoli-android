@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
@@ -86,7 +87,7 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
 
     @Override
     protected DatabaseReference getCollectionReference() {
-        return database.getReference(API_VERSION).child(getCollectionName());
+        return database.getReference(Constants.API_VERSION).child(getCollectionName());
     }
 
     @Override

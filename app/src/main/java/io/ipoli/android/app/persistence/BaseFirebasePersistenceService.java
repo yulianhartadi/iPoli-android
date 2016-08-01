@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnChangeListener;
@@ -31,8 +32,6 @@ import rx.Observable;
  * on 3/25/16.
  */
 public abstract class BaseFirebasePersistenceService<T extends PersistedObject> implements PersistenceService<T> {
-
-    public static String API_VERSION = "v0";
 
     protected final FirebaseDatabase database;
     protected final Bus eventBus;
@@ -194,7 +193,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
-        return database.getReference(API_VERSION).child("players").child(App.getPlayerId());
+        return database.getReference(Constants.API_VERSION).child("players").child(App.getPlayerId());
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {

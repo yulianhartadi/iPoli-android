@@ -70,6 +70,7 @@ public class SubQuest extends PersistedObject {
         this.completedAtMinute = completedAtMinute;
     }
 
+    @Exclude
     public boolean isCompleted() {
         return getCompletedAtDate() != null;
     }
