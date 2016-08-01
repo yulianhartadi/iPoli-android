@@ -419,7 +419,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             remindersRef.updateChildren(data);
         } else {
             Map<String, Object> data = new HashMap<>();
-            addOldReminders(quest, oldStartTimes, data);
+            addRemindersToDelete(quest, oldStartTimes, data);
             addNewRemindersIfNeeded(data, quest);
             remindersRef.updateChildren(data);
         }
@@ -452,7 +452,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 }
                 addNewReminders(data, quest);
             } else {
-                addOldReminders(quest, allOldStartTimes.get(i), data);
+                addRemindersToDelete(quest, allOldStartTimes.get(i), data);
                 addNewRemindersIfNeeded(data, quest);
             }
         }
@@ -475,7 +475,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         super.save(quest, listener);
 
         Map<String, Object> data = new HashMap<>();
-        addOldReminders(quest, oldStartTimes, data);
+        addRemindersToDelete(quest, oldStartTimes, data);
         addNewRemindersIfNeeded(data, quest);
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
         remindersRef.updateChildren(data);
@@ -533,7 +533,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             for (Reminder r : quest.getReminders()) {
                 startTimes.add(r.getStart());
             }
-            addOldReminders(quest, startTimes, data);
+            addRemindersToDelete(quest, startTimes, data);
             DatabaseReference remindersRef = getPlayerReference().child("reminders");
             remindersRef.updateChildren(data);
         }
@@ -549,7 +549,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 for (Reminder r : quest.getReminders()) {
                     startTimes.add(r.getStart());
                 }
-                addOldReminders(quest, startTimes, data);
+                addRemindersToDelete(quest, startTimes, data);
             }
         }
 
@@ -561,7 +561,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addNewRemindersIfNeeded(Map<String, Object> data, Quest quest) {
-        if (quest.getEndDate() != null || quest.getCompletedAt() == null || quest.getStartMinute() >= 0) {
+        if (quest.getEndDate() != null && quest.getCompletedAt() == null && quest.getStartMinute() >= 0) {
             addNewReminders(data, quest);
         }
     }
@@ -577,7 +577,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
     }
 
-    private void addOldReminders(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
+    private void addRemindersToDelete(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
         for (long startTime : oldStartTimes) {
             Map<String, Boolean> d = new HashMap<>();
             d.put(quest.getId(), null);

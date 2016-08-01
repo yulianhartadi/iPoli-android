@@ -318,19 +318,20 @@ public class App extends MultiDexApplication {
             quest.setEndDate(null);
             quest.setStartDate(null);
         }
-        questPersistenceService.save(quest);
-        playerPersistenceService.find(player -> {
-            player.removeExperience(quest.getExperience());
-            if (shouldDecreaseLevel(player)) {
-                player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
-                while (shouldDecreaseLevel(player)) {
+        questPersistenceService.save(quest, () -> {
+            playerPersistenceService.find(player -> {
+                player.removeExperience(quest.getExperience());
+                if (shouldDecreaseLevel(player)) {
                     player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                    while (shouldDecreaseLevel(player)) {
+                        player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                    }
+                    eventBus.post(new LevelDownEvent(player.getLevel()));
                 }
-                eventBus.post(new LevelDownEvent(player.getLevel()));
-            }
-            player.removeCoins(quest.getCoins());
-            playerPersistenceService.save(player);
-            eventBus.post(new UndoCompletedQuestEvent(quest));
+                player.removeCoins(quest.getCoins());
+                playerPersistenceService.save(player);
+                eventBus.post(new UndoCompletedQuestEvent(quest));
+            });
         });
     }
 
