@@ -149,6 +149,11 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
 
     @Override
     public void onDataChanged(List<RepeatingQuest> quests) {
+        if (quests.isEmpty()) {
+            RepeatingQuestListAdapter rewardListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
+            questList.setAdapter(rewardListAdapter);
+            return;
+        }
         List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
             createViewModel(rq, vm -> {
