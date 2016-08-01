@@ -40,7 +40,9 @@ public class RateDialog extends DialogFragment {
     @Inject
     Bus eventBus;
 
-    private LocalStorage localStorage;
+    @Inject
+    LocalStorage localStorage;
+
     private int appRun;
 
     public enum State {
@@ -72,7 +74,6 @@ public class RateDialog extends DialogFragment {
             state = State.INITIAL;
         }
 
-        localStorage = LocalStorage.of(getContext());
         appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
         eventBus.post(new RateDialogShownEvent(appRun));
     }

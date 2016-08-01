@@ -30,14 +30,12 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -64,8 +62,8 @@ public class QuestActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
-    private String questId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,14 +82,17 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
+        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 
-        initViewPager(viewPager);
+        questPersistenceService.listenById(questId, quest -> {
+            getSupportActionBar().setTitle(quest.getName());
+            setBackgroundColors(Quest.getCategory(quest));
+            eventBus.post(new ScreenShownEvent(EventSource.QUEST));
+        });
+
+        initViewPager(viewPager, questId);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
-
-        eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
     private void initTabIcons() {
@@ -129,7 +130,7 @@ public class QuestActivity extends BaseActivity {
         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
     }
 
-    private void initViewPager(ViewPager viewPager) {
+    private void initViewPager(ViewPager viewPager, String questId) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(TimerFragment.newInstance(questId));
         adapter.addFragment(SubQuestListFragment.newInstance(questId));
@@ -143,7 +144,7 @@ public class QuestActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position != SUB_QUESTS_TAB_POSITION) {
+                if (position != SUB_QUESTS_TAB_POSITION) {
                     eventBus.post(new SaveSubQuestsRequestEvent());
                 }
                 hideKeyboard();
@@ -165,9 +166,6 @@ public class QuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        Quest quest = questPersistenceService.findById(questId);
-        getSupportActionBar().setTitle(quest.getName());
-        setBackgroundColors(quest.getCategory());
     }
 
     @Override
@@ -176,10 +174,10 @@ public class QuestActivity extends BaseActivity {
         super.onPause();
     }
 
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        Quest q = questPersistenceService.findById(questId);
-        setBackgroundColors(q.getCategory());
+    @Override
+    protected void onStop() {
+        questPersistenceService.removeAllListeners();
+        super.onStop();
     }
 
     @Subscribe

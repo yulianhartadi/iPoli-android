@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
@@ -14,6 +15,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,11 +24,21 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 public class PersistentRepeatingQuestScheduler {
 
     private final RepeatingQuestScheduler repeatingQuestScheduler;
+
     private final QuestPersistenceService questPersistenceService;
 
-    public PersistentRepeatingQuestScheduler(RepeatingQuestScheduler repeatingQuestScheduler, QuestPersistenceService questPersistenceService) {
+    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    public PersistentRepeatingQuestScheduler(RepeatingQuestScheduler repeatingQuestScheduler, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         this.repeatingQuestScheduler = repeatingQuestScheduler;
         this.questPersistenceService = questPersistenceService;
+        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+    }
+
+    public void schedule(RepeatingQuest repeatingQuest, Date startDate, int period) {
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        repeatingQuests.add(repeatingQuest);
+        schedule(repeatingQuests, startDate);
     }
 
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
@@ -43,6 +55,7 @@ public class PersistentRepeatingQuestScheduler {
                 scheduleFor4WeeksAhead(rq, currentDate);
             }
         }
+        repeatingQuestPersistenceService.save(repeatingQuests);
     }
 
     private void scheduleFlexibleFor4WeeksAhead(LocalDate currentDate, RepeatingQuest rq) {
@@ -83,14 +96,29 @@ public class PersistentRepeatingQuestScheduler {
     }
 
     private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate, LocalDate startDate) {
-        long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(repeatingQuest, startOfPeriodDate, endOfPeriodDate);
-        if (createdQuestsCount == 0) {
+        Date periodEnd = DateUtils.toStartOfDayUTC(endOfPeriodDate);
+        if (repeatingQuest.shouldBeScheduledForPeriod(periodEnd)) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
-            questPersistenceService.saveSync(questsToCreate);
+            questPersistenceService.save(questsToCreate);
+            repeatingQuest.addScheduledPeriodEndDate(periodEnd);
         }
     }
 
     private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate) {
         saveQuestsInRange(repeatingQuest, startOfPeriodDate, endOfPeriodDate, startOfPeriodDate);
+    }
+
+    public Quest schedulePlaceholderQuest(Quest quest, RepeatingQuest repeatingQuest, LocalDate startDate) {
+        List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
+        questPersistenceService.save(questsToCreate);
+        repeatingQuest.addScheduledPeriodEndDate(DateUtils.toStartOfDayUTC(startDate.dayOfWeek().withMaximumValue()));
+        repeatingQuestPersistenceService.save(repeatingQuest);
+        for (Quest q : questsToCreate) {
+            if (quest.getStartDate().equals(q.getStartDate())) {
+                quest.setId(q.getId());
+                return quest;
+            }
+        }
+        return null;
     }
 }

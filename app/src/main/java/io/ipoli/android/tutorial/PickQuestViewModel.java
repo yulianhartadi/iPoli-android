@@ -2,7 +2,7 @@ package io.ipoli.android.tutorial;
 
 import java.util.Date;
 
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.BaseQuest;
 
 /**
@@ -71,7 +71,7 @@ public class PickQuestViewModel {
     }
 
     public Category getCategory() {
-        return baseQuest.getCategory();
+        return Category.valueOf(baseQuest.getCategory());
     }
 
     public boolean isRepeating() {

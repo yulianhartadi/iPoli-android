@@ -1,7 +1,6 @@
 package io.ipoli.android.challenge.activities;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -33,14 +32,11 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 
@@ -55,9 +51,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    private ChallengePersistenceService challengePersistenceService;
-    private QuestPersistenceService questPersistenceService;
-    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -81,75 +82,74 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         setContentView(R.layout.activity_pick_challenge_quests);
         ButterKnife.bind(this);
         appComponent().inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        challenge = challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY));
+        challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY), challenge -> {
+            this.challenge = challenge;
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            questList.setLayoutManager(layoutManager);
+            questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+            filter("", viewModels -> {
+                adapter = new ChallengePickQuestListAdapter(PickChallengeQuestsActivity.this, eventBus, viewModels, true);
+                questList.setAdapter(adapter);
+            });
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        questList.setLayoutManager(layoutManager);
-        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        adapter = new ChallengePickQuestListAdapter(this, eventBus, filter(""), true);
-        questList.setAdapter(adapter);
-
-        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+            eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+        });
     }
 
-    @NonNull
-    private List<PickQuestViewModel> filter(String query) {
-        List<Quest> quests = questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge);
-        List<PickQuestViewModel> viewModels = new ArrayList<>();
-        for (Quest q : quests) {
-            viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
-        }
-        for (RepeatingQuest rq : repeatingQuests) {
-            viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstart(), true));
-        }
+    private void filter(String query, FilterListener filterListener) {
+        questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge.getId(), quests -> {
+            repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
+                List<PickQuestViewModel> viewModels = new ArrayList<>();
+                for (Quest q : quests) {
+                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+                }
+                for (RepeatingQuest rq : repeatingQuests) {
+                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+                }
 
-        Collections.sort(viewModels, (vm1, vm2) -> {
-            Date d1 = vm1.getStartDate();
-            Date d2 = vm2.getStartDate();
-            if (d1 == null && d2 == null) {
-                return -1;
-            }
+                Collections.sort(viewModels, (vm1, vm2) -> {
+                    Date d1 = vm1.getStartDate();
+                    Date d2 = vm2.getStartDate();
+                    if (d1 == null && d2 == null) {
+                        return -1;
+                    }
 
-            if (d1 == null) {
-                return 1;
-            }
+                    if (d1 == null) {
+                        return 1;
+                    }
 
-            if (d2 == null) {
-                return -1;
-            }
+                    if (d2 == null) {
+                        return -1;
+                    }
 
-            if (d2.after(d1)) {
-                return 1;
-            }
+                    if (d2.after(d1)) {
+                        return 1;
+                    }
 
-            if (d1.after(d2)) {
-                return -1;
-            }
+                    if (d1.after(d2)) {
+                        return -1;
+                    }
 
-            return 0;
+                    return 0;
+                });
+                filterListener.onFilterCompleted(viewModels);
+            });
         });
-        return viewModels;
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         challengePersistenceService.removeAllListeners();
         questPersistenceService.removeAllListeners();
         repeatingQuestPersistenceService.removeAllListeners();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override
@@ -174,16 +174,14 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (StringUtils.isEmpty(newText)) {
-                    adapter.setViewModels(filter(""));
+                    filter("", viewModels -> adapter.setViewModels(viewModels));
                     return true;
                 }
 
                 if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
-
-                adapter.setViewModels(filter(newText.trim()));
-
+                filter(newText.trim(), viewModels -> adapter.setViewModels(viewModels));
                 return true;
             }
         });
@@ -214,21 +212,25 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         for (BaseQuest bq : baseQuests) {
             if (bq instanceof Quest) {
                 Quest q = (Quest) bq;
-                q.setChallenge(challenge);
+                q.setChallengeId(challenge.getId());
                 quests.add(q);
             } else {
                 RepeatingQuest rq = (RepeatingQuest) bq;
-                rq.setChallenge(challenge);
+                rq.setChallengeId(challenge.getId());
                 repeatingQuests.add(rq);
             }
         }
 
         if (!quests.isEmpty()) {
-            questPersistenceService.save(quests).compose(bindToLifecycle()).subscribe();
+            questPersistenceService.save(quests);
         }
         if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.save(repeatingQuests).compose(bindToLifecycle()).subscribe();
+            repeatingQuestPersistenceService.save(repeatingQuests);
         }
         finish();
+    }
+
+    public interface FilterListener {
+        void onFilterCompleted(List<PickQuestViewModel> viewModels);
     }
 }

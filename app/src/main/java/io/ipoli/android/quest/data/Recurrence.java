@@ -1,24 +1,19 @@
 package io.ipoli.android.quest.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/8/16.
  */
-public class Recurrence extends RealmObject {
+public class Recurrence extends PersistedObject {
 
     public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
-
-    @Required
-    @PrimaryKey
-    private String id;
 
     private int timesADay;
     private int flexibleCount;
@@ -29,23 +24,18 @@ public class Recurrence extends RealmObject {
 
     private String exrule;
     private String exdate;
-    private Date dtstart;
-    private Date dtend;
+    private Long dtstart;
+    private Long dtend;
     private String type;
-    @Required
-    private Date createdAt;
-    @Required
-    private Date updatedAt;
 
     public Recurrence() {
 
     }
 
     public Recurrence(int timesADay) {
-        id = IDGenerator.generate();
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
-        setType(RecurrenceType.DAILY);
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
+        setRecurrenceType(RecurrenceType.DAILY);
         this.timesADay = timesADay;
         this.flexibleCount = 0;
     }
@@ -58,8 +48,13 @@ public class Recurrence extends RealmObject {
         return new Recurrence(1);
     }
 
-    public void setType(RecurrenceType type) {
+    @Exclude
+    public void setRecurrenceType(RecurrenceType type) {
         this.type = type.name();
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getType() {
@@ -102,44 +97,68 @@ public class Recurrence extends RealmObject {
         this.exdate = exdate;
     }
 
-    public Date getDtstart() {
+    @Exclude
+    public Date getDtstartDate() {
+        return dtstart != null ? new Date(dtstart) : null;
+    }
+
+    @Exclude
+    public void setDtstartDate(Date dtstartDate) {
+        dtstart = dtstartDate != null ? dtstartDate.getTime() : null;
+    }
+
+    public Long getDtstart() {
         return dtstart;
     }
 
-    public void setDtstart(Date dtstart) {
+    public void setDtstart(Long dtstart) {
         this.dtstart = dtstart;
     }
 
-    public Date getDtend() {
+    @Exclude
+    public Date getDtendDate() {
+        return dtend != null ? new Date(dtend) : null;
+    }
+
+    @Exclude
+    public void setDtendDate(Date dtendDate) {
+        dtend = dtendDate != null ? dtendDate.getTime() : null;
+    }
+
+    public Long getDtend() {
         return dtend;
     }
 
-    public void setDtend(Date dtend) {
+    public void setDtend(Long dtend) {
         this.dtend = dtend;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    @Override
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    @Override
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public Long getUpdatedAt() {
+        return updatedAt;
     }
 
     public int getFlexibleCount() {
@@ -149,11 +168,13 @@ public class Recurrence extends RealmObject {
     public void setFlexibleCount(int flexibleCount) {
         this.flexibleCount = flexibleCount;
     }
-    
+
+    @Exclude
     public RecurrenceType getRecurrenceType() {
         return RecurrenceType.valueOf(type);
     }
 
+    @Exclude
     public boolean isFlexible() {
         return flexibleCount > 0;
     }

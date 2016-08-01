@@ -29,7 +29,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         } else {
             this.duration = Math.max(Constants.CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
         }
-        this.backgroundColor = quest.getCategory().color50;
+        this.backgroundColor = Quest.getCategory(quest).color50;
         this.startMinute = quest.getActualStartMinute();
     }
 
@@ -74,7 +74,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @DrawableRes
     public int getContextImage() {
-        return quest.getCategory().colorfulImage;
+        return Quest.getCategory(quest).colorfulImage;
     }
 
     public void setDuration(int duration) {
@@ -88,6 +88,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

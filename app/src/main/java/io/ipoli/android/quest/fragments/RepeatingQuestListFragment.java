@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +18,6 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,14 +39,12 @@ import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.RepeatingQuestViewModel;
 
-public class RepeatingQuestListFragment extends BaseFragment implements OnDatabaseChangedListener<RepeatingQuest> {
+public class RepeatingQuestListFragment extends BaseFragment implements OnDataChangedListener<List<RepeatingQuest>> {
 
     @Inject
     Bus eventBus;
@@ -62,11 +58,12 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
-    private RepeatingQuestListAdapter repeatingQuestListAdapter;
     private Unbinder unbinder;
 
     @Override
@@ -83,12 +80,10 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
-        questList.setAdapter(repeatingQuestListAdapter);
+        RepeatingQuestListAdapter repeatingQuestListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this);
+        questList.setAdapter(repeatingQuestListAdapter);
+        repeatingQuestPersistenceService.listenForAllNonAllDayActiveRepeatingQuests(this);
         return view;
     }
 
@@ -122,8 +117,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
         super.onPause();
     }
 
-    @Nullable
-    private RepeatingQuestViewModel createViewModel(RepeatingQuest rq) {
+    private void createViewModel(RepeatingQuest rq, ViewModelListener listener) {
         try {
             Recurrence recurrence = rq.getRecurrence();
             Recur recur = new Recur(recurrence.getRrule());
@@ -137,12 +131,14 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
                 to = LocalDate.now().dayOfWeek().withMaximumValue();
             }
 
-            int completedCount = (int) questPersistenceService.countCompleted(rq, from, to);
-            int totalCount = (int) questPersistenceService.countAllForRepeatingQuest(rq, from, to);
-            Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(rq);
-            return new RepeatingQuestViewModel(rq, totalCount, completedCount, recur, nextDate);
+            questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount ->
+                    questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount ->
+                            questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
+                                listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate));
+                            })));
+
         } catch (ParseException e) {
-            return null;
+            listener.onViewModelCreated(null);
         }
     }
 
@@ -152,15 +148,23 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
     }
 
     @Override
-    public void onDatabaseChanged(List<RepeatingQuest> quests) {
+    public void onDataChanged(List<RepeatingQuest> quests) {
+        if (quests.isEmpty()) {
+            RepeatingQuestListAdapter rewardListAdapter = new RepeatingQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
+            questList.setAdapter(rewardListAdapter);
+            return;
+        }
         List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
-            RepeatingQuestViewModel vm = createViewModel(rq);
-            if (vm != null) {
+            createViewModel(rq, vm -> {
                 viewModels.add(vm);
-            }
+
+                if (viewModels.size() == quests.size()) {
+                    RepeatingQuestListAdapter rewardListAdapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
+                    questList.setAdapter(rewardListAdapter);
+                }
+            });
         }
-        repeatingQuestListAdapter.updateQuests(viewModels);
     }
 
     @Subscribe
@@ -168,5 +172,9 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataba
         Intent i = new Intent(getActivity(), RepeatingQuestActivity.class);
         i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
+    }
+
+    private interface ViewModelListener {
+        void onViewModelCreated(RepeatingQuestViewModel viewModel);
     }
 }

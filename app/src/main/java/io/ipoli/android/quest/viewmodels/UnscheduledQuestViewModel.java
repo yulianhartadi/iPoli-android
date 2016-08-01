@@ -3,7 +3,7 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.text.TextUtils;
 
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -33,7 +33,7 @@ public class UnscheduledQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return quest.getCategory();
+        return Quest.getCategory(quest);
     }
 
     public String getName() {
@@ -61,6 +61,6 @@ public class UnscheduledQuestViewModel {
     }
 
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

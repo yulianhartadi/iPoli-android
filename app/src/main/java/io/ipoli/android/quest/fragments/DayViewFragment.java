@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,7 +33,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.scheduling.SchedulingAPIService;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -57,14 +55,12 @@ import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
-import rx.Observable;
 
 public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
 
@@ -82,15 +78,17 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @BindView(R.id.calendar_container)
     CalendarLayout calendarContainer;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
-    SchedulingAPIService schedulingAPIService;
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
-    RepeatingQuestScheduler repeatingQuestScheduler;
+    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
 
     private int movingQuestPosition;
 
@@ -162,24 +160,23 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             calendarDayView.hideTimeLine();
         }
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-
         if (currentDateIsInThePast()) {
-            questPersistenceService.findAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
+            questPersistenceService.listenForAllNonAllDayCompletedForDate(currentDate, this::questsForPastUpdated);
         } else if (currentDateIsInTheFuture()) {
 
-            repeatingQuestPersistenceService.findNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
-                futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
-                questsForFutureUpdated();
+            repeatingQuestPersistenceService.listenForNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
+                getPlaceholderQuestsFromRepeatingQuests(repeatingQuests, quests -> {
+                    futurePlaceholderQuests = quests;
+                    questsForFutureUpdated();
+                });
             });
 
-            questPersistenceService.findAllNonAllDayIncompleteForDate(currentDate, quests -> {
+            questPersistenceService.listenForAllNonAllDayIncompleteForDate(currentDate, quests -> {
                 futureQuests = quests;
                 questsForFutureUpdated();
             });
         } else {
-            questPersistenceService.findAllNonAllDayForDate(currentDate, this::questsForPresentUpdated);
+            questPersistenceService.listenForAllNonAllDayForDate(currentDate, this::questsForPresentUpdated);
         }
 
         return view;
@@ -189,24 +186,27 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return currentDate.isBefore(new LocalDate());
     }
 
-    @NonNull
-    private List<Quest> getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
+    private void getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests, PlaceholderQuestsListener listener) {
         List<Quest> res = new ArrayList<>();
-        for (RepeatingQuest rq : repeatingQuests) {
-            long createdQuestsCount = questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate);
-            if (createdQuestsCount == 0) {
-                List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
-                        DateUtils.toStartOfDayUTC(currentDate),
-                        DateUtils.toStartOfDayUTC(currentDate));
-                res.addAll(questsToCreate);
-            }
+        for (int i = 0; i < repeatingQuests.size(); i++) {
+            RepeatingQuest rq = repeatingQuests.get(i);
+            boolean isLast = i == repeatingQuests.size() - 1;
+            questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate, createdQuestsCount -> {
+                if (createdQuestsCount == 0) {
+                    List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
+                            DateUtils.toStartOfDayUTC(currentDate),
+                            DateUtils.toStartOfDayUTC(currentDate));
+                    res.addAll(questsToCreate);
+                }
+                if (isLast) {
+                    for (Quest q : res) {
+                        q.setPlaceholder(true);
+                    }
+                    listener.onPlaceholderQuestsCreated(res);
+                }
+            });
         }
-        for (Quest q : res) {
-            q.setPlaceholder(true);
-        }
-        return res;
     }
-
 
     private void questsForFutureUpdated() {
         List<Quest> quests = new ArrayList<>();
@@ -233,7 +233,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             // completed events should be added first since we don't want them to intercept clicks
             // for incomplete events
 
-            if (q.getCompletedAt() != null) {
+            if (q.getCompletedAtDate() != null) {
                 QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                 if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getEndDate()))) {
                     event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
@@ -332,7 +332,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     void updateSchedule(Schedule schedule) {
-        if (calendarContainer.isInEditMode()) {
+        if (calendarContainer == null || calendarContainer.isInEditMode()) {
             return;
         }
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
@@ -398,7 +398,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         q.setStartMinute(qvm.getStartMinute());
-        saveQuest(q).subscribe();
+        saveQuest(q);
     }
 
     @Override
@@ -407,8 +407,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         setUnscheduledQuestsHeight();
     }
 
-    private Observable<Quest> saveQuest(Quest q) {
-        return questPersistenceService.save(q).compose(bindToLifecycle());
+    private void saveQuest(Quest q) {
+        questPersistenceService.save(q);
     }
 
     @Override
@@ -428,17 +428,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         startActivity(i);
     }
 
-    @NonNull
     private Quest savePlaceholderQuest(Quest quest) {
         LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        List<Quest> quests = repeatingQuestScheduler.schedule(quest.getRepeatingQuest(), DateUtils.toStartOfDayUTC(startOfWeek));
-        questPersistenceService.saveSync(quests);
-        for (Quest q : quests) {
-            if (quest.getStartDate().equals(q.getStartDate())) {
-                return q;
-            }
-        }
-        return quest;
+        return persistentRepeatingQuestScheduler.schedulePlaceholderQuest(quest, quest.getRepeatingQuest(), startOfWeek);
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
@@ -470,5 +462,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         public List<QuestCalendarViewModel> getCalendarEvents() {
             return calendarEvents;
         }
+    }
+
+    private interface PlaceholderQuestsListener {
+        void onPlaceholderQuestsCreated(List<Quest> quests);
     }
 }

@@ -32,8 +32,9 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,12 +46,12 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
@@ -98,8 +99,12 @@ public class RepeatingQuestActivity extends BaseActivity {
     TextView streak;
 
     private RepeatingQuest repeatingQuest;
-    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
-    private RealmQuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +124,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
     }
 
     @Override
@@ -149,15 +152,15 @@ public class RepeatingQuestActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        repeatingQuest = repeatingQuestPersistenceService.findById(repeatingQuestId);
-
-        if (repeatingQuest == null) {
-            finish();
-            return;
-        }
-
-        eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
-        displayRepeatingQuest();
+        repeatingQuestPersistenceService.findById(repeatingQuestId, repeatingQuest -> {
+            if (repeatingQuest == null) {
+                finish();
+                return;
+            }
+            this.repeatingQuest = repeatingQuest;
+            eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+            displayRepeatingQuest();
+        });
     }
 
     private Pair<LocalDate, LocalDate> getCurrentInterval() {
@@ -177,7 +180,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
 
-        Category category = repeatingQuest.getCategory();
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
         long completed = findCompletedForCurrentInterval();
         showFrequencyProgress(category, completed);
 
@@ -191,26 +194,23 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        int timeSpent = (int) getTotalTimeSpent();
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), completed -> {
+            questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
+                long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
+                for (Quest completedQuest : completedWithStartTime) {
+                    timeSpent += completedQuest.getActualDuration();
+                }
+                totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
 
-        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+                frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
-        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+                questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest, nextDate -> {
+                    nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
+                });
 
-        streak.setText(String.valueOf(getCurrentStreak()));
-    }
-
-    private long getTotalTimeSpent() {
-        long completed = questPersistenceService.countCompleted(repeatingQuest);
-        List<Quest> completedWithStartTime = questPersistenceService.findAllCompletedWithStartTime(repeatingQuest);
-
-        long totalTime = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
-        for (Quest completedQuest : completedWithStartTime) {
-            totalTime += completedQuest.getActualDuration();
-        }
-        return totalTime;
+                streak.setText(String.valueOf(getCurrentStreak()));
+            });
+        });
     }
 
     private void showFrequencyProgress(Category category, long completed) {
@@ -307,7 +307,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getMonthText(monthPairs.get(0).first));
@@ -331,7 +331,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategory().color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
 
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
@@ -397,7 +397,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
-        Category category = repeatingQuest.getCategory();
+        Category category = RepeatingQuest.getCategory(repeatingQuest);
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
@@ -466,7 +466,10 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompleted(repeatingQuest, start, end);
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
+
+        });
+        return 0;
     }
 
 }

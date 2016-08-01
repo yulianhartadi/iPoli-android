@@ -38,8 +38,6 @@ import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
@@ -62,8 +60,12 @@ public class ChallengeQuestListFragment extends BaseFragment {
 
     private ChallengeQuestListAdapter adapter;
 
-    private QuestPersistenceService questPersistenceService;
-    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
     private List<Quest> quests = new ArrayList<>();
     private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
     private Challenge challenge;
@@ -85,10 +87,7 @@ public class ChallengeQuestListFragment extends BaseFragment {
         adapter = new ChallengeQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(adapter);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
-
-        questPersistenceService.findIncompleteNotRepeatingForChallenge(challenge, results -> {
+        questPersistenceService.findIncompleteNotRepeatingForChallenge(challenge.getId(), results -> {
             quests = results;
             onQuestListUpdated();
         });
@@ -141,12 +140,12 @@ public class ChallengeQuestListFragment extends BaseFragment {
         BaseQuest bq = e.baseQuest;
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
-            q.setChallenge(null);
-            questPersistenceService.save(q).compose(bindToLifecycle()).subscribe();
+            q.setChallengeId(null);
+            questPersistenceService.save(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
-            rq.setChallenge(null);
-            repeatingQuestPersistenceService.save(rq).compose(bindToLifecycle()).subscribe();
+            rq.setChallengeId(null);
+            repeatingQuestPersistenceService.save(rq);
         }
     }
 

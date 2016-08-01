@@ -27,12 +27,11 @@ import io.ipoli.android.app.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.reward.persistence.RealmRewardPersistenceService;
-import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.formatters.PriceFormatter;
+import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.ui.dialogs.PricePickerFragment;
 
 /**
@@ -43,8 +42,6 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     @Inject
     Bus eventBus;
-
-    RewardPersistenceService rewardPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -61,12 +58,14 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     private boolean isEdit = false;
     private Reward reward;
 
+    @Inject
+    RewardPersistenceService rewardPersistenceService;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_reward);
         App.getAppComponent(this).inject(this);
-        rewardPersistenceService = new RealmRewardPersistenceService(getRealm());
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -79,8 +78,10 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             eventBus.post(new ScreenShownEvent(EventSource.EDIT_REWARD));
             setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
-            reward = rewardPersistenceService.findById(rewardId);
-            initUI();
+            rewardPersistenceService.findById(rewardId, reward -> {
+                this.reward = reward;
+                initUI();
+            });
         } else {
             eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
             initUI();
@@ -89,7 +90,6 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     @Override
     protected void onDestroy() {
-        rewardPersistenceService.removeAllListeners();
         super.onDestroy();
     }
 
@@ -129,12 +129,10 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
                 AlertDialog d = new AlertDialog.Builder(this).setTitle(getString(R.string.dialog_delete_reward_title))
                         .setMessage(getString(R.string.dialog_delete_reward_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    reward.markDeleted();
-                    rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(rewardId -> {
-                        Toast.makeText(EditRewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
-                        setResult(Constants.RESULT_REMOVED);
-                        finish();
-                    });
+                    rewardPersistenceService.delete(reward);
+                    Toast.makeText(EditRewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
+                    setResult(Constants.RESULT_REMOVED);
+                    finish();
                 });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
                 });
@@ -168,7 +166,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     private void setDescriptionText(String description) {
         descriptionText.setTag(description);
-        if(StringUtils.isEmpty(description)) {
+        if (StringUtils.isEmpty(description)) {
             descriptionText.setText(R.string.unknown_choice);
             return;
         }
@@ -195,14 +193,13 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
         }
 
         String description = (String) descriptionText.getTag();
-        if(!StringUtils.isEmpty(description)) {
+        if (!StringUtils.isEmpty(description)) {
             reward.setDescription(description);
         }
 
-        rewardPersistenceService.save(reward).compose(bindToLifecycle()).subscribe(reward -> {
-            eventBus.post(new NewRewardSavedEvent(reward));
-            Toast.makeText(this, R.string.reward_saved, Toast.LENGTH_SHORT).show();
-            finish();
-        });
+        rewardPersistenceService.save(reward);
+        eventBus.post(new NewRewardSavedEvent(reward));
+        Toast.makeText(this, R.string.reward_saved, Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

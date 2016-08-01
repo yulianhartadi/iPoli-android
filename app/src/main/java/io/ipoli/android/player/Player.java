@@ -1,64 +1,47 @@
 package io.ipoli.android.player;
 
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
+import com.google.firebase.database.IgnoreExtraProperties;
 
-import io.ipoli.android.app.net.RemoteObject;
+import java.math.BigInteger;
+
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
-public class Player extends RealmObject implements RemoteObject<Player> {
+@IgnoreExtraProperties
+public class Player extends PersistedObject {
 
-    @Required
-    @PrimaryKey
-    private String id;
+    private String uid;
     private String experience;
     private Integer level;
     private Long coins;
     private String avatar;
     private String timezone;
-    private RealmList<AuthProvider> authProviders;
-
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
-    private boolean needsSyncWithRemote;
-    private String remoteId;
-    private boolean isDeleted;
 
     public Player() {
     }
 
-    public Player(String experience, int level, String avatar) {
-        this.id = IDGenerator.generate();
+    public Player(String uid, String experience, int level, long coins, String avatar) {
+        this.uid = uid;
         this.experience = experience;
         this.level = level;
+        this.coins = coins;
         this.avatar = avatar;
-        this.authProviders = new RealmList<>();
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
-        this.needsSyncWithRemote = true;
-        this.isDeleted = false;
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    public String getId() {
-        return id;
-    }
-
+    @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     public String getExperience() {
@@ -85,25 +68,19 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.avatar = avatar;
     }
 
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
@@ -121,25 +98,6 @@ public class Player extends RealmObject implements RemoteObject<Player> {
 
     public void setCoins(Long coins) {
         this.coins = coins;
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
-    public List<AuthProvider> getAuthProviders() {
-        return authProviders;
     }
 
     public void addExperience(long experience) {
@@ -162,24 +120,11 @@ public class Player extends RealmObject implements RemoteObject<Player> {
         this.coins = Math.max(0, this.coins - coins);
     }
 
-    @Override
-    public String getRemoteId() {
-        return remoteId;
+    public String getUid() {
+        return uid;
     }
 
-    @Override
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    @Override
-    public void markDeleted() {
-        isDeleted = true;
-        markUpdated();
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

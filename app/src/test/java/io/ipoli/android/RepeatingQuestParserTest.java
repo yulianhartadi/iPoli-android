@@ -123,7 +123,7 @@ public class RepeatingQuestParserTest {
 
     private void assertStartDate(RepeatingQuest rq, Calendar expected) {
         Calendar dueC = Calendar.getInstance();
-        dueC.setTime(rq.getRecurrence().getDtstart());
+        dueC.setTime(rq.getRecurrence().getDtstartDate());
         assertTrue(expected.get(Calendar.DAY_OF_YEAR) == dueC.get(Calendar.DAY_OF_YEAR));
     }
 }

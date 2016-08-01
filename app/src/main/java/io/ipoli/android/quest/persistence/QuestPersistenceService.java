@@ -6,11 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -18,75 +16,65 @@ import io.ipoli.android.quest.data.SubQuest;
  */
 public interface QuestPersistenceService extends PersistenceService<Quest> {
 
-    void findAllUnplanned(OnDatabaseChangedListener<Quest> listener);
+    void listenForUnplanned(OnDataChangedListener<List<Quest>> listener);
 
-    void findPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDatabaseChangedListener<Quest> listener);
+    void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate);
+    void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllPlannedAndStartedToday();
+    void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllIncompleteToDosBefore(LocalDate localDate);
+    void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllCompletedWithStartTime(RepeatingQuest repeatingQuest);
+    void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
-    long countCompleted(RepeatingQuest repeatingQuest, LocalDate fromDate, LocalDate toDate);
+    void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener);
 
-    long countCompleted(RepeatingQuest repeatingQuest);
+    void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener);
 
-    void findAllNonAllDayForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayCompletedForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDatabaseChangedListener<Quest> listener);
+    void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllForRepeatingQuest(RepeatingQuest repeatingQuest);
+    void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
-    long countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate);
+    void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener);
 
-    List<Quest> findAllNonAllDayIncompleteForDateSync(LocalDate currentDate);
+    void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<Quest> listener);
 
-    Quest findByExternalSourceMappingId(String source, String sourceId);
+    void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllUpcomingForRepeatingQuest(LocalDate startDate, RepeatingQuest repeatingQuest);
+    void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
-    long countAllCompletedWithPriorityForDate(int priority, LocalDate date);
+    void findAllForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    List<Quest> findAllForChallenge(Challenge challenge);
+    void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener);
 
-    Quest findByReminderId(String reminderId);
+    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDatabaseChangedListener<Quest> listener);
+    void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener);
 
-    void setReminders(Quest quest, List<Reminder> reminders);
+    void findNextUncompletedQuestEndDate(String challengeId, OnDataChangedListener<Date> listener);
 
-    void saveReminders(Quest quest, List<Reminder> reminders);
+    void findIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void saveReminders(Quest quest, List<Reminder> reminders, boolean markUpdated);
+    void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void setSubQuests(Quest quest, List<SubQuest> subQuests);
+    void findAllCompleted(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    void saveSubQuests(Quest quest, List<SubQuest> subQuests);
+    void countCompletedByWeek(String challengeId, int weeks, OnDataChangedListener<List<Long>> listener);
 
-    void saveSubQuests(Quest quest, List<SubQuest> subQuests, boolean markUpdated);
+    void countCompletedForChallenge(String challengeId, OnDataChangedListener<Long> listener);
 
-    Date findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest);
+    void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener);
 
-    Date findNextUncompletedQuestEndDate(Challenge challenge);
+    void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener);
 
-    void findById(String questId, OnSingleDatabaseObjectChangedListener<Quest> listener);
+    void saveWithNewReminders(Quest quest, List<Reminder> newReminders, OnOperationCompletedListener listener);
 
-    void findIncompleteNotRepeatingForChallenge(Challenge challenge, OnDatabaseChangedListener<Quest> listener);
+    void listenForReminderChange(OnChangeListener<Void> onChangeListener);
 
-    List<Quest> findIncompleteNotRepeatingNotForChallenge(String query, Challenge challenge);
-
-    List<Quest> findAllCompleted(Challenge challenge);
-
-    long countCompleted(Challenge challenge, LocalDate start, LocalDate end);
-
-    long countCompleted(Challenge challenge);
-
-    long countNotRepeating(Challenge challenge);
-
-    long countNotDeleted(Challenge challenge);
+    void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener);
 }

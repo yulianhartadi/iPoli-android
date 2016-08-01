@@ -47,13 +47,12 @@ import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
 import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
@@ -97,6 +96,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     List<TextView> reasonTextViews;
 
     private EditMode editMode;
+
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,23 +153,25 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         editMode = EditMode.EDIT;
         toolbarTitle.setText(R.string.title_edit_challenge);
 
-        Challenge challenge = findChallenge();
+        String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+        challengePersistenceService.findById(challengeId, challenge -> {
 
-        nameText.setText(challenge.getName());
-        nameText.setSelection(challenge.getName().length());
-        categoryView.changeCategory(challenge.getCategory());
-        populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
-                challenge.getExpectedResult1(),
-                challenge.getExpectedResult2(),
-                challenge.getExpectedResult3()
-        })));
-        populateReasons(new ArrayList<>(Arrays.asList(new String[]{
-                challenge.getReason1(),
-                challenge.getReason2(),
-                challenge.getReason3()
-        })));
-        populateEndDate(challenge.getEndDate());
-        populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
+            nameText.setText(challenge.getName());
+            nameText.setSelection(challenge.getName().length());
+            categoryView.changeCategory(Challenge.getCategory(challenge));
+            populateExpectedResults(new ArrayList<>(Arrays.asList(new String[]{
+                    challenge.getExpectedResult1(),
+                    challenge.getExpectedResult2(),
+                    challenge.getExpectedResult3()
+            })));
+            populateReasons(new ArrayList<>(Arrays.asList(new String[]{
+                    challenge.getReason1(),
+                    challenge.getReason2(),
+                    challenge.getReason3()
+            })));
+            populateEndDate(challenge.getEndDate());
+            populateDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
+        });
     }
 
     @Override
@@ -193,17 +197,19 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                         .setTitle(getString(R.string.dialog_delete_challenge_title))
                         .setMessage(getString(R.string.dialog_delete_challenge_message))
                         .create();
-                Challenge challenge = findChallenge();
-                d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                    eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));
-                    Toast.makeText(this, R.string.challenge_deleted, Toast.LENGTH_SHORT).show();
-                    setResult(Constants.RESULT_REMOVED);
-                    finish();
+                String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+                challengePersistenceService.findById(challengeId, challenge -> {
+                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
+                        eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));
+                        Toast.makeText(this, R.string.challenge_deleted, Toast.LENGTH_SHORT).show();
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
+                        eventBus.post(new CancelDeleteChallengeEvent(challenge, EventSource.EDIT_CHALLENGE));
+                    });
+                    d.show();
                 });
-                d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                    eventBus.post(new CancelDeleteChallengeEvent(challenge, EventSource.EDIT_CHALLENGE));
-                });
-                d.show();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
@@ -247,20 +253,17 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void updateChallenge(EventSource source) {
-        Challenge challenge = findChallenge();
-        challenge.setName(nameText.getText().toString().trim());
-        populateChallengeFromForm(challenge);
-        eventBus.post(new UpdateChallengeEvent(challenge, source));
-    }
-
-    private Challenge findChallenge() {
         String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        ChallengePersistenceService challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
-        return challengePersistenceService.findById(challengeId);
+        challengePersistenceService.findById(challengeId, challenge -> {
+            challenge.setName(nameText.getText().toString().trim());
+            populateChallengeFromForm(challenge);
+            eventBus.post(new UpdateChallengeEvent(challenge, source));
+        });
+
     }
 
     private void populateChallengeFromForm(Challenge challenge) {
-        challenge.setCategory(categoryView.getSelectedCategory());
+        challenge.setCategory(categoryView.getSelectedCategory().name());
 
         challenge.setExpectedResult1((String) expectedResultTextViews.get(0).getTag());
         challenge.setExpectedResult2((String) expectedResultTextViews.get(1).getTag());

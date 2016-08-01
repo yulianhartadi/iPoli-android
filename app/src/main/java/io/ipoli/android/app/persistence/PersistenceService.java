@@ -2,43 +2,37 @@ package io.ipoli.android.app.persistence;
 
 import java.util.List;
 
-import io.ipoli.android.app.net.RemoteObject;
-import io.realm.RealmObject;
-import rx.Observable;
+import io.ipoli.android.quest.persistence.OnChangeListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/30/16.
  */
-public interface PersistenceService<T extends RealmObject & RemoteObject> {
+public interface PersistenceService<T extends PersistedObject> {
 
-    Observable<T> save(T obj);
+    void save(T obj);
 
-    Observable<List<T>> save(List<T> objects);
+    void save(T obj, OnOperationCompletedListener listener);
 
-    void saveSync(T obj);
+    void save(List<T> objects);
 
-    void saveSync(T obj, boolean markUpdated);
+    void save(List<T> objects, OnOperationCompletedListener listener);
 
-    void saveSync(List<T> objects);
+    void findById(String id, OnDataChangedListener<T> listener);
 
-    void saveSync(List<T> objects, boolean markUpdated);
+    void listenById(String id, OnDataChangedListener<T> listener);
 
-    Observable<T> saveRemoteObject(T object);
+    void delete(T object);
 
-    Observable<List<T>> saveRemoteObjects(List<T> objects);
+    void delete(T object, OnOperationCompletedListener listener);
 
-    List<T> findAllWhoNeedSyncWithRemote();
+    void delete(List<T> objects);
 
-    T findById(String id);
-
-    T findByRemoteId(String id);
-
-    T findAnyById(String id);
-
-    T findAnyByRemoteId(String id);
-
-    Observable<Void> delete(List<T> objects);
+    void delete(List<T> objects, OnOperationCompletedListener listener);
 
     void removeAllListeners();
+
+    void listenForChange(OnChangeListener<List<T>> listener);
 }

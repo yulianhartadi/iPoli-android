@@ -27,7 +27,7 @@ import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
 /**
@@ -59,7 +59,7 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
         final Challenge challenge = challenges.get(position);
         viewBinderHelper.bind(holder.swipeLayout, challenge.getId());
 
-        Category category = challenge.getCategory();
+        Category category = Challenge.getCategory(challenge);
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, category.color500));
 

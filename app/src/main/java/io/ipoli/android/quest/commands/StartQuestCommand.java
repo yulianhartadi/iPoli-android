@@ -2,14 +2,12 @@ package io.ipoli.android.quest.commands;
 
 import android.content.Context;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -27,27 +25,27 @@ public class StartQuestCommand {
         this.questPersistenceService = questPersistenceService;
     }
 
-    public Observable<Quest> execute() {
-        quest.setActualStart(DateUtils.nowUTC());
-        return questPersistenceService.save(quest).flatMap(q -> {
-            stopOtherRunningQuests(quest);
+    public Quest execute() {
+        quest.setActualStartDate(DateUtils.nowUTC());
+        questPersistenceService.save(quest);
+        stopOtherRunningQuests(quest);
 
-            if (quest.getDuration() > 0) {
-                long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
-                long showDoneAtMillis = quest.getActualStart().getTime() + durationMillis;
-                QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
-            }
-            return Observable.just(q);
-        });
+        if (quest.getDuration() > 0) {
+            long durationMillis = TimeUnit.MINUTES.toMillis(quest.getDuration());
+            long showDoneAtMillis = quest.getActualStartDate().getTime() + durationMillis;
+            QuestNotificationScheduler.scheduleDone(quest.getId(), showDoneAtMillis, context);
+        }
+        return quest;
     }
 
     private void stopOtherRunningQuests(Quest q) {
-        List<Quest> quests = questPersistenceService.findAllPlannedAndStartedToday();
-        for (Quest cq : quests) {
-            if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
-                cq.setActualStart(null);
-                questPersistenceService.save(cq).subscribe();
+        questPersistenceService.findAllPlannedAndStartedToday(quests -> {
+            for (Quest cq : quests) {
+                if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
+                    cq.setActualStartDate(null);
+                    questPersistenceService.save(cq);
+                }
             }
-        }
+        });
     }
 }

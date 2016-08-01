@@ -9,10 +9,11 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
-
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,19 +22,28 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.realm.Realm;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
-    private final List<Quest> quests = new ArrayList<>();
+    private List<Quest> quests = new ArrayList<>();
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    Gson gson;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
@@ -46,11 +56,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        quests.clear();
-        Realm realm = Realm.getDefaultInstance();
-        RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        quests.addAll(questPersistenceService.findAllNonAllDayIncompleteForDateSync(new LocalDate()));
-        realm.close();
+        Type type = new TypeToken<List<Quest>>() {
+        }.getType();
+        quests = gson.fromJson(localStorage.readString(Constants.WIDGET_AGENDA_QUESTS), type);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public RemoteViews getViewAt(int position) {
-        if(position >= getCount()) {
+        if (position >= getCount()) {
             return getLoadingView();
         }
 
@@ -73,7 +81,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         Quest q = quests.get(position);
         rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
         rv.setInt(R.id.widget_agenda_quest_info_container, "setBackgroundColor",
-                ContextCompat.getColor(context, q.getCategory().color500));
+                ContextCompat.getColor(context, Quest.getCategory(q).color500));
 
         Bundle tapQuestBundle = new Bundle();
         tapQuestBundle.putInt(AgendaWidgetProvider.QUEST_ACTION_EXTRA_KEY, AgendaWidgetProvider.QUEST_ACTION_VIEW);

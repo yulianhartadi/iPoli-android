@@ -86,6 +86,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     @Inject
     Bus eventBus;
+    
+    @Inject
+    Gson gson;
 
     @BindView(R.id.recurrence_flexibility)
     Switch flexibleRecurrence;
@@ -147,7 +150,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         Bundle args = getArguments();
         String recurrenceJson = args.getString(RECURRENCE);
         if (!TextUtils.isEmpty(recurrenceJson)) {
-            recurrence = new Gson().fromJson(recurrenceJson, Recurrence.class);
+            recurrence = gson.fromJson(recurrenceJson, Recurrence.class);
         } else {
             recurrence = Recurrence.create();
         }
@@ -250,8 +253,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void initUntilDate() {
-        if (recurrence.getDtend() != null) {
-            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtend(), DateTimeZone.UTC));
+        if (recurrence.getDtendDate() != null) {
+            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtendDate(), DateTimeZone.UTC));
             until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DateFormatter.format(dtend));
             until.setTag(dtend);
         }
@@ -404,7 +407,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
         if (until.getTag() != null) {
             Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));
-            recurrence.setDtend(dtEnd);
+            recurrence.setDtendDate(dtEnd);
         } else {
             recurrence.setDtend(null);
         }
@@ -416,11 +419,11 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         switch (recurrenceType) {
             case WEEKLY:
                 recur.setFrequency(Recur.WEEKLY);
-                recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
                 break;
             case MONTHLY:
                 recur.setFrequency(Recur.MONTHLY);
-                recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
                 break;
         }
 
@@ -445,7 +448,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 recur.getDayList().add(WeekDay.FR);
                 recur.getDayList().add(WeekDay.SA);
                 recur.getDayList().add(WeekDay.SU);
-                recurrence.setType(Recurrence.RecurrenceType.DAILY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
                 recur.setFrequency(Recur.WEEKLY);
                 break;
             case WEEKLY:
@@ -455,12 +458,12 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                     }
                 }
                 recur.setFrequency(Recur.WEEKLY);
-                recurrence.setType(Recurrence.RecurrenceType.WEEKLY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
                 break;
             case MONTHLY:
                 recur.setFrequency(Recur.MONTHLY);
                 recur.getMonthDayList().add(dayOfMonth.getSelectedItemPosition() + 1);
-                recurrence.setType(Recurrence.RecurrenceType.MONTHLY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
                 break;
         }
         recurrence.setRrule(recur.toString());

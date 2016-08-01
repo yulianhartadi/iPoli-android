@@ -18,7 +18,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickTutorialQuestsAdapter;
@@ -94,7 +94,7 @@ public class PickTutorailQuestsFragment extends BaseTutorialPickQuestsFragment<Q
     @NonNull
     private Quest makeQuest(String name, Category category) {
         Quest q = new Quest(name, DateUtils.now());
-        q.setCategory(category);
+        q.setCategory(category.name());
         q.setRawText(name + " today");
         return q;
     }

@@ -6,22 +6,26 @@ import dagger.Component;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.AndroidCalendarPersistenceModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
-import io.ipoli.android.app.modules.RestAPIModule;
+import io.ipoli.android.app.modules.JsonModule;
+import io.ipoli.android.app.modules.LocalStorageModule;
+import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.SchedulerModule;
-import io.ipoli.android.app.net.JsonRequestBodyBuilder;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
-import io.ipoli.android.app.services.AppJobService;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
-import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
+import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
+import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
+import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -34,10 +38,12 @@ import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
+import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
@@ -58,8 +64,11 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
         modules = {
                 AppModule.class,
                 BusModule.class,
+                JsonModule.class,
+                LocalStorageModule.class,
+                PersistenceModule.class,
                 AnalyticsModule.class,
-                RestAPIModule.class,
+                AndroidCalendarPersistenceModule.class,
                 SchedulerModule.class
         }
 )
@@ -81,8 +90,6 @@ public interface AppComponent {
 
     void inject(MainActivity mainActivity);
 
-    void inject(AppJobService appJobService);
-
     void inject(DayViewFragment dayViewFragment);
 
     void inject(OverviewFragment overviewFragment);
@@ -96,8 +103,6 @@ public interface AppComponent {
     void inject(PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment);
 
     void inject(PickTutorailQuestsFragment pickTutorailQuestsFragment);
-
-    void inject(JsonRequestBodyBuilder jsonRequestBodyBuilder);
 
     void inject(CalendarFragment calendarFragment);
 
@@ -148,5 +153,15 @@ public interface AppComponent {
     void inject(ChallengeQuestListFragment challengeQuestListFragment);
 
     void inject(PickChallengeQuestsActivity pickChallengeQuestsActivity);
+
+    void inject(EditReminderFragment editReminderFragment);
+
+    void inject(ScheduleDailyChallengeReminderReceiver scheduleDailyChallengeReminderReceiver);
+
+    void inject(DailyChallengeReminderReceiver dailyChallengeReminderReceiver);
+
+    void inject(ScheduleNextRemindersReceiver scheduleNextRemindersReceiver);
+
+    void inject(SignInActivity signInActivity);
 }
 

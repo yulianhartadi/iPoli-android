@@ -74,7 +74,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             }
         });
 
-        questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS)));
+        questHolder.deleteQuest.setOnClickListener(v -> {
+            questHolder.swipeLayout.close(true);
+            eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+        });
 
         questHolder.editQuest.setOnClickListener(v -> {
             questHolder.swipeLayout.close(true);
@@ -128,6 +131,16 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
     public void updateQuests(List<RepeatingQuestViewModel> newViewModels) {
         viewModels = newViewModels;
         notifyDataSetChanged();
+    }
+
+    public void clear() {
+        viewModels.clear();
+        notifyDataSetChanged();
+    }
+
+    public void add(RepeatingQuestViewModel viewModel) {
+        viewModels.add(viewModel);
+        notifyItemInserted(viewModels.size() - 1);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

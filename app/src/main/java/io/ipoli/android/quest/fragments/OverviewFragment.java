@@ -50,12 +50,11 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.persistence.OnDatabaseChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends BaseFragment implements OnDatabaseChangedListener<Quest> {
+public class OverviewFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
     @Inject
     Bus eventBus;
 
@@ -68,6 +67,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private OverviewAdapter overviewAdapter;
@@ -90,8 +90,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
         overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        questPersistenceService.findPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
+        questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
         return view;
     }
 
@@ -158,9 +157,8 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
         }
         final String toastMessage = toast;
         q.setEndDateFromLocal(endDate);
-        questPersistenceService.save(q).compose(bindToLifecycle()).subscribe(quest -> {
-            Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
-        });
+        questPersistenceService.save(q);
+        Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.add_quest)
@@ -174,7 +172,7 @@ public class OverviewFragment extends BaseFragment implements OnDatabaseChangedL
     }
 
     @Override
-    public void onDatabaseChanged(List<Quest> quests) {
+    public void onDataChanged(List<Quest> quests) {
         List<QuestViewModel> viewModels = new ArrayList<>();
         List<Quest> recurrent = new ArrayList<>();
         for (Quest q : quests) {

@@ -37,6 +37,9 @@ public class HelpDialog extends DialogFragment {
     @Inject
     Bus eventBus;
 
+    @Inject
+    LocalStorage localStorage;
+
     private int appRun;
 
     @LayoutRes
@@ -74,7 +77,6 @@ public class HelpDialog extends DialogFragment {
         title = getArguments().getInt(TITLE);
         screen = getArguments().getString(SCREEN);
 
-        LocalStorage localStorage = LocalStorage.of(getContext());
         appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
         eventBus.post(new HelpDialogShownEvent(screen, appRun));
     }

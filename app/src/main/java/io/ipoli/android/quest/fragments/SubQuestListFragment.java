@@ -38,12 +38,11 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
-import io.ipoli.android.quest.persistence.OnSingleDatabaseObjectChangedListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 
-public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnSingleDatabaseObjectChangedListener<Quest> {
+public class SubQuestListFragment extends BaseFragment implements View.OnFocusChangeListener, OnDataChangedListener<Quest> {
 
     private static final String QUEST_ID_KEY = "quest_id";
     @Inject
@@ -60,6 +59,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     private SubQuestListAdapter adapter;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -78,7 +78,6 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subQuestList.setLayoutManager(layoutManager);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         questPersistenceService.findById(questId, this);
 
         adapter = new SubQuestListAdapter(getContext(), eventBus, new ArrayList<>());
@@ -101,7 +100,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             questId = getArguments().getString(QUEST_ID_KEY);
         }
     }
@@ -131,49 +130,49 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
 
     @Override
     public void onPause() {
-        if(getUserVisibleHint()) {
-            saveSubquests();
+        if (getUserVisibleHint()) {
+            saveSubQuests();
         }
         eventBus.unregister(this);
         super.onPause();
     }
 
     @Subscribe
-    public void onSaveSubquestsRequest(SaveSubQuestsRequestEvent e) {
-        saveSubquests();
+    public void onSaveSubQuestsRequest(SaveSubQuestsRequestEvent e) {
+        saveSubQuests();
     }
 
-    private void saveSubquests() {
-        eventBus.post(new UpdateQuestEvent(quest, adapter.getSubQuests(), null, EventSource.SUBQUESTS));
+    private void saveSubQuests() {
+        eventBus.post(new UpdateQuestEvent(quest, adapter.getSubQuests(), quest.getReminders(), EventSource.SUBQUESTS));
     }
 
     @Override
     public void onFocusChange(View view, boolean isFocused) {
-        if(addSubQuest == null) {
+        if (addSubQuest == null) {
             return;
         }
         String text = addSubQuest.getText().toString();
         if (isFocused) {
             showUnderline(addSubQuest);
             if (text.equals(getString(R.string.add_sub_quest))) {
-                setAddSubquestInEditMode();
+                setAddSubQuestInEditMode();
             }
             addSubQuest.requestFocus();
             eventBus.post(new AddSubQuestTappedEvent(EventSource.SUBQUESTS));
         } else {
             hideUnderline(addSubQuest);
             if (StringUtils.isEmpty(text)) {
-                setAddSubquestInViewMode();
+                setAddSubQuestInViewMode();
             }
         }
     }
 
-    private void setAddSubquestInViewMode() {
+    private void setAddSubQuestInViewMode() {
         addSubQuest.setText(getString(R.string.add_sub_quest));
         addSubQuest.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
     }
 
-    private void setAddSubquestInEditMode() {
+    private void setAddSubQuestInEditMode() {
         addSubQuest.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         addSubQuest.setText("");
     }
@@ -190,28 +189,28 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            addSubquest();
+            addSubQuest();
             return true;
         } else {
             return false;
         }
     }
 
-    private void addSubquest() {
+    private void addSubQuest() {
         String name = addSubQuest.getText().toString();
-        if(StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
             return;
         }
 
         SubQuest sq = new SubQuest(name);
-        adapter.addSubquest(sq);
+        adapter.addSubQuest(sq);
         eventBus.post(new NewSubQuestEvent(sq, EventSource.SUBQUESTS));
-        setAddSubquestInEditMode();
+        setAddSubQuestInEditMode();
     }
 
     @Override
-    public void onDatabaseObjectChanged(Quest result) {
-        quest = result;
-        adapter.setSubQuests(result.getSubQuests());
+    public void onDataChanged(Quest quest) {
+        this.quest = quest;
+        adapter.setSubQuests(quest.getSubQuests());
     }
 }

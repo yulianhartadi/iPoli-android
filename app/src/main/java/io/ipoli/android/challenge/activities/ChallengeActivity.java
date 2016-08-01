@@ -34,8 +34,7 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -63,7 +62,9 @@ public class ChallengeActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
     ChallengePersistenceService challengePersistenceService;
+
     private String challengeId;
     private Challenge challenge;
 
@@ -85,11 +86,16 @@ public class ChallengeActivity extends BaseActivity {
         }
 
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
-        initViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
-        initTabIcons();
-
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, getRealm());
+        challengePersistenceService.listenById(challengeId, challenge -> {
+            this.challenge = challenge;
+            initViewPager(viewPager);
+            tabLayout.setupWithViewPager(viewPager);
+            initTabIcons();
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(challenge.getName());
+            }
+            setBackgroundColors(Challenge.getCategory(challenge));
+        });
     }
 
     private void initTabIcons() {
@@ -168,11 +174,6 @@ public class ChallengeActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        challenge = challengePersistenceService.findById(challengeId);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(challenge.getName());
-        }
-        setBackgroundColors(challenge.getCategory());
     }
 
     @Override

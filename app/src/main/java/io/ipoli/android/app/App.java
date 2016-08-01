@@ -1,8 +1,6 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -10,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +15,8 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -31,29 +30,23 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import io.ipoli.android.APIConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ForceServerSyncRequestEvent;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
-import io.ipoli.android.app.events.ServerSyncRequestEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
-import io.ipoli.android.app.modules.RestAPIModule;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.AppJobService;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
-import io.ipoli.android.app.services.readers.AndroidCalendarQuestListReader;
-import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListReader;
+import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
+import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
@@ -63,7 +56,6 @@ import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.RealmChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
@@ -74,10 +66,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -85,30 +74,23 @@ import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
-import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
+import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmList;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -122,37 +104,82 @@ import rx.schedulers.Schedulers;
  */
 public class App extends MultiDexApplication {
 
-    private static final int SYNC_JOB_ID = 1;
-    private static final int DAILY_SYNC_JOB_ID = 2;
-
     private static AppComponent appComponent;
+
+    private static String playerId;
 
     @Inject
     Bus eventBus;
 
     @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    Gson gson;
+
+    @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
+
+    @Inject
+    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
 
     @Inject
     AnalyticsService analyticsService;
 
-    private QuestPersistenceService questPersistenceService;
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
-    private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    private ChallengePersistenceService challengePersistenceService;
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
 
-    private PlayerPersistenceService playerPersistenceService;
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
+
+    @Inject
+    AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
 
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe();
+            scheduleQuestsFor4WeeksAhead();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             moveIncompleteQuestsToInbox();
-            updateWidgets();
+            listenForChanges();
         }
     };
+
+    private void listenForChanges() {
+        questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
+        listenForWidgetQuestsChange();
+        listenForRepeatingQuestChange();
+        listenForReminderChange();
+    }
+
+    private void listenForReminderChange() {
+        questPersistenceService.listenForReminderChange(new OnChangeListener<Void>() {
+            @Override
+            public void onNew(Void data) {
+                scheduleNextReminder();
+            }
+
+            @Override
+            public void onChanged(Void data) {
+                scheduleNextReminder();
+            }
+
+            @Override
+            public void onDeleted() {
+                scheduleNextReminder();
+            }
+        });
+    }
 
     @Override
     public void onCreate() {
@@ -161,67 +188,57 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
-                .schemaVersion(BuildConfig.VERSION_CODE)
-                .deleteRealmIfMigrationNeeded()
-                .initialData(realm -> {
-                    Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_AVATAR);
-                    player.setCoins(Constants.DEFAULT_PLAYER_COINS);
-                    realm.copyToRealm(player);
-                })
-//                .migration((realm, oldVersion, newVersion) -> {
-//
-//                })
-                .build();
-        Realm.setDefaultConfiguration(config);
-
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         getAppComponent(this).inject(this);
-
-        Realm realm = Realm.getDefaultInstance();
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-        challengePersistenceService = new RealmChallengePersistenceService(eventBus, realm);
-        playerPersistenceService = new RealmPlayerPersistenceService(realm);
-
-        moveIncompleteQuestsToInbox();
         registerServices();
-        scheduleNextReminder();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            return;
+        } else {
+            playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+        }
 
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
+        initAppStart();
+    }
+
+    private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleDailyChallenge();
-            scheduleJob(dailySyncJob());
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             FlurryAgent.onStartSession(this);
             eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             FlurryAgent.onEndSession(this);
         }
-        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe(aVoid -> {
-        }, Throwable::printStackTrace, () -> {
-            if (localStorage.readInt(Constants.KEY_APP_RUN_COUNT) != 0) {
-                eventBus.post(new ForceServerSyncRequestEvent());
-            }
-            localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-        });
-
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+        scheduleQuestsFor4WeeksAhead();
+        moveIncompleteQuestsToInbox();
+        scheduleNextReminder();
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
+        listenForChanges();
+    }
 
-//        if (BuildConfig.DEBUG) {
-//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//                    .detectDiskReads()
-//                    .detectDiskWrites()
-//                    .detectNetwork()   // or .detectAll() for all detectable problems
-//                    .penaltyLog()
-//                    .build());
-//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//                    .detectLeakedSqlLiteObjects()
-//                    .detectLeakedClosableObjects()
-//                    .penaltyLog()
-//                    .penaltyDeath()
-//                    .build());
-//        }
+    private void listenForRepeatingQuestChange() {
+        repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
+            @Override
+            public void onNew(List<RepeatingQuest> data) {
+                Observable.defer(() -> {
+                    for (RepeatingQuest rq : data) {
+                        onRepeatingQuestSaved(rq);
+                    }
+                    return Observable.empty();
+                }).compose(applyAndroidSchedulers()).subscribe();
+            }
 
+            @Override
+            public void onChanged(List<RepeatingQuest> data) {
+
+            }
+
+            @Override
+            public void onDeleted() {
+
+            }
+        });
     }
 
     private void scheduleDailyChallenge() {
@@ -233,32 +250,25 @@ public class App extends MultiDexApplication {
         scheduleDailyChallenge();
     }
 
-    private Observable<Void> scheduleQuestsFor4WeeksAhead() {
-        return Observable.defer(() -> {
-            Realm realm = Realm.getDefaultInstance();
-            RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests();
-            QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
-            realm.close();
-            return Observable.empty();
-        });
+    private void scheduleQuestsFor4WeeksAhead() {
+        repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this::scheduleRepeatingQuests);
     }
 
     private void moveIncompleteQuestsToInbox() {
-        List<Quest> quests = questPersistenceService.findAllIncompleteToDosBefore(new LocalDate());
-        for (Quest q : quests) {
-            if (q.isStarted()) {
-                q.setEndDateFromLocal(new Date());
-                q.setStartMinute(0);
-            } else {
-                q.setEndDate(null);
+        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate(), quests -> {
+            for (Quest q : quests) {
+                if (q.isStarted()) {
+                    q.setEndDateFromLocal(new Date());
+                    q.setStartMinute(0);
+                } else {
+                    q.setEndDate(null);
+                }
+                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                    q.setPriority(null);
+                }
+                questPersistenceService.save(q);
             }
-            if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
-                q.setPriority(null);
-            }
-            questPersistenceService.save(q).subscribe();
-        }
+        });
     }
 
     private void registerServices() {
@@ -268,63 +278,61 @@ public class App extends MultiDexApplication {
 
     public static AppComponent getAppComponent(Context context) {
         if (appComponent == null) {
-            String ipoliApiBaseUrl = BuildConfig.DEBUG ? APIConstants.DEV_IPOLI_ENDPOINT : APIConstants.PROD_IPOLI_ENDPOINT;
-            String schedulingApiBaseUrl = BuildConfig.DEBUG ? APIConstants.DEV_SCHEDULING_ENDPOINT : APIConstants.PROD_SCHEDULING_ENDPOINT;
-
             appComponent = DaggerAppComponent.builder()
                     .appModule(new AppModule(context))
-                    .restAPIModule(new RestAPIModule(ipoliApiBaseUrl, schedulingApiBaseUrl))
                     .build();
         }
         return appComponent;
     }
 
     @Subscribe
+    public void onPlayerCreated(PlayerCreatedEvent e) {
+        playerId = e.playerId;
+        initAppStart();
+    }
+
+    @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor4WeeksAhead().compose(applyAndroidSchedulers()).subscribe(quests -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new SyncCompleteEvent()));
+        scheduleQuestsFor4WeeksAhead();
     }
 
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
         QuestNotificationScheduler.stopAll(q.getId(), this);
-        q.setCompletedAt(new Date());
+        q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        questPersistenceService.save(q).subscribe(quest -> {
-            onQuestComplete(quest, e.source);
-            checkForDailyChallengeCompletion(quest, e.source);
+        questPersistenceService.save(q, () -> {
+            onQuestComplete(q, e.source);
         });
     }
 
     @Subscribe
     public void onUndoCompletedQuestRequest(UndoCompletedQuestRequestEvent e) {
         Quest quest = e.quest;
-        // @TODO remove old logs
-        quest.getLogs().clear();
         quest.setDifficulty(null);
-        quest.setActualStart(null);
-        quest.setCompletedAt(null);
+        quest.setActualStartDate(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedAtMinute(null);
 
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);
             quest.setStartDate(null);
         }
-        questPersistenceService.save(quest).subscribe(q -> {
-            Player player = playerPersistenceService.find();
-            player.removeExperience(q.getExperience());
-            if (shouldDecreaseLevel(player)) {
-                player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
-                while (shouldDecreaseLevel(player)) {
+        questPersistenceService.save(quest, () -> {
+            playerPersistenceService.find(player -> {
+                player.removeExperience(quest.getExperience());
+                if (shouldDecreaseLevel(player)) {
                     player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                    while (shouldDecreaseLevel(player)) {
+                        player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+                    }
+                    eventBus.post(new LevelDownEvent(player.getLevel()));
                 }
-                eventBus.post(new LevelDownEvent(player.getLevel()));
-            }
-            player.removeCoins(q.getCoins());
-            playerPersistenceService.saveSync(player);
-            eventBus.post(new UndoCompletedQuestEvent(q));
+                player.removeCoins(quest.getCoins());
+                playerPersistenceService.save(player);
+                eventBus.post(new UndoCompletedQuestEvent(quest));
+            });
         });
     }
 
@@ -338,8 +346,9 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
-        questPersistenceService.saveReminders(e.quest, e.reminders);
-        questPersistenceService.save(e.quest).subscribe(quest -> {
+        Quest quest = e.quest;
+        quest.setReminders(e.reminders);
+        questPersistenceService.save(quest, () -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);
             }
@@ -348,52 +357,53 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        if(e.reminders != null) {
-            questPersistenceService.saveReminders(e.quest, e.reminders);
-        }
-        if(e.subQuests != null) {
-            questPersistenceService.saveSubQuests(e.quest, e.subQuests);
-        }
-        questPersistenceService.save(e.quest).subscribe(quest -> {
-            if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest, e.source);
+        e.quest.setSubQuests(e.subQuests);
+        questPersistenceService.saveWithNewReminders(e.quest, e.reminders, () -> {
+            if (Quest.isCompleted(e.quest)) {
+                onQuestComplete(e.quest, e.source);
             }
         });
     }
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        List<Quest> questsToRemove = questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), e.repeatingQuest);
-        LocalStorage localStorage = LocalStorage.of(getApplicationContext());
-        Set<String> removedQuests = localStorage.readStringSet(Constants.KEY_REMOVED_QUESTS);
-        for (Quest quest : questsToRemove) {
-            QuestNotificationScheduler.stopAll(quest.getId(), this);
-            if (!TextUtils.isEmpty(quest.getRemoteId())) {
-                removedQuests.add(quest.getRemoteId());
-            }
-        }
-        localStorage.saveStringSet(Constants.KEY_REMOVED_QUESTS, removedQuests);
-        questPersistenceService.delete(questsToRemove).subscribe(ignored -> {
-        }, Throwable::printStackTrace, () -> {
-            repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
-            repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
-        });
+        Observable.defer(() -> {
+            RepeatingQuest rq = e.repeatingQuest;
+            questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
+                for (Quest quest : questsToRemove) {
+                    QuestNotificationScheduler.stopAll(quest.getId(), this);
+                }
+                questPersistenceService.delete(questsToRemove);
+                rq.setReminders(e.reminders);
+
+                long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
+                List<String> periodsToDelete = new ArrayList<>();
+                for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
+                    if (Long.valueOf(periodEnd) >= todayStartOfDay) {
+                        periodsToDelete.add(periodEnd);
+                    }
+                }
+                rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
+                scheduleRepeatingQuest(rq);
+            });
+            return Observable.empty();
+        }).compose(applyAndroidSchedulers()).subscribe();
     }
 
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
-        e.quest.markDeleted();
-        RealmList<Reminder> reminders = e.quest.getReminders();
+        List<Reminder> reminders = e.quest.getReminders();
         if (reminders != null && !reminders.isEmpty()) {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
             for (Reminder reminder : reminders) {
                 notificationManagerCompat.cancel(reminder.getNotificationId());
             }
         }
-        questPersistenceService.save(e.quest).subscribe();
+        questPersistenceService.delete(e.quest);
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
+        checkForDailyChallengeCompletion(quest, source);
         updatePlayer(quest);
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
@@ -402,7 +412,6 @@ public class App extends MultiDexApplication {
         if (quest.getPriority() != Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
             return;
         }
-        LocalStorage localStorage = LocalStorage.of(this);
         Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
         Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
         boolean isCompletedForToday = todayUtc.equals(lastCompleted);
@@ -414,20 +423,21 @@ public class App extends MultiDexApplication {
         if (!challengeDays.contains(currentDayOfWeek)) {
             return;
         }
-        long questCount = questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now());
-        if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
-            return;
-        }
-        localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
+        questPersistenceService.countAllCompletedWithPriorityForDate(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY, LocalDate.now(), questCount -> {
+            if (questCount != Constants.DAILY_CHALLENGE_QUEST_COUNT) {
+                return;
+            }
+            localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
 
-        long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
-        long coins = new CoinsRewardGenerator().generateForDailyChallenge();
-        Challenge dailyChallenge = new Challenge();
-        dailyChallenge.setExperience(xp);
-        dailyChallenge.setCoins(coins);
-        updatePlayer(dailyChallenge);
-        showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
-        eventBus.post(new DailyChallengeCompleteEvent());
+            long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
+            long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+            Challenge dailyChallenge = new Challenge();
+            dailyChallenge.setExperience(xp);
+            dailyChallenge.setCoins(coins);
+            updatePlayer(dailyChallenge);
+            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
+            eventBus.post(new DailyChallengeCompleteEvent());
+        });
     }
 
     private void showChallengeCompleteDialog(String title, long xp, long coins) {
@@ -440,11 +450,12 @@ public class App extends MultiDexApplication {
     }
 
     private void updatePlayer(RewardProvider rewardProvider) {
-        Player player = playerPersistenceService.find();
-        player.addExperience(rewardProvider.getExperience());
-        increasePlayerLevelIfNeeded(player);
-        player.addCoins(rewardProvider.getCoins());
-        playerPersistenceService.saveSync(player);
+        playerPersistenceService.find(player -> {
+            player.addExperience(rewardProvider.getExperience());
+            increasePlayerLevelIfNeeded(player);
+            player.addCoins(rewardProvider.getCoins());
+            playerPersistenceService.save(player);
+        });
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
@@ -463,73 +474,35 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
-        repeatingQuestPersistenceService.saveReminders(e.repeatingQuest, e.reminders);
-        repeatingQuestPersistenceService.save(e.repeatingQuest).subscribe();
+        e.repeatingQuest.setReminders(e.reminders);
+        repeatingQuestPersistenceService.save(e.repeatingQuest);
     }
 
-    @Subscribe
-    public void onRepeatingQuestSaved(RepeatingQuestSavedEvent e) {
-        RepeatingQuest rq = e.repeatingQuest;
-
-        Recurrence recurrence = rq.getRecurrence();
-        if (TextUtils.isEmpty(recurrence.getRrule())) {
-            List<Quest> questsToCreate = new ArrayList<>();
-            for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                questsToCreate.add(repeatingQuestScheduler.createQuestFromRepeating(rq, recurrence.getDtstart()));
-            }
-            questPersistenceService.saveRemoteObjects(questsToCreate).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                onQuestChanged();
-                eventBus.post(new ServerSyncRequestEvent());
-            });
-        } else {
-
-            Observable.defer(() -> {
-                Realm realm = Realm.getDefaultInstance();
-                QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-                scheduleRepeatingQuest(rq, questPersistenceService);
-                realm.close();
-                return Observable.empty();
-            }).compose(applyAndroidSchedulers()).subscribe(quests -> {
-            }, Throwable::printStackTrace, () -> {
-                onQuestChanged();
-                eventBus.post(new ServerSyncRequestEvent());
-            });
-        }
+    public void onRepeatingQuestSaved(RepeatingQuest repeatingQuest) {
+        scheduleRepeatingQuest(repeatingQuest);
     }
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        repeatingQuest.markDeleted();
-        markQuestsDeleted(repeatingQuest).flatMap(ignored ->
-                repeatingQuestPersistenceService.saveRemoteObject(repeatingQuest)).subscribe();
+        deleteQuestsForRepeating(repeatingQuest);
+        repeatingQuestPersistenceService.delete(repeatingQuest);
     }
 
-    private Observable<List<Quest>> markQuestsDeleted(RepeatingQuest repeatingQuest) {
-        List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(repeatingQuest);
-        for (Quest q : quests) {
-            if (!Quest.isCompleted(q)) {
-                q.markDeleted();
-            }
-        }
-        return questPersistenceService.saveRemoteObjects(quests);
+    private void deleteQuestsForRepeating(RepeatingQuest repeatingQuest) {
+        questPersistenceService.findAllNotCompletedForRepeatingQuest(repeatingQuest.getId(), quests -> {
+            questPersistenceService.delete(quests);
+        });
     }
 
-    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest, QuestPersistenceService questPersistenceService) {
+    private void scheduleRepeatingQuest(RepeatingQuest repeatingQuest) {
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         repeatingQuests.add(repeatingQuest);
-        scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
+        scheduleRepeatingQuests(repeatingQuests);
     }
 
-    private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests, QuestPersistenceService questPersistenceService) {
-        new PersistentRepeatingQuestScheduler(repeatingQuestScheduler, questPersistenceService).schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        eventBus.post(new ServerSyncRequestEvent());
-        onQuestChanged();
+    private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
+        persistentRepeatingQuestScheduler.schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     private void scheduleNextReminder() {
@@ -538,30 +511,30 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        e.challenge.markDeleted();
-        challengePersistenceService.save(e.challenge).subscribe();
-        List<Quest> quests = questPersistenceService.findAllForChallenge(e.challenge);
-        List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findAllForChallenge(e.challenge);
+        questPersistenceService.findAllForChallenge(e.challenge.getId(), quests -> {
+            for (Quest quest : quests) {
+                quest.setChallengeId(null);
+            }
 
-        for (Quest quest : quests) {
-            quest.setChallenge(null);
-        }
+            questPersistenceService.save(quests);
 
-        for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            repeatingQuest.setChallenge(null);
-        }
+            repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
+                for (RepeatingQuest repeatingQuest : repeatingQuests) {
+                    repeatingQuest.setChallengeId(null);
+                }
+                repeatingQuestPersistenceService.save(repeatingQuests);
+            });
 
-        questPersistenceService.save(quests).subscribe();
-        repeatingQuestPersistenceService.save(repeatingQuests).subscribe();
+            challengePersistenceService.delete(e.challenge);
+        });
     }
 
     @Subscribe
     public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
         Challenge challenge = e.challenge;
-        challenge.setCompletedAt(new Date());
-        challengePersistenceService.save(challenge).subscribe(quest -> {
-            onChallengeComplete(challenge, e.source);
-        });
+        challenge.setCompletedAtDate(new Date());
+        challengePersistenceService.save(challenge);
+        onChallengeComplete(challenge, e.source);
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
@@ -570,82 +543,24 @@ public class App extends MultiDexApplication {
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
-    private void onQuestChanged() {
-        scheduleNextReminder();
-        updateWidgets();
-    }
-
-    private void updateWidgets() {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                new ComponentName(this, AgendaWidgetProvider.class));
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
-    }
-
-    @Subscribe
-    public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
-        eventBus.post(new ServerSyncRequestEvent());
-        onQuestChanged();
+    private void listenForWidgetQuestsChange() {
+        questPersistenceService.listenForAllNonAllDayIncompleteForDate(new LocalDate(), quests -> {
+            localStorage.saveString(Constants.WIDGET_AGENDA_QUESTS, gson.toJson(quests));
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                    new ComponentName(this, AgendaWidgetProvider.class));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
+        });
     }
 
     @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
-        challengePersistenceService.save(e.challenge).subscribe();
+        challengePersistenceService.save(e.challenge);
     }
 
     @Subscribe
     public void onUpdateChallenge(UpdateChallengeEvent e) {
-        challengePersistenceService.save(e.challenge).subscribe();
-    }
-
-    @Subscribe
-    public void onQuestDeleted(QuestDeletedEvent e) {
-        QuestNotificationScheduler.stopAll(e.id, this);
-        eventBus.post(new ServerSyncRequestEvent());
-        onQuestChanged();
-    }
-
-    @Subscribe
-    public void onSyncRequest(ServerSyncRequestEvent e) {
-        scheduleJob(defaultSyncJob()
-                .build());
-    }
-
-    private void scheduleJob(JobInfo job) {
-        getJobScheduler().schedule(job);
-    }
-
-    private JobScheduler getJobScheduler() {
-        return (JobScheduler)
-                getSystemService(Context.JOB_SCHEDULER_SERVICE);
-    }
-
-    @Subscribe
-    public void onForceSyncRequest(ForceServerSyncRequestEvent e) {
-        scheduleJob(createJobBuilder(SYNC_JOB_ID).setPersisted(true)
-                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL).
-                        setOverrideDeadline(1).build());
-    }
-
-    private JobInfo.Builder defaultSyncJob() {
-        return createJobBuilder(SYNC_JOB_ID).setPersisted(true)
-                .setMinimumLatency(TimeUnit.MINUTES.toMillis(Constants.MINIMUM_DELAY_SYNC_MINUTES))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setBackoffCriteria(JobInfo.DEFAULT_INITIAL_BACKOFF_MILLIS, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
-    }
-
-    private JobInfo dailySyncJob() {
-        return createJobBuilder(DAILY_SYNC_JOB_ID).setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setRequiresDeviceIdle(true)
-                .setPeriodic(TimeUnit.HOURS.toMillis(24)).build();
-    }
-
-    @NonNull
-    private JobInfo.Builder createJobBuilder(int dailySyncJobId) {
-        return new JobInfo.Builder(dailySyncJobId,
-                new ComponentName(getPackageName(),
-                        AppJobService.class.getName()));
+        challengePersistenceService.save(e.challenge);
     }
 
     @Subscribe
@@ -653,16 +568,9 @@ public class App extends MultiDexApplication {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
-            eventBus.post(new ForceServerSyncRequestEvent());
             return;
         }
-
-        syncCalendars().subscribe(o -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new SyncCompleteEvent());
-            eventBus.post(new ForceServerSyncRequestEvent());
-        });
-
+        syncCalendars().subscribe();
     }
 
     @Subscribe
@@ -673,21 +581,13 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        syncCalendars().subscribe(o -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new SyncCompleteEvent()));
+        syncCalendars().subscribe();
     }
 
     private Observable<Object> syncCalendars() {
         return Observable.defer(() -> {
-            Realm realm = Realm.getDefaultInstance();
-            QuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            RepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-            AndroidCalendarQuestListReader questReader = new AndroidCalendarQuestListReader(questPersistenceService, repeatingQuestPersistenceService);
-            AndroidCalendarRepeatingQuestListReader repeatingQuestReader = new AndroidCalendarRepeatingQuestListReader(repeatingQuestPersistenceService);
             CalendarProvider provider = new CalendarProvider(this);
             List<Calendar> calendars = provider.getCalendars().getList();
-            LocalStorage localStorage = LocalStorage.of(this);
             Set<String> calendarIds = new HashSet<>();
             List<Event> repeating = new ArrayList<>();
             List<Event> nonRepeating = new ArrayList<>();
@@ -706,12 +606,8 @@ public class App extends MultiDexApplication {
                 }
             }
             localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-            List<Quest> quests = questReader.read(nonRepeating);
-            questPersistenceService.saveSync(quests);
-            List<RepeatingQuest> repeatingQuests = repeatingQuestReader.read(repeating);
-            repeatingQuestPersistenceService.saveSync(repeatingQuests);
-            scheduleRepeatingQuests(repeatingQuests, questPersistenceService);
-            realm.close();
+            androidCalendarQuestService.save(nonRepeating);
+            androidCalendarRepeatingQuestService.save(repeating);
             return Observable.empty();
         }).compose(applyAndroidSchedulers());
     }
@@ -725,8 +621,7 @@ public class App extends MultiDexApplication {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        onQuestChanged();
+    public static String getPlayerId() {
+        return playerId;
     }
 }

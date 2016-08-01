@@ -1,45 +1,36 @@
 package io.ipoli.android.quest.data;
 
+import com.google.firebase.database.Exclude;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.quest.Category;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
+import io.ipoli.android.reminders.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class Quest extends RealmObject implements RemoteObject<Quest>, RewardProvider, BaseQuest {
+public class Quest extends PersistedObject implements RewardProvider, BaseQuest {
 
     public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
     public static final int DEFAULT_NO_PRIORITY_VALUE = -1;
 
-    @Required
-    @PrimaryKey
-    private String id;
-
     private String rawText;
 
-    @Required
     private String name;
 
     private String category;
@@ -48,37 +39,29 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     private Integer priority;
 
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
     private Integer startMinute;
 
     private String preferredStartTime;
     private Boolean flexibleStartTime;
 
     private Integer duration;
-    private Date startDate;
-    private Date originalStartDate;
 
-    private Date endDate;
+    private Long start;
+    private Long originalStart;
+    private Long end;
+
     private RepeatingQuest repeatingQuest;
 
-    private RealmList<Log> logs;
-
-    private RealmList<Reminder> reminders;
-    private RealmList<SubQuest> subQuests;
-    private RealmList<Tag> tags;
+    private List<Reminder> reminders;
+    private List<SubQuest> subQuests;
     private Integer difficulty;
 
-    private Date completedAt;
+    private Long completedAt;
     private Integer completedAtMinute;
 
-    private Date actualStart;
+    private Long actualStart;
 
-    private Challenge challenge;
+    private String challengeId;
 
     private Long coins;
     private Long experience;
@@ -87,14 +70,10 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     private String source;
 
-    private Boolean needsSyncWithRemote;
-    private String remoteId;
-
     private SourceMapping sourceMapping;
-    private boolean isDeleted;
 
-    @Ignore
-    private boolean isPlaceholder;
+    @Exclude
+    private transient boolean isPlaceholder;
 
     public Quest() {
     }
@@ -104,23 +83,18 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
     public Quest(String name, Date endDate) {
-        this.id = IDGenerator.generate();
         this.name = name;
-        this.reminders = new RealmList<>();
-        this.subQuests = new RealmList<>();
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
-        this.originalStartDate = DateUtils.getDate(endDate);
+        setOriginalStartDate(endDate);
         this.setStartMinute(null);
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
-        this.needsSyncWithRemote = true;
         this.experience = new ExperienceRewardGenerator().generate(this);
         this.coins = new CoinsRewardGenerator().generate(this);
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.isDeleted = false;
     }
 
     public void setDuration(Integer duration) {
@@ -131,23 +105,22 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.duration = (int) Math.min(TimeUnit.HOURS.toMinutes(Constants.MAX_QUEST_DURATION_HOURS), duration);
     }
 
-    public void setLogs(RealmList<Log> logs) {
-        this.logs = logs;
-    }
-
-    public RealmList<Reminder> getReminders() {
+    public List<Reminder> getReminders() {
         return reminders;
     }
 
-    public void setReminders(RealmList<Reminder> reminders) {
+    public void setReminders(List<Reminder> reminders) {
         this.reminders = reminders;
     }
 
-    public RealmList<SubQuest> getSubQuests() {
+    public List<SubQuest> getSubQuests() {
+        if (subQuests == null) {
+            return new ArrayList<>();
+        }
         return subQuests;
     }
 
-    public void setSubQuests(RealmList<SubQuest> subQuests) {
+    public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests = subQuests;
     }
 
@@ -165,16 +138,6 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
 
     public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
-        updateRemindersStartTime();
-    }
-
-    public void updateRemindersStartTime() {
-        if (getReminders() == null) {
-            return;
-        }
-        for (Reminder r : getReminders()) {
-            r.calculateStartTime(this);
-        }
     }
 
     public RepeatingQuest getRepeatingQuest() {
@@ -201,20 +164,68 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.priority = priority;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    @Exclude
     public Date getStartDate() {
-        return startDate;
+        return start != null ? new Date(start) : null;
     }
 
+    @Exclude
+    public void setStartDate(Date startDate) {
+        start = startDate != null ? startDate.getTime() : null;
+    }
+
+    public Long getStart() {
+        return start;
+    }
+
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    @Exclude
     public void setStartDateFromLocal(Date startDate) {
         setStartDate(DateUtils.getDate(startDate));
+    }
+
+    @Exclude
+    public void setOriginalStartDate(Date originalStartDate) {
+        originalStart = originalStartDate != null ? originalStartDate.getTime() : null;
+    }
+
+    @Exclude
+    public Date getOriginalStartDate() {
+        return originalStart != null ? new Date(originalStart) : null;
+    }
+
+    public Long getOriginalStart() {
+        return originalStart;
+    }
+
+    public void setOriginalStart(long originalStart) {
+        this.originalStart = originalStart;
+    }
+
+    @Exclude
+    public Date getEndDate() {
+        return end != null ? new Date(end) : null;
+    }
+
+    @Exclude
+    public void setEndDate(Date endDate) {
+        end = endDate != null ? endDate.getTime() : null;
+    }
+
+    @Exclude
+    public void setEndDateFromLocal(Date endDate) {
+        setEndDate(DateUtils.getDate(endDate));
+    }
+
+    public Long getEnd() {
+        return end;
+    }
+
+    public void setEnd(Long end) {
+        this.end = end;
     }
 
     public static Time getStartTime(Quest quest) {
@@ -228,7 +239,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.difficulty = difficulty;
     }
 
-    public int getDifficulty() {
+    public Integer getDifficulty() {
         return difficulty;
     }
 
@@ -240,36 +251,40 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.name = name;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDateFromLocal(Date endDate) {
-        setEndDate(DateUtils.getDate(endDate));
-    }
-
-    public String getId() {
-        return id;
-    }
-
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
-    public Category getCategory() {
-        return Category.valueOf(category);
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public void setCategory(Category category) {
-        this.category = category.name();
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public static Date getStartDateTime(Quest quest) {
@@ -280,11 +295,21 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         return new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
     }
 
-    public Date getActualStart() {
+    @Exclude
+    public Date getActualStartDate() {
+        return actualStart != null ? new Date(actualStart) : null;
+    }
+
+    @Exclude
+    public void setActualStartDate(Date actualStartDate) {
+        actualStart = actualStartDate != null ? actualStartDate.getTime() : null;
+    }
+
+    public Long getActualStart() {
         return actualStart;
     }
 
-    public void setActualStart(Date actualStart) {
+    public void setActualStart(Long actualStart) {
         this.actualStart = actualStart;
     }
 
@@ -296,20 +321,30 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.completedAtMinute = completedAtMinute;
     }
 
-    public Date getCompletedAt() {
+    @Exclude
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    public Long getCompletedAt() {
         return completedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
+    public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
     }
 
     public static boolean isStarted(Quest quest) {
-        return quest.getActualStart() != null && quest.getCompletedAt() == null;
+        return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
     public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAt() != null;
+        return quest.getCompletedAtDate() != null;
     }
 
     public static void setStartTime(Quest quest, Time time) {
@@ -320,32 +355,23 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         }
     }
 
+    @Exclude
     public boolean isScheduledForToday() {
         return isScheduledFor(new LocalDate());
     }
 
+    @Exclude
     public boolean isScheduledFor(LocalDate date) {
         return date.isEqual(new LocalDate(getEndDate(), DateTimeZone.UTC));
     }
 
+    @Exclude
     public boolean isScheduledForThePast() {
         return getEndDate() != null && getEndDate().before(DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
     public int getStartMinute() {
         return startMinute != null ? startMinute : -1;
-    }
-
-    public List<Log> getLogs() {
-        return logs;
-    }
-
-    public RealmList<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(RealmList<Tag> tags) {
-        this.tags = tags;
     }
 
     public String getSource() {
@@ -356,37 +382,19 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.source = source;
     }
 
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
+    @Exclude
     public boolean isStarted() {
         return actualStart != null && completedAt == null;
     }
 
+    @Exclude
     public boolean isScheduledForTomorrow() {
         return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getEndDate(), DateTimeZone.UTC)));
     }
 
+    @Exclude
     public boolean isIndicator() {
-        boolean isCompleted = getCompletedAt() != null;
+        boolean isCompleted = getCompletedAtDate() != null;
         return isCompleted && repeatPerDayWithShortOrNoDuration();
     }
 
@@ -397,6 +405,7 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
     }
 
 
+    @Exclude
     public boolean isRepeatingQuest() {
         return getRepeatingQuest() != null;
     }
@@ -425,57 +434,20 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.experience = experience;
     }
 
-    @Override
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void markDeleted() {
-        if (getReminders() != null) {
-            for (Reminder r : getReminders()) {
-                r.markDeleted();
-            }
-        }
-        if (getSubQuests() != null) {
-            for (SubQuest sq : getSubQuests()) {
-                sq.markDeleted();
-            }
-        }
-        isDeleted = true;
-        markUpdated();
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
-    }
-
-    public void setFlexibleStartTime(boolean flexibleStartTime) {
+    public void setFlexibleStartTime(Boolean flexibleStartTime) {
         this.flexibleStartTime = flexibleStartTime;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public Boolean getFlexibleStartTime() {
+        return flexibleStartTime;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-        updateRemindersStartTime();
-    }
-
-    public void setOriginalStartDate(Date originalStartDate) {
-        this.originalStartDate = originalStartDate;
-    }
-
+    @Exclude
     public boolean isPlaceholder() {
         return isPlaceholder;
     }
 
+    @Exclude
     public void setPlaceholder(boolean placeholder) {
         isPlaceholder = placeholder;
     }
@@ -488,25 +460,31 @@ public class Quest extends RealmObject implements RemoteObject<Quest>, RewardPro
         this.note = note;
     }
 
-    public Challenge getChallenge() {
-        return challenge;
+    public String getChallengeId() {
+        return challengeId;
     }
 
-    public void setChallenge(Challenge challenge) {
-        this.challenge = challenge;
+    public void setChallengeId(String challengeId) {
+        this.challengeId = challengeId;
     }
 
+    @Exclude
     public int getActualDuration() {
-        if (Quest.isCompleted(this) && getActualStart() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt().getTime() - getActualStart().getTime());
+        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAtDate().getTime() - getActualStartDate().getTime());
         }
         return getDuration();
     }
 
+    @Exclude
     public int getActualStartMinute() {
-        if (Quest.isCompleted(this) && getActualStart() != null) {
+        if (Quest.isCompleted(this) && getActualStartDate() != null) {
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
+    }
+
+    public static Category getCategory(Quest quest) {
+        return Category.valueOf(quest.getCategory());
     }
 }

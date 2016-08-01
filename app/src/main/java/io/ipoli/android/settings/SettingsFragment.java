@@ -48,6 +48,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @Inject
     Bus eventBus;
 
+    @Inject
+    LocalStorage localStorage;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -65,8 +68,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     private Unbinder unbinder;
 
-    private LocalStorage localStorage;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,7 +78,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
 
-        localStorage = LocalStorage.of(getContext());
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);

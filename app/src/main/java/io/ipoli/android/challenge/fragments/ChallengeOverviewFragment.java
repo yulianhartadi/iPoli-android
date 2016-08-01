@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
@@ -52,14 +51,13 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.RepeatingQuestSavedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.persistence.events.QuestsSavedEvent;
 import io.ipoli.android.quest.persistence.events.RepeatingQuestsSavedEvent;
@@ -109,8 +107,11 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
     private Challenge challenge;
 
-    private RealmQuestPersistenceService questPersistenceService;
-    private RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Nullable
     @Override
@@ -121,9 +122,6 @@ public class ChallengeOverviewFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
 
         challenge = ((ChallengeActivity) getActivity()).getChallenge();
-
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, getRealm());
 
         displayChallenge();
 
@@ -138,57 +136,68 @@ public class ChallengeOverviewFragment extends BaseFragment {
         setupChart();
     }
 
-    private void showProgress() {
+    private long totalCount = 0;
 
+    private void showProgress() {
+        totalCount = 0;
         Date challengeEnd = challenge.getEndDate();
         LocalDate today = LocalDate.now();
         LocalDate scheduledQuestsEndDate = today.plusWeeks(3).dayOfWeek().withMaximumValue();
 
-        long completed = questPersistenceService.countCompleted(challenge);
-        long totalCount = 0;
-
         if (notAllQuestsAreScheduledForChallenge(challengeEnd, scheduledQuestsEndDate)) {
-            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotDeleted(challenge);
-            Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
+            repeatingQuestPersistenceService.findByChallenge(challenge, repeatingQuests -> {
+                Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
+                for (RepeatingQuest rq : repeatingQuests) {
+                    Recurrence recurrence = rq.getRecurrence();
+                    Date rqStart = recurrence.getDtstartDate();
+                    Date rqEnd = recurrence.getDtendDate();
 
-            totalCount += questPersistenceService.countNotRepeating(challenge);
-            for (RepeatingQuest rq : repeatingQuests) {
-                Recurrence recurrence = rq.getRecurrence();
-                Date rqStart = recurrence.getDtstart();
-                Date rqEnd = recurrence.getDtend();
+                    Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
+                    Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
 
-                Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
-                Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
+                    float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
 
-                float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
-
-                int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
-                totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
-            }
+                    int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
+                    totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
+                }
+                questPersistenceService.countNotRepeating(challenge.getId(), count -> {
+                    totalCount += count;
+                    populateProgress();
+                });
+            });
         } else {
-            totalCount = questPersistenceService.countNotDeleted(challenge);
+            questPersistenceService.countNotDeleted(challenge.getId(), count -> {
+                totalCount = count;
+                populateProgress();
+            });
         }
 
-        progressFraction.setText(completed + " / " + totalCount);
+    }
 
-        int percentDone = Math.round((completed / (float) totalCount) * 100);
+    private void populateProgress() {
+       questPersistenceService.countCompletedForChallenge(challenge.getId(), completed -> {
+           progressFraction.setText(completed + " / " + totalCount);
 
-        progressPercent.setText(String.valueOf(percentDone) + "% done");
+           int percentDone = Math.round((completed / (float) totalCount) * 100);
 
-        int progressColor = R.color.colorAccent;
+           progressPercent.setText(String.valueOf(percentDone) + "% done");
 
-        Category category = challenge.getCategory();
-        if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
-            progressColor = R.color.colorAccentAlternative;
-        }
-        progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(getContext(), progressColor), PorterDuff.Mode.SRC_IN);
-        progress.setProgress(percentDone);
+           int progressColor = R.color.colorAccent;
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
-        int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
-        animation.setDuration(animationTime);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.start();
+           Category category = Challenge.getCategory(challenge);
+           if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
+               progressColor = R.color.colorAccentAlternative;
+           }
+           progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(getContext(), progressColor), PorterDuff.Mode.SRC_IN);
+           progress.setProgress(percentDone);
+
+           ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
+           int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
+           animation.setDuration(animationTime);
+           animation.setInterpolator(new DecelerateInterpolator());
+           animation.start();
+       });
+
     }
 
     private float calculateQuestsPerDayCoefficient(Recurrence recurrence) {
@@ -219,29 +228,28 @@ public class ChallengeOverviewFragment extends BaseFragment {
     }
 
     private void showSummaryStats() {
-        Category category = challenge.getCategory();
+        Category category = Challenge.getCategory(challenge);
 
         summaryStatsContainer.setBackgroundResource(category.color500);
 
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
+        questPersistenceService.findNextUncompletedQuestEndDate(challenge.getId(), nextDate ->
+                nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled))));
 
-        Date nextDate = questPersistenceService.findNextUncompletedQuestEndDate(challenge);
-        nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getContext().getString(R.string.unscheduled)));
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 
-        int timeSpent = (int) getTotalTimeSpent(questPersistenceService);
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        questPersistenceService.findAllCompleted(challenge.getId(), quests -> {
+            int timeSpent = (int) getTotalTimeSpent(quests);
+            totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        });
     }
 
-    private long getTotalTimeSpent(QuestPersistenceService questPersistenceService) {
-
-        List<Quest> completed = questPersistenceService.findAllCompleted(challenge);
-
+    private long getTotalTimeSpent(List<Quest> completedQuests) {
         long totalTime = 0;
-        for (Quest completedQuest : completed) {
+        for (Quest completedQuest : completedQuests) {
             totalTime += completedQuest.getActualDuration();
         }
         return totalTime;
@@ -274,28 +282,25 @@ public class ChallengeOverviewFragment extends BaseFragment {
         xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
+        questPersistenceService.countCompletedByWeek(challenge.getId(), Constants.DEFAULT_BAR_COUNT, counts -> {
+            List<BarEntry> yValues = new ArrayList<>();
+            List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
+            for (int i = 0; i < counts.size(); i++) {
+                yValues.add(new BarEntry(counts.get(i), i));
+            }
 
-        List<BarEntry> yValues = new ArrayList<>();
-        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
-        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
-        }
+            BarDataSet dataSet = new BarDataSet(yValues, "");
+            dataSet.setColors(getColors());
+            dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color100));
 
-        BarDataSet dataSet = new BarDataSet(yValues, "");
-        dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(getContext(), challenge.getCategory().color100));
+            List<String> xValues = new ArrayList<>();
+            xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
+            xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
+            xValues.add("last week");
+            xValues.add("this week");
+            setHistoryData(dataSet, xValues);
+        });
 
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
-        xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
-        xValues.add("last week");
-        xValues.add("this week");
-        setHistoryData(dataSet, xValues);
-    }
-
-    private long getCompletedForRange(LocalDate start, LocalDate end) {
-        return questPersistenceService.countCompleted(challenge, start, end);
     }
 
     private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
@@ -317,24 +322,9 @@ public class ChallengeOverviewFragment extends BaseFragment {
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            colors[i] = ContextCompat.getColor(getContext(), challenge.getCategory().color300);
+            colors[i] = ContextCompat.getColor(getContext(), Challenge.getCategory(challenge).color300);
         }
         return colors;
-    }
-
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
-        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < 3; i++) {
-            weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            weekBounds.add(new Pair<>(weekStart, weekEnd));
-        }
-        return weekBounds;
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {

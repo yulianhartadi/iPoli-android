@@ -30,20 +30,18 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
-import io.realm.Realm;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -53,6 +51,12 @@ public class TutorialActivity extends AppIntro2 {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     private PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment;
     private PickTutorailQuestsFragment pickTutorailQuestsFragment;
@@ -105,10 +109,6 @@ public class TutorialActivity extends AppIntro2 {
         List<RepeatingQuest> selectedRepeatingQuests = pickTutorialRepeatingQuestsFragment.getSelectedQuests();
 
         Observable.defer(() -> {
-            Realm realm = Realm.getDefaultInstance();
-            RealmQuestPersistenceService questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-            RealmRepeatingQuestPersistenceService repeatingQuestPersistenceService = new RealmRepeatingQuestPersistenceService(eventBus, realm);
-
             List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
             for (RepeatingQuest rq : selectedRepeatingQuests) {
                 RepeatingQuest parsedRepeatingQuest = questParser.parseNotUserCreatedRepeatingQuest(rq.getRawText());
@@ -116,15 +116,13 @@ public class TutorialActivity extends AppIntro2 {
                 parsedRepeatingQuests.add(parsedRepeatingQuest);
             }
 
-            questPersistenceService.saveSync(selectedQuests);
-            repeatingQuestPersistenceService.saveSync(parsedRepeatingQuests);
-            realm.close();
+            questPersistenceService.save(selectedQuests);
+            repeatingQuestPersistenceService.save(parsedRepeatingQuests);
             return Observable.empty();
         }).compose(RxLifecycle.bindActivity(lifecycleSubject))
                 .subscribe(ignored -> {
                         }, error -> finish(),
                         () -> {
-                            eventBus.post(new ScheduleRepeatingQuestsEvent());
                             eventBus.post(new TutorialDoneEvent());
                             Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
                             finish();

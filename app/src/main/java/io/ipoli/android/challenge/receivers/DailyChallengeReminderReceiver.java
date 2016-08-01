@@ -14,8 +14,11 @@ import org.joda.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -29,11 +32,12 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SHOW_DAILY_CHALLENGE_REMINDER = "io.ipoli.android.intent.action.SHOW_DAILY_CHALLENGE_REMINDER";
 
+    @Inject
+    LocalStorage localStorage;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        LocalStorage localStorage = LocalStorage.of(context);
-
+        App.getAppComponent(context).inject(this);
         Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
         Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
         boolean isCompletedForToday = todayUtc.equals(lastCompleted);

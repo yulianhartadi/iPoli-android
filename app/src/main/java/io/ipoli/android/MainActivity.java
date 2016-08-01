@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -60,11 +61,11 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.persistence.RealmPlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -76,7 +77,6 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reward.fragments.RewardListFragment;
@@ -112,14 +112,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Inject
     Bus eventBus;
 
+    @Inject
+    LocalStorage localStorage;
+
+    @Inject
     QuestPersistenceService questPersistenceService;
 
+    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     Fragment currentFragment;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +134,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         appComponent().inject(this);
         ButterKnife.bind(this);
 
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
-        playerPersistenceService = new RealmPlayerPersistenceService(getRealm());
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        }
 
-        LocalStorage localStorage = LocalStorage.of(this);
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
@@ -158,10 +166,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         questPersistenceService.removeAllListeners();
         playerPersistenceService.removeAllListeners();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override
@@ -178,26 +186,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (navigationView.getHeaderCount() < 1) {
             return;
         }
-        Player player = playerPersistenceService.find();
-        View header = navigationView.getHeaderView(0);
-        TextView level = (TextView) header.findViewById(R.id.player_level);
-        level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
+        playerPersistenceService.listen(player -> {
+            this.player = player;
+            View header = navigationView.getHeaderView(0);
+            TextView level = (TextView) header.findViewById(R.id.player_level);
+            level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
 
-        TextView coins = (TextView) header.findViewById(R.id.player_coins);
-        coins.setText(String.valueOf(player.getCoins()));
+            TextView coins = (TextView) header.findViewById(R.id.player_coins);
+            coins.setText(String.valueOf(player.getCoins()));
 
-        ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-        experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
-        experienceBar.setProgress(getCurrentProgress(player));
+            ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+            experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+            experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
-        avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-        avatarView.setOnClickListener(v -> {
-            eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
+            CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
+            avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
+            avatarView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
+
+            TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+            currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
         });
-
-        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
-        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
     }
 
     private int getCurrentProgress(Player player) {
@@ -219,9 +227,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (isFromAction(ACTION_QUEST_COMPLETE)) {
             String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
             setIntent(null);
-            Quest quest = questPersistenceService.findById(questId);
-            startCalendar();
-            eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
+            questPersistenceService.findById(questId, quest -> {
+                startCalendar();
+                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
+            });
         } else if (isFromAction(ACTION_ADD_QUEST_FROM_WIDGET)) {
             eventBus.post(new AddQuestRequestEvent(EventSource.WIDGET));
             setIntent(null);
@@ -276,7 +285,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private boolean shouldShowRateDialog() {
-        LocalStorage localStorage = LocalStorage.of(this);
         int appRun = localStorage.readInt(Constants.KEY_APP_RUN_COUNT);
         if (isRateDialogShown || appRun < RateDialogConstants.MIN_APP_RUN_FOR_RATE_DIALOG ||
                 !localStorage.readBool(RateDialogConstants.KEY_SHOULD_SHOW_RATE_DIALOG, true)) {
@@ -484,9 +492,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (!TextUtils.isEmpty(avatar)) {
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, avatar));
-                Player player = playerPersistenceService.find();
                 player.setAvatar(avatar);
-                playerPersistenceService.saveSync(player);
+                playerPersistenceService.save(player);
             }
         }
     }

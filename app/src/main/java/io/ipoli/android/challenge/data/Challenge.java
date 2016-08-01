@@ -1,29 +1,22 @@
 package io.ipoli.android.challenge.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.Date;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class Challenge extends RealmObject implements RemoteObject<Challenge>, RewardProvider {
+public class Challenge extends PersistedObject implements RewardProvider {
 
-    @Required
-    @PrimaryKey
-    private String id;
-
-    @Required
     private String name;
 
     private String category;
@@ -38,84 +31,32 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
 
     private Integer difficulty;
 
-    private Date endDate;
+    private Long end;
 
-    private Date completedAt;
+    private Long completedAt;
 
     private Long coins;
     private Long experience;
 
     private String source;
 
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
-    private Boolean needsSyncWithRemote;
-    private String remoteId;
-    private Boolean isDeleted;
-
     public Challenge() {
     }
 
     public Challenge(String name) {
-        this.id = IDGenerator.generate();
         this.name = name;
         this.category = Category.PERSONAL.name();
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.createdAt = DateUtils.nowUTC();
-        this.updatedAt = DateUtils.nowUTC();
-        this.needsSyncWithRemote = true;
-        this.isDeleted = false;
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getName() {
@@ -200,19 +141,39 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
         this.difficulty = difficulty;
     }
 
+    @Exclude
     public Date getEndDate() {
-        return endDate;
+        return end != null ? new Date(end) : null;
     }
 
+    @Exclude
     public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+        end = endDate != null ? endDate.getTime() : null;
     }
 
-    public Date getCompletedAt() {
+    public Long getEnd() {
+        return end;
+    }
+
+    public void setEnd(Long end) {
+        this.end = end;
+    }
+
+    @Exclude
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    public Long getCompletedAt() {
         return completedAt;
     }
 
-    public void setCompletedAt(Date completedAt) {
+    public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
     }
 
@@ -232,12 +193,16 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
         this.experience = experience;
     }
 
-    public Category getCategory() {
-        return Category.valueOf(category);
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category.name();
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public static Category getCategory(Challenge challenge) {
+        return Category.valueOf(challenge.getCategory());
     }
 
     public String getSource() {
@@ -249,23 +214,22 @@ public class Challenge extends RealmObject implements RemoteObject<Challenge>, R
     }
 
     @Override
-    public String getRemoteId() {
-        return remoteId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
-    public boolean isDeleted() {
-        return isDeleted;
+    public String getId() {
+        return id;
     }
 
     @Override
-    public void markDeleted() {
-        isDeleted = true;
-        markUpdated();
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

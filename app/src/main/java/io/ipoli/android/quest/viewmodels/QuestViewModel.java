@@ -7,7 +7,7 @@ import android.support.annotation.DrawableRes;
 import java.util.Locale;
 
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -49,7 +49,7 @@ public class QuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return quest.getCategory();
+        return Quest.getCategory(quest);
     }
 
     public Quest getQuest() {
@@ -102,6 +102,6 @@ public class QuestViewModel {
     }
 
     public boolean isForChallenge() {
-        return quest.getChallenge() != null;
+        return quest.getChallengeId() != null;
     }
 }

@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -23,13 +23,13 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class RepeatingQuestViewModel {
 
     private final RepeatingQuest repeatingQuest;
-    private final int totalCount;
+    private final long totalCount;
     private final int completedCount;
     private final Recur recur;
     private final java.util.Date nextDate;
     private final int timesADay;
 
-    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, int totalCount, int completedCount, Recur recur, java.util.Date nextDate) {
+    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, long totalCount, int completedCount, Recur recur, java.util.Date nextDate) {
         this.repeatingQuest = repeatingQuest;
         this.totalCount = totalCount;
         this.completedCount = completedCount;
@@ -61,7 +61,7 @@ public class RepeatingQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return repeatingQuest.getCategory();
+        return RepeatingQuest.getCategory(repeatingQuest);
     }
 
     public String getNextText() {
@@ -93,7 +93,7 @@ public class RepeatingQuestViewModel {
         return "Next: " + nextText;
     }
 
-    public int getTotalCount() {
+    public long getTotalCount() {
         return totalCount;
     }
 

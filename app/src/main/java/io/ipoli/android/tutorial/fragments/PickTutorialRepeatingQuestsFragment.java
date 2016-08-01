@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickTutorialRepeatingQuestsAdapter;
@@ -71,7 +71,7 @@ public class PickTutorialRepeatingQuestsFragment extends BaseTutorialPickQuestsF
 
     private void addViewModel(String text, Category category, boolean isSelected) {
         RepeatingQuest rq = new RepeatingQuest(text);
-        rq.setCategory(category);
+        rq.setCategory(category.name());
         viewModels.add(new PickQuestViewModel(rq, text, isSelected, true));
     }
 

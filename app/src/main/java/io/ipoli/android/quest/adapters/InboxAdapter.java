@@ -17,6 +17,7 @@ import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -24,7 +25,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -62,7 +63,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         final Quest q = quests.get(position);
         viewBinderHelper.bind(holder.swipeLayout, q.getId());
 
-        Category category = q.getCategory();
+        Category category = Quest.getCategory(q);
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
         drawable.setColor(ContextCompat.getColor(context, category.color500));
 
@@ -72,7 +73,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(q.getName());
-        holder.createdAt.setText(prettyTime.format(q.getCreatedAt()));
+        holder.createdAt.setText(prettyTime.format(new Date(q.getCreatedAt())));
         holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
             @Override
             public void onOpened(SwipeRevealLayout view) {

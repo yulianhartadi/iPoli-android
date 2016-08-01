@@ -22,14 +22,12 @@ import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
-import io.realm.RealmList;
+import io.ipoli.android.reminders.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -201,8 +199,8 @@ public class RepeatingQuestScheduler {
         } catch (ParseException e) {
             return res;
         }
-        if (recurrence.getDtend() != null) {
-            recur.setUntil(new Date(recurrence.getDtend()));
+        if (recurrence.getDtendDate() != null) {
+            recur.setUntil(new Date(recurrence.getDtendDate()));
         }
 
         if (recur.getFrequency().equals(Recur.YEARLY)) {
@@ -210,15 +208,19 @@ public class RepeatingQuestScheduler {
         }
 
         java.util.Date endDate = getEndDate(recur, startDate);
-        DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(startDate), new Date(recurrence.getDtstartDate()),
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
             for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+                res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
             }
         }
         return res;
+    }
+
+    private java.util.Date toJavaDate(Date date) {
+        return new java.util.Date(date.getTime());
     }
 
     @NonNull
@@ -235,24 +237,23 @@ public class RepeatingQuestScheduler {
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
         quest.setOriginalStartDate(endDate);
-        quest.setId(IDGenerator.generate());
-        quest.setCreatedAt(DateUtils.nowUTC());
-        quest.setUpdatedAt(DateUtils.nowUTC());
+        quest.setCreatedAt(DateUtils.nowUTC().getTime());
+        quest.setUpdatedAt(DateUtils.nowUTC().getTime());
         quest.setFlexibleStartTime(false);
-        quest.setNeedsSync();
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setExperience(new ExperienceRewardGenerator().generate(quest));
         quest.setCoins(new CoinsRewardGenerator().generate(quest));
-        quest.setChallenge(repeatingQuest.getChallenge());
+        quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setRepeatingQuest(repeatingQuest);
-        RealmList<Reminder> questReminders = new RealmList<>();
-        for (Reminder r : repeatingQuest.getReminders()) {
-            Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
-            questReminder.setMessage(r.getMessage());
-            questReminders.add(questReminder);
+        List<Reminder> questReminders = new ArrayList<>();
+        if (repeatingQuest.getReminders() != null) {
+            for (Reminder r : repeatingQuest.getReminders()) {
+                Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
+                questReminder.setMessage(r.getMessage());
+                questReminders.add(questReminder);
+            }
+            quest.setReminders(questReminders);
         }
-        quest.setReminders(questReminders);
-        quest.updateRemindersStartTime();
         return quest;
     }
 
@@ -284,13 +285,13 @@ public class RepeatingQuestScheduler {
         if (recur.getFrequency().equals(Recur.YEARLY)) {
             return res;
         }
-        DateList dates = recur.getDates(new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(recurrence.getDtstartDate()),
                 new Date(from),
                 getPeriodEnd(to), Value.DATE);
 
 
         for (Object obj : dates) {
-            res.add(createQuestFromRepeating(repeatingQuest, (Date) obj));
+            res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
         }
         return res;
     }

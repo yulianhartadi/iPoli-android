@@ -23,9 +23,7 @@ import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -40,25 +38,26 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        PendingResult result = goAsync();
         this.context = context;
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        Realm realm = Realm.getDefaultInstance();
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, realm);
-        Quest q = questPersistenceService.findById(questId);
-        showQuestTimerNotification(q);
-        realm.close();
+        questPersistenceService.findById(questId, q -> {
+            showQuestTimerNotification(q);
+            result.finish();
+        });
     }
 
     private void showQuestTimerNotification(Quest q) {
         int duration = q.getDuration();
 
-        long startTime = q.getActualStart().getTime();
+        long startTime = q.getActualStartDate().getTime();
         long now = System.currentTimeMillis();
         long elapsedSeconds = TimeUnit.MILLISECONDS.toSeconds(now) - TimeUnit.MILLISECONDS.toSeconds(startTime);
         int elapsedMinutes = Math.round(elapsedSeconds / 60.0f);
@@ -83,7 +82,7 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
                 .setContentInfo(elapsedMinutes + " m")
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(largeIcon)
-                .setWhen(q.getActualStart().getTime())
+                .setWhen(q.getActualStartDate().getTime())
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

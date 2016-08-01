@@ -26,7 +26,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
-import io.realm.Realm;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,7 +35,9 @@ public class BaseActivity extends RxAppCompatActivity {
 
     @Inject
     protected Bus eventBus;
-    private Realm realm;
+
+    @Inject
+    protected LocalStorage localStorage;
 
     protected AppComponent appComponent() {
         return App.getAppComponent(this);
@@ -45,28 +46,16 @@ public class BaseActivity extends RxAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
         appComponent().inject(this);
-    }
-
-    protected Realm getRealm() {
-        return realm;
-    }
-
-    @Override
-    protected void onDestroy() {
-        realm.close();
-        super.onDestroy();
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        LocalStorage localStorage = LocalStorage.of(this);
         Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
         Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
         boolean isCompletedForToday = todayUtc.equals(lastCompleted);
 
-        Set<Integer> challengeDays = LocalStorage.of(this).readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+        Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         int currentDayOfWeek = LocalDate.now().getDayOfWeek();
         if (isCompletedForToday || !challengeDays.contains(currentDayOfWeek)) {
             menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);

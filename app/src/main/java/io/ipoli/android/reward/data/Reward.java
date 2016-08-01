@@ -1,99 +1,37 @@
 package io.ipoli.android.reward.data;
 
-import java.util.Date;
-
-import io.ipoli.android.app.net.RemoteObject;
+import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.IDGenerator;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class Reward extends RealmObject implements RemoteObject<Reward> {
-    @Required
-    @PrimaryKey
-    private String id;
+public class Reward extends PersistedObject {
 
-    @Required
+
     private String name;
 
     private String description;
 
-    @Required
     private Integer price;
-
-    @Required
-    private Date createdAt;
-
-    @Required
-    private Date updatedAt;
-
-    private Boolean needsSyncWithRemote;
-    private String remoteId;
-    private boolean isDeleted;
 
     public Reward() {
     }
 
     public Reward(String name, Integer price) {
-        this.id = IDGenerator.generate();
         this.name = name;
         this.price = price;
-        createdAt = DateUtils.nowUTC();
-        updatedAt = DateUtils.nowUTC();
-        needsSyncWithRemote = true;
-        isDeleted = false;
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void markUpdated() {
-        setNeedsSync();
-        setUpdatedAt(DateUtils.nowUTC());
-    }
-
-    @Override
-    public void setNeedsSync() {
-        needsSyncWithRemote = true;
-    }
-
-    @Override
-    public boolean needsSyncWithRemote() {
-        return needsSyncWithRemote;
-    }
-
-    @Override
-    public void setSyncedWithRemote() {
-        needsSyncWithRemote = false;
-    }
-
-    public Date getCreatedAt() {
+    public Long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
+    public Long getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getName() {
@@ -121,23 +59,20 @@ public class Reward extends RealmObject implements RemoteObject<Reward> {
     }
 
     @Override
-    public String getRemoteId() {
-        return remoteId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
-    public boolean isDeleted() {
-        return isDeleted;
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public void markDeleted() {
-        isDeleted = true;
-        markUpdated();
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
     }
 
-    @Override
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

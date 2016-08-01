@@ -30,7 +30,6 @@ import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
-import io.realm.RealmList;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -80,13 +79,13 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                sq.setCompletedAt(new Date());
+                sq.setCompletedAtDate(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
                 holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 holder.name.setEnabled(false);
                 evenBus.post(new CompleteSubQuestEvent(sq));
             } else {
-                sq.setCompletedAt(null);
+                sq.setCompletedAtDate(null);
                 sq.setCompletedAtMinute(null);
                 holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                 holder.name.setEnabled(true);
@@ -130,12 +129,12 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
         return subQuests.size();
     }
 
-    public void addSubquest(SubQuest subQuest) {
+    public void addSubQuest(SubQuest subQuest) {
         subQuests.add(subQuest);
         notifyItemInserted(subQuests.size() - 1);
     }
 
-    public void setSubQuests(RealmList<SubQuest> subQuests) {
+    public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests.clear();
         this.subQuests.addAll(subQuests);
         notifyDataSetChanged();

@@ -56,10 +56,9 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
-import io.ipoli.android.quest.Category;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RealmQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -94,6 +93,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Inject
     Bus eventBus;
 
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
@@ -107,7 +107,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        questPersistenceService = new RealmQuestPersistenceService(eventBus, getRealm());
         ((MainActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
@@ -131,18 +130,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        List<Quest> quests = questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1));
-
-        if (quests.isEmpty()) {
-            chartContainer.setVisibility(View.GONE);
-            emptyViewContainer.setVisibility(View.VISIBLE);
-        } else {
-            chartContainer.setVisibility(View.VISIBLE);
-            emptyViewContainer.setVisibility(View.GONE);
-            setUpSummaryStats(quests);
-            setUpTimeSpentChart(quests);
-            setUpExperienceChart(quests, dayCount);
-        }
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1), quests -> {
+            if (quests.isEmpty()) {
+                chartContainer.setVisibility(View.GONE);
+                emptyViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                chartContainer.setVisibility(View.VISIBLE);
+                emptyViewContainer.setVisibility(View.GONE);
+                setUpSummaryStats(quests);
+                setUpTimeSpentChart(quests);
+                setUpExperienceChart(quests, dayCount);
+            }
+        });
     }
 
     private void setUpSummaryStats(List<Quest> quests) {
@@ -219,7 +218,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
 
         for (Quest q : quests) {
-            Date dateKey = new LocalDate(q.getCompletedAt().getTime()).toDate();
+            Date dateKey = new LocalDate(q.getCompletedAtDate().getTime()).toDate();
             groupedByDate.get(dateKey).add(q);
         }
 
@@ -301,7 +300,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         Set<Category> usedCategories = new TreeSet<>();
         for (Quest q : quests) {
-            Category category = q.getCategory();
+            Category category = Quest.getCategory(q);
             if (!groupedByCategory.containsKey(category)) {
                 groupedByCategory.put(category, new ArrayList<>());
             }
@@ -354,8 +353,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private int getDurationForCompletedQuest(Quest q) {
-        if (q.getActualStart() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAt().getTime() - q.getActualStart().getTime());
+        if (q.getActualStartDate() != null) {
+            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAtDate().getTime() - q.getActualStartDate().getTime());
         } else {
             return Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION);
         }

@@ -18,13 +18,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class LocalStorage {
     private final SharedPreferences sharedPreferences;
+    private final Gson gson;
 
-    private LocalStorage(SharedPreferences sharedPreferences) {
+    private LocalStorage(SharedPreferences sharedPreferences, Gson gson) {
         this.sharedPreferences = sharedPreferences;
+        this.gson = gson;
     }
 
-    public static LocalStorage of(Context context) {
-        return new LocalStorage(PreferenceManager.getDefaultSharedPreferences(context));
+    public static LocalStorage of(Context context, Gson gson) {
+        return new LocalStorage(PreferenceManager.getDefaultSharedPreferences(context), gson);
     }
 
     public void saveInt(String key, int value) {
@@ -40,12 +42,10 @@ public class LocalStorage {
     }
 
     public void saveStringSet(String key, Set<String> values) {
-        Gson gson = new Gson();
         editor().putString(key, gson.toJson(values)).apply();
     }
 
     public void saveIntSet(String key, Set<Integer> values) {
-        Gson gson = new Gson();
         editor().putString(key, gson.toJson(values)).apply();
     }
 
@@ -54,7 +54,6 @@ public class LocalStorage {
         if (TextUtils.isEmpty(json)) {
             return new CopyOnWriteArraySet<>();
         }
-        Gson gson = new Gson();
         Type typeToken = new TypeToken<CopyOnWriteArraySet<String>>() {
         }.getType();
         return gson.fromJson(json, typeToken);
@@ -65,7 +64,6 @@ public class LocalStorage {
         if (TextUtils.isEmpty(json)) {
             return defaultValue;
         }
-        Gson gson = new Gson();
         Type typeToken = new TypeToken<CopyOnWriteArraySet<Integer>>() {
         }.getType();
         return gson.fromJson(json, typeToken);

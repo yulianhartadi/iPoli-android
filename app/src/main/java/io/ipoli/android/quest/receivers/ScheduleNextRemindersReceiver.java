@@ -6,16 +6,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.quest.data.Reminder;
-import io.ipoli.android.quest.reminders.persistence.RealmReminderPersistenceService;
-import io.realm.Realm;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -25,38 +25,32 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
 
     public static final String ACTION_SCHEDULE_REMINDERS = "io.ipoli.android.intent.action.SCHEDULE_QUEST_REMINDERS";
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        List<Reminder> reminders = getReminders();
-        Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(context, i));
-        if (reminders.isEmpty()) {
-            return;
-        }
-        i.putStringArrayListExtra(Constants.REMINDER_IDS_EXTRA_KEY, getReminderIds(reminders));
-        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
-        long alarmTime = reminders.get(0).getStartTime().getTime();
-        if (Build.VERSION.SDK_INT > 22) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-        } else {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
-        }
-    }
 
-    private List<Reminder> getReminders() {
-        Realm realm = Realm.getDefaultInstance();
-        List<Reminder> reminders = new RealmReminderPersistenceService(realm).findNextReminders();
-        realm.close();
-        return reminders;
-    }
-
-    @NonNull
-    private ArrayList<String> getReminderIds(List<Reminder> reminders) {
-        ArrayList<String> reminderIds = new ArrayList<>();
-        for (Reminder reminder : reminders) {
-            reminderIds.add(reminder.getId());
-        }
-        return reminderIds;
+        App.getAppComponent(context).inject(this);
+        PendingResult result = goAsync();
+        questPersistenceService.findNextQuestIdsToRemind(reminderStart -> {
+            Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(context, i));
+            if (reminderStart == null) {
+                result.finish();
+                return;
+            }
+            List<String> questIds = reminderStart.questIds;
+            i.putStringArrayListExtra(Constants.QUEST_IDS_EXTRA_KEY, (ArrayList<String>) questIds);
+            i.putExtra(Constants.REMINDER_START_TIME, reminderStart.startTime);
+            PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
+            if (Build.VERSION.SDK_INT > 22) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderStart.startTime, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderStart.startTime, pendingIntent);
+            }
+            result.finish();
+        });
     }
 }
