@@ -222,9 +222,12 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
             @Override
             public void onNew(List<RepeatingQuest> data) {
-                for (RepeatingQuest rq : data) {
-                    onRepeatingQuestSaved(rq);
-                }
+                Observable.defer(() -> {
+                    for (RepeatingQuest rq : data) {
+                        onRepeatingQuestSaved(rq);
+                    }
+                    return Observable.empty();
+                }).compose(applyAndroidSchedulers()).subscribe();
             }
 
             @Override
