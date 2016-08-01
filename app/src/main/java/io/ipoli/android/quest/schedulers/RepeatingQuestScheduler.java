@@ -213,7 +213,7 @@ public class RepeatingQuestScheduler {
 
         for (Object obj : dates) {
             for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date)obj)));
+                res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
             }
         }
         return res;
@@ -246,12 +246,14 @@ public class RepeatingQuestScheduler {
         quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setRepeatingQuest(repeatingQuest);
         List<Reminder> questReminders = new ArrayList<>();
-        for (Reminder r : repeatingQuest.getReminders()) {
-            Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
-            questReminder.setMessage(r.getMessage());
-            questReminders.add(questReminder);
+        if (repeatingQuest.getReminders() != null) {
+            for (Reminder r : repeatingQuest.getReminders()) {
+                Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
+                questReminder.setMessage(r.getMessage());
+                questReminders.add(questReminder);
+            }
+            quest.setReminders(questReminders);
         }
-        quest.setReminders(questReminders);
         return quest;
     }
 

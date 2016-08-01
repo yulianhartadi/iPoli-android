@@ -152,10 +152,8 @@ public class QuestParser {
         Recur dayOfMonthRecur = dayOfMonthPair.first;
         text = dayOfMonthPair.second;
 
-        Date dueDate = null;
         if (everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
             Pair<Date, String> dueDatePair = parseQuestPart(text, endDateMatcher);
-            dueDate = dueDatePair.first;
             text = dueDatePair.second;
         }
 
@@ -195,18 +193,9 @@ public class QuestParser {
         }
 
         recurrence.setTimesADay(Math.max(1, timesADay));
-    rq.setRecurrence(recurrence);
+        rq.setRecurrence(recurrence);
 
-    return rq;
-}
-
-    public boolean isRepeatingQuest(String text) {
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesAWeekMatcher, timesAMonthMatcher}) {
-            if (matcher.match(text) != null) {
-                return true;
-            }
-        }
-        return false;
+        return rq;
     }
 
     private <T> Pair<T, String> parseQuestPart(String text, QuestTextMatcher<T> matcher) {
