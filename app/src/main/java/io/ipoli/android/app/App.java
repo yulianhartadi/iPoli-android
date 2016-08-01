@@ -366,24 +366,27 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        RepeatingQuest rq = e.repeatingQuest;
-        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
-            for (Quest quest : questsToRemove) {
-                QuestNotificationScheduler.stopAll(quest.getId(), this);
-            }
-            questPersistenceService.delete(questsToRemove);
-            rq.setReminders(e.reminders);
-
-            long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
-            List<String> periodsToDelete = new ArrayList<>();
-            for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
-                if (Long.valueOf(periodEnd) >= todayStartOfDay) {
-                    periodsToDelete.add(periodEnd);
+        Observable.defer(() -> {
+            RepeatingQuest rq = e.repeatingQuest;
+            questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
+                for (Quest quest : questsToRemove) {
+                    QuestNotificationScheduler.stopAll(quest.getId(), this);
                 }
-            }
-            rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            scheduleRepeatingQuest(rq);
-        });
+                questPersistenceService.delete(questsToRemove);
+                rq.setReminders(e.reminders);
+
+                long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
+                List<String> periodsToDelete = new ArrayList<>();
+                for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
+                    if (Long.valueOf(periodEnd) >= todayStartOfDay) {
+                        periodsToDelete.add(periodEnd);
+                    }
+                }
+                rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
+                scheduleRepeatingQuest(rq);
+            });
+            return Observable.empty();
+        }).compose(applyAndroidSchedulers()).subscribe();
     }
 
     @Subscribe

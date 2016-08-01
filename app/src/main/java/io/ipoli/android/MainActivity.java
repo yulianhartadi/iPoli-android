@@ -201,9 +201,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
             avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getAvatar()));
-            avatarView.setOnClickListener(v -> {
-                eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER));
-            });
+            avatarView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
             TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
             currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));

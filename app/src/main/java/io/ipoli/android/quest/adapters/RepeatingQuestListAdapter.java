@@ -74,7 +74,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             }
         });
 
-        questHolder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS)));
+        questHolder.deleteQuest.setOnClickListener(v -> {
+            questHolder.swipeLayout.close(true);
+            eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+        });
 
         questHolder.editQuest.setOnClickListener(v -> {
             questHolder.swipeLayout.close(true);
