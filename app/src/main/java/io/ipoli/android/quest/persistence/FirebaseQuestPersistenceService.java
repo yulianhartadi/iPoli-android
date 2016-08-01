@@ -403,7 +403,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         List<Long> oldStartTimes = new ArrayList<>();
         if (quest.getReminders() != null) {
             for (Reminder r : quest.getReminders()) {
-                oldStartTimes.add(r.getStart());
+                if (r.getStartTime() != null) {
+                    oldStartTimes.add(r.getStart());
+                }
                 r.calculateStartTime(quest);
             }
         }
@@ -434,7 +436,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             List<Long> oldStartTimes = new ArrayList<>();
             if (quest.getReminders() != null) {
                 for (Reminder r : quest.getReminders()) {
-                    oldStartTimes.add(r.getStart());
+                    if (r.getStartTime() != null) {
+                        oldStartTimes.add(r.getStart());
+                    }
                     r.calculateStartTime(quest);
                 }
             }
@@ -547,7 +551,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
                 List<Long> startTimes = new ArrayList<>();
                 for (Reminder r : quest.getReminders()) {
-                    startTimes.add(r.getStart());
+                    if (r.getStartTime() != null) {
+                        startTimes.add(r.getStart());
+                    }
                 }
                 addRemindersToDelete(quest, startTimes, data);
             }
