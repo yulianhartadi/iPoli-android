@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.ipoli.android.Constants;
-import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -35,17 +34,15 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     public static String API_VERSION = "v0";
 
     protected final FirebaseDatabase database;
-    protected final String playerId;
     protected final Bus eventBus;
     private final Gson gson;
     protected Map<Query, ValueEventListener> valueListeners;
     protected Map<Query, ChildEventListener> childListeners;
 
-    public BaseFirebasePersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
+    public BaseFirebasePersistenceService(Bus eventBus, Gson gson) {
         this.eventBus = eventBus;
         this.gson = gson;
         this.database = FirebaseDatabase.getInstance();
-        this.playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
     }
@@ -176,7 +173,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
-        return database.getReference(API_VERSION).child("players").child(playerId);
+        return database.getReference(API_VERSION).child("players").child(App.getPlayerId());
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {

@@ -5,7 +5,6 @@ import com.squareup.otto.Bus;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.FirebaseChallengePersistenceService;
 import io.ipoli.android.player.persistence.FirebasePlayerPersistenceService;
@@ -25,27 +24,27 @@ import io.ipoli.android.reward.persistence.RewardPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    public QuestPersistenceService provideQuestPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        return new FirebaseQuestPersistenceService(localStorage, eventBus, gson);
+    public QuestPersistenceService provideQuestPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebaseQuestPersistenceService(eventBus, gson);
     }
 
     @Provides
-    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        return new FirebaseRepeatingQuestPersistenceService(localStorage, eventBus, gson);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebaseRepeatingQuestPersistenceService(eventBus, gson);
     }
 
     @Provides
-    public PlayerPersistenceService providePlayerPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        return new FirebasePlayerPersistenceService(localStorage, eventBus, gson);
+    public PlayerPersistenceService providePlayerPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebasePlayerPersistenceService(eventBus, gson);
     }
 
     @Provides
-    public ChallengePersistenceService provideChallengePersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        return new FirebaseChallengePersistenceService(localStorage, eventBus, gson);
+    public ChallengePersistenceService provideChallengePersistenceService(Bus eventBus, Gson gson) {
+        return new FirebaseChallengePersistenceService(eventBus, gson);
     }
 
     @Provides
-    public RewardPersistenceService provideRewardPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        return new FirebaseRewardPersistenceService(localStorage, eventBus, gson);
+    public RewardPersistenceService provideRewardPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebaseRewardPersistenceService(eventBus, gson);
     }
 }

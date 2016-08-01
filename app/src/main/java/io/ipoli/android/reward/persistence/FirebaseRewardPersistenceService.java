@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.data.Reward;
 
@@ -19,8 +18,8 @@ import io.ipoli.android.reward.data.Reward;
  */
 public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceService<Reward> implements RewardPersistenceService {
 
-    public FirebaseRewardPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        super(localStorage, eventBus, gson);
+    public FirebaseRewardPersistenceService(Bus eventBus, Gson gson) {
+        super(eventBus, gson);
     }
 
     @Override

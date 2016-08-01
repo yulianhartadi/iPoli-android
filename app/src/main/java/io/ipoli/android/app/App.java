@@ -110,6 +110,8 @@ public class App extends MultiDexApplication {
 
     private static AppComponent appComponent;
 
+    private static String playerId;
+
     @Inject
     Bus eventBus;
 
@@ -270,7 +272,6 @@ public class App extends MultiDexApplication {
 
     private void registerServices() {
         eventBus.register(analyticsService);
-        eventBus.register(questPersistenceService);
         eventBus.register(this);
     }
 
@@ -285,6 +286,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
+        playerId = e.playerId;
         initAppStart();
     }
 
@@ -642,5 +644,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onSyncComplete(SyncCompleteEvent e) {
         onQuestChanged();
+    }
+
+    public static String getPlayerId() {
+        return playerId;
     }
 }

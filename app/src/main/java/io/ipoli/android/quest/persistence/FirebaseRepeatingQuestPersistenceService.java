@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
@@ -28,8 +27,8 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersistenceService<RepeatingQuest> implements RepeatingQuestPersistenceService {
 
-    public FirebaseRepeatingQuestPersistenceService(LocalStorage localStorage, Bus eventBus, Gson gson) {
-        super(localStorage, eventBus, gson);
+    public FirebaseRepeatingQuestPersistenceService(Bus eventBus, Gson gson) {
+        super(eventBus, gson);
     }
 
     @Override
