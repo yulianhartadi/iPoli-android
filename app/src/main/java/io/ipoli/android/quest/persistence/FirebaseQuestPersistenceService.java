@@ -567,6 +567,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addNewReminders(Map<String, Object> data, Quest quest) {
+        if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
+            return;
+        }
         for (Reminder reminder : quest.getReminders()) {
             Map<String, Boolean> d = new HashMap<>();
             d.put(quest.getId(), true);

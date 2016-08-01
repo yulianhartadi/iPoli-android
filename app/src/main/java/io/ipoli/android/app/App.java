@@ -194,6 +194,8 @@ public class App extends MultiDexApplication {
         registerServices();
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             return;
+        } else {
+            playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         }
 
         initAppStart();
