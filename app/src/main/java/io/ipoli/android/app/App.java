@@ -45,7 +45,6 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
@@ -295,7 +294,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
         scheduleQuestsFor4WeeksAhead();
-        eventBus.post(new SyncCompleteEvent());
     }
 
     @Subscribe
@@ -572,12 +570,7 @@ public class App extends MultiDexApplication {
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
-        syncCalendars().subscribe(o -> {
-        }, Throwable::printStackTrace, () -> {
-            eventBus.post(new SyncCompleteEvent());
-        });
-
+        syncCalendars().subscribe();
     }
 
     @Subscribe
@@ -588,9 +581,7 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        syncCalendars().subscribe(o -> {
-        }, Throwable::printStackTrace, () ->
-                eventBus.post(new SyncCompleteEvent()));
+        syncCalendars().subscribe();
     }
 
     private Observable<Object> syncCalendars() {

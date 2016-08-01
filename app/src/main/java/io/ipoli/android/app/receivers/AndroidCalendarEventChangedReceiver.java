@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.providers.SyncAndroidCalendarProvider;
-import io.ipoli.android.app.services.events.SyncCompleteEvent;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -75,7 +74,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         }
         createOrUpdateEvents(dirtyEvents, context);
         deleteEvents(deletedEvents);
-        eventBus.post(new SyncCompleteEvent());
     }
 
     private void addDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider, List<Event> deletedEvents) {
