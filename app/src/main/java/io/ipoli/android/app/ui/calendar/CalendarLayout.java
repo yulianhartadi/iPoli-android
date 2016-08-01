@@ -75,12 +75,11 @@ public class CalendarLayout extends FrameLayout {
 
     public void acceptNewEvent(CalendarEvent calendarEvent) {
 
-        View dragView = inflater.inflate(R.layout.calendar_quest_item, this, false);
-        dragView.setBackgroundResource(calendarEvent.getBackgroundColor());
+        View dragView = inflater.inflate(R.layout.calendar_drag_item, this, false);
+        dragView.findViewById(R.id.quest_details_container).setBackgroundResource(calendarEvent.getBackgroundColor());
         CalendarLayout.LayoutParams params = (CalendarLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(Math.max(calendarEvent.getDuration(), Constants.CALENDAR_EVENT_MIN_DURATION));
         params.topMargin = (int) y - params.height / 2;
-        dragView.setLayoutParams(params);
 
         TextView nameView = (TextView) dragView.findViewById(R.id.quest_text);
         nameView.setText(calendarEvent.getName());
@@ -97,7 +96,6 @@ public class CalendarLayout extends FrameLayout {
         dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? VISIBLE : GONE);
         dragView.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? VISIBLE : GONE);
         dragView.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? VISIBLE : GONE);
-
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {
@@ -126,6 +124,10 @@ public class CalendarLayout extends FrameLayout {
                 LayoutParams layoutParams = (LayoutParams) dragView.getLayoutParams();
                 layoutParams.topMargin = (int) event.getY() - initialTouchHeight;
                 dragView.setLayoutParams(layoutParams);
+
+                int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
+                int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
+                ((TextView)dragView.findViewById(R.id.quest_current_time_indicator)).setText(Time.at(hours, minutes).toString());
             }
 
             @Override
