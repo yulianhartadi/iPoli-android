@@ -36,7 +36,6 @@ import io.ipoli.android.quest.events.subquests.SaveSubQuestsRequestEvent;
 import io.ipoli.android.quest.fragments.SubQuestListFragment;
 import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -179,11 +178,6 @@ public class QuestActivity extends BaseActivity {
     protected void onStop() {
         questPersistenceService.removeAllListeners();
         super.onStop();
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        setBackgroundColors(Quest.getCategory(e.quest));
     }
 
     @Subscribe

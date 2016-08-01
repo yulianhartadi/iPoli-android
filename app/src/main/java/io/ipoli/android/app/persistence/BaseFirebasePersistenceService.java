@@ -23,6 +23,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 import rx.Observable;
 
 /**
@@ -49,6 +50,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(T obj) {
+        save(obj, null);
+    }
+
+    @Override
+    public void save(T obj, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(obj.getId());
         if (!isNew) {
@@ -58,11 +64,16 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 collectionRef.push() :
                 collectionRef.child(obj.getId());
         obj.setId(objRef.getKey());
-        objRef.setValue(obj);
+        objRef.setValue(obj, FirebaseCompletionListener.listen(listener));
     }
 
     @Override
     public void save(List<T> objects) {
+        save(objects, null);
+    }
+
+    @Override
+    public void save(List<T> objects, OnOperationCompletedListener listener) {
         String json = gson.toJson(objects);
         Type type = new TypeToken<List<Map<String, Object>>>() {
         }.getType();
@@ -82,7 +93,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 data.put(objMap.get("id").toString(), objMap);
             }
         }
-        collectionRef.updateChildren(data);
+        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
     }
 
     @Override
@@ -107,17 +118,27 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object) {
-        getCollectionReference().child(object.getId()).removeValue();
+        delete(object, null);
+    }
+
+    @Override
+    public void delete(T object, OnOperationCompletedListener listener) {
+        getCollectionReference().child(object.getId()).removeValue(FirebaseCompletionListener.listen(listener));
     }
 
     @Override
     public void delete(List<T> objects) {
+        delete(objects, null);
+    }
+
+    @Override
+    public void delete(List<T> objects, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         Map<String, Object> data = new HashMap<>();
         for (T obj : objects) {
             data.put(obj.getId(), null);
         }
-        collectionRef.updateChildren(data);
+        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
     }
 
     @Override
@@ -233,7 +254,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
     }
 
-
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();
@@ -241,6 +261,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
         return new ArrayList<>(dataSnapshot.getValue(getGenericMapIndicator()).values());
     }
+
 
     protected abstract GenericTypeIndicator<Map<String, T>> getGenericMapIndicator();
 
@@ -332,6 +353,26 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
             }
         };
+    }
+
+    private static class FirebaseCompletionListener implements DatabaseReference.CompletionListener {
+
+        private final OnOperationCompletedListener listener;
+
+        private FirebaseCompletionListener(OnOperationCompletedListener listener) {
+            this.listener = listener;
+        }
+
+        public static FirebaseCompletionListener listen(OnOperationCompletedListener listener) {
+            return new FirebaseCompletionListener(listener);
+        }
+
+        @Override
+        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+            if (listener != null) {
+                listener.onComplete();
+            }
+        }
     }
 
     public interface QueryFilter<T> {

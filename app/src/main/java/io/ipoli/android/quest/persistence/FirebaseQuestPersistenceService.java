@@ -224,11 +224,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public Quest findByReminderId(String reminderId) {
-        return null;
-    }
-
-    @Override
     public void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener) {
         Query query = getPlayerReference().child("reminders").orderByKey().startAt(String.valueOf(new Date().getTime())).limitToFirst(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -403,7 +398,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void save(Quest quest) {
+    public void save(Quest quest, OnOperationCompletedListener listener) {
         boolean shouldCreate = StringUtils.isEmpty(quest.getId());
         List<Long> oldStartTimes = new ArrayList<>();
         if (quest.getReminders() != null) {
@@ -412,7 +407,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 r.calculateStartTime(quest);
             }
         }
-        super.save(quest);
+        super.save(quest, listener);
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
 
         if (shouldCreate) {
@@ -431,7 +426,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void save(List<Quest> quests) {
+    public void save(List<Quest> quests, OnOperationCompletedListener listener) {
         List<Boolean> shouldCreate = new ArrayList<>();
         List<List<Long>> allOldStartTimes = new ArrayList<>();
         for (Quest quest : quests) {
@@ -445,7 +440,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             }
             allOldStartTimes.add(oldStartTimes);
         }
-        super.save(quests);
+        super.save(quests, listener);
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
         Map<String, Object> data = new HashMap<>();
         for (int i = 0; i < quests.size(); i++) {
@@ -464,7 +459,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         remindersRef.updateChildren(data);
     }
 
-    public void saveWithNewReminders(Quest quest, List<Reminder> newReminders) {
+    public void saveWithNewReminders(Quest quest, List<Reminder> newReminders, OnOperationCompletedListener listener) {
         List<Long> oldStartTimes = new ArrayList<>();
         if (quest.getReminders() != null) {
             for (Reminder r : quest.getReminders()) {
@@ -477,7 +472,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 r.calculateStartTime(quest);
             }
         }
-        super.save(quest);
+        super.save(quest, listener);
 
         Map<String, Object> data = new HashMap<>();
         addOldReminders(quest, oldStartTimes, data);
@@ -531,7 +526,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void delete(Quest quest) {
+    public void delete(Quest quest, OnOperationCompletedListener listener) {
         if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
             Map<String, Object> data = new HashMap<>();
             List<Long> startTimes = new ArrayList<>();
@@ -542,11 +537,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             DatabaseReference remindersRef = getPlayerReference().child("reminders");
             remindersRef.updateChildren(data);
         }
-        super.delete(quest);
+        super.delete(quest, listener);
     }
 
     @Override
-    public void delete(List<Quest> quests) {
+    public void delete(List<Quest> quests, OnOperationCompletedListener listener) {
         Map<String, Object> data = new HashMap<>();
         for (Quest quest : quests) {
             if (quest.getReminders() != null && !quest.getReminders().isEmpty()) {
@@ -562,7 +557,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             DatabaseReference remindersRef = getPlayerReference().child("reminders");
             remindersRef.updateChildren(data);
         }
-        super.delete(quests);
+        super.delete(quests, listener);
     }
 
     private void addNewRemindersIfNeeded(Map<String, Object> data, Quest quest) {

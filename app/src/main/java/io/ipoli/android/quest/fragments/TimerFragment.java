@@ -14,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,11 +29,11 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
@@ -42,7 +41,6 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -160,13 +158,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
                     new StartQuestCommand(getContext(), q, questPersistenceService).execute();
                 }
             }
-            onQuestFound(q);
-        });
-    }
-
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        questPersistenceService.findById(questId, q -> {
             onQuestFound(q);
         });
     }

@@ -83,9 +83,6 @@ import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.events.QuestDeletedEvent;
-import io.ipoli.android.quest.persistence.events.QuestSavedEvent;
-import io.ipoli.android.quest.persistence.events.RepeatingQuestDeletedEvent;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
@@ -302,9 +299,9 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        questPersistenceService.save(q);
-        onQuestComplete(q, e.source);
-        checkForDailyChallengeCompletion(q, e.source);
+        questPersistenceService.save(q, () -> {
+            onQuestComplete(q, e.source);
+        });
     }
 
     @Subscribe
@@ -347,19 +344,21 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = e.quest;
         quest.setReminders(e.reminders);
-        questPersistenceService.save(quest);
-        if (Quest.isCompleted(quest)) {
-            onQuestComplete(quest, e.source);
-        }
+        questPersistenceService.save(quest, () -> {
+            if (Quest.isCompleted(quest)) {
+                onQuestComplete(quest, e.source);
+            }
+        });
     }
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
         e.quest.setSubQuests(e.subQuests);
-        questPersistenceService.saveWithNewReminders(e.quest, e.reminders);
-        if (Quest.isCompleted(e.quest)) {
-            onQuestComplete(e.quest, e.source);
-        }
+        questPersistenceService.saveWithNewReminders(e.quest, e.reminders, () -> {
+            if (Quest.isCompleted(e.quest)) {
+                onQuestComplete(e.quest, e.source);
+            }
+        });
     }
 
     @Subscribe
@@ -397,6 +396,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
+        checkForDailyChallengeCompletion(quest, source);
         updatePlayer(quest);
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
@@ -498,11 +498,6 @@ public class App extends MultiDexApplication {
         persistentRepeatingQuestScheduler.schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
-    @Subscribe
-    public void onQuestSaved(QuestSavedEvent e) {
-        onQuestChanged();
-    }
-
     private void scheduleNextReminder() {
         sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
     }
@@ -541,10 +536,6 @@ public class App extends MultiDexApplication {
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
-    private void onQuestChanged() {
-        scheduleNextReminder();
-    }
-
     private void listenForWidgetQuestsChange() {
         questPersistenceService.listenForAllNonAllDayIncompleteForDate(new LocalDate(), quests -> {
             localStorage.saveString(Constants.WIDGET_AGENDA_QUESTS, gson.toJson(quests));
@@ -556,11 +547,6 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onRepeatingQuestDeleted(RepeatingQuestDeletedEvent e) {
-        onQuestChanged();
-    }
-
-    @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
     }
@@ -568,12 +554,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateChallenge(UpdateChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
-    }
-
-    @Subscribe
-    public void onQuestDeleted(QuestDeletedEvent e) {
-        QuestNotificationScheduler.stopAll(e.id, this);
-        onQuestChanged();
     }
 
     @Subscribe
@@ -639,11 +619,6 @@ public class App extends MultiDexApplication {
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
-    }
-
-    @Subscribe
-    public void onSyncComplete(SyncCompleteEvent e) {
-        onQuestChanged();
     }
 
     public static String getPlayerId() {

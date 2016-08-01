@@ -27,6 +27,11 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
+    public void save(Player obj) {
+        save(obj, null);
+    }
+
+    @Override
     public void save(Player player, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(player.getId());

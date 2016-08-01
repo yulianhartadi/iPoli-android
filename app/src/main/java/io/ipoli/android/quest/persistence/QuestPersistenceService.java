@@ -50,8 +50,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener);
 
-    Quest findByReminderId(String reminderId);
-
     void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener);
 
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
@@ -74,7 +72,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener);
 
-    void saveWithNewReminders(Quest quest, List<Reminder> newReminders);
+    void saveWithNewReminders(Quest quest, List<Reminder> newReminders, OnOperationCompletedListener listener);
 
     void listenForReminderChange(OnChangeListener<Void> onChangeListener);
 

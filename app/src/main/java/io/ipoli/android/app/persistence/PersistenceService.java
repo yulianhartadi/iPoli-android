@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -13,7 +14,11 @@ public interface PersistenceService<T extends PersistedObject> {
 
     void save(T obj);
 
+    void save(T obj, OnOperationCompletedListener listener);
+
     void save(List<T> objects);
+
+    void save(List<T> objects, OnOperationCompletedListener listener);
 
     void findById(String id, OnDataChangedListener<T> listener);
 
@@ -21,7 +26,11 @@ public interface PersistenceService<T extends PersistedObject> {
 
     void delete(T object);
 
+    void delete(T object, OnOperationCompletedListener listener);
+
     void delete(List<T> objects);
+
+    void delete(List<T> objects, OnOperationCompletedListener listener);
 
     void removeAllListeners();
 
