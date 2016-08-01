@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -37,6 +38,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -188,12 +190,17 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        getAppComponent(this).inject(this);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        moveIncompleteQuestsToInbox();
+        getAppComponent(this).inject(this);
         registerServices();
-        scheduleNextReminder();
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            return;
+        }
 
+        initAppStart();
+    }
+
+    private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleDailyChallenge();
@@ -204,7 +211,8 @@ public class App extends MultiDexApplication {
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
         scheduleQuestsFor4WeeksAhead();
-
+        moveIncompleteQuestsToInbox();
+        scheduleNextReminder();
         getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
         listenForChanges();
     }
@@ -262,6 +270,7 @@ public class App extends MultiDexApplication {
 
     private void registerServices() {
         eventBus.register(analyticsService);
+        eventBus.register(questPersistenceService);
         eventBus.register(this);
     }
 
@@ -272,6 +281,11 @@ public class App extends MultiDexApplication {
                     .build();
         }
         return appComponent;
+    }
+
+    @Subscribe
+    public void onPlayerCreated(PlayerCreatedEvent e) {
+        initAppStart();
     }
 
     @Subscribe

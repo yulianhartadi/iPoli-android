@@ -14,6 +14,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,13 +27,17 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
-    public void save(Player player) {
+    public void save(Player player, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(player.getId());
         if (isNew) {
             DatabaseReference objRef = collectionRef.push();
             player.setId(objRef.getKey());
-            objRef.setValue(player);
+            objRef.setValue(player, (databaseError, databaseReference) -> {
+                if (listener != null) {
+                    listener.onComplete();
+                }
+            });
         } else {
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
@@ -44,7 +49,11 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             playerData.put("avatar", player.getAvatar());
             playerData.put("updatedAt", player.getUpdatedAt());
             playerData.put("createdAt", player.getCreatedAt());
-            objRef.updateChildren(playerData);
+            objRef.updateChildren(playerData, (databaseError, databaseReference) -> {
+                if (listener != null) {
+                    listener.onComplete();
+                }
+            });
         }
     }
 

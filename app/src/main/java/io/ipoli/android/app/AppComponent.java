@@ -25,6 +25,7 @@ import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -160,5 +161,7 @@ public interface AppComponent {
     void inject(DailyChallengeReminderReceiver dailyChallengeReminderReceiver);
 
     void inject(ScheduleNextRemindersReceiver scheduleNextRemindersReceiver);
+
+    void inject(SignInActivity signInActivity);
 }
 

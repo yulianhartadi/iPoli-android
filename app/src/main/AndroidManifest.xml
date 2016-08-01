@@ -40,6 +40,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".player.activities.SignInActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".quest.activities.EditQuestActivity"
             android:label="@string/title_activity_add_quest"
             android:parentActivityName=".MainActivity"

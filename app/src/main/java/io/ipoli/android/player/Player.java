@@ -14,6 +14,7 @@ import io.ipoli.android.app.utils.DateUtils;
 @IgnoreExtraProperties
 public class Player extends PersistedObject {
 
+    private String uid;
     private String experience;
     private Integer level;
     private Long coins;
@@ -23,9 +24,11 @@ public class Player extends PersistedObject {
     public Player() {
     }
 
-    public Player(String experience, int level, String avatar) {
+    public Player(String uid, String experience, int level, long coins, String avatar) {
+        this.uid = uid;
         this.experience = experience;
         this.level = level;
+        this.coins = coins;
         this.avatar = avatar;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
@@ -115,5 +118,13 @@ public class Player extends PersistedObject {
 
     public void removeCoins(long coins) {
         this.coins = Math.max(0, this.coins - coins);
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
