@@ -45,7 +45,15 @@ public class CalendarDayView extends FrameLayout {
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
 
-    public NestedScrollView scrollView;
+    private NestedScrollView scrollView;
+
+    private int hourCellClickYPos;
+
+    private OnHourCellLongClickListener hourCellListener;
+
+    public interface OnHourCellLongClickListener {
+        void onLongClickHourCell(Time atTime);
+    }
 
     public CalendarDayView(Context context) {
         super(context);
@@ -81,7 +89,6 @@ public class CalendarDayView extends FrameLayout {
         hourHeight = getScreenHeight(context) / HOURS_PER_SCREEN;
         minuteHeight = hourHeight / 60.0f;
 
-
         LayoutInflater inflater = LayoutInflater.from(context);
         FrameLayout mainContainer = initMainContainer(context);
         mainContainer.addView(initHourCellsContainer(context, inflater));
@@ -116,6 +123,18 @@ public class CalendarDayView extends FrameLayout {
         for (int i = 0; i < HOURS_IN_A_DAY; i++) {
             hourCellsContainer.addView(initHourCell(i, hourCellsContainer, inflater));
         }
+
+        hourCellsContainer.setOnTouchListener((view, event) -> {
+            hourCellClickYPos = (int) event.getRawY();
+            return false;
+        });
+
+        hourCellsContainer.setOnLongClickListener(view -> {
+            if (hourCellListener != null) {
+                hourCellListener.onLongClickHourCell(Time.at(getHoursFor(hourCellClickYPos), getMinutesFor(hourCellClickYPos, 15)));
+            }
+            return false;
+        });
         return hourCellsContainer;
     }
 
@@ -133,7 +152,6 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private RelativeLayout initEventsContainer(Context context) {
-
         eventsContainer = new RelativeLayout(context);
         eventsContainer.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return eventsContainer;
@@ -341,5 +359,9 @@ public class CalendarDayView extends FrameLayout {
 
     public void hideTimeLine() {
         timeLine.setVisibility(GONE);
+    }
+
+    public void setOnHourCellLongClickListener(OnHourCellLongClickListener hourCellListener) {
+        this.hourCellListener = hourCellListener;
     }
 }

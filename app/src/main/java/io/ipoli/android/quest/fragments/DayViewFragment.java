@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,7 @@ import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
-public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel> {
+public class DayViewFragment extends BaseFragment implements CalendarListener<QuestCalendarViewModel>, CalendarDayView.OnHourCellLongClickListener {
 
     public static final String CURRENT_DATE = "current_date";
 
@@ -154,6 +155,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
         calendarDayView.setAdapter(calendarAdapter);
+        calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
 
         if (!currentDate.isEqual(new LocalDate())) {
@@ -444,6 +446,11 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     private boolean hasNoStartTime(Quest q) {
         return q.getStartMinute() < 0;
+    }
+
+    @Override
+    public void onLongClickHourCell(Time atTime) {
+        Log.d("CalendarLongClick", "At time: " + atTime.toString());
     }
 
     private class Schedule {
