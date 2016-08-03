@@ -25,6 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
@@ -140,7 +141,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             adjustQuestDetailsView(v);
         }
 
-        if(q.getDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
+        if (q.getDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.END);
         }
@@ -194,15 +195,25 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     }
 
     @Override
-    public void onDragStarted(View draggedView) {
-        View background = draggedView.findViewById(R.id.quest_background);
+    public void onDragStarted(View dragView, Time time) {
+        View background = dragView.findViewById(R.id.quest_background);
         background.setAlpha(0.26f);
+        TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
+        currentTimeIndicator.setText(time.toString());
     }
 
     @Override
-    public void onDragEnded(View draggedView) {
-        View background = draggedView.findViewById(R.id.quest_background);
+    public void onDragMoved(View dragView, Time time) {
+        TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
+        currentTimeIndicator.setText(time.toString());
+    }
+
+    @Override
+    public void onDragEnded(View dragView) {
+        View background = dragView.findViewById(R.id.quest_background);
         background.setAlpha(0.12f);
+        TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
+        currentTimeIndicator.setText("");
     }
 
     @Override

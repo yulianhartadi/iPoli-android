@@ -279,7 +279,8 @@ public class CalendarDayView extends FrameLayout {
             @Override
             public void onDragStarted(DragEvent event) {
                 hasDropped = false;
-                adapter.onDragStarted(dragView);
+                CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
+                adapter.onDragStarted(dragView, Time.of(calendarEvent.getStartMinute()));
             }
 
             @Override
@@ -297,6 +298,9 @@ public class CalendarDayView extends FrameLayout {
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) dragView.getLayoutParams();
                 layoutParams.topMargin = getRelativeY((int) (event.getY() - initialTouchHeight), getTop());
                 dragView.setLayoutParams(layoutParams);
+                int h = getHoursFor(ViewUtils.getViewRawTop(dragView));
+                int m = getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
+                adapter.onDragMoved(dragView, Time.at(h, m));
             }
 
             @Override

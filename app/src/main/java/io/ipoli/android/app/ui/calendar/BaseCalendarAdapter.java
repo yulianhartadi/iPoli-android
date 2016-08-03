@@ -19,5 +19,4 @@ public abstract class BaseCalendarAdapter<E extends CalendarEvent> implements Ca
             calendarDayView.addEvent(getEvents().get(i), i);
         }
     }
-
 }

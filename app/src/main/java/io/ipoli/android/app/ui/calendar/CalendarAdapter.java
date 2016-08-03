@@ -5,6 +5,8 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import io.ipoli.android.app.utils.Time;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/20/16.
@@ -20,9 +22,11 @@ public interface CalendarAdapter<E extends CalendarEvent> {
 
     void updateEvents(List<E> calendarEvents);
 
-    void onDragStarted(View draggedView);
+    void onDragStarted(View dragView, Time time);
 
-    void onDragEnded(View draggedView);
+    void onDragEnded(View dragView);
 
     void removeEvent(E calendarEvent);
+
+    void onDragMoved(View dragView, Time time);
 }
