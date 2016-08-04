@@ -451,7 +451,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Override
     public void onLongClickHourCell(Time atTime) {
         Intent intent = new Intent(getContext(), QuickAddActivity.class);
-        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " for 30 min today");
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " today");
         startActivity(intent);
     }
 
