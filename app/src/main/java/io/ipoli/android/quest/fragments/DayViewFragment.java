@@ -60,6 +60,7 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
+import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
@@ -450,8 +451,21 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onLongClickHourCell(Time atTime) {
+        if (currentDateIsInThePast()) {
+            return;
+        }
+
+        String dateText;
+        if (currentDate.isEqual(LocalDate.now())) {
+            dateText = "today";
+        } else if (currentDate.isEqual(LocalDate.now().plusDays(1))) {
+            dateText = "tomorrow";
+        } else {
+            dateText = "on " + DateFormatter.formatWithoutYear(DateUtils.toStartOfDayUTC(currentDate));
+        }
+
         Intent intent = new Intent(getContext(), QuickAddActivity.class);
-        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " today");
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " " + dateText);
         startActivity(intent);
     }
 

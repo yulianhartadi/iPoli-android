@@ -74,6 +74,7 @@ public class QuickAddActivity extends BaseActivity {
             }
             repeatingQuest.setCategory(categoryView.getSelectedCategory().name());
             eventBus.post(new NewRepeatingQuestEvent(repeatingQuest, reminders));
+            Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -85,6 +86,11 @@ public class QuickAddActivity extends BaseActivity {
         }
         quest.setCategory(categoryView.getSelectedCategory().name());
         eventBus.post(new NewQuestEvent(quest, reminders, EventSource.QUICK_ADD));
+        if (quest.getEndDate() != null) {
+            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.quest_saved_to_inbox, Toast.LENGTH_SHORT).show();
+        }
         finish();
     }
 }
