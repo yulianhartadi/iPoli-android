@@ -10,7 +10,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.R;
-import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.activities.BaseActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

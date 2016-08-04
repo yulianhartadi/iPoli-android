@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
@@ -450,7 +450,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onLongClickHourCell(Time atTime) {
-        Log.d("CalendarLongClick", "At time: " + atTime.toString());
+        Intent intent = new Intent(getContext(), QuickAddActivity.class);
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " for 30 min today");
+        startActivity(intent);
     }
 
     private class Schedule {

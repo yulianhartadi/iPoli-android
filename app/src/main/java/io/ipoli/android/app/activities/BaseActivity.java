@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.app.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +23,8 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.AppComponent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;

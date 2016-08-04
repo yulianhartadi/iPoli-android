@@ -36,7 +36,7 @@ public class QuestParserTest {
     }
 
     private Quest parse(String text) {
-        return questParser.parse(text);
+        return questParser.parseQuest(text);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class QuestParserTest {
 
 //    @Test
 //    public void addQuestNextFriday() {
-//        Quest q = parse("Workout next Friday");
+//        Quest q = parseQuest("Workout next Friday");
 //        assertThat(q.getName(), is("Workout"));
 //        Calendar expected = getNextDayOfWeek(Calendar.FRIDAY);
 //        assertDueDate(q, expected);

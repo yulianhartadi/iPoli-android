@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;

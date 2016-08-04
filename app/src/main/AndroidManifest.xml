@@ -40,6 +40,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".app.activities.QuickAddActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
+        <activity
             android:name=".player.activities.SignInActivity"
             android:screenOrientation="portrait" />
         <activity

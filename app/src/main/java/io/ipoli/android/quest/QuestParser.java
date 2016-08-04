@@ -60,7 +60,7 @@ public class QuestParser {
         endDateMatcher = new EndDateMatcher(timeParser);
     }
 
-    public QuestParserResult parseText(String text) {
+    public QuestParserResult parse(String text) {
         QuestParserResult result = new QuestParserResult();
         result.rawText = text;
 
@@ -95,7 +95,7 @@ public class QuestParser {
         return result;
     }
 
-    public Quest parse(String text) {
+    public Quest parseQuest(String text) {
 
         String rawText = text;
 
@@ -123,7 +123,7 @@ public class QuestParser {
         return q;
     }
 
-    public RepeatingQuest parseNotUserCreatedRepeatingQuest(String text) {
+    public RepeatingQuest parseRepeatingQuest(String text) {
 
         String rawText = text;
 
@@ -196,6 +196,15 @@ public class QuestParser {
         rq.setRecurrence(recurrence);
 
         return rq;
+    }
+
+    public boolean isRepeatingQuest(String text) {
+        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesAWeekMatcher, timesAMonthMatcher}) {
+            if (matcher.match(text) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private <T> Pair<T, String> parseQuestPart(String text, QuestTextMatcher<T> matcher) {

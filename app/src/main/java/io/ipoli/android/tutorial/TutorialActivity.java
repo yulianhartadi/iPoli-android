@@ -111,7 +111,7 @@ public class TutorialActivity extends AppIntro2 {
         Observable.defer(() -> {
             List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
             for (RepeatingQuest rq : selectedRepeatingQuests) {
-                RepeatingQuest parsedRepeatingQuest = questParser.parseNotUserCreatedRepeatingQuest(rq.getRawText());
+                RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
                 parsedRepeatingQuest.setCategory(rq.getCategory());
                 parsedRepeatingQuests.add(parsedRepeatingQuest);
             }

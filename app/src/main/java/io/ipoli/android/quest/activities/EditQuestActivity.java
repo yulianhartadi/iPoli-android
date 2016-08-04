@@ -51,7 +51,7 @@ import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.BaseActivity;
+import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.CategoryView;
@@ -240,7 +240,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             categoryView.changeCategory(Quest.getCategory(quest));
             populateNoteText(quest.getNote());
-            challengePersistenceService.findById(quest.getChallengeId(), challenge -> populateChallenge(challenge));
+            challengePersistenceService.findById(quest.getChallengeId(), this::populateChallenge);
 
             if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
                 notificationId = new Random().nextInt();
@@ -267,7 +267,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             setFrequencyText(rq.getRecurrence());
             categoryView.changeCategory(RepeatingQuest.getCategory(rq));
             populateNoteText(rq.getNote());
-            challengePersistenceService.findById(rq.getChallengeId(), challenge -> populateChallenge(challenge));
+            challengePersistenceService.findById(rq.getChallengeId(), this::populateChallenge);
 
             if (rq.getReminders().isEmpty()) {
                 notificationId = new Random().nextInt();
@@ -498,7 +498,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
-        QuestParser.QuestParserResult result = questParser.parseText(questText.getText().toString());
+        QuestParser.QuestParserResult result = questParser.parse(questText.getText().toString());
         this.rawText = result.rawText;
         if (result.endDate == null) {
             populateEndDate(null);

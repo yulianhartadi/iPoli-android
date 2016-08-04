@@ -33,7 +33,7 @@ public class RepeatingQuestParserTest {
     }
 
     private RepeatingQuest parse(String text) {
-        return questParser.parseNotUserCreatedRepeatingQuest(text);
+        return questParser.parseRepeatingQuest(text);
     }
 
     @Test
