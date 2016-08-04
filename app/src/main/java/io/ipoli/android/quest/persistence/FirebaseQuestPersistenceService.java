@@ -183,7 +183,17 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(currentDate).getTime());
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null), (q1, q2) -> {
+            int q1Start = q1.getStartMinute();
+            if (q1Start < 0) {
+                return -1;
+            }
+            int q2Start = q2.getStartMinute();
+            if (q2Start < 0) {
+                return 1;
+            }
+            return q1Start - q2Start;
+        });
     }
 
     @Override
