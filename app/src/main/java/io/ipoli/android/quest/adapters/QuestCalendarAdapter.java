@@ -2,6 +2,7 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
@@ -150,6 +151,12 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
+
+        v.findViewById(R.id.quest_more_menu).setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(v.getContext(), view);
+            popupMenu.inflate(R.menu.calendar_quest_menu);
+            popupMenu.show();
+        });
 
         return v;
     }
