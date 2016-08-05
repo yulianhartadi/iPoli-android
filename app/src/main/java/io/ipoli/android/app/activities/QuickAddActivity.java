@@ -59,7 +59,7 @@ public class QuickAddActivity extends BaseActivity {
     public void onAddQuest(View v) {
         String text = questText.getText().toString();
         if (StringUtils.isEmpty(text)) {
-            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.quest_name_validation, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -70,7 +70,7 @@ public class QuickAddActivity extends BaseActivity {
         if (questParser.isRepeatingQuest(text)) {
             RepeatingQuest repeatingQuest = questParser.parseRepeatingQuest(text);
             if (repeatingQuest == null) {
-                Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.quest_name_validation, Toast.LENGTH_LONG).show();
                 return;
             }
             repeatingQuest.setCategory(categoryView.getSelectedCategory().name());
@@ -82,7 +82,7 @@ public class QuickAddActivity extends BaseActivity {
 
         Quest quest = questParser.parseQuest(text);
         if (quest == null) {
-            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.quest_name_validation, Toast.LENGTH_LONG).show();
             return;
         }
         quest.setCategory(categoryView.getSelectedCategory().name());

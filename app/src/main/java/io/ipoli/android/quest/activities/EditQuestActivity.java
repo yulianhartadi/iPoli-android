@@ -490,7 +490,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private boolean isQuestNameInvalid(String name) {
         if (StringUtils.isEmpty(name)) {
-            Toast.makeText(this, "Please, add quest name", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.quest_name_validation, Toast.LENGTH_LONG).show();
             return true;
         }
         return false;
