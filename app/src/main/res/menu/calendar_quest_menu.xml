@@ -9,8 +9,14 @@
         tools:showAsAction="withText" />
 
     <item
-        android:id="@+id/item_snooze"
-        android:title="Snooze..."
+        android:id="@+id/item_date"
+        android:title="New date..."
+        android:visible="true"
+        tools:showAsAction="withText" />
+
+    <item
+        android:id="@+id/item_time"
+        android:title="New time..."
         android:visible="true"
         tools:showAsAction="withText" />
 
