@@ -94,4 +94,9 @@ public class QuickAddActivity extends BaseActivity {
         }
         finish();
     }
+
+    @OnClick(R.id.cancel)
+    public void onCancel(View v) {
+        finish();
+    }
 }
