@@ -8,9 +8,8 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import io.ipoli.android.Constants;
@@ -127,7 +126,7 @@ public class CalendarLayout extends FrameLayout {
 
                 int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                 int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
-                ((TextView)dragView.findViewById(R.id.quest_current_time_indicator)).setText(Time.at(hours, minutes).toString());
+                ((TextView) dragView.findViewById(R.id.quest_current_time_indicator)).setText(Time.at(hours, minutes).toString());
             }
 
             @Override
@@ -185,10 +184,9 @@ public class CalendarLayout extends FrameLayout {
     }
 
     private void adjustQuestDetailsView(View v) {
-        LinearLayout detailsContainer = (LinearLayout) v.findViewById(R.id.quest_details_container);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) detailsContainer.getLayoutParams();
+        ViewGroup detailsContainer = (ViewGroup) v.findViewById(R.id.quest_details_container);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) detailsContainer.getLayoutParams();
         params.topMargin = 0;
-        params.addRule(RelativeLayout.CENTER_VERTICAL);
         detailsContainer.setLayoutParams(params);
     }
 

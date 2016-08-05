@@ -52,6 +52,7 @@ public class QuickAddActivity extends BaseActivity {
         String additionalText = getIntent().getStringExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT);
         questText.setText(additionalText);
         questText.setSelection(0);
+        showKeyboard();
     }
 
     @OnClick(R.id.add)

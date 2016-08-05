@@ -347,6 +347,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = e.quest;
+        quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
         quest.setReminders(e.reminders);
         questPersistenceService.save(quest, () -> {
             if (Quest.isCompleted(quest)) {
@@ -474,8 +475,10 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
-        e.repeatingQuest.setReminders(e.reminders);
-        repeatingQuestPersistenceService.save(e.repeatingQuest);
+        RepeatingQuest repeatingQuest = e.repeatingQuest;
+        repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
+        repeatingQuest.setReminders(e.reminders);
+        repeatingQuestPersistenceService.save(repeatingQuest);
     }
 
     public void onRepeatingQuestSaved(RepeatingQuest repeatingQuest) {
