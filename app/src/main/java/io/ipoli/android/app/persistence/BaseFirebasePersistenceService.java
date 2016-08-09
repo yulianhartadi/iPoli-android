@@ -153,20 +153,14 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void listenForChange(OnChangeListener<List<T>> listener) {
-//        Query query = getCollectionReference().orderByChild("updatedAt").startAt(new Date().getTime());
-        Query query = getCollectionReference().orderByChild("updatedAt");
-        long now = new Date().getTime();
+        Query query = getCollectionReference().orderByChild("updatedAt").startAt(new Date().getTime());
         ChildEventListener childListener = new ChildEventListener() {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                T child = dataSnapshot.getValue(getModelClass());
-                if(child.getUpdatedAt() >= now) {
-                    List<T> result = new ArrayList<>();
-//                    result.add(dataSnapshot.getValue(getModelClass()));
-                    result.add(child);
-                    listener.onNew(result);
-                }
+                List<T> result = new ArrayList<>();
+                result.add(dataSnapshot.getValue(getModelClass()));
+                listener.onNew(result);
             }
 
             @Override
