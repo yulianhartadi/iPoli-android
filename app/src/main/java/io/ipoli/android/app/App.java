@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -189,7 +188,7 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         getAppComponent(this).inject(this);
         registerServices();
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
