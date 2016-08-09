@@ -113,6 +113,7 @@ public class TutorialActivity extends AppIntro2 {
             for (RepeatingQuest rq : selectedRepeatingQuests) {
                 RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
                 parsedRepeatingQuest.setCategory(rq.getCategory());
+                parsedRepeatingQuest.setReminders(rq.getReminders());
                 parsedRepeatingQuests.add(parsedRepeatingQuest);
             }
 
