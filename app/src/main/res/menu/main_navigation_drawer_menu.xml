@@ -6,8 +6,14 @@
         <item
             android:id="@+id/home"
             android:checked="true"
-            android:icon="@drawable/ic_home_white_24dp"
-            android:title="@string/home" />
+            android:icon="@drawable/ic_event_white_24dp"
+            android:title="@string/calendar" />
+
+        <item
+            android:id="@+id/overview"
+            android:checked="true"
+            android:icon="@drawable/ic_assignment_white_24dp"
+            android:title="@string/overview" />
 
         <item
             android:id="@+id/inbox"

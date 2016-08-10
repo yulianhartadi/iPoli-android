@@ -7,10 +7,4 @@
         android:icon="@drawable/ic_today_white_24dp"
         android:title="@string/today"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_overview"
-        android:icon="@drawable/ic_assignment_white_24dp"
-        android:title="@string/fragment_overview_title"
-        app:showAsAction="always" />
 </menu>

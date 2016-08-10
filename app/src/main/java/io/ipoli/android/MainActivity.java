@@ -369,6 +369,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startCalendar();
                 break;
 
+            case R.id.overview:
+                source = EventSource.OVERVIEW;
+                startOverview();
+                break;
+
             case R.id.inbox:
                 source = EventSource.INBOX;
                 changeCurrentFragment(new InboxFragment());
@@ -498,7 +503,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    public void startOverview() {
+    private void startOverview() {
         changeCurrentFragment(new OverviewFragment());
     }
 }

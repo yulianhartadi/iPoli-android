@@ -301,4 +301,7 @@
     <string name="activity_quick_add_title">Quick Add</string>
     <string name="quick_add_hint">Enter name, duration, frequency …</string>
     <string name="quest_name_validation">Please, add quest name</string>
+
+    <string name="calendar">Calendar</string>
+    <string name="overview">Journey ahead</string>
 </resources>
