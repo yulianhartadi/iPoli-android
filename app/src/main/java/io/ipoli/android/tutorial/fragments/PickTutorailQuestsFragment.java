@@ -10,6 +10,8 @@ import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -20,6 +22,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.tutorial.PickQuestViewModel;
 import io.ipoli.android.tutorial.adapters.PickTutorialQuestsAdapter;
 
@@ -96,6 +99,9 @@ public class PickTutorailQuestsFragment extends BaseTutorialPickQuestsFragment<Q
         Quest q = new Quest(name, DateUtils.now());
         q.setCategory(category.name());
         q.setRawText(name + " today");
+        List<Reminder> reminders = new ArrayList<>();
+        reminders.add(new Reminder(0, new Random().nextInt()));
+        q.setReminders(reminders);
         return q;
     }
 
