@@ -438,6 +438,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    public void save(List<Quest> quests) {
+        save(quests, null);
+    }
+
+    @Override
     public void save(List<Quest> quests, OnOperationCompletedListener listener) {
         List<Boolean> shouldCreate = new ArrayList<>();
         List<List<Long>> allOldStartTimes = new ArrayList<>();
@@ -587,6 +592,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             return;
         }
         for (Reminder reminder : quest.getReminders()) {
+            if(reminder.getStart() == null) {
+                continue;
+            }
             Map<String, Boolean> d = new HashMap<>();
             d.put(quest.getId(), true);
             data.put(String.valueOf(reminder.getStart()), d);
@@ -594,7 +602,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addRemindersToDelete(Quest quest, List<Long> oldStartTimes, Map<String, Object> data) {
-        for (long startTime : oldStartTimes) {
+        for (Long startTime : oldStartTimes) {
+            if(startTime == null) {
+                continue;
+            }
             Map<String, Boolean> d = new HashMap<>();
             d.put(quest.getId(), null);
             data.put(String.valueOf(startTime), d);
