@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.Space;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -41,13 +40,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
     private List<RepeatingQuestViewModel> viewModels;
     private Bus eventBus;
 
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
-
     public RepeatingQuestListAdapter(Context context, List<RepeatingQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
-        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -63,25 +59,22 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         final RepeatingQuestViewModel vm = viewModels.get(questHolder.getAdapterPosition());
         RepeatingQuest rq = vm.getRepeatingQuest();
 
-        viewBinderHelper.bind(questHolder.swipeLayout, rq.getId());
-        questHolder.swipeLayout.close(false);
-
-        questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-            @Override
-            public void onOpened(SwipeRevealLayout view) {
-                super.onOpened(view);
-                eventBus.post(new ItemActionsShownEvent(EventSource.REPEATING_QUESTS));
-            }
-        });
-
-        questHolder.deleteQuest.setOnClickListener(v -> {
-            questHolder.swipeLayout.close(true);
-            eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
-        });
-
-        questHolder.editQuest.setOnClickListener(v -> {
-            questHolder.swipeLayout.close(true);
-            eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+        questHolder.moreMenu.setOnClickListener(v -> {
+            eventBus.post(new ItemActionsShownEvent(EventSource.REPEATING_QUESTS));
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.repeating_quest_actions_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.edit_repeating_quest:
+                        eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+                        return true;
+                    case R.id.delete_repeating_quest:
+                        eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
         });
 
         questHolder.contentLayout.setOnClickListener(view ->
@@ -169,14 +162,8 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;
 
-        @BindView(R.id.swipe_layout)
-        public SwipeRevealLayout swipeLayout;
-
-        @BindView(R.id.edit_quest)
-        public ImageButton editQuest;
-
-        @BindView(R.id.delete_quest)
-        public ImageButton deleteQuest;
+        @BindView(R.id.repeating_quest_more_menu)
+        public ImageButton moreMenu;
 
         public ViewHolder(View v) {
             super(v);
