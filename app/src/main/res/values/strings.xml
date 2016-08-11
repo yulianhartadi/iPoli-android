@@ -304,4 +304,6 @@
 
     <string name="calendar">Calendar</string>
     <string name="overview">Journey Ahead</string>
+    <string name="schedule_for_today">Schedule for today</string>
+    <string name="schedule_for_tomorrow">Schedule for tomorrow</string>
 </resources>

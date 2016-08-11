@@ -3,9 +3,11 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -15,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
@@ -149,30 +150,31 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
             Quest q = vm.getQuest();
-            viewBinderHelper.bind(questHolder.swipeLayout, q.getId());
-            questHolder.swipeLayout.close(false);
-            questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-                @Override
-                public void onOpened(SwipeRevealLayout view) {
-                    super.onOpened(view);
-                    eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
-                }
-            });
-            questHolder.scheduleQuest.setOnClickListener(v -> {
-                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
-            });
 
-            questHolder.completeQuest.setOnClickListener(v -> {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
-            });
-
-            questHolder.editQuest.setOnClickListener(v -> {
-                questHolder.swipeLayout.close(true);
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
-            });
-
-            questHolder.deleteQuest.setOnClickListener(v -> {
-                eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));
+            questHolder.moreMenu.setOnClickListener(v -> {
+                eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
+                PopupMenu popupMenu = new PopupMenu(context, v);
+                popupMenu.inflate(R.menu.quest_actions_menu);
+                MenuItem scheduleQuestItem = popupMenu.getMenu().findItem(R.id.schedule_quest);
+                scheduleQuestItem.setTitle(q.isScheduledForToday() ? context.getString(R.string.schedule_for_tomorrow) : context.getString(R.string.schedule_for_today));
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.schedule_quest:
+                            eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.complete_quest:
+                            eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.edit_quest:
+                            eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.delete_quest:
+                            eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                    }
+                    return false;
+                });
+                popupMenu.show();
             });
 
             questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
@@ -303,20 +305,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;
 
-        @BindView(R.id.swipe_layout)
-        public SwipeRevealLayout swipeLayout;
+        @BindView(R.id.quest_more_menu)
+        public ImageButton moreMenu;
 
-        @BindView(R.id.schedule_quest)
-        public ImageButton scheduleQuest;
-
-        @BindView(R.id.complete_quest)
-        public ImageButton completeQuest;
-
-        @BindView(R.id.edit_quest)
-        public ImageButton editQuest;
-
-        @BindView(R.id.delete_quest)
-        public ImageButton deleteQuest;
 
         public QuestViewHolder(View v) {
             super(v);
