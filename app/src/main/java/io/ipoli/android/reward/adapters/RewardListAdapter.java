@@ -1,5 +1,7 @@
 package io.ipoli.android.reward.adapters;
 
+import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -35,12 +35,10 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
 
     private final List<RewardViewModel> viewModels;
     private final Bus eventBus;
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     public RewardListAdapter(List<RewardViewModel> viewModels, Bus eventBus) {
         this.viewModels = viewModels;
         this.eventBus = eventBus;
-        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -53,24 +51,26 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
         Reward reward = vm.getReward();
 
-        viewBinderHelper.bind(holder.swipeLayout, reward.getId());
-        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-            @Override
-            public void onOpened(SwipeRevealLayout view) {
-                super.onOpened(view);
-                eventBus.post(new ItemActionsShownEvent(EventSource.REWARDS));
-            }
-        });
-
         holder.contentLayout.setOnClickListener(v ->
                 eventBus.post(new EditRewardRequestEvent(reward)));
 
-        holder.delete.setOnClickListener(v ->
-                eventBus.post(new DeleteRewardRequestEvent(reward)));
-
-        holder.edit.setOnClickListener(v -> {
-            holder.swipeLayout.close(true);
-            eventBus.post(new EditRewardRequestEvent(reward));
+        holder.moreMenu.setOnClickListener(v -> {
+            eventBus.post(new ItemActionsShownEvent(EventSource.REWARDS));
+            Context context = holder.itemView.getContext();
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.reward_actions_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.edit_reward:
+                        eventBus.post(new EditRewardRequestEvent(reward));
+                        return true;
+                    case R.id.delete_reward:
+                        eventBus.post(new DeleteRewardRequestEvent(reward));
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
         });
 
         holder.name.setText(reward.getName());
@@ -111,14 +111,8 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         @BindView(R.id.buy_reward)
         Button buy;
 
-        @BindView(R.id.swipe_layout)
-        public SwipeRevealLayout swipeLayout;
-
-        @BindView(R.id.edit)
-        public ImageButton edit;
-
-        @BindView(R.id.delete)
-        public ImageButton delete;
+        @BindView(R.id.reward_more_menu)
+        public ImageButton moreMenu;
 
         public ViewHolder(View itemView) {
             super(itemView);
