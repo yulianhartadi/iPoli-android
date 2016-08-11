@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int QUEST_ITEM_VIEW_TYPE = 1;
     private final Context context;
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     private List<Object> items;
     private Bus eventBus;
@@ -56,7 +54,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public OverviewAdapter(Context context, List<QuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
-        viewBinderHelper.setOpenOnlyOne(true);
         setItems(viewModels);
     }
 
