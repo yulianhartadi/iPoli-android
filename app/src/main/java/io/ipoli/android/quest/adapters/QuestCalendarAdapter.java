@@ -154,7 +154,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         v.findViewById(R.id.quest_more_menu).setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(v.getContext(), view);
-            popupMenu.inflate(R.menu.quest_actions_menu);
+            popupMenu.inflate(R.menu.calendar_quest_menu);
             popupMenu.show();
         });
 
