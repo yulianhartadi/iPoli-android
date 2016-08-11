@@ -7,9 +7,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -95,11 +92,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.overview_menu, menu);
-    }
-
-    @Override
     protected boolean useOptionsMenu() {
         return true;
     }
@@ -126,17 +118,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_calendar:
-                ((MainActivity) getActivity()).startCalendar();
-                return true;
-
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe

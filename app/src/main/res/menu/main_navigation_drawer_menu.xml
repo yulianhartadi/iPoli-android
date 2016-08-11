@@ -6,8 +6,14 @@
         <item
             android:id="@+id/home"
             android:checked="true"
-            android:icon="@drawable/ic_home_white_24dp"
-            android:title="@string/home" />
+            android:icon="@drawable/ic_event_white_24dp"
+            android:title="@string/calendar" />
+
+        <item
+            android:id="@+id/overview"
+            android:checked="true"
+            android:icon="@drawable/ic_favorite_border_white_24dp"
+            android:title="@string/overview" />
 
         <item
             android:id="@+id/inbox"
@@ -40,24 +46,12 @@
             android:title="@string/rewards" />
     </group>
 
-    <group android:id="@+id/drawer_secondary_group">
+    <group android:id="@+id/third_group">
         <item
             android:id="@+id/invite_friends"
             android:checked="false"
-            android:icon="@drawable/ic_friends_white_24dp"
+            android:icon="@drawable/ic_group_add_white_24dp"
             android:title="@string/invite_friends" />
-        <item
-            android:id="@+id/sync_calendars"
-            android:checked="false"
-            android:icon="@drawable/ic_event_white_24dp"
-            android:title="@string/sync_android_calendars" />
-        <item
-            android:id="@+id/tutorial"
-            android:checked="false"
-            android:icon="@drawable/ic_tutorial_white_24dp"
-            android:title="@string/show_tutorial" />
-    </group>
-    <group android:id="@+id/third_group">
         <item
             android:id="@+id/settings"
             android:checked="false"

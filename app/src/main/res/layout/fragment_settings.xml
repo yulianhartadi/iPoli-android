@@ -51,6 +51,66 @@
                 android:textColor="@color/md_dark_text_54"
                 android:textSize="14sp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/show_tutorial_container"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="Show tutorial"
+                android:textColor="@color/md_dark_text_87"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="View tutorial and pick some quests"
+                android:textColor="@color/md_dark_text_54"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sync_calendars_container"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="Sync calendars"
+                android:textColor="@color/md_dark_text_87"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="Import all your habits &amp; todos"
+                android:textColor="@color/md_dark_text_54"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <View

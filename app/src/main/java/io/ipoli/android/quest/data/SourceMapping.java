@@ -55,7 +55,7 @@ public class SourceMapping extends PersistedObject {
         return androidCalendar;
     }
 
-    public void setAndroidCalendar(long googleCalendar) {
+    public void setAndroidCalendar(String googleCalendar) {
         this.androidCalendar = String.valueOf(googleCalendar);
     }
 }

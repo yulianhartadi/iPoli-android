@@ -134,10 +134,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_overview:
-                ((MainActivity) getActivity()).startOverview();
-                return true;
-
             case R.id.action_today:
                 eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.MENU));
                 closeToolbarCalendar();

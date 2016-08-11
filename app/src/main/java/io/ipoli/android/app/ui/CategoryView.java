@@ -1,6 +1,7 @@
 package io.ipoli.android.app.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
 
 /**
@@ -22,6 +24,8 @@ import io.ipoli.android.quest.data.Category;
  * on 6/27/16.
  */
 public class CategoryView extends LinearLayout {
+    private static final int DEFAULT_GAP_DP = 12;
+    private float gap;
     private List<OnCategoryChangedListener> categoryChangedListeners = new ArrayList<>();
     private View view;
 
@@ -36,6 +40,7 @@ public class CategoryView extends LinearLayout {
 
     public CategoryView(Context context) {
         super(context);
+        gap = ViewUtils.dpToPx(DEFAULT_GAP_DP, getResources());
         if (!isInEditMode()) {
             initUI(context);
         }
@@ -43,6 +48,17 @@ public class CategoryView extends LinearLayout {
 
     public CategoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.CategoryView,
+                0, 0);
+
+        try {
+            gap = typedArray.getDimensionPixelSize(R.styleable.CategoryView_category_gap, DEFAULT_GAP_DP);
+        }finally {
+            typedArray.recycle();
+        }
+
         if (!isInEditMode()) {
             initUI(context);
         }
@@ -59,6 +75,11 @@ public class CategoryView extends LinearLayout {
         final Category[] categories = Category.values();
         for (int i = 0; i < categoryContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
+            if(i < categoryContainer.getChildCount() - 1) {
+                LinearLayout.LayoutParams lp = (LayoutParams) iv.getLayoutParams();
+                lp.setMarginEnd((int) gap);
+                iv.setLayoutParams(lp);
+            }
             GradientDrawable drawable = (GradientDrawable) iv.getBackground();
             drawable.setColor(ContextCompat.getColor(context, categories[i].color500));
 
