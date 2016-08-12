@@ -337,7 +337,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
+    public void listenForIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && q.getRepeatingQuest() == null));
     }

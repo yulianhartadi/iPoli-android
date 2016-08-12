@@ -84,13 +84,13 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
         listenForSingleListChange(query, listener);
     }
 
     @Override
-    public void findActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+    public void listenForActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 
@@ -105,7 +105,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().equalTo(challenge.getId(), "challengeId");
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
         listenForSingleListChange(query, listener);
     }
 
