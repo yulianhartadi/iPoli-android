@@ -153,7 +153,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 PopupMenu popupMenu = new PopupMenu(context, v);
                 popupMenu.inflate(R.menu.quest_actions_menu);
                 MenuItem scheduleQuestItem = popupMenu.getMenu().findItem(R.id.schedule_quest);
-                scheduleQuestItem.setTitle(q.isScheduledForToday() ? context.getString(R.string.schedule_for_tomorrow) : context.getString(R.string.schedule_for_today));
+                scheduleQuestItem.setTitle(q.isScheduledForToday() ? context.getString(R.string.snooze_for_tomorrow) : context.getString(R.string.do_today));
                 popupMenu.setOnMenuItemClickListener(item -> {
                     switch (item.getItemId()) {
                         case R.id.schedule_quest:

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/schedule_quest"
-        android:title="@string/schedule_for_today"
+        android:title="@string/do_today"
         android:visible="true"
         tools:showAsAction="withText" />
 
