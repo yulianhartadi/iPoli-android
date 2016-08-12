@@ -61,11 +61,15 @@ import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.commands.StartQuestCommand;
+import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
@@ -350,6 +354,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         showLevelDownMessage(e.newLevel);
     }
 
+    @Subscribe
+    public void onStartQuestRequest(StartQuestRequestEvent e) {
+        new StartQuestCommand(this, e.quest, questPersistenceService).execute();
+    }
+
+    @Subscribe
+    public void onStopQuestRequest(StopQuestRequestEvent e) {
+        new StopQuestCommand(this, e.quest, questPersistenceService).execute();
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         navigationView.setCheckedItem(item.getItemId());
@@ -438,35 +452,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             Toast.makeText(this, R.string.show_invite_failed, Toast.LENGTH_LONG).show();
         }
     }
-
-//    private void checkForCalendarPermission() {
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.READ_CALENDAR)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.READ_CALENDAR},
-//                    Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
-//        } else {
-//            eventBus.post(new SyncCalendarRequestEvent(EventSource.OPTIONS_MENU));
-//            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.length > 0
-//                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
-//                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
-//                Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-//            } else if (grantResults.length > 0
-//                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-//                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
-//            }
-//        }
-//    }
 
     @Subscribe
     public void onPickAvatarRequest(PickAvatarRequestEvent e) {

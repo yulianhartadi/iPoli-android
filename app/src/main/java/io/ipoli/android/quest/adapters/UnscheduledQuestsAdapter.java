@@ -3,14 +3,18 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -22,8 +26,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**
@@ -82,9 +90,43 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
         holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
         holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
-//        holder.schedule.setOnClickListener(v -> {
-//            eventBus.post(new ScheduleQuestRequestEvent(vm));
-//        });
+
+        holder.moreMenu.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+            popupMenu.inflate(R.menu.calendar_quest_menu);
+
+            MenuItem start = popupMenu.getMenu().findItem(R.id.quest_start);
+            start.setTitle(q.isStarted() ? R.string.stop : R.string.start);
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.quest_start:
+                        if(!q.isStarted()) {
+                            eventBus.post(new StartQuestRequestEvent(q));
+                        } else {
+                            eventBus.post(new StopQuestRequestEvent(q));
+                        }
+                        return true;
+                    case R.id.quest_snooze:
+                        return true;
+                    case R.id.quest_snooze_for_tomorrow:
+                        return true;
+                    case R.id.quest_duplicate:
+                        return true;
+                    case R.id.quest_edit:
+                        eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+                        return true;
+                    case R.id.quest_delete:
+                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+                        Toast.makeText(view.getContext(), R.string.quest_deleted, Toast.LENGTH_SHORT).show();
+                        return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+        });
+
     }
 
     @Override
@@ -132,8 +174,8 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @BindView(R.id.quest_challenge_indicator)
         View challengeIndicator;
 
-//        @BindView(R.id.quest_schedule)
-//        View schedule;
+        @BindView(R.id.quest_more_menu)
+        ImageButton moreMenu;
 
         public ViewHolder(View v) {
             super(v);

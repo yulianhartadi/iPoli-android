@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -31,8 +32,12 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
@@ -154,7 +159,41 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         v.findViewById(R.id.quest_more_menu).setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(v.getContext(), view);
-            popupMenu.inflate(R.menu.calendar_quest_menu);
+            boolean isCompleted = Quest.isCompleted(q);
+            int menuRes =  isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
+            popupMenu.inflate(menuRes);
+
+            if(!isCompleted) {
+                MenuItem start = popupMenu.getMenu().findItem(R.id.quest_start);
+                start.setTitle(q.isStarted() ? R.string.stop : R.string.start);
+            }
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.quest_start:
+                        if(!q.isStarted()) {
+                            eventBus.post(new StartQuestRequestEvent(q));
+                        } else {
+                            eventBus.post(new StopQuestRequestEvent(q));
+                        }
+                        return true;
+                    case R.id.quest_snooze:
+                        return true;
+                    case R.id.quest_snooze_for_tomorrow:
+                        return true;
+                    case R.id.quest_duplicate:
+                        return true;
+                    case R.id.quest_edit:
+                        eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                        return true;
+                    case R.id.quest_delete:
+                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                        Toast.makeText(view.getContext(), R.string.quest_deleted, Toast.LENGTH_SHORT).show();
+                        return true;
+                }
+                return false;
+            });
+
             popupMenu.show();
         });
 
