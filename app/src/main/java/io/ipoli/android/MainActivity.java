@@ -51,6 +51,7 @@ import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
@@ -351,9 +352,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         quest.setCreatedAt(new Date().getTime());
         quest.setUpdatedAt(new Date().getTime());
         quest.setActualStartDate(null);
-        quest.setEndDate(date);
+        quest.setEndDateFromLocal(date);
         quest.setCompletedAtMinute(null);
         quest.setCompletedAtDate(null);
+        if(DateUtils.isSameDay(new Date(), date)) {
+            quest.setStartMinute(null);
+        }
         List<Reminder> reminders = quest.getReminders();
         List<Reminder> newReminders = new ArrayList<>();
         int notificationId = new Random().nextInt();
