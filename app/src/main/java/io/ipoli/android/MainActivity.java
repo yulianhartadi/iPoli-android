@@ -26,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.LocalDate;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -41,6 +43,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
@@ -337,7 +340,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
-        if(e.date == null) {
+        if (e.date == null) {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, date -> {
                 duplicateQuest(e.quest, date);
             });
@@ -348,6 +351,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void duplicateQuest(Quest quest, Date date) {
+        boolean isForSameDay = DateUtils.isSameDay(quest.getEndDate(), date);
         quest.setId(null);
         quest.setCreatedAt(new Date().getTime());
         quest.setUpdatedAt(new Date().getTime());
@@ -355,16 +359,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         quest.setEndDateFromLocal(date);
         quest.setCompletedAtMinute(null);
         quest.setCompletedAtDate(null);
-        if(DateUtils.isSameDay(new Date(), date)) {
+        if (isForSameDay) {
             quest.setStartMinute(null);
         }
         List<Reminder> reminders = quest.getReminders();
         List<Reminder> newReminders = new ArrayList<>();
         int notificationId = new Random().nextInt();
-        for(Reminder r : reminders) {
+        for (Reminder r : reminders) {
             newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
         }
         eventBus.post(new NewQuestEvent(quest, newReminders, EventSource.CALENDAR));
+        Snackbar snackbar = Snackbar
+                .make(contentContainer,
+                        R.string.quest_duplicated,
+                        Snackbar.LENGTH_LONG);
+
+        if (!isForSameDay) {
+            snackbar.setAction(R.string.view, view -> {
+                eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), CurrentDayChangedEvent.Source.CALENDAR));
+            });
+        }
+
+        snackbar.show();
     }
 
     @Subscribe

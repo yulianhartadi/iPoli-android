@@ -307,4 +307,6 @@
     <string name="do_today">Do today</string>
     <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
     <string name="duplicate_date_picker_title">Duplicate quest for</string>
+    <string name="quest_duplicated">Quest duplicated</string>
+    <string name="view">View</string>
 </resources>
