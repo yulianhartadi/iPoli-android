@@ -66,10 +66,10 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.edit_repeating_quest:
-                        eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+                        eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
                         return true;
                     case R.id.delete_repeating_quest:
-                        eventBus.post(new EditRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+                        eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
                         return true;
                 }
                 return false;
