@@ -29,6 +29,9 @@ import com.squareup.otto.Subscribe;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -65,7 +68,9 @@ import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.StartQuestRequestEvent;
@@ -75,8 +80,10 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
@@ -325,6 +332,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Intent i = new Intent(this, EditQuestActivity.class);
         i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
+        if(e.date == null) {
+            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, date -> {
+                duplicateQuest(e.quest, date);
+            });
+            fragment.show(getSupportFragmentManager());
+        } else {
+            duplicateQuest(e.quest, e.date);
+        }
+    }
+
+    private void duplicateQuest(Quest quest, Date date) {
+        quest.setId(null);
+        quest.setCreatedAt(new Date().getTime());
+        quest.setUpdatedAt(new Date().getTime());
+        quest.setActualStartDate(null);
+        quest.setEndDate(date);
+        quest.setCompletedAtMinute(null);
+        quest.setCompletedAtDate(null);
+        List<Reminder> reminders = quest.getReminders();
+        List<Reminder> newReminders = new ArrayList<>();
+        int notificationId = new Random().nextInt();
+        for(Reminder r : reminders) {
+            newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
+        }
+        eventBus.post(new NewQuestEvent(quest, newReminders, EventSource.CALENDAR));
     }
 
     @Subscribe

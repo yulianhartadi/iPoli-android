@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,12 +28,14 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
@@ -97,6 +100,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
+        Context context = parent.getContext();
+
         Category category = Quest.getCategory(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(category.color500);
         v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.color500);
@@ -106,7 +111,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         ViewGroup detailsRoot = (ViewGroup) v.findViewById(R.id.quest_details_container);
 
-        CheckBox checkBox = createCheckBox(q, v.getContext());
+        CheckBox checkBox = createCheckBox(q, context);
         detailsRoot.addView(checkBox, 0);
 
         v.setOnClickListener(view -> {
@@ -114,7 +119,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             if (!Quest.isCompleted(q)) {
                 eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
             } else {
-                Toast.makeText(v.getContext(), R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -157,13 +162,14 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
 
-        v.findViewById(R.id.quest_more_menu).setOnClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(v.getContext(), view);
+        View moreMenu = v.findViewById(R.id.quest_more_menu);
+        moreMenu.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(context, view);
             boolean isCompleted = Quest.isCompleted(q);
-            int menuRes =  isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
+            int menuRes = isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
             popupMenu.inflate(menuRes);
 
-            if(!isCompleted) {
+            if (!isCompleted) {
                 MenuItem start = popupMenu.getMenu().findItem(R.id.quest_start);
                 start.setTitle(q.isStarted() ? R.string.stop : R.string.start);
             }
@@ -171,7 +177,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.quest_start:
-                        if(!q.isStarted()) {
+                        if (!q.isStarted()) {
                             eventBus.post(new StartQuestRequestEvent(q));
                         } else {
                             eventBus.post(new StopQuestRequestEvent(q));
@@ -182,13 +188,30 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
                     case R.id.quest_snooze_for_tomorrow:
                         return true;
                     case R.id.quest_duplicate:
+                        PopupMenu datesPopupMenu = new PopupMenu(context, moreMenu);
+                        datesPopupMenu.inflate(R.menu.duplicate_dates_menu);
+                        datesPopupMenu.setOnMenuItemClickListener(dateItem -> {
+                            switch (dateItem.getItemId()) {
+                                case R.id.today:
+                                    eventBus.post(new DuplicateQuestRequestEvent(q, new Date()));
+                                    return true;
+                                case R.id.tomorrow:
+                                    eventBus.post(new DuplicateQuestRequestEvent(q, DateUtils.getTomorrow()));
+                                    return true;
+                                case R.id.custom:
+                                    eventBus.post(new DuplicateQuestRequestEvent(q));
+                                    return true;
+                            }
+                            return false;
+                        });
+                        datesPopupMenu.show();
                         return true;
                     case R.id.quest_edit:
                         eventBus.post(new EditQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
                         return true;
                     case R.id.quest_delete:
                         eventBus.post(new DeleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
-                        Toast.makeText(view.getContext(), R.string.quest_deleted, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                         return true;
                 }
                 return false;
