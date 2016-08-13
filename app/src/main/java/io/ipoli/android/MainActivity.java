@@ -58,6 +58,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -376,7 +377,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (!isForSameDay) {
             snackbar.setAction(R.string.view, view -> {
-                eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), CurrentDayChangedEvent.Source.CALENDAR));
+                Time scrollToTime = null;
+                if(!isForSameDay && quest.getStartMinute() > -1) {
+                    scrollToTime = Time.of(quest.getStartMinute());
+                }
+                eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
             });
         }
 

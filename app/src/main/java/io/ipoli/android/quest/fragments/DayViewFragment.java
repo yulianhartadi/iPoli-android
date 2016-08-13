@@ -52,6 +52,7 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.ScrollToTimeEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
@@ -429,6 +430,11 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         Intent i = new Intent(getActivity(), QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivity(i);
+    }
+
+    @Subscribe
+    public void onScrollToTime(ScrollToTimeEvent e) {
+        calendarDayView.smoothScrollToTime(e.time);
     }
 
     private Quest savePlaceholderQuest(Quest quest) {

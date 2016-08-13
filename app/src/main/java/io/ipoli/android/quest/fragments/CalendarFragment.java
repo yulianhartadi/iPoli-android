@@ -44,6 +44,7 @@ import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -210,6 +211,9 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         toolbarCalendar.setCurrentDate(currentMidDate.toDate());
 
         calendarPager.setCurrentItem(MID_POSITION, false);
+        if(e.time != null) {
+            eventBus.post(new ScrollToTimeEvent(e.time));
+        }
     }
 
     private FragmentStatePagerAdapter createAdapter() {
