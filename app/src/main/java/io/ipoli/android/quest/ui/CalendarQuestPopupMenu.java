@@ -52,23 +52,7 @@ public class CalendarQuestPopupMenu {
                 case R.id.quest_snooze_for_tomorrow:
                     return true;
                 case R.id.quest_duplicate:
-                    PopupMenu datesPopupMenu = new PopupMenu(context, view);
-                    datesPopupMenu.inflate(R.menu.duplicate_dates_menu);
-                    datesPopupMenu.setOnMenuItemClickListener(dateItem -> {
-                        switch (dateItem.getItemId()) {
-                            case R.id.today:
-                                eventBus.post(new DuplicateQuestRequestEvent(quest, new Date()));
-                                return true;
-                            case R.id.tomorrow:
-                                eventBus.post(new DuplicateQuestRequestEvent(quest, DateUtils.getTomorrow()));
-                                return true;
-                            case R.id.custom:
-                                eventBus.post(new DuplicateQuestRequestEvent(quest));
-                                return true;
-                        }
-                        return false;
-                    });
-                    datesPopupMenu.show();
+                    showDuplicateMenu(view, quest, eventBus);
                     return true;
                 case R.id.quest_edit:
                     eventBus.post(new EditQuestRequestEvent(quest, source));
@@ -82,5 +66,25 @@ public class CalendarQuestPopupMenu {
         });
 
         popupMenu.show();
+    }
+
+    private static void showDuplicateMenu(View view, Quest quest, Bus eventBus) {
+        PopupMenu datesPopupMenu = new PopupMenu(view.getContext(), view);
+        datesPopupMenu.inflate(R.menu.duplicate_dates_menu);
+        datesPopupMenu.setOnMenuItemClickListener(dateItem -> {
+            switch (dateItem.getItemId()) {
+                case R.id.today:
+                    eventBus.post(new DuplicateQuestRequestEvent(quest, new Date()));
+                    return true;
+                case R.id.tomorrow:
+                    eventBus.post(new DuplicateQuestRequestEvent(quest, DateUtils.getTomorrow()));
+                    return true;
+                case R.id.custom:
+                    eventBus.post(new DuplicateQuestRequestEvent(quest));
+                    return true;
+            }
+            return false;
+        });
+        datesPopupMenu.show();
     }
 }
