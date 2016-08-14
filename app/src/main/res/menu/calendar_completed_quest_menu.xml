@@ -4,9 +4,11 @@
 
     <item
         android:id="@+id/quest_duplicate"
-        android:title="Duplicate..."
+        android:title="Duplicate"
         android:visible="true"
-        tools:showAsAction="withText" />
+        tools:showAsAction="withText">
+        <menu />
+    </item>
 
     <item
         android:id="@+id/quest_delete"

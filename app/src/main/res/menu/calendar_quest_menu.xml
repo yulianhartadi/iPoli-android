@@ -10,9 +10,11 @@
 
     <item
         android:id="@+id/quest_snooze"
-        android:title="Snooze..."
+        android:title="Snooze"
         android:visible="true"
-        tools:showAsAction="withText" />
+        tools:showAsAction="withText" >
+        <menu />
+    </item>
 
     <item
         android:id="@+id/quest_snooze_for_tomorrow"
@@ -25,26 +27,7 @@
         android:title="Duplicate"
         android:visible="true"
         tools:showAsAction="withText">
-        <menu>
-            <!--<item-->
-                <!--android:id="@+id/duplicate_today"-->
-                <!--android:title="Today"-->
-                <!--android:visible="true"-->
-                <!--tools:showAsAction="withText" />-->
-
-            <!--<item-->
-                <!--android:id="@+id/duplicate_tomorrow"-->
-                <!--android:title="Tomorrow"-->
-                <!--android:visible="true"-->
-                <!--tools:showAsAction="withText" />-->
-
-            <!--<item-->
-                <!--android:id="@+id/duplicate_custom"-->
-                <!--android:title="Custom"-->
-                <!--android:visible="true"-->
-                <!--tools:showAsAction="withText" />-->
-        </menu>
-
+        <menu/>
     </item>
 
     <item

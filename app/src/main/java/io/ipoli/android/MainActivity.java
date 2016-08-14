@@ -78,6 +78,7 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
+import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestRequestEvent;
 import io.ipoli.android.quest.events.StopQuestRequestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
@@ -386,6 +387,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         snackbar.show();
+    }
+
+    @Subscribe
+    public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
+        Quest quest = e.quest;
+        if(e.showDatePicker) {
+
+        } else if(e.showTimePicker) {
+
+        } else {
+            if(e.minutes > 0) {
+                quest.setStartMinute(quest.getStartMinute() + e.minutes);
+            } else {
+                quest.setEndDateFromLocal(e.date);
+            }
+            questPersistenceService.save(quest);
+        }
     }
 
     @Subscribe
