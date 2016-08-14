@@ -57,7 +57,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/challenge_text"
+        android:layout_alignTop="@+id/challenge_category_container"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:background="?android:attr/selectableItemBackground"

@@ -79,7 +79,6 @@
             android:id="@+id/quest_more_menu"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
