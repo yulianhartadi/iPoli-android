@@ -25,7 +25,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.ui.CalendarQuestPopupMenu;
+import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**

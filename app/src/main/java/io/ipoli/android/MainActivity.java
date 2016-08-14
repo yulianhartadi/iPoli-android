@@ -343,17 +343,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
+        boolean showAction = e.source != EventSource.OVERVIEW;
         if (e.date == null) {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, date -> {
-                duplicateQuest(e.quest, date);
+                duplicateQuest(e.quest, date, showAction);
             });
             fragment.show(getSupportFragmentManager());
         } else {
-            duplicateQuest(e.quest, e.date);
+            duplicateQuest(e.quest, e.date, showAction);
         }
     }
 
-    private void duplicateQuest(Quest quest, Date date) {
+    private void duplicateQuest(Quest quest, Date date, boolean showAction) {
         boolean isForSameDay = DateUtils.isSameDay(quest.getEndDate(), date);
         quest.setId(null);
         quest.setCreatedAt(new Date().getTime());
@@ -375,7 +376,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
-        if (!isForSameDay) {
+        if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
                 Time scrollToTime = null;
                 if(!isForSameDay && quest.getStartMinute() > -1) {
@@ -390,11 +391,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
+        boolean showAction = e.source != EventSource.OVERVIEW;
         Quest quest = e.quest;
         if(e.showDatePicker) {
-            pickDateAndSnoozeQuest(quest);
+            pickDateAndSnoozeQuest(quest, showAction);
         } else if(e.showTimePicker) {
-            pickTimeAndSnoozeQuest(quest);
+            pickTimeAndSnoozeQuest(quest, showAction);
         } else {
             boolean isDateChanged = false;
             if(e.minutes > 0) {
@@ -410,26 +412,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 isDateChanged = true;
                 quest.setEndDateFromLocal(e.date);
             }
-            saveSnoozedQuest(quest, isDateChanged);
+            saveSnoozedQuest(quest, isDateChanged, showAction);
         }
     }
 
-    private void pickTimeAndSnoozeQuest(Quest quest) {
+    private void pickTimeAndSnoozeQuest(Quest quest, boolean showAction) {
         Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
         TimePickerFragment.newInstance(false, time, newTime -> {
            quest.setStartMinute(newTime.toMinutesAfterMidnight());
-            saveSnoozedQuest(quest, false);
+            saveSnoozedQuest(quest, false, showAction);
         }).show(getSupportFragmentManager());
     }
 
-    private void pickDateAndSnoozeQuest(Quest quest) {
+    private void pickDateAndSnoozeQuest(Quest quest, boolean showAction) {
         DatePickerFragment.newInstance(new Date(), true, date -> {
             quest.setEndDateFromLocal(date);
-            saveSnoozedQuest(quest, true);
+            saveSnoozedQuest(quest, true, showAction);
         }).show(getSupportFragmentManager());
     }
 
-    private void saveSnoozedQuest(Quest quest, boolean isDateChanged) {
+    private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
         questPersistenceService.save(quest);
         String message = getString(R.string.quest_snoozed);
         if(quest.getEndDate() == null) {
@@ -439,7 +441,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
 
-        if (isDateChanged) {
+        if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
                 if(quest.getEndDate() == null) {
                     changeCurrentFragment(new InboxFragment());

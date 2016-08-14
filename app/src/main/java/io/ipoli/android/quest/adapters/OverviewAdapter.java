@@ -21,6 +21,7 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,9 +32,17 @@ import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
+import io.ipoli.android.quest.ui.menus.DuplicateDateItem;
+import io.ipoli.android.quest.ui.menus.DuplicateQuestItemsHelper;
+import io.ipoli.android.quest.ui.menus.SnoozeQuestItemsHelper;
+import io.ipoli.android.quest.ui.menus.SnoozeTimeItem;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 /**
@@ -150,17 +159,50 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             questHolder.moreMenu.setOnClickListener(v -> {
                 eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
-                PopupMenu popupMenu = new PopupMenu(context, v);
-                popupMenu.inflate(R.menu.quest_actions_menu);
-                MenuItem scheduleQuestItem = popupMenu.getMenu().findItem(R.id.schedule_quest);
+                PopupMenu pm = new PopupMenu(context, v);
+                pm.inflate(R.menu.overview_quest_actions_menu);
+
+                MenuItem startItem = pm.getMenu().findItem(R.id.quest_start);
+                if(q.isScheduledForToday()) {
+                    startItem.setTitle(q.isStarted() ? R.string.stop : R.string.start);
+                } else {
+                    startItem.setVisible(false);
+                }
+
+                MenuItem scheduleQuestItem = pm.getMenu().findItem(R.id.schedule_quest);
                 scheduleQuestItem.setTitle(q.isScheduledForToday() ? context.getString(R.string.snooze_for_tomorrow) : context.getString(R.string.do_today));
-                popupMenu.setOnMenuItemClickListener(item -> {
+
+                Map<Integer, DuplicateDateItem> itemIdToDuplicateDateItem = DuplicateQuestItemsHelper
+                        .createDuplicateDateMap(context, pm.getMenu().findItem(R.id.quest_duplicate));
+
+                Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = SnoozeQuestItemsHelper
+                        .createSnoozeTimeMap(q, pm.getMenu().findItem(R.id.quest_snooze));
+
+                pm.setOnMenuItemClickListener(item -> {
+                    if (itemIdToDuplicateDateItem.containsKey(item.getItemId())) {
+                        eventBus.post(new DuplicateQuestRequestEvent(q, itemIdToDuplicateDateItem.get(item.getItemId()).date, EventSource.OVERVIEW));
+                        return true;
+                    }
+
+                    if (itemIdToSnoozeTimeItem.containsKey(item.getItemId())) {
+                        SnoozeTimeItem snoozeTimeItem = itemIdToSnoozeTimeItem.get(item.getItemId());
+                        eventBus.post(new SnoozeQuestRequestEvent(q, snoozeTimeItem.minutes, snoozeTimeItem.date, snoozeTimeItem.pickTime, snoozeTimeItem.pickDate, EventSource.OVERVIEW));
+                        return true;
+                    }
+
                     switch (item.getItemId()) {
-                        case R.id.schedule_quest:
-                            eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
+                        case R.id.quest_start:
+                            if (!q.isStarted()) {
+                                eventBus.post(new StartQuestRequestEvent(q));
+                            } else {
+                                eventBus.post(new StopQuestRequestEvent(q));
+                            }
                             return true;
                         case R.id.complete_quest:
                             eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.schedule_quest:
+                            eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
                             return true;
                         case R.id.edit_quest:
                             eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
@@ -171,7 +213,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                     return false;
                 });
-                popupMenu.show();
+                pm.show();
             });
 
             questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));

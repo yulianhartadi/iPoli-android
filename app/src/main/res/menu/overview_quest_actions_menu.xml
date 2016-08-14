@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <item
         android:id="@+id/quest_start"
         android:title="@string/start"
@@ -9,8 +8,14 @@
         tools:showAsAction="withText" />
 
     <item
-        android:id="@+id/quest_snooze_for_tomorrow"
-        android:title="Snooze for tomorrow"
+        android:id="@+id/complete_quest"
+        android:title="Mark as done"
+        android:visible="true"
+        tools:showAsAction="withText" />
+
+    <item
+        android:id="@+id/schedule_quest"
+        android:title="@string/do_today"
         android:visible="true"
         tools:showAsAction="withText" />
 
@@ -31,13 +36,13 @@
     </item>
 
     <item
-        android:id="@+id/quest_edit"
+        android:id="@+id/edit_quest"
         android:title="Edit"
         android:visible="true"
         tools:showAsAction="withText" />
 
     <item
-        android:id="@+id/quest_delete"
+        android:id="@+id/delete_quest"
         android:title="Delete"
         android:visible="true"
         tools:showAsAction="withText" />
