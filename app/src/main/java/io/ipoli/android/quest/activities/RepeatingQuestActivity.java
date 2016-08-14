@@ -26,6 +26,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -42,6 +43,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
@@ -151,6 +153,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        eventBus.register(this);
         String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
         repeatingQuestPersistenceService.findById(repeatingQuestId, repeatingQuest -> {
             if (repeatingQuest == null) {
@@ -162,6 +165,13 @@ public class RepeatingQuestActivity extends BaseActivity {
             displayRepeatingQuest();
         });
     }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
 
     private Pair<LocalDate, LocalDate> getCurrentInterval() {
         LocalDate today = LocalDate.now();
@@ -472,4 +482,10 @@ public class RepeatingQuestActivity extends BaseActivity {
         return 0;
     }
 
+    @Subscribe
+    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
+        if(!e.hasInternet) {
+            showNoInternetActivity();
+        }
+    }
 }

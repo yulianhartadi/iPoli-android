@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
@@ -27,6 +28,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
@@ -86,6 +88,18 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         questList.setAdapter(pickQuestsAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
         questPersistenceService.findAllIncompleteOrMostImportantForDate(LocalDate.now(), this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
     }
 
     @Override
@@ -182,5 +196,12 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         }
 
         pickQuestsAdapter.setViewModels(viewModels);
+    }
+
+    @Subscribe
+    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
+        if(!e.hasInternet) {
+            showNoInternetActivity();
+        }
     }
 }

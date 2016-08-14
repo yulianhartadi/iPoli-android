@@ -16,6 +16,7 @@ import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
+import io.ipoli.android.app.receivers.NetworkChangeReceiver;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
@@ -164,5 +165,7 @@ public interface AppComponent {
     void inject(ScheduleNextRemindersReceiver scheduleNextRemindersReceiver);
 
     void inject(SignInActivity signInActivity);
+
+    void inject(NetworkChangeReceiver networkChangeReceiver);
 }
 

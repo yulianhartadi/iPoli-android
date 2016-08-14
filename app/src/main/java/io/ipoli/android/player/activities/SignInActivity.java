@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
@@ -13,6 +14,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -45,5 +47,25 @@ public class SignInActivity extends BaseActivity {
             });
 
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+
+    @Subscribe
+    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
+        if(!e.hasInternet) {
+            showNoInternetActivity();
+        }
     }
 }

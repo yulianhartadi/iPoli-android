@@ -20,6 +20,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.adapters.AvatarAdapter;
 import io.ipoli.android.player.events.AvatarPickedEvent;
@@ -71,4 +72,10 @@ public class PickAvatarActivity extends BaseActivity {
         finish();
     }
 
+    @Subscribe
+    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
+        if(!e.hasInternet) {
+            showNoInternetActivity();
+        }
+    }
 }

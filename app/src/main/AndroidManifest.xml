@@ -111,7 +111,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
@@ -134,19 +133,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".player.activities.LevelUpActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
-
         <activity
             android:name=".challenge.activities.ChallengeCompleteActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
-
+        <activity
+            android:name=".app.activities.NoInternetActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -245,6 +246,13 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
+        <receiver android:name=".app.receivers.NetworkChangeReceiver"
+            android:exported="true" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -47,6 +47,7 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
@@ -57,6 +58,7 @@ import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
@@ -144,6 +146,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetActivity();
+            return;
+        }
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivity(new Intent(this, SignInActivity.class));
@@ -605,5 +612,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void startOverview() {
         changeCurrentFragment(new OverviewFragment());
+    }
+
+    @Subscribe
+    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
+        if(!e.hasInternet) {
+            showNoInternetActivity();
+        }
     }
 }
