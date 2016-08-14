@@ -47,7 +47,7 @@ import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         appComponent().inject(this);
         ButterKnife.bind(this);
 
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetActivity();
             return;
         }
@@ -386,7 +386,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
                 Time scrollToTime = null;
-                if(!isForSameDay && quest.getStartMinute() > -1) {
+                if (!isForSameDay && quest.getStartMinute() > -1) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
                 eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
@@ -400,15 +400,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
         boolean showAction = e.source != EventSource.OVERVIEW;
         Quest quest = e.quest;
-        if(e.showDatePicker) {
+        if (e.showDatePicker) {
             pickDateAndSnoozeQuest(quest, showAction);
-        } else if(e.showTimePicker) {
+        } else if (e.showTimePicker) {
             pickTimeAndSnoozeQuest(quest, showAction);
         } else {
             boolean isDateChanged = false;
-            if(e.minutes > 0) {
+            if (e.minutes > 0) {
                 int newMinutes = quest.getStartMinute() + e.minutes;
-                if(newMinutes >= Time.MINUTES_IN_A_DAY) {
+                if (newMinutes >= Time.MINUTES_IN_A_DAY) {
                     newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
                     quest.setEndDateFromLocal(new LocalDate(quest.getEndDate()).plusDays(1).toDate());
                     isDateChanged = true;
@@ -426,7 +426,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void pickTimeAndSnoozeQuest(Quest quest, boolean showAction) {
         Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
         TimePickerFragment.newInstance(false, time, newTime -> {
-           quest.setStartMinute(newTime.toMinutesAfterMidnight());
+            quest.setStartMinute(newTime.toMinutesAfterMidnight());
             saveSnoozedQuest(quest, false, showAction);
         }).show(getSupportFragmentManager());
     }
@@ -441,7 +441,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
         questPersistenceService.save(quest);
         String message = getString(R.string.quest_snoozed);
-        if(quest.getEndDate() == null) {
+        if (quest.getEndDate() == null) {
             message = getString(R.string.quest_moved_to_inbox);
         }
 
@@ -450,7 +450,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
-                if(quest.getEndDate() == null) {
+                if (quest.getEndDate() == null) {
                     changeCurrentFragment(new InboxFragment());
                 } else {
                     Time scrollToTime = null;
@@ -615,9 +615,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

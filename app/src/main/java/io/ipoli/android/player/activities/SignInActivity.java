@@ -14,7 +14,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -63,9 +63,7 @@ public class SignInActivity extends BaseActivity {
 
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

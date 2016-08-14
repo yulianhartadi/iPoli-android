@@ -28,7 +28,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
@@ -199,9 +199,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     }
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

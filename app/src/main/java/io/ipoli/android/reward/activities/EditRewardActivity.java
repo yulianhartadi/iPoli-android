@@ -26,7 +26,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
@@ -218,9 +218,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     }
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

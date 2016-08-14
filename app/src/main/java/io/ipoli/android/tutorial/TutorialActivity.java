@@ -33,7 +33,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.NoInternetActivity;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
@@ -214,10 +214,8 @@ public class TutorialActivity extends AppIntro2 {
     }
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 
     private void showNoInternetActivity() {

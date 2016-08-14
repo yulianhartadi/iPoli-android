@@ -39,7 +39,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NetworkConnectionChangedEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.DateUtils;
@@ -411,7 +411,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public void onCategoryChanged(Category category) {
         colorLayout(category);
-        if(editMode == EditMode.ADD) {
+        if (editMode == EditMode.ADD) {
             eventBus.post(new NewChallengeCategoryChangedEvent(category));
         }
     }
@@ -425,9 +425,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     @Subscribe
-    public void onNetworkChanged(NetworkConnectionChangedEvent e) {
-        if(!e.hasInternet) {
-            showNoInternetActivity();
-        }
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }
