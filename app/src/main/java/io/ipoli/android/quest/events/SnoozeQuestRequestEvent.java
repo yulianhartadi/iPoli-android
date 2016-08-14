@@ -22,4 +22,12 @@ public class SnoozeQuestRequestEvent {
         this.showTimePicker = showTimePicker;
         this.showDatePicker = showDatePicker;
     }
+
+    public SnoozeQuestRequestEvent(Quest quest, Date date) {
+        this.quest = quest;
+        this.date = date;
+        this.minutes = -1;
+        this.showDatePicker = false;
+        this.showTimePicker = false;
+    }
 }

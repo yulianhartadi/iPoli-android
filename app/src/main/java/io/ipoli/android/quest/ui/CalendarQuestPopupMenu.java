@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,59 +34,35 @@ import io.ipoli.android.quest.events.StopQuestRequestEvent;
  */
 public class CalendarQuestPopupMenu {
     private static Context context;
+    private static Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem;
+    private static Map<Integer, DuplicateDateItem> itemIdToDateItem;
 
     public static void show(View view, Quest quest, Bus eventBus, EventSource source) {
         context = view.getContext();
-        PopupMenu popupMenu = new PopupMenu(context, view);
+        PopupMenu pm = new PopupMenu(context, view);
         boolean isCompleted = Quest.isCompleted(quest);
         int menuRes = isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
-        popupMenu.inflate(menuRes);
+        pm.inflate(menuRes);
+
+        MenuItem duplicateItem = pm.getMenu().findItem(R.id.quest_duplicate);
+        itemIdToDateItem = initDuplicateDatesMap(duplicateItem);
+        itemIdToSnoozeTimeItem = new HashMap<>();
 
         if (!isCompleted) {
-            MenuItem start = popupMenu.getMenu().findItem(R.id.quest_start);
+            MenuItem start = pm.getMenu().findItem(R.id.quest_start);
             start.setTitle(quest.isStarted() ? R.string.stop : R.string.start);
-        }
 
-        MenuItem duplicateItem = popupMenu.getMenu().findItem(R.id.quest_duplicate);
-        Map<Integer, DuplicateDateItem> itemIdToDate = initDuplicateDatesMap(duplicateItem);
-
-        Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = new HashMap<>();
-
-        if (!isCompleted) {
-            MenuItem snoozeItem = popupMenu.getMenu().findItem(R.id.quest_snooze);
             if (quest.isStarted()) {
-                snoozeItem.setVisible(false);
+                hideItemsIfQuestStarted(pm);
             } else {
-                List<SnoozeTimeItem> snoozeTimeItems = new ArrayList<>();
-                if (quest.getStartMinute() >= 0) {
-                    snoozeTimeItems.add(new SnoozeTimeItem("10 min", 10));
-                    snoozeTimeItems.add(new SnoozeTimeItem("15 min", 15));
-                    snoozeTimeItems.add(new SnoozeTimeItem("30 min", 30));
-                    snoozeTimeItems.add(new SnoozeTimeItem("1 hour", 60));
-                }
-                snoozeTimeItems.add(new SnoozeTimeItem("Tomorrow", DateUtils.getTomorrow()));
-                snoozeTimeItems.add(new SnoozeTimeItem("Next week", new LocalDate().plusDays(7).toDate()));
-                snoozeTimeItems.add(new SnoozeTimeItem("Move to inbox", null));
-                SnoozeTimeItem pickTime = new SnoozeTimeItem("Pick time");
-                pickTime.pickTime = true;
-                snoozeTimeItems.add(pickTime);
-                SnoozeTimeItem pickDate = new SnoozeTimeItem("Pick date");
-                pickDate.pickDate = true;
-                snoozeTimeItems.add(pickDate);
-
-
-                for (SnoozeTimeItem item : snoozeTimeItems) {
-                    int id = new Random().nextInt();
-                    itemIdToSnoozeTimeItem.put(id, item);
-                    snoozeItem.getSubMenu().add(Menu.NONE, id, Menu.NONE, item.title);
-                }
+                itemIdToSnoozeTimeItem = initSnoozeTimeMap(quest, pm.getMenu().findItem(R.id.quest_snooze));
             }
         }
 
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            if (itemIdToDate.containsKey(item.getItemId())) {
-                eventBus.post(new DuplicateQuestRequestEvent(quest, itemIdToDate.get(item.getItemId()).date));
+        pm.setOnMenuItemClickListener(item -> {
+            if (itemIdToDateItem.containsKey(item.getItemId())) {
+                eventBus.post(new DuplicateQuestRequestEvent(quest, itemIdToDateItem.get(item.getItemId()).date));
                 return true;
             }
 
@@ -106,10 +80,8 @@ public class CalendarQuestPopupMenu {
                         eventBus.post(new StopQuestRequestEvent(quest));
                     }
                     return true;
-                case R.id.quest_snooze:
-                    PopupMenu snoozePopupMenu = new PopupMenu(context, view);
-                    return true;
                 case R.id.quest_snooze_for_tomorrow:
+                    eventBus.post(new SnoozeQuestRequestEvent(quest, DateUtils.getTomorrow()));
                     return true;
                 case R.id.quest_edit:
                     eventBus.post(new EditQuestRequestEvent(quest, source));
@@ -122,7 +94,48 @@ public class CalendarQuestPopupMenu {
             return false;
         });
 
-        popupMenu.show();
+        pm.show();
+    }
+
+    private static void hideItemsIfQuestStarted(PopupMenu popupMenu) {
+        popupMenu.getMenu().findItem(R.id.quest_snooze).setVisible(false);
+        popupMenu.getMenu().findItem(R.id.quest_snooze_for_tomorrow).setVisible(false);
+        popupMenu.getMenu().findItem(R.id.quest_edit).setVisible(false);
+    }
+
+    private static Map<Integer, SnoozeTimeItem> initSnoozeTimeMap(Quest quest, MenuItem snoozeItem) {
+        List<SnoozeTimeItem> snoozeTimeItems = getSnoozeTimeItems(quest);
+        Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = new HashMap<>();
+        for (SnoozeTimeItem item : snoozeTimeItems) {
+            int id = new Random().nextInt();
+            itemIdToSnoozeTimeItem.put(id, item);
+            snoozeItem.getSubMenu().add(Menu.NONE, id, Menu.NONE, item.title);
+        }
+        return itemIdToSnoozeTimeItem;
+    }
+
+    @NonNull
+    private static List<SnoozeTimeItem> getSnoozeTimeItems(Quest quest) {
+        List<SnoozeTimeItem> snoozeTimeItems = new ArrayList<>();
+        if (isQuestScheduledForTime(quest)) {
+            snoozeTimeItems.add(new SnoozeTimeItem("10 min", 10));
+            snoozeTimeItems.add(new SnoozeTimeItem("15 min", 15));
+            snoozeTimeItems.add(new SnoozeTimeItem("30 min", 30));
+            snoozeTimeItems.add(new SnoozeTimeItem("1 hour", 60));
+        }
+        snoozeTimeItems.add(new SnoozeTimeItem("Tomorrow", DateUtils.getTomorrow()));
+        snoozeTimeItems.add(new SnoozeTimeItem("Move to inbox", null));
+        SnoozeTimeItem pickTime = new SnoozeTimeItem("Pick time");
+        pickTime.pickTime = true;
+        snoozeTimeItems.add(pickTime);
+        SnoozeTimeItem pickDate = new SnoozeTimeItem("Pick date");
+        pickDate.pickDate = true;
+        snoozeTimeItems.add(pickDate);
+        return snoozeTimeItems;
+    }
+
+    private static boolean isQuestScheduledForTime(Quest quest) {
+        return quest.getStartMinute() >= 0;
     }
 
     @NonNull
@@ -143,7 +156,7 @@ public class CalendarQuestPopupMenu {
         List<DuplicateDateItem> duplicateDateItems = new ArrayList<>();
         duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.today), new Date()));
         duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.tomorrow), DateUtils.getTomorrow()));
-        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.pick_a_date), null));
+        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.pick_date), null));
         return duplicateDateItems;
     }
 

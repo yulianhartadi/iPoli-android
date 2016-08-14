@@ -87,6 +87,7 @@ import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminders.data.Reminder;
@@ -371,10 +372,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
         }
         eventBus.post(new NewQuestEvent(quest, newReminders, EventSource.CALENDAR));
-        Snackbar snackbar = Snackbar
-                .make(contentContainer,
-                        R.string.quest_duplicated,
-                        Snackbar.LENGTH_LONG);
+
+        Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
         if (!isForSameDay) {
             snackbar.setAction(R.string.view, view -> {
@@ -393,17 +392,68 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
         Quest quest = e.quest;
         if(e.showDatePicker) {
-
+            pickDateAndSnoozeQuest(quest);
         } else if(e.showTimePicker) {
-
+            pickTimeAndSnoozeQuest(quest);
         } else {
+            boolean isDateChanged = false;
             if(e.minutes > 0) {
-                quest.setStartMinute(quest.getStartMinute() + e.minutes);
+                int newMinutes = quest.getStartMinute() + e.minutes;
+                if(newMinutes >= Time.MINUTES_IN_A_DAY) {
+                    newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
+                    quest.setEndDateFromLocal(new LocalDate(quest.getEndDate()).plusDays(1).toDate());
+                    isDateChanged = true;
+                }
+                quest.setStartMinute(newMinutes);
+
             } else {
+                isDateChanged = true;
                 quest.setEndDateFromLocal(e.date);
             }
-            questPersistenceService.save(quest);
+            saveSnoozedQuest(quest, isDateChanged);
         }
+    }
+
+    private void pickTimeAndSnoozeQuest(Quest quest) {
+        Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
+        TimePickerFragment.newInstance(false, time, newTime -> {
+           quest.setStartMinute(newTime.toMinutesAfterMidnight());
+            saveSnoozedQuest(quest, false);
+        }).show(getSupportFragmentManager());
+    }
+
+    private void pickDateAndSnoozeQuest(Quest quest) {
+        DatePickerFragment.newInstance(new Date(), true, date -> {
+            quest.setEndDateFromLocal(date);
+            saveSnoozedQuest(quest, true);
+        }).show(getSupportFragmentManager());
+    }
+
+    private void saveSnoozedQuest(Quest quest, boolean isDateChanged) {
+        questPersistenceService.save(quest);
+        String message = getString(R.string.quest_snoozed);
+        if(quest.getEndDate() == null) {
+            message = getString(R.string.quest_moved_to_inbox);
+        }
+
+
+        Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
+
+        if (isDateChanged) {
+            snackbar.setAction(R.string.view, view -> {
+                if(quest.getEndDate() == null) {
+                    changeCurrentFragment(new InboxFragment());
+                } else {
+                    Time scrollToTime = null;
+                    if (quest.getStartMinute() > -1) {
+                        scrollToTime = Time.of(quest.getStartMinute());
+                    }
+                    eventBus.post(new CurrentDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
+                }
+            });
+        }
+
+        snackbar.show();
     }
 
     @Subscribe
