@@ -309,4 +309,5 @@
     <string name="duplicate_date_picker_title">Duplicate quest for</string>
     <string name="quest_duplicated">Quest duplicated</string>
     <string name="view">View</string>
+    <string name="pick_a_date">Pick a date</string>
 </resources>
