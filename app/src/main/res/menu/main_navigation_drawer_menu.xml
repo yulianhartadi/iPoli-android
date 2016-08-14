@@ -46,7 +46,9 @@
             android:title="@string/rewards" />
     </group>
 
-    <group android:id="@+id/third_group">
+    <group
+        android:id="@+id/third_group"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/invite_friends"
             android:checked="false"

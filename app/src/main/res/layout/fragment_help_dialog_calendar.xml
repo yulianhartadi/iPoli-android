@@ -47,14 +47,14 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_smart_schedule" />
+            android:src="@drawable/ic_flash_on_black_24dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="@string/help_dialog_calendar_smart_schedule" />
+            android:text="@string/help_dialog_calendar_quick_add" />
     </LinearLayout>
 
 
