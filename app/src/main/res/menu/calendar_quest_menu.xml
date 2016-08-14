@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/quest_start"
+        android:title="@string/start"
+        android:visible="true"
+        tools:showAsAction="withText" />
+
+    <item
+        android:id="@+id/quest_snooze_for_tomorrow"
+        android:title="Snooze for tomorrow"
+        android:visible="true"
+        tools:showAsAction="withText" />
+
+    <item
+        android:id="@+id/quest_snooze"
+        android:title="Snooze"
+        android:visible="true"
+        tools:showAsAction="withText" >
+        <menu />
+    </item>
+
+    <item
+        android:id="@+id/quest_duplicate"
+        android:title="Duplicate"
+        android:visible="true"
+        tools:showAsAction="withText">
+        <menu/>
+    </item>
+
+    <item
+        android:id="@+id/quest_edit"
+        android:title="Edit"
+        android:visible="true"
+        tools:showAsAction="withText" />
+
+    <item
+        android:id="@+id/quest_delete"
+        android:title="Delete"
+        android:visible="true"
+        tools:showAsAction="withText" />
+</menu>

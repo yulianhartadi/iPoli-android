@@ -75,7 +75,6 @@ dependencies {
     compile 'com.github.sundeepk:compact-calendar-view:1.8.5'
     compile 'me.everything:providers-android:1.0.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
-    compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.2.2'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
 }
 

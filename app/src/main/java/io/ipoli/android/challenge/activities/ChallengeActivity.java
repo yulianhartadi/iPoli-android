@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
@@ -211,5 +213,10 @@ public class ChallengeActivity extends BaseActivity {
         public CharSequence getPageTitle(int position) {
             return null;
         }
+    }
+
+    @Subscribe
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

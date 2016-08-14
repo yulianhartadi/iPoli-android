@@ -34,6 +34,7 @@ import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
+import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 
@@ -91,6 +92,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     private View createQuest(ViewGroup parent, QuestCalendarViewModel calendarEvent, Quest q, LayoutInflater inflater) {
         final View v = inflater.inflate(R.layout.calendar_quest_item, parent, false);
 
+        Context context = parent.getContext();
+
         Category category = Quest.getCategory(q);
         v.findViewById(R.id.quest_background).setBackgroundResource(category.color500);
         v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.color500);
@@ -100,7 +103,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         ViewGroup detailsRoot = (ViewGroup) v.findViewById(R.id.quest_details_container);
 
-        CheckBox checkBox = createCheckBox(q, v.getContext());
+        CheckBox checkBox = createCheckBox(q, context);
         detailsRoot.addView(checkBox, 0);
 
         v.setOnClickListener(view -> {
@@ -108,7 +111,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             if (!Quest.isCompleted(q)) {
                 eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
             } else {
-                Toast.makeText(v.getContext(), R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -150,6 +153,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
+
+        View moreMenu = v.findViewById(R.id.quest_more_menu);
+        moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_DAY_VIEW));
 
         return v;
     }

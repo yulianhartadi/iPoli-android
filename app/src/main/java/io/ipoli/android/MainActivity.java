@@ -26,9 +26,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.joda.time.LocalDate;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -38,9 +43,11 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.ContactUsTapEvent;
+import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
@@ -48,9 +55,12 @@ import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -61,18 +71,28 @@ import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.commands.StartQuestCommand;
+import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
+import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
+import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.tutorial.TutorialActivity;
@@ -126,6 +146,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetActivity();
+            return;
+        }
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivity(new Intent(this, SignInActivity.class));
@@ -324,6 +349,123 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
+    public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
+        boolean showAction = e.source != EventSource.OVERVIEW;
+        if (e.date == null) {
+            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, date -> {
+                duplicateQuest(e.quest, date, showAction);
+            });
+            fragment.show(getSupportFragmentManager());
+        } else {
+            duplicateQuest(e.quest, e.date, showAction);
+        }
+    }
+
+    private void duplicateQuest(Quest quest, Date date, boolean showAction) {
+        boolean isForSameDay = DateUtils.isSameDay(quest.getEndDate(), date);
+        quest.setId(null);
+        quest.setCreatedAt(new Date().getTime());
+        quest.setUpdatedAt(new Date().getTime());
+        quest.setActualStartDate(null);
+        quest.setEndDateFromLocal(date);
+        quest.setCompletedAtMinute(null);
+        quest.setCompletedAtDate(null);
+        if (isForSameDay) {
+            quest.setStartMinute(null);
+        }
+        List<Reminder> reminders = quest.getReminders();
+        List<Reminder> newReminders = new ArrayList<>();
+        int notificationId = new Random().nextInt();
+        for (Reminder r : reminders) {
+            newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
+        }
+        eventBus.post(new NewQuestEvent(quest, newReminders, EventSource.CALENDAR));
+
+        Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
+
+        if (!isForSameDay && showAction) {
+            snackbar.setAction(R.string.view, view -> {
+                Time scrollToTime = null;
+                if (!isForSameDay && quest.getStartMinute() > -1) {
+                    scrollToTime = Time.of(quest.getStartMinute());
+                }
+                eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
+            });
+        }
+
+        snackbar.show();
+    }
+
+    @Subscribe
+    public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
+        boolean showAction = e.source != EventSource.OVERVIEW;
+        Quest quest = e.quest;
+        if (e.showDatePicker) {
+            pickDateAndSnoozeQuest(quest, showAction);
+        } else if (e.showTimePicker) {
+            pickTimeAndSnoozeQuest(quest, showAction);
+        } else {
+            boolean isDateChanged = false;
+            if (e.minutes > 0) {
+                int newMinutes = quest.getStartMinute() + e.minutes;
+                if (newMinutes >= Time.MINUTES_IN_A_DAY) {
+                    newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
+                    quest.setEndDateFromLocal(new LocalDate(quest.getEndDate()).plusDays(1).toDate());
+                    isDateChanged = true;
+                }
+                quest.setStartMinute(newMinutes);
+
+            } else {
+                isDateChanged = true;
+                quest.setEndDateFromLocal(e.date);
+            }
+            saveSnoozedQuest(quest, isDateChanged, showAction);
+        }
+    }
+
+    private void pickTimeAndSnoozeQuest(Quest quest, boolean showAction) {
+        Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
+        TimePickerFragment.newInstance(false, time, newTime -> {
+            quest.setStartMinute(newTime.toMinutesAfterMidnight());
+            saveSnoozedQuest(quest, false, showAction);
+        }).show(getSupportFragmentManager());
+    }
+
+    private void pickDateAndSnoozeQuest(Quest quest, boolean showAction) {
+        DatePickerFragment.newInstance(new Date(), true, date -> {
+            quest.setEndDateFromLocal(date);
+            saveSnoozedQuest(quest, true, showAction);
+        }).show(getSupportFragmentManager());
+    }
+
+    private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
+        questPersistenceService.save(quest);
+        String message = getString(R.string.quest_snoozed);
+        if (quest.getEndDate() == null) {
+            message = getString(R.string.quest_moved_to_inbox);
+        }
+
+
+        Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
+
+        if (isDateChanged && showAction) {
+            snackbar.setAction(R.string.view, view -> {
+                if (quest.getEndDate() == null) {
+                    changeCurrentFragment(new InboxFragment());
+                } else {
+                    Time scrollToTime = null;
+                    if (quest.getStartMinute() > -1) {
+                        scrollToTime = Time.of(quest.getStartMinute());
+                    }
+                    eventBus.post(new CurrentDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
+                }
+            });
+        }
+
+        snackbar.show();
+    }
+
+    @Subscribe
     public void onShowLoader(ShowLoaderEvent e) {
         if (!TextUtils.isEmpty(e.message)) {
             loadingMessage.setText(e.message);
@@ -348,6 +490,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void onLevelDown(LevelDownEvent e) {
         showLevelDownMessage(e.newLevel);
+    }
+
+    @Subscribe
+    public void onStartQuestRequest(StartQuestRequestEvent e) {
+        new StartQuestCommand(this, e.quest, questPersistenceService).execute();
+    }
+
+    @Subscribe
+    public void onStopQuestRequest(StopQuestRequestEvent e) {
+        new StopQuestCommand(this, e.quest, questPersistenceService).execute();
     }
 
     @Override
@@ -439,35 +591,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-//    private void checkForCalendarPermission() {
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.READ_CALENDAR)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.READ_CALENDAR},
-//                    Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
-//        } else {
-//            eventBus.post(new SyncCalendarRequestEvent(EventSource.OPTIONS_MENU));
-//            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.length > 0
-//                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
-//                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
-//                Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-//            } else if (grantResults.length > 0
-//                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-//                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
-//            }
-//        }
-//    }
-
     @Subscribe
     public void onPickAvatarRequest(PickAvatarRequestEvent e) {
         startActivityForResult(new Intent(MainActivity.this, PickAvatarActivity.class), PICK_PLAYER_AVATAR_REQUEST_CODE);
@@ -489,5 +612,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void startOverview() {
         changeCurrentFragment(new OverviewFragment());
+    }
+
+    @Subscribe
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

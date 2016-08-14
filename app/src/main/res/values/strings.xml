@@ -18,7 +18,6 @@
     <string name="title_activity_level_up">Level Up!</string>
     <string name="level_up_reward">You are now level %d! Your reward is:</string>
     <string name="attribution">Source: %s</string>
-    <string name="reward_no_internet">Turn on your Internet connection to see your reward</string>
     <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
@@ -84,7 +83,6 @@
     <string name="title_activity_main">iPoli</string>
 
     <string name="save">SAVE</string>
-    <string name="no_internet_repeating_quest_added">Repeating Quest will be added when Internet is available</string>
     <string name="show_tutorial">Show Tutorial</string>
     <string name="tutorial_welcome_title">Welcome to iPoli</string>
     <string name="tutorial_welcome_desc">Ready for a life-changing challenge? You are free to accept or refuse!</string>
@@ -304,4 +302,14 @@
 
     <string name="calendar">Calendar</string>
     <string name="overview">Journey Ahead</string>
+    <string name="do_today">Do today</string>
+    <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
+    <string name="duplicate_date_picker_title">Duplicate quest for</string>
+    <string name="quest_duplicated">Quest duplicated</string>
+    <string name="view">View</string>
+    <string name="pick_date">Pick date</string>
+    <string name="quest_snoozed">Quest snoozed</string>
+    <string name="quest_moved_to_inbox">Quest moved to inbox</string>
+    <string name="turn_on_internet">Sorry, you need an internet connection to play with iPoli</string>
+    <string name="title_no_internet">No internet</string>
 </resources>

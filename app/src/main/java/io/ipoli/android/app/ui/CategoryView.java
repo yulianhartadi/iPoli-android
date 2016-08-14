@@ -54,7 +54,7 @@ public class CategoryView extends LinearLayout {
                 0, 0);
 
         try {
-            gap = typedArray.getDimensionPixelSize(R.styleable.CategoryView_category_gap, DEFAULT_GAP_DP);
+            gap = typedArray.getDimensionPixelSize(R.styleable.CategoryView_category_gap, (int) ViewUtils.dpToPx(DEFAULT_GAP_DP, getResources()));
         }finally {
             typedArray.recycle();
         }

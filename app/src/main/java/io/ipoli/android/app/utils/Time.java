@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Time {
 
-    private static final int MINUTES_IN_A_DAY = 24 * 60;
+    public static final int MINUTES_IN_A_DAY = 24 * 60;
 
     private final int minutes;
 

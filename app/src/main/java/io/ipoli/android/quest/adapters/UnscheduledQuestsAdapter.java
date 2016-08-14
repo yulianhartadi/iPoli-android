@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -24,6 +25,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
 /**
@@ -82,9 +84,9 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
         holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
         holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
-//        holder.schedule.setOnClickListener(v -> {
-//            eventBus.post(new ScheduleQuestRequestEvent(vm));
-//        });
+
+        holder.moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+
     }
 
     @Override
@@ -132,8 +134,8 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         @BindView(R.id.quest_challenge_indicator)
         View challengeIndicator;
 
-//        @BindView(R.id.quest_schedule)
-//        View schedule;
+        @BindView(R.id.quest_more_menu)
+        ImageButton moreMenu;
 
         public ViewHolder(View v) {
             super(v);

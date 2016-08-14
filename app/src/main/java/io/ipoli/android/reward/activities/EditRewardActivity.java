@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
@@ -25,6 +26,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
@@ -86,6 +88,18 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
             initUI();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
     }
 
     @Override
@@ -201,5 +215,10 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
         eventBus.post(new NewRewardSavedEvent(reward));
         Toast.makeText(this, R.string.reward_saved, Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    @Subscribe
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        showNoInternetActivity();
     }
 }

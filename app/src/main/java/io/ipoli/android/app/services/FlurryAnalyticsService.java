@@ -31,6 +31,7 @@ import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -55,6 +56,7 @@ import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -76,6 +78,7 @@ import io.ipoli.android.quest.events.ScheduleQuestRequestEvent;
 import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
+import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
@@ -684,6 +687,41 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onUpdateSubQuestName(UpdateSubQuestNameEvent e) {
         log("update_sub_quest_name", EventParams.of("name", e.subQuest.getName()));
+    }
+
+    @Subscribe
+    public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
+        String time = "";
+        if(e.showTimePicker) {
+            time = "Custom time";
+        } else if(e.showDatePicker) {
+            time = "Custom date";
+        } else if(e.minutes > -1) {
+            time = e.minutes + " minutes";
+        } else if(e.date != null) {
+            time = DateUtils.isTomorrow(e.date) ? "Tomorrow" : e.date.toString();
+        } else {
+            time = "Inbox";
+        }
+
+        log("snooze_quest_request", EventParams.create()
+                .add("name", e.quest.getName())
+                .add("time", time));
+    }
+
+    @Subscribe
+    public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
+        String date = "";
+        if(e.date == null) {
+            date = "Custom";
+        } else if(DateUtils.isToday(e.date)) {
+            date = "Today";
+        } else if(DateUtils.isTomorrow(e.date)) {
+            date = "Tomorrow";
+        }
+        log("duplicate_quest_request", EventParams.create()
+                .add("name", e.quest.getName())
+                .add("date", date));
     }
 
     private FlurryEventRecordStatus log(String eventName) {

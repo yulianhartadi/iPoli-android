@@ -87,11 +87,11 @@ public class ChallengeQuestListFragment extends BaseFragment {
         adapter = new ChallengeQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(adapter);
 
-        questPersistenceService.findIncompleteNotRepeatingForChallenge(challenge.getId(), results -> {
+        questPersistenceService.listenForIncompleteNotRepeatingForChallenge(challenge.getId(), results -> {
             quests = results;
             onQuestListUpdated();
         });
-        repeatingQuestPersistenceService.findActiveForChallenge(challenge, results -> {
+        repeatingQuestPersistenceService.listenForActiveForChallenge(challenge, results -> {
             repeatingQuests = results;
             onQuestListUpdated();
         });

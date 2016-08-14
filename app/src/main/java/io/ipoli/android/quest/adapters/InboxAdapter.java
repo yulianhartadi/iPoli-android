@@ -3,6 +3,7 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -42,14 +41,12 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     public InboxAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
         prettyTime = new PrettyTime();
-        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -61,7 +58,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
-        viewBinderHelper.bind(holder.swipeLayout, q.getId());
 
         Category category = Quest.getCategory(q);
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
@@ -74,23 +70,31 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(prettyTime.format(new Date(q.getCreatedAt())));
-        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-            @Override
-            public void onOpened(SwipeRevealLayout view) {
-                super.onOpened(view);
-                eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
-            }
+
+        holder.moreMenu.setOnClickListener(v -> {
+            eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.quest_actions_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.schedule_quest:
+                        eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
+                        return true;
+                    case R.id.complete_quest:
+                        eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
+                        return true;
+                    case R.id.edit_quest:
+                        eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
+                        return true;
+                    case R.id.delete_quest:
+                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX));
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
         });
-        holder.scheduleQuest.setOnClickListener(v -> eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX)));
 
-        holder.completeQuest.setOnClickListener(v -> eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX)));
-
-        holder.editQuest.setOnClickListener(v -> {
-            holder.swipeLayout.close(true);
-            eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
-        });
-
-        holder.deleteQuest.setOnClickListener(v -> eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX)));
     }
 
     @Override
@@ -119,20 +123,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         @BindView(R.id.quest_category_indicator_image)
         ImageView categoryIndicatorImage;
 
-        @BindView(R.id.swipe_layout)
-        SwipeRevealLayout swipeLayout;
-
-        @BindView(R.id.schedule_quest)
-        ImageButton scheduleQuest;
-
-        @BindView(R.id.complete_quest)
-        ImageButton completeQuest;
-
-        @BindView(R.id.edit_quest)
-        ImageButton editQuest;
-
-        @BindView(R.id.delete_quest)
-        ImageButton deleteQuest;
+        @BindView(R.id.quest_more_menu)
+        ImageButton moreMenu;
 
         public ViewHolder(View v) {
             super(v);

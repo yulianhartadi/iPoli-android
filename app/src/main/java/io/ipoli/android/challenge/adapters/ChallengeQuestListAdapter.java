@@ -3,6 +3,7 @@ package io.ipoli.android.challenge.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -36,13 +35,10 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
     private List<ChallengeQuestViewModel> viewModels;
     private final Bus eventBus;
 
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
-
     public ChallengeQuestListAdapter(Context context, List<ChallengeQuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.viewModels = viewModels;
         this.eventBus = eventBus;
-        viewBinderHelper.setOpenOnlyOne(true);
     }
 
     @Override
@@ -53,7 +49,6 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ChallengeQuestViewModel vm = viewModels.get(position);
-        viewBinderHelper.bind(holder.swipeLayout, vm.getBaseQuest().getId());
 
         Category category = vm.getCategory();
         GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
@@ -62,16 +57,23 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
         holder.contextIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(vm.getName());
-        holder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-            @Override
-            public void onOpened(SwipeRevealLayout view) {
-                super.onOpened(view);
-                eventBus.post(new ItemActionsShownEvent(EventSource.CHALLENGE_QUEST_LIST));
-            }
-        });
-        holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
 
-        holder.deleteChallengeQuests.setOnClickListener(v -> eventBus.post(new RemoveBaseQuestFromChallengeEvent(vm.getBaseQuest())));
+        holder.moreMenu.setOnClickListener(v -> {
+            eventBus.post(new ItemActionsShownEvent(EventSource.CHALLENGE_QUEST_LIST));
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.challenge_quests_actions_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.delete_challenge_quest:
+                        eventBus.post(new RemoveBaseQuestFromChallengeEvent(vm.getBaseQuest()));
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
+        });
+
+        holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -98,11 +100,8 @@ public class ChallengeQuestListAdapter extends RecyclerView.Adapter<ChallengeQue
         @BindView(R.id.challenge_quest_category_indicator_image)
         ImageView contextIndicatorImage;
 
-        @BindView(R.id.swipe_layout)
-        SwipeRevealLayout swipeLayout;
-
-        @BindView(R.id.delete_challenge_quest)
-        ImageButton deleteChallengeQuests;
+        @BindView(R.id.challenge_quest_more_menu)
+        ImageButton moreMenu;
 
         public ViewHolder(View itemView) {
             super(itemView);

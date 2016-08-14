@@ -21,7 +21,7 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
     private final List<String> daysOfMonth = new ArrayList<>();
     private final List<String> months = new ArrayList<>();
-    private static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Avg", "Sep", "Oct", "Nov", "Dec"};
+    private static final String[] MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
     public DueDateSuggestionsProvider() {
         SimpleDateFormat dayMonthFormatter = new SimpleDateFormat("dd MMM", Locale.getDefault());

@@ -3,9 +3,11 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -15,12 +17,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,9 +32,17 @@ import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
+import io.ipoli.android.quest.events.StartQuestRequestEvent;
+import io.ipoli.android.quest.events.StopQuestRequestEvent;
+import io.ipoli.android.quest.ui.menus.DuplicateDateItem;
+import io.ipoli.android.quest.ui.menus.DuplicateQuestItemsHelper;
+import io.ipoli.android.quest.ui.menus.SnoozeQuestItemsHelper;
+import io.ipoli.android.quest.ui.menus.SnoozeTimeItem;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 /**
@@ -45,7 +54,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int QUEST_ITEM_VIEW_TYPE = 1;
     private final Context context;
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
     private List<Object> items;
     private Bus eventBus;
@@ -55,7 +63,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public OverviewAdapter(Context context, List<QuestViewModel> viewModels, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
-        viewBinderHelper.setOpenOnlyOne(true);
         setItems(viewModels);
     }
 
@@ -149,30 +156,64 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
 
             Quest q = vm.getQuest();
-            viewBinderHelper.bind(questHolder.swipeLayout, q.getId());
-            questHolder.swipeLayout.close(false);
-            questHolder.swipeLayout.setSwipeListener(new SwipeRevealLayout.SimpleSwipeListener() {
-                @Override
-                public void onOpened(SwipeRevealLayout view) {
-                    super.onOpened(view);
-                    eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
+
+            questHolder.moreMenu.setOnClickListener(v -> {
+                eventBus.post(new ItemActionsShownEvent(EventSource.OVERVIEW));
+                PopupMenu pm = new PopupMenu(context, v);
+                pm.inflate(R.menu.overview_quest_actions_menu);
+
+                MenuItem startItem = pm.getMenu().findItem(R.id.quest_start);
+                if(q.isScheduledForToday()) {
+                    startItem.setTitle(q.isStarted() ? R.string.stop : R.string.start);
+                } else {
+                    startItem.setVisible(false);
                 }
-            });
-            questHolder.scheduleQuest.setOnClickListener(v -> {
-                eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
-            });
 
-            questHolder.completeQuest.setOnClickListener(v -> {
-                eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
-            });
+                MenuItem scheduleQuestItem = pm.getMenu().findItem(R.id.schedule_quest);
+                scheduleQuestItem.setTitle(q.isScheduledForToday() ? context.getString(R.string.snooze_for_tomorrow) : context.getString(R.string.do_today));
 
-            questHolder.editQuest.setOnClickListener(v -> {
-                questHolder.swipeLayout.close(true);
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
-            });
+                Map<Integer, DuplicateDateItem> itemIdToDuplicateDateItem = DuplicateQuestItemsHelper
+                        .createDuplicateDateMap(context, pm.getMenu().findItem(R.id.quest_duplicate));
 
-            questHolder.deleteQuest.setOnClickListener(v -> {
-                eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = SnoozeQuestItemsHelper
+                        .createSnoozeTimeMap(q, pm.getMenu().findItem(R.id.quest_snooze));
+
+                pm.setOnMenuItemClickListener(item -> {
+                    if (itemIdToDuplicateDateItem.containsKey(item.getItemId())) {
+                        eventBus.post(new DuplicateQuestRequestEvent(q, itemIdToDuplicateDateItem.get(item.getItemId()).date, EventSource.OVERVIEW));
+                        return true;
+                    }
+
+                    if (itemIdToSnoozeTimeItem.containsKey(item.getItemId())) {
+                        SnoozeTimeItem snoozeTimeItem = itemIdToSnoozeTimeItem.get(item.getItemId());
+                        eventBus.post(new SnoozeQuestRequestEvent(q, snoozeTimeItem.minutes, snoozeTimeItem.date, snoozeTimeItem.pickTime, snoozeTimeItem.pickDate, EventSource.OVERVIEW));
+                        return true;
+                    }
+
+                    switch (item.getItemId()) {
+                        case R.id.quest_start:
+                            if (!q.isStarted()) {
+                                eventBus.post(new StartQuestRequestEvent(q));
+                            } else {
+                                eventBus.post(new StopQuestRequestEvent(q));
+                            }
+                            return true;
+                        case R.id.complete_quest:
+                            eventBus.post(new CompleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.schedule_quest:
+                            eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.edit_quest:
+                            eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                        case R.id.delete_quest:
+                            eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));
+                            return true;
+                    }
+                    return false;
+                });
+                pm.show();
             });
 
             questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
@@ -303,20 +344,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;
 
-        @BindView(R.id.swipe_layout)
-        public SwipeRevealLayout swipeLayout;
+        @BindView(R.id.quest_more_menu)
+        public ImageButton moreMenu;
 
-        @BindView(R.id.schedule_quest)
-        public ImageButton scheduleQuest;
-
-        @BindView(R.id.complete_quest)
-        public ImageButton completeQuest;
-
-        @BindView(R.id.edit_quest)
-        public ImageButton editQuest;
-
-        @BindView(R.id.delete_quest)
-        public ImageButton deleteQuest;
 
         public QuestViewHolder(View v) {
             super(v);
