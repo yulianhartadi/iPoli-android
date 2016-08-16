@@ -65,6 +65,7 @@ public class QuestActivity extends BaseActivity {
 
     @Inject
     QuestPersistenceService questPersistenceService;
+    private String questId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,17 +84,23 @@ public class QuestActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        questPersistenceService.listenById(questId, quest -> {
-            getSupportActionBar().setTitle(quest.getName());
-            setBackgroundColors(Quest.getCategory(quest));
-        });
+        questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 
         initViewPager(viewPager, questId);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
 
         eventBus.post(new ScreenShownEvent(EventSource.QUEST));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        questPersistenceService.listenById(questId, quest -> {
+            getSupportActionBar().setTitle(quest.getName());
+            setBackgroundColors(Quest.getCategory(quest));
+        });
+
     }
 
     private void initTabIcons() {
