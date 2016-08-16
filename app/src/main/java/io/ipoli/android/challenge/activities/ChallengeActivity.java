@@ -90,14 +90,15 @@ public class ChallengeActivity extends BaseActivity {
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
         challengePersistenceService.listenById(challengeId, challenge -> {
             this.challenge = challenge;
-            initViewPager(viewPager);
-            tabLayout.setupWithViewPager(viewPager);
-            initTabIcons();
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle(challenge.getName());
             }
             setBackgroundColors(Challenge.getCategory(challenge));
         });
+
+        initViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+        initTabIcons();
     }
 
     private void initTabIcons() {
@@ -137,8 +138,8 @@ public class ChallengeActivity extends BaseActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ChallengeOverviewFragment());
-        adapter.addFragment(new ChallengeQuestListFragment());
+        adapter.addFragment(ChallengeOverviewFragment.newInstance(challengeId));
+        adapter.addFragment(ChallengeQuestListFragment.newInstance(challengeId));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(STATS_TAB_POSITION);
     }

@@ -84,16 +84,16 @@ public class QuestActivity extends BaseActivity {
         }
 
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-
         questPersistenceService.listenById(questId, quest -> {
             getSupportActionBar().setTitle(quest.getName());
             setBackgroundColors(Quest.getCategory(quest));
-            eventBus.post(new ScreenShownEvent(EventSource.QUEST));
         });
 
         initViewPager(viewPager, questId);
         tabLayout.setupWithViewPager(viewPager);
         initTabIcons();
+
+        eventBus.post(new ScreenShownEvent(EventSource.QUEST));
     }
 
     private void initTabIcons() {

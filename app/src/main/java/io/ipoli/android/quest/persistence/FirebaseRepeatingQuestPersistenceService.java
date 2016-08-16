@@ -89,8 +89,8 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void listenForActiveForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
+    public void listenForActiveForChallenge(String challengeId, OnDataChangedListener<List<RepeatingQuest>> listener) {
+        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
         listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
     }
 

@@ -28,10 +28,8 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
 import io.ipoli.android.quest.data.BaseQuest;
@@ -68,7 +66,21 @@ public class ChallengeQuestListFragment extends BaseFragment {
 
     private List<Quest> quests = new ArrayList<>();
     private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-    private Challenge challenge;
+    private String challengeId;
+
+    public static ChallengeQuestListFragment newInstance(String challengeId) {
+        ChallengeQuestListFragment fragment = new ChallengeQuestListFragment();
+        Bundle args = new Bundle();
+        args.putString(CHALLENGE_ID, challengeId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        challengeId = getArguments().getString(CHALLENGE_ID);
+    }
 
     @Nullable
     @Override
@@ -78,8 +90,6 @@ public class ChallengeQuestListFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        challenge = ((ChallengeActivity) getActivity()).getChallenge();
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
@@ -87,11 +97,11 @@ public class ChallengeQuestListFragment extends BaseFragment {
         adapter = new ChallengeQuestListAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(adapter);
 
-        questPersistenceService.listenForIncompleteNotRepeatingForChallenge(challenge.getId(), results -> {
+        questPersistenceService.listenForIncompleteNotRepeatingForChallenge(challengeId, results -> {
             quests = results;
             onQuestListUpdated();
         });
-        repeatingQuestPersistenceService.listenForActiveForChallenge(challenge, results -> {
+        repeatingQuestPersistenceService.listenForActiveForChallenge(challengeId, results -> {
             repeatingQuests = results;
             onQuestListUpdated();
         });
@@ -131,7 +141,7 @@ public class ChallengeQuestListFragment extends BaseFragment {
     @OnClick(R.id.add_quests)
     public void onAddQuestsClick(View v) {
         Intent intent = new Intent(getContext(), PickChallengeQuestsActivity.class);
-        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challenge.getId());
+        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId);
         startActivity(intent);
     }
 

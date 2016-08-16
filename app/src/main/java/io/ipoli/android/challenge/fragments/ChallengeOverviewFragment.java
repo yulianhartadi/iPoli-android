@@ -49,8 +49,8 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -70,6 +70,7 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
  */
 public class ChallengeOverviewFragment extends BaseFragment {
 
+    private static final String CHALLENGE_ID = "challenge_id";
     private Unbinder unbinder;
 
     @Inject
@@ -113,6 +114,24 @@ public class ChallengeOverviewFragment extends BaseFragment {
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+    private String challengeId;
+
+    public static ChallengeOverviewFragment newInstance(String challengeId) {
+        ChallengeOverviewFragment fragment = new ChallengeOverviewFragment();
+        Bundle args = new Bundle();
+        args.putString(CHALLENGE_ID, challengeId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        challengeId = getArguments().getString(CHALLENGE_ID);
+    }
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -121,9 +140,11 @@ public class ChallengeOverviewFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-        challenge = ((ChallengeActivity) getActivity()).getChallenge();
+        challengePersistenceService.listenById(challengeId, challenge -> {
+            this.challenge = challenge;
+            displayChallenge();
+        });
 
-        displayChallenge();
 
         eventBus.post(new ScreenShownEvent(EventSource.CHALLENGE_OVERVIEW));
 
@@ -360,6 +381,7 @@ public class ChallengeOverviewFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
+        challengePersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }
