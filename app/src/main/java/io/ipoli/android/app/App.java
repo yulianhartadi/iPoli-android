@@ -202,7 +202,7 @@ public class App extends MultiDexApplication {
         listenForWidgetQuestsChange();
         listenForRepeatingQuestChange();
         listenForReminderChange();
-        if(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
+        if (localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
             listenForDailyQuestsChange();
         }
     }
@@ -213,7 +213,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onOngoingNotificationChange(OngoingNotificationChangeEvent e) {
-        if(e.isEnabled) {
+        if (e.isEnabled) {
             listenForDailyQuestsChange();
         } else {
             NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
@@ -264,12 +264,12 @@ public class App extends MultiDexApplication {
         if (quest != null) {
             title = quest.getName();
         } else if (totalCount == 0) {
-            title = "Ready for a quest?";
+            title = getString(R.string.ongoing_notification_no_quests_title);
         } else {
-            title = "All done for today!";
+            title = getString(R.string.ongoing_notification_done_title);
         }
 
-        String text = totalCount == 0 ? "Start your day with a smile" : "Daily progress: " + completedCount + "/" + totalCount;
+        String text = totalCount == 0 ? getString(R.string.ongoing_notification_no_quests_text) : getString(R.string.ongoing_notification_progress_text, completedCount, totalCount);
         boolean showWhen = quest != null && quest.getStartMinute() > -1;
         long when = showWhen ? Quest.getStartDateTime(quest).getTime() : 0;
         String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
@@ -280,7 +280,7 @@ public class App extends MultiDexApplication {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent addIntent = new Intent(this, QuickAddActivity.class);
-        addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " today");
+        addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getString(R.string.today).toLowerCase());
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setContentTitle(title)
@@ -293,11 +293,11 @@ public class App extends MultiDexApplication {
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
                 .addAction(R.drawable.ic_add_white_24dp, getString(R.string.add), PendingIntent.getActivity(this, 0, addIntent, PendingIntent.FLAG_UPDATE_CURRENT))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setColor(ContextCompat.getColor(this, iconColor))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (quest != null) {
-            if(quest.isStarted()) {
+            if (quest.isStarted()) {
                 builder.addAction(R.drawable.ic_clear_24dp, getString(R.string.cancel).toUpperCase(), getCancelPendingIntent(quest.getId()));
             } else {
                 builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), getStartPendingIntent(quest.getId()));
