@@ -36,8 +36,9 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected final FirebaseDatabase database;
     protected final Bus eventBus;
     private final Gson gson;
-    protected Map<Query, ValueEventListener> valueListeners;
-    protected Map<Query, ChildEventListener> childListeners;
+    private final Map<ValueEventListener, Query> valueListeners;
+    protected final Map<ChildEventListener, Query> childListeners;
+    private final Map<OnDataChangedListener<?>, ValueEventListener> listenerToValueListener;
 
     public BaseFirebasePersistenceService(Bus eventBus, Gson gson) {
         this.eventBus = eventBus;
@@ -45,6 +46,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         this.database = FirebaseDatabase.getInstance();
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
+        this.listenerToValueListener = new HashMap<>();
     }
 
     @Override
@@ -142,17 +144,25 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void removeAllListeners() {
-        for (Query query : valueListeners.keySet()) {
-            query.removeEventListener(valueListeners.get(query));
+        for (ValueEventListener valueEventListener : valueListeners.keySet()) {
+            Query query = valueListeners.get(valueEventListener);
+            query.removeEventListener(valueEventListener);
         }
 
-        for (Query query : childListeners.keySet()) {
-            query.removeEventListener(childListeners.get(query));
+        for (ChildEventListener childEventListener : childListeners.keySet()) {
+            Query query = childListeners.get(childEventListener);
+            query.removeEventListener(childEventListener);
         }
     }
 
     @Override
-    public void removeListener(OnDataChangedListener<T> listener) {
+    public void removeDataChangedListener(OnDataChangedListener<?> listener) {
+        if (!listenerToValueListener.containsKey(listener)) {
+            return;
+        }
+        ValueEventListener valueEventListener = listenerToValueListener.get(listener);
+        Query query = valueListeners.get(valueEventListener);
+        query.removeEventListener(valueEventListener);
 
     }
 
@@ -187,7 +197,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
             }
         };
-        childListeners.put(query, childListener);
+        childListeners.put(childListener, query);
         query.addChildEventListener(childListener);
     }
 
@@ -202,23 +212,24 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {
-        listenForQuery(query, createListListener(listener));
+        listenForQuery(query, createListListener(listener), listener);
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
-        listenForQuery(query, createListListener(listener, queryFilter));
+        listenForQuery(query, createListListener(listener, queryFilter), listener);
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
-        listenForQuery(query, createSortedListListener(listener, queryFilter, querySort));
+        listenForQuery(query, createSortedListListener(listener, queryFilter, querySort), listener);
     }
 
     protected void listenForModelChange(Query query, OnDataChangedListener<T> listener) {
-        listenForQuery(query, createModelListener(listener));
+        listenForQuery(query, createModelListener(listener), listener);
     }
 
-    protected void listenForQuery(Query query, ValueEventListener valueListener) {
-        valueListeners.put(query, valueListener);
+    protected void listenForQuery(Query query, ValueEventListener valueListener, OnDataChangedListener<?> listener) {
+        listenerToValueListener.put(listener, valueListener);
+        valueListeners.put(valueListener, query);
         query.addValueEventListener(valueListener);
     }
 
@@ -243,11 +254,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener) {
-        listenForQuery(query, createCountListener(listener));
+        listenForQuery(query, createCountListener(listener), listener);
     }
 
     protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
-        listenForQuery(query, createCountListener(listener, queryFilter));
+        listenForQuery(query, createCountListener(listener, queryFilter), listener);
     }
 
     protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener) {

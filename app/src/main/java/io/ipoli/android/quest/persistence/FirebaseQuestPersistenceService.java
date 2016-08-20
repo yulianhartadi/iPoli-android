@@ -132,46 +132,26 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
         Query endAt = collectionReference.orderByChild("end").equalTo(startDateUTC.getTime());
 
-        listenForQuery(endAt, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                endDateQuests.clear();
-                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
-                for (Quest quest : quests) {
-                    if (!Quest.isCompleted(quest)) {
-                        endDateQuests.add(quest);
-                    }
-                }
-                List<Quest> result = new ArrayList<>(endDateQuests);
-                result.addAll(completedQuests);
-                listener.onDataChanged(result);
-            }
+        listenForListChange(endAt, quests -> {
+            endDateQuests.clear();
+            endDateQuests.addAll(quests);
+            List<Quest> result = new ArrayList<>(endDateQuests);
+            result.addAll(completedQuests);
+            listener.onDataChanged(result);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        }, data -> data.filter(q -> !Quest.isCompleted(q)));
 
         Date startDate = toStartOfDay(currentDate);
         Date endDate = toStartOfDay(currentDate.plusDays(1));
 
         Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
 
-        listenForQuery(completedAt, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                completedQuests.clear();
-                completedQuests.addAll(getListFromMapSnapshot(dataSnapshot));
-                List<Quest> result = new ArrayList<>(completedQuests);
-                result.addAll(endDateQuests);
-                listener.onDataChanged(result);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+        listenForListChange(completedAt, quests -> {
+            completedQuests.clear();
+            completedQuests.addAll(quests);
+            List<Quest> result = new ArrayList<>(completedQuests);
+            result.addAll(endDateQuests);
+            listener.onDataChanged(result);
         });
     }
 
@@ -182,7 +162,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         Date endDate = toStartOfDay(currentDate.plusDays(1));
         DatabaseReference collectionReference = getCollectionReference();
         Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
-        listenForQuery(completedAt, createListListener(listener));
+        listenForListChange(completedAt, listener);
     }
 
     @Override
@@ -536,7 +516,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
             }
         };
-        childListeners.put(query, childListener);
+        childListeners.put(childListener, query);
         query.addChildEventListener(childListener);
     }
 

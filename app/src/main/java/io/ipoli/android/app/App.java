@@ -217,7 +217,7 @@ public class App extends MultiDexApplication {
             listenForDailyQuestsChange();
         } else {
             NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
-            questPersistenceService.removeListener(dailyQuestsChangedListener);
+            questPersistenceService.removeDataChangedListener(dailyQuestsChangedListener);
         }
     }
 

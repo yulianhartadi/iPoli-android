@@ -1,79 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/default_app_bar" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:text="General"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp" />
+        <include layout="@layout/default_app_bar" />
 
         <LinearLayout
-            android:id="@+id/pick_avatar_container"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:weightSum="2">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:text="Change your avatar"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:text="Pick an awesome new avatar for yourself"
-                android:textColor="@color/md_dark_text_54"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="General"
+                android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/ongoing_notification_container"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
 
             <LinearLayout
+                android:id="@+id/pick_avatar_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
                 android:orientation="vertical"
-                android:layout_toStartOf="@+id/ongoing_notification"
-                android:layout_centerVertical="true">
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Persistent notification"
+                    android:text="Change your avatar"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -82,193 +52,312 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="top"
-                    android:text="Quickly view your daily quests and progress"
+                    android:text="Pick an awesome new avatar for yourself"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/ongoing_notification_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/ongoing_notification"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:text="Persistent notification"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="top"
+                        android:text="Quickly view your daily quests and progress"
+                        android:textColor="@color/md_dark_text_54"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <Switch
+                    android:id="@+id/ongoing_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/show_tutorial_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Show tutorial"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="View tutorial and pick some quests"
                     android:textColor="@color/md_dark_text_54"
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <Switch
-                android:id="@+id/ongoing_notification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true" />
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/show_tutorial_container"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:weightSum="2">
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/sync_calendars_container"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:text="Show tutorial"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:text="View tutorial and pick some quests"
-                android:textColor="@color/md_dark_text_54"
-                android:textSize="14sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Sync calendars"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Import all your habits &amp; todos"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/sync_calendars_container"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:weightSum="2">
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_dark_text_12" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:text="Sync calendars"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:text="Import all your habits &amp; todos"
-                android:textColor="@color/md_dark_text_54"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/md_dark_text_12" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical">
-
-        <TextView
-            style="@style/TextAppearance.AppCompat.Body2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:text="Daily challenge"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp" />
-
-        <RelativeLayout
-            android:id="@+id/daily_challenge_notification_container"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="Show a reminder"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
-
-            <Switch
-                android:id="@+id/daily_challenge_notification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true" />
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/daily_challenge_start_time_container"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:weightSum="2">
-
-            <TextView
-                android:id="@+id/daily_challenge_start_time_hint"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:text="Remind me at"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/daily_challenge_start_time"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:text="10:00"
-                android:textColor="@color/md_dark_text_54"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="Daily challenge"
+                android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
+
+            <RelativeLayout
+                android:id="@+id/daily_challenge_notification_container"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="Show a reminder"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/daily_challenge_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/daily_challenge_start_time_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/daily_challenge_start_time_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Remind me at"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/daily_challenge_start_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="10:00"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/daily_challenge_days_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/challenge_days_question"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/daily_challenge_days"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Mon, Tue, Wed, Thu, Fri"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/daily_challenge_days_container"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:weightSum="2">
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_dark_text_12" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:text="@string/challenge_days_question"
-                android:textColor="@color/md_dark_text_87"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/daily_challenge_days"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top"
-                android:text="Mon, Tue, Wed, Thu, Fri"
-                android:textColor="@color/md_dark_text_54"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="About"
+                android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/rate_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Rate us"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="If you like iPoli, rate it on Google Play"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/app_version_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="App version"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/app_version"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
-
-
-</LinearLayout>
+</ScrollView>
