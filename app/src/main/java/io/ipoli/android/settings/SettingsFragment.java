@@ -3,6 +3,7 @@ package io.ipoli.android.settings;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
@@ -40,12 +42,12 @@ import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
@@ -76,6 +78,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @BindView(R.id.daily_challenge_start_time_hint)
     TextView dailyChallengeStartTimeHint;
 
+    @BindView(R.id.app_version)
+    TextView appVersion;
+
     private Unbinder unbinder;
 
     @Override
@@ -99,6 +104,8 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         populateDaysOfWeekText(selectedDays);
+
+        appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
     }
 
@@ -224,5 +231,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
             }
         }
+    }
+
+    @OnClick(R.id.rate_container)
+    public void onRateClicked(View v) {
+        Uri uri = Uri.parse("market://details?id=" + getActivity().getPackageName());
+        Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(linkToMarket);
     }
 }
