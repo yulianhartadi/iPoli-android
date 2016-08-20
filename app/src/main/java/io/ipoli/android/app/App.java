@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
@@ -26,6 +27,7 @@ import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -87,6 +89,7 @@ import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
+import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -160,6 +163,39 @@ public class App extends MultiDexApplication {
         listenForWidgetQuestsChange();
         listenForRepeatingQuestChange();
         listenForReminderChange();
+        listenForDailyQuestsChange();
+    }
+
+    private void listenForDailyQuestsChange() {
+        questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
+            if (quests.isEmpty()) {
+                updateOngoingNotification(null, 0, 0);
+                return;
+            }
+
+            List<Quest> uncompletedQuests = new ArrayList<>();
+            for (Quest q : quests) {
+                if (!Quest.isCompleted(q)) {
+                    uncompletedQuests.add(q);
+                }
+            }
+
+            if (uncompletedQuests.isEmpty()) {
+                updateOngoingNotification(null, quests.size(), quests.size());
+                return;
+            }
+
+            Collections.sort(uncompletedQuests, (q1, q2) -> {
+                if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
+                    return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
+                }
+
+                return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
+            });
+
+            Quest quest = uncompletedQuests.get(0);
+            updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
+        });
     }
 
     private void listenForReminderChange() {
@@ -198,6 +234,44 @@ public class App extends MultiDexApplication {
         }
 
         initAppStart();
+    }
+
+    private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
+        String title = "";
+        if (quest != null) {
+            title = quest.getName();
+        } else if (totalCount == 0) {
+            title = "Ready for a quest?";
+        } else {
+            title = "All done for today!";
+        }
+
+        String text = totalCount == 0 ? "Start your day with a smile" : "Daily progress: " + completedCount + "/" + totalCount;
+        boolean showWhen = quest != null && quest.getStartMinute() > -1;
+        long when = showWhen ? Quest.getStartDateTime(quest).getTime()  : 0;
+        String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
+        int smallIcon = quest == null ? R.drawable.ic_notification_small : Quest.getCategory(quest).whiteImage;
+        int iconColor = quest == null ? R.color.md_grey_500 : Quest.getCategory(quest).color500;
+
+        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setShowWhen(showWhen)
+                .setWhen(when)
+                .setContentInfo(contentInfo)
+                .setSmallIcon(smallIcon)
+                .setOnlyAlertOnce(true)
+                .setOngoing(true)
+                .addAction(R.drawable.ic_add_white_24dp, getString(R.string.add), null)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setColor(ContextCompat.getColor(this, iconColor))
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        if (quest != null) {
+            builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), null)
+                    .addAction(R.drawable.ic_done_24dp, getString(R.string.done), null);
+        }
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(123456, builder.build());
     }
 
     private void initAppStart() {

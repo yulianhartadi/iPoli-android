@@ -34,7 +34,6 @@ public class CategoryView extends LinearLayout {
     }
 
     private TextView categoryName;
-    private LinearLayout categoryContainer;
 
     private Category category;
 
@@ -69,7 +68,7 @@ public class CategoryView extends LinearLayout {
                 R.layout.layout_category, this);
 
         categoryName = (TextView) view.findViewById(R.id.category_name);
-        categoryContainer = (LinearLayout) view.findViewById(R.id.category_container);
+        LinearLayout categoryContainer = (LinearLayout) view.findViewById(R.id.category_container);
         doChangeCategory(Category.LEARNING);
 
         final Category[] categories = Category.values();
