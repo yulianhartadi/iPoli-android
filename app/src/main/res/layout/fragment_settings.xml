@@ -52,6 +52,50 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/ongoing_notification_container"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_toStartOf="@+id/ongoing_notification"
+                android:layout_centerVertical="true">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Persistent notification"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Quickly view your daily quests and progress"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/ongoing_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/show_tutorial_container"
             android:layout_width="match_parent"

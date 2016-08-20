@@ -32,8 +32,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -470,9 +470,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             dateText = "on " + DateFormatter.formatWithoutYear(DateUtils.toStartOfDayUTC(currentDate));
         }
 
-        Intent intent = new Intent(getContext(), QuickAddActivity.class);
-        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " at " + atTime.toString() + " " + dateText);
-        startActivity(intent);
+        eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));
     }
 
     private class Schedule {

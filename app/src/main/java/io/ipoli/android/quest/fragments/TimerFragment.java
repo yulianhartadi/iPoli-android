@@ -147,7 +147,6 @@ public class TimerFragment extends BaseFragment implements Chronometer.OnChronom
         eventBus.register(this);
         questPersistenceService.findById(questId, q -> {
 
-
             if (afterOnCreate) {
                 afterOnCreate = false;
                 String action = getActivity().getIntent().getAction();

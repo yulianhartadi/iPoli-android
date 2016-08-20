@@ -1,6 +1,7 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -31,21 +32,26 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.events.CurrentDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
+import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
+import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
@@ -68,6 +74,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -82,6 +89,7 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.OnChangeListener;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
@@ -93,6 +101,7 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -157,45 +166,59 @@ public class App extends MultiDexApplication {
         }
     };
 
+    private OnDataChangedListener<List<Quest>> dailyQuestsChangedListener = quests -> {
+        if (quests.isEmpty()) {
+            updateOngoingNotification(null, 0, 0);
+            return;
+        }
+
+        List<Quest> uncompletedQuests = new ArrayList<>();
+        for (Quest q : quests) {
+            if (!Quest.isCompleted(q)) {
+                uncompletedQuests.add(q);
+            }
+        }
+
+        if (uncompletedQuests.isEmpty()) {
+            updateOngoingNotification(null, quests.size(), quests.size());
+            return;
+        }
+
+        Collections.sort(uncompletedQuests, (q1, q2) -> {
+            if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
+                return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
+            }
+
+            return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
+        });
+
+        Quest quest = uncompletedQuests.get(0);
+        updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
+    };
+
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
         repeatingQuestPersistenceService.removeAllListeners();
         listenForWidgetQuestsChange();
         listenForRepeatingQuestChange();
         listenForReminderChange();
-        listenForDailyQuestsChange();
+        if(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
+            listenForDailyQuestsChange();
+        }
     }
 
     private void listenForDailyQuestsChange() {
-        questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
-            if (quests.isEmpty()) {
-                updateOngoingNotification(null, 0, 0);
-                return;
-            }
+        questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), dailyQuestsChangedListener);
+    }
 
-            List<Quest> uncompletedQuests = new ArrayList<>();
-            for (Quest q : quests) {
-                if (!Quest.isCompleted(q)) {
-                    uncompletedQuests.add(q);
-                }
-            }
-
-            if (uncompletedQuests.isEmpty()) {
-                updateOngoingNotification(null, quests.size(), quests.size());
-                return;
-            }
-
-            Collections.sort(uncompletedQuests, (q1, q2) -> {
-                if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
-                    return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
-                }
-
-                return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
-            });
-
-            Quest quest = uncompletedQuests.get(0);
-            updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
-        });
+    @Subscribe
+    public void onOngoingNotificationChange(OngoingNotificationChangeEvent e) {
+        if(e.isEnabled) {
+            listenForDailyQuestsChange();
+        } else {
+            NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
+            questPersistenceService.removeListener(dailyQuestsChangedListener);
+        }
     }
 
     private void listenForReminderChange() {
@@ -248,30 +271,65 @@ public class App extends MultiDexApplication {
 
         String text = totalCount == 0 ? "Start your day with a smile" : "Daily progress: " + completedCount + "/" + totalCount;
         boolean showWhen = quest != null && quest.getStartMinute() > -1;
-        long when = showWhen ? Quest.getStartDateTime(quest).getTime()  : 0;
+        long when = showWhen ? Quest.getStartDateTime(quest).getTime() : 0;
         String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
         int smallIcon = quest == null ? R.drawable.ic_notification_small : Quest.getCategory(quest).whiteImage;
         int iconColor = quest == null ? R.color.md_grey_500 : Quest.getCategory(quest).color500;
 
+        Intent startAppIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent addIntent = new Intent(this, QuickAddActivity.class);
+        addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " today");
+
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(contentIntent)
                 .setShowWhen(showWhen)
                 .setWhen(when)
                 .setContentInfo(contentInfo)
                 .setSmallIcon(smallIcon)
                 .setOnlyAlertOnce(true)
                 .setOngoing(true)
-                .addAction(R.drawable.ic_add_white_24dp, getString(R.string.add), null)
+                .addAction(R.drawable.ic_add_white_24dp, getString(R.string.add), PendingIntent.getActivity(this, 0, addIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setColor(ContextCompat.getColor(this, iconColor))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (quest != null) {
-            builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), null)
-                    .addAction(R.drawable.ic_done_24dp, getString(R.string.done), null);
+            if(quest.isStarted()) {
+                builder.addAction(R.drawable.ic_clear_24dp, getString(R.string.cancel).toUpperCase(), getCancelPendingIntent(quest.getId()));
+            } else {
+                builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), getStartPendingIntent(quest.getId()));
+            }
+            builder.addAction(R.drawable.ic_done_24dp, getString(R.string.done), getDonePendingIntent(quest.getId()));
         }
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(123456, builder.build());
+        notificationManagerCompat.notify(Constants.ONGOING_NOTIFICATION_ID, builder.build());
+    }
+
+    private PendingIntent getStartPendingIntent(String questId) {
+        Intent intent = new Intent(this, QuestActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(QuestActivity.ACTION_START_QUEST);
+
+        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, this, new Random().nextInt());
+    }
+
+    private PendingIntent getCancelPendingIntent(String questId) {
+        Intent intent = new Intent(this, QuestActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(QuestActivity.ACTION_QUEST_CANCELED);
+
+        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, this);
+    }
+
+    private PendingIntent getDonePendingIntent(String questId) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        intent.setAction(MainActivity.ACTION_QUEST_COMPLETE);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void initAppStart() {
@@ -317,6 +375,13 @@ public class App extends MultiDexApplication {
 
     private void scheduleDailyChallenge() {
         sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
+    }
+
+    @Subscribe
+    public void onStartQuickAddEvent(StartQuickAddEvent e) {
+        Intent intent = new Intent(this, QuickAddActivity.class);
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, e.additionalText);
+        startActivity(intent);
     }
 
     @Subscribe

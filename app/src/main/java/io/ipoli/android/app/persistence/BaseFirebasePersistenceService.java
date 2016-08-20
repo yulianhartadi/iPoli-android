@@ -152,6 +152,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
+    public void removeListener(OnDataChangedListener<T> listener) {
+
+    }
+
+    @Override
     public void listenForChange(OnChangeListener<List<T>> listener) {
         Query query = getCollectionReference().orderByChild("updatedAt").startAt(new Date().getTime());
         ChildEventListener childListener = new ChildEventListener() {

@@ -32,7 +32,9 @@ public interface PersistenceService<T extends PersistedObject> {
 
     void delete(List<T> objects, OnOperationCompletedListener listener);
 
+    void listenForChange(OnChangeListener<List<T>> listener);
+
     void removeAllListeners();
 
-    void listenForChange(OnChangeListener<List<T>> listener);
+    void removeListener(OnDataChangedListener<T> listener);
 }

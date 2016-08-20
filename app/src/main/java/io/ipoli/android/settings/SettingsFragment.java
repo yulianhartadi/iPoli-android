@@ -46,6 +46,7 @@ import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.events.ShowTutorialEvent;
 
@@ -63,6 +64,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.ongoing_notification)
+    Switch ongoingNotification;
 
     @BindView(R.id.daily_challenge_notification)
     Switch dailyChallengeNotification;
@@ -87,6 +91,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
+
+        ongoingNotification.setChecked(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED));
+        ongoingNotification.setOnCheckedChangeListener((compoundButton, b) -> localStorage.saveBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, ongoingNotification.isChecked()));
+
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
@@ -122,6 +130,13 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.pick_avatar_container)
     public void onPickAvatarClicked(View view) {
         eventBus.post(new PickAvatarRequestEvent(EventSource.SETTINGS));
+    }
+
+    @OnClick(R.id.ongoing_notification_container)
+    public void onOngoingNotificationClicked(View view) {
+        ongoingNotification.setChecked(!ongoingNotification.isChecked());
+        localStorage.saveBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, ongoingNotification.isChecked());
+        eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
     }
 
     @OnClick(R.id.show_tutorial_container)
