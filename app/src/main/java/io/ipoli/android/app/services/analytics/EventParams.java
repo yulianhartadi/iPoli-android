@@ -28,6 +28,10 @@ public class EventParams {
         return eventParams;
     }
 
+    public static EventParams of(String key, boolean value) {
+        return of(key, String.valueOf(value));
+    }
+
     public EventParams add(String key, String value) {
         params.put(key, value);
         return this;
@@ -44,4 +48,6 @@ public class EventParams {
     public Map<String, String> getParams() {
         return params;
     }
+
+
 }

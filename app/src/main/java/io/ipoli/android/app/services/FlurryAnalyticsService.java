@@ -106,6 +106,7 @@ import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
@@ -692,13 +693,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onSnoozeQuestRequest(SnoozeQuestRequestEvent e) {
         String time = "";
-        if(e.showTimePicker) {
+        if (e.showTimePicker) {
             time = "Custom time";
-        } else if(e.showDatePicker) {
+        } else if (e.showDatePicker) {
             time = "Custom date";
-        } else if(e.minutes > -1) {
+        } else if (e.minutes > -1) {
             time = e.minutes + " minutes";
-        } else if(e.date != null) {
+        } else if (e.date != null) {
             time = DateUtils.isTomorrow(e.date) ? "Tomorrow" : e.date.toString();
         } else {
             time = "Inbox";
@@ -712,16 +713,21 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
         String date = "";
-        if(e.date == null) {
+        if (e.date == null) {
             date = "Custom";
-        } else if(DateUtils.isToday(e.date)) {
+        } else if (DateUtils.isToday(e.date)) {
             date = "Today";
-        } else if(DateUtils.isTomorrow(e.date)) {
+        } else if (DateUtils.isTomorrow(e.date)) {
             date = "Tomorrow";
         }
         log("duplicate_quest_request", EventParams.create()
                 .add("name", e.quest.getName())
                 .add("date", date));
+    }
+
+    @Subscribe
+    public void onOngoingNotificationChanged(OngoingNotificationChangeEvent e) {
+        log("ongoing_notification_changed", EventParams.of("enabled", e.isEnabled));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
