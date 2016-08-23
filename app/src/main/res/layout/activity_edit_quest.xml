@@ -330,7 +330,7 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Do you want to divide it in sub-quests?" />
+                        android:text="@string/quest_sub_quests_question" />
 
                 </LinearLayout>
             </RelativeLayout>
