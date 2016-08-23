@@ -687,7 +687,9 @@ public class FlurryAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onUpdateSubQuestName(UpdateSubQuestNameEvent e) {
-        log("update_sub_quest_name", EventParams.of("name", e.subQuest.getName()));
+        log("update_sub_quest_name", EventParams.create()
+                .add("name", e.subQuest.getName())
+                .add("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe

@@ -78,7 +78,7 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subQuestList.setLayoutManager(layoutManager);
 
-        questPersistenceService.findById(questId, this);
+        questPersistenceService.listenById(questId, this);
 
         adapter = new SubQuestListAdapter(getContext(), eventBus, new ArrayList<>());
         subQuestList.setAdapter(adapter);
@@ -143,7 +143,8 @@ public class SubQuestListFragment extends BaseFragment implements View.OnFocusCh
     }
 
     private void saveSubQuests() {
-        eventBus.post(new UpdateQuestEvent(quest, adapter.getSubQuests(), quest.getReminders(), EventSource.SUBQUESTS));
+        quest.setSubQuests(adapter.getSubQuests());
+        eventBus.post(new UpdateQuestEvent(quest, quest.getReminders(), EventSource.SUBQUESTS));
     }
 
     @Override

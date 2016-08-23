@@ -1,16 +1,20 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
@@ -25,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,11 +67,13 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
+import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -84,6 +91,8 @@ import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.events.UndoDeleteRepeatingQuestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
+import io.ipoli.android.quest.events.subquests.AddSubQuestTappedEvent;
+import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
@@ -172,6 +181,15 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_reminders_container)
     ViewGroup remindersContainer;
 
+    @BindView(R.id.add_sub_quest)
+    TextInputEditText addSubQuest;
+
+    @BindView(R.id.sub_quests_container)
+    RecyclerView subQuestsContainer;
+
+    @BindView(R.id.add_sub_quest_clear)
+    ImageButton clearAddSubQuest;
+
     @Inject
     QuestPersistenceService questPersistenceService;
 
@@ -182,6 +200,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     ChallengePersistenceService challengePersistenceService;
 
     private BaseSuggestionsAdapter adapter;
+
+    private EditQuestSubQuestListAdapter subQuestListAdapter;
 
     private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 
@@ -215,6 +235,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
 
         categoryView.addCategoryChangedListener(this);
+        initSubQuestsUI();
 
         if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY))) {
             onEditQuest();
@@ -222,7 +243,36 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             onEditRepeatingQuest();
         } else {
             onAddNewQuest();
+
         }
+    }
+
+    private void initSubQuestsUI() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        subQuestsContainer.setLayoutManager(layoutManager);
+
+        subQuestListAdapter = new EditQuestSubQuestListAdapter(this, eventBus, new ArrayList<>());
+        subQuestsContainer.setAdapter(subQuestListAdapter);
+
+        hideUnderline(addSubQuest);
+
+        addSubQuest.setOnFocusChangeListener((view, isFocused) -> {
+            String text = addSubQuest.getText().toString();
+            if (isFocused) {
+                showUnderline(addSubQuest);
+                if (text.equals(getString(R.string.edit_quest_add_sub_quest))) {
+                    setAddSubQuestInEditMode();
+                }
+                addSubQuest.requestFocus();
+                eventBus.post(new AddSubQuestTappedEvent(EventSource.EDIT_QUEST));
+            } else {
+                hideUnderline(addSubQuest);
+                if (StringUtils.isEmpty(text)) {
+                    setAddSubQuestInViewMode();
+                }
+            }
+        });
     }
 
     private void onEditQuest() {
@@ -241,6 +291,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             categoryView.changeCategory(Quest.getCategory(quest));
             populateNoteText(quest.getNote());
+            subQuestListAdapter.setSubQuests(quest.getSubQuests());
             challengePersistenceService.findById(quest.getChallengeId(), this::populateChallenge);
 
             if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
@@ -268,6 +319,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             setFrequencyText(rq.getRecurrence());
             categoryView.changeCategory(RepeatingQuest.getCategory(rq));
             populateNoteText(rq.getNote());
+            subQuestListAdapter.setSubQuests(rq.getSubQuests());
             challengePersistenceService.findById(rq.getChallengeId(), this::populateChallenge);
 
             if (rq.getReminders().isEmpty()) {
@@ -338,6 +390,56 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
+    }
+
+    private void setAddSubQuestInViewMode() {
+        addSubQuest.setText(getString(R.string.edit_quest_add_sub_quest));
+        addSubQuest.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+        clearAddSubQuest.setVisibility(View.INVISIBLE);
+    }
+
+    private void setAddSubQuestInEditMode() {
+        addSubQuest.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_87));
+        addSubQuest.setText("");
+        clearAddSubQuest.setVisibility(View.VISIBLE);
+    }
+
+    @OnClick(R.id.add_sub_quest_clear)
+    public void onClearAddSubQuestClick(View v) {
+        hideUnderline(addSubQuest);
+        addSubQuest.clearFocus();
+        setAddSubQuestInViewMode();
+    }
+
+    private void showUnderline(View view) {
+        view.getBackground().clearColorFilter();
+    }
+
+    private void hideUnderline(View view) {
+        view.getBackground().setColorFilter(ContextCompat.getColor(this, android.R.color.transparent), PorterDuff.Mode.SRC_IN);
+    }
+
+    @OnEditorAction(R.id.add_sub_quest)
+    public boolean onSubQuestEditorAction(TextView v, int actionId, KeyEvent event) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            addSubQuest();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void addSubQuest() {
+        String name = addSubQuest.getText().toString();
+        if (StringUtils.isEmpty(name)) {
+            return;
+        }
+
+        SubQuest sq = new SubQuest(name);
+        subQuestListAdapter.addSubQuest(sq);
+        eventBus.post(new NewSubQuestEvent(sq, EventSource.EDIT_QUEST));
+        setAddSubQuestInEditMode();
     }
 
     @Override
@@ -457,6 +559,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
             q.setNote((String) noteText.getTag());
+            q.setSubQuests(subQuestListAdapter.getSubQuests());
             eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
             if (q.getEndDate() != null) {
                 Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
@@ -482,6 +585,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setCategory(categoryView.getSelectedCategory().name());
             rq.setChallengeId((String) challengeValue.getTag());
             rq.setNote((String) noteText.getTag());
+            rq.setSubQuests(subQuestListAdapter.getSubQuests());
             eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
             Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
@@ -781,6 +885,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
         q.setNote((String) noteText.getTag());
         q.setChallengeId((String) challengeValue.getTag());
+        q.setSubQuests(subQuestListAdapter.getSubQuests());
 
         eventBus.post(new NewQuestEvent(q, getReminders(), EventSource.EDIT_QUEST));
         if (q.getEndDate() != null) {
@@ -810,6 +915,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallengeId((String) challengeValue.getTag());
         rq.setNote((String) noteText.getTag());
+        rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }

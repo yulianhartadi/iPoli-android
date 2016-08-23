@@ -1,45 +1,39 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 
 import com.squareup.otto.Bus;
 
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.SubQuest;
-import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
-import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapter.ViewHolder> {
+public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuestSubQuestListAdapter.ViewHolder> {
     protected Context context;
     protected final Bus evenBus;
     protected List<SubQuest> subQuests;
 
-    public SubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
+    public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
         this.context = context;
         this.evenBus = evenBus;
         this.subQuests = subQuests;
@@ -47,7 +41,7 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.sub_quest_list_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.edit_quest_sub_quest_list_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -55,56 +49,40 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         final SubQuest sq = subQuests.get(holder.getAdapterPosition());
 
-        holder.moreMenu.setOnClickListener(v -> {
-            evenBus.post(new ItemActionsShownEvent(EventSource.SUBQUESTS));
-            PopupMenu popupMenu = new PopupMenu(context, v);
-            popupMenu.inflate(R.menu.sub_quest_actions_menu);
-            popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.delete_sub_quest:
-                        removeSubquest(holder.getAdapterPosition());
-                        evenBus.post(new DeleteSubQuestEvent(sq, EventSource.SUBQUESTS));
-                        return true;
-                }
-                return false;
-            });
-            popupMenu.show();
+        holder.delete.setOnClickListener(v -> {
+            removeSubquest(holder.getAdapterPosition());
+            evenBus.post(new DeleteSubQuestEvent(sq, EventSource.EDIT_QUEST));
         });
 
         holder.name.setText(sq.getName());
-        holder.check.setOnCheckedChangeListener(null);
-        holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                sq.setCompletedAtDate(new Date());
-                sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-                holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                holder.name.setEnabled(false);
-                evenBus.post(new CompleteSubQuestEvent(sq));
-            } else {
-                sq.setCompletedAtDate(null);
-                sq.setCompletedAtMinute(null);
-                holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                holder.name.setEnabled(true);
-                evenBus.post(new UndoCompleteSubQuestEvent(sq));
-            }
-        });
-        holder.check.setChecked(sq.isCompleted());
 
         hideUnderline(holder.name);
         holder.name.setOnFocusChangeListener((view, isFocused) -> {
             if (isFocused) {
-                if (sq.isCompleted()) {
-                    holder.name.clearFocus();
-                    return;
-                }
                 showUnderline(holder.name);
                 holder.name.requestFocus();
             } else {
                 hideUnderline(holder.name);
-                sq.setName(holder.name.getText().toString());
-                evenBus.post(new UpdateSubQuestNameEvent(sq, EventSource.SUBQUESTS));
+                evenBus.post(new UpdateSubQuestNameEvent(sq, EventSource.EDIT_QUEST));
             }
         });
+        holder.name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                sq.setName(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
     }
 
     private void removeSubquest(int position) {
@@ -142,14 +120,11 @@ public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapte
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.sub_quest_check)
-        CheckBox check;
-
         @BindView(R.id.sub_quest_name)
         TextInputEditText name;
 
-        @BindView(R.id.sub_quest_more_menu)
-        ImageButton moreMenu;
+        @BindView(R.id.sub_quest_delete)
+        ImageButton delete;
 
         public ViewHolder(View v) {
             super(v);

@@ -276,6 +276,7 @@
     <string name="title_activity_challenge" />
     <string name="activity_quest_title">Quest</string>
     <string name="add_sub_quest">Add sub-quest</string>
+    <string name="edit_quest_add_sub_quest">+ Add sub-quest</string>
     <string name="help_dialog_quest_title">Manage your quest</string>
     <string name="help_dialog_quest_text1">From this screen you can:</string>
     <string name="help_dialog_quest_track_time">Use the timer to track how you spend your time</string>

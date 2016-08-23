@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.events.subquests;
 
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.SubQuest;
 
 /**
@@ -8,8 +9,10 @@ import io.ipoli.android.quest.data.SubQuest;
  */
 public class UpdateSubQuestNameEvent {
     public final SubQuest subQuest;
+    public final EventSource source;
 
-    public UpdateSubQuestNameEvent(SubQuest subQuest) {
+    public UpdateSubQuestNameEvent(SubQuest subQuest, EventSource source) {
         this.subQuest = subQuest;
+        this.source = source;
     }
 }

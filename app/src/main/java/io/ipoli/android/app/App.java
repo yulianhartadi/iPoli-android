@@ -498,7 +498,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        e.quest.setSubQuests(e.subQuests);
         questPersistenceService.saveWithNewReminders(e.quest, e.reminders, () -> {
             if (Quest.isCompleted(e.quest)) {
                 onQuestComplete(e.quest, e.source);
