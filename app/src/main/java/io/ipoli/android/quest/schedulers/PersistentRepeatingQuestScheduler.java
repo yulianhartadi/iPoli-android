@@ -35,12 +35,6 @@ public class PersistentRepeatingQuestScheduler {
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
     }
 
-    public void schedule(RepeatingQuest repeatingQuest, Date startDate, int period) {
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        repeatingQuests.add(repeatingQuest);
-        schedule(repeatingQuests, startDate);
-    }
-
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
         for (RepeatingQuest rq : repeatingQuests) {
@@ -58,20 +52,33 @@ public class PersistentRepeatingQuestScheduler {
         repeatingQuestPersistenceService.save(repeatingQuests);
     }
 
+    public Quest schedulePlaceholderQuest(Quest quest, RepeatingQuest repeatingQuest, LocalDate startDate) {
+        List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
+        questPersistenceService.save(questsToCreate);
+        repeatingQuest.addScheduledPeriodEndDate(DateUtils.toStartOfDayUTC(startDate.dayOfWeek().withMaximumValue()));
+        repeatingQuestPersistenceService.save(repeatingQuest);
+        for (Quest q : questsToCreate) {
+            if (quest.getStartDate().equals(q.getStartDate())) {
+                quest.setId(q.getId());
+                return quest;
+            }
+        }
+        return null;
+    }
+
     private void scheduleFlexibleFor4WeeksAhead(LocalDate currentDate, RepeatingQuest rq) {
         List<Pair<LocalDate, LocalDate>> bounds = getBoundsFor4WeeksAhead(currentDate);
         for (int i = 0; i < bounds.size(); i++) {
             Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
             // Start date is relevant only for the current week. Next week starts (naturally) at the start of the next week.
             LocalDate startDate = i == 0 ? currentDate : weekPair.first;
-            saveQuestsInRange(rq, weekPair.first, weekPair.second, startDate);
+            saveQuestsInRange(rq, startDate, weekPair.second);
         }
     }
 
     private void scheduleFlexibleForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
-        LocalDate startOfMonth = currentDate.dayOfMonth().withMinimumValue();
         LocalDate endOfMonth = currentDate.dayOfMonth().withMaximumValue();
-        saveQuestsInRange(repeatingQuest, startOfMonth, endOfMonth, currentDate);
+        saveQuestsInRange(repeatingQuest, currentDate, endOfMonth);
     }
 
     private void scheduleFor4WeeksAhead(RepeatingQuest repeatingQuest, LocalDate currentDate) {
@@ -95,30 +102,12 @@ public class PersistentRepeatingQuestScheduler {
         return weekBounds;
     }
 
-    private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate, LocalDate startDate) {
+    private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endOfPeriodDate) {
         Date periodEnd = DateUtils.toStartOfDayUTC(endOfPeriodDate);
         if (repeatingQuest.shouldBeScheduledForPeriod(periodEnd)) {
             List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
             questPersistenceService.save(questsToCreate);
             repeatingQuest.addScheduledPeriodEndDate(periodEnd);
         }
-    }
-
-    private void saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startOfPeriodDate, LocalDate endOfPeriodDate) {
-        saveQuestsInRange(repeatingQuest, startOfPeriodDate, endOfPeriodDate, startOfPeriodDate);
-    }
-
-    public Quest schedulePlaceholderQuest(Quest quest, RepeatingQuest repeatingQuest, LocalDate startDate) {
-        List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
-        questPersistenceService.save(questsToCreate);
-        repeatingQuest.addScheduledPeriodEndDate(DateUtils.toStartOfDayUTC(startDate.dayOfWeek().withMaximumValue()));
-        repeatingQuestPersistenceService.save(repeatingQuest);
-        for (Quest q : questsToCreate) {
-            if (quest.getStartDate().equals(q.getStartDate())) {
-                quest.setId(q.getId());
-                return quest;
-            }
-        }
-        return null;
     }
 }
