@@ -62,6 +62,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarActivity;
@@ -146,6 +147,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        startActivity(new Intent(this, PetActivity.class));
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetActivity();

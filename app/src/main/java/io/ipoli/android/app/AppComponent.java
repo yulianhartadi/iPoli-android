@@ -26,6 +26,7 @@ import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -167,5 +168,7 @@ public interface AppComponent {
     void inject(SignInActivity signInActivity);
 
     void inject(NetworkChangeReceiver networkChangeReceiver);
+
+    void inject(PetActivity petActivity);
 }
 
