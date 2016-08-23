@@ -26,6 +26,8 @@ import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -75,26 +77,35 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(List<T> objects, OnOperationCompletedListener listener) {
-        String json = gson.toJson(objects);
-        Type type = new TypeToken<List<Map<String, Object>>>() {
-        }.getType();
-        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (int i = 0; i < objMaps.size(); i++) {
-            Map<String, Object> objMap = objMaps.get(i);
-            boolean isNew = !objMap.containsKey("id");
-            if (isNew) {
-                String id = collectionRef.push().getKey();
-                objects.get(i).setId(id);
-                objMap.put("id", id);
-                data.put(id, objMap);
-            } else {
-                objMap.put("updatedAt", new Date().getTime());
-                data.put(objMap.get("id").toString(), objMap);
+        Observable.defer(() -> {
+            String json = gson.toJson(objects);
+            Type type = new TypeToken<List<Map<String, Object>>>() {
+            }.getType();
+            List<Map<String, Object>> objMaps = gson.fromJson(json, type);
+            DatabaseReference collectionRef = getCollectionReference();
+            Map<String, Object> data = new HashMap<>();
+            for (int i = 0; i < objMaps.size(); i++) {
+                Map<String, Object> objMap = objMaps.get(i);
+                boolean isNew = !objMap.containsKey("id");
+                if (isNew) {
+                    String id = collectionRef.push().getKey();
+                    objects.get(i).setId(id);
+                    objMap.put("id", id);
+                    data.put(id, objMap);
+                } else {
+                    objMap.put("updatedAt", new Date().getTime());
+                    data.put(objMap.get("id").toString(), objMap);
+                }
             }
-        }
-        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+            collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+
+            return Observable.empty();
+        }).compose(applyAndroidSchedulers()).subscribe();
+    }
+
+    private <T> Observable.Transformer<T, T> applyAndroidSchedulers() {
+        return observable -> observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -124,7 +135,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object, OnOperationCompletedListener listener) {
-        getCollectionReference().child(object.getId()).removeValue(FirebaseCompletionListener.listen(listener));
+        Observable.defer(() -> {
+            getCollectionReference().child(object.getId()).removeValue(FirebaseCompletionListener.listen(listener));
+
+            return Observable.empty();
+        }).compose(applyAndroidSchedulers()).subscribe();
     }
 
     @Override
@@ -134,12 +149,17 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(List<T> objects, OnOperationCompletedListener listener) {
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (T obj : objects) {
-            data.put(obj.getId(), null);
-        }
-        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+        Observable.defer(() -> {
+            DatabaseReference collectionRef = getCollectionReference();
+            Map<String, Object> data = new HashMap<>();
+            for (T obj : objects) {
+                data.put(obj.getId(), null);
+            }
+            collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+
+
+            return Observable.empty();
+        }).compose(applyAndroidSchedulers()).subscribe();
     }
 
     @Override
