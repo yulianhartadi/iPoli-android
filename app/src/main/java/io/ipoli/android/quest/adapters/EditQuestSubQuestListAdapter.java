@@ -110,7 +110,9 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
 
     public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests.clear();
-        this.subQuests.addAll(subQuests);
+        if(subQuests != null) {
+            this.subQuests.addAll(subQuests);
+        }
         notifyDataSetChanged();
     }
 
