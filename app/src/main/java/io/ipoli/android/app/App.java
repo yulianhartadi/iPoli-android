@@ -380,6 +380,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onStartQuickAddEvent(StartQuickAddEvent e) {
         Intent intent = new Intent(this, QuickAddActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, e.additionalText);
         startActivity(intent);
     }
