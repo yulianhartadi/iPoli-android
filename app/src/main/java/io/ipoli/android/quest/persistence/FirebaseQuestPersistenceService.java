@@ -270,6 +270,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                     if (q.getEndDate().before(startDate)) {
                         continue;
                     }
+                    if (Quest.isCompleted(q)) {
+                        continue;
+                    }
                     if (nextDate == null) {
                         nextDate = q.getEndDate();
                     }
@@ -302,6 +305,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                         continue;
                     }
                     if (q.getEndDate().before(startDate)) {
+                        continue;
+                    }
+                    if (Quest.isCompleted(q)) {
                         continue;
                     }
                     if (nextDate == null) {
