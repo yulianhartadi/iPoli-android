@@ -27,7 +27,7 @@ import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
-import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -129,7 +129,7 @@ public interface AppComponent {
 
     void inject(EditRewardActivity editRewardActivity);
 
-    void inject(PickAvatarActivity pickAvatarActivity);
+    void inject(PickAvatarPictureActivity pickAvatarPictureActivity);
 
     void inject(GrowthFragment growthFragment);
 

@@ -5,8 +5,12 @@ import com.squareup.otto.Bus;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.avatar.persistence.FirebaseAvatarPersistenceService;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.FirebaseChallengePersistenceService;
+import io.ipoli.android.pet.persistence.FirebasePetPersistenceService;
+import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.persistence.FirebasePlayerPersistenceService;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.FirebaseQuestPersistenceService;
@@ -36,6 +40,16 @@ public class PersistenceModule {
     @Provides
     public PlayerPersistenceService providePlayerPersistenceService(Bus eventBus, Gson gson) {
         return new FirebasePlayerPersistenceService(eventBus, gson);
+    }
+
+    @Provides
+    public AvatarPersistenceService provideAvatarPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebaseAvatarPersistenceService(eventBus, gson);
+    }
+
+    @Provides
+    public PetPersistenceService providePetPersistenceService(Bus eventBus, Gson gson) {
+        return new FirebasePetPersistenceService(eventBus, gson);
     }
 
     @Provides

@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/pet_background">
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
+        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
@@ -22,6 +22,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,13 +35,13 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/pet_xp_bonus"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:text="XP: +30%"
                 android:textColor="@color/md_light_text_87" />
 
             <android.support.v4.widget.Space
@@ -50,36 +51,37 @@
                 android:layout_centerHorizontal="true" />
 
             <TextView
+                android:id="@+id/pet_coins_bonus"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
                 android:layout_toEndOf="@id/pet_bonus_mid"
-                android:text="Coins: +15%"
                 android:textColor="@color/md_light_text_87" />
         </RelativeLayout>
 
         <ImageView
+            android:id="@+id/pet_avatar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="150dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/pet" />
+            android:scaleType="fitXY" />
 
         <TextView
+            android:id="@+id/pet_state"
             style="@style/Base.TextAppearance.AppCompat.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="100dp"
-            android:text="HAPPY"
             android:textColor="@color/md_light_text_87" />
 
         <ProgressBar
+            android:id="@+id/pet_hp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="220dp"
             android:layout_height="wrap_content"
@@ -87,7 +89,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="70dp"
             android:max="100"
-            android:progress="90"
             android:scaleY="3" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

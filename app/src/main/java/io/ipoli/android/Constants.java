@@ -73,13 +73,13 @@ public interface Constants {
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int DEFAULT_PLAYER_XP = 0;
-    int DEFAULT_PLAYER_LEVEL = 1;
+    int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
-    String DEFAULT_PLAYER_AVATAR = "avatar_12";
+    String DEFAULT_PLAYER_PICTURE = "avatar_12";
 
     int AVATAR_COUNT = 12;
 
-    String AVATAR_NAME_EXTRA_KEY = "avatar_name";
+    String PICTURE_NAME_EXTRA_KEY = "avatar_name";
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
@@ -112,6 +112,13 @@ public interface Constants {
     String WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
     String REMINDER_START_TIME = "reminder_start_time";
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
+
+    String DEFAULT_PET_NAME = "iPoli";
+    String DEFAULT_PET_AVATAR = "pet_1";
+    String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
+    Integer DEFAULT_PET_HP = 100;
+    Integer DEFAULT_PET_XP_BONUS = 10;
+    Integer DEFAULT_PET_COINS_BONUS = 5;
 
 
     enum DaysOfWeek {

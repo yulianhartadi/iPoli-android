@@ -123,7 +123,7 @@
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".player.activities.PickAvatarActivity"
+            android:name=".player.activities.PickAvatarPictureActivity"
             android:label="@string/title_activity_pick_avatar"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"

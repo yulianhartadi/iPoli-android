@@ -32,7 +32,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
@@ -55,7 +55,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     Bus eventBus;
 
     @Inject
-    PlayerPersistenceService playerPersistenceService;
+    AvatarPersistenceService avatarPersistenceService;
 
     @Inject
     RewardPersistenceService rewardPersistenceService;
@@ -130,13 +130,13 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     @Subscribe
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
-        playerPersistenceService.find(player -> {
-            if (player.getCoins() - r.getPrice() < 0) {
+        avatarPersistenceService.find(avatar -> {
+            if (avatar.getCoins() - r.getPrice() < 0) {
                 showTooExpensiveMessage();
                 return;
             }
-            player.removeCoins(r.getPrice());
-            playerPersistenceService.save(player);
+            avatar.removeCoins(r.getPrice());
+            avatarPersistenceService.save(avatar);
             updateRewards(rewards);
             Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
 
@@ -168,9 +168,9 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
 
     private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
-        playerPersistenceService.find(player -> {
+        avatarPersistenceService.find(avatar -> {
             for (Reward r : rewards) {
-                rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= player.getCoins())));
+                rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= avatar.getCoins())));
             }
             RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
             rewardList.setAdapter(rewardListAdapter);
