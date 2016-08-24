@@ -16,12 +16,12 @@ public abstract class BaseRewardGenerator implements RewardGenerator {
     }
 
     protected double getXpBonusMultiplier() {
-        int xpBonusPercentage = localStorage.readInt(Constants.XP_BONUS_PERCENTAGE, 0);
+        int xpBonusPercentage = localStorage.readInt(Constants.KEY_XP_BONUS_PERCENTAGE, 0);
         return (xpBonusPercentage + 100) / 100.0;
     }
 
     protected double getCoinsBonusMultiplier() {
-        int coinsBonusPercentage = localStorage.readInt(Constants.COINS_BONUS_PERCENTAGE, 0);
+        int coinsBonusPercentage = localStorage.readInt(Constants.KEY_COINS_BONUS_PERCENTAGE, 0);
         return (coinsBonusPercentage + 100) / 100.0;
     }
 }

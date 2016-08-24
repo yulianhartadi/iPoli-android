@@ -120,8 +120,8 @@ public interface Constants {
     Integer DEFAULT_PET_XP_BONUS = 10;
     Integer DEFAULT_PET_COINS_BONUS = 5;
 
-    String XP_BONUS_PERCENTAGE = "xp_bonus";
-    String COINS_BONUS_PERCENTAGE = "coins_bonus";
+    String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
+    String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
 
 
     enum DaysOfWeek {
