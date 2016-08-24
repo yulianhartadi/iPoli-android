@@ -15,8 +15,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.reminders.data.Reminder;
 
@@ -92,8 +90,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
-        this.experience = new ExperienceRewardGenerator().generate(this);
-        this.coins = new CoinsRewardGenerator().generate(this);
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 

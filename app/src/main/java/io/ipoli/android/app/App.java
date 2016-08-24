@@ -164,6 +164,12 @@ public class App extends MultiDexApplication {
     @Inject
     AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
 
+    @Inject
+    ExperienceRewardGenerator experienceRewardGenerator;
+
+    @Inject
+    CoinsRewardGenerator coinsRewardGenerator;
+
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -450,6 +456,8 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+        q.setExperience(experienceRewardGenerator.generate(q));
+        q.setCoins(coinsRewardGenerator.generate(q));
         questPersistenceService.save(q, () -> {
             onQuestComplete(q, e.source);
         });
@@ -498,7 +506,8 @@ public class App extends MultiDexApplication {
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
         quest.setReminders(e.reminders);
         if (Quest.isCompleted(quest)) {
-            quest.setExperience(new ExperienceRewardGenerator().generate(quest));
+            quest.setExperience(experienceRewardGenerator.generate(quest));
+            quest.setCoins(coinsRewardGenerator.generate(quest));
         }
         questPersistenceService.save(quest, () -> {
             if (Quest.isCompleted(quest)) {
@@ -580,8 +589,8 @@ public class App extends MultiDexApplication {
             }
             localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
 
-            long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
-            long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+            long xp = experienceRewardGenerator.generateForDailyChallenge();
+            long coins = coinsRewardGenerator.generateForDailyChallenge();
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
@@ -602,14 +611,10 @@ public class App extends MultiDexApplication {
 
     private void updateAvatar(RewardProvider rewardProvider) {
         avatarPersistenceService.find(avatar -> {
-            petPersistenceService.find(pet -> {
-                Double xpBonus = (pet.getExperienceBonusPercentage() + 100) / 100.0;
-                Double coinsBonus = (pet.getCoinsBonusPercentage() + 100) / 100.0;
-                avatar.addExperience((long) (rewardProvider.getExperience() * xpBonus));
-                increaseAvatarLevelIfNeeded(avatar);
-                avatar.addCoins((long) (rewardProvider.getCoins() * coinsBonus));
-                avatarPersistenceService.save(avatar);
-            });
+            avatar.addExperience(rewardProvider.getExperience());
+            increaseAvatarLevelIfNeeded(avatar);
+            avatar.addCoins(rewardProvider.getCoins());
+            avatarPersistenceService.save(avatar);
         });
     }
 

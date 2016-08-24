@@ -13,6 +13,7 @@ import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.JsonModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
@@ -72,6 +73,7 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 AndroidCalendarPersistenceModule.class,
+                RewardGeneratorModule.class,
                 SchedulerModule.class
         }
 )

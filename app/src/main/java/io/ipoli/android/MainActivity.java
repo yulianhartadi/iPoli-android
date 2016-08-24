@@ -387,7 +387,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
                 Time scrollToTime = null;
-                if (!isForSameDay && quest.getStartMinute() > -1) {
+                if (quest.getStartMinute() > -1) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
                 eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));

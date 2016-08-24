@@ -2,6 +2,7 @@ package io.ipoli.android.quest.generators;
 
 import java.util.Random;
 
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
@@ -9,13 +10,17 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/1/16.
  */
-public class CoinsRewardGenerator implements RewardGenerator {
+public class CoinsRewardGenerator extends BaseRewardGenerator {
+
+    public CoinsRewardGenerator(LocalStorage localStorage) {
+        super(localStorage);
+    }
 
     @Override
     public long generate(Challenge challenge) {
         long reward = generateForDailyChallenge() * 2;
         reward *= challenge.getDifficulty();
-        return reward;
+        return (long) (reward * getCoinsBonusMultiplier());
     }
 
     @Override
@@ -25,12 +30,12 @@ public class CoinsRewardGenerator implements RewardGenerator {
         if (quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
             reward *= 2;
         }
-        return reward;
+        return (long) (reward * getCoinsBonusMultiplier());
     }
 
     @Override
     public long generateForDailyChallenge() {
         long[] rewards = new long[]{20L, 30L, 40L, 50L, 80L};
-        return rewards[new Random().nextInt(rewards.length)];
+        return (long) (rewards[new Random().nextInt(rewards.length)] * getCoinsBonusMultiplier());
     }
 }

@@ -37,7 +37,6 @@ import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.tutorial.PickQuestViewModel;
@@ -161,8 +160,6 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         for (BaseQuest bq : selectedBaseQuests) {
             Quest q = (Quest) bq;
             q.setPriority(Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY);
-            q.setExperience(new ExperienceRewardGenerator().generate(q));
-            q.setCoins(new ExperienceRewardGenerator().generate(q));
             selectedQuests.add(q);
         }
         questsToSave.addAll(selectedQuests);
