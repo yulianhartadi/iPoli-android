@@ -51,7 +51,7 @@ import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
 
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
 
     @Inject
     Bus eventBus;
@@ -94,6 +94,10 @@ public class TutorialActivity extends AppIntro2 {
                 getString(R.string.tutorial_reward_desc),
                 R.drawable.tutorial_reward,
                 R.color.md_purple_500));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_pet_title),
+                getString(R.string.tutorial_pet_desc),
+                R.drawable.pet_1,
+                R.color.md_orange_500));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
         pickTutorailQuestsFragment = new PickTutorailQuestsFragment();

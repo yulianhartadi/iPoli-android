@@ -320,4 +320,6 @@
     <string name="ongoing_notification_progress_text">Daily progress: %1$d/%2$d</string>
     <string name="quest_sub_quests_question">Do you have a checklist?</string>
     <string name="rename_your_pet">Rename your pet</string>
+    <string name="tutorial_pet_title">Enjoy a Faithful Companion</string>
+    <string name="tutorial_pet_desc">Flopsy is your first pet! He helps you gain more XP and life coins when he is healthy.</string>
 </resources>
