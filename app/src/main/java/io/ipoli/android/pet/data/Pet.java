@@ -1,8 +1,12 @@
 package io.ipoli.android.pet.data;
 
+import android.support.annotation.ColorRes;
+
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.R;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -119,5 +123,47 @@ public class Pet extends PersistedObject {
 
     private void updateExperienceBonusPercentage() {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
+    }
+
+    @Exclude
+    public String getStateText() {
+        return getState().name().toLowerCase();
+    }
+
+    @Exclude
+    @ColorRes
+    public int getStateColor() {
+        return getState().color;
+    }
+
+    @Exclude
+    private PetState getState() {
+        if (healthPointsPercentage >= 90) {
+            return PetState.AWESOME;
+        }
+        if (healthPointsPercentage >= 60) {
+            return PetState.HAPPY;
+        }
+        if (healthPointsPercentage >= 35) {
+            return PetState.GOOD;
+        }
+        if (healthPointsPercentage > 0) {
+            return PetState.SAD;
+        }
+        return PetState.DEAD;
+    }
+
+    private enum PetState {
+        AWESOME(R.color.md_light_green_500),
+        HAPPY(R.color.md_yellow_500),
+        GOOD(R.color.md_orange_500),
+        SAD(R.color.md_red_500),
+        DEAD(R.color.md_black);
+
+        public final int color;
+
+        PetState(@ColorRes int color) {
+            this.color = color;
+        }
     }
 }

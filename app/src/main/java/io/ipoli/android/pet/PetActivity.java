@@ -129,23 +129,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         avatar.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
-        state.setText(getStateText(pet.getHealthPointsPercentage()).toUpperCase());
+        state.setText(pet.getStateText().toUpperCase());
         hp.setProgress(pet.getHealthPointsPercentage());
-    }
-
-    private String getStateText(Integer hp) {
-        if (hp >= 90) {
-            return "very happy";
-        }
-        if (hp >= 60) {
-            return "happy";
-        }
-        if (hp >= 35) {
-            return "good";
-        }
-        if (hp > 0) {
-            return "sad";
-        }
-        return "dead";
     }
 }

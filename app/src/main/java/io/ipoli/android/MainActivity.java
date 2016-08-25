@@ -1,6 +1,7 @@
 package io.ipoli.android;
 
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
@@ -187,6 +188,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStart() {
         super.onStart();
         updateAvatarInDrawer();
+        updatePetInDrawer();
     }
 
     @Override
@@ -228,14 +230,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, this.avatar.getPicture()));
             avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
-            petPersistenceService.find(pet -> {
-                CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
-                petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture()));
-                petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
-            });
-
             TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
             currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), this.avatar.getExperience()));
+        });
+    }
+
+    private void updatePetInDrawer() {
+        petPersistenceService.listen(pet -> {
+            View header = navigationView.getHeaderView(0);
+
+            CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
+            petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture()));
+            petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
+
+            ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);
+            GradientDrawable drawable = (GradientDrawable) petStateView.getBackground();
+            drawable.setColor(ContextCompat.getColor(this, pet.getStateColor()));
         });
     }
 
