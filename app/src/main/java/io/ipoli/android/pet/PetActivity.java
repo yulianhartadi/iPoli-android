@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,15 +21,17 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/23/16.
  */
-public class PetActivity extends BaseActivity implements OnDataChangedListener<Pet> {
+public class PetActivity extends BaseActivity implements OnDataChangedListener<Pet>, TextPickerFragment.OnTextPickedListener {
 
     @Inject
     PetPersistenceService petPersistenceService;
@@ -52,6 +56,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
 
     @BindView(R.id.pet_hp)
     ProgressBar hp;
+    private Pet pet;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,7 +89,41 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.pet_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_rename_pet:
+                showRenamePetDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showRenamePetDialog() {
+        TextPickerFragment.newInstance(pet.getName(), R.string.rename_your_pet, this).show(getSupportFragmentManager());
+    }
+
+    @Override
+    public void onTextPicked(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return;
+        }
+        renamePet(name);
+    }
+
+    private void renamePet(String name) {
+        pet.setName(name);
+        petPersistenceService.save(pet);
+    }
+
+    @Override
     public void onDataChanged(Pet pet) {
+        this.pet = pet;
         toolbar.setTitle(pet.getName());
         backgroundImage.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getBackgroundPicture()));
         avatar.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
@@ -95,16 +134,16 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     }
 
     private String getStateText(Integer hp) {
-        if(hp >= 90) {
+        if (hp >= 90) {
             return "very happy";
         }
-        if(hp >= 60) {
+        if (hp >= 60) {
             return "happy";
         }
-        if(hp >= 35) {
+        if (hp >= 35) {
             return "good";
         }
-        if(hp > 0) {
+        if (hp > 0) {
             return "sad";
         }
         return "dead";
