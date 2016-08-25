@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,11 +18,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -35,6 +38,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
 
     @Inject
     PetPersistenceService petPersistenceService;
+
+    @Inject
+    AvatarPersistenceService avatarPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,6 +62,10 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
 
     @BindView(R.id.pet_hp)
     ProgressBar hp;
+
+    @BindView(R.id.revive)
+    Button revive;
+
     private Pet pet;
 
     @Override
@@ -129,7 +139,27 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         avatar.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
-        state.setText(pet.getStateText().toUpperCase());
-        hp.setProgress(pet.getHealthPointsPercentage());
+
+        if (pet.getState() == Pet.PetState.DEAD) {
+            revive.setText("400 coins");
+            revive.setVisibility(View.VISIBLE);
+            hp.setVisibility(View.GONE);
+            state.setVisibility(View.GONE);
+        } else {
+            revive.setVisibility(View.GONE);
+            hp.setVisibility(View.VISIBLE);
+            state.setVisibility(View.VISIBLE);
+            state.setText(pet.getStateText().toUpperCase());
+            hp.setProgress(pet.getHealthPointsPercentage());
+        }
+    }
+
+    @OnClick(R.id.revive)
+    public void onReviveClick(View view) {
+        this.pet.addHealthPoints(80);
+        petPersistenceService.save(pet);
+//        avatarPersistenceService.find(avatar -> {
+//            avatar.getCoins()
+//        });
     }
 }

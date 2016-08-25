@@ -137,7 +137,7 @@ public class Pet extends PersistedObject {
     }
 
     @Exclude
-    private PetState getState() {
+    public PetState getState() {
         if (healthPointsPercentage >= 90) {
             return PetState.AWESOME;
         }
@@ -153,7 +153,7 @@ public class Pet extends PersistedObject {
         return PetState.DEAD;
     }
 
-    private enum PetState {
+    public enum PetState {
         AWESOME(R.color.md_green_500),
         HAPPY(R.color.md_orange_500),
         GOOD(R.color.md_yellow_500),

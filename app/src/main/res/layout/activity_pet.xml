@@ -7,10 +7,10 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:paddingTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+        android:paddingTop="16dp"
         android:theme="@style/Theme.iPoli.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -22,9 +22,9 @@
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
-        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -90,5 +90,15 @@
             android:layout_marginBottom="70dp"
             android:max="100"
             android:scaleY="3" />
+
+        <Button
+            android:id="@+id/revive"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="70dp"
+            android:visibility="gone" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
