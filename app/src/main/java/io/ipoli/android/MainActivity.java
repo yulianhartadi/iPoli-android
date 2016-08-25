@@ -64,6 +64,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.pet.PetActivity;
+import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
@@ -134,6 +136,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Inject
     AvatarPersistenceService avatarPersistenceService;
 
+    @Inject
+    PetPersistenceService petPersistenceService;
+
     Fragment currentFragment;
 
     private boolean isRateDialogShown;
@@ -188,6 +193,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onStop() {
         questPersistenceService.removeAllListeners();
         avatarPersistenceService.removeAllListeners();
+        petPersistenceService.removeAllListeners();
         super.onStop();
     }
 
@@ -208,21 +214,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //                return;
 //            }
             View header = navigationView.getHeaderView(0);
-            TextView level = (TextView) header.findViewById(R.id.player_level);
+            TextView level = (TextView) header.findViewById(R.id.avatar_level);
             level.setText(String.format(getString(R.string.nav_header_player_level), this.avatar.getLevel()));
 
-            TextView coins = (TextView) header.findViewById(R.id.player_coins);
+            TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
             coins.setText(String.valueOf(this.avatar.getCoins()));
 
             ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
             experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
             experienceBar.setProgress(getCurrentProgress(this.avatar));
 
-            CircleImageView avatarView = (CircleImageView) header.findViewById(R.id.player_image);
-            avatarView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, this.avatar.getPicture()));
-            avatarView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
+            CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.avatar_picture);
+            avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, this.avatar.getPicture()));
+            avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
-            TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+            petPersistenceService.find(pet -> {
+                CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
+                petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture()));
+                petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
+            });
+
+            TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
             currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), this.avatar.getExperience()));
         });
     }
@@ -601,7 +613,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == PICK_PLAYER_PICTURE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String picture = data.getStringExtra(Constants.PICTURE_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(picture)) {
-                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_image);
+                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar_picture);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
                 this.avatar.setPicture(picture);
                 avatarPersistenceService.save(this.avatar);
