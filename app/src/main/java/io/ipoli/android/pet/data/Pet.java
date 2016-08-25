@@ -88,7 +88,7 @@ public class Pet extends PersistedObject {
     }
 
     public void setHealthPointsPercentage(Integer healthPointsPercentage) {
-        this.healthPointsPercentage = Math.max(0, healthPointsPercentage);
+        this.healthPointsPercentage = Math.max(0, Math.min(100, healthPointsPercentage));
         updateExperienceBonusPercentage();
         updateCoinsBonusPercentage();
     }
@@ -98,7 +98,7 @@ public class Pet extends PersistedObject {
     }
 
     public void setExperienceBonusPercentage(Integer experienceBonusPercentage) {
-        this.experienceBonusPercentage = Math.max(0, experienceBonusPercentage);
+        this.experienceBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_XP_BONUS, experienceBonusPercentage));
     }
 
     public Integer getCoinsBonusPercentage() {
@@ -106,7 +106,7 @@ public class Pet extends PersistedObject {
     }
 
     public void setCoinsBonusPercentage(Integer coinsBonusPercentage) {
-        this.coinsBonusPercentage = Math.max(0, coinsBonusPercentage);
+        this.coinsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_COIN_BONUS, coinsBonusPercentage));
     }
 
     public void addHealthPoints(int healthPoints) {
