@@ -7,9 +7,13 @@ import io.ipoli.android.quest.data.Quest;
  * on 3/17/16.
  */
 public class UndoCompletedQuestEvent {
-    public Quest quest;
+    public final Quest quest;
+    public final long experience;
+    public final long coins;
 
-    public UndoCompletedQuestEvent(Quest quest) {
+    public UndoCompletedQuestEvent(Quest quest, long experience, long coins) {
         this.quest = quest;
+        this.experience = experience;
+        this.coins = coins;
     }
 }

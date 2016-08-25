@@ -18,7 +18,8 @@ public class ExperienceRewardGenerator extends BaseRewardGenerator {
 
     @Override
     public long generate(Challenge challenge) {
-        long reward = generateForDailyChallenge() * 2;
+        long[] rewards = new long[]{20L, 30L, 50L, 80L, 100L};
+        long reward = rewards[new Random().nextInt(rewards.length)] * 2;
         reward *= challenge.getDifficulty();
         return (long) (reward * getXpBonusMultiplier());
     }

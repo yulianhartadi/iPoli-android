@@ -116,15 +116,16 @@ public interface Constants {
     String DEFAULT_PET_NAME = "iPoli";
     String DEFAULT_PET_AVATAR = "pet_1";
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
-    Integer DEFAULT_PET_HP = 100;
+    Integer DEFAULT_PET_HP = 50;
 
     String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
     String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
-    double COINS_BONUS_PERCENTAGE_OF_HP = 20.0;
-    double XP_BONUS_PERCENTAGE_OF_HP = 10.0;
+    double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
+    double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
     int MAX_PET_XP_BONUS = 20;
 
+    double XP_TO_PET_HP_RATIO = 13.2;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

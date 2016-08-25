@@ -315,9 +315,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Quest q = e.quest;
-        long experience = q.getExperience();
-        long coins = q.getCoins();
-        String text = getString(q.getEndDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, experience, coins);
+        String text = getString(q.getEndDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, e.experience, e.coins);
         Snackbar
                 .make(contentContainer,
                         text,

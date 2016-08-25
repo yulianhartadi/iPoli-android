@@ -110,7 +110,7 @@ public class Pet extends PersistedObject {
     }
 
     public void addHealthPoints(int healthPoints) {
-        setHealthPointsPercentage(getHealthPointsPercentage() - healthPoints);
+        setHealthPointsPercentage(getHealthPointsPercentage() + healthPoints);
     }
 
     private void updateCoinsBonusPercentage() {

@@ -422,11 +422,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return experience;
     }
 
-    public void setCoins(long coins) {
+    public void setCoins(Long coins) {
         this.coins = coins;
     }
 
-    public void setExperience(long experience) {
+    public void setExperience(Long experience) {
         this.experience = experience;
     }
 
