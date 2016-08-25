@@ -122,6 +122,8 @@ public interface Constants {
 
     String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
     String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
+    double COINS_BONUS_PERCENTAGE_OF_HP = 20.0;
+    double XP_BONUS_PERCENTAGE_OF_HP = 10.0;
 
 
     enum DaysOfWeek {

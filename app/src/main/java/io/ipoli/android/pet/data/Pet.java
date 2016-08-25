@@ -10,7 +10,7 @@ import io.ipoli.android.app.utils.DateUtils;
 public class Pet extends PersistedObject {
 
     private String name;
-    private Integer healthPoints;
+    private Integer healthPointsPercentage;
     private Integer experienceBonusPercentage;
     private Integer coinsBonusPercentage;
     private String picture;
@@ -20,11 +20,11 @@ public class Pet extends PersistedObject {
 
     }
 
-    public Pet(String name, String picture, String backgroundPicture, Integer healthPoints, Integer experienceBonusPercentage, Integer coinsBonusPercentage) {
+    public Pet(String name, String picture, String backgroundPicture, Integer healthPointsPercentage, Integer experienceBonusPercentage, Integer coinsBonusPercentage) {
         this.name = name;
         this.picture = picture;
         this.backgroundPicture = backgroundPicture;
-        this.healthPoints = healthPoints;
+        this.healthPointsPercentage = healthPointsPercentage;
         this.experienceBonusPercentage = experienceBonusPercentage;
         this.coinsBonusPercentage = coinsBonusPercentage;
         setCreatedAt(DateUtils.nowUTC().getTime());
@@ -81,12 +81,12 @@ public class Pet extends PersistedObject {
         this.name = name;
     }
 
-    public Integer getHealthPoints() {
-        return healthPoints;
+    public Integer getHealthPointsPercentage() {
+        return healthPointsPercentage;
     }
 
-    public void setHealthPoints(Integer healthPoints) {
-        this.healthPoints = healthPoints;
+    public void setHealthPointsPercentage(Integer healthPointsPercentage) {
+        this.healthPointsPercentage = healthPointsPercentage;
     }
 
     public Integer getExperienceBonusPercentage() {

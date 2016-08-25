@@ -70,6 +70,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.LevelUpActivity;
@@ -173,6 +174,7 @@ public class App extends MultiDexApplication {
     BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            decreasePetHealth();
             scheduleQuestsFor4WeeksAhead();
             eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
             moveIncompleteQuestsToInbox();
@@ -209,6 +211,8 @@ public class App extends MultiDexApplication {
         Quest quest = uncompletedQuests.get(0);
         updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
     };
+    public static final double MAX_PENALTY_COEFFICIENT = 0.5;
+    public static final double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -219,6 +223,55 @@ public class App extends MultiDexApplication {
         if (localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
             listenForDailyQuestsChange();
         }
+    }
+
+    private void decreasePetHealth() {
+        questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests ->
+                petPersistenceService.find(pet -> updatePet(pet, pet.getHealthPointsPercentage() - getDecreasePercentage(quests)))
+        );
+    }
+
+    private void updatePet(Pet pet, int newHealthPointsPercentage) {
+        pet.setHealthPointsPercentage(newHealthPointsPercentage);
+        pet.setExperienceBonusPercentage((int) Math.floor(newHealthPointsPercentage * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
+        pet.setCoinsBonusPercentage((int) Math.floor(newHealthPointsPercentage * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
+
+        localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
+        localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
+        petPersistenceService.save(pet);
+    }
+
+    private int getDecreasePercentage(List<Quest> quests) {
+        if (quests.isEmpty()) {
+            return (int) (MAX_PENALTY_COEFFICIENT * 100);
+        }
+
+        int decreasePercentage = 0;
+        if (quests.size() == 1) {
+            decreasePercentage += 30;
+        }
+
+        if (quests.size() == 2) {
+            decreasePercentage += 20;
+        }
+
+        Set<Quest> uncompletedQuests = new HashSet<>();
+        int uncompletedImportantQuestCount = 0;
+        for (Quest q : quests) {
+            if (!Quest.isCompleted(q)) {
+                uncompletedQuests.add(q);
+                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                    uncompletedImportantQuestCount++;
+                }
+            }
+        }
+
+        double uncompletedRatio = uncompletedQuests.size() / quests.size();
+
+        int randomNoise = new Random().nextInt(21) - 10;
+        decreasePercentage += (int) (uncompletedRatio * MAX_PENALTY_COEFFICIENT + (uncompletedImportantQuestCount * IMPORTANT_QUEST_PENALTY_PERCENT) + randomNoise);
+        decreasePercentage = (int) Math.min(decreasePercentage, MAX_PENALTY_COEFFICIENT * 100);
+        return decreasePercentage;
     }
 
     private void listenForDailyQuestsChange() {
