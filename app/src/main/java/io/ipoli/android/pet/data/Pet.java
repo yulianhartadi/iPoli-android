@@ -155,8 +155,8 @@ public class Pet extends PersistedObject {
 
     private enum PetState {
         AWESOME(R.color.md_light_green_500),
-        HAPPY(R.color.md_yellow_500),
-        GOOD(R.color.md_orange_500),
+        HAPPY(R.color.md_orange_500),
+        GOOD(R.color.md_yellow_500),
         SAD(R.color.md_red_500),
         DEAD(R.color.md_black);
 
