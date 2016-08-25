@@ -1,5 +1,8 @@
 package io.ipoli.android.pet.data;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -7,6 +10,7 @@ import io.ipoli.android.app.utils.DateUtils;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/24/16.
  */
+@IgnoreExtraProperties
 public class Pet extends PersistedObject {
 
     private String name;
@@ -20,13 +24,11 @@ public class Pet extends PersistedObject {
 
     }
 
-    public Pet(String name, String picture, String backgroundPicture, Integer healthPointsPercentage, Integer experienceBonusPercentage, Integer coinsBonusPercentage) {
+    public Pet(String name, String picture, String backgroundPicture, Integer healthPointsPercentage) {
         this.name = name;
         this.picture = picture;
         this.backgroundPicture = backgroundPicture;
-        this.healthPointsPercentage = healthPointsPercentage;
-        this.experienceBonusPercentage = experienceBonusPercentage;
-        this.coinsBonusPercentage = coinsBonusPercentage;
+        setHealthPointsPercentage(healthPointsPercentage);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
     }
@@ -86,7 +88,9 @@ public class Pet extends PersistedObject {
     }
 
     public void setHealthPointsPercentage(Integer healthPointsPercentage) {
-        this.healthPointsPercentage = healthPointsPercentage;
+        this.healthPointsPercentage = Math.max(0, healthPointsPercentage);
+        updateExperienceBonusPercentage();
+        updateCoinsBonusPercentage();
     }
 
     public Integer getExperienceBonusPercentage() {
@@ -94,7 +98,7 @@ public class Pet extends PersistedObject {
     }
 
     public void setExperienceBonusPercentage(Integer experienceBonusPercentage) {
-        this.experienceBonusPercentage = experienceBonusPercentage;
+        this.experienceBonusPercentage = Math.max(0, experienceBonusPercentage);
     }
 
     public Integer getCoinsBonusPercentage() {
@@ -102,10 +106,18 @@ public class Pet extends PersistedObject {
     }
 
     public void setCoinsBonusPercentage(Integer coinsBonusPercentage) {
-        this.coinsBonusPercentage = coinsBonusPercentage;
+        this.coinsBonusPercentage = Math.max(0, coinsBonusPercentage);
     }
 
-    public void markUpdated() {
-        setUpdatedAt(DateUtils.nowUTC().getTime());
+    public void addHealthPoints(int healthPoints) {
+        setHealthPointsPercentage(getHealthPointsPercentage() - healthPoints);
+    }
+
+    private void updateCoinsBonusPercentage() {
+        setCoinsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
+    }
+
+    private void updateExperienceBonusPercentage() {
+        setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 }

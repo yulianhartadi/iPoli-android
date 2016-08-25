@@ -48,7 +48,7 @@ public class SignInActivity extends BaseActivity {
                 return;
             }
             String uid = task.getResult().getUser().getUid();
-            Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP, Constants.DEFAULT_PET_XP_BONUS, Constants.DEFAULT_PET_COINS_BONUS);
+            Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
             Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
             Player player = new Player(uid, pet, avatar);
             playerPersistenceService.save(player, () -> {

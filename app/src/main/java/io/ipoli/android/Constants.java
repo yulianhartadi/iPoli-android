@@ -117,8 +117,6 @@ public interface Constants {
     String DEFAULT_PET_AVATAR = "pet_1";
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
     Integer DEFAULT_PET_HP = 100;
-    Integer DEFAULT_PET_XP_BONUS = 10;
-    Integer DEFAULT_PET_COINS_BONUS = 5;
 
     String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
     String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";

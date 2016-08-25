@@ -227,14 +227,12 @@ public class App extends MultiDexApplication {
 
     private void decreasePetHealth() {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests ->
-                petPersistenceService.find(pet -> updatePet(pet, pet.getHealthPointsPercentage() - getDecreasePercentage(quests)))
+                petPersistenceService.find(pet -> updatePet(pet, getDecreasePercentage(quests)))
         );
     }
 
-    private void updatePet(Pet pet, int newHealthPointsPercentage) {
-        pet.setHealthPointsPercentage(newHealthPointsPercentage);
-        pet.setExperienceBonusPercentage((int) Math.floor(newHealthPointsPercentage * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
-        pet.setCoinsBonusPercentage((int) Math.floor(newHealthPointsPercentage * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
+    private void updatePet(Pet pet, int healthPointsDecrease) {
+        pet.addHealthPoints(healthPointsDecrease);
 
         localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
         localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
