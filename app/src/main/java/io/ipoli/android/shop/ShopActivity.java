@@ -53,9 +53,9 @@ public class ShopActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth"};
+        String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth", "Chicken invader"};
         List<PetViewModel> petViewModels = new ArrayList<>();
-        for(int i = 0; i < descriptions.length ; i++) {
+        for (int i = 0; i < descriptions.length; i++) {
             petViewModels.add(new PetViewModel(descriptions[i], 500,
                     ResourceUtils.extractDrawableResource(this, "pet_" + (i + 1)),
                     ResourceUtils.extractDrawableResource(this, "pet_" + (i + 1) + "_happy")));
