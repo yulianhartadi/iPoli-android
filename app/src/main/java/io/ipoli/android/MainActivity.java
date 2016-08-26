@@ -238,7 +238,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             View header = navigationView.getHeaderView(0);
 
             CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
-            petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture()));
+            petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture() + "_head"));
             petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
 
             ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);
