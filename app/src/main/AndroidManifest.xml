@@ -122,11 +122,11 @@
         <activity
             android:name=".shop.ShopActivity"
             android:label="@string/title_activity_shop"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".pet.PetActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".pet.PetActivity" />
         </activity>
         <activity
             android:name=".tutorial.TutorialActivity"

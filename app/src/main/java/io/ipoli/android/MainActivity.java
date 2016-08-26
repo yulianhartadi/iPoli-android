@@ -154,8 +154,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         appComponent().inject(this);
         ButterKnife.bind(this);
 
-        startActivity(new Intent(this, ShopActivity.class));
-
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetActivity();
             return;

@@ -1,5 +1,6 @@
 package io.ipoli.android.pet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -31,6 +32,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.shop.ShopActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -112,6 +114,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         switch (item.getItemId()) {
             case R.id.action_rename_pet:
                 showRenamePetDialog();
+                return true;
+            case R.id.action_shop:
+                startActivity(new Intent(this, ShopActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
