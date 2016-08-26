@@ -70,6 +70,16 @@
             android:layout_marginBottom="150dp"
             android:scaleType="fitXY" />
 
+        <ImageView
+            android:id="@+id/pet_avatar_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="150dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/pet_1_sad" />
+
         <TextView
             android:id="@+id/pet_state"
             style="@style/Base.TextAppearance.AppCompat.Headline"
