@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -57,6 +59,7 @@ import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistence
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -70,6 +73,8 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.PetActivity;
+import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.LevelUpActivity;
@@ -232,13 +237,45 @@ public class App extends MultiDexApplication {
 
     private void updatePet(int healthPoints) {
         petPersistenceService.find(pet -> {
+
+            if (pet.getState() == Pet.PetState.DEAD) {
+                return;
+            }
+
+            Pet.PetState initialState = pet.getState();
             pet.addHealthPoints(healthPoints);
+
+            Pet.PetState currentState = pet.getState();
+
+            if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
+                notifyPetStateChanged(pet);
+            }
 
             localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
             localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
             petPersistenceService.save(pet);
         });
+    }
 
+    private void notifyPetStateChanged(Pet pet) {
+        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died": "I am so sad, don't let me die";
+        String text = pet.getState() == Pet.PetState.DEAD ? "Revive " + pet.getName() + " to help you with your quests!" :
+                "Complete your quests to make me happy!";
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), ResourceUtils.extractDrawableResource(this, pet.getPicture()));
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setLargeIcon(largeIcon)
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(Constants.PET_STATE_CHANGED_NOTIFICATION_ID, builder.build());
     }
 
     private int getDecreasePercentage(List<Quest> quests) {
