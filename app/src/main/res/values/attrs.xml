@@ -3,4 +3,7 @@
     <declare-styleable name="CategoryView">
         <attr name="category_gap" format="dimension"/>
     </declare-styleable>
+    <declare-styleable name="IconButton">
+        <attr name="iconPadding" format="dimension"/>
+    </declare-styleable>
 </resources>

@@ -145,7 +145,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
 
         if (pet.getState() == Pet.PetState.DEAD) {
-            revive.setText(Constants.REVIVE_PET_COST + " coins");
+            revive.setText(Constants.REVIVE_PET_COST + "");
             revive.setVisibility(View.VISIBLE);
             hp.setVisibility(View.GONE);
             state.setVisibility(View.GONE);

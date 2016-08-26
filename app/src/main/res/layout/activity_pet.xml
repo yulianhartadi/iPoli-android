@@ -100,14 +100,16 @@
             android:max="100"
             android:scaleY="3" />
 
-        <Button
+        <io.ipoli.android.app.ui.IconButton
             android:id="@+id/revive"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="220dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="70dp"
-            android:visibility="gone" />
+            android:drawableLeft="@drawable/ic_life_coin_white_24dp"
+            android:visibility="gone"
+            app:iconPadding="8dp" />
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
