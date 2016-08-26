@@ -53,9 +53,10 @@ public class ShopActivity extends BaseActivity {
         }
 
         List<PetViewModel> petViewModels = new ArrayList<>();
-        petViewModels.add(new PetViewModel("Sharp teeth", 500, R.drawable.pet_1, R.drawable.pet_1_happy));
+        petViewModels.add(new PetViewModel("Cute tail", 500, R.drawable.pet_1, R.drawable.pet_1_happy));
         petViewModels.add(new PetViewModel("Fancy ears", 500, R.drawable.pet_2, R.drawable.pet_2_happy));
         petViewModels.add(new PetViewModel("Flying ears", 500, R.drawable.pet_3, R.drawable.pet_3_happy));
+        petViewModels.add(new PetViewModel("Crazy teeth", 500, R.drawable.pet_4, R.drawable.pet_4_happy));
 
         viewPager.setAdapter(new ShopPetAdapter(this, petViewModels));
     }

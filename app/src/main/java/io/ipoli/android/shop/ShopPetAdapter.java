@@ -30,7 +30,7 @@ public class ShopPetAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return viewModels.size();
     }
 
     @Override
