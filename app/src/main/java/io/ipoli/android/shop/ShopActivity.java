@@ -7,6 +7,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -16,6 +19,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
+import io.ipoli.android.shop.viewmodels.PetViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,6 +52,11 @@ public class ShopActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        viewPager.setAdapter(new ShopPetAdapter(this));
+        List<PetViewModel> petViewModels = new ArrayList<>();
+        petViewModels.add(new PetViewModel("Sharp teeth", 500, R.drawable.pet_1, R.drawable.pet_1_happy));
+        petViewModels.add(new PetViewModel("Fancy ears", 500, R.drawable.pet_2, R.drawable.pet_2_happy));
+        petViewModels.add(new PetViewModel("Flying ears", 500, R.drawable.pet_3, R.drawable.pet_3_happy));
+
+        viewPager.setAdapter(new ShopPetAdapter(this, petViewModels));
     }
 }
