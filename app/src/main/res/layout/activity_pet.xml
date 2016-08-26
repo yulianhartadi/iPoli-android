@@ -78,7 +78,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="150dp"
             android:scaleType="fitXY"
-            android:src="@drawable/pet_1_sad" />
+            android:src="@drawable/pet_1_awesome" />
 
         <TextView
             android:id="@+id/pet_state"
