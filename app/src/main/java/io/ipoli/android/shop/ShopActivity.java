@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
@@ -52,12 +53,13 @@ public class ShopActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth"};
         List<PetViewModel> petViewModels = new ArrayList<>();
-        petViewModels.add(new PetViewModel("Cute tail", 500, R.drawable.pet_1, R.drawable.pet_1_happy));
-        petViewModels.add(new PetViewModel("Fancy ears", 500, R.drawable.pet_2, R.drawable.pet_2_happy));
-        petViewModels.add(new PetViewModel("Flying ears", 500, R.drawable.pet_3, R.drawable.pet_3_happy));
-        petViewModels.add(new PetViewModel("Crazy teeth", 500, R.drawable.pet_4, R.drawable.pet_4_happy));
-
+        for(int i = 0; i < descriptions.length ; i++) {
+            petViewModels.add(new PetViewModel(descriptions[i], 500,
+                    ResourceUtils.extractDrawableResource(this, "pet_" + (i + 1)),
+                    ResourceUtils.extractDrawableResource(this, "pet_" + (i + 1) + "_happy")));
+        }
         viewPager.setAdapter(new ShopPetAdapter(this, petViewModels));
     }
 }
