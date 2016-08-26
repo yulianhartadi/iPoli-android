@@ -120,6 +120,15 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".shop.ShopActivity"
+            android:label="@string/title_activity_shop"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity

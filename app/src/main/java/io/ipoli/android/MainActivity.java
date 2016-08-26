@@ -98,6 +98,7 @@ import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
+import io.ipoli.android.shop.ShopActivity;
 import io.ipoli.android.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -152,6 +153,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+
+        startActivity(new Intent(this, ShopActivity.class));
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetActivity();
