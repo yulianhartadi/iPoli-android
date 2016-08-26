@@ -13,12 +13,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
@@ -141,7 +143,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
 
         if (pet.getState() == Pet.PetState.DEAD) {
-            revive.setText("400 coins");
+            revive.setText(Constants.REVIVE_PET_COST + " coins");
             revive.setVisibility(View.VISIBLE);
             hp.setVisibility(View.GONE);
             state.setVisibility(View.GONE);
@@ -156,10 +158,16 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
 
     @OnClick(R.id.revive)
     public void onReviveClick(View view) {
-        this.pet.addHealthPoints(80);
-        petPersistenceService.save(pet);
-//        avatarPersistenceService.find(avatar -> {
-//            avatar.getCoins()
-//        });
+        avatarPersistenceService.find(avatar -> {
+            long avatarCoins = avatar.getCoins();
+            if (avatarCoins < Constants.REVIVE_PET_COST) {
+                Toast.makeText(this, "Not enough coins to revive " + pet.getName(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            avatar.removeCoins(Constants.REVIVE_PET_COST);
+            this.pet.addHealthPoints(Constants.DEFAULT_PET_HP);
+            petPersistenceService.save(pet);
+            avatarPersistenceService.save(avatar);
+        });
     }
 }
