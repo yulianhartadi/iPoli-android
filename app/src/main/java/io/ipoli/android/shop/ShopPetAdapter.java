@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.util.List;
+
 import io.ipoli.android.R;
+import io.ipoli.android.shop.viewmodels.PetViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -15,12 +18,9 @@ import io.ipoli.android.R;
  */
 public class ShopPetAdapter extends PagerAdapter {
 
-
-    private final Context context;
     private final LayoutInflater layoutInflater;
 
-    public ShopPetAdapter(final Context context) {
-        this.context = context;
+    public ShopPetAdapter(final Context context, List<PetViewModel> viewModels) {
         this.layoutInflater = LayoutInflater.from(context);
     }
 
