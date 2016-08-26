@@ -8,9 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +50,11 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @BindView(R.id.root_container)
     View backgroundImage;
 
-    @BindView(R.id.pet_avatar)
-    View avatar;
+    @BindView(R.id.pet_picture)
+    ImageView picture;
+
+    @BindView(R.id.pet_picture_state)
+    ImageView pictureState;
 
     @BindView(R.id.pet_xp_bonus)
     TextView xpBonus;
@@ -83,9 +86,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         }
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, android.R.color.transparent));
-
-        Window w = getWindow(); // in Activity's onCreate() for instance
-        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
 
     @Override
@@ -138,7 +139,8 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         this.pet = pet;
         toolbar.setTitle(pet.getName());
         backgroundImage.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getBackgroundPicture()));
-        avatar.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
+        picture.setImageResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
+        pictureState.setImageResource(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText()));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
 
