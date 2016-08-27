@@ -221,12 +221,6 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void decreasePetHealth() {
-        questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests ->
-                updatePet(-getDecreasePercentage(quests))
-        );
-    }
-
     private void updatePet(int healthPoints) {
         petPersistenceService.find(pet -> {
 
@@ -889,11 +883,15 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
-        decreasePetHealth();
-        scheduleQuestsFor4WeeksAhead();
-        eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
-        moveIncompleteQuestsToInbox();
-        listenForChanges();
+
+        questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
+            updatePet(-getDecreasePercentage(quests));
+            scheduleQuestsFor4WeeksAhead();
+            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
+            moveIncompleteQuestsToInbox();
+            listenForChanges();
+        });
+
     }
 
     public static String getPlayerId() {
