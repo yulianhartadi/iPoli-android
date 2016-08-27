@@ -115,10 +115,10 @@ public interface Constants {
     String REMINDER_START_TIME = "reminder_start_time";
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
 
-    String DEFAULT_PET_NAME = "iPoli";
+    String DEFAULT_PET_NAME = "Flopsy";
     String DEFAULT_PET_AVATAR = "pet_1";
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
-    Integer DEFAULT_PET_HP = 50;
+    Integer DEFAULT_PET_HP = 80;
 
     String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
     String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";

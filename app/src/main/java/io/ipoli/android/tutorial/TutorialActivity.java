@@ -96,7 +96,7 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_purple_500));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_pet_title),
                 getString(R.string.tutorial_pet_desc),
-                R.drawable.pet_1,
+                R.drawable.tutorial_pet,
                 R.color.md_orange_500));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
