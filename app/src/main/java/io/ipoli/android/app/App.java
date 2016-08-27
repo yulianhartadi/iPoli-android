@@ -1,16 +1,16 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -44,7 +44,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
+import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
@@ -54,10 +55,12 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
+import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
@@ -175,17 +178,6 @@ public class App extends MultiDexApplication {
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
 
-    BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            decreasePetHealth();
-            scheduleQuestsFor4WeeksAhead();
-            eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
-            moveIncompleteQuestsToInbox();
-            listenForChanges();
-        }
-    };
-
     private OnDataChangedListener<List<Quest>> dailyQuestsChangedListener = quests -> {
         if (quests.isEmpty()) {
             updateOngoingNotification(null, 0, 0);
@@ -255,7 +247,7 @@ public class App extends MultiDexApplication {
     }
 
     private void notifyPetStateChanged(Pet pet) {
-        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died": "I am so sad, don't let me die";
+        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died" : "I am so sad, don't let me die";
         String text = pet.getState() == Pet.PetState.DEAD ? "Revive " + pet.getName() + " to help you with your quests!" :
                 "Complete your quests to make me happy!";
 
@@ -446,8 +438,8 @@ public class App extends MultiDexApplication {
         scheduleQuestsFor4WeeksAhead();
         moveIncompleteQuestsToInbox();
         scheduleNextReminder();
-        getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
         listenForChanges();
+        scheduleDateChanged();
     }
 
     private void listenForRepeatingQuestChange() {
@@ -880,6 +872,28 @@ public class App extends MultiDexApplication {
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
+    }
+
+    private void scheduleDateChanged() {
+        Intent i = new Intent(DateChangedReceiver.ACTION_DATE_CHANGED);
+        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        long notificationTime = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime() + 5000L;
+        if (Build.VERSION.SDK_INT > 22) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
+        }
+    }
+
+    @Subscribe
+    public void onDateChanged(DateChangedEvent e) {
+        decreasePetHealth();
+        scheduleQuestsFor4WeeksAhead();
+        eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
+        moveIncompleteQuestsToInbox();
+        listenForChanges();
     }
 
     public static String getPlayerId() {

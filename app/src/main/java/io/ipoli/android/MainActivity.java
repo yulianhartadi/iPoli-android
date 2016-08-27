@@ -44,7 +44,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.ContactUsTapEvent;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
@@ -98,7 +98,6 @@ import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminders.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
-import io.ipoli.android.shop.ShopActivity;
 import io.ipoli.android.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -409,7 +408,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (quest.getStartMinute() > -1) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
-                eventBus.post(new CurrentDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
+                eventBus.post(new CalendarDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CalendarDayChangedEvent.Source.CALENDAR));
             });
         }
 
@@ -477,7 +476,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (quest.getStartMinute() > -1) {
                         scrollToTime = Time.of(quest.getStartMinute());
                     }
-                    eventBus.post(new CurrentDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CurrentDayChangedEvent.Source.CALENDAR));
+                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CalendarDayChangedEvent.Source.CALENDAR));
                 }
             });
         }
