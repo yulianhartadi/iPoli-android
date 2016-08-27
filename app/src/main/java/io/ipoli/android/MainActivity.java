@@ -210,9 +210,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         avatarPersistenceService.listen(avatar -> {
             this.avatar = avatar;
 
-//            if (navigationView.getHeaderCount() < 1) {
-//                return;
-//            }
             View header = navigationView.getHeaderView(0);
             TextView level = (TextView) header.findViewById(R.id.avatar_level);
             level.setText(String.format(getString(R.string.nav_header_player_level), this.avatar.getLevel()));
