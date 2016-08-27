@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.widget.Toast;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
@@ -89,6 +90,13 @@ public class ShopActivity extends BaseActivity {
     protected void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        menu.findItem(R.id.action_help).setVisible(false);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Subscribe

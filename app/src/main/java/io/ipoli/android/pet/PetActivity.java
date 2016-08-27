@@ -25,6 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -123,6 +124,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
                 return true;
             case R.id.action_shop:
                 startActivity(new Intent(this, ShopActivity.class));
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_pet , R.string.help_dialog_pet_title, "pet").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
