@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
@@ -400,7 +400,7 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
+    public void onCurrentDayChanged(CalendarDayChangedEvent e) {
         log("current_day_changed", EventParams.of("new_day", e.date.toString())
                 .add("source", e.source.toString()));
     }

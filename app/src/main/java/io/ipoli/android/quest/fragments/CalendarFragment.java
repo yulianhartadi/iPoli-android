@@ -37,7 +37,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
@@ -122,7 +122,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
                 changeTitle(date);
                 toolbarCalendar.setCurrentDate(date.toDate());
-                eventBus.post(new CurrentDayChangedEvent(date, CurrentDayChangedEvent.Source.SWIPE));
+                eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.SWIPE));
             }
         });
 
@@ -136,7 +136,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_today:
-                eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.MENU));
+                eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.MENU));
                 closeToolbarCalendar();
                 return true;
 
@@ -200,8 +200,8 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     }
 
     @Subscribe
-    public void onCurrentDayChanged(CurrentDayChangedEvent e) {
-        if (e.source == CurrentDayChangedEvent.Source.SWIPE) {
+    public void onCurrentDayChanged(CalendarDayChangedEvent e) {
+        if (e.source == CalendarDayChangedEvent.Source.SWIPE) {
             return;
         }
 
@@ -239,19 +239,19 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     @Override
     public void onDayClick(Date dateClicked) {
-        eventBus.post(new CurrentDayChangedEvent(new LocalDate(dateClicked), CurrentDayChangedEvent.Source.CALENDAR));
+        eventBus.post(new CalendarDayChangedEvent(new LocalDate(dateClicked), CalendarDayChangedEvent.Source.CALENDAR));
         closeToolbarCalendar();
     }
 
     @Override
     public void onMonthScroll(Date firstDayOfNewMonth) {
-        eventBus.post(new CurrentDayChangedEvent(new LocalDate(firstDayOfNewMonth), CurrentDayChangedEvent.Source.CALENDAR));
+        eventBus.post(new CalendarDayChangedEvent(new LocalDate(firstDayOfNewMonth), CalendarDayChangedEvent.Source.CALENDAR));
     }
 
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
         if (new LocalDate(e.quest.getEndDate()).isAfter(new LocalDate()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
-            eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
+            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
         }
     }
 

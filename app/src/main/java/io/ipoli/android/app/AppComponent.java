@@ -17,6 +17,7 @@ import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
+import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.receivers.NetworkChangeReceiver;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -175,5 +176,7 @@ public interface AppComponent {
     void inject(PetActivity petActivity);
 
     void inject(ShopActivity shopActivity);
+
+    void inject(DateChangedReceiver dateChangedReceiver);
 }
 
