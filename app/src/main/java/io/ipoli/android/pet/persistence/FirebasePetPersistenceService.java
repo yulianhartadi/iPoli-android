@@ -11,9 +11,12 @@ import com.squareup.otto.Bus;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,8 +24,11 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class FirebasePetPersistenceService extends BaseFirebasePersistenceService<Pet> implements PetPersistenceService {
 
-    public FirebasePetPersistenceService(Bus eventBus, Gson gson) {
+    private final LocalStorage localStorage;
+
+    public FirebasePetPersistenceService(Bus eventBus, Gson gson, LocalStorage localStorage) {
         super(eventBus, gson);
+        this.localStorage = localStorage;
     }
 
     @Override
@@ -63,6 +69,14 @@ public class FirebasePetPersistenceService extends BaseFirebasePersistenceServic
 
             }
         }, listener);
+    }
+
+    @Override
+    public void save(Pet pet, OnOperationCompletedListener listener) {
+        super.save(pet, listener);
+        localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
+        localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
+
     }
 
     @Override

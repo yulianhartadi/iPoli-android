@@ -323,4 +323,7 @@
     <string name="tutorial_pet_title">Enjoy a Faithful Companion</string>
     <string name="tutorial_pet_desc">Flopsy is your first pet! He helps you gain more XP and life coins when he is healthy.</string>
     <string name="title_activity_shop">Pet shop</string>
+    <string name="not_enough_coins_to_buy_pet">Not enough coins to buy this pet</string>
+    <string name="buy_pet_confirm_title">Buy new pet</string>
+    <string name="buy_pet_confirm_message">Are you sure you want to replace your current pet with this one?</string>
 </resources>

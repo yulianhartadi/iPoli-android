@@ -250,9 +250,6 @@ public class App extends MultiDexApplication {
             if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
                 notifyPetStateChanged(pet);
             }
-
-            localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
-            localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
             petPersistenceService.save(pet);
         });
     }

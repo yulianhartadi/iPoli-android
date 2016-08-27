@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.IconButton;
+import io.ipoli.android.shop.events.BuyPetRequestEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
 
 /**
@@ -22,9 +25,11 @@ public class ShopPetAdapter extends PagerAdapter {
 
     private final LayoutInflater layoutInflater;
     private final List<PetViewModel> viewModels;
+    private final Bus eventBus;
 
-    public ShopPetAdapter(final Context context, List<PetViewModel> viewModels) {
+    public ShopPetAdapter(final Context context, List<PetViewModel> viewModels, Bus eventBus) {
         this.viewModels = viewModels;
+        this.eventBus = eventBus;
         this.layoutInflater = LayoutInflater.from(context);
     }
 
@@ -47,6 +52,8 @@ public class ShopPetAdapter extends PagerAdapter {
         petPicture.setImageResource(vm.getPicture());
         petStatePicture.setImageResource(vm.getPictureState());
         petPrice.setText(vm.getPrice() + "");
+
+        petPrice.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
 
         container.addView(view);
         return view;
