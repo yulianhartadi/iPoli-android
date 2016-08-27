@@ -28,6 +28,7 @@
         android:layout_marginTop="16dp">
 
         <RelativeLayout
+            android:id="@+id/pet_bonus_container"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_alignParentTop="true"
@@ -62,55 +63,80 @@
                 android:textColor="@color/md_light_text_87" />
         </RelativeLayout>
 
-        <ImageView
-            android:id="@+id/pet_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="150dp"
-            android:scaleType="fitXY" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/pet_bonus_container"
+            android:orientation="vertical"
+            android:weightSum="7">
 
-        <ImageView
-            android:id="@+id/pet_picture_state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="150dp"
-            android:scaleType="fitXY" />
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2" />
 
-        <TextView
-            android:id="@+id/pet_state"
-            style="@style/Base.TextAppearance.AppCompat.Headline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="100dp"
-            android:textColor="@color/md_light_text_87" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="3">
 
-        <ProgressBar
-            android:id="@+id/pet_hp"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="70dp"
-            android:max="100"
-            android:scaleY="3" />
 
-        <io.ipoli.android.app.ui.IconButton
-            android:id="@+id/revive"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="220dp"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="70dp"
-            android:drawableLeft="@drawable/ic_life_coin_white_24dp"
-            android:visibility="gone"
-            app:iconPadding="8dp" />
+                <ImageView
+                    android:id="@+id/pet_picture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY" />
+
+                <ImageView
+                    android:adjustViewBounds="true"
+                    android:id="@+id/pet_picture_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:scaleType="fitXY" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/pet_state"
+                    style="@style/Base.TextAppearance.AppCompat.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="100dp"
+                    android:textColor="@color/md_light_text_87" />
+
+                <ProgressBar
+                    android:id="@+id/pet_hp"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="70dp"
+                    android:max="100"
+                    android:scaleY="3" />
+
+                <io.ipoli.android.app.ui.IconButton
+                    android:id="@+id/revive"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="220dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="70dp"
+                    android:drawableLeft="@drawable/ic_life_coin_white_24dp"
+                    android:visibility="gone"
+                    app:iconPadding="8dp" />
+            </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
