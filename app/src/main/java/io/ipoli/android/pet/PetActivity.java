@@ -149,9 +149,8 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     public void onDataChanged(Pet pet) {
         this.pet = pet;
         toolbar.setTitle(pet.getName());
-        backgroundImage.setBackgroundResource(ResourceUtils.extractDrawableResource(this, pet.getBackgroundPicture()));
-        picture.setImageResource(ResourceUtils.extractDrawableResource(this, pet.getPicture()));
-        pictureState.setImageResource(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText()));
+        picture.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture())));
+        pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
 

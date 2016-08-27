@@ -26,11 +26,13 @@ public class ShopPetAdapter extends PagerAdapter {
     private final LayoutInflater layoutInflater;
     private final List<PetViewModel> viewModels;
     private final Bus eventBus;
+    private Context context;
 
     public ShopPetAdapter(final Context context, List<PetViewModel> viewModels, Bus eventBus) {
         this.viewModels = viewModels;
         this.eventBus = eventBus;
         this.layoutInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     @Override
@@ -49,8 +51,10 @@ public class ShopPetAdapter extends PagerAdapter {
         IconButton petPrice = (IconButton) view.findViewById(R.id.pet_price);
 
         petDescription.setText(vm.getDescription());
-        petPicture.setImageResource(vm.getPicture());
-        petStatePicture.setImageResource(vm.getPictureState());
+
+        petPicture.setImageDrawable(context.getDrawable(vm.getPicture()));
+
+        petStatePicture.setImageDrawable(context.getDrawable(vm.getPictureState()));
         petPrice.setText(vm.getPrice() + "");
 
         petPrice.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
@@ -67,5 +71,10 @@ public class ShopPetAdapter extends PagerAdapter {
     @Override
     public void destroyItem(final ViewGroup container, final int position, final Object object) {
         container.removeView((View) object);
+    }
+
+    public void setPets(List<PetViewModel> pets) {
+        this.viewModels.clear();
+        this.viewModels.addAll(pets);
     }
 }
