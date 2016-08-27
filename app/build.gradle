@@ -4,7 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
 
     dexOptions {
         javaMaxHeapSize "2g"
@@ -76,6 +76,7 @@ dependencies {
     compile 'me.everything:providers-android:1.0.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
+    compile 'com.github.devlight:infinitecycleviewpager:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

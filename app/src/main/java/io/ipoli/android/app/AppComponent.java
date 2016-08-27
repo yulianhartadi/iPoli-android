@@ -13,9 +13,11 @@ import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.JsonModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
+import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.receivers.NetworkChangeReceiver;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -26,7 +28,8 @@ import io.ipoli.android.challenge.fragments.ChallengeOverviewFragment;
 import io.ipoli.android.challenge.fragments.ChallengeQuestListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
-import io.ipoli.android.player.activities.PickAvatarActivity;
+import io.ipoli.android.pet.PetActivity;
+import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -52,6 +55,7 @@ import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
+import io.ipoli.android.shop.ShopActivity;
 import io.ipoli.android.tutorial.TutorialActivity;
 import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
@@ -71,6 +75,7 @@ import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 AndroidCalendarPersistenceModule.class,
+                RewardGeneratorModule.class,
                 SchedulerModule.class
         }
 )
@@ -128,7 +133,7 @@ public interface AppComponent {
 
     void inject(EditRewardActivity editRewardActivity);
 
-    void inject(PickAvatarActivity pickAvatarActivity);
+    void inject(PickAvatarPictureActivity pickAvatarPictureActivity);
 
     void inject(GrowthFragment growthFragment);
 
@@ -167,5 +172,11 @@ public interface AppComponent {
     void inject(SignInActivity signInActivity);
 
     void inject(NetworkChangeReceiver networkChangeReceiver);
+
+    void inject(PetActivity petActivity);
+
+    void inject(ShopActivity shopActivity);
+
+    void inject(DateChangedReceiver dateChangedReceiver);
 }
 

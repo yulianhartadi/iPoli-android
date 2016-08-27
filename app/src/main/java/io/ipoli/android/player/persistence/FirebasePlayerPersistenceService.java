@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
@@ -39,20 +37,29 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
         if (isNew) {
             DatabaseReference objRef = collectionRef.push();
             player.setId(objRef.getKey());
+
+
             objRef.setValue(player, (databaseError, databaseReference) -> {
-                if (listener != null) {
-                    listener.onComplete();
-                }
+
+                DatabaseReference petsRef = objRef.child("pets");
+                DatabaseReference petRef = petsRef.push();
+                player.getPet().setId(petRef.getKey());
+                petRef.setValue(player.getPet(), (databaseError1, databaseReference1) -> {
+                    DatabaseReference avatarsRef = objRef.child("avatars");
+                    DatabaseReference avatarRef = avatarsRef.push();
+                    player.getAvatar().setId(avatarRef.getKey());
+                    avatarRef.setValue(player.getAvatar(), (databaseError2, databaseReference2) -> {
+                        if (listener != null) {
+                            listener.onComplete();
+                        }
+                    });
+                });
             });
         } else {
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
             Map<String, Object> playerData = new HashMap<>();
-            playerData.put("id", player.getId());
-            playerData.put("coins", player.getCoins());
-            playerData.put("experience", player.getExperience());
-            playerData.put("level", player.getLevel());
-            playerData.put("avatar", player.getAvatar());
+            playerData.put("uid", player.getUid());
             playerData.put("updatedAt", player.getUpdatedAt());
             playerData.put("createdAt", player.getCreatedAt());
             objRef.updateChildren(playerData, (databaseError, databaseReference) -> {
@@ -61,18 +68,6 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
                 }
             });
         }
-    }
-
-    @Override
-    public void find(OnDataChangedListener<Player> listener) {
-        DatabaseReference playerRef = getCollectionReference().child(App.getPlayerId());
-        listenForSingleModelChange(playerRef, listener);
-    }
-
-    @Override
-    public void listen(OnDataChangedListener<Player> listener) {
-        DatabaseReference playerRef = getCollectionReference().child(App.getPlayerId());
-        listenForModelChange(playerRef, listener);
     }
 
     @Override

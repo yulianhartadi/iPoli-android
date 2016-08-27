@@ -1,14 +1,16 @@
 package io.ipoli.android.app;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,7 +44,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
-import io.ipoli.android.app.events.CurrentDayChangedEvent;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
+import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
@@ -52,12 +55,17 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
+import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
@@ -68,8 +76,10 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.PetActivity;
+import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
-import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
@@ -151,20 +161,22 @@ public class App extends MultiDexApplication {
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
+    AvatarPersistenceService avatarPersistenceService;
+
+    @Inject
+    PetPersistenceService petPersistenceService;
+
+    @Inject
     AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
 
     @Inject
     AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
 
-    BroadcastReceiver dateChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            scheduleQuestsFor4WeeksAhead();
-            eventBus.post(new CurrentDayChangedEvent(new LocalDate(), CurrentDayChangedEvent.Source.CALENDAR));
-            moveIncompleteQuestsToInbox();
-            listenForChanges();
-        }
-    };
+    @Inject
+    ExperienceRewardGenerator experienceRewardGenerator;
+
+    @Inject
+    CoinsRewardGenerator coinsRewardGenerator;
 
     private OnDataChangedListener<List<Quest>> dailyQuestsChangedListener = quests -> {
         if (quests.isEmpty()) {
@@ -195,6 +207,8 @@ public class App extends MultiDexApplication {
         Quest quest = uncompletedQuests.get(0);
         updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
     };
+    public static final double MAX_PENALTY_COEFFICIENT = 0.5;
+    public static final double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -205,6 +219,79 @@ public class App extends MultiDexApplication {
         if (localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
             listenForDailyQuestsChange();
         }
+    }
+
+    private void updatePet(int healthPoints) {
+        petPersistenceService.find(pet -> {
+
+            if (pet.getState() == Pet.PetState.DEAD) {
+                return;
+            }
+
+            Pet.PetState initialState = pet.getState();
+            pet.addHealthPoints(healthPoints);
+
+            Pet.PetState currentState = pet.getState();
+
+            if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
+                notifyPetStateChanged(pet);
+            }
+            petPersistenceService.save(pet);
+        });
+    }
+
+    private void notifyPetStateChanged(Pet pet) {
+        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died" : "I am so sad, don't let me die";
+        String text = pet.getState() == Pet.PetState.DEAD ? "Revive " + pet.getName() + " to help you with your quests!" :
+                "Complete your quests to make me happy!";
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_head"));
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setLargeIcon(largeIcon)
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(Constants.PET_STATE_CHANGED_NOTIFICATION_ID, builder.build());
+    }
+
+    private int getDecreasePercentage(List<Quest> quests) {
+        if (quests.isEmpty()) {
+            return (int) (MAX_PENALTY_COEFFICIENT * 100);
+        }
+
+        int decreasePercentage = 0;
+        if (quests.size() == 1) {
+            decreasePercentage += 30;
+        }
+
+        if (quests.size() == 2) {
+            decreasePercentage += 20;
+        }
+
+        Set<Quest> uncompletedQuests = new HashSet<>();
+        int uncompletedImportantQuestCount = 0;
+        for (Quest q : quests) {
+            if (!Quest.isCompleted(q)) {
+                uncompletedQuests.add(q);
+                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                    uncompletedImportantQuestCount++;
+                }
+            }
+        }
+
+        double uncompletedRatio = uncompletedQuests.size() / quests.size();
+
+        int randomNoise = new Random().nextInt(21) - 10;
+        decreasePercentage += (int) (uncompletedRatio * MAX_PENALTY_COEFFICIENT + (uncompletedImportantQuestCount * IMPORTANT_QUEST_PENALTY_PERCENT) + randomNoise);
+        decreasePercentage = (int) Math.min(decreasePercentage, MAX_PENALTY_COEFFICIENT * 100);
+        return decreasePercentage;
     }
 
     private void listenForDailyQuestsChange() {
@@ -345,8 +432,8 @@ public class App extends MultiDexApplication {
         scheduleQuestsFor4WeeksAhead();
         moveIncompleteQuestsToInbox();
         scheduleNextReminder();
-        getApplicationContext().registerReceiver(dateChangedReceiver, new IntentFilter(Intent.ACTION_DATE_CHANGED));
         listenForChanges();
+        scheduleDateChanged();
     }
 
     private void listenForRepeatingQuestChange() {
@@ -442,6 +529,8 @@ public class App extends MultiDexApplication {
         QuestNotificationScheduler.stopAll(q.getId(), this);
         q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+        q.setExperience(experienceRewardGenerator.generate(q));
+        q.setCoins(coinsRewardGenerator.generate(q));
         questPersistenceService.save(q, () -> {
             onQuestComplete(q, e.source);
         });
@@ -459,29 +548,35 @@ public class App extends MultiDexApplication {
             quest.setEndDate(null);
             quest.setStartDate(null);
         }
+        Long xp = quest.getExperience();
+        Long coins = quest.getCoins();
+        quest.setExperience(null);
+        quest.setCoins(null);
         questPersistenceService.save(quest, () -> {
-            playerPersistenceService.find(player -> {
-                player.removeExperience(quest.getExperience());
-                if (shouldDecreaseLevel(player)) {
-                    player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
-                    while (shouldDecreaseLevel(player)) {
-                        player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
+            avatarPersistenceService.find(avatar -> {
+                avatar.removeExperience(xp);
+                if (shouldDecreaseLevel(avatar)) {
+                    avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
+                    while (shouldDecreaseLevel(avatar)) {
+                        avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
                     }
-                    eventBus.post(new LevelDownEvent(player.getLevel()));
+                    eventBus.post(new LevelDownEvent(avatar.getLevel()));
                 }
-                player.removeCoins(quest.getCoins());
-                playerPersistenceService.save(player);
-                eventBus.post(new UndoCompletedQuestEvent(quest));
+                avatar.removeCoins(coins);
+                avatarPersistenceService.save(avatar);
             });
+
+            updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
+            eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
         });
     }
 
-    private boolean shouldIncreaseLevel(Player player) {
-        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1)) >= 0;
+    private boolean shouldIncreaseLevel(Avatar avatar) {
+        return new BigInteger(avatar.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(avatar.getLevel() + 1)) >= 0;
     }
 
-    private boolean shouldDecreaseLevel(Player player) {
-        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel())) < 0;
+    private boolean shouldDecreaseLevel(Avatar avatar) {
+        return new BigInteger(avatar.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(avatar.getLevel())) < 0;
     }
 
     @Subscribe
@@ -489,6 +584,10 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
         quest.setReminders(e.reminders);
+        if (Quest.isCompleted(quest)) {
+            quest.setExperience(experienceRewardGenerator.generate(quest));
+            quest.setCoins(coinsRewardGenerator.generate(quest));
+        }
         questPersistenceService.save(quest, () -> {
             if (Quest.isCompleted(quest)) {
                 onQuestComplete(quest, e.source);
@@ -498,9 +597,12 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
-        questPersistenceService.saveWithNewReminders(e.quest, e.reminders, () -> {
-            if (Quest.isCompleted(e.quest)) {
-                onQuestComplete(e.quest, e.source);
+        Quest quest = e.quest;
+        questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
+            if (Quest.isCompleted(quest)) {
+                quest.setExperience(experienceRewardGenerator.generate(quest));
+                quest.setCoins(coinsRewardGenerator.generate(quest));
+                onQuestComplete(quest, e.source);
             }
         });
     }
@@ -543,12 +645,13 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
-        checkForDailyChallengeCompletion(quest, source);
-        updatePlayer(quest);
+        checkForDailyChallengeCompletion(quest);
+        updateAvatar(quest);
+        updatePet((int) (Math.floor(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
-    private void checkForDailyChallengeCompletion(Quest quest, EventSource source) {
+    private void checkForDailyChallengeCompletion(Quest quest) {
         if (quest.getPriority() != Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
             return;
         }
@@ -569,12 +672,12 @@ public class App extends MultiDexApplication {
             }
             localStorage.saveLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED, todayUtc.getTime());
 
-            long xp = new ExperienceRewardGenerator().generateForDailyChallenge();
-            long coins = new CoinsRewardGenerator().generateForDailyChallenge();
+            long xp = experienceRewardGenerator.generateForDailyChallenge();
+            long coins = coinsRewardGenerator.generateForDailyChallenge();
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            updatePlayer(dailyChallenge);
+            updateAvatar(dailyChallenge);
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
@@ -589,26 +692,27 @@ public class App extends MultiDexApplication {
         startActivity(intent);
     }
 
-    private void updatePlayer(RewardProvider rewardProvider) {
-        playerPersistenceService.find(player -> {
-            player.addExperience(rewardProvider.getExperience());
-            increasePlayerLevelIfNeeded(player);
-            player.addCoins(rewardProvider.getCoins());
-            playerPersistenceService.save(player);
+    private void updateAvatar(RewardProvider rewardProvider) {
+        avatarPersistenceService.find(avatar -> {
+            Long experience = rewardProvider.getExperience();
+            avatar.addExperience(experience);
+            increaseAvatarLevelIfNeeded(avatar);
+            avatar.addCoins(rewardProvider.getCoins());
+            avatarPersistenceService.save(avatar);
         });
     }
 
-    private void increasePlayerLevelIfNeeded(Player player) {
-        if (shouldIncreaseLevel(player)) {
-            player.setLevel(player.getLevel() + 1);
-            while (shouldIncreaseLevel(player)) {
-                player.setLevel(player.getLevel() + 1);
+    private void increaseAvatarLevelIfNeeded(Avatar avatar) {
+        if (shouldIncreaseLevel(avatar)) {
+            avatar.setLevel(avatar.getLevel() + 1);
+            while (shouldIncreaseLevel(avatar)) {
+                avatar.setLevel(avatar.getLevel() + 1);
             }
             Intent intent = new Intent(this, LevelUpActivity.class);
-            intent.putExtra(LevelUpActivity.LEVEL, player.getLevel());
+            intent.putExtra(LevelUpActivity.LEVEL, avatar.getLevel());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            eventBus.post(new LevelUpEvent(player.getLevel()));
+            eventBus.post(new LevelUpEvent(avatar.getLevel()));
         }
     }
 
@@ -680,7 +784,8 @@ public class App extends MultiDexApplication {
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
-        updatePlayer(challenge);
+        updateAvatar(challenge);
+        updatePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
@@ -761,6 +866,32 @@ public class App extends MultiDexApplication {
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
+    }
+
+    private void scheduleDateChanged() {
+        Intent i = new Intent(DateChangedReceiver.ACTION_DATE_CHANGED);
+        PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        long notificationTime = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime() + 5000L;
+        if (Build.VERSION.SDK_INT > 22) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
+        }
+    }
+
+    @Subscribe
+    public void onDateChanged(DateChangedEvent e) {
+
+        questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
+            updatePet(-getDecreasePercentage(quests));
+            scheduleQuestsFor4WeeksAhead();
+            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
+            moveIncompleteQuestsToInbox();
+            listenForChanges();
+        });
+
     }
 
     public static String getPlayerId() {

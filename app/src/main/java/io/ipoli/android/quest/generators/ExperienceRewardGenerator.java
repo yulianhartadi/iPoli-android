@@ -2,6 +2,7 @@ package io.ipoli.android.quest.generators;
 
 import java.util.Random;
 
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
@@ -9,13 +10,18 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/1/16.
  */
-public class ExperienceRewardGenerator implements RewardGenerator {
+public class ExperienceRewardGenerator extends BaseRewardGenerator {
+
+    public ExperienceRewardGenerator(LocalStorage localStorage) {
+        super(localStorage);
+    }
 
     @Override
     public long generate(Challenge challenge) {
-        long reward = generateForDailyChallenge() * 2;
+        long[] rewards = new long[]{20L, 30L, 50L, 80L, 100L};
+        long reward = rewards[new Random().nextInt(rewards.length)] * 2;
         reward *= challenge.getDifficulty();
-        return reward;
+        return (long) (reward * getXpBonusMultiplier());
     }
 
     @Override
@@ -25,12 +31,12 @@ public class ExperienceRewardGenerator implements RewardGenerator {
         if (quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
             reward *= 2;
         }
-        return reward;
+        return (long) (reward * getXpBonusMultiplier());
     }
 
     @Override
     public long generateForDailyChallenge() {
         long[] rewards = new long[]{20L, 30L, 50L, 80L, 100L};
-        return rewards[new Random().nextInt(rewards.length)];
+        return (long) (rewards[new Random().nextInt(rewards.length)] * getXpBonusMultiplier());
     }
 }

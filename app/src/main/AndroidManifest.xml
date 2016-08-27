@@ -112,10 +112,27 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".pet.PetActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".shop.ShopActivity"
+            android:label="@string/title_activity_shop"
+            android:parentActivityName=".pet.PetActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pet.PetActivity" />
+        </activity>
+        <activity
             android:name=".tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".player.activities.PickAvatarActivity"
+            android:name=".player.activities.PickAvatarPictureActivity"
             android:label="@string/title_activity_pick_avatar"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait"
@@ -246,8 +263,10 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <receiver android:name=".app.receivers.NetworkChangeReceiver"
-            android:exported="true" android:enabled="true">
+        <receiver
+            android:name=".app.receivers.NetworkChangeReceiver"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />

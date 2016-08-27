@@ -25,8 +25,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.reminders.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -241,8 +239,6 @@ public class RepeatingQuestScheduler {
         quest.setUpdatedAt(DateUtils.nowUTC().getTime());
         quest.setFlexibleStartTime(false);
         quest.setSource(Constants.API_RESOURCE_SOURCE);
-        quest.setExperience(new ExperienceRewardGenerator().generate(quest));
-        quest.setCoins(new CoinsRewardGenerator().generate(quest));
         quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setSubQuests(repeatingQuest.getSubQuests());
         quest.setRepeatingQuest(repeatingQuest);

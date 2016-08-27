@@ -155,6 +155,27 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         });
     }
 
+    @Override
+    public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
+        Date startDateUTC = toStartOfDayUTC(currentDate);
+
+        Query endAt = getCollectionReference().orderByChild("end").equalTo(startDateUTC.getTime());
+
+        listenForSingleListChange(endAt, endAtQuests -> {
+
+            Date startDate = toStartOfDay(currentDate);
+            Date endDate = toStartOfDay(currentDate.plusDays(1));
+
+            Query completedAt = getCollectionReference().orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
+
+            listenForSingleListChange(completedAt, completedAtQuests -> {
+                endAtQuests.addAll(completedAtQuests);
+                listener.onDataChanged(endAtQuests);
+            });
+
+        }, data -> data.filter(q -> !Quest.isCompleted(q)));
+    }
+
 
     @Override
     public void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {

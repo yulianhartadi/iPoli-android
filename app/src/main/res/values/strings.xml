@@ -196,7 +196,7 @@
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
     <string name="action_settings">Settings</string>
     <string name="nav_header_player_level">Level %d: Newbie</string>
-    <string name="nav_drawer_player_xp">Current XP: %s</string>
+    <string name="nav_drawer_player_xp">XP: %s</string>
     <string name="title_fragment_growth">Growth</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="chart_time_spent_description">Time spent per category</string>
@@ -319,4 +319,15 @@
     <string name="ongoing_notification_done_title">All done for today!</string>
     <string name="ongoing_notification_progress_text">Daily progress: %1$d/%2$d</string>
     <string name="quest_sub_quests_question">Do you have a checklist?</string>
+    <string name="rename_your_pet">Rename your pet</string>
+    <string name="tutorial_pet_title">Enjoy a Faithful Companion</string>
+    <string name="tutorial_pet_desc">Flopsy is your first pet! He helps you gain more XP and life coins when he is healthy.</string>
+    <string name="title_activity_shop">Pet shop</string>
+    <string name="not_enough_coins_to_buy_pet">Not enough coins to buy this pet</string>
+    <string name="buy_pet_confirm_title">Buy new pet</string>
+    <string name="buy_pet_confirm_message">Are you sure you want to replace your current pet with this one?</string>
+    <string name="help_dialog_pet_title">Enjoy faithful friend</string>
+    <string name="help_dialog_pet_text1">This is your personal pet who will help you in your journey!</string>
+    <string name="help_dialog_pet_text2">Keep him healthy by adding and completing quests and challenges. Healthier the pet, the bigger bonuses you get.</string>
+    <string name="help_dialog_pet_shop">Go to the pet shop if you want to buy and replace this pet. You can have only one at a time.</string>
 </resources>

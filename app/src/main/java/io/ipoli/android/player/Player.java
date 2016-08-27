@@ -1,37 +1,69 @@
 package io.ipoli.android.player;
 
-import com.google.firebase.database.IgnoreExtraProperties;
-
-import java.math.BigInteger;
+import com.google.firebase.database.Exclude;
 
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.pet.data.Pet;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/10/16.
  */
-@IgnoreExtraProperties
 public class Player extends PersistedObject {
 
     private String uid;
-    private String experience;
-    private Integer level;
-    private Long coins;
-    private String avatar;
-    private String timezone;
+    @Exclude
+    private Pet pet;
+    @Exclude
+    private Avatar avatar;
 
     public Player() {
     }
 
-    public Player(String uid, String experience, int level, long coins, String avatar) {
+    public Player(String uid, Pet pet, Avatar avatar) {
         this.uid = uid;
-        this.experience = experience;
-        this.level = level;
-        this.coins = coins;
+        this.pet = pet;
         this.avatar = avatar;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+    }
+
+    @Exclude
+    public Pet getPet() {
+        return pet;
+    }
+
+    @Exclude
+    public void setPet(Pet pet) {
+        this.pet = pet;
+    }
+
+    @Exclude
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    @Exclude
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -44,87 +76,11 @@ public class Player extends PersistedObject {
         return id;
     }
 
-    public String getExperience() {
-        return experience;
-    }
-
-    public void setExperience(String experience) {
-        this.experience = experience;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
     public Long getCreatedAt() {
         return createdAt;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
-
-    public Long getCoins() {
-        return coins;
-    }
-
-    public void setCoins(Long coins) {
-        this.coins = coins;
-    }
-
-    public void addExperience(long experience) {
-        this.experience = new BigInteger(this.experience).add(new BigInteger(String.valueOf(experience))).toString();
-    }
-
-    public void removeExperience(long experience) {
-        BigInteger newXP = new BigInteger(this.experience).subtract(new BigInteger(String.valueOf(experience)));
-        if (newXP.compareTo(BigInteger.ZERO) < 0) {
-            newXP = BigInteger.ZERO;
-        }
-        this.experience = newXP.toString();
-    }
-
-    public void addCoins(long coins) {
-        this.coins += coins;
-    }
-
-    public void removeCoins(long coins) {
-        this.coins = Math.max(0, this.coins - coins);
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 }

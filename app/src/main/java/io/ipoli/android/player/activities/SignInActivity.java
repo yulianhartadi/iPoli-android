@@ -16,6 +16,10 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
@@ -28,6 +32,12 @@ public class SignInActivity extends BaseActivity {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
+    @Inject
+    AvatarPersistenceService avatarPersistenceService;
+
+    @Inject
+    PetPersistenceService petPersistenceService;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,9 +48,13 @@ public class SignInActivity extends BaseActivity {
                 return;
             }
             String uid = task.getResult().getUser().getUid();
-            Player player = new Player(uid, String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_PLAYER_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_AVATAR);
+            Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
+            Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
+            Player player = new Player(uid, pet, avatar);
             playerPersistenceService.save(player, () -> {
                 localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
+                localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
+                localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
                 eventBus.post(new PlayerCreatedEvent(player.getId()));
                 startActivity(new Intent(SignInActivity.this, MainActivity.class));
                 finish();

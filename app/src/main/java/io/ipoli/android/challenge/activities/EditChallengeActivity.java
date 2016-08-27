@@ -55,8 +55,6 @@ import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
@@ -259,8 +257,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     private void addNewChallenge(EventSource source) {
         Challenge challenge = new Challenge(nameText.getText().toString().trim());
         populateChallengeFromForm(challenge);
-        challenge.setExperience(new ExperienceRewardGenerator().generate(challenge));
-        challenge.setCoins(new CoinsRewardGenerator().generate(challenge));
         eventBus.post(new NewChallengeEvent(challenge, source));
     }
 

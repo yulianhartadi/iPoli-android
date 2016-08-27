@@ -26,7 +26,7 @@ import io.ipoli.android.player.adapters.AvatarAdapter;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.AvatarSelectedEvent;
 
-public class PickAvatarActivity extends BaseActivity {
+public class PickAvatarPictureActivity extends BaseActivity {
 
     @BindView(R.id.avatar_list)
     RecyclerView avatarList;
@@ -67,7 +67,7 @@ public class PickAvatarActivity extends BaseActivity {
     public void onAvatarSelected(AvatarSelectedEvent e) {
         eventBus.post(new AvatarPickedEvent(e.avatarName));
         Intent data = new Intent();
-        data.putExtra(Constants.AVATAR_NAME_EXTRA_KEY, e.avatarName);
+        data.putExtra(Constants.PICTURE_NAME_EXTRA_KEY, e.avatarName);
         setResult(RESULT_OK, data);
         finish();
     }

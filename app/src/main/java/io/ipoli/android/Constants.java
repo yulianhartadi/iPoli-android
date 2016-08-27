@@ -26,6 +26,8 @@ public interface Constants {
     int QUEST_TIMER_NOTIFICATION_ID = 201;
     int QUEST_COMPLETE_NOTIFICATION_ID = 202;
 
+    int PET_STATE_CHANGED_NOTIFICATION_ID = 301;
+
     int DEFAULT_SNOOZE_TIME_MINUTES = 10;
 
     int QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30;
@@ -73,13 +75,13 @@ public interface Constants {
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int DEFAULT_PLAYER_XP = 0;
-    int DEFAULT_PLAYER_LEVEL = 1;
+    int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
-    String DEFAULT_PLAYER_AVATAR = "avatar_12";
+    String DEFAULT_PLAYER_PICTURE = "avatar_12";
 
     int AVATAR_COUNT = 12;
 
-    String AVATAR_NAME_EXTRA_KEY = "avatar_name";
+    String PICTURE_NAME_EXTRA_KEY = "avatar_name";
     String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
@@ -113,6 +115,21 @@ public interface Constants {
     String REMINDER_START_TIME = "reminder_start_time";
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
 
+    String DEFAULT_PET_NAME = "Flopsy";
+    String DEFAULT_PET_AVATAR = "pet_3";
+    String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
+    Integer DEFAULT_PET_HP = 80;
+
+    String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
+    String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
+    double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
+    double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
+    int MAX_PET_COIN_BONUS = 10;
+    int MAX_PET_XP_BONUS = 20;
+
+    double XP_TO_PET_HP_RATIO = 13.2;
+
+    int REVIVE_PET_COST = 300;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
