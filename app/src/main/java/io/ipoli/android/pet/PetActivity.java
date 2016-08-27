@@ -25,6 +25,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -90,6 +92,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        eventBus.post(new ScreenShownEvent(EventSource.PET));
     }
 
     @Override

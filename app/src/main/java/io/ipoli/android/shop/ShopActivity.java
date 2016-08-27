@@ -23,6 +23,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
@@ -78,6 +80,7 @@ public class ShopActivity extends BaseActivity {
             }
             viewPager.setAdapter(new ShopPetAdapter(this, petViewModels, eventBus));
         });
+        eventBus.post(new ScreenShownEvent(EventSource.SHOP));
     }
 
     @Override
