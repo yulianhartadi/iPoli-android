@@ -25,11 +25,14 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
@@ -90,6 +93,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        eventBus.post(new ScreenShownEvent(EventSource.PET));
     }
 
     @Override
@@ -175,6 +179,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @OnClick(R.id.revive)
     public void onReviveClick(View view) {
         avatarPersistenceService.find(avatar -> {
+            eventBus.post(new RevivePetRequest(pet.getPicture()));
             long avatarCoins = avatar.getCoins();
             if (avatarCoins < Constants.REVIVE_PET_COST) {
                 Toast.makeText(this, "Not enough coins to revive " + pet.getName(), Toast.LENGTH_SHORT).show();

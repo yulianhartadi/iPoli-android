@@ -23,10 +23,13 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.shop.events.BuyPetRequestEvent;
+import io.ipoli.android.shop.events.PetBoughtEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
 
 /**
@@ -78,6 +81,7 @@ public class ShopActivity extends BaseActivity {
             }
             viewPager.setAdapter(new ShopPetAdapter(this, petViewModels, eventBus));
         });
+        eventBus.post(new ScreenShownEvent(EventSource.SHOP));
     }
 
     @Override
@@ -112,6 +116,7 @@ public class ShopActivity extends BaseActivity {
                     .setTitle(R.string.buy_pet_confirm_title)
                     .setMessage(R.string.buy_pet_confirm_message)
                     .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                        eventBus.post(new PetBoughtEvent(e.petViewModel));
                         avatar.removeCoins(vm.getPrice());
                         avatarPersistenceService.save(avatar, () -> {
                             petPersistenceService.find(pet -> {

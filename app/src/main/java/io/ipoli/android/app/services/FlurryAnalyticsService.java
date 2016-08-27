@@ -8,9 +8,9 @@ import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
 
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
-import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
@@ -43,6 +43,7 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -107,6 +108,7 @@ import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.shop.events.PetBoughtEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
@@ -730,6 +732,16 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onOngoingNotificationChanged(OngoingNotificationChangeEvent e) {
         log("ongoing_notification_changed", EventParams.of("enabled", e.isEnabled));
+    }
+
+    @Subscribe
+    public void onPetBoughtEvent(PetBoughtEvent e) {
+        log("pet_bought", EventParams.of("pet", e.petViewModel.getPictureName()));
+    }
+
+    @Subscribe
+    public void onRevivePetRequest(RevivePetRequest e) {
+        log("revive_pet_request", EventParams.of("pet", e.picture));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
