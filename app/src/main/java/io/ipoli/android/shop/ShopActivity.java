@@ -29,6 +29,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.shop.events.BuyPetRequestEvent;
+import io.ipoli.android.shop.events.PetBoughtEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
 
 /**
@@ -115,6 +116,7 @@ public class ShopActivity extends BaseActivity {
                     .setTitle(R.string.buy_pet_confirm_title)
                     .setMessage(R.string.buy_pet_confirm_message)
                     .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                        eventBus.post(new PetBoughtEvent(e.petViewModel));
                         avatar.removeCoins(vm.getPrice());
                         avatarPersistenceService.save(avatar, () -> {
                             petPersistenceService.find(pet -> {
