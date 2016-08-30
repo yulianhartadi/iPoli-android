@@ -225,6 +225,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private void showFrequencyProgress(Category category, long completed) {
         LayoutInflater inflater = LayoutInflater.from(this);
+        progressContainer.removeAllViews();
 
         int frequency = getFrequency();
         if (frequency > 7) {

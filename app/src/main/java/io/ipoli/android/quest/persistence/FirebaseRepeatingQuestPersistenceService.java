@@ -79,7 +79,13 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener) {
         Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
-        listenForSingleModelChange(query, listener);
+        listenForSingleListChange(query, result -> {
+            if (result.isEmpty()) {
+                listener.onDataChanged(null);
+                return;
+            }
+            listener.onDataChanged(result.get(0));
+        });
     }
 
     @Override

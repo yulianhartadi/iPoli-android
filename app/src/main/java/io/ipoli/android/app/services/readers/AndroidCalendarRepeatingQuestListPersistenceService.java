@@ -1,5 +1,6 @@
 package io.ipoli.android.app.services.readers;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.joda.time.DateTime;
@@ -7,6 +8,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -75,19 +77,21 @@ public class AndroidCalendarRepeatingQuestListPersistenceService implements Andr
                     switch (frequency) {
                         case Recur.MONTHLY:
                             recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+                            recurrence.setRrule(e.rRule);
                             break;
                         case Recur.WEEKLY:
                             recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+                            recurrence.setRrule(e.rRule);
                             break;
                         case Recur.DAILY:
                             recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
+                            recurrence.setRrule(createDailyRrule());
                             break;
                     }
                 } catch (ParseException ex) {
                     ex.printStackTrace();
                 }
 
-                recurrence.setRrule(e.rRule);
                 recurrence.setRdate(e.rDate);
                 if (e.dTStart > 0) {
                     recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(new LocalDate(e.dTStart, DateTimeZone.UTC)));
@@ -100,5 +104,18 @@ public class AndroidCalendarRepeatingQuestListPersistenceService implements Andr
                 repeatingQuestPersistenceService.save(repeatingQuest);
             });
         }
+    }
+
+    @NonNull
+    private String createDailyRrule() {
+        Recur r = new Recur(Recur.WEEKLY, null);
+        r.getDayList().add(WeekDay.MO);
+        r.getDayList().add(WeekDay.TU);
+        r.getDayList().add(WeekDay.WE);
+        r.getDayList().add(WeekDay.TH);
+        r.getDayList().add(WeekDay.FR);
+        r.getDayList().add(WeekDay.SA);
+        r.getDayList().add(WeekDay.SU);
+        return r.toString();
     }
 }
