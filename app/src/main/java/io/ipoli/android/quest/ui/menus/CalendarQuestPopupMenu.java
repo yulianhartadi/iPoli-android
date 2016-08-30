@@ -13,11 +13,13 @@ import java.util.Map;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.ShareQuestEvent;
 import io.ipoli.android.quest.events.SnoozeQuestRequestEvent;
 import io.ipoli.android.quest.events.StartQuestRequestEvent;
 import io.ipoli.android.quest.events.StopQuestRequestEvent;
@@ -32,6 +34,7 @@ public class CalendarQuestPopupMenu {
     private static Map<Integer, DuplicateDateItem> itemIdToDuplicateDateItem;
 
     public static void show(View view, Quest quest, Bus eventBus, EventSource source) {
+        eventBus.post(new ItemActionsShownEvent(source));
         context = view.getContext();
         PopupMenu pm = new PopupMenu(context, view);
         boolean isCompleted = Quest.isCompleted(quest);
@@ -83,6 +86,9 @@ public class CalendarQuestPopupMenu {
                 case R.id.quest_delete:
                     eventBus.post(new DeleteQuestRequestEvent(quest, source));
                     Toast.makeText(context, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.quest_share:
+                    eventBus.post(new ShareQuestEvent(quest, source));
                     return true;
             }
             return false;

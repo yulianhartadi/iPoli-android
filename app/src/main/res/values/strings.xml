@@ -97,7 +97,7 @@
     <string name="find_slots_loading_message">Finding the perfect time…</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
 
-    <string name="share">share</string>
+    <string name="share">Share</string>
 
     <string name="facebook_app_id">1609232436065758</string>
     <string name="invite_friends">Invite Friends</string>
@@ -330,4 +330,6 @@
     <string name="help_dialog_pet_text1">This is your personal pet who will help you in your journey!</string>
     <string name="help_dialog_pet_text2">Keep him healthy by adding and completing quests and challenges. Healthier the pet, the bigger bonuses you get.</string>
     <string name="help_dialog_pet_shop">Go to the pet shop if you want to buy and replace this pet. You can have only one at a time.</string>
+    <string name="edit_menu">Edit</string>
+    <string name="brag">Brag</string>
 </resources>

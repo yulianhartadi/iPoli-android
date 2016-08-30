@@ -8,7 +8,7 @@
         tools:showAsAction="withText" />
     <item
         android:id="@+id/edit_challenge"
-        android:title="@string/edit"
+        android:title="@string/edit_menu"
         android:visible="true"
         tools:showAsAction="withText" />
 

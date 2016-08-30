@@ -32,7 +32,7 @@
 
     <item
         android:id="@+id/quest_edit"
-        android:title="Edit"
+        android:title="@string/edit_menu"
         android:visible="true"
         tools:showAsAction="withText" />
 
