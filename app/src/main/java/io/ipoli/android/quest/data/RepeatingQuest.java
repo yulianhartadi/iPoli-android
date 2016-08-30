@@ -207,6 +207,30 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.challengeId = challengeId;
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public String getPreferredStartTime() {
+        return preferredStartTime;
+    }
+
+    public void setPreferredStartTime(String preferredStartTime) {
+        this.preferredStartTime = preferredStartTime;
+    }
+
+    public Boolean getFlexibleStartTime() {
+        return flexibleStartTime;
+    }
+
+    public void setFlexibleStartTime(Boolean flexibleStartTime) {
+        this.flexibleStartTime = flexibleStartTime;
+    }
+
     @Exclude
     public void addScheduledPeriodEndDate(Date date) {
         if (scheduledPeriodEndDates == null) {
