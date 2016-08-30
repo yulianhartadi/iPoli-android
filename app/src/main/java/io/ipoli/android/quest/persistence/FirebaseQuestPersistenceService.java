@@ -118,7 +118,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
-        listenForCountChange(query, listener);
+        listenForCountChange(query, listener, data -> data.filter(Quest::isCompleted));
     }
 
     @Override

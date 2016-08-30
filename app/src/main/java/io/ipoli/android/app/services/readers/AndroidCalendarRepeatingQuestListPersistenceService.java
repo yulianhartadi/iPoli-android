@@ -6,7 +6,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Dur;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +39,16 @@ public class AndroidCalendarRepeatingQuestListPersistenceService implements Andr
             if (e.allDay || e.deleted) {
                 continue;
             }
+            try {
+                Recur recur = new Recur(e.rRule);
+                String frequency = recur.getFrequency();
+                if (frequency.equals(Recur.YEARLY)) {
+                    continue;
+                }
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+
             RepeatingQuest repeatingQuest = new RepeatingQuest("");
             repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), foundRepeatingQuest -> {
                 if (foundRepeatingQuest != null) {
@@ -56,6 +68,25 @@ public class AndroidCalendarRepeatingQuestListPersistenceService implements Andr
                 Dur dur = new Dur(e.duration);
                 repeatingQuest.setDuration((int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime()));
                 Recurrence recurrence = Recurrence.create();
+
+                try {
+                    Recur recur = new Recur(e.rRule);
+                    String frequency = recur.getFrequency();
+                    switch (frequency) {
+                        case Recur.MONTHLY:
+                            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+                            break;
+                        case Recur.WEEKLY:
+                            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+                            break;
+                        case Recur.DAILY:
+                            recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
+                            break;
+                    }
+                } catch (ParseException ex) {
+                    ex.printStackTrace();
+                }
+
                 recurrence.setRrule(e.rRule);
                 recurrence.setRdate(e.rDate);
                 if (e.dTStart > 0) {

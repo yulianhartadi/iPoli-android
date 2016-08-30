@@ -34,7 +34,6 @@ import io.ipoli.android.app.activities.NoInternetActivity;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.NoNetworkConnectionEvent;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -199,8 +198,6 @@ public class TutorialActivity extends AppIntro2 {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_CALENDAR},
                     Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
-        } else {
-            eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
         }
     }
 
