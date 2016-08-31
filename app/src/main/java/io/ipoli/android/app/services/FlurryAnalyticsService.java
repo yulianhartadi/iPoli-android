@@ -19,6 +19,7 @@ import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -754,6 +755,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
         log("no_network_connection");
+    }
+
+    @Subscribe
+    public void onStartAppWithNoInternet(StartAppWithNoInternetEvent e) {
+        log("start_app_with_no_network_connection");
     }
 
     private FlurryEventRecordStatus log(String eventName) {

@@ -49,6 +49,7 @@ import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
@@ -154,6 +155,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ButterKnife.bind(this);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            eventBus.post(new StartAppWithNoInternetEvent());
             showNoInternetActivity();
             return;
         }
