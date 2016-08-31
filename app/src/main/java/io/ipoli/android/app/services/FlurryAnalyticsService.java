@@ -15,6 +15,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
@@ -748,6 +749,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPetRenamed(PetRenamedEvent e) {
         log("pet_renamed", EventParams.of("name", e.name));
+    }
+
+    @Subscribe
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        log("no_network_connection");
     }
 
     private FlurryEventRecordStatus log(String eventName) {
