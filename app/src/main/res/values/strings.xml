@@ -332,4 +332,6 @@
     <string name="help_dialog_pet_shop">Go to the pet shop if you want to buy and replace this pet. You can have only one at a time.</string>
     <string name="edit_menu">Edit</string>
     <string name="brag">Brag</string>
+
+    <string name="facebook_application_id" translatable="false">1609232436065758</string>
 </resources>

@@ -3,9 +3,7 @@ package io.ipoli.android.player.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
@@ -42,24 +40,17 @@ public class SignInActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(this).inject(this);
-        FirebaseAuth.getInstance().signInAnonymously().addOnCompleteListener(this, task -> {
-            if (!task.isSuccessful()) {
-                Toast.makeText(this, "Cannot create player, please try again.", Toast.LENGTH_LONG).show();
-                return;
-            }
-            String uid = task.getResult().getUser().getUid();
-            Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
-            Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
-            Player player = new Player(uid, pet, avatar);
-            playerPersistenceService.save(player, () -> {
-                localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
-                localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
-                localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
-                eventBus.post(new PlayerCreatedEvent(player.getId()));
-                startActivity(new Intent(SignInActivity.this, MainActivity.class));
-                finish();
-            });
 
+        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
+        Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
+        Player player = new Player("", pet, avatar);
+        playerPersistenceService.save(player, () -> {
+            localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
+            localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
+            localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
+            eventBus.post(new PlayerCreatedEvent(player.getId()));
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         });
     }
 
@@ -74,7 +65,6 @@ public class SignInActivity extends BaseActivity {
         eventBus.unregister(this);
         super.onPause();
     }
-
 
     @Subscribe
     public void onNoNetworkConnection(NoNetworkConnectionEvent e) {

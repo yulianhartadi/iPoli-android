@@ -19,7 +19,6 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -63,6 +62,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -337,7 +337,7 @@ public class App extends MultiDexApplication {
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         getAppComponent(this).inject(this);
         registerServices();
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             return;
         } else {
             playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
