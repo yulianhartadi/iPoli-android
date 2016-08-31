@@ -43,6 +43,7 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
@@ -742,6 +743,11 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onRevivePetRequest(RevivePetRequest e) {
         log("revive_pet_request", EventParams.of("pet", e.picture));
+    }
+
+    @Subscribe
+    public void onPetRenamed(PetRenamedEvent e) {
+        log("pet_renamed", EventParams.of("name", e.name));
     }
 
     private FlurryEventRecordStatus log(String eventName) {
