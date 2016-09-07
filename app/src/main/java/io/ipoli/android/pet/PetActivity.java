@@ -32,6 +32,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -151,6 +152,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     private void renamePet(String name) {
         pet.setName(name);
         petPersistenceService.save(pet);
+        eventBus.post(new PetRenamedEvent(name));
     }
 
     @Override

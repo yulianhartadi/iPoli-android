@@ -15,9 +15,11 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -43,6 +45,7 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
@@ -742,6 +745,21 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onRevivePetRequest(RevivePetRequest e) {
         log("revive_pet_request", EventParams.of("pet", e.picture));
+    }
+
+    @Subscribe
+    public void onPetRenamed(PetRenamedEvent e) {
+        log("pet_renamed", EventParams.of("name", e.name));
+    }
+
+    @Subscribe
+    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
+        log("no_network_connection");
+    }
+
+    @Subscribe
+    public void onStartAppWithNoInternet(StartAppWithNoInternetEvent e) {
+        log("start_app_with_no_network_connection");
     }
 
     private FlurryEventRecordStatus log(String eventName) {
