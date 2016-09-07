@@ -17,8 +17,8 @@
         android:layout_gravity="center"
         android:layout_weight="2"
         android:gravity="center"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
         android:textColor="@android:color/white" />
 
     <LinearLayout
@@ -54,15 +54,14 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/logo_tutorial" />
+                android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/tutorial_description"
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="24dp"
                 android:textColor="@android:color/white" />
         </LinearLayout>
