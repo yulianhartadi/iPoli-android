@@ -72,9 +72,4 @@ public class ShopPetAdapter extends PagerAdapter {
     public void destroyItem(final ViewGroup container, final int position, final Object object) {
         container.removeView((View) object);
     }
-
-    public void setPets(List<PetViewModel> pets) {
-        this.viewModels.clear();
-        this.viewModels.addAll(pets);
-    }
 }

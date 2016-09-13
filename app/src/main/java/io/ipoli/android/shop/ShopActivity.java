@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -37,9 +36,6 @@ import io.ipoli.android.shop.viewmodels.PetViewModel;
  * on 8/26/16.
  */
 public class ShopActivity extends BaseActivity {
-
-    @Inject
-    Bus eventBus;
 
     @Inject
     PetPersistenceService petPersistenceService;

@@ -151,6 +151,15 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".challenge.activities.PickChallengeActivity"
+            android:label="@string/title_activity_pick_challenge"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".player.activities.LevelUpActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"

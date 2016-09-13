@@ -21,6 +21,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.receivers.NetworkChangeReceiver;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
@@ -178,5 +179,7 @@ public interface AppComponent {
     void inject(ShopActivity shopActivity);
 
     void inject(DateChangedReceiver dateChangedReceiver);
+
+    void inject(PickChallengeActivity pickChallengeActivity);
 }
 

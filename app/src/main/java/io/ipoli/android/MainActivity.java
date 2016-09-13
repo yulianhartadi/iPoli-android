@@ -65,6 +65,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
@@ -182,6 +183,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startCalendar();
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        startActivity(new Intent(this, PickChallengeActivity.class));
     }
 
     @Override
