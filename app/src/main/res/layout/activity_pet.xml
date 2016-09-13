@@ -4,7 +4,7 @@
     android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pet_background_1">
+    android:background="@drawable/pet_background_01">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

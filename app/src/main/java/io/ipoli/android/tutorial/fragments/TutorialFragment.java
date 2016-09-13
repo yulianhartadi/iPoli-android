@@ -22,12 +22,10 @@ public class TutorialFragment extends Fragment implements ISlideBackgroundColorH
     private static final String DESCRIPTION = "description";
     private static final String IMAGE = "image";
     private static final String BACKGROUND = "background_color";
-    private static final String SHOW_LOGO = "show_parrot";
     private String title;
     private int image;
     private String description;
     private int backgroundColor;
-    private boolean showLogo;
     private int slideBackgroundColor;
     private View containerView;
 
@@ -35,17 +33,12 @@ public class TutorialFragment extends Fragment implements ISlideBackgroundColorH
     }
 
     public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, @ColorRes int backgroundColor) {
-        return newInstance(title, description, image, backgroundColor, true);
-    }
-
-    public static TutorialFragment newInstance(String title, String description, @DrawableRes int image, @ColorRes int backgroundColor, boolean showLogo) {
         TutorialFragment fragment = new TutorialFragment();
         Bundle args = new Bundle();
         args.putString(TITLE, title);
         args.putString(DESCRIPTION, description);
         args.putInt(IMAGE, image);
         args.putInt(BACKGROUND, backgroundColor);
-        args.putBoolean(SHOW_LOGO, showLogo);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,7 +51,6 @@ public class TutorialFragment extends Fragment implements ISlideBackgroundColorH
             description = getArguments().getString(DESCRIPTION);
             image = getArguments().getInt(IMAGE);
             backgroundColor = getArguments().getInt(BACKGROUND);
-            showLogo = getArguments().getBoolean(SHOW_LOGO);
         }
     }
 
@@ -71,13 +63,6 @@ public class TutorialFragment extends Fragment implements ISlideBackgroundColorH
         TextView titleView = (TextView) v.findViewById(R.id.tutorial_title);
         TextView descView = (TextView) v.findViewById(R.id.tutorial_description);
         ImageView imageView = (ImageView) v.findViewById(R.id.tutorial_image);
-        ImageView logoView = (ImageView) v.findViewById(R.id.tutorial_logo);
-
-        if (showLogo) {
-            logoView.setVisibility(View.VISIBLE);
-        } else {
-            logoView.setVisibility(View.GONE);
-        }
 
         titleView.setText(title);
         descView.setText(description);
