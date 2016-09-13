@@ -61,6 +61,10 @@ public class PickChallengeActivity extends BaseActivity {
         challengeViewModels.add(new PickChallengeViewModel("Weight Cutter", "Start shedding some weight and feel great", R.drawable.challenge_01, Category.WELLNESS));
         challengeViewModels.add(new PickChallengeViewModel("Stress-Free Mind", "Be mindful and stay in the flow longer", R.drawable.challenge_02, Category.WELLNESS));
         challengeViewModels.add(new PickChallengeViewModel("Healthy & Fit", "Keep working out and live healthier life", R.drawable.challenge_03, Category.WELLNESS));
+        challengeViewModels.add(new PickChallengeViewModel("English Jedi", "Advance your English skills", R.drawable.challenge_04, Category.LEARNING));
+        challengeViewModels.add(new PickChallengeViewModel("Programming Ninja", "Learn the fundamentals of computer programming", R.drawable.challenge_05, Category.LEARNING));
+        challengeViewModels.add(new PickChallengeViewModel("Master presenter", "Learn how to create and present effectively", R.drawable.challenge_06, Category.WORK));
+        challengeViewModels.add(new PickChallengeViewModel("Famous writer", "Learn how to become great writer & blogger", R.drawable.challenge_07, Category.WORK));
 
         setBackgroundColors(challengeViewModels.get(0).getCategory());
 
