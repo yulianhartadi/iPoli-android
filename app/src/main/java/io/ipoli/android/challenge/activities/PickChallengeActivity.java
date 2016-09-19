@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.activities;
 
 import android.animation.ArgbEvaluator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.challenge.adapters.PickChallengeAdapter;
+import io.ipoli.android.challenge.events.PersonalizeChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.PickChallengeViewModel;
 import io.ipoli.android.quest.data.Category;
 
@@ -85,5 +88,22 @@ public class PickChallengeActivity extends BaseActivity {
         appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onPersonalizeChallenge(PersonalizeChallengeEvent e) {
+        startActivity(new Intent(this, PersonalizeChallengeActivity.class));
     }
 }

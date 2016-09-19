@@ -5,6 +5,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.R;
+import io.ipoli.android.challenge.events.PersonalizeChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.PickChallengeViewModel;
 
 /**
@@ -46,10 +48,12 @@ public class PickChallengeAdapter extends PagerAdapter {
         TextView challengeName = (TextView) view.findViewById(R.id.challenge_name);
         TextView challengeDescription = (TextView) view.findViewById(R.id.challenge_description);
         ImageView challengePicture = (ImageView) view.findViewById(R.id.challenge_picture);
+        Button personalize = (Button) view.findViewById(R.id.challenge_personalize);
 
         challengeName.setText(vm.getName());
         challengeDescription.setText(vm.getDescription());
         challengePicture.setImageDrawable(context.getDrawable(vm.getPicture()));
+        personalize.setOnClickListener(view1 -> eventBus.post(new PersonalizeChallengeEvent()));
 
         container.addView(view);
         return view;

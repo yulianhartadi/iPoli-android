@@ -336,4 +336,5 @@
     <string name="facebook_application_id" translatable="false">1609232436065758</string>
     <string name="title_activity_pick_challenge">Pick a Challenge</string>
     <string name="personalize">Personalize</string>
+    <string name="title_activity_personalize_challenge">Accept the Challenge</string>
 </resources>

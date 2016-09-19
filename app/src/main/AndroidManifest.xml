@@ -160,6 +160,15 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
+            android:name=".challenge.activities.PersonalizeChallengeActivity"
+            android:label="@string/title_activity_personalize_challenge"
+            android:parentActivityName=".challenge.activities.PickChallengeActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".challenge.activities.PickChallengeActivity" />
+        </activity>
+        <activity
             android:name=".player.activities.LevelUpActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
