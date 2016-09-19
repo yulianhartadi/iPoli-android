@@ -26,7 +26,6 @@ public class TutorialFragment extends Fragment implements ISlideBackgroundColorH
     private int image;
     private String description;
     private int backgroundColor;
-    private int slideBackgroundColor;
     private View containerView;
 
     public TutorialFragment() {
