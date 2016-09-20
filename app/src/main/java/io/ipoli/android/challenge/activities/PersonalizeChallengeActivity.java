@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -70,6 +71,8 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         questList.setHasFixedSize(true);
         initViewModels();
         questList.setAdapter(new PickTutorialQuestsAdapter(this, eventBus, viewModels));
+
+        setBackgroundColors(Category.PERSONAL);
     }
 
     protected void initViewModels() {
@@ -123,5 +126,11 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         reminders.add(new Reminder(0, new Random().nextInt()));
         q.setReminders(reminders);
         return q;
+    }
+
+    private void setBackgroundColors(Category category) {
+        collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, category.color500));
+        collapsingToolbar.setStatusBarScrimColor(ContextCompat.getColor(this, category.color700));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
     }
 }
