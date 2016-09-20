@@ -41,7 +41,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.tutorial.fragments.TutorialFragment;
@@ -62,7 +62,7 @@ public class TutorialActivity extends AppIntro2 {
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     private PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment;
-    private PickTutorailQuestsFragment pickTutorailQuestsFragment;
+    private PickTutorialQuestsFragment pickTutorialQuestsFragment;
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
@@ -98,8 +98,8 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_orange_500));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
-        pickTutorailQuestsFragment = new PickTutorailQuestsFragment();
-        addSlide(pickTutorailQuestsFragment);
+        pickTutorialQuestsFragment = new PickTutorialQuestsFragment();
+        addSlide(pickTutorialQuestsFragment);
         pickTutorialRepeatingQuestsFragment = new PickTutorialRepeatingQuestsFragment();
         addSlide(pickTutorialRepeatingQuestsFragment);
 
@@ -111,7 +111,7 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-        List<Quest> selectedQuests = pickTutorailQuestsFragment.getSelectedQuests();
+        List<Quest> selectedQuests = pickTutorialQuestsFragment.getSelectedQuests();
         List<RepeatingQuest> selectedRepeatingQuests = pickTutorialRepeatingQuestsFragment.getSelectedQuests();
 
         Observable.defer(() -> {

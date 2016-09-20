@@ -59,7 +59,7 @@ import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.settings.SettingsFragment;
 import io.ipoli.android.shop.ShopActivity;
 import io.ipoli.android.tutorial.TutorialActivity;
-import io.ipoli.android.tutorial.fragments.PickTutorailQuestsFragment;
+import io.ipoli.android.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
 
@@ -111,7 +111,7 @@ public interface AppComponent {
 
     void inject(PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment);
 
-    void inject(PickTutorailQuestsFragment pickTutorailQuestsFragment);
+    void inject(PickTutorialQuestsFragment pickTutorialQuestsFragment);
 
     void inject(CalendarFragment calendarFragment);
 

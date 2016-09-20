@@ -11,22 +11,25 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
+import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminders.data.Reminder;
-import io.ipoli.android.tutorial.PickQuestViewModel;
-import io.ipoli.android.tutorial.adapters.PickTutorialQuestsAdapter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,7 +51,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @BindView(R.id.predefined_challenge_quests)
     RecyclerView questList;
-    private ArrayList<PickQuestViewModel> viewModels;
+    private ArrayList<PredefinedChallengeQuestViewModel> viewModels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,67 +68,86 @@ public class PersonalizeChallengeActivity extends BaseActivity {
             ab.setDisplayShowTitleEnabled(false);
         }
 
+
+
         collapsingToolbar.setTitle("Master Presenter");
 
         questList.setLayoutManager(new LinearLayoutManager(this));
         questList.setHasFixedSize(true);
-        initViewModels();
-        questList.setAdapter(new PickTutorialQuestsAdapter(this, eventBus, viewModels));
+        initViewModels(Category.WORK);
 
-        setBackgroundColors(Category.PERSONAL);
+        questList.setAdapter(new PredefinedChallengeQuestAdapter(this, eventBus, viewModels));
+
+        setBackgroundColors(Category.WORK);
     }
 
-    protected void initViewModels() {
+    protected void initViewModels(Category category) {
         viewModels = new ArrayList<>();
+        Quest quest1 = makeQuest("Learn how to give great presentation", category);
+        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setDuration(30);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
 
-        Quest q = makeQuest("Try out iPoli", Category.FUN);
-        Quest.setStartTime(q, Time.afterMinutes(5));
-        q.setDuration(Constants.QUEST_MIN_DURATION);
-        viewModels.add(new PickQuestViewModel(q, q.getName(), true));
+        Quest quest2 = makeQuest("Sign up at Slides & SlideShare", category);
+        Quest.setStartTime(quest2, Time.afterHours(1));
+        quest2.setDuration(15);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest2, true));
 
-        addViewModel("Take a walk", Category.WELLNESS, "Take a walk for 25 min", 25);
-        addViewModel("Answer emails", Category.WORK);
-        addViewModel("Make a lunch date", Category.FUN);
-        addViewModel("Call dad", Category.PERSONAL);
-        addViewModel("Cook a nice dinner", Category.FUN);
-        addViewModel("Hit the gym", Category.WELLNESS);
-        addViewModel("Plan a date night", Category.FUN);
-        addViewModel("Call mom", Category.PERSONAL);
-        addViewModel("Do laundry", Category.CHORES);
-        addViewModel("Rent a bouncy castle", Category.FUN);
-        addViewModel("Call plumber", Category.CHORES);
-        addViewModel("Take my vitamin", Category.WELLNESS);
-        addViewModel("Find dog sitter", Category.CHORES);
-        addViewModel("Prep for presentation", Category.WORK);
-        addViewModel("Check my weight", Category.WELLNESS);
-        addViewModel("Play my favourite song and dance", Category.FUN);
-    }
+        Quest quest3 = makeQuest("Create my presentation", category, DateUtils.getTomorrow());
+        Quest.setStartTime(quest3, Time.atHours(11));
+        quest3.setDuration(120);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest3, true));
 
-    private void addViewModel(String name, Category category) {
-        addViewModel(name, category, false);
-    }
+        RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", category);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
-    private void addViewModel(String name, Category category, boolean isSelected) {
-        Quest q = makeQuest(name, category);
-        q.setDuration(Constants.QUEST_MIN_DURATION);
-        viewModels.add(new PickQuestViewModel(q, name, isSelected));
-    }
+        Quest quest4 = makeQuest("Practice presenting to a friend", category, LocalDate.now().plusDays(7).toDate());
+        quest4.setDuration(30);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest4, true));
 
-    private void addViewModel(String name, Category category, String text, int duration) {
-        Quest q = makeQuest(name, category);
-        q.setDuration(duration);
-        viewModels.add(new PickQuestViewModel(q, text));
+        Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(9).toDate());
+        quest5.setDuration(30);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest5, true));
+
     }
 
     @NonNull
     private Quest makeQuest(String name, Category category) {
-        Quest q = new Quest(name, DateUtils.now());
+        return makeQuest(name, category, DateUtils.now());
+    }
+
+    @NonNull
+    private Quest makeQuest(String name, Category category, Date endDate) {
+        Quest q = new Quest(name, endDate);
         q.setCategory(category.name());
-        q.setRawText(name + " today");
         List<Reminder> reminders = new ArrayList<>();
         reminders.add(new Reminder(0, new Random().nextInt()));
         q.setReminders(reminders);
         return q;
+    }
+
+    private RepeatingQuest makeRepeatingQuest(String rawText, String name, Category category) {
+        RepeatingQuest rq = new RepeatingQuest(rawText);
+        rq.setName(name);
+//        rq.setDuration((int) durationText.getTag());
+//        rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
+//        Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
+//        recurrence.setDtstartDate(toStartOfDayUTC(LocalDate.now()));
+//        if (recurrence.getRrule() == null) {
+//            if (endDateText.getTag() != null) {
+//                recurrence.setDtstartDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+//                recurrence.setDtendDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
+//            } else {
+//                recurrence.setDtstartDate(null);
+//                recurrence.setDtend(null);
+//            }
+//        }
+//        rq.setRecurrence(recurrence);
+        rq.setCategory(category.name());
+//        rq.setChallengeId((String) challengeValue.getTag());
+//        rq.setNote((String) noteText.getTag());
+//        rq.setSubQuests(subQuestListAdapter.getSubQuests());
+        return rq;
     }
 
     private void setBackgroundColors(Category category) {

@@ -30,10 +30,10 @@ import io.ipoli.android.tutorial.adapters.PickTutorialQuestsAdapter;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/27/16.
  */
-public class PickTutorailQuestsFragment extends BaseTutorialPickQuestsFragment<Quest> implements ISlideBackgroundColorHolder {
+public class PickTutorialQuestsFragment extends BaseTutorialPickQuestsFragment<Quest> implements ISlideBackgroundColorHolder {
+
     @Inject
     Bus eventBus;
-    private int backgroundColor;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

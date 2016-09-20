@@ -119,10 +119,10 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
         TextView name;
 
         @BindView(R.id.quest_category_indicator_background)
-        public View categoryIndicatorBackground;
+        View categoryIndicatorBackground;
 
         @BindView(R.id.quest_category_indicator_image)
-        public ImageView categoryIndicatorImage;
+        ImageView categoryIndicatorImage;
 
         @BindView(R.id.quest_repeating_indicator)
         ImageView repeatingIndicator;

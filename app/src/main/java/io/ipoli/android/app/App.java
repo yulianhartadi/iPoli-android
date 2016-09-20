@@ -897,4 +897,10 @@ public class App extends MultiDexApplication {
     public static String getPlayerId() {
         return playerId;
     }
+
+    public static List<Challenge> getPredefinedChallenges() {
+        List<Challenge> challenges = new ArrayList<>();
+
+        return challenges;
+    }
 }
