@@ -97,10 +97,10 @@ import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.settings.SettingsFragment;
-import io.ipoli.android.tutorial.TutorialActivity;
+import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 

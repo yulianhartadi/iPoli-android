@@ -15,8 +15,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -64,7 +65,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Long coins;
     private Long experience;
 
-    private String note;
+    private List<Note> notes;
 
     private String source;
 
@@ -448,14 +449,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         isPlaceholder = placeholder;
     }
 
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     public String getChallengeId() {
         return challengeId;
     }
@@ -482,5 +475,30 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public static Category getCategory(Quest quest) {
         return Category.valueOf(quest.getCategory());
+    }
+
+    public List<Note> getNotes() {
+        if(notes == null) {
+            notes = new ArrayList<>();
+        }
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
+
+    public List<Note> getTextNotes() {
+        List<Note> textNotes = new ArrayList<>();
+        for(Note note : getNotes()) {
+            if(note.getType().equals(Note.Type.TEXT.name())) {
+                textNotes.add(note);
+            }
+        }
+        return textNotes;
+    }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
     }
 }

@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.joda.time.LocalDate;
 
@@ -26,10 +27,12 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -51,6 +54,10 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @BindView(R.id.predefined_challenge_quests)
     RecyclerView questList;
+
+    @BindView(R.id.challenge_picture)
+    ImageView challengePicture;
+
     private ArrayList<PredefinedChallengeQuestViewModel> viewModels;
 
     @Override
@@ -69,7 +76,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         }
 
 
-
         collapsingToolbar.setTitle("Master Presenter");
 
         questList.setLayoutManager(new LinearLayoutManager(this));
@@ -78,7 +84,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         questList.setAdapter(new PredefinedChallengeQuestAdapter(this, eventBus, viewModels));
 
-        setBackgroundColors(Category.WORK);
+        setBackgroundColors(Category.LEARNING);
     }
 
     protected void initViewModels(Category category) {
@@ -86,19 +92,30 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest quest1 = makeQuest("Learn how to give great presentation", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
+
+        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by Princeton University", "https://www.princeton.edu/~archss/webpdfs08/BaharMartonosi.pdf"));
+        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by University of Kent", "https://www.kent.ac.uk/careers/presentationskills.htm"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
 
-        Quest quest2 = makeQuest("Sign up at Slides & SlideShare", category);
+        Quest quest2 = makeQuest("Sign up at Canva", category);
         Quest.setStartTime(quest2, Time.afterHours(1));
         quest2.setDuration(15);
+        quest2.addNote(new Note(Note.Type.URL, "Sign up at Canva", "https://www.canva.com/"));
+
         viewModels.add(new PredefinedChallengeQuestViewModel(quest2, true));
 
-        Quest quest3 = makeQuest("Create my presentation", category, DateUtils.getTomorrow());
+        Quest quest3 = makeQuest("Create my presentation at Canva", category, DateUtils.getTomorrow());
         Quest.setStartTime(quest3, Time.atHours(11));
         quest3.setDuration(120);
+        quest3.addNote(new Note(Note.Type.URL, "Open Canva", "https://www.canva.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest3, true));
 
-        RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", category);
+        RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", 20, category);
+        Recurrence recurrence = new Recurrence(2);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
+        recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));
+        rq1.setRecurrence(recurrence);
+
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
         Quest quest4 = makeQuest("Practice presenting to a friend", category, LocalDate.now().plusDays(7).toDate());
@@ -107,6 +124,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(9).toDate());
         quest5.setDuration(30);
+        quest5.addNote(new Note(Note.Type.URL, "Sign up at SlideShare.net", "https://www.slideshare.net/upload"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest5, true));
     }
 
@@ -125,27 +143,14 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         return q;
     }
 
-    private RepeatingQuest makeRepeatingQuest(String rawText, String name, Category category) {
+    private RepeatingQuest makeRepeatingQuest(String rawText, String name, int duration, Category category) {
         RepeatingQuest rq = new RepeatingQuest(rawText);
         rq.setName(name);
-//        rq.setDuration((int) durationText.getTag());
-//        rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-//        Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-//        recurrence.setDtstartDate(toStartOfDayUTC(LocalDate.now()));
-//        if (recurrence.getRrule() == null) {
-//            if (endDateText.getTag() != null) {
-//                recurrence.setDtstartDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-//                recurrence.setDtendDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-//            } else {
-//                recurrence.setDtstartDate(null);
-//                recurrence.setDtend(null);
-//            }
-//        }
-//        rq.setRecurrence(recurrence);
+        rq.setDuration(duration);
         rq.setCategory(category.name());
-//        rq.setChallengeId((String) challengeValue.getTag());
-//        rq.setNote((String) noteText.getTag());
-//        rq.setSubQuests(subQuestListAdapter.getSubQuests());
+        List<Reminder> reminders = new ArrayList<>();
+        reminders.add(new Reminder(0, new Random().nextInt()));
+        rq.setReminders(reminders);
         return rq;
     }
 

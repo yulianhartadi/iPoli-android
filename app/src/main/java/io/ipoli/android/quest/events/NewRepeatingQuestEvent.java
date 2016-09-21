@@ -2,7 +2,7 @@ package io.ipoli.android.quest.events;
 
 import java.util.List;
 
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**

@@ -39,7 +39,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.tutorial.PickQuestViewModel;
+import io.ipoli.android.app.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

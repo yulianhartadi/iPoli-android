@@ -129,7 +129,7 @@
                 android:value=".pet.PetActivity" />
         </activity>
         <activity
-            android:name=".tutorial.TutorialActivity"
+            android:name=".app.tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".player.activities.PickAvatarPictureActivity"

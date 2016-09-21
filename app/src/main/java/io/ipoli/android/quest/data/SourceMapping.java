@@ -11,7 +11,7 @@ public class SourceMapping extends PersistedObject {
 
     private String androidCalendar;
 
-    public SourceMapping() {
+    private SourceMapping() {
     }
 
     public static SourceMapping fromGoogleCalendar(long eventId) {

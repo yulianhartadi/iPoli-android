@@ -2,7 +2,7 @@ package io.ipoli.android.quest.ui.formatters;
 
 import java.util.concurrent.TimeUnit;
 
-import io.ipoli.android.reminders.TimeOffsetType;
+import io.ipoli.android.reminder.TimeOffsetType;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

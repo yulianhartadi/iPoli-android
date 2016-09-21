@@ -2,6 +2,7 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.reminders.data.Reminder;
+import io.ipoli.android.note.data.Note;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -41,7 +43,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private Recurrence recurrence;
 
-    private String note;
+    private List<Note> notes;
 
     private String challengeId;
 
@@ -191,12 +193,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.allDay = allDay;
     }
 
-    public String getNote() {
-        return note;
+    public List<Note> getNotes() {
+        if (notes == null) {
+            return new ArrayList<>();
+        }
+        return notes;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
     }
 
     public String getChallengeId() {
@@ -265,5 +270,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             return true;
         }
         return !scheduledPeriodEndDates.containsKey(String.valueOf(periodEnd.getTime()));
+    }
+
+    public List<Note> getTextNotes() {
+        List<Note> textNotes = new ArrayList<>();
+        for (Note note : getNotes()) {
+            if (note.getType().equals(Note.Type.TEXT.name())) {
+                textNotes.add(note);
+            }
+        }
+        return textNotes;
     }
 }

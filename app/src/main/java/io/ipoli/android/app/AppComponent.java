@@ -56,12 +56,12 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.settings.SettingsFragment;
+import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.shop.ShopActivity;
-import io.ipoli.android.tutorial.TutorialActivity;
-import io.ipoli.android.tutorial.fragments.PickTutorialQuestsFragment;
-import io.ipoli.android.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
-import io.ipoli.android.tutorial.fragments.SyncAndroidCalendarFragment;
+import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
+import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

@@ -107,19 +107,19 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.settings.events.DailyChallengeDaysOfWeekChangedEvent;
-import io.ipoli.android.settings.events.DailyChallengeReminderChangeEvent;
-import io.ipoli.android.settings.events.DailyChallengeStartTimeChangedEvent;
-import io.ipoli.android.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
-import io.ipoli.android.tutorial.events.PredefinedQuestDeselectedEvent;
-import io.ipoli.android.tutorial.events.PredefinedQuestSelectedEvent;
-import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
-import io.ipoli.android.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
-import io.ipoli.android.tutorial.events.ShowTutorialEvent;
-import io.ipoli.android.tutorial.events.SyncCalendarCheckTappedEvent;
-import io.ipoli.android.tutorial.events.TutorialDoneEvent;
-import io.ipoli.android.tutorial.events.TutorialSkippedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.tutorial.events.SyncCalendarCheckTappedEvent;
+import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
+import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 
 public class FlurryAnalyticsService implements AnalyticsService {
 
