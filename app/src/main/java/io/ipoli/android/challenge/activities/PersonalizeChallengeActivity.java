@@ -108,7 +108,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(9).toDate());
         quest5.setDuration(30);
         viewModels.add(new PredefinedChallengeQuestViewModel(quest5, true));
-
     }
 
     @NonNull
