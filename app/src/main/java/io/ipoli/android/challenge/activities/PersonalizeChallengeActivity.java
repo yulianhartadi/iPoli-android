@@ -84,7 +84,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         questList.setAdapter(new PredefinedChallengeQuestAdapter(this, eventBus, viewModels));
 
-        setBackgroundColors(Category.LEARNING);
+        setBackgroundColors(Category.WELLNESS);
     }
 
     protected void initViewModels(Category category) {
