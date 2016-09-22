@@ -84,12 +84,12 @@
 
     <string name="save">SAVE</string>
     <string name="show_tutorial">Show Tutorial</string>
-    <string name="tutorial_welcome_title">4 Simple Steps to Upgrade Your Life</string>
+    <string name="tutorial_welcome_title">3 Simple Steps to Upgrade Your Life</string>
     <string name="tutorial_welcome_desc">Ready for a life-changing challenge? You are free to accept or refuse!</string>
     <string name="tutorial_hero_title">Level Up Your Life</string>
     <string name="tutorial_hero_desc">Your daily tasks and habits are now called quests. Earn life coins and experience by completing them!</string>
-    <string name="tutorial_rewards_title">Choose Your Bounty</string>
-    <string name="tutorial_reward_desc">Spend your life coins buying real-world rewards that you create</string>
+    <string name="tutorial_rewards_title">Challenge Yourself</string>
+    <string name="tutorial_reward_desc">Complete real-world goals and spend your life coins buying rewards that you create</string>
     <string name="fragment_calendar_title">Calendar</string>
     <string name="title_pick_initial_repeating_quests">Pick a few Habits to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>

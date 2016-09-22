@@ -77,21 +77,17 @@ public class TutorialActivity extends AppIntro2 {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title),
-                getString(R.string.tutorial_welcome_desc),
+                getString(R.string.tutorial_hero_desc),
                 R.drawable.tutorial_welcome,
                 R.color.md_blue_700));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_hero_title),
-                getString(R.string.tutorial_hero_desc),
-                R.drawable.tutorial_hero,
-                R.color.md_blue_500));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_rewards_title),
                 getString(R.string.tutorial_reward_desc),
                 R.drawable.tutorial_reward,
-                R.color.md_purple_500));
+                R.color.md_light_blue_500));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_pet_title),
                 getString(R.string.tutorial_pet_desc),
                 R.drawable.tutorial_pet,
-                R.color.md_orange_500));
+                R.color.md_orange_700));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
         pickTutorialQuestsFragment = new PickTutorialQuestsFragment();

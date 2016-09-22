@@ -56,7 +56,7 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
 
     @Override
     public int getDefaultBackgroundColor() {
-        return ContextCompat.getColor(getContext(), R.color.md_green_500);
+        return ContextCompat.getColor(getContext(), R.color.md_deep_purple_500);
     }
 
     @Override
