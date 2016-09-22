@@ -16,8 +16,6 @@ public class NoInternetActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.logo)
                 .setTitle("Can I get a connection?")
