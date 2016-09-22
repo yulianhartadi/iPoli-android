@@ -1,7 +1,6 @@
 package io.ipoli.android.app.tutorial;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.RxLifecycle;
 
@@ -30,21 +28,19 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.activities.NoInternetActivity;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
-import io.ipoli.android.quest.QuestParser;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
+import io.ipoli.android.quest.QuestParser;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
@@ -211,17 +207,6 @@ public class TutorialActivity extends AppIntro2 {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));
             }
         }
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
-    }
-
-    private void showNoInternetActivity() {
-        Intent intent = new Intent(this, NoInternetActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
 }

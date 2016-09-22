@@ -15,7 +15,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
@@ -31,6 +30,18 @@ import io.ipoli.android.app.rate.events.RateDialogLoveTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogRateTappedEvent;
 import io.ipoli.android.app.rate.events.RateDialogShownEvent;
 import io.ipoli.android.app.services.analytics.EventParams;
+import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
+import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.tutorial.events.SyncCalendarCheckTappedEvent;
+import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
+import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
@@ -107,19 +118,7 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
-import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
-import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
-import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
-import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
-import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
-import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
-import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
-import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
-import io.ipoli.android.app.tutorial.events.SyncCalendarCheckTappedEvent;
-import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
-import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 
 public class FlurryAnalyticsService implements AnalyticsService {
 
@@ -750,11 +749,6 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPetRenamed(PetRenamedEvent e) {
         log("pet_renamed", EventParams.of("name", e.name));
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        log("no_network_connection");
     }
 
     @Subscribe

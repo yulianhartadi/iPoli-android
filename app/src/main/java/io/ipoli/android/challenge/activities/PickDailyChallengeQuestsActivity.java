@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
@@ -28,8 +27,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -39,7 +38,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -193,10 +191,5 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         }
 
         pickQuestsAdapter.setViewModels(viewModels);
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
     }
 }

@@ -25,7 +25,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.AppComponent;
-import io.ipoli.android.app.ui.NoInternetDialogFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
@@ -42,12 +41,9 @@ public class BaseActivity extends RxAppCompatActivity {
     @Inject
     protected LocalStorage localStorage;
 
-    protected NoInternetDialogFragment noInternetDialog;
-
     protected AppComponent appComponent() {
         return App.getAppComponent(this);
     }
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,11 +94,5 @@ public class BaseActivity extends RxAppCompatActivity {
 
     protected void showKeyboard() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-    }
-
-    protected void showNoInternetActivity() {
-        Intent intent = new Intent(this, NoInternetActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 }

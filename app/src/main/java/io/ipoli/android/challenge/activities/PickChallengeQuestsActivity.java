@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,8 +26,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
@@ -40,7 +39,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -246,10 +244,5 @@ public class PickChallengeQuestsActivity extends BaseActivity {
 
     public interface FilterListener {
         void onFilterCompleted(List<PickQuestViewModel> viewModels);
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
     }
 }

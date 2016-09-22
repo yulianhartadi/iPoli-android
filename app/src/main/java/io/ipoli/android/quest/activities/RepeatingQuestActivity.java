@@ -26,7 +26,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -43,7 +42,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
@@ -483,8 +481,4 @@ public class RepeatingQuestActivity extends BaseActivity {
         return 0;
     }
 
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
-    }
 }

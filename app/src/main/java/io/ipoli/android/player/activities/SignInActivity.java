@@ -4,16 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.squareup.otto.Subscribe;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
+import io.ipoli.android.app.activities.NoInternetActivity;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
@@ -41,6 +40,11 @@ public class SignInActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         App.getAppComponent(this).inject(this);
 
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Intent intent = new Intent(this, NoInternetActivity.class);
+            startActivity(intent);
+        }
+
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
         Player player = new Player("", pet, avatar);
@@ -64,10 +68,5 @@ public class SignInActivity extends BaseActivity {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
     }
 }

@@ -20,7 +20,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.player.adapters.AvatarAdapter;
 import io.ipoli.android.player.events.AvatarPickedEvent;
@@ -70,10 +69,5 @@ public class PickAvatarPictureActivity extends BaseActivity {
         data.putExtra(Constants.PICTURE_NAME_EXTRA_KEY, e.avatarName);
         setResult(RESULT_OK, data);
         finish();
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
     }
 }

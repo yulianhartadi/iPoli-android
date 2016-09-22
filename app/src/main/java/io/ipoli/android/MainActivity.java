@@ -47,19 +47,18 @@ import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.InviteFriendEvent;
-import io.ipoli.android.app.events.NoNetworkConnectionEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
+import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.share.ShareQuestDialog;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
@@ -99,8 +98,6 @@ import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.app.settings.SettingsFragment;
-import io.ipoli.android.app.tutorial.TutorialActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -154,12 +151,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
-
-        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-            eventBus.post(new StartAppWithNoInternetEvent());
-            showNoInternetActivity();
-            return;
-        }
 
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             startActivity(new Intent(this, SignInActivity.class));
@@ -633,10 +624,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void startOverview() {
         changeCurrentFragment(new OverviewFragment());
-    }
-
-    @Subscribe
-    public void onNoNetworkConnection(NoNetworkConnectionEvent e) {
-        showNoInternetActivity();
     }
 }

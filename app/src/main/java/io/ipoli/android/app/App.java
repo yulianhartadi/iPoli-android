@@ -19,6 +19,7 @@ import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
 import com.flurry.android.FlurryAgent;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -58,6 +59,9 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
 import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
+import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -110,9 +114,6 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
-import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
-import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -334,7 +335,8 @@ public class App extends MultiDexApplication {
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         getAppComponent(this).inject(this);
         registerServices();
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
