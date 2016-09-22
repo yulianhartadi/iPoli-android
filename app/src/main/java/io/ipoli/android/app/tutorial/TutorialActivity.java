@@ -80,9 +80,9 @@ public class TutorialActivity extends AppIntro2 {
                 getString(R.string.tutorial_hero_desc),
                 R.drawable.tutorial_welcome,
                 R.color.md_blue_700));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_rewards_title),
-                getString(R.string.tutorial_reward_desc),
-                R.drawable.tutorial_reward,
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_challenges_title),
+                getString(R.string.tutorial_challenges_desc),
+                R.drawable.tutorial_challenge,
                 R.color.md_light_blue_500));
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_pet_title),
                 getString(R.string.tutorial_pet_desc),
