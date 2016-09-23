@@ -27,7 +27,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
-import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -93,21 +92,21 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
 
-        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by Princeton University", "https://www.princeton.edu/~archss/webpdfs08/BaharMartonosi.pdf"));
-        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by University of Kent", "https://www.kent.ac.uk/careers/presentationskills.htm"));
+//        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by Princeton University", "https://www.princeton.edu/~archss/webpdfs08/BaharMartonosi.pdf"));
+//        quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by University of Kent", "https://www.kent.ac.uk/careers/presentationskills.htm"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
 
         Quest quest2 = makeQuest("Sign up at Canva", category);
         Quest.setStartTime(quest2, Time.afterHours(1));
         quest2.setDuration(15);
-        quest2.addNote(new Note(Note.Type.URL, "Sign up at Canva", "https://www.canva.com/"));
+//        quest2.addNote(new Note(Note.Type.URL, "Sign up at Canva", "https://www.canva.com/"));
 
         viewModels.add(new PredefinedChallengeQuestViewModel(quest2, true));
 
         Quest quest3 = makeQuest("Create my presentation at Canva", category, DateUtils.getTomorrow());
         Quest.setStartTime(quest3, Time.atHours(11));
         quest3.setDuration(120);
-        quest3.addNote(new Note(Note.Type.URL, "Open Canva", "https://www.canva.com/"));
+//        quest3.addNote(new Note(Note.Type.URL, "Open Canva", "https://www.canva.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest3, true));
 
         RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", 20, category);
@@ -124,7 +123,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(9).toDate());
         quest5.setDuration(30);
-        quest5.addNote(new Note(Note.Type.URL, "Sign up at SlideShare.net", "https://www.slideshare.net/upload"));
+//        quest5.addNote(new Note(Note.Type.URL, "Sign up at SlideShare.net", "https://www.slideshare.net/upload"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest5, true));
     }
 
