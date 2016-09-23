@@ -15,6 +15,10 @@ public class Note extends PersistedObject {
     private String text;
     private String data;
 
+    public Note() {
+
+    }
+
     public Note(Type type, String text, String data) {
         this.type = type.name();
         this.text = text;

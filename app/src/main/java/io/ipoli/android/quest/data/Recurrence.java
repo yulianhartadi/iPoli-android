@@ -13,6 +13,8 @@ import io.ipoli.android.app.utils.DateUtils;
  */
 public class Recurrence extends PersistedObject {
 
+    public static final String RRULE_EVERY_DAY = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU";
+
     public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
 
     private int timesADay;

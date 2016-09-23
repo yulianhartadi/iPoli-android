@@ -72,6 +72,8 @@ import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.data.Difficulty;
+import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
@@ -89,6 +91,7 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
@@ -900,8 +903,104 @@ public class App extends MultiDexApplication {
         return playerId;
     }
 
-    public static List<Challenge> getPredefinedChallenges() {
-        List<Challenge> challenges = new ArrayList<>();
+    public static List<PredefinedChallenge> getPredefinedChallenges() {
+        List<PredefinedChallenge> challenges = new ArrayList<>();
+
+        Challenge c = new Challenge("Weight Cutter");
+        c.setCategoryType(Category.WELLNESS);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Start shedding some weight and feel great", R.drawable.challenge_01, R.drawable.challenge_expanded_02));
+
+        c = new Challenge("Stress-Free Mind");
+        c.setCategoryType(Category.WELLNESS);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Be mindful and stay in the flow longer", R.drawable.challenge_02, R.drawable.challenge_expanded_02));
+
+        c = new Challenge("Healthy & Fit");
+        c.setCategoryType(Category.WELLNESS);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Keep working out and live healthier life", R.drawable.challenge_03, R.drawable.challenge_expanded_02));
+
+        c = new Challenge("English Jedi");
+        c.setCategoryType(Category.LEARNING);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Advance your English skills", R.drawable.challenge_04, R.drawable.challenge_expanded_04));
+
+        c = new Challenge("Programming Ninja");
+        c.setCategoryType(Category.LEARNING);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Learn the fundamentals of computer programming", R.drawable.challenge_05, R.drawable.challenge_expanded_04));
+
+        c = new Challenge("Master Presenter");
+        c.setCategoryType(Category.WORK);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Learn how to create and present effectively", R.drawable.challenge_06, R.drawable.challenge_expanded_06));
+
+        c = new Challenge("Famous writer");
+        c.setCategoryType(Category.WORK);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Learn how to become great writer & blogger", R.drawable.challenge_07, R.drawable.challenge_expanded_04));
+
+        c = new Challenge("Friends & Family time");
+        c.setCategoryType(Category.PERSONAL);
+        c.setDifficultyType(Difficulty.NORMAL);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Connect with your friends and family", R.drawable.challenge_08, R.drawable.challenge_expanded_08));
 
         return challenges;
     }

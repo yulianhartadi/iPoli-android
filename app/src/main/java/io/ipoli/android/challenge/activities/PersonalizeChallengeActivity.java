@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -19,19 +20,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
+import io.ipoli.android.challenge.data.PredefinedChallenge;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.reminder.data.Reminder;
 
 /**
@@ -58,11 +69,29 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     @BindView(R.id.challenge_picture)
     ImageView challengePicture;
 
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
     private ArrayList<PredefinedChallengeQuestViewModel> viewModels;
+
+    private PredefinedChallenge predefinedChallenge;
+
+    private PredefinedChallengeQuestAdapter predefinedChallengeQuestAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() == null || !getIntent().hasExtra(Constants.PREDEFINED_CHALLENGE_INDEX)) {
+            finish();
+            return;
+        }
 
         setContentView(R.layout.activity_personalize_challenge);
         ButterKnife.bind(this);
@@ -76,19 +105,77 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         }
 
 
-        collapsingToolbar.setTitle("Master Presenter");
+        int index = getIntent().getIntExtra(Constants.PREDEFINED_CHALLENGE_INDEX, 0);
+        predefinedChallenge = App.getPredefinedChallenges().get(index);
+
+        collapsingToolbar.setTitle(predefinedChallenge.challenge.getName());
+        challengePicture.setImageResource(predefinedChallenge.backgroundPicture);
 
         questList.setLayoutManager(new LinearLayoutManager(this));
         questList.setHasFixedSize(true);
-        initViewModels(Category.WORK);
+        initViewModels(index);
 
-        questList.setAdapter(new PredefinedChallengeQuestAdapter(this, eventBus, viewModels));
+        predefinedChallengeQuestAdapter = new PredefinedChallengeQuestAdapter(this, eventBus, viewModels);
+        questList.setAdapter(predefinedChallengeQuestAdapter);
 
-        setBackgroundColors(Category.WELLNESS);
+        setBackgroundColors(predefinedChallenge.challenge.getCategoryType());
     }
 
-    protected void initViewModels(Category category) {
+    protected void initViewModels(int index) {
         viewModels = new ArrayList<>();
+        switch (index) {
+            case 0:
+                createWeightCutter();
+                break;
+            case 1:
+                createStressFreeMind();
+                break;
+            case 2:
+                createHealthyAndFit();
+                break;
+            case 3:
+                createEnglishJedi();
+                break;
+            case 4:
+                createProgrammingNinja();
+                break;
+            case 5:
+                createMasterPresenter();
+                break;
+            case 6:
+                createFamousWriter();
+                break;
+            case 7:
+                createFamilyAndFriendsTime();
+                break;
+        }
+    }
+
+    private void createFamilyAndFriendsTime() {
+    }
+
+    private void createFamousWriter() {
+        
+    }
+
+    private void createProgrammingNinja() {
+    }
+
+    private void createEnglishJedi() {
+    }
+
+    private void createHealthyAndFit() {
+    }
+
+    private void createStressFreeMind() {
+    }
+
+    private void createWeightCutter() {
+    }
+
+    private void createMasterPresenter() {
+        Category category = predefinedChallenge.challenge.getCategoryType();
+
         Quest quest1 = makeQuest("Learn how to give great presentation", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
@@ -114,6 +201,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Recurrence recurrence = new Recurrence(2);
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
         recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));
+        recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq1.setRecurrence(recurrence);
 
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
@@ -122,7 +210,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         quest4.setDuration(30);
         viewModels.add(new PredefinedChallengeQuestViewModel(quest4, true));
 
-        Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(9).toDate());
+        Quest quest5 = makeQuest("Upload my presentation to SlideShare", category, LocalDate.now().plusDays(10).toDate());
         quest5.setDuration(30);
         quest5.addNote(new Note(Note.Type.URL, "Sign up at SlideShare.net", "https://www.slideshare.net/upload"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest5, true));
@@ -158,5 +246,26 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, category.color500));
         collapsingToolbar.setStatusBarScrimColor(ContextCompat.getColor(this, category.color700));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+    }
+
+    @OnClick(R.id.accept_challenge)
+    public void onAcceptChallenge(View view) {
+        challengePersistenceService.save(predefinedChallenge.challenge, () -> {
+            List<Quest> quests = new ArrayList<>();
+            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+            List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
+            for (BaseQuest bq : selectedQuests) {
+                if (bq instanceof Quest) {
+                    quests.add((Quest) bq);
+                } else {
+                    repeatingQuests.add((RepeatingQuest) bq);
+                }
+            }
+            questPersistenceService.save(quests, () -> {
+                repeatingQuestPersistenceService.save(repeatingQuests, () -> {
+                    finish();
+                });
+            });
+        });
     }
 }
