@@ -85,6 +85,8 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private PredefinedChallengeQuestAdapter predefinedChallengeQuestAdapter;
 
+    private Category category;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,14 +116,17 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         questList.setLayoutManager(new LinearLayoutManager(this));
         questList.setHasFixedSize(true);
+
+        category = predefinedChallenge.challenge.getCategoryType();
+
         initViewModels(index);
 
         predefinedChallengeQuestAdapter = new PredefinedChallengeQuestAdapter(this, eventBus, viewModels);
         questList.setAdapter(predefinedChallengeQuestAdapter);
 
-        setBackgroundColors(predefinedChallenge.challenge.getCategoryType());
+        setBackgroundColors();
     }
-    
+
     protected void initViewModels(int index) {
         viewModels = new ArrayList<>();
         switch (index) {
@@ -156,7 +161,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createFamousWriter() {
-        
+
     }
 
     private void createProgrammingNinja() {
@@ -169,10 +174,44 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createStressFreeMind() {
+        RepeatingQuest rq1 = makeRepeatingQuest("Meditate every day for 10 min", "Meditate", 10, category);
+        Recurrence recurrence = new Recurrence(1);
+        recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        RepeatingQuest rq2 = makeRepeatingQuest("Read a book for 30 min 3 times a week", "Read a book", 30, Category.LEARNING);
+        recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(3);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        rq2.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq2.getRawText(), rq2, true));
+
+        Quest quest1 = makeQuest("Share your troubles with a friend", Category.PERSONAL, LocalDate.now().plusDays(5).toDate());
+        Quest.setStartTime(quest1, Time.at(21, 0));
+        quest1.setDuration(60);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
+
+        RepeatingQuest rq3 = makeRepeatingQuest("Take a walk for 30 min 5 times a week", "Take a walk", 30, category);
+        recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(5);
+        recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        rq3.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq3.getRawText(), rq3, true));
+
+        RepeatingQuest rq4 = makeRepeatingQuest("Say 3 things that I am grateful for every morning", "Say 3 things that I am grateful", 15, category);
+        rq4.setStartMinute(Time.at(9, 30).toMinutesAfterMidnight());
+        recurrence = new Recurrence(1);
+        recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
+        rq4.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq4.getRawText(), rq4, true));
     }
 
     private void createWeightCutter() {
-        Category category = predefinedChallenge.challenge.getCategoryType();
         RepeatingQuest rq1 = makeRepeatingQuest("Run 2 times a week for 30 min", "Run", 30, category);
         Recurrence recurrence = new Recurrence(1);
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
@@ -221,8 +260,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createMasterPresenter() {
-        Category category = predefinedChallenge.challenge.getCategoryType();
-
         Quest quest1 = makeQuest("Learn how to give great presentation", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
@@ -288,7 +325,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         return rq;
     }
 
-    private void setBackgroundColors(Category category) {
+    private void setBackgroundColors() {
         collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, category.color500));
         collapsingToolbar.setStatusBarScrimColor(ContextCompat.getColor(this, category.color700));
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
