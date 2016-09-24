@@ -940,7 +940,7 @@ public class App extends MultiDexApplication {
         c.setExpectedResult1("Prepare a presentation");
         c.setExpectedResult2("Present in front of an audience");
         c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Keep working out and live healthier life", R.drawable.challenge_03, R.drawable.challenge_expanded_02));
+        challenges.add(new PredefinedChallenge(c, "Keep working out and live healthier life", R.drawable.challenge_03, R.drawable.challenge_expanded_03));
 
         c = new Challenge("English Jedi");
         c.setCategoryType(Category.LEARNING);

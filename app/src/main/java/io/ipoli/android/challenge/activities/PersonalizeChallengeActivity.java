@@ -121,7 +121,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         setBackgroundColors(predefinedChallenge.challenge.getCategoryType());
     }
-
+    
     protected void initViewModels(int index) {
         viewModels = new ArrayList<>();
         switch (index) {

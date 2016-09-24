@@ -153,6 +153,7 @@
         <activity
             android:name=".challenge.activities.PickChallengeActivity"
             android:label="@string/title_activity_pick_challenge"
+            android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
