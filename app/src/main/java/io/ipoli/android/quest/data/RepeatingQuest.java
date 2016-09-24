@@ -281,4 +281,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
         return textNotes;
     }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
+    }
 }

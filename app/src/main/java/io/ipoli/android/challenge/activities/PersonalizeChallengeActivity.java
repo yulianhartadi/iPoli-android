@@ -162,6 +162,36 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createFamousWriter() {
 
+        Quest q1 = makeQuest("Create a blog at Medium", category);
+        Quest.setStartTime(q1, Time.afterMinutes(30));
+        q1.setDuration(15);
+        q1.addNote(new Note(Note.Type.URL, "Create my blog at Medium", "https://medium.com/"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(q1, true));
+
+        Quest q2 = makeQuest("Choose what I am going to write about", category);
+        Quest.setStartTime(q2, Time.afterMinutes(90));
+        q2.setDuration(45);
+        viewModels.add(new PredefinedChallengeQuestViewModel(q2, true));
+
+        Quest q3 = makeQuest("Pick 5 bloggers who inspire you and read most of their posts", category, LocalDate.now().plusDays(1).toDate());
+        Quest.setStartTime(q3, Time.at(20, 30));
+        q3.setDuration(60);
+        viewModels.add(new PredefinedChallengeQuestViewModel(q3, true));
+
+        Quest q4 = makeQuest("Research & write my first blog post", category, LocalDate.now().plusDays(2).toDate());
+        q4.setDuration(90);
+        viewModels.add(new PredefinedChallengeQuestViewModel(q4, true));
+
+        RepeatingQuest rq1 = makeRepeatingQuest("Write a blog post once every week", "Write a blog post", 120, category);
+        Recurrence recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(1);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(8)));
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        rq1.setRecurrence(recurrence);
+        rq1.addNote(new Note(Note.Type.URL, "Visit Medium", "https://medium.com/"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
     }
 
     private void createProgrammingNinja() {
@@ -212,6 +242,12 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createWeightCutter() {
+
+        Quest quest1 = makeQuest("Sign up for a gym club card", category);
+        Quest.setStartTime(quest1, Time.afterMinutes(60));
+        quest1.setDuration(30);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
+
         RepeatingQuest rq1 = makeRepeatingQuest("Run 2 times a week for 30 min", "Run", 30, category);
         Recurrence recurrence = new Recurrence(1);
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
@@ -252,11 +288,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
-
-        Quest quest1 = makeQuest("Sign up for a gym club card", category);
-        Quest.setStartTime(quest1, Time.afterMinutes(60));
-        quest1.setDuration(30);
-        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
     }
 
     private void createMasterPresenter() {
