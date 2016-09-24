@@ -916,7 +916,7 @@ public class App extends MultiDexApplication {
         c.setExpectedResult1("Prepare a presentation");
         c.setExpectedResult2("Present in front of an audience");
         c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Start shedding some weight and feel great", R.drawable.challenge_01, R.drawable.challenge_expanded_02));
+        challenges.add(new PredefinedChallenge(c, "Start shedding some weight and feel great", R.drawable.challenge_01, R.drawable.challenge_expanded_01));
 
         c = new Challenge("Stress-Free Mind");
         c.setCategoryType(Category.WELLNESS);
