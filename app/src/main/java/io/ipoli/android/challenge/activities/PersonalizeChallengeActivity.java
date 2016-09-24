@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -171,6 +172,52 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createWeightCutter() {
+        Category category = predefinedChallenge.challenge.getCategoryType();
+        RepeatingQuest rq1 = makeRepeatingQuest("Run 2 times a week for 30 min", "Run", 30, category);
+        Recurrence recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(2);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        rq1 = makeRepeatingQuest("Workout at the gym 3 times a week for 1h", "Workout", 60, category);
+        recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(3);
+        recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        rq1 = makeRepeatingQuest("Measure my weight every morning", "Measure my weight", Constants.QUEST_MIN_DURATION, category);
+        recurrence = new Recurrence(1);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
+        recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));
+        recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        rq1 = makeRepeatingQuest("Prepare healthy dinner 6 times a week", "Prepare healthy dinner", 60, category);
+        recurrence = new Recurrence(1);
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(6);
+        recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        Quest quest1 = makeQuest("Sign up for a gym club card", category);
+        Quest.setStartTime(quest1, Time.afterMinutes(60));
+        quest1.setDuration(30);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
     }
 
     private void createMasterPresenter() {
@@ -179,7 +226,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest quest1 = makeQuest("Learn how to give great presentation", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
-
         quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by Princeton University", "https://www.princeton.edu/~archss/webpdfs08/BaharMartonosi.pdf"));
         quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by University of Kent", "https://www.kent.ac.uk/careers/presentationskills.htm"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
