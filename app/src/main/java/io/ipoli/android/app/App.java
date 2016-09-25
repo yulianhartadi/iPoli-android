@@ -964,7 +964,7 @@ public class App extends MultiDexApplication {
         c.setExpectedResult1("Prepare a presentation");
         c.setExpectedResult2("Present in front of an audience");
         c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Learn the fundamentals of computer programming", R.drawable.challenge_05, R.drawable.challenge_expanded_04));
+        challenges.add(new PredefinedChallenge(c, "Learn the fundamentals of computer programming", R.drawable.challenge_05, R.drawable.challenge_expanded_05));
 
         c = new Challenge("Master Presenter");
         c.setCategoryType(Category.WORK);
@@ -988,7 +988,7 @@ public class App extends MultiDexApplication {
         c.setExpectedResult1("Prepare a presentation");
         c.setExpectedResult2("Present in front of an audience");
         c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Learn how to become great writer & blogger", R.drawable.challenge_07, R.drawable.challenge_expanded_04));
+        challenges.add(new PredefinedChallenge(c, "Learn how to become great writer & blogger", R.drawable.challenge_07, R.drawable.challenge_expanded_07));
 
         c = new Challenge("Friends & Family time");
         c.setCategoryType(Category.PERSONAL);
