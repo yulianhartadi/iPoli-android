@@ -115,23 +115,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void bindNote(Note note, NoteViewHolder holder) {
-        switch (note.getNoteType()) {
-            case TEXT:
-                holder.text.setText(note.getText());
-                break;
-            case URL:
-                holder.text.setText(note.getText());
-
-                holder.text.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(context, R.drawable.ic_insert_link_black_24dp), null);
-                holder.text.setTextColor(ContextCompat.getColor(context, R.color.md_blue_700));
-                break;
-
-            case INTENT:
-                holder.text.setText(note.getText());
-                holder.text.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(context, R.drawable.ic_exit_to_app_black_24dp), null);
-                holder.text.setTextColor(ContextCompat.getColor(context, R.color.md_blue_700));
-                break;
-        }
+        holder.text.setText(note.getText());
     }
 
     private void bindSubQuestViewHolder(SubQuest sq, SubQuestViewHolder holder) {
