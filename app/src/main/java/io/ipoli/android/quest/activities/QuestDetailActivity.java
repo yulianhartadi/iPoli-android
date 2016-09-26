@@ -19,7 +19,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.quest.adapters.SubQuestListAdapter;
+import io.ipoli.android.note.data.Note;
+import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
@@ -69,16 +71,24 @@ public class QuestDetailActivity extends BaseActivity {
 
         timerProgress.setProgress(33);
 
-        List<SubQuest> subQuests = new ArrayList<>();
-        subQuests.add(new SubQuest("Prepare Barbell"));
-        subQuests.add(new SubQuest("Do 10 pull-ups"));
-        subQuests.add(new SubQuest("Do 10 push-ups"));
-        SubQuestListAdapter adapter = new SubQuestListAdapter(this, eventBus, subQuests);
 
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
 
-        details.setAdapter(adapter);
+        Quest quest = new Quest("Hello world");
+
+        List<SubQuest> subQuests = new ArrayList<>();
+        subQuests.add(new SubQuest("Prepare Barbell"));
+        subQuests.add(new SubQuest("Do 10 pull-ups"));
+        subQuests.add(new SubQuest("Do 10 push-ups"));
+
+        quest.setSubQuests(subQuests);
+
+        List<Note> notes = new ArrayList<>();
+        notes.add(new Note("Workout hard even though Vihar is not the smartest cat in the world!"));
+        quest.setNotes(notes);
+
+        details.setAdapter(new QuestDetailsAdapter(this, quest, eventBus));
 
 //        adapter.setSubQuests(subQuests);
     }
