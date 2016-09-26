@@ -456,7 +456,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void initSuggestions() {
         adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
-        questText.setThreshold(1);
+        questText.setThreshold(2);
     }
 
     @Override
@@ -964,6 +964,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 break;
 
             case GUI_CHANGE:
+                if(s.length() <= 1) {
+                    break;
+                }
                 parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
                 colorParsedParts(parsedParts);
                 break;
