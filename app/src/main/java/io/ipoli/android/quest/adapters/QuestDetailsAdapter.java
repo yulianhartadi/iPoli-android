@@ -1,10 +1,12 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,6 +50,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int SUB_QUEST_ITEM_VIEW_TYPE = 1;
     public static final int NOTE_ITEM_VIEW_TYPE = 2;
+    public static final int NOTE_LINK_ITEM_VIEW_TYPE = 3;
 
     private final Quest quest;
     private final Context context;
@@ -82,7 +85,10 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new SubQuestViewHolder(inflater.inflate(R.layout.sub_quest_list_item, parent, false));
 
             case NOTE_ITEM_VIEW_TYPE:
-                return new NoteViewHolder(inflater.inflate(R.layout.note_list_item, parent, false));
+                return new NoteViewHolder(inflater.inflate(R.layout.note_text_list_item, parent, false));
+
+            case NOTE_LINK_ITEM_VIEW_TYPE:
+                return new NoteLinkViewHolder(inflater.inflate(R.layout.note_link_list_item, parent, false));
         }
         throw new IllegalArgumentException("Unknown view type: " + viewType);
     }
@@ -96,6 +102,11 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (holder.getItemViewType() == NOTE_ITEM_VIEW_TYPE) {
             final Note n = (Note) items.get(holder.getAdapterPosition());
             bindNote(n, (NoteViewHolder) holder);
+        } else if (holder.getItemViewType() == NOTE_LINK_ITEM_VIEW_TYPE) {
+            final Note n = (Note) items.get(holder.getAdapterPosition());
+            NoteLinkViewHolder h = (NoteLinkViewHolder) holder;
+            h.button.setText(n.getText());
+            h.button.setSupportBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.md_white)));
         } else {
             TextView header = (TextView) holder.itemView;
             String text = (String) items.get(position);
@@ -104,7 +115,23 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void bindNote(Note note, NoteViewHolder holder) {
-        holder.text.setText(note.getText());
+        switch (note.getNoteType()) {
+            case TEXT:
+                holder.text.setText(note.getText());
+                break;
+            case URL:
+                holder.text.setText(note.getText());
+
+                holder.text.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(context, R.drawable.ic_insert_link_black_24dp), null);
+                holder.text.setTextColor(ContextCompat.getColor(context, R.color.md_blue_700));
+                break;
+
+            case INTENT:
+                holder.text.setText(note.getText());
+                holder.text.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, ContextCompat.getDrawable(context, R.drawable.ic_exit_to_app_black_24dp), null);
+                holder.text.setTextColor(ContextCompat.getColor(context, R.color.md_blue_700));
+                break;
+        }
     }
 
     private void bindSubQuestViewHolder(SubQuest sq, SubQuestViewHolder holder) {
@@ -183,7 +210,11 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (item instanceof SubQuest) {
             return SUB_QUEST_ITEM_VIEW_TYPE;
         }
-        return NOTE_ITEM_VIEW_TYPE;
+        Note note = (Note) item;
+        if (note.getNoteType() == Note.Type.TEXT) {
+            return NOTE_ITEM_VIEW_TYPE;
+        }
+        return NOTE_LINK_ITEM_VIEW_TYPE;
     }
 
     @Override
@@ -204,6 +235,17 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView text;
 
         NoteViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    static class NoteLinkViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.note_text)
+        AppCompatButton button;
+
+        NoteLinkViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

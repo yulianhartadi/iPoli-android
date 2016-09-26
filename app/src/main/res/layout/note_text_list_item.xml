@@ -9,5 +9,7 @@
     android:clickable="true"
     android:focusable="true"
     android:maxLines="5"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp"
     android:textColor="@color/md_dark_text_87"
     android:textSize="@dimen/sub_quest_item_text_size" />

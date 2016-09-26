@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -30,7 +31,7 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
  * on 9/26/16.
  */
 
-public class QuestDetailActivity extends BaseActivity {
+public class QuestDetailActivity extends BaseActivity implements Chronometer.OnChronometerTickListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -68,8 +69,11 @@ public class QuestDetailActivity extends BaseActivity {
 
         timer.setBase(0);
         timer.setText(TimerFormatter.format(TimeUnit.MINUTES.toMillis(20)));
+        timer.start();
 
-        timerProgress.setProgress(33);
+        timer.setOnChronometerTickListener(this);
+
+        timerProgress.setProgress(80);
 
 
         details.setLayoutManager(new LinearLayoutManager(this));
@@ -86,10 +90,17 @@ public class QuestDetailActivity extends BaseActivity {
 
         List<Note> notes = new ArrayList<>();
         notes.add(new Note("Workout hard even though Vihar is not the smartest cat in the world!"));
+        notes.add(new Note(Note.Type.URL, "Visit Medium", "https://medium.com/"));
+        notes.add(new Note(Note.Type.INTENT, "Learn English on Duolingo", "https://medium.com/"));
         quest.setNotes(notes);
 
         details.setAdapter(new QuestDetailsAdapter(this, quest, eventBus));
 
 //        adapter.setSubQuests(subQuests);
+    }
+
+    @Override
+    public void onChronometerTick(Chronometer chronometer) {
+        timerProgress.setProgress(timerProgress.getProgress() + new Random().nextInt(2));
     }
 }
