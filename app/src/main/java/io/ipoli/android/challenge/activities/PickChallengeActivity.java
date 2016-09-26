@@ -1,6 +1,5 @@
 package io.ipoli.android.challenge.activities;
 
-import android.animation.ArgbEvaluator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -43,8 +42,6 @@ public class PickChallengeActivity extends BaseActivity {
 
     @BindView(R.id.challenge_view_pager)
     HorizontalInfiniteCycleViewPager viewPager;
-
-    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

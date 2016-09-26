@@ -35,9 +35,9 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
  * on 4/28/16.
  */
 public class SubQuestListAdapter extends RecyclerView.Adapter<SubQuestListAdapter.ViewHolder> {
-    protected Context context;
-    protected final Bus evenBus;
-    protected List<SubQuest> subQuests;
+    private Context context;
+    private final Bus evenBus;
+    private List<SubQuest> subQuests;
 
     public SubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
         this.context = context;
