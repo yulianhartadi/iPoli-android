@@ -2,6 +2,7 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public List<Reminder> getReminders() {
+        if(reminders == null) {
+            reminders = new ArrayList<>();
+        }
         return reminders;
     }
 
