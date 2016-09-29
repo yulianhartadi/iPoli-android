@@ -98,6 +98,7 @@ public class TutorialActivity extends AppIntro2 {
         lifecycleSubject.onNext(ActivityEvent.CREATE);
         setImmersiveMode(true, true);
         setColorTransitionsEnabled(true);
+        showSkipButton(false);
     }
 
     @Override
