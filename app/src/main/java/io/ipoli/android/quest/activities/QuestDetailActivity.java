@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -10,6 +11,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
@@ -17,7 +20,6 @@ import android.widget.ProgressBar;
 
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,8 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
@@ -36,7 +40,8 @@ import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditNoteRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
@@ -111,31 +116,39 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowTitleEnabled(true);
+            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
         collapsingToolbarLayout.setTitleEnabled(false);
 
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
+    }
 
-        quest = new Quest("Hello world");
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.quest_detail_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        List<SubQuest> subQuests = new ArrayList<>();
-        subQuests.add(new SubQuest("Prepare Barbell"));
-        subQuests.add(new SubQuest("Do 10 pull-ups"));
-        subQuests.add(new SubQuest("Do 10 push-ups"));
-
-        quest.setSubQuests(subQuests);
-
-        List<Note> notes = new ArrayList<>();
-        notes.add(new Note("Workout hard even though Vihar is not the smartest cat in the world!"));
-        notes.add(new Note(Note.Type.URL, "Visit Medium", "https://medium.com/"));
-        notes.add(new Note(Note.Type.INTENT, "Learn English on Duolingo", "https://medium.com/"));
-        quest.setNotes(notes);
-
-        adapter = new QuestDetailsAdapter(this, quest, eventBus);
-        details.setAdapter(adapter);
-
-//        adapter.setSubQuests(subQuests);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                Intent i = new Intent(this, EditQuestActivity.class);
+                i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+                startActivity(i);
+                return true;
+            case R.id.action_done:
+                eventBus.post(new DoneQuestTapEvent(quest));
+                stopTimer();
+                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.QUEST));
+                finish();
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quest, R.string.help_dialog_repeating_quest_title, "repeating_quest").show(getSupportFragmentManager());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -153,6 +166,8 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
                 resumeTimer();
                 timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
             }
+            adapter = new QuestDetailsAdapter(this, quest, eventBus);
+            details.setAdapter(adapter);
         });
     }
 
