@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Chronometer;
 import android.widget.ProgressBar;
 
+import com.squareup.otto.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +26,8 @@ import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.quest.events.EditNoteRequestEvent;
+import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
 /**
@@ -31,7 +35,7 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
  * on 9/26/16.
  */
 
-public class QuestDetailActivity extends BaseActivity implements Chronometer.OnChronometerTickListener {
+public class QuestDetailActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -50,6 +54,8 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
 
     @BindView(R.id.quest_details)
     RecyclerView details;
+    private Quest quest;
+    private QuestDetailsAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,7 +85,7 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
 
-        Quest quest = new Quest("Hello world");
+        quest = new Quest("Hello world");
 
         List<SubQuest> subQuests = new ArrayList<>();
         subQuests.add(new SubQuest("Prepare Barbell"));
@@ -94,13 +100,40 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
         notes.add(new Note(Note.Type.INTENT, "Learn English on Duolingo", "https://medium.com/"));
         quest.setNotes(notes);
 
-        details.setAdapter(new QuestDetailsAdapter(this, quest, eventBus));
+        adapter = new QuestDetailsAdapter(this, quest, eventBus);
+        details.setAdapter(adapter);
 
 //        adapter.setSubQuests(subQuests);
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Override
     public void onChronometerTick(Chronometer chronometer) {
         timerProgress.setProgress(timerProgress.getProgress() + new Random().nextInt(2));
+    }
+
+    @Subscribe
+    public void onEditNoteRequest(EditNoteRequestEvent e) {
+        TextPickerFragment.newInstance((String) e.note.getText(), R.string.pick_note_title, this).show(getSupportFragmentManager());
+    }
+
+    @Override
+    public void onTextPicked(String text) {
+        List<Note> notes = quest.getTextNotes();
+        if (!notes.isEmpty()) {
+            notes.get(0).setText(text);
+        }
+        adapter.updateNotes(quest.getNotes());
     }
 }

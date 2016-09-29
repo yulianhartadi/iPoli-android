@@ -20,6 +20,7 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,10 +28,12 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.quest.events.EditNoteRequestEvent;
 import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
@@ -45,10 +48,11 @@ import static io.ipoli.android.quest.adapters.OverviewAdapter.QUEST_ITEM_VIEW_TY
 
 public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int HEADER_COUNT = 2;
+    private static final int HEADER_COUNT = 3;
 
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int SUB_QUEST_ITEM_VIEW_TYPE = 1;
+    public static final int ADD_SUB_QUEST_ITEM_VIEW_TYPE = 4;
     public static final int NOTE_ITEM_VIEW_TYPE = 2;
     public static final int NOTE_LINK_ITEM_VIEW_TYPE = 3;
 
@@ -67,6 +71,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         for (SubQuest sq : quest.getSubQuests()) {
             items.add(sq);
         }
+        items.add("Add sub-quest");
         items.add("Notes");
         for (Note note : quest.getNotes()) {
             items.add(note);
@@ -79,7 +84,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (viewType) {
 
             case HEADER_ITEM_VIEW_TYPE:
-                return new HeaderViewHolder(inflater.inflate(R.layout.overview_quest_header_item, parent, false));
+                return new HeaderViewHolder(inflater.inflate(R.layout.quest_header_item, parent, false));
 
             case SUB_QUEST_ITEM_VIEW_TYPE:
                 return new SubQuestViewHolder(inflater.inflate(R.layout.sub_quest_list_item, parent, false));
@@ -89,6 +94,9 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             case NOTE_LINK_ITEM_VIEW_TYPE:
                 return new NoteLinkViewHolder(inflater.inflate(R.layout.note_link_list_item, parent, false));
+
+            case ADD_SUB_QUEST_ITEM_VIEW_TYPE:
+                return new AddSubQuestViewHolder(inflater.inflate(R.layout.layout_add_sub_quest, parent, false));
         }
         throw new IllegalArgumentException("Unknown view type: " + viewType);
     }
@@ -107,15 +115,28 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             NoteLinkViewHolder h = (NoteLinkViewHolder) holder;
             h.button.setText(n.getText());
             h.button.setSupportBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.md_white)));
-        } else {
+        } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
             String text = (String) items.get(position);
             header.setText(text);
+        } else if (holder.getItemViewType() == ADD_SUB_QUEST_ITEM_VIEW_TYPE) {
+            AddSubQuestViewHolder h = (AddSubQuestViewHolder) holder;
+            h.addSubQuestContainer.setOnClickListener(v -> {
+                h.addSubQuest.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_87));
+                h.addSubQuest.setText("");
+                showUnderline(h.addSubQuest);
+                h.addSubQuest.requestFocus();
+            });
         }
     }
 
     private void bindNote(Note note, NoteViewHolder holder) {
-        holder.text.setText(note.getText());
+        String text = note.getText();
+        if (StringUtils.isEmpty(text)) {
+            holder.text.setHint("Tap to add a note");
+        }
+        holder.text.setText(text);
+        holder.text.setOnClickListener(v -> eventBus.post(new EditNoteRequestEvent(note)));
     }
 
     private void bindSubQuestViewHolder(SubQuest sq, SubQuestViewHolder holder) {
@@ -177,6 +198,17 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         notifyItemRemoved(position);
     }
 
+    public void updateNotes(List<Note> notes) {
+        Iterator i = items.iterator();
+        while (i.hasNext()) {
+            if (i.next() instanceof Note) {
+                i.remove();
+            }
+        }
+        items.addAll(notes);
+        notifyDataSetChanged();
+    }
+
     private void showUnderline(TextInputEditText editText) {
         editText.getBackground().clearColorFilter();
     }
@@ -189,6 +221,9 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public int getItemViewType(int position) {
         Object item = items.get(position);
         if (item instanceof String) {
+            if (item.equals("Add sub-quest")) {
+                return ADD_SUB_QUEST_ITEM_VIEW_TYPE;
+            }
             return HEADER_ITEM_VIEW_TYPE;
         }
         if (item instanceof SubQuest) {
@@ -246,6 +281,19 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ImageButton moreMenu;
 
         SubQuestViewHolder(View v) {
+            super(v);
+            ButterKnife.bind(this, v);
+        }
+    }
+
+    static class AddSubQuestViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.add_sub_quest_container)
+        ViewGroup addSubQuestContainer;
+
+        @BindView(R.id.add_sub_quest)
+        TextInputEditText addSubQuest;
+
+        AddSubQuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
         }
