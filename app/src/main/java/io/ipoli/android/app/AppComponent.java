@@ -35,6 +35,7 @@ import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.QuestDetailActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
@@ -85,6 +86,8 @@ public interface AppComponent {
     void inject(App app);
 
     void inject(QuestActivity questActivity);
+
+    void inject(QuestDetailActivity questDetailActivity);
 
     void inject(SnoozeQuestReceiver snoozeQuestReceiver);
 

@@ -17,4 +17,8 @@ public class IntentUtils {
     public static PendingIntent getBroadcastPendingIntent(Context context, Intent intent) {
         return getBroadcastPendingIntent(context, intent, 0);
     }
+
+    public static boolean hasExtra(Intent intent, String extraKey) {
+        return intent != null && intent.hasExtra(extraKey);
+    }
 }

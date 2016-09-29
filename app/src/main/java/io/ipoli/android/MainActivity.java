@@ -74,7 +74,6 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.activities.QuestDetailActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
@@ -174,8 +173,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startCalendar();
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        startActivity(new Intent(this, QuestDetailActivity.class));
     }
 
     @Override

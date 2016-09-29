@@ -64,6 +64,7 @@ public class QuestActivity extends BaseActivity {
 
     @Inject
     QuestPersistenceService questPersistenceService;
+
     private String questId;
 
     @Override
