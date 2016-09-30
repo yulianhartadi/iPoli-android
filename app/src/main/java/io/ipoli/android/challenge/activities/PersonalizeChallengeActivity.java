@@ -260,6 +260,46 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createEnglishJedi() {
+        Quest quest1 = makeQuest("Sign up for an account at Duolingo", category);
+        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setDuration(15);
+        quest1.addNote(new Note(Note.Type.INTENT, "Sign up at Duolingo", "com.duolingo"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
+
+        Quest quest2 = makeQuest("Sign up for a local English course", category, LocalDate.now().plusDays(1).toDate());
+        quest2.setDuration(60);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest2, true));
+
+        Quest quest3 = makeQuest("Subscribe to the Misterduncan YouTube channel", category);
+        quest3.setDuration(15);
+        quest3.addNote(new Note(Note.Type.URL, "Subscribe to Misterduncan", "https://www.youtube.com/channel/UC8pPDhxSn1nee70LRKJ0p3g"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest3, true));
+
+        RepeatingQuest rq1 = makeRepeatingQuest("Learn using Duolingo for 15 min every day", "Learn using Duolingo", 15, category);
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1)));
+        recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
+        rq1.setRecurrence(recurrence);
+        rq1.addNote(new Note(Note.Type.INTENT, "Learn using Duolingo", "com.duolingo"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        RepeatingQuest rq2 = makeRepeatingQuest("Watch a movie with English subtitles 5 times a week", "Watch a movie with English subtitles", 120, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(3);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(7)));
+        rq2.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq2.getRawText(), rq2, true));
+
+        RepeatingQuest rq3 = makeRepeatingQuest("Read Alice in Wonderland 4 times a week", "Read Alice in Wonderland", 60, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(4);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(14)));
+        rq3.setRecurrence(recurrence);
+        rq3.addNote(new Note(Note.Type.URL, "Read Alice in Wonderland", "https://www.gutenberg.org/files/11/11-h/11-h.htm"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq3.getRawText(), rq3, true));
     }
 
     private void createHealthyAndFit() {
