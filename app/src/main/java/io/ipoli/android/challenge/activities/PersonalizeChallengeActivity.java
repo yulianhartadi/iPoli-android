@@ -105,6 +105,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowTitleEnabled(false);
+            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
 
@@ -158,6 +159,37 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createFamilyAndFriendsTime() {
+        Quest quest1 = makeQuest("Plan a vacation with friends", Category.PERSONAL, LocalDate.now().plusDays(5).toDate());
+        quest1.setDuration(90);
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
+
+        RepeatingQuest rq1 = makeRepeatingQuest("Call parents once every week", "Call parents", 30, category);
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(1);
+        rq1.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        RepeatingQuest rq2 = makeRepeatingQuest("Visit parents once every month", "Visit parents", 180, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+        recurrence.setFlexibleCount(1);
+        rq2.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq2.getRawText(), rq2, true));
+
+        RepeatingQuest rq3 = makeRepeatingQuest("Have family dinner 3 times a week", "Have family dinner", 90, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(3);
+        rq3.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq3.getRawText(), rq3, true));
+
+        RepeatingQuest rq4 = makeRepeatingQuest("Go out with friends 2 times a week", "Go out with friends", 90, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(2);
+        rq4.setRecurrence(recurrence);
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq4.getRawText(), rq4, true));
     }
 
     private void createFamousWriter() {
@@ -183,18 +215,48 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(q4, true));
 
         RepeatingQuest rq1 = makeRepeatingQuest("Write a blog post once every week", "Write a blog post", 120, category);
-        Recurrence recurrence = new Recurrence(1);
+        Recurrence recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(1);
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(8)));
-        Recur recur = new Recur(Recur.WEEKLY, null);
-        recurrence.setRrule(recur.toString());
         rq1.setRecurrence(recurrence);
         rq1.addNote(new Note(Note.Type.URL, "Visit Medium", "https://medium.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
     }
 
     private void createProgrammingNinja() {
+        Quest quest1 = makeQuest("Sign up for an account at freeCodeCamp", category);
+        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setDuration(30);
+        quest1.addNote(new Note(Note.Type.URL, "Sign up at freeCodeCamp", "https://www.freecodecamp.com/"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
+
+        RepeatingQuest rq1 = makeRepeatingQuest("Read JavaScript For Cats 3 times a week", "Read JavaScript For Cats", 30, category);
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(3);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1)));
+        rq1.setRecurrence(recurrence);
+        rq1.addNote(new Note(Note.Type.URL, "JavaScript For Cats", "https://noblemule.gitbooks.io/javascript-for-cats/content/"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
+
+        RepeatingQuest rq2 = makeRepeatingQuest("Conquer freeCodeCamp challenges 5 times a week", "Conquer freeCodeCamp challenges", 60, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(5);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
+        rq2.setRecurrence(recurrence);
+        rq2.addNote(new Note(Note.Type.URL, "freeCodeCamp challenges", "https://www.freecodecamp.com/"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq2.getRawText(), rq2, true));
+
+        RepeatingQuest rq3 = makeRepeatingQuest("Watch CS50x Programming Course 2 times a week", "Watch CS50x Programming Course", 60, category);
+        recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setFlexibleCount(2);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1)));
+        rq3.setRecurrence(recurrence);
+        rq3.addNote(new Note(Note.Type.URL, "Watch CS50x on edX", "https://www.edx.org/course/introduction-computer-science-harvardx-cs50x"));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq3.getRawText(), rq3, true));
     }
 
     private void createEnglishJedi() {
@@ -205,13 +267,13 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createStressFreeMind() {
         RepeatingQuest rq1 = makeRepeatingQuest("Meditate every day for 10 min", "Meditate", 10, category);
-        Recurrence recurrence = new Recurrence(1);
+        Recurrence recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
         RepeatingQuest rq2 = makeRepeatingQuest("Read a book for 30 min 3 times a week", "Read a book", 30, Category.LEARNING);
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(3);
         Recur recur = new Recur(Recur.WEEKLY, null);
@@ -225,7 +287,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
 
         RepeatingQuest rq3 = makeRepeatingQuest("Take a walk for 30 min 5 times a week", "Take a walk", 30, category);
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(5);
         recur = new Recur(Recur.WEEKLY, null);
@@ -235,7 +297,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         RepeatingQuest rq4 = makeRepeatingQuest("Say 3 things that I am grateful for every morning", "Say 3 things that I am grateful", 15, category);
         rq4.setStartMinute(Time.at(9, 30).toMinutesAfterMidnight());
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq4.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq4.getRawText(), rq4, true));
@@ -249,7 +311,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1, true));
 
         RepeatingQuest rq1 = makeRepeatingQuest("Run 2 times a week for 30 min", "Run", 30, category);
-        Recurrence recurrence = new Recurrence(1);
+        Recurrence recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(2);
         Recur recur = new Recur(Recur.WEEKLY, null);
@@ -260,7 +322,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
         rq1 = makeRepeatingQuest("Workout at the gym 3 times a week for 1h", "Workout", 60, category);
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(3);
         recur = new Recur(Recur.WEEKLY, null);
@@ -271,7 +333,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
         rq1 = makeRepeatingQuest("Measure my weight every morning", "Measure my weight", Constants.QUEST_MIN_DURATION, category);
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
         recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
@@ -279,7 +341,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1, true));
 
         rq1 = makeRepeatingQuest("Prepare healthy dinner 6 times a week", "Prepare healthy dinner", 60, category);
-        recurrence = new Recurrence(1);
+        recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(6);
         recur = new Recur(Recur.WEEKLY, null);
