@@ -337,4 +337,5 @@
     <string name="title_activity_pick_challenge">Pick a Challenge</string>
     <string name="personalize">Personalize</string>
     <string name="title_activity_personalize_challenge">Accept the Challenge</string>
+    <string name="mark_done">MARK DONE</string>
 </resources>

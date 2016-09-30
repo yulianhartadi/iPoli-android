@@ -478,7 +478,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public List<Note> getNotes() {
-        if(notes == null) {
+        if (notes == null) {
             notes = new ArrayList<>();
         }
         return notes;
@@ -490,8 +490,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
-        for(Note note : getNotes()) {
-            if(note.getType().equals(Note.Type.TEXT.name())) {
+        for (Note note : getNotes()) {
+            if (note.getType().equals(Note.Type.TEXT.name())) {
                 textNotes.add(note);
             }
         }
@@ -500,5 +500,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void addNote(Note note) {
         getNotes().add(note);
+    }
+
+    @Exclude
+    public void removeTextNote() {
+        List<Note> txtNotes = getTextNotes();
+        getNotes().removeAll(txtNotes);
     }
 }

@@ -34,6 +34,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.IntentUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
@@ -214,16 +215,23 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
-        TextPickerFragment.newInstance((String) e.note.getText(), R.string.pick_note_title, this).show(getSupportFragmentManager());
+        TextPickerFragment.newInstance(e.text, R.string.pick_note_title, this).show(getSupportFragmentManager());
     }
 
     @Override
     public void onTextPicked(String text) {
-        List<Note> notes = quest.getTextNotes();
-        if (!notes.isEmpty()) {
-            notes.get(0).setText(text);
+
+        if (StringUtils.isEmpty(text)) {
+            quest.removeTextNote();
+        } else {
+            List<Note> notes = quest.getTextNotes();
+            if (!notes.isEmpty()) {
+                notes.get(0).setText(text);
+            } else {
+                quest.addNote(new Note(text));
+            }
         }
-        adapter.updateNotes(quest.getNotes());
+        questPersistenceService.save(quest);
     }
 
     private void initUI() {
