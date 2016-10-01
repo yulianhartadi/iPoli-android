@@ -459,7 +459,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void initSuggestions() {
         adapter = new SuggestionsAdapter(this, eventBus, suggestionsManager.getSuggestions());
         questText.setAdapter(adapter);
-        questText.setThreshold(1);
+        questText.setThreshold(2);
     }
 
     @Override
