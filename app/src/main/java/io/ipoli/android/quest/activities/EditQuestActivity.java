@@ -560,7 +560,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
-            
+
             List<Note> textNotes = q.getTextNotes();
             String txt = (String) noteText.getTag();
 

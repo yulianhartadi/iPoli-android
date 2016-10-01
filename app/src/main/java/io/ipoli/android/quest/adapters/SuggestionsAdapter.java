@@ -26,12 +26,7 @@ public class SuggestionsAdapter extends BaseSuggestionsAdapter {
 
     @Override
     protected View.OnClickListener getClickListener(int position) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventBus.post(new SuggestionAdapterItemClickEvent(suggestions.get(position)));
-            }
-        };
+        return v -> eventBus.post(new SuggestionAdapterItemClickEvent(suggestions.get(position)));
     }
 
 }

@@ -61,6 +61,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public List<Reminder> getReminders() {
+        if(reminders == null) {
+            reminders = new ArrayList<>();
+        }
         return reminders;
     }
 

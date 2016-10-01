@@ -545,9 +545,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
                 }
             }
             questPersistenceService.save(quests, () -> {
-                repeatingQuestPersistenceService.save(repeatingQuests, () -> {
-                    finish();
-                });
+                repeatingQuestPersistenceService.save(repeatingQuests, this::finish);
             });
         });
     }
