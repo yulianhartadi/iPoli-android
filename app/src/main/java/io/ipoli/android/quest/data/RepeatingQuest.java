@@ -195,7 +195,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public List<Note> getNotes() {
         if (notes == null) {
-            return new ArrayList<>();
+            notes = new ArrayList<>();
         }
         return notes;
     }

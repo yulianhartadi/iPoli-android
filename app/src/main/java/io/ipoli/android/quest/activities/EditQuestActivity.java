@@ -117,7 +117,6 @@ import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 
-import static com.flurry.sdk.lk.q;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -561,10 +560,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
+            
             List<Note> textNotes = q.getTextNotes();
             String txt = (String) noteText.getTag();
-
-            q.removeTextNote();
 
             if (!StringUtils.isEmpty(txt)) {
                 if (textNotes.isEmpty()) {
@@ -572,6 +570,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 } else {
                     textNotes.get(0).setText(txt);
                 }
+            } else {
+                q.removeTextNote();
             }
 
             q.setSubQuests(subQuestListAdapter.getSubQuests());
@@ -601,18 +601,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setChallengeId((String) challengeValue.getTag());
 
             List<Note> textNotes = rq.getTextNotes();
-            Note note;
-            if (textNotes.isEmpty()) {
-                note = new Note((String) noteText.getTag());
-                rq.getNotes().add(note);
-            } else {
-                note = textNotes.get(0);
-                note.setText((String) noteText.getTag());
-            }
-
             String txt = (String) noteText.getTag();
-
-            rq.removeTextNote();
 
             if (!StringUtils.isEmpty(txt)) {
                 if (textNotes.isEmpty()) {
@@ -620,6 +609,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 } else {
                     textNotes.get(0).setText(txt);
                 }
+            } else {
+                rq.removeTextNote();
             }
 
             rq.setSubQuests(subQuestListAdapter.getSubQuests());
