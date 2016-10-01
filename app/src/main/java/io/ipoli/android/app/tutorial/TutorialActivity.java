@@ -15,13 +15,6 @@ import android.widget.Toast;
 
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
-import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.RxLifecycle;
-
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,40 +25,15 @@ import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
-import io.ipoli.android.quest.QuestParser;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
-
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
     @Inject
     Bus eventBus;
 
-    @Inject
-    QuestPersistenceService questPersistenceService;
-
-    @Inject
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
-
-    private PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment;
-    private PickTutorialQuestsFragment pickTutorialQuestsFragment;
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
-
-    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
-
-    private int previousSlide = -1;
-
-    private QuestParser questParser = new QuestParser(new PrettyTimeParser());
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,12 +58,7 @@ public class TutorialActivity extends AppIntro2 {
                 R.color.md_orange_700));
         syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
         addSlide(syncAndroidCalendarFragment);
-        pickTutorialQuestsFragment = new PickTutorialQuestsFragment();
-        addSlide(pickTutorialQuestsFragment);
-        pickTutorialRepeatingQuestsFragment = new PickTutorialRepeatingQuestsFragment();
-        addSlide(pickTutorialRepeatingQuestsFragment);
 
-        lifecycleSubject.onNext(ActivityEvent.CREATE);
         setImmersiveMode(true, true);
         setColorTransitionsEnabled(true);
         showSkipButton(false);
@@ -104,43 +67,12 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-        List<Quest> selectedQuests = pickTutorialQuestsFragment.getSelectedQuests();
-        List<RepeatingQuest> selectedRepeatingQuests = pickTutorialRepeatingQuestsFragment.getSelectedQuests();
-
-        Observable.defer(() -> {
-            List<RepeatingQuest> parsedRepeatingQuests = new ArrayList<>();
-            for (RepeatingQuest rq : selectedRepeatingQuests) {
-                RepeatingQuest parsedRepeatingQuest = questParser.parseRepeatingQuest(rq.getRawText());
-                parsedRepeatingQuest.setCategory(rq.getCategory());
-                parsedRepeatingQuest.setReminders(rq.getReminders());
-                parsedRepeatingQuests.add(parsedRepeatingQuest);
-            }
-
-            questPersistenceService.save(selectedQuests);
-            repeatingQuestPersistenceService.save(parsedRepeatingQuests);
-            return Observable.empty();
-        }).compose(RxLifecycle.bindActivity(lifecycleSubject))
-                .subscribe(ignored -> {
-                        }, error -> finish(),
-                        () -> {
-                            eventBus.post(new TutorialDoneEvent());
-                            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-                            finish();
-                        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(ActivityEvent.START);
-    }
-
-    @Override
-    public void onSlideChanged(Fragment oldFragment, Fragment newFragment) {
-        if (previousSlide == SYNC_CALENDAR_SLIDE_INDEX && syncAndroidCalendarFragment.isSyncCalendarChecked()) {
+        if (syncAndroidCalendarFragment.isSyncCalendarChecked()) {
             checkCalendarForPermission();
+        } else {
+            eventBus.post(new TutorialDoneEvent());
+            finish();
         }
-        previousSlide = pager.getCurrentItem();
     }
 
     @Override
@@ -155,41 +87,16 @@ public class TutorialActivity extends AppIntro2 {
         finish();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        eventBus.register(this);
-        lifecycleSubject.onNext(ActivityEvent.RESUME);
-
-    }
-
-    @Override
-    protected void onPause() {
-        eventBus.unregister(this);
-        lifecycleSubject.onNext(ActivityEvent.PAUSE);
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        lifecycleSubject.onNext(ActivityEvent.STOP);
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        lifecycleSubject.onNext(ActivityEvent.DESTROY);
-        super.onDestroy();
-    }
-
     private void checkCalendarForPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CALENDAR)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_CALENDAR},
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR},
                     Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
+        } else {
+            eventBus.post(new TutorialDoneEvent());
+            Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -198,11 +105,14 @@ public class TutorialActivity extends AppIntro2 {
         if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.TUTORIAL));
             } else if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));
             }
+            eventBus.post(new TutorialDoneEvent());
+            finish();
         }
     }
 
