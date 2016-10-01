@@ -585,6 +585,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void startTutorial() {
         Intent intent = new Intent(this, TutorialActivity.class);
+        intent.putExtra(TutorialActivity.SHOW_PICK_CHALLENGES, true);
         startActivity(intent);
     }
 

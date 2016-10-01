@@ -14,8 +14,8 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.R;
+import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.PersonalizeChallengeEvent;
-import io.ipoli.android.challenge.viewmodels.PickChallengeViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,13 +23,13 @@ import io.ipoli.android.challenge.viewmodels.PickChallengeViewModel;
  */
 public class PickChallengeAdapter extends PagerAdapter {
 
-    private final List<PickChallengeViewModel> viewModels;
+    private final List<PredefinedChallenge> predefinedChallenges;
     private final Bus eventBus;
     private final LayoutInflater layoutInflater;
     private final Context context;
 
-    public PickChallengeAdapter(final Context context, List<PickChallengeViewModel> viewModels, Bus eventBus) {
-        this.viewModels = viewModels;
+    public PickChallengeAdapter(final Context context, List<PredefinedChallenge> predefinedChallenges, Bus eventBus) {
+        this.predefinedChallenges = predefinedChallenges;
         this.eventBus = eventBus;
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
@@ -37,23 +37,23 @@ public class PickChallengeAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return viewModels.size();
+        return predefinedChallenges.size();
     }
 
     @Override
     public Object instantiateItem(final ViewGroup container, final int position) {
         final View view = layoutInflater.inflate(R.layout.pick_challenge_item, container, false);
-        PickChallengeViewModel vm = viewModels.get(position);
+        PredefinedChallenge pc = predefinedChallenges.get(position);
 
         TextView challengeName = (TextView) view.findViewById(R.id.challenge_name);
         TextView challengeDescription = (TextView) view.findViewById(R.id.challenge_description);
         ImageView challengePicture = (ImageView) view.findViewById(R.id.challenge_picture);
         Button personalize = (Button) view.findViewById(R.id.challenge_personalize);
 
-        challengeName.setText(vm.getName());
-        challengeDescription.setText(vm.getDescription());
-        challengePicture.setImageDrawable(context.getDrawable(vm.getPicture()));
-        personalize.setOnClickListener(view1 -> eventBus.post(new PersonalizeChallengeEvent()));
+        challengeName.setText(pc.challenge.getName());
+        challengeDescription.setText(pc.description);
+        challengePicture.setImageDrawable(context.getDrawable(pc.picture));
+        personalize.setOnClickListener(view1 -> eventBus.post(new PersonalizeChallengeEvent(position)));
 
         container.addView(view);
         return view;

@@ -18,6 +18,11 @@ import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
+import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
+import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PersonalizeChallengeActivity;
@@ -41,8 +46,6 @@ import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
-import io.ipoli.android.quest.fragments.SubQuestListFragment;
-import io.ipoli.android.quest.fragments.TimerFragment;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
@@ -55,12 +58,7 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.shop.ShopActivity;
-import io.ipoli.android.app.tutorial.TutorialActivity;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
-import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -149,10 +147,6 @@ public interface AppComponent {
     void inject(ChallengePickerFragment challengePickerFragment);
 
     void inject(RepeatingQuestActivity repeatingQuestActivity);
-
-    void inject(TimerFragment timerFragment);
-
-    void inject(SubQuestListFragment subQuestListFragment);
 
     void inject(ChallengeActivity challengeActivity);
 

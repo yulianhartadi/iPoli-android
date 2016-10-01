@@ -1,6 +1,5 @@
 package io.ipoli.android.challenge.activities;
 
-import android.animation.ArgbEvaluator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -8,21 +7,26 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.challenge.adapters.PickChallengeAdapter;
+import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.PersonalizeChallengeEvent;
-import io.ipoli.android.challenge.viewmodels.PickChallengeViewModel;
 import io.ipoli.android.quest.data.Category;
 
 /**
@@ -30,6 +34,8 @@ import io.ipoli.android.quest.data.Category;
  * on 9/13/16.
  */
 public class PickChallengeActivity extends BaseActivity {
+
+    public static final String TITLE = "title";
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -43,9 +49,6 @@ public class PickChallengeActivity extends BaseActivity {
     @BindView(R.id.challenge_view_pager)
     HorizontalInfiniteCycleViewPager viewPager;
 
-    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
-    private List<PickChallengeViewModel> challengeViewModels;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,29 +61,33 @@ public class PickChallengeActivity extends BaseActivity {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+            if(IntentUtils.hasExtra(getIntent(), TITLE)) {
+                ab.setTitle(getIntent().getStringExtra(TITLE));
+            }
         }
 
-        challengeViewModels = new ArrayList<>();
-        challengeViewModels.add(new PickChallengeViewModel("Weight Cutter", "Start shedding some weight and feel great", R.drawable.challenge_01, Category.WELLNESS));
-        challengeViewModels.add(new PickChallengeViewModel("Stress-Free Mind", "Be mindful and stay in the flow longer", R.drawable.challenge_02, Category.WELLNESS));
-        challengeViewModels.add(new PickChallengeViewModel("Healthy & Fit", "Keep working out and live healthier life", R.drawable.challenge_03, Category.WELLNESS));
-        challengeViewModels.add(new PickChallengeViewModel("English Jedi", "Advance your English skills", R.drawable.challenge_04, Category.LEARNING));
-        challengeViewModels.add(new PickChallengeViewModel("Programming Ninja", "Learn the fundamentals of computer programming", R.drawable.challenge_05, Category.LEARNING));
-        challengeViewModels.add(new PickChallengeViewModel("Master presenter", "Learn how to create and present effectively", R.drawable.challenge_06, Category.WORK));
-        challengeViewModels.add(new PickChallengeViewModel("Famous writer", "Learn how to become great writer & blogger", R.drawable.challenge_07, Category.WORK));
-        challengeViewModels.add(new PickChallengeViewModel("Friends & Family time", "Connect with your friends and family", R.drawable.challenge_08, Category.PERSONAL));
+        List<PredefinedChallenge> challenges = App.getPredefinedChallenges();
+        setBackgroundColors(challenges.get(0).challenge.getCategoryType());
 
-        setBackgroundColors(challengeViewModels.get(0).getCategory());
-
-        PickChallengeAdapter pickChallengeAdapter = new PickChallengeAdapter(this, challengeViewModels, eventBus);
+        PickChallengeAdapter pickChallengeAdapter = new PickChallengeAdapter(this, challenges, eventBus);
         viewPager.setAdapter(pickChallengeAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
-                setBackgroundColors(challengeViewModels.get(viewPager.getRealItem()).getCategory());
+                setBackgroundColors(challenges.get(viewPager.getRealItem()).challenge.getCategoryType());
             }
         });
+
+        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE));
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_help).setVisible(false);
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        return true;
     }
 
     private void setBackgroundColors(Category category) {
@@ -104,6 +111,8 @@ public class PickChallengeActivity extends BaseActivity {
 
     @Subscribe
     public void onPersonalizeChallenge(PersonalizeChallengeEvent e) {
-        startActivity(new Intent(this, PersonalizeChallengeActivity.class));
+        Intent intent = new Intent(this, PersonalizeChallengeActivity.class);
+        intent.putExtra(Constants.PREDEFINED_CHALLENGE_INDEX, e.index);
+        startActivity(intent);
     }
 }

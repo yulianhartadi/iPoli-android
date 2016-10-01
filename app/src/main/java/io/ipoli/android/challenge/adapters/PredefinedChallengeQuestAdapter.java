@@ -10,12 +10,14 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
+import io.ipoli.android.quest.data.BaseQuest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -63,6 +65,16 @@ public class PredefinedChallengeQuestAdapter extends RecyclerView.Adapter<Predef
     @Override
     public int getItemCount() {
         return viewModels.size();
+    }
+
+    public List<BaseQuest> getSelectedQuests() {
+        List<BaseQuest> quests = new ArrayList<>();
+        for (PredefinedChallengeQuestViewModel vm : viewModels) {
+            if (vm.isSelected()) {
+                quests.add(vm.getQuest());
+            }
+        }
+        return quests;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

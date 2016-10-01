@@ -448,8 +448,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 recur.getDayList().add(WeekDay.FR);
                 recur.getDayList().add(WeekDay.SA);
                 recur.getDayList().add(WeekDay.SU);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
                 recur.setFrequency(Recur.WEEKLY);
+                recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
                 break;
             case WEEKLY:
                 for (Map.Entry<WeekDay, Integer> entry : weekDayToCheckBoxId.entrySet()) {

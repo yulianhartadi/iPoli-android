@@ -130,6 +130,7 @@ public interface Constants {
     double XP_TO_PET_HP_RATIO = 13.2;
 
     int REVIVE_PET_COST = 300;
+    String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

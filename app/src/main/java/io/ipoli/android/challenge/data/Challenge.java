@@ -142,6 +142,11 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @Exclude
+    public void setDifficultyType(Difficulty difficulty) {
+        this.difficulty = difficulty.getValue();
+    }
+
+    @Exclude
     public Date getEndDate() {
         return end != null ? new Date(end) : null;
     }
@@ -195,6 +200,16 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     public String getCategory() {
         return category;
+    }
+
+    @Exclude
+    public void setCategoryType(Category category) {
+        this.category = category.name();
+    }
+
+    @Exclude
+    public Category getCategoryType() {
+        return Category.valueOf(category);
     }
 
     public void setCategory(String category) {

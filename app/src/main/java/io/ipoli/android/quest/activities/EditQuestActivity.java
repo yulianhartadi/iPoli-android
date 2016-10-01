@@ -64,6 +64,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.BaseSuggestionsAdapter;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
@@ -289,7 +290,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 populateEndDate(null);
             }
             categoryView.changeCategory(Quest.getCategory(quest));
-            populateNoteText(quest.getNote());
+            List<Note> notes = quest.getTextNotes();
+            populateNoteText(notes.isEmpty() ? null : notes.get(0).getText());
             subQuestListAdapter.setSubQuests(quest.getSubQuests());
             challengePersistenceService.findById(quest.getChallengeId(), this::populateChallenge);
 
@@ -317,7 +319,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             setFrequencyText(rq.getRecurrence());
             categoryView.changeCategory(RepeatingQuest.getCategory(rq));
-            populateNoteText(rq.getNote());
+            List<Note> notes = rq.getTextNotes();
+            populateNoteText(notes.isEmpty() ? null : notes.get(0).getText());
             subQuestListAdapter.setSubQuests(rq.getSubQuests());
             challengePersistenceService.findById(rq.getChallengeId(), this::populateChallenge);
 
@@ -557,7 +560,20 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
-            q.setNote((String) noteText.getTag());
+
+            List<Note> textNotes = q.getTextNotes();
+            String txt = (String) noteText.getTag();
+
+            if (!StringUtils.isEmpty(txt)) {
+                if (textNotes.isEmpty()) {
+                    q.getNotes().add(new Note(txt));
+                } else {
+                    textNotes.get(0).setText(txt);
+                }
+            } else {
+                q.removeTextNote();
+            }
+
             q.setSubQuests(subQuestListAdapter.getSubQuests());
             eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
             if (q.getEndDate() != null) {
@@ -583,7 +599,20 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setRecurrence((Recurrence) frequencyText.getTag());
             rq.setCategory(categoryView.getSelectedCategory().name());
             rq.setChallengeId((String) challengeValue.getTag());
-            rq.setNote((String) noteText.getTag());
+
+            List<Note> textNotes = rq.getTextNotes();
+            String txt = (String) noteText.getTag();
+
+            if (!StringUtils.isEmpty(txt)) {
+                if (textNotes.isEmpty()) {
+                    rq.getNotes().add(new Note(txt));
+                } else {
+                    textNotes.get(0).setText(txt);
+                }
+            } else {
+                rq.removeTextNote();
+            }
+
             rq.setSubQuests(subQuestListAdapter.getSubQuests());
             eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
             Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
@@ -883,7 +912,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         q.setCategory(categoryView.getSelectedCategory().name());
 
-        q.setNote((String) noteText.getTag());
+        List<Note> notes = new ArrayList<>();
+        String txt = (String) noteText.getTag();
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
+        q.setNotes(notes);
         q.setChallengeId((String) challengeValue.getTag());
         q.setSubQuests(subQuestListAdapter.getSubQuests());
 
@@ -914,7 +948,14 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setRecurrence(recurrence);
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallengeId((String) challengeValue.getTag());
-        rq.setNote((String) noteText.getTag());
+
+        List<Note> notes = new ArrayList<>();
+        String txt = (String) noteText.getTag();
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
+        rq.setNotes(notes);
+
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
@@ -964,9 +1005,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 break;
 
             case GUI_CHANGE:
-                if(s.length() <= 1) {
-                    break;
-                }
                 parsedParts = suggestionsManager.onTextChange(s.toString(), questText.getSelectionStart());
                 colorParsedParts(parsedParts);
                 break;
@@ -1057,5 +1095,4 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
-
 }

@@ -86,7 +86,6 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
         holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
 
         holder.moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-
     }
 
     @Override

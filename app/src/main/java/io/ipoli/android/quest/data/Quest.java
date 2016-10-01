@@ -15,6 +15,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.reminder.data.Reminder;
 
@@ -64,7 +65,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Long coins;
     private Long experience;
 
-    private String note;
+    private List<Note> notes;
 
     private String source;
 
@@ -111,7 +112,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public List<SubQuest> getSubQuests() {
         if (subQuests == null) {
-            return new ArrayList<>();
+            subQuests = new ArrayList<>();
         }
         return subQuests;
     }
@@ -476,11 +477,45 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return Category.valueOf(quest.getCategory());
     }
 
-    public String getNote() {
-        return note;
+    public List<Note> getNotes() {
+        if (notes == null) {
+            notes = new ArrayList<>();
+        }
+        return notes;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
+
+    @Exclude
+    public List<Note> getTextNotes() {
+        List<Note> textNotes = new ArrayList<>();
+        for (Note note : getNotes()) {
+            if (note.getType().equals(Note.Type.TEXT.name())) {
+                textNotes.add(note);
+            }
+        }
+        return textNotes;
+    }
+
+    public void addNote(Note note) {
+        getNotes().add(note);
+    }
+
+    @Exclude
+    public void removeTextNote() {
+        List<Note> txtNotes = getTextNotes();
+        getNotes().removeAll(txtNotes);
+    }
+
+    @Exclude
+    public void addSubQuest(SubQuest subQuest) {
+        getSubQuests().add(subQuest);
+    }
+
+    @Exclude
+    public void removeSubQuest(SubQuest subQuest) {
+        getSubQuests().remove(subQuest);
     }
 }

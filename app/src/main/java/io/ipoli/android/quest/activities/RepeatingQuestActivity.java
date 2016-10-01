@@ -77,9 +77,6 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
-    @BindView(R.id.quest_name)
-    TextView name;
-
     @BindView(R.id.quest_category_image)
     ImageView categoryImage;
 
@@ -122,7 +119,9 @@ public class RepeatingQuestActivity extends BaseActivity {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
+        collapsingToolbarLayout.setTitleEnabled(false);
 
     }
 
@@ -186,7 +185,10 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void displayRepeatingQuest() {
-        name.setText(repeatingQuest.getName());
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(repeatingQuest.getName());
+        }
 
         Category category = RepeatingQuest.getCategory(repeatingQuest);
         long completed = findCompletedForCurrentInterval();
