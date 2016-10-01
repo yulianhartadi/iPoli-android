@@ -2,6 +2,8 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import org.joda.time.LocalDate;
+
 import java.util.Date;
 
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -38,6 +40,7 @@ public class Recurrence extends PersistedObject {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
         setRecurrenceType(RecurrenceType.DAILY);
+        setDtstartDate(DateUtils.toStartOfDay(LocalDate.now()));
         this.timesADay = timesADay;
         this.flexibleCount = 0;
     }

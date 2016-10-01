@@ -12,16 +12,22 @@ public class PredefinedChallengeQuestViewModel {
     private final String name;
     private final BaseQuest quest;
 
+    public PredefinedChallengeQuestViewModel(String name, BaseQuest quest) {
+        this(name, quest, true);
+    }
+
+    public PredefinedChallengeQuestViewModel(BaseQuest quest, boolean isSelected) {
+        this(quest.getName(), quest, isSelected);
+    }
+
     public PredefinedChallengeQuestViewModel(String name, BaseQuest quest, boolean isSelected) {
         this.name = name;
         this.quest = quest;
         this.isSelected = isSelected;
     }
 
-    public PredefinedChallengeQuestViewModel(BaseQuest quest, boolean isSelected) {
-        this.name = quest.getName();
-        this.quest = quest;
-        this.isSelected = isSelected;
+    public PredefinedChallengeQuestViewModel(BaseQuest quest) {
+        this(quest, true);
     }
 
 
