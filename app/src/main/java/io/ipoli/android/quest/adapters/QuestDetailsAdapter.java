@@ -31,6 +31,7 @@ import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.EditNoteRequestEvent;
@@ -134,6 +135,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             NoteLinkViewHolder h = (NoteLinkViewHolder) holder;
             h.button.setText(n.getText());
             h.button.setSupportBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.md_white)));
+            h.button.setOnClickListener(v -> eventBus.post(new OpenNoteEvent(n)));
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
             String text = (String) items.get(position);
@@ -141,7 +143,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (holder.getItemViewType() == ADD_SUB_QUEST_ITEM_VIEW_TYPE) {
             AddSubQuestViewHolder h = (AddSubQuestViewHolder) holder;
             h.addSubQuestView.addSubQuestAddedListener(this);
-            if(isAddSubQuestInEditMode) {
+            if (isAddSubQuestInEditMode) {
                 h.addSubQuestView.setInEditMode();
             }
         } else if (holder.getItemViewType() == EMPTY_NOTE_HINT_VIEW_TYPE) {
@@ -178,7 +180,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         holder.name.setText(sq.getName());
         holder.check.setOnCheckedChangeListener(null);
         holder.check.setChecked(sq.isCompleted());
-        if(sq.isCompleted()) {
+        if (sq.isCompleted()) {
             strike(holder);
         }
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -211,7 +213,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             int result = actionId & EditorInfo.IME_MASK_ACTION;
             if (result == EditorInfo.IME_ACTION_DONE) {
                 String name = holder.name.getText().toString();
-                if(StringUtils.isEmpty(name)) {
+                if (StringUtils.isEmpty(name)) {
                     eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
                 } else {
                     updateSubQuest(sq, holder);
@@ -271,12 +273,12 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        int noteCount = quest.getNotes().size();
-        if (noteCount == 0) {
+        int itemCount = quest.getSubQuests().size() + quest.getNotes().size() + HEADER_COUNT;
+        if (quest.getTextNotes().isEmpty()) {
             // add note hint
-            noteCount++;
+            itemCount++;
         }
-        return quest.getSubQuests().size() + noteCount + HEADER_COUNT;
+        return itemCount;
     }
 
     @Override

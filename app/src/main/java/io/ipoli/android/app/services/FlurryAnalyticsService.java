@@ -58,6 +58,7 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.events.AvatarPickedEvent;
@@ -696,6 +697,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
         log("update_sub_quest_name", EventParams.create()
                 .add("name", e.subQuest.getName())
                 .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onOpenNote(OpenNoteEvent e) {
+        log("open_note", EventParams.create()
+                .add("type", e.note.getType())
+                .add("data", e.note.getData()));
     }
 
     @Subscribe

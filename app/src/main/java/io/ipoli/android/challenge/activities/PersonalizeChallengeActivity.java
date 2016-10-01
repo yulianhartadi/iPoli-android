@@ -109,9 +109,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowTitleEnabled(false);
-            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
-
 
         int index = getIntent().getIntExtra(Constants.PREDEFINED_CHALLENGE_INDEX, 0);
         predefinedChallenge = App.getPredefinedChallenges().get(index);
@@ -238,7 +236,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createProgrammingNinja() {
-        Quest quest1 = makeQuest("Sign up for an account at freeCodeCamp", category);
+        Quest quest1 = makeQuest("Sign up at freeCodeCamp", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(30);
         quest1.addNote(new Note(Note.Type.URL, "Sign up at freeCodeCamp", "https://www.freecodecamp.com/"));
@@ -273,7 +271,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     }
 
     private void createEnglishJedi() {
-        Quest quest1 = makeQuest("Sign up for an account at Duolingo", category);
+        Quest quest1 = makeQuest("Sign up at Duolingo", category);
         Quest.setStartTime(quest1, Time.afterMinutes(15));
         quest1.setDuration(15);
         quest1.addNote(new Note(Note.Type.INTENT, "Sign up at Duolingo", "com.duolingo"));
@@ -373,7 +371,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         RepeatingQuest rq9 = makeRepeatingQuest("Eat a fruit every day", "Eat a fruit", 15, category);
         recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
-        rq8.setRecurrence(recurrence);
+        rq9.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq9.getRawText(), rq9));
     }
 

@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -38,6 +39,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -375,5 +377,26 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Subscribe
     public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvent e) {
         questPersistenceService.save(quest);
+    }
+
+    @Subscribe
+    public void onOpenNote(OpenNoteEvent e) {
+        Note note = e.note;
+        if (note.getNoteType() == Note.Type.URL) {
+            Intent noteLink = new Intent(Intent.ACTION_VIEW, Uri.parse(note.getData()));
+            startActivity(noteLink);
+        } else if (note.getNoteType() == Note.Type.INTENT) {
+            String packageName = note.getData();
+            try {
+                Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+                startActivity(LaunchIntent);
+            } catch (Exception ex) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + packageName)));
+                }
+            }
+        }
     }
 }
