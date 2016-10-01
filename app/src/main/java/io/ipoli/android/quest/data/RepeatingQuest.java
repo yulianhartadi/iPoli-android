@@ -286,4 +286,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public void addNote(Note note) {
         getNotes().add(note);
     }
+
+    @Exclude
+    public void removeTextNote() {
+        List<Note> txtNotes = getTextNotes();
+        getNotes().removeAll(txtNotes);
+
+    }
 }

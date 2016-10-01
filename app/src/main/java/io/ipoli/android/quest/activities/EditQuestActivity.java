@@ -117,6 +117,7 @@ import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 
+import static com.flurry.sdk.lk.q;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -561,14 +562,18 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
             List<Note> textNotes = q.getTextNotes();
-            Note note;
-            if (textNotes.isEmpty()) {
-                note = new Note((String) noteText.getTag());
-                q.getNotes().add(note);
-            } else {
-                note = textNotes.get(0);
-                note.setText((String) noteText.getTag());
+            String txt = (String) noteText.getTag();
+
+            q.removeTextNote();
+
+            if (!StringUtils.isEmpty(txt)) {
+                if (textNotes.isEmpty()) {
+                    q.getNotes().add(new Note(txt));
+                } else {
+                    textNotes.get(0).setText(txt);
+                }
             }
+
             q.setSubQuests(subQuestListAdapter.getSubQuests());
             eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
             if (q.getEndDate() != null) {
@@ -603,6 +608,18 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             } else {
                 note = textNotes.get(0);
                 note.setText((String) noteText.getTag());
+            }
+
+            String txt = (String) noteText.getTag();
+
+            rq.removeTextNote();
+
+            if (!StringUtils.isEmpty(txt)) {
+                if (textNotes.isEmpty()) {
+                    rq.getNotes().add(new Note(txt));
+                } else {
+                    textNotes.get(0).setText(txt);
+                }
             }
 
             rq.setSubQuests(subQuestListAdapter.getSubQuests());
@@ -905,7 +922,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setCategory(categoryView.getSelectedCategory().name());
 
         List<Note> notes = new ArrayList<>();
-        notes.add(new Note((String) noteText.getTag()));
+        String txt = (String) noteText.getTag();
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
         q.setNotes(notes);
         q.setChallengeId((String) challengeValue.getTag());
         q.setSubQuests(subQuestListAdapter.getSubQuests());
@@ -939,7 +959,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setChallengeId((String) challengeValue.getTag());
 
         List<Note> notes = new ArrayList<>();
-        notes.add(new Note((String) noteText.getTag()));
+        String txt = (String) noteText.getTag();
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
         rq.setNotes(notes);
 
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
@@ -1081,5 +1104,4 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
-
 }
