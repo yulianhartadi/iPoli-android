@@ -41,7 +41,7 @@ import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.activities.QuestDetailActivity;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -427,7 +427,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         if (quest.isPlaceholder()) {
             quest = savePlaceholderQuest(quest);
         }
-        Intent i = new Intent(getActivity(), QuestDetailActivity.class);
+        Intent i = new Intent(getActivity(), QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivity(i);
     }
