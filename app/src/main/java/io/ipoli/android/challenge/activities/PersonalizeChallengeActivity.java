@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -538,15 +539,21 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     @OnClick(R.id.accept_challenge)
     public void onAcceptChallenge(View view) {
         eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
+        Toast.makeText(this, R.string.challenge_accepted, Toast.LENGTH_SHORT).show();
         challengePersistenceService.save(predefinedChallenge.challenge, () -> {
+            String challengeId = predefinedChallenge.challenge.getId();
             List<Quest> quests = new ArrayList<>();
             List<RepeatingQuest> repeatingQuests = new ArrayList<>();
             List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
             for (BaseQuest bq : selectedQuests) {
                 if (bq instanceof Quest) {
-                    quests.add((Quest) bq);
+                    Quest q = (Quest) bq;
+                    q.setChallengeId(challengeId);
+                    quests.add(q);
                 } else {
-                    repeatingQuests.add((RepeatingQuest) bq);
+                    RepeatingQuest rq = (RepeatingQuest) bq;
+                    rq.setChallengeId(challengeId);
+                    repeatingQuests.add(rq);
                 }
             }
             questPersistenceService.save(quests, () -> {
