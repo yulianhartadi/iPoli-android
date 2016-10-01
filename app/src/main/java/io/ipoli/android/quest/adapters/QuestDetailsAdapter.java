@@ -236,7 +236,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void updateSubQuest(SubQuest sq, SubQuestViewHolder holder) {
         hideUnderline(holder.name);
         sq.setName(holder.name.getText().toString());
-        eventBus.post(new UpdateSubQuestNameEvent(sq, EventSource.SUBQUESTS));
+        eventBus.post(new UpdateSubQuestNameEvent(sq, EventSource.QUEST));
     }
 
     private void showUnderline(TextInputEditText editText) {
