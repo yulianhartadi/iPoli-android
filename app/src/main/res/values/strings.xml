@@ -338,4 +338,5 @@
     <string name="personalize">Personalize</string>
     <string name="title_activity_personalize_challenge">Accept the Challenge</string>
     <string name="mark_done">MARK DONE</string>
+    <string name="pick_challenge_to_start">Pick a challenge to start with</string>
 </resources>

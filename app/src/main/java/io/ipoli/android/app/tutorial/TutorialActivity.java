@@ -1,6 +1,7 @@
 package io.ipoli.android.app.tutorial;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,22 +24,30 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
+import io.ipoli.android.app.utils.IntentUtils;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 
 public class TutorialActivity extends AppIntro2 {
 
+    public static final String SHOW_PICK_CHALLENGES = "show_pick_challenges";
     @Inject
     Bus eventBus;
 
     private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
+    private boolean showPickChallenges = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(this).inject(this);
+
+        if(IntentUtils.hasExtra(getIntent(), SHOW_PICK_CHALLENGES)) {
+            showPickChallenges = getIntent().getBooleanExtra(SHOW_PICK_CHALLENGES, false);
+        }
 
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -70,7 +79,6 @@ public class TutorialActivity extends AppIntro2 {
         if (syncAndroidCalendarFragment.isSyncCalendarChecked()) {
             checkCalendarForPermission();
         } else {
-            eventBus.post(new TutorialDoneEvent());
             finish();
         }
     }
@@ -81,12 +89,6 @@ public class TutorialActivity extends AppIntro2 {
         super.onBackPressed();
     }
 
-    @Override
-    public void onSkipPressed(Fragment currentFragment) {
-        eventBus.post(new TutorialSkippedEvent());
-        finish();
-    }
-
     private void checkCalendarForPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -94,7 +96,7 @@ public class TutorialActivity extends AppIntro2 {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR},
                     Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
         } else {
-            eventBus.post(new TutorialDoneEvent());
+            eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
             Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -111,9 +113,18 @@ public class TutorialActivity extends AppIntro2 {
                     && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.TUTORIAL));
             }
-            eventBus.post(new TutorialDoneEvent());
+            eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
             finish();
         }
     }
 
+    @Override
+    public void finish() {
+        if(showPickChallenges) {
+            Intent intent = new Intent(this, PickChallengeActivity.class);
+            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+            startActivity(intent);
+        }
+        super.finish();
+    }
 }

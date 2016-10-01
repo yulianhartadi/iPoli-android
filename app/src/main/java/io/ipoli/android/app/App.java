@@ -906,7 +906,19 @@ public class App extends MultiDexApplication {
     public static List<PredefinedChallenge> getPredefinedChallenges() {
         List<PredefinedChallenge> challenges = new ArrayList<>();
 
-        Challenge c = new Challenge("Weight Cutter");
+        Challenge c = new Challenge("Stress-Free Mind");
+        c.setCategoryType(Category.WELLNESS);
+        c.setDifficultyType(Difficulty.HARD);
+        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setReason1("Better present my ideas");
+        c.setReason2("Become more confident");
+        c.setReason3("Explain better");
+        c.setExpectedResult1("Prepare a presentation");
+        c.setExpectedResult2("Present in front of an audience");
+        c.setExpectedResult3("Upload my presentation on the Internet");
+        challenges.add(new PredefinedChallenge(c, "Be mindful and stay in the flow longer", R.drawable.challenge_02, R.drawable.challenge_expanded_02));
+
+        c = new Challenge("Weight Cutter");
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
@@ -918,17 +930,6 @@ public class App extends MultiDexApplication {
         c.setExpectedResult3("Upload my presentation on the Internet");
         challenges.add(new PredefinedChallenge(c, "Start shedding some weight and feel great", R.drawable.challenge_01, R.drawable.challenge_expanded_01));
 
-        c = new Challenge("Stress-Free Mind");
-        c.setCategoryType(Category.WELLNESS);
-        c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
-        c.setReason1("Better present my ideas");
-        c.setReason2("Become more confident");
-        c.setReason3("Explain better");
-        c.setExpectedResult1("Prepare a presentation");
-        c.setExpectedResult2("Present in front of an audience");
-        c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Be mindful and stay in the flow longer", R.drawable.challenge_02, R.drawable.challenge_expanded_02));
 
         c = new Challenge("Healthy & Fit");
         c.setCategoryType(Category.WELLNESS);

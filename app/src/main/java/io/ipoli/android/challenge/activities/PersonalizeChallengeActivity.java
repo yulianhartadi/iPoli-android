@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -128,14 +129,21 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         setBackgroundColors();
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_help).setVisible(false);
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        return true;
+    }
+
     protected void initViewModels(int index) {
         viewModels = new ArrayList<>();
         switch (index) {
             case 0:
-                createWeightCutter();
+                createStressFreeMind();
                 break;
             case 1:
-                createStressFreeMind();
+                createWeightCutter();
                 break;
             case 2:
                 createHealthyAndFit();

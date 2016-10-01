@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.ViewGroup;
 
 import com.gigamole.infinitecycleviewpager.HorizontalInfiniteCycleViewPager;
@@ -20,6 +21,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.challenge.adapters.PickChallengeAdapter;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.PersonalizeChallengeEvent;
@@ -30,6 +32,8 @@ import io.ipoli.android.quest.data.Category;
  * on 9/13/16.
  */
 public class PickChallengeActivity extends BaseActivity {
+
+    public static final String TITLE = "title";
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -55,16 +59,11 @@ public class PickChallengeActivity extends BaseActivity {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+            if(IntentUtils.hasExtra(getIntent(), TITLE)) {
+                ab.setTitle(getIntent().getStringExtra(TITLE));
+            }
         }
-
-//        challengeViewModels.add(new PickChallengeViewModel("Weight Cutter", "Start shedding some weight and feel great", R.drawable.challenge_01, Category.WELLNESS));
-//        challengeViewModels.add(new PickChallengeViewModel("Stress-Free Mind", "Be mindful and stay in the flow longer", R.drawable.challenge_02, Category.WELLNESS));
-//        challengeViewModels.add(new PickChallengeViewModel("Healthy & Fit", "Keep working out and live healthier life", R.drawable.challenge_03, Category.WELLNESS));
-//        challengeViewModels.add(new PickChallengeViewModel("English Jedi", "Advance your English skills", R.drawable.challenge_04, Category.LEARNING));
-//        challengeViewModels.add(new PickChallengeViewModel("Programming Ninja", "Learn the fundamentals of computer programming", R.drawable.challenge_05, Category.LEARNING));
-//        challengeViewModels.add(new PickChallengeViewModel("Master presenter", "Learn how to create and present effectively", R.drawable.challenge_06, Category.WORK));
-//        challengeViewModels.add(new PickChallengeViewModel("Famous writer", "Learn how to become great writer & blogger", R.drawable.challenge_07, Category.WORK));
-//        challengeViewModels.add(new PickChallengeViewModel("Friends & Family time", "Connect with your friends and family", R.drawable.challenge_08, Category.PERSONAL));
 
         List<PredefinedChallenge> challenges = App.getPredefinedChallenges();
         setBackgroundColors(challenges.get(0).challenge.getCategoryType());
@@ -78,6 +77,13 @@ public class PickChallengeActivity extends BaseActivity {
                 setBackgroundColors(challenges.get(viewPager.getRealItem()).challenge.getCategoryType());
             }
         });
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_help).setVisible(false);
+        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+        return true;
     }
 
     private void setBackgroundColors(Category category) {
