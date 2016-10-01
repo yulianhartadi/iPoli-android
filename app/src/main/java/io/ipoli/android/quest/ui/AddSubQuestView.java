@@ -8,8 +8,8 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,6 +23,7 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 
 /**
@@ -36,6 +37,9 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     public interface OnSubQuestAddedListener {
         void onSubQuestAdded(String name);
     }
+
+    @BindView(R.id.add_sub_quest_container)
+    ViewGroup container;
 
     @BindView(R.id.add_sub_quest)
     TextInputEditText editText;
@@ -75,6 +79,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         view.getBackground().setColorFilter(ContextCompat.getColor(getContext(), android.R.color.transparent), PorterDuff.Mode.SRC_IN);
     }
 
+    public void setInEditMode() {
+        editText.requestFocus();
+    }
+
     @Override
     public void onFocusChange(View view, boolean isFocused) {
         if (editText == null) {
@@ -98,6 +106,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     private void setAddSubQuestInViewMode() {
         editText.setText(getContext().getString(R.string.add_sub_quest));
         editText.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        hideUnderline(editText);
+        KeyboardUtils.hideKeyboard(getContext(), editText);
+        container.requestFocus();
+        editText.clearFocus();
         clearAddSubQuest.setVisibility(View.INVISIBLE);
     }
 
@@ -109,9 +121,6 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
 
     @OnClick(R.id.add_sub_quest_clear)
     public void onClearAddSubQuestClick(View v) {
-        hideUnderline(editText);
-        hideKeyboard(editText);
-        editText.clearFocus();
         setAddSubQuestInViewMode();
     }
 
@@ -122,7 +131,6 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
             for (OnSubQuestAddedListener l : subQuestAddedListeners) {
                 l.onSubQuestAdded(editText.getText().toString());
             }
-            setAddSubQuestInEditMode();
             return true;
         } else {
             return false;
@@ -141,10 +149,5 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     protected void onDetachedFromWindow() {
         unbinder.unbind();
         super.onDetachedFromWindow();
-    }
-
-    private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

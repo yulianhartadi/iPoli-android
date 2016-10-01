@@ -272,6 +272,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return !scheduledPeriodEndDates.containsKey(String.valueOf(periodEnd.getTime()));
     }
 
+    @Exclude
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {

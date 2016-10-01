@@ -46,6 +46,11 @@ import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.EditNoteRequestEvent;
 import io.ipoli.android.quest.events.StartQuestTapEvent;
 import io.ipoli.android.quest.events.StopQuestTapEvent;
+import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
+import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
@@ -95,6 +100,8 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
 
     private boolean isTimerRunning;
     private int elapsedSeconds;
+
+    private boolean isAddSubQuestInEditMode = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -167,8 +174,9 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
                 resumeTimer();
                 timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
             }
-            adapter = new QuestDetailsAdapter(this, quest, eventBus);
+            adapter = new QuestDetailsAdapter(this, quest, isAddSubQuestInEditMode, eventBus);
             details.setAdapter(adapter);
+            isAddSubQuestInEditMode = false;
         });
     }
 
@@ -315,5 +323,33 @@ public class QuestDetailActivity extends BaseActivity implements Chronometer.OnC
             long defaultDurationSeconds = TimeUnit.MINUTES.toSeconds(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
             return elapsedSeconds % defaultDurationSeconds;
         }
+    }
+
+    @Subscribe
+    public void onNewSubQuestEvent(NewSubQuestEvent e) {
+        quest.addSubQuest(e.subQuest);
+        isAddSubQuestInEditMode = true;
+        questPersistenceService.save(quest);
+    }
+
+    @Subscribe
+    public void onUpdateSubQuestEvent(UpdateSubQuestNameEvent e) {
+        questPersistenceService.save(quest);
+    }
+
+    @Subscribe
+    public void onDeleteSubQuestEvent(DeleteSubQuestEvent e) {
+        quest.removeSubQuest(e.subQuest);
+        questPersistenceService.save(quest);
+    }
+
+    @Subscribe
+    public void onCompleteSubQuest(CompleteSubQuestEvent e) {
+        questPersistenceService.save(quest);
+    }
+
+    @Subscribe
+    public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvent e) {
+        questPersistenceService.save(quest);
     }
 }

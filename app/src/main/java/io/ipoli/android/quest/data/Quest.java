@@ -112,7 +112,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public List<SubQuest> getSubQuests() {
         if (subQuests == null) {
-            return new ArrayList<>();
+            subQuests = new ArrayList<>();
         }
         return subQuests;
     }
@@ -488,6 +488,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.notes = notes;
     }
 
+    @Exclude
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {
@@ -506,5 +507,15 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
+    }
+
+    @Exclude
+    public void addSubQuest(SubQuest subQuest) {
+        getSubQuests().add(subQuest);
+    }
+
+    @Exclude
+    public void removeSubQuest(SubQuest subQuest) {
+        getSubQuests().remove(subQuest);
     }
 }
