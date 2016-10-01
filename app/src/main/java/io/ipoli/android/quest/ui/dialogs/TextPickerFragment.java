@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 
 /**
@@ -78,10 +79,11 @@ public class TextPickerFragment extends DialogFragment {
                 .setView(view)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                    KeyboardUtils.hideKeyboard(getActivity());
                     textPickedListener.onTextPicked(noteText.getText().toString());
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
-
+                    KeyboardUtils.hideKeyboard(getActivity());
                 });
         return builder.create();
     }

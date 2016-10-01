@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -13,6 +12,7 @@ import java.util.Locale;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -25,15 +25,13 @@ public class RepeatingQuestViewModel {
     private final RepeatingQuest repeatingQuest;
     private final long totalCount;
     private final int completedCount;
-    private final Recur recur;
     private final java.util.Date nextDate;
     private final int timesADay;
 
-    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, long totalCount, int completedCount, Recur recur, java.util.Date nextDate) {
+    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, long totalCount, int completedCount, java.util.Date nextDate) {
         this.repeatingQuest = repeatingQuest;
         this.totalCount = totalCount;
         this.completedCount = completedCount;
-        this.recur = recur;
         this.nextDate = nextDate;
         this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
     }
@@ -66,7 +64,7 @@ public class RepeatingQuestViewModel {
 
     public String getNextText() {
         String nextText = "";
-        if (recur == null || nextDate == null) {
+        if (nextDate == null) {
             nextText += "Unscheduled";
         } else {
             if (DateUtils.isTodayUTC(nextDate)) {
@@ -98,9 +96,6 @@ public class RepeatingQuestViewModel {
     }
 
     public String getRepeatText() {
-        if (recur == null) {
-            return "";
-        }
 
         int remainingCount = getRemainingDailyCount();
 
@@ -108,7 +103,8 @@ public class RepeatingQuestViewModel {
             return "Done";
         }
 
-        if (recur.getFrequency().equals(Recur.MONTHLY) && !repeatingQuest.isFlexible()) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY && !repeatingQuest.isFlexible()) {
             return remainingCount + " more this month";
         }
 

@@ -14,9 +14,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,28 +116,22 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
     }
 
     private void createViewModel(RepeatingQuest rq, ViewModelListener listener) {
-        try {
-            Recurrence recurrence = rq.getRecurrence();
-            Recur recur = new Recur(recurrence.getRrule());
+        Recurrence recurrence = rq.getRecurrence();
 
-            LocalDate from, to;
-            if (recur.getFrequency().equals(Recur.MONTHLY) && !rq.isFlexible()) {
-                from = LocalDate.now().dayOfMonth().withMinimumValue();
-                to = LocalDate.now().dayOfMonth().withMaximumValue();
-            } else {
-                from = LocalDate.now().dayOfWeek().withMinimumValue();
-                to = LocalDate.now().dayOfWeek().withMaximumValue();
-            }
-
-            questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount ->
-                    questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount ->
-                            questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
-                                listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), recur, nextDate));
-                            })));
-
-        } catch (ParseException e) {
-            listener.onViewModelCreated(null);
+        LocalDate from, to;
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY && !rq.isFlexible()) {
+            from = LocalDate.now().dayOfMonth().withMinimumValue();
+            to = LocalDate.now().dayOfMonth().withMaximumValue();
+        } else {
+            from = LocalDate.now().dayOfWeek().withMinimumValue();
+            to = LocalDate.now().dayOfWeek().withMaximumValue();
         }
+
+        questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount ->
+            questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount ->
+                questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
+                    listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), nextDate));
+        })));
     }
 
     @OnClick(R.id.add_repeating_quest)
