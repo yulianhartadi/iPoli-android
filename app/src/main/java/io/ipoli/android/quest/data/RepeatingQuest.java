@@ -195,7 +195,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public List<Note> getNotes() {
         if (notes == null) {
-            return new ArrayList<>();
+            notes = new ArrayList<>();
         }
         return notes;
     }
@@ -285,5 +285,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void addNote(Note note) {
         getNotes().add(note);
+    }
+
+    @Exclude
+    public void removeTextNote() {
+        List<Note> txtNotes = getTextNotes();
+        getNotes().removeAll(txtNotes);
+
     }
 }
