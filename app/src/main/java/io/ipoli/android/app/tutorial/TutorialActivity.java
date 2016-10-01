@@ -46,7 +46,7 @@ import rx.subjects.BehaviorSubject;
 
 public class TutorialActivity extends AppIntro2 {
 
-    private static final int SYNC_CALENDAR_SLIDE_INDEX = 4;
+    private static final int SYNC_CALENDAR_SLIDE_INDEX = 3;
 
     @Inject
     Bus eventBus;
