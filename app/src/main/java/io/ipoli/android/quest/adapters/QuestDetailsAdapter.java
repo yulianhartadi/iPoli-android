@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Quest;
@@ -166,7 +167,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.delete_sub_quest:
-                        eventBus.post(new DeleteSubQuestEvent(sq, EventSource.SUBQUESTS));
+                        eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
                         return true;
                 }
                 return false;
@@ -209,7 +210,12 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         holder.name.setOnEditorActionListener((v, actionId, event) -> {
             int result = actionId & EditorInfo.IME_MASK_ACTION;
             if (result == EditorInfo.IME_ACTION_DONE) {
-                updateSubQuest(sq, holder);
+                String name = holder.name.getText().toString();
+                if(StringUtils.isEmpty(name)) {
+                    eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
+                } else {
+                    updateSubQuest(sq, holder);
+                }
                 return true;
             } else {
                 return false;

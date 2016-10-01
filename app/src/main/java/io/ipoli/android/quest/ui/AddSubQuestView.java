@@ -128,8 +128,13 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
-            for (OnSubQuestAddedListener l : subQuestAddedListeners) {
-                l.onSubQuestAdded(editText.getText().toString());
+            String name = editText.getText().toString();
+            if(StringUtils.isEmpty(name)) {
+                setAddSubQuestInViewMode();
+            } else {
+                for (OnSubQuestAddedListener l : subQuestAddedListeners) {
+                    l.onSubQuestAdded(name);
+                }
             }
             return true;
         } else {
