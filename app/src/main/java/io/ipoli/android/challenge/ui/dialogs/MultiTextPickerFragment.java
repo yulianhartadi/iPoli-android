@@ -21,6 +21,9 @@ import java.util.List;
 import butterknife.BindView;
 import io.ipoli.android.R;
 
+import static io.ipoli.android.app.utils.KeyboardUtils.hideKeyboard;
+import static io.ipoli.android.app.utils.KeyboardUtils.showKeyboard;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/17/16.
@@ -89,6 +92,7 @@ public class MultiTextPickerFragment extends DialogFragment {
                 .setView(view)
                 .setTitle(title)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                    hideKeyboard(getDialog());
                     List<String> texts = new ArrayList<>();
                     for (TextInputEditText textView : textViews) {
                         texts.add(textView.getText().toString());
@@ -96,9 +100,15 @@ public class MultiTextPickerFragment extends DialogFragment {
                     textPickedListener.onTextPicked(texts);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
-
+                    hideKeyboard(getDialog());
                 });
         return builder.create();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        showKeyboard(getDialog());
+        super.onActivityCreated(savedInstanceState);
     }
 
     public void show(FragmentManager fragmentManager) {

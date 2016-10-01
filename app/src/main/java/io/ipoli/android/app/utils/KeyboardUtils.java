@@ -1,6 +1,7 @@
 package io.ipoli.android.app.utils;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,6 +28,14 @@ public class KeyboardUtils {
 
     public static void showKeyboard(Activity activity) {
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    public static void showKeyboard(Dialog dialog) {
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    public static void hideKeyboard(Dialog dialog) {
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     public static void showKeyboard(Context context) {
