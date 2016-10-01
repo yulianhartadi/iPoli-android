@@ -46,11 +46,13 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
+import io.ipoli.android.challenge.events.ShowPersonalizeChallengeEvent;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
@@ -755,6 +757,17 @@ public class FlurryAnalyticsService implements AnalyticsService {
     public void onStartAppWithNoInternet(StartAppWithNoInternetEvent e) {
         log("start_app_with_no_network_connection");
     }
+
+    @Subscribe
+    public void onPersonalizeChallenge(ShowPersonalizeChallengeEvent e) {
+        log("personalize_challenge", EventParams.of("name", e.name));
+    }
+
+    @Subscribe
+    public void onAcceptChallenge(AcceptChallengeEvent e) {
+        log("accept_challenge", EventParams.of("name", e.name));
+    }
+
 
     private FlurryEventRecordStatus log(String eventName) {
         return FlurryAgent.logEvent(eventName);

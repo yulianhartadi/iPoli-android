@@ -21,6 +21,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.challenge.adapters.PickChallengeAdapter;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -77,6 +79,8 @@ public class PickChallengeActivity extends BaseActivity {
                 setBackgroundColors(challenges.get(viewPager.getRealItem()).challenge.getCategoryType());
             }
         });
+
+        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE));
     }
 
     @Override

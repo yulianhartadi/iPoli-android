@@ -35,6 +35,8 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
+import io.ipoli.android.challenge.events.AcceptChallengeEvent;
+import io.ipoli.android.challenge.events.ShowPersonalizeChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
 import io.ipoli.android.note.data.Note;
@@ -127,6 +129,8 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         questList.setAdapter(predefinedChallengeQuestAdapter);
 
         setBackgroundColors();
+
+        eventBus.post(new ShowPersonalizeChallengeEvent(predefinedChallenge.challenge.getName()));
     }
 
     @Override
@@ -533,6 +537,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @OnClick(R.id.accept_challenge)
     public void onAcceptChallenge(View view) {
+        eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
         challengePersistenceService.save(predefinedChallenge.challenge, () -> {
             List<Quest> quests = new ArrayList<>();
             List<RepeatingQuest> repeatingQuests = new ArrayList<>();
