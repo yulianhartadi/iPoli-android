@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import io.ipoli.android.quest.events.subquests.CompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
+import io.ipoli.android.quest.ui.AddSubQuestView;
 
 import static io.ipoli.android.quest.adapters.OverviewAdapter.QUEST_ITEM_VIEW_TYPE;
 
@@ -70,7 +72,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         for (SubQuest sq : quest.getSubQuests()) {
             items.add(sq);
         }
-        items.add("Add sub-quest");
+        items.add(new AddSubQuestButton(context.getString(R.string.add_sub_quest)));
         items.add("Notes");
         if (quest.getTextNotes().isEmpty()) {
             items.add(new EmptyNoteHint("Tap to add a note"));
@@ -98,7 +100,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 return new NoteLinkViewHolder(inflater.inflate(R.layout.note_link_list_item, parent, false));
 
             case ADD_SUB_QUEST_ITEM_VIEW_TYPE:
-                return new AddSubQuestViewHolder(inflater.inflate(R.layout.layout_add_sub_quest, parent, false));
+                return new AddSubQuestViewHolder(inflater.inflate(R.layout.add_sub_quest_item, parent, false));
 
             case EMPTY_NOTE_HINT_VIEW_TYPE:
                 return new EmptyNoteViewHolder(inflater.inflate(R.layout.note_text_list_item, parent, false));
@@ -125,13 +127,9 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             String text = (String) items.get(position);
             header.setText(text);
         } else if (holder.getItemViewType() == ADD_SUB_QUEST_ITEM_VIEW_TYPE) {
-            AddSubQuestViewHolder h = (AddSubQuestViewHolder) holder;
-            h.addSubQuestContainer.setOnClickListener(v -> {
-                h.addSubQuest.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_87));
-                h.addSubQuest.setText("");
-                showUnderline(h.addSubQuest);
-                h.addSubQuest.requestFocus();
-            });
+           ((AddSubQuestViewHolder) holder).addSubQuestView.addSubQuestAddedListener(name -> {
+               Log.d("AAAAA", name);
+           });
         } else if (holder.getItemViewType() == EMPTY_NOTE_HINT_VIEW_TYPE) {
             EmptyNoteViewHolder h = (EmptyNoteViewHolder) holder;
             EmptyNoteHint hint = (EmptyNoteHint) items.get(holder.getAdapterPosition());
@@ -217,10 +215,10 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public int getItemViewType(int position) {
         Object item = items.get(position);
         if (item instanceof String) {
-            if (item.equals("Add sub-quest")) {
-                return ADD_SUB_QUEST_ITEM_VIEW_TYPE;
-            }
             return HEADER_ITEM_VIEW_TYPE;
+        }
+        if(item instanceof AddSubQuestButton) {
+            return ADD_SUB_QUEST_ITEM_VIEW_TYPE;
         }
         if (item instanceof SubQuest) {
             return SUB_QUEST_ITEM_VIEW_TYPE;
@@ -302,11 +300,8 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     static class AddSubQuestViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.add_sub_quest_container)
-        ViewGroup addSubQuestContainer;
-
-        @BindView(R.id.add_sub_quest)
-        TextInputEditText addSubQuest;
+        @BindView(R.id.add_sub_quest_layout)
+        AddSubQuestView addSubQuestView;
 
         AddSubQuestViewHolder(View v) {
             super(v);
@@ -319,6 +314,14 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public EmptyNoteHint(String textHint) {
             this.textHint = textHint;
+        }
+    }
+
+    private class AddSubQuestButton {
+        public final String text;
+
+        public AddSubQuestButton(String text) {
+            this.text = text;
         }
     }
 }
