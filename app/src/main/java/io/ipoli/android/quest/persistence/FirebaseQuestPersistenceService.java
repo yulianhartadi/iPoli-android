@@ -108,7 +108,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
-        listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
+        listenForSingleCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
                         && quest.getCompletedAtDate().getTime() >= toStartOfDayUTC(fromDate).getTime()
                         && quest.getCompletedAtDate().getTime() <= toStartOfDayUTC(toDate).getTime()
                 )

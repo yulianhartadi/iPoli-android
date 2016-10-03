@@ -63,6 +63,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
+    private RepeatingQuestListAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -148,13 +149,13 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         }
         List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
+            viewModels.add(new RepeatingQuestViewModel(rq));
+        }
+        adapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
+        questList.setAdapter(adapter);
+        for (RepeatingQuest rq : quests) {
             createViewModel(rq, vm -> {
-                viewModels.add(vm);
-
-                if (viewModels.size() == quests.size()) {
-                    RepeatingQuestListAdapter rewardListAdapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
-                    questList.setAdapter(rewardListAdapter);
-                }
+                adapter.updateViewModel(vm);
             });
         }
     }

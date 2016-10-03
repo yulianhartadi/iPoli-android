@@ -136,6 +136,21 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         notifyItemInserted(viewModels.size() - 1);
     }
 
+    public void updateViewModel(RepeatingQuestViewModel viewModel) {
+        int index = -1;
+        for(int i = 0; i< viewModels.size(); i++) {
+            if(viewModels.get(i).getRepeatingQuest().getId().equals(viewModel.getRepeatingQuest().getId())) {
+                index = i;
+                break;
+            }
+        }
+
+        if(index > -1) {
+            viewModels.set(index, viewModel);
+            notifyItemChanged(index);
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)

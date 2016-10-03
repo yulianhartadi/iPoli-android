@@ -23,10 +23,18 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class RepeatingQuestViewModel {
 
     private final RepeatingQuest repeatingQuest;
-    private final long totalCount;
-    private final int completedCount;
-    private final java.util.Date nextDate;
-    private final int timesADay;
+    private long totalCount;
+    private int completedCount;
+    private java.util.Date nextDate;
+    private int timesADay;
+
+    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest) {
+        this.repeatingQuest = repeatingQuest;
+        this.totalCount = 0;
+        this.completedCount = 0;
+        this.nextDate = null;
+        this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
+    }
 
     public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, long totalCount, int completedCount, java.util.Date nextDate) {
         this.repeatingQuest = repeatingQuest;
