@@ -426,7 +426,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(2);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -437,7 +437,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(3);
         recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -456,7 +456,6 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(6);
         recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
