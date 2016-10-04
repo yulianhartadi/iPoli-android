@@ -108,7 +108,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
-        listenForSingleCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
+        listenForCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
                         && quest.getCompletedAtDate().getTime() >= toStartOfDayUTC(fromDate).getTime()
                         && quest.getCompletedAtDate().getTime() <= toStartOfDayUTC(toDate).getTime()
                 )
@@ -211,7 +211,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuest.getId());
-        listenForSingleCountChange(query, listener, data -> data
+        listenForCountChange(query, listener, data -> data
                 .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
     }
 
@@ -284,7 +284,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuest/id")
                 .equalTo(repeatingQuest.getId());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        listenForQuery(query, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
@@ -314,7 +314,39 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        }, listener);
+
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
+//                Date startDate = toStartOfDayUTC(LocalDate.now());
+//                Date nextDate = null;
+//                for (Quest q : quests) {
+//                    if (q.getEndDate() == null) {
+//                        continue;
+//                    }
+//                    if (q.getEndDate().before(startDate)) {
+//                        continue;
+//                    }
+//                    if (Quest.isCompleted(q)) {
+//                        continue;
+//                    }
+//                    if (nextDate == null) {
+//                        nextDate = q.getEndDate();
+//                    }
+//                    if (q.getEndDate().before(nextDate)) {
+//                        nextDate = q.getEndDate();
+//                    }
+//                }
+//                listener.onDataChanged(nextDate);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     @Override

@@ -39,6 +39,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     private final Map<ValueEventListener, Query> valueListeners;
     protected final Map<ChildEventListener, Query> childListeners;
     private final Map<OnDataChangedListener<?>, ValueEventListener> listenerToValueListener;
+    private DatabaseReference playerRef;
 
     public BaseFirebasePersistenceService(Bus eventBus, Gson gson) {
         this.eventBus = eventBus;
@@ -47,6 +48,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
         this.listenerToValueListener = new HashMap<>();
+        this.playerRef = null;
     }
 
     @Override
@@ -148,11 +150,13 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             Query query = valueListeners.get(valueEventListener);
             query.removeEventListener(valueEventListener);
         }
+        valueListeners.clear();
 
         for (ChildEventListener childEventListener : childListeners.keySet()) {
             Query query = childListeners.get(childEventListener);
             query.removeEventListener(childEventListener);
         }
+        childListeners.clear();
     }
 
     @Override
@@ -164,6 +168,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         Query query = valueListeners.get(valueEventListener);
         query.removeEventListener(valueEventListener);
 
+        valueListeners.remove(valueEventListener);
+        listenerToValueListener.remove(listener);
     }
 
     @Override
@@ -208,7 +214,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
-        return database.getReference(Constants.API_VERSION).child("players").child(App.getPlayerId());
+        if(playerRef == null) {
+            playerRef = database.getReference(Constants.API_VERSION).child("players").child(App.getPlayerId());
+            playerRef.keepSynced(true);
+        }
+        return playerRef;
     }
 
     protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener) {

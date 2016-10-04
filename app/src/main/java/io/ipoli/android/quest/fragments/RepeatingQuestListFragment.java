@@ -140,6 +140,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
+
     @Override
     public void onDataChanged(List<RepeatingQuest> quests) {
         if (quests.isEmpty()) {

@@ -40,7 +40,7 @@ public class Recurrence extends PersistedObject {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
         setRecurrenceType(RecurrenceType.DAILY);
-        setDtstartDate(DateUtils.toStartOfDay(LocalDate.now()));
+        setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
         this.timesADay = timesADay;
         this.flexibleCount = 0;
     }

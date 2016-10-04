@@ -53,7 +53,7 @@
             android:id="@+id/quest_details_loader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Loading..." />
+            android:text="@string/loading" />
 
         <LinearLayout
             android:id="@+id/quest_repeating_quest_indicators_container"
