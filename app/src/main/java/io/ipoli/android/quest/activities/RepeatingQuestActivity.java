@@ -93,7 +93,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     TextView totalTimeSpent;
 
     @BindView(R.id.quest_streak)
-    TextView streak;
+    TextView streakText;
 
     private RepeatingQuest repeatingQuest;
 
@@ -179,11 +179,6 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
     }
 
-    private long findCompletedForCurrentInterval() {
-        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
-        return getCompletedForRange(interval.first, interval.second);
-    }
-
     private void displayRepeatingQuest() {
 
         if (getSupportActionBar() != null) {
@@ -191,13 +186,14 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
 
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-        long completed = findCompletedForCurrentInterval();
-        showFrequencyProgress(category, completed);
+        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), interval.first, interval.second, count -> {
+            showFrequencyProgress(category, count);
+            displaySummaryStats(category);
+            colorLayout(category);
+            setupChart();
+        });
 
-        displaySummaryStats(category);
-
-        colorLayout(category);
-        setupChart();
     }
 
     private void displaySummaryStats(Category category) {
@@ -218,7 +214,7 @@ public class RepeatingQuestActivity extends BaseActivity {
                     nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
                 });
 
-                streak.setText(String.valueOf(getCurrentStreak()));
+                setCurrentStreak();
             });
         });
     }
@@ -313,19 +309,23 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(monthPair.first, monthPair.second), i));
+            int finalI = i;
+            questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), monthPair.first, monthPair.second, count -> {
+                yValues.add(new BarEntry(count, finalI));
+                if (yValues.size() == Constants.DEFAULT_BAR_COUNT) {
+                    BarDataSet dataSet = new BarDataSet(yValues, "");
+                    dataSet.setColors(getColors());
+                    dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+
+                    List<String> xValues = new ArrayList<>();
+                    xValues.add(getMonthText(monthPairs.get(0).first));
+                    xValues.add(getMonthText(monthPairs.get(1).first));
+                    xValues.add(getMonthText(monthPairs.get(2).first));
+                    xValues.add("this month");
+                    setHistoryData(dataSet, xValues);
+                }
+            });
         }
-
-        BarDataSet dataSet = new BarDataSet(yValues, "");
-        dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
-
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getMonthText(monthPairs.get(0).first));
-        xValues.add(getMonthText(monthPairs.get(1).first));
-        xValues.add(getMonthText(monthPairs.get(2).first));
-        xValues.add("this month");
-        setHistoryData(dataSet, xValues);
     }
 
     private String getMonthText(LocalDate date) {
@@ -337,19 +337,24 @@ public class RepeatingQuestActivity extends BaseActivity {
         List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            yValues.add(new BarEntry(getCompletedForRange(weekPair.first, weekPair.second), i));
+            int finalI = i;
+            questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), weekPair.first, weekPair.second, count -> {
+                yValues.add(new BarEntry(count, finalI));
+                if (yValues.size() == Constants.DEFAULT_BAR_COUNT) {
+                    BarDataSet dataSet = new BarDataSet(yValues, "");
+                    dataSet.setColors(getColors());
+                    dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+
+                    List<String> xValues = new ArrayList<>();
+                    xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
+                    xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
+                    xValues.add("last week");
+                    xValues.add("this week");
+                    setHistoryData(dataSet, xValues);
+                }
+            });
         }
 
-        BarDataSet dataSet = new BarDataSet(yValues, "");
-        dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
-
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
-        xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
-        xValues.add("last week");
-        xValues.add("this week");
-        setHistoryData(dataSet, xValues);
     }
 
     @NonNull
@@ -434,53 +439,53 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
     }
 
-    private long getCurrentStreak() {
+    private void setCurrentStreak() {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            return getMonthlyStreak();
+            getMonthlyStreak(streak -> streakText.setText(String.valueOf(streak)));
+        } else {
+            getWeeklyStreak(streak -> streakText.setText(String.valueOf(streak)));
         }
-        return getWeeklyStreak();
+
     }
 
-    private long getMonthlyStreak() {
+    private void getMonthlyStreak(StreakListener streakListener) {
         LocalDate monthStart = LocalDate.now().dayOfMonth().withMinimumValue();
         LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-        long streak = getCompletedForRange(monthStart, monthEnd);
-        int frequency = getFrequency();
-        while (true) {
-            monthStart = monthStart.minusMonths(1);
-            monthEnd = monthStart.dayOfMonth().withMaximumValue();
-            long completed = getCompletedForRange(monthStart, monthEnd);
-            if (completed < frequency) {
-                break;
-            }
-            streak += completed;
-        }
-        return streak;
+        countMonthlyStreak(monthStart, monthEnd, 0, streakListener);
     }
 
-    private long getWeeklyStreak() {
+    private void getWeeklyStreak(StreakListener streakListener) {
         LocalDate weekStart = LocalDate.now().dayOfWeek().withMinimumValue();
         LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-        long streak = getCompletedForRange(weekStart, weekEnd);
-        int frequency = getFrequency();
-        while (true) {
-            weekStart = weekStart.minusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            long completed = getCompletedForRange(weekStart, weekEnd);
-            if (completed < frequency) {
-                break;
-            }
-            streak += completed;
-        }
-        return streak;
+        countWeeklyStreak(weekStart, weekEnd, 0, streakListener);
     }
 
-    private long getCompletedForRange(LocalDate start, LocalDate end) {
+    private void countMonthlyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
         questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
-
+            if (count < getFrequency()) {
+                listener.onStreakCounted(streak);
+            } else {
+                LocalDate monthStart = start.minusMonths(1);
+                LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+                countMonthlyStreak(monthStart, monthEnd, streak + count, listener);
+            }
         });
-        return 0;
     }
 
+    private void countWeeklyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
+        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
+            if (count < getFrequency()) {
+                listener.onStreakCounted(streak);
+            } else {
+                LocalDate weekStart = start.minusWeeks(1);
+                LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+                countWeeklyStreak(weekStart, weekEnd, streak + count, listener);
+            }
+        });
+    }
+
+    interface StreakListener {
+        void onStreakCounted(long streak);
+    }
 }
