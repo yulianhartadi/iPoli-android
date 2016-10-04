@@ -30,8 +30,8 @@ public class RepeatingQuestViewModel {
 
     public RepeatingQuestViewModel(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
-        this.totalCount = 0;
-        this.completedCount = 0;
+        this.totalCount = -1;
+        this.completedCount = -1;
         this.nextDate = null;
         this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
     }
@@ -123,4 +123,9 @@ public class RepeatingQuestViewModel {
     public RepeatingQuest getRepeatingQuest() {
         return repeatingQuest;
     }
+
+    public boolean isLoaded() {
+        return totalCount >= 0;
+    }
+
 }

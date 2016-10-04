@@ -87,6 +87,13 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
 
+        if(!vm.isLoaded()) {
+            showLoading(questHolder);
+            return;
+        }
+
+        hideLoading(questHolder);
+
         questHolder.nextDateTime.setText(vm.getNextText());
 
         questHolder.repeatFrequency.setText(vm.getRepeatText());
@@ -116,20 +123,23 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
+    private void hideLoading(ViewHolder questHolder) {
+        questHolder.indicatorsContainer.setVisibility(View.VISIBLE);
+        questHolder.nextDateTime.setVisibility(View.VISIBLE);
+        questHolder.loader.setVisibility(View.GONE);
+    }
+
+    private void showLoading(ViewHolder questHolder) {
+        questHolder.indicatorsContainer.setVisibility(View.GONE);
+        questHolder.nextDateTime.setVisibility(View.GONE);
+        questHolder.loader.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public int getItemCount() {
         return viewModels.size();
     }
 
-    public void updateQuests(List<RepeatingQuestViewModel> newViewModels) {
-        viewModels = newViewModels;
-        notifyDataSetChanged();
-    }
-
-    public void clear() {
-        viewModels.clear();
-        notifyDataSetChanged();
-    }
 
     public void add(RepeatingQuestViewModel viewModel) {
         viewModels.add(viewModel);
@@ -161,6 +171,12 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;
+
+        @BindView(R.id.quest_details_loader)
+        public TextView loader;
+
+        @BindView(R.id.quest_repeating_quest_indicators_container)
+        public ViewGroup indicatorsContainer;
 
         @BindView(R.id.quest_progress_container)
         public ViewGroup progressContainer;

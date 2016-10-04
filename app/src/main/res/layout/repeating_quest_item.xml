@@ -49,9 +49,16 @@
             android:textColor="@color/md_dark_text_87"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/quest_details_loader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..." />
+
         <LinearLayout
             android:id="@+id/quest_repeating_quest_indicators_container"
             android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -76,6 +83,7 @@
         </LinearLayout>
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/quest_next_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
