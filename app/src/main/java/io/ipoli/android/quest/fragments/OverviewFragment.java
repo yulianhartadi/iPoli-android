@@ -192,7 +192,13 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
                 if (lq.getEndDate().after(rq.getEndDate())) {
                     return 1;
                 }
-                return lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute() ? 1 : -1;
+                if(lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
+                    return 1;
+                }
+                if(lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
+                    return -1;
+                }
+                return 0;
             }
         });
         overviewAdapter.updateQuests(viewModels);
