@@ -1,9 +1,8 @@
 package io.ipoli.android.app;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.MenuItem;
-
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import io.ipoli.android.R;
 
@@ -11,7 +10,7 @@ import io.ipoli.android.R;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/1/16.
  */
-public abstract class BaseFragment extends RxFragment {
+public abstract class BaseFragment extends Fragment {
 
     protected abstract boolean useOptionsMenu();
 

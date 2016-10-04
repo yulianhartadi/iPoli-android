@@ -3,12 +3,12 @@ package io.ipoli.android.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import org.joda.time.LocalDate;
 
@@ -30,7 +30,7 @@ import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
  */
-public class BaseActivity extends RxAppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     @Inject
     protected Bus eventBus;
