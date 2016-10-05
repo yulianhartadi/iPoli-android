@@ -3,44 +3,54 @@
     android:id="@+id/widget_agenda_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_white"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/widget_agenda_title"
-        style="@style/TextAppearance.AppCompat.Medium"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:background="@color/colorPrimary"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:maxLines="1"
-        android:paddingBottom="4dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:paddingTop="4dp"
-        android:textColor="@color/md_white" />
+        android:layout_height="48dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/widget_agenda_title"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/md_light_text_100" />
+
+        <ImageButton
+            android:id="@+id/widget_agenda_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:src="@drawable/ic_add_white_24dp" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/widget_agenda_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:divider="@android:color/transparent"
-        android:dividerHeight="8.0dp" />
+        android:dividerHeight="2.0dp" />
 
-    <Button
+    <TextView
         android:id="@+id/widget_agenda_empty"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:background="@color/colorAccent"
-        android:text="@string/add"
-        android:textColor="@color/md_white" />
-
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/md_white"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/widget_agenda_empty"
+        android:textColor="@color/md_dark_text_54" />
 
 </LinearLayout>

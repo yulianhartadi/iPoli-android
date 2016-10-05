@@ -60,7 +60,7 @@
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
     <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
     <string name="calendar_format">EEE, d MMM</string>
-    <string name="widget_agenda_title_format">\'Journey for \'EEE, d MMM</string>
+    <string name="widget_agenda_title_format">EEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
@@ -342,4 +342,5 @@
     <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
     <string name="loading">Loading...</string>
+    <string name="widget_agenda_empty">iPoli wants a quest!</string>
 </resources>

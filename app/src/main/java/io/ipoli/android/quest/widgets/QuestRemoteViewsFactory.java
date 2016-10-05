@@ -80,8 +80,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
         rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
-        rv.setInt(R.id.widget_agenda_quest_info_container, "setBackgroundColor",
-                ContextCompat.getColor(context, Quest.getCategory(q).color500));
+        rv.setInt(R.id.widget_agenda_check, "setColorFilter", ContextCompat.getColor(context, Quest.getCategory(q).color500));
 
         Bundle tapQuestBundle = new Bundle();
         tapQuestBundle.putInt(AgendaWidgetProvider.QUEST_ACTION_EXTRA_KEY, AgendaWidgetProvider.QUEST_ACTION_VIEW);

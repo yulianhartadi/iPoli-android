@@ -22,6 +22,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -98,7 +99,6 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda);
             setupHeader(context, rv);
-            setupHeadClickListener(context, rv);
             Intent widgetServiceIntent = createWidgetServiceIntent(context, appWidgetId);
             setupAgenda(widgetServiceIntent, context, appWidgetId, rv);
             setupEmptyView(context, rv);
@@ -135,12 +135,21 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     private void setupHeader(Context context, RemoteViews rv) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(context.getString(R.string.widget_agenda_title_format), Locale.getDefault());
         rv.setTextViewText(R.id.widget_agenda_title, simpleDateFormat.format(new Date()));
+        setupHeadClickListener(context, rv);
+        setupAddClickListener(context, rv);
     }
 
     private void setupHeadClickListener(Context context, RemoteViews rv) {
         Intent startAppIntent = new Intent(context, MainActivity.class);
         PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         rv.setOnClickPendingIntent(R.id.widget_agenda_title, startAppPendingIntent);
+    }
+
+    private void setupAddClickListener(Context context, RemoteViews rv) {
+        Intent intent = new Intent(context, QuickAddActivity.class);
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + context.getString(R.string.today).toLowerCase());
+        PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        rv.setOnClickPendingIntent(R.id.widget_agenda_add, startAppPendingIntent);
     }
 
     private void setupEmptyView(Context context, RemoteViews rv) {
