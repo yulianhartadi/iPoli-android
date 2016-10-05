@@ -3,7 +3,6 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.Space;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
@@ -87,52 +85,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
 
-        if(!vm.isLoaded()) {
-            showLoading(questHolder);
-            return;
-        }
-
-        hideLoading(questHolder);
-
-        questHolder.nextDateTime.setText(vm.getNextText());
-
-        questHolder.repeatFrequency.setText(vm.getRepeatText());
-
-        questHolder.progressContainer.removeAllViews();
-
-        if (vm.getTotalCount() == 0) {
-            questHolder.progressSpace.setVisibility(View.GONE);
-        } else {
-            questHolder.progressSpace.setVisibility(View.VISIBLE);
-        }
-
-        LayoutInflater inflater = LayoutInflater.from(context);
-        for (int i = 1; i <= vm.getCompletedDailyCount(); i++) {
-            View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
-            GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
-            progressViewBackground.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
-            questHolder.progressContainer.addView(progressView);
-        }
-
-        for (int i = 1; i <= vm.getRemainingDailyCount(); i++) {
-            View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
-            GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
-
-            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
-            questHolder.progressContainer.addView(progressViewEmpty);
-        }
-    }
-
-    private void hideLoading(ViewHolder questHolder) {
-        questHolder.indicatorsContainer.setVisibility(View.VISIBLE);
-        questHolder.nextDateTime.setVisibility(View.VISIBLE);
-        questHolder.loader.setVisibility(View.GONE);
-    }
-
-    private void showLoading(ViewHolder questHolder) {
-        questHolder.indicatorsContainer.setVisibility(View.GONE);
-        questHolder.nextDateTime.setVisibility(View.GONE);
-        questHolder.loader.setVisibility(View.VISIBLE);
+        questHolder.schedule.setText(vm.getScheduleText());
     }
 
     @Override
@@ -146,21 +99,6 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         notifyItemInserted(viewModels.size() - 1);
     }
 
-    public void updateViewModel(RepeatingQuestViewModel viewModel) {
-        int index = -1;
-        for(int i = 0; i< viewModels.size(); i++) {
-            if(viewModels.get(i).getRepeatingQuest().getId().equals(viewModel.getRepeatingQuest().getId())) {
-                index = i;
-                break;
-            }
-        }
-
-        if(index > -1) {
-            viewModels.set(index, viewModel);
-            notifyItemChanged(index);
-        }
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)
@@ -172,26 +110,11 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
         @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;
 
-        @BindView(R.id.quest_details_loader)
-        public TextView loader;
-
-        @BindView(R.id.quest_repeating_quest_indicators_container)
-        public ViewGroup indicatorsContainer;
-
-        @BindView(R.id.quest_progress_container)
-        public ViewGroup progressContainer;
-
-        @BindView(R.id.quest_next_datetime)
-        public TextView nextDateTime;
-
-        @BindView(R.id.quest_remaining)
-        public TextView repeatFrequency;
-
-        @BindView(R.id.quest_progress_space)
-        public Space progressSpace;
-
         @BindView(R.id.content_layout)
         public RelativeLayout contentLayout;
+
+        @BindView(R.id.quest_schedule)
+        public TextView schedule;
 
         @BindView(R.id.repeating_quest_more_menu)
         public ImageButton moreMenu;

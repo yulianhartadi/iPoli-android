@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,6 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
-import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ShowRepeatingQuestEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -116,25 +113,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         super.onPause();
     }
 
-    private void createViewModel(RepeatingQuest rq, ViewModelListener listener) {
-        Recurrence recurrence = rq.getRecurrence();
-
-        LocalDate from, to;
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY && !rq.isFlexible()) {
-            from = LocalDate.now().dayOfMonth().withMinimumValue();
-            to = LocalDate.now().dayOfMonth().withMaximumValue();
-        } else {
-            from = LocalDate.now().dayOfWeek().withMinimumValue();
-            to = LocalDate.now().dayOfWeek().withMaximumValue();
-        }
-
-        questPersistenceService.countCompletedForRepeatingQuest(rq.getId(), from, to, completedCount ->
-            questPersistenceService.countAllForRepeatingQuest(rq, from, to, totalCount ->
-                questPersistenceService.findNextUncompletedQuestEndDate(rq, nextDate -> {
-                    listener.onViewModelCreated(new RepeatingQuestViewModel(rq, totalCount, completedCount.intValue(), nextDate));
-        })));
-    }
-
     @OnClick(R.id.add_repeating_quest)
     public void onAddRepeatingQuest(View view) {
         startActivity(new Intent(getActivity(), EditQuestActivity.class));
@@ -154,9 +132,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         }
         adapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
         questList.setAdapter(adapter);
-        for (RepeatingQuest rq : quests) {
-            createViewModel(rq, vm -> adapter.updateViewModel(vm));
-        }
     }
 
     @Subscribe

@@ -122,7 +122,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
         collapsingToolbarLayout.setTitleEnabled(false);
-
+        history.setNoDataText("");
     }
 
     @Override

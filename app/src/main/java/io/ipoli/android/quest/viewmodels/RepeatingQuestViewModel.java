@@ -3,18 +3,16 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.text.ParseException;
 
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,25 +21,9 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class RepeatingQuestViewModel {
 
     private final RepeatingQuest repeatingQuest;
-    private long totalCount;
-    private int completedCount;
-    private java.util.Date nextDate;
-    private int timesADay;
 
     public RepeatingQuestViewModel(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
-        this.totalCount = -1;
-        this.completedCount = -1;
-        this.nextDate = null;
-        this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
-    }
-
-    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest, long totalCount, int completedCount, java.util.Date nextDate) {
-        this.repeatingQuest = repeatingQuest;
-        this.totalCount = totalCount;
-        this.completedCount = completedCount;
-        this.nextDate = nextDate;
-        this.timesADay = repeatingQuest.getRecurrence().getTimesADay();
     }
 
     public String getName() {
@@ -58,74 +40,44 @@ public class RepeatingQuestViewModel {
         return getQuestCategory().whiteImage;
     }
 
-    public int getCompletedDailyCount() {
-        return (int) Math.floor((double) completedCount / (double) timesADay);
-    }
-
-    public int getRemainingDailyCount() {
-        return (int) Math.ceil((double) (totalCount - completedCount) / (double) timesADay);
-    }
-
     private Category getQuestCategory() {
         return RepeatingQuest.getCategory(repeatingQuest);
-    }
-
-    public String getNextText() {
-        String nextText = "";
-        if (nextDate == null) {
-            nextText += "Unscheduled";
-        } else {
-            if (DateUtils.isTodayUTC(nextDate)) {
-                nextText = "Today";
-            } else if (DateUtils.isTomorrowUTC(nextDate)) {
-                nextText = "Tomorrow";
-            } else {
-                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(new LocalDate(nextDate, DateTimeZone.UTC).toDate());
-            }
-        }
-
-        nextText += " ";
-
-        int duration = repeatingQuest.getDuration();
-        Time startTime = RepeatingQuest.getStartTime(repeatingQuest);
-        if (duration > 0 && startTime != null) {
-            Time endTime = Time.plusMinutes(startTime, duration);
-            nextText += startTime + " - " + endTime;
-        } else if (duration > 0) {
-            nextText += "for " + DurationFormatter.formatReadable(duration);
-        } else if (startTime != null) {
-            nextText += startTime;
-        }
-        return "Next: " + nextText;
-    }
-
-    public long getTotalCount() {
-        return totalCount;
-    }
-
-    public String getRepeatText() {
-
-        int remainingCount = getRemainingDailyCount();
-
-        if (remainingCount <= 0) {
-            return "Done";
-        }
-
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY && !repeatingQuest.isFlexible()) {
-            return remainingCount + " more this month";
-        }
-
-        return remainingCount + " more this week";
-
     }
 
     public RepeatingQuest getRepeatingQuest() {
         return repeatingQuest;
     }
 
-    public boolean isLoaded() {
-        return totalCount >= 0;
+    public String getScheduleText() {
+        String txt = FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence());
+        int duration = repeatingQuest.getDuration();
+        Time startTime = RepeatingQuest.getStartTime(repeatingQuest);
+        if (duration > 0 && startTime != null) {
+            Time endTime = Time.plusMinutes(startTime, duration);
+            txt += " at " + startTime + " - " + endTime;
+        } else {
+            txt += " for " + DurationFormatter.formatReadable(duration);
+        }
+        return txt;
+    }
+
+    private int getFrequency() {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        if (recurrence.isFlexible()) {
+            return recurrence.getFlexibleCount();
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
+            return 7;
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return 1;
+        }
+        try {
+            Recur recur = new Recur(recurrence.getRrule());
+            return recur.getDayList().size();
+        } catch (ParseException e) {
+            return 0;
+        }
     }
 
 }

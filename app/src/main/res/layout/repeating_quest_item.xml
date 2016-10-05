@@ -50,43 +50,10 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/quest_details_loader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/loading" />
-
-        <LinearLayout
-            android:id="@+id/quest_repeating_quest_indicators_container"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/quest_progress_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal" />
-
-            <android.support.v4.widget.Space
-                android:id="@+id/quest_progress_space"
-                android:layout_width="6dp"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/quest_remaining"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/md_dark_text_54" />
-        </LinearLayout>
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/quest_next_datetime"
+            android:id="@+id/quest_schedule"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 
@@ -102,4 +69,5 @@
         android:clickable="true"
         android:scaleType="fitXY"
         android:src="@drawable/ic_more_vert_black_24dp" />
+
 </RelativeLayout>
