@@ -142,7 +142,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     private void setupHeadClickListener(Context context, RemoteViews rv) {
         Intent startAppIntent = new Intent(context, MainActivity.class);
         PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setOnClickPendingIntent(R.id.widget_agenda_title, startAppPendingIntent);
+        rv.setOnClickPendingIntent(R.id.widget_agenda_header, startAppPendingIntent);
     }
 
     private void setupAddClickListener(Context context, RemoteViews rv) {

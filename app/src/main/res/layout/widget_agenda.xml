@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/widget_agenda_header"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/colorPrimary">
@@ -29,8 +30,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="16dp"
             android:background="@null"
+            android:padding="16dp"
             android:src="@drawable/ic_add_white_24dp" />
     </RelativeLayout>
 
