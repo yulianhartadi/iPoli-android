@@ -14,6 +14,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
+import io.ipoli.android.quest.generators.CoinsRewardGenerator;
+import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
@@ -27,10 +29,14 @@ public class AndroidCalendarQuestListPersistenceService implements AndroidCalend
 
     private final QuestPersistenceService questPersistenceService;
     private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private final ExperienceRewardGenerator experienceRewardGenerator;
+    private final CoinsRewardGenerator coinsRewardGenerator;
 
-    public AndroidCalendarQuestListPersistenceService(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+    public AndroidCalendarQuestListPersistenceService(QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator) {
         this.questPersistenceService = questPersistenceService;
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+        this.experienceRewardGenerator = experienceRewardGenerator;
+        this.coinsRewardGenerator = coinsRewardGenerator;
     }
 
     @Override
@@ -62,6 +68,8 @@ public class AndroidCalendarQuestListPersistenceService implements AndroidCalend
                 if (endDateTime.toLocalDate().isBefore(new LocalDate())) {
                     q.setCompletedAtDate(new Date(e.dTend));
                     q.setCompletedAtMinute(Time.of(q.getCompletedAtDate()).toMinutesAfterMidnight());
+                    q.setExperience(experienceRewardGenerator.generate(q));
+                    q.setCoins(coinsRewardGenerator.generate(q));
                 }
                 if (TextUtils.isEmpty(e.originalId)) {
                     questPersistenceService.save(q);
