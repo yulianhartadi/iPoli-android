@@ -464,7 +464,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void countMonthlyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
         questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
             if (count < getFrequency()) {
-                listener.onStreakCounted(streak);
+                long streakResult = streak == 0 ? streak + count : streak;
+                listener.onStreakCounted(streakResult);
             } else {
                 LocalDate monthStart = start.minusMonths(1);
                 LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
@@ -476,7 +477,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     private void countWeeklyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
         questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
             if (count < getFrequency()) {
-                listener.onStreakCounted(streak);
+                long streakResult = streak == 0 ? streak + count : streak;
+                listener.onStreakCounted(streakResult);
             } else {
                 LocalDate weekStart = start.minusWeeks(1);
                 LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
