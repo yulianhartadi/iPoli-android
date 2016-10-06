@@ -10,12 +10,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.ViewUtils;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -38,11 +40,19 @@ public class FabMenuView extends RelativeLayout {
     @BindView(R.id.fab2)
     FloatingActionButton fab2;
 
+    @BindView(R.id.fab_label)
+    TextView fabLabel;
+
+    @BindView(R.id.fab1_label)
+    TextView fab1Label;
+
+    @BindView(R.id.fab2_label)
+    TextView fab2Label;
+
     private Animation fabOpen;
     private Animation fabClose;
     private Animation rotateForward;
     private Animation rotateBackward;
-    private Animation fabClose1;
     private boolean isOpen = false;
 
     public FabMenuView(Context context) {
@@ -64,10 +74,10 @@ public class FabMenuView extends RelativeLayout {
                 R.layout.layout_fab_menu, this);
         unbinder = ButterKnife.bind(this, view);
 
+        setElevation(ViewUtils.dpToPx(5, getResources()));
 
         fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-        fabClose1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
         rotateForward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
         rotateBackward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
 
@@ -108,10 +118,11 @@ public class FabMenuView extends RelativeLayout {
             }
         });
         fab.startAnimation(rotateForward);
+        fabLabel.startAnimation(fabOpen);
         fab1.startAnimation(fabOpen);
+        fab1Label.startAnimation(fabOpen);
         fab2.startAnimation(fabOpen);
-        fab1.setClickable(true);
-        fab2.setClickable(true);
+        fab2Label.startAnimation(fabOpen);
     }
 
     private void close() {
@@ -132,15 +143,15 @@ public class FabMenuView extends RelativeLayout {
 
             }
         });
-        fabClose1.setAnimationListener(new Animation.AnimationListener() {
+        fabClose.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                container.animate().alpha(0).setDuration(100).start();
-//                container.setVisibility(GONE);
+                container.animate().alpha(0).setDuration(getResources().getInteger(
+                        android.R.integer.config_shortAnimTime)).start();
             }
 
             @Override
@@ -150,8 +161,11 @@ public class FabMenuView extends RelativeLayout {
         });
 
         fab.startAnimation(rotateBackward);
+        fab2Label.startAnimation(fabClose);
         fab2.startAnimation(fabClose);
-        fab1.startAnimation(fabClose1);
+        fab1Label.startAnimation(fabClose);
+        fab1.startAnimation(fabClose);
+        fabLabel.startAnimation(fabClose);
     }
 
     @Override

@@ -3,17 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="visible"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:visibility="visible">
 
     <RelativeLayout
         android:id="@+id/fab_menu_container"
-        android:background="@color/md_light_text_87"
-        android:paddingBottom="72dp"
-        android:elevation="7dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/md_light_text_87"
+        android:paddingBottom="72dp"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/fab2_label"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:elevation="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/fab2"
+            android:layout_alignTop="@+id/fab2"
+            android:background="@drawable/fab_mini_label_background"
+            android:gravity="center_vertical"
+            android:text="Repeating Quest" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab2"
@@ -26,37 +39,66 @@
             android:src="@drawable/ic_done_white_24dp"
             android:visibility="invisible"
             app:backgroundTint="@color/colorAccent"
-            app:elevation="8dp"
+            app:elevation="6dp"
             app:fabSize="mini"
             app:pressedTranslationZ="12dp" />
+
+        <TextView
+            android:id="@+id/fab1_label"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:elevation="2dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/fab1"
+            android:layout_alignTop="@+id/fab1"
+            android:background="@drawable/fab_mini_label_background"
+            android:gravity="center_vertical"
+            android:text="Challenges" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="24dp"
             android:src="@drawable/ic_sword_white_24dp"
             android:visibility="invisible"
             app:backgroundTint="@color/colorAccent"
-            app:elevation="8dp"
+            app:elevation="6dp"
             app:fabSize="mini"
             app:pressedTranslationZ="12dp" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/fab_label"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:visibility="invisible"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:elevation="2dp"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/fab_normal_label_background"
+        android:gravity="center_vertical"
+        android:text="Quest" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:src="@drawable/ic_add_white_24dp"
         app:backgroundTint="@color/colorAccent"
-        app:elevation="8dp"
+        app:elevation="6dp"
         app:pressedTranslationZ="12dp" />
 
 </FrameLayout>

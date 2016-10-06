@@ -102,7 +102,6 @@
     <io.ipoli.android.app.ui.FabMenuView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fab_menu"
-        android:elevation="6dp"/>
+        android:id="@+id/fab_menu" />
 
 </android.support.design.widget.CoordinatorLayout>
