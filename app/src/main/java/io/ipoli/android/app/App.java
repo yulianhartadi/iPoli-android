@@ -784,6 +784,8 @@ public class App extends MultiDexApplication {
     public void onCompleteChallengeRequest(CompleteChallengeRequestEvent e) {
         Challenge challenge = e.challenge;
         challenge.setCompletedAtDate(new Date());
+        challenge.setExperience(experienceRewardGenerator.generate(challenge));
+        challenge.setCoins(coinsRewardGenerator.generate(challenge));
         challengePersistenceService.save(challenge);
         onChallengeComplete(challenge, e.source);
     }
