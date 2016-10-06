@@ -2,8 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/md_white">
+    android:layout_height="match_parent">
 
     <include layout="@layout/default_app_bar" />
 
