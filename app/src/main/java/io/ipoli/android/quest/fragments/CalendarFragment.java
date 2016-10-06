@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,19 +31,17 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -79,29 +74,14 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @BindView(R.id.appbar)
     AppBarLayout appBar;
 
-    @BindView(R.id.add_quest)
-    FloatingActionButton fab;
-
-    @BindView(R.id.fab1)
-    FloatingActionButton fab1;
-
-    @BindView(R.id.fab2)
-    FloatingActionButton fab2;
-
-    @BindView(R.id.fab2_container)
-    ViewGroup fab2Container;
-
     @Inject
     Bus eventBus;
 
     private FragmentStatePagerAdapter adapter;
     private LocalDate currentMidDate;
 
-    private Boolean isFabOpen = false;
-    private Animation fabOpen;
-    private Animation fabClose;
-    private Animation rotateForward;
-    private Animation rotateBackward;
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
 
     @Nullable
     @Override
@@ -149,12 +129,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
 
-
-        fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fabClose = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
-        rotateForward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_forward);
-        rotateBackward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
-
         return view;
     }
 
@@ -201,31 +175,13 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         super.onPause();
     }
 
-    @OnClick(R.id.add_quest)
-    public void onAddQuest(View view) {
-        animateFAB();
-//        eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
-//        startActivity(new Intent(getActivity(), EditQuestActivity.class));
-    }
-
-    public void animateFAB(){
-
-        if(isFabOpen){
-            fab.startAnimation(rotateBackward);
-            fab1.startAnimation(fabClose);
-            fab2Container.startAnimation(fabClose);
-            fab1.setClickable(false);
-            fab2.setClickable(false);
-            isFabOpen = false;
-        } else {
-            fab.startAnimation(rotateForward);
-            fab1.startAnimation(fabOpen);
-            fab2Container.startAnimation(fabOpen);
-            fab1.setClickable(true);
-            fab2.setClickable(true);
-            isFabOpen = true;
-        }
-    }
+//    @OnClick(R.id.add_quest)
+//    public void onAddQuest(View view) {
+//        fabMenu.open();
+////        startActivity(new Intent(getActivity(), FABActivity.class));
+////        eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
+////        startActivity(new Intent(getActivity(), EditQuestActivity.class));
+//    }
 
     private void changeTitle(LocalDate date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());

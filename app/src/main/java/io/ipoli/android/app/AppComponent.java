@@ -175,5 +175,6 @@ public interface AppComponent {
     void inject(PickChallengeActivity pickChallengeActivity);
 
     void inject(PersonalizeChallengeActivity personalizeChallengeActivity);
+
 }
 

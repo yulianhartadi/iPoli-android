@@ -92,66 +92,17 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!--<android.support.design.widget.FloatingActionButton-->
-    <!--android:id="@+id/add_quest"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_gravity="bottom|end"-->
-    <!--android:layout_margin="16dp"-->
-    <!--android:src="@drawable/ic_add_white_24dp" />-->
+        <!--android:id="@+id/add_quest"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="16dp"-->
+        <!--android:src="@drawable/ic_add_white_24dp" />-->
 
-    <LinearLayout
-        android:id="@+id/fab2_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="160dp"
-        android:layout_marginEnd="0dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="invisible">
+    <io.ipoli.android.app.ui.FabMenuView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fab_menu"
+        android:elevation="6dp"/>
 
-        <TextView
-            style="@style/TextAppearance.AppCompat.Body2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@color/md_dark_text_87"
-            android:padding="4dp"
-            android:text="Quest"
-            android:textColor="@color/md_light_text_87" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_done_white_24dp"
-            app:backgroundTint="@color/colorAccent"
-            app:elevation="6dp"
-            app:pressedTranslationZ="12dp" />
-
-    </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="90dp"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:src="@drawable/ic_sword_white_24dp"
-        android:visibility="invisible"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_quest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_white_24dp"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp" />
 </android.support.design.widget.CoordinatorLayout>
