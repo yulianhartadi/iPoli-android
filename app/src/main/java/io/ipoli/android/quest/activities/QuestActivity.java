@@ -9,6 +9,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
@@ -95,7 +97,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     private Quest quest;
 
-    private QuestDetailsAdapter adapter;
+    @BindView(R.id.quest_name)
+    TextView name;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -130,12 +133,20 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
-            ab.setDisplayShowTitleEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
         afterOnCreate = true;
 
         collapsingToolbarLayout.setTitleEnabled(false);
+
+        appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout)) {
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+            } else {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+        });
+
 
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
@@ -190,6 +201,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     }
 
     private void onQuestFound(Quest quest) {
+        name.setText(quest.getName());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(quest.getName());
         }
@@ -201,7 +213,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
         }
-        adapter = new QuestDetailsAdapter(this, quest, isAddSubQuestInEditMode, eventBus);
+        QuestDetailsAdapter adapter = new QuestDetailsAdapter(this, quest, isAddSubQuestInEditMode, eventBus);
         details.setAdapter(adapter);
         isAddSubQuestInEditMode = false;
     }
