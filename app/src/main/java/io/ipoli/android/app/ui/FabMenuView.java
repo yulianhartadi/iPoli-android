@@ -40,6 +40,12 @@ public class FabMenuView extends RelativeLayout {
     @BindView(R.id.fab2)
     FloatingActionButton fab2;
 
+    @BindView(R.id.fab3)
+    FloatingActionButton fab3;
+
+    @BindView(R.id.fab4)
+    FloatingActionButton fab4;
+
     @BindView(R.id.fab_label)
     TextView fabLabel;
 
@@ -49,11 +55,16 @@ public class FabMenuView extends RelativeLayout {
     @BindView(R.id.fab2_label)
     TextView fab2Label;
 
+    @BindView(R.id.fab3_label)
+    TextView fab3Label;
+
+    @BindView(R.id.fab4_label)
+    TextView fab4Label;
+
     private Animation fabOpen;
     private Animation fabClose;
     private Animation rotateForward;
     private Animation rotateBackward;
-    private boolean isOpen = false;
 
     public FabMenuView(Context context) {
         super(context);
@@ -93,7 +104,6 @@ public class FabMenuView extends RelativeLayout {
         setFocusableInTouchMode(true);
         requestFocus();
         container.setClickable(true);
-        isOpen = true;
         container.setVisibility(VISIBLE);
         container.setAlpha(1);
         openAnimation();
@@ -123,6 +133,10 @@ public class FabMenuView extends RelativeLayout {
         fab1Label.startAnimation(fabOpen);
         fab2.startAnimation(fabOpen);
         fab2Label.startAnimation(fabOpen);
+        fab3.startAnimation(fabOpen);
+        fab3Label.startAnimation(fabOpen);
+        fab4.startAnimation(fabOpen);
+        fab4Label.startAnimation(fabOpen);
     }
 
     private void close() {
@@ -161,6 +175,10 @@ public class FabMenuView extends RelativeLayout {
         });
 
         fab.startAnimation(rotateBackward);
+        fab4.startAnimation(fabClose);
+        fab4Label.startAnimation(fabClose);
+        fab3.startAnimation(fabClose);
+        fab3Label.startAnimation(fabClose);
         fab2Label.startAnimation(fabClose);
         fab2.startAnimation(fabClose);
         fab1Label.startAnimation(fabClose);

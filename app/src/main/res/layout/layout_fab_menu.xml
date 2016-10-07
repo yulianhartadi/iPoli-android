@@ -15,18 +15,76 @@
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/fab4_label"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignTop="@+id/fab4"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/fab4"
+            android:background="@drawable/fab_mini_label_background"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="Quick Add" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fab3"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_flash_on_white_24dp"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            app:pressedTranslationZ="12dp" />
+
+        <TextView
+            android:id="@+id/fab3_label"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignTop="@+id/fab3"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/fab3"
+            android:background="@drawable/fab_mini_label_background"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="Reward" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fab2"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_gift_white_24dp"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:fabSize="mini"
+            app:pressedTranslationZ="12dp" />
+
+        <TextView
             android:id="@+id/fab2_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:elevation="2dp"
+            android:layout_alignTop="@+id/fab2"
             android:layout_marginEnd="8dp"
             android:layout_toStartOf="@+id/fab2"
-            android:layout_alignTop="@+id/fab2"
             android:background="@drawable/fab_mini_label_background"
+            android:elevation="2dp"
             android:gravity="center_vertical"
-            android:text="Repeating Quest" />
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="Challenge" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab2"
@@ -36,7 +94,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="24dp"
-            android:src="@drawable/ic_done_white_24dp"
+            android:src="@drawable/ic_sword_white_24dp"
             android:visibility="invisible"
             app:backgroundTint="@color/colorAccent"
             app:elevation="6dp"
@@ -47,15 +105,15 @@
             android:id="@+id/fab1_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:elevation="2dp"
+            android:layout_alignTop="@+id/fab1"
             android:layout_marginEnd="8dp"
             android:layout_toStartOf="@+id/fab1"
-            android:layout_alignTop="@+id/fab1"
             android:background="@drawable/fab_mini_label_background"
+            android:elevation="2dp"
             android:gravity="center_vertical"
-            android:text="Challenges" />
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:text="Repeating Quest" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab1"
@@ -65,7 +123,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="24dp"
-            android:src="@drawable/ic_sword_white_24dp"
+            android:src="@drawable/ic_repeat_white_24dp"
             android:visibility="invisible"
             app:backgroundTint="@color/colorAccent"
             app:elevation="6dp"
@@ -78,16 +136,16 @@
         android:id="@+id/fab_label"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:visibility="invisible"
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="16dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:elevation="2dp"
         android:layout_marginEnd="80dp"
         android:background="@drawable/fab_normal_label_background"
+        android:elevation="2dp"
         android:gravity="center_vertical"
-        android:text="Quest" />
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:text="Quest"
+        android:visibility="invisible" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
