@@ -103,39 +103,38 @@ public class FabMenuView extends RelativeLayout {
 
     @OnClick(R.id.fab_add_quest)
     public void onAddQuestClick(View view) {
-        fabClick(EditQuestActivity.class);
+        Intent intent = new Intent(getContext(), EditQuestActivity.class);
+        intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, false);
+        startActivity(intent);
     }
 
     @OnClick(R.id.fab_add_repeating_quest)
     public void onAddRepeatingQuestClick(View view) {
-        fabClick(EditQuestActivity.class);
+        Intent intent = new Intent(getContext(), EditQuestActivity.class);
+        intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, true);
+        startActivity(intent);
     }
 
     @OnClick(R.id.fab_add_challenge)
     public void onAddChallengeClick(View view) {
-        fabClick(EditChallengeActivity.class);
+        startActivity(new Intent(getContext(), EditChallengeActivity.class));
     }
 
     @OnClick(R.id.fab_add_reward)
     public void onAddRewardClick(View view) {
-        fabClick(EditRewardActivity.class);
+        startActivity(new Intent(getContext(), EditRewardActivity.class));
     }
 
     @OnClick(R.id.fab_quick_add_quest)
     public void onQuickAddQuestClick(View view) {
-        if(isOpen) {
-            Intent addIntent = new Intent(getContext(), QuickAddActivity.class);
-            addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getContext().getString(R.string.today).toLowerCase());
-            getContext().startActivity(addIntent);
-            close();
-        } else {
-            open();
-        }
+        Intent intent = new Intent(getContext(), QuickAddActivity.class);
+        intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getContext().getString(R.string.today).toLowerCase());
+        startActivity(intent);
     }
 
-    private void fabClick(Class<?> clazz) {
-        if(isOpen) {
-            getContext().startActivity(new Intent(getContext(), clazz));
+    private void startActivity(Intent intent) {
+        if (isOpen) {
+            getContext().startActivity(intent);
             close();
         } else {
             open();
@@ -238,10 +237,10 @@ public class FabMenuView extends RelativeLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if( keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             close();
             return true;
-        }else{
+        } else {
             return super.onKeyDown(keyCode, event);
         }
     }

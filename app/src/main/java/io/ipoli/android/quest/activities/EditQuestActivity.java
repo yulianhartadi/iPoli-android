@@ -119,6 +119,7 @@ import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
+import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.EDIT_NEW_QUEST;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -132,6 +133,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
         CategoryView.OnCategoryChangedListener {
+
+    public static final String KEY_NEW_REPEATING_QUEST = "key_new_repeating_quest";
 
     @Inject
     Bus eventBus;
@@ -243,7 +246,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             onEditRepeatingQuest();
         } else {
             onAddNewQuest();
-
         }
     }
 
@@ -362,7 +364,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         this.editMode = editMode;
         switch (editMode) {
             case ADD:
-                suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
+                boolean addNewRepeatingQuest = getIntent().getBooleanExtra(KEY_NEW_REPEATING_QUEST, false);
+                if(addNewRepeatingQuest) {
+                    suggestionsManager = SuggestionsManager.createForRepeatingQuest(prettyTimeParser);
+                } else {
+                    suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
+                }
                 suggestionsManager.setSuggestionsUpdatedListener(this);
                 initSuggestions();
                 questText.addTextChangedListener(this);
@@ -471,7 +478,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_save).setTitle(editMode == EditMode.ADD ? R.string.done : R.string.save);
-        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EditMode.EDIT_NEW_QUEST));
+        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EDIT_NEW_QUEST));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -522,9 +529,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void onSaveTap(EventSource source) {
         if (editMode == EditMode.ADD) {
-            changeEditMode(EditMode.EDIT_NEW_QUEST);
+            changeEditMode(EDIT_NEW_QUEST);
             populateFormFromParser();
-        } else if (editMode == EditMode.EDIT_NEW_QUEST) {
+        } else if (editMode == EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
@@ -1082,7 +1089,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onCategoryChanged(Category category) {
         colorLayout(category);
-        if (editMode == EditMode.EDIT_NEW_QUEST) {
+        if (editMode == EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestCategoryChangedEvent(category));
         }
     }

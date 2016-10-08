@@ -66,7 +66,7 @@ public class SuggestionsManager {
         } else {
             disabledEntityTypes.add(TextEntityType.DUE_DATE);
         }
-        
+
         typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
             put(TextEntityType.MAIN, new MainMatcher(disabledEntityTypes));
             put(TextEntityType.DURATION, new DurationMatcher());
