@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -120,11 +119,6 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         unbinder.unbind();
         rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @OnClick(R.id.add_reward)
-    public void onAddReward(View view) {
-        startActivity(new Intent(getActivity(), EditRewardActivity.class));
     }
 
     @Subscribe

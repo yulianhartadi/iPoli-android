@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -132,11 +131,6 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
         unbinder.unbind();
         challengePersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @OnClick(R.id.add_challenge)
-    public void onAddChallenge(View view) {
-        startActivity(new Intent(getContext(), EditChallengeActivity.class));
     }
 
     @Override

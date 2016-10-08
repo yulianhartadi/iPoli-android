@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -29,7 +28,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -112,12 +110,6 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         eventBus.unregister(this);
         super.onPause();
     }
-
-    @OnClick(R.id.add_repeating_quest)
-    public void onAddRepeatingQuest(View view) {
-        startActivity(new Intent(getActivity(), EditQuestActivity.class));
-    }
-
 
     @Override
     public void onDataChanged(List<RepeatingQuest> quests) {

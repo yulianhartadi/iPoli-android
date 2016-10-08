@@ -28,23 +28,19 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -140,12 +136,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         q.setEndDateFromLocal(endDate);
         questPersistenceService.save(q);
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.add_quest)
-    public void onAddQuest(View view) {
-        eventBus.post(new AddQuestButtonTappedEvent(EventSource.OVERVIEW));
-        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
     private boolean hasDailyRrule(Quest q) {
