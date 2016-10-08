@@ -362,7 +362,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         this.editMode = editMode;
         switch (editMode) {
             case ADD:
-                suggestionsManager = new SuggestionsManager(prettyTimeParser);
+                suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
                 suggestionsManager.setSuggestionsUpdatedListener(this);
                 initSuggestions();
                 questText.addTextChangedListener(this);
