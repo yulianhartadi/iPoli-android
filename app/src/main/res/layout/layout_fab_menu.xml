@@ -15,7 +15,7 @@
         android:visibility="gone">
 
         <TextView
-            android:id="@+id/fab4_label"
+            android:id="@+id/fab_quick_add_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/fab_quick_add_quest"
@@ -44,7 +44,7 @@
             app:pressedTranslationZ="12dp" />
 
         <TextView
-            android:id="@+id/fab3_label"
+            android:id="@+id/fab_reward_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/fab_add_reward"
@@ -73,7 +73,7 @@
             app:pressedTranslationZ="12dp" />
 
         <TextView
-            android:id="@+id/fab2_label"
+            android:id="@+id/fab_challenge_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/fab_add_challenge"
@@ -102,7 +102,7 @@
             app:pressedTranslationZ="12dp" />
 
         <TextView
-            android:id="@+id/fab1_label"
+            android:id="@+id/fab_repeating_quest_label"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_alignTop="@+id/fab_add_repeating_quest"
@@ -133,7 +133,7 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/fab_label"
+        android:id="@+id/fab_quest_label"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_gravity="bottom|end"

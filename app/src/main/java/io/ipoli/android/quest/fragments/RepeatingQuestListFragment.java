@@ -26,8 +26,11 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.adapters.RepeatingQuestListAdapter;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -51,12 +54,14 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
     QuestPersistenceService questPersistenceService;
-
     private Unbinder unbinder;
     private RepeatingQuestListAdapter adapter;
 
@@ -78,6 +83,8 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         questList.setEmptyView(rootLayout, R.string.empty_repeating_quests_text, R.drawable.ic_repeat_grey_24dp);
         questList.setAdapter(repeatingQuestListAdapter);
         repeatingQuestPersistenceService.listenForAllNonAllDayActiveRepeatingQuests(this);
+
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.REPEATING_QUESTS)));
         return view;
     }
 

@@ -39,6 +39,7 @@ import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
@@ -129,6 +130,8 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
 
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CALENDAR)));
+
         return view;
     }
 
@@ -174,14 +177,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         eventBus.unregister(this);
         super.onPause();
     }
-
-//    @OnClick(R.id.add_quest)
-//    public void onAddQuest(View view) {
-//        fabMenu.open();
-////        startActivity(new Intent(getActivity(), FABActivity.class));
-////        eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
-////        startActivity(new Intent(getActivity(), EditQuestActivity.class));
-//    }
 
     private void changeTitle(LocalDate date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());

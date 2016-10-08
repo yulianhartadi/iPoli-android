@@ -26,9 +26,12 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -48,6 +51,9 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -74,6 +80,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         questList.setAdapter(inboxAdapter);
 
         questPersistenceService.listenForUnplanned(this);
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.INBOX)));
         return view;
     }
 

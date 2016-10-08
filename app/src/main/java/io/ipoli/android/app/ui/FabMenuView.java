@@ -13,6 +13,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,6 +35,10 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  * on 6/27/16.
  */
 public class FabMenuView extends RelativeLayout {
+    private enum FabName {
+        OPEN, QUEST, REPEATING_QUEST, CHALLENGE, REWARD, QUICK_ADD
+    }
+
     private Unbinder unbinder;
 
     @BindView(R.id.fab_menu_container)
@@ -50,28 +57,30 @@ public class FabMenuView extends RelativeLayout {
     FloatingActionButton reward;
 
     @BindView(R.id.fab_quick_add_quest)
-    FloatingActionButton quickQuest;
+    FloatingActionButton quickAddQuest;
 
-    @BindView(R.id.fab_label)
-    TextView fabLabel;
+    @BindView(R.id.fab_quest_label)
+    TextView questLabel;
 
-    @BindView(R.id.fab1_label)
-    TextView fab1Label;
+    @BindView(R.id.fab_repeating_quest_label)
+    TextView repeatingQuestLabel;
 
-    @BindView(R.id.fab2_label)
-    TextView fab2Label;
+    @BindView(R.id.fab_challenge_label)
+    TextView challengeLabel;
 
-    @BindView(R.id.fab3_label)
-    TextView fab3Label;
+    @BindView(R.id.fab_reward_label)
+    TextView rewardLabel;
 
-    @BindView(R.id.fab4_label)
-    TextView fab4Label;
+    @BindView(R.id.fab_quick_add_label)
+    TextView quickAddLabel;
 
-    private Animation fabOpen;
-    private Animation fabClose;
-    private Animation rotateForward;
-    private Animation rotateBackward;
+    private Animation fabOpenAnimation;
+    private Animation fabCloseAnimation;
+    private Animation rotateForwardAnimation;
+    private Animation rotateBackwardAnimation;
     private boolean isOpen = false;
+
+    private List<FabClickListener> fabClickListeners;
 
     public FabMenuView(Context context) {
         super(context);
@@ -91,13 +100,14 @@ public class FabMenuView extends RelativeLayout {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_fab_menu, this);
         unbinder = ButterKnife.bind(this, view);
+        fabClickListeners = new ArrayList<>();
 
         setElevation(ViewUtils.dpToPx(5, getResources()));
 
-        fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-        rotateForward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
-        rotateBackward = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
+        fabOpenAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fabCloseAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        rotateForwardAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
+        rotateBackwardAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
 
     }
 
@@ -105,39 +115,47 @@ public class FabMenuView extends RelativeLayout {
     public void onAddQuestClick(View view) {
         Intent intent = new Intent(getContext(), EditQuestActivity.class);
         intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, false);
-        startActivity(intent);
+        onFabClicked(intent, FabName.QUEST);
     }
 
     @OnClick(R.id.fab_add_repeating_quest)
     public void onAddRepeatingQuestClick(View view) {
         Intent intent = new Intent(getContext(), EditQuestActivity.class);
         intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, true);
-        startActivity(intent);
+        onFabClicked(intent, FabName.REPEATING_QUEST);
     }
 
     @OnClick(R.id.fab_add_challenge)
     public void onAddChallengeClick(View view) {
-        startActivity(new Intent(getContext(), EditChallengeActivity.class));
+        onFabClicked(new Intent(getContext(), EditChallengeActivity.class), FabName.CHALLENGE);
     }
 
     @OnClick(R.id.fab_add_reward)
     public void onAddRewardClick(View view) {
-        startActivity(new Intent(getContext(), EditRewardActivity.class));
+        onFabClicked(new Intent(getContext(), EditRewardActivity.class), FabName.REWARD);
     }
 
     @OnClick(R.id.fab_quick_add_quest)
     public void onQuickAddQuestClick(View view) {
         Intent intent = new Intent(getContext(), QuickAddActivity.class);
         intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getContext().getString(R.string.today).toLowerCase());
-        startActivity(intent);
+        onFabClicked(intent, FabName.QUICK_ADD);
     }
 
-    private void startActivity(Intent intent) {
+    private void onFabClicked(Intent intent, FabName fabName) {
         if (isOpen) {
+            callListeners(fabName);
             getContext().startActivity(intent);
             close();
         } else {
             open();
+            callListeners(FabName.OPEN);
+        }
+    }
+
+    private void callListeners(FabName fabName) {
+        for(FabClickListener listener : fabClickListeners) {
+            listener.onFabClicked(fabName.name().toLowerCase());
         }
     }
 
@@ -159,7 +177,7 @@ public class FabMenuView extends RelativeLayout {
     }
 
     private void playOpenAnimation() {
-        rotateForward.setAnimationListener(new Animation.AnimationListener() {
+        rotateForwardAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -176,21 +194,21 @@ public class FabMenuView extends RelativeLayout {
 
             }
         });
-        quest.startAnimation(rotateForward);
-        fabLabel.startAnimation(fabOpen);
-        repeatingQuest.startAnimation(fabOpen);
-        fab1Label.startAnimation(fabOpen);
-        challenge.startAnimation(fabOpen);
-        fab2Label.startAnimation(fabOpen);
-        reward.startAnimation(fabOpen);
-        fab3Label.startAnimation(fabOpen);
-        quickQuest.startAnimation(fabOpen);
-        fab4Label.startAnimation(fabOpen);
+        quest.startAnimation(rotateForwardAnimation);
+        questLabel.startAnimation(fabOpenAnimation);
+        repeatingQuest.startAnimation(fabOpenAnimation);
+        repeatingQuestLabel.startAnimation(fabOpenAnimation);
+        challenge.startAnimation(fabOpenAnimation);
+        challengeLabel.startAnimation(fabOpenAnimation);
+        reward.startAnimation(fabOpenAnimation);
+        rewardLabel.startAnimation(fabOpenAnimation);
+        quickAddQuest.startAnimation(fabOpenAnimation);
+        quickAddLabel.startAnimation(fabOpenAnimation);
     }
 
 
     private void playCloseAnimation() {
-        rotateBackward.setAnimationListener(new Animation.AnimationListener() {
+        rotateBackwardAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 quest.setImageResource(R.drawable.ic_add_white_24dp);
@@ -206,7 +224,7 @@ public class FabMenuView extends RelativeLayout {
 
             }
         });
-        fabClose.setAnimationListener(new Animation.AnimationListener() {
+        fabCloseAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
             }
@@ -223,16 +241,16 @@ public class FabMenuView extends RelativeLayout {
             }
         });
 
-        quest.startAnimation(rotateBackward);
-        quickQuest.startAnimation(fabClose);
-        fab4Label.startAnimation(fabClose);
-        reward.startAnimation(fabClose);
-        fab3Label.startAnimation(fabClose);
-        fab2Label.startAnimation(fabClose);
-        challenge.startAnimation(fabClose);
-        fab1Label.startAnimation(fabClose);
-        repeatingQuest.startAnimation(fabClose);
-        fabLabel.startAnimation(fabClose);
+        quest.startAnimation(rotateBackwardAnimation);
+        quickAddLabel.startAnimation(fabCloseAnimation);
+        quickAddQuest.startAnimation(fabCloseAnimation);
+        rewardLabel.startAnimation(fabCloseAnimation);
+        reward.startAnimation(fabCloseAnimation);
+        challengeLabel.startAnimation(fabCloseAnimation);
+        challenge.startAnimation(fabCloseAnimation);
+        repeatingQuestLabel.startAnimation(fabCloseAnimation);
+        repeatingQuest.startAnimation(fabCloseAnimation);
+        questLabel.startAnimation(fabCloseAnimation);
     }
 
     @Override
@@ -254,5 +272,17 @@ public class FabMenuView extends RelativeLayout {
     protected void onDetachedFromWindow() {
         unbinder.unbind();
         super.onDetachedFromWindow();
+    }
+
+    public void addFabClickListener(FabClickListener listener) {
+        fabClickListeners.add(listener);
+    }
+
+    public void removeFabClickListener(FabClickListener listener) {
+        fabClickListeners.remove(listener);
+    }
+
+    public interface FabClickListener {
+        void onFabClicked(String name);
     }
 }

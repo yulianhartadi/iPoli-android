@@ -34,8 +34,11 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
@@ -60,9 +63,11 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     @Inject
     QuestPersistenceService questPersistenceService;
-
     private OverviewAdapter overviewAdapter;
     private Unbinder unbinder;
 
@@ -84,6 +89,8 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
         questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
+
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.OVERVIEW)));
         return view;
     }
 
@@ -182,10 +189,10 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
                 if (lq.getEndDate().after(rq.getEndDate())) {
                     return 1;
                 }
-                if(lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
+                if (lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
                     return 1;
                 }
-                if(lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
+                if (lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
                     return -1;
                 }
                 return 0;
