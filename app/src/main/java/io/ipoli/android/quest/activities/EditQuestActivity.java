@@ -39,7 +39,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -561,7 +560,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (editMode == EditMode.ADD_QUEST) {
             changeEditMode(EDIT_NEW_QUEST);
             populateFormFromParser();
-        } else if(editMode == ADD_REPEATING_QUEST) {
+        } else if (editMode == ADD_REPEATING_QUEST) {
             changeEditMode(EDIT_NEW_REPEATING_QUEST);
             populateFormFromParser();
         } else if (editMode == EDIT_NEW_QUEST || editMode == EDIT_NEW_REPEATING_QUEST) {
@@ -671,48 +670,30 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
-        QuestParser.QuestParserResult result = questParser.parse(questText.getText().toString());
-        this.rawText = result.rawText;
-        if (result.endDate == null) {
-            populateEndDate(null);
-        } else {
-            populateEndDate(toStartOfDay(new LocalDate(result.endDate, DateTimeZone.UTC)));
-        }
-        populateStartTime(result.startMinute);
-        populateDuration(Math.max(result.duration, Constants.QUEST_MIN_DURATION));
-        populateFrequency(result);
+        String name = "";
+        if (editMode == EDIT_NEW_QUEST) {
+            Quest q = questParser.parseQuest(questText.getText().toString());
+            if (q.getEndDate() == null) {
+                populateEndDate(null);
+            } else {
+                populateEndDate(toStartOfDay(new LocalDate(q.getEndDate(), DateTimeZone.UTC)));
+            }
+            populateStartTime(q.getStartMinute());
+            populateDuration(Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION));
+            name = q.getName();
 
-        questText.setText(result.name);
-        questText.setSelection(result.name.length());
+        } else if (editMode == EDIT_NEW_REPEATING_QUEST) {
+            RepeatingQuest rq = questParser.parseRepeatingQuest(questText.getText().toString());
+            populateStartTime(rq.getStartMinute());
+            populateDuration(Math.max(rq.getDuration(), Constants.QUEST_MIN_DURATION));
+            setFrequencyText(rq.getRecurrence());
+            name = rq.getName();
+        }
+        this.rawText = questText.getText().toString();
+        questText.setText(name);
+        questText.setSelection(name.length());
         questText.clearFocus();
         hideKeyboard();
-    }
-
-    private void populateFrequency(QuestParser.QuestParserResult result) {
-        Recurrence recurrence = Recurrence.create();
-        if (result.everyDayRecurrence != null) {
-            recurrence.setRrule(result.everyDayRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
-        } else if (result.dayOfWeekRecurrence != null) {
-            recurrence.setRrule(result.dayOfWeekRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
-        } else if (result.dayOfMonthRecurrence != null) {
-            recurrence.setRrule(result.dayOfMonthRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
-        } else if (result.timesAWeek > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
-            recurrence.setFlexibleCount(result.timesAWeek);
-            Recur recur = new Recur(Recur.WEEKLY, null);
-            recurrence.setRrule(recur.toString());
-        } else if (result.timesAMonth > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
-            recurrence.setFlexibleCount(result.timesAMonth);
-            Recur recur = new Recur(Recur.MONTHLY, null);
-            recurrence.setRrule(recur.toString());
-        } else {
-            recurrence = null;
-        }
-        setFrequencyText(recurrence);
     }
 
     @OnClick(R.id.quest_end_date_container)
@@ -922,7 +903,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (isQuestNameInvalid(name)) {
             return;
         }
-        if (isRepeatingQuest()) {
+        if (editMode == EDIT_NEW_REPEATING_QUEST) {
             createRepeatingQuest(name);
         } else {
             createQuest(name);
@@ -998,10 +979,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
-    }
-
-    private boolean isRepeatingQuest() {
-        return frequencyText.getTag() != null;
     }
 
     private boolean hasStartTime(Quest q) {

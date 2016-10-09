@@ -165,7 +165,8 @@ public class ChallengeActivity extends BaseActivity {
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
         collapsingToolbarLayout.setTitleEnabled(false);
-
+        history.setNoDataText("");
+        getWindow().setBackgroundDrawable(null);
         appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout)) {
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -227,7 +228,6 @@ public class ChallengeActivity extends BaseActivity {
                 Intent i = new Intent(this, EditChallengeActivity.class);
                 i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challenge.getId());
                 startActivity(i);
-                finish();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_challenge, R.string.help_dialog_challenge_title, "challenge").show(getSupportFragmentManager());

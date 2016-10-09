@@ -127,6 +127,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
         collapsingToolbarLayout.setTitleEnabled(false);
         history.setNoDataText("");
+        getWindow().setBackgroundDrawable(null);
 
         appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout)) {
@@ -150,7 +151,6 @@ public class RepeatingQuestActivity extends BaseActivity {
                 Intent i = new Intent(this, EditQuestActivity.class);
                 i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, repeatingQuest.getId());
                 startActivity(i);
-                finish();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quest, R.string.help_dialog_repeating_quest_title, "repeating_quest").show(getSupportFragmentManager());
