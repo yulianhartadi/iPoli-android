@@ -344,4 +344,6 @@
     <string name="loading">Loading...</string>
     <string name="widget_agenda_empty">iPoli wants a quest!</string>
     <string name="quests">Quests</string>
+    <string name="title_edit_new_quest">Add Quest</string>
+    <string name="title_edit_new_repeating_quest">Add Repeating Quest</string>
 </resources>
