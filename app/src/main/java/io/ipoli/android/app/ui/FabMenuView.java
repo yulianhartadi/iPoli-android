@@ -154,7 +154,7 @@ public class FabMenuView extends RelativeLayout {
     }
 
     private void callListeners(FabName fabName) {
-        for(FabClickListener listener : fabClickListeners) {
+        for (FabClickListener listener : fabClickListeners) {
             listener.onFabClicked(fabName.name().toLowerCase());
         }
     }
@@ -255,7 +255,7 @@ public class FabMenuView extends RelativeLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && isOpen) {
             close();
             return true;
         } else {
