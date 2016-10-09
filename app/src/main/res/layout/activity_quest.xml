@@ -9,8 +9,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="168dp"
-        android:background="?attr/colorPrimary"
+        android:layout_height="wrap_content"
+        android:background="@color/md_white"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -18,18 +18,38 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minHeight="?attr/actionBarSize"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/md_white"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:statusBarScrim="?attr/colorPrimaryDark">
+            app:statusBarScrim="@color/md_white">
 
-            <Chronometer
-                android:id="@+id/quest_details_time"
-                style="@style/TextAppearance.AppCompat.Display2"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/md_white" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/quest_name"
+                    style="@style/TextAppearance.AppCompat.Headline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:ellipsize="marquee"
+                    android:gravity="center_horizontal"
+                    android:maxLines="3"
+                    android:paddingTop="?attr/actionBarSize" />
+
+                <Chronometer
+                    android:id="@+id/quest_details_time"
+                    style="@style/TextAppearance.AppCompat.Display1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/md_white" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/quest_details_progress"

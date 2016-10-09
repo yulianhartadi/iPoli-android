@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -38,13 +37,13 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -64,9 +63,11 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     @Inject
     QuestPersistenceService questPersistenceService;
-
     private OverviewAdapter overviewAdapter;
     private Unbinder unbinder;
 
@@ -88,6 +89,8 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
         questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
+
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.OVERVIEW)));
         return view;
     }
 
@@ -142,12 +145,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 
-    @OnClick(R.id.add_quest)
-    public void onAddQuest(View view) {
-        eventBus.post(new AddQuestButtonTappedEvent(EventSource.OVERVIEW));
-        startActivity(new Intent(getActivity(), EditQuestActivity.class));
-    }
-
     private boolean hasDailyRrule(Quest q) {
         return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesADay() > 1;
     }
@@ -192,10 +189,10 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
                 if (lq.getEndDate().after(rq.getEndDate())) {
                     return 1;
                 }
-                if(lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
+                if (lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
                     return 1;
                 }
-                if(lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
+                if (lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
                     return -1;
                 }
                 return 0;

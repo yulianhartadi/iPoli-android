@@ -83,12 +83,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
             <RelativeLayout
                 android:id="@+id/quest_end_date_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true">
 

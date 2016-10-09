@@ -39,7 +39,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -117,8 +116,13 @@ import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 
+import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
+import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.ADD_QUEST;
+import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.ADD_REPEATING_QUEST;
+import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.EDIT_NEW_QUEST;
+import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.EDIT_NEW_REPEATING_QUEST;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -132,6 +136,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
         CategoryView.OnCategoryChangedListener {
+
+    public static final String KEY_NEW_REPEATING_QUEST = "key_new_repeating_quest";
 
     @Inject
     Bus eventBus;
@@ -156,6 +162,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @BindView(R.id.quest_info_container)
     ViewGroup infoContainer;
+
+    @BindView(R.id.quest_end_date_container)
+    ViewGroup endDateContainer;
+
+    @BindView(R.id.quest_frequency_container)
+    ViewGroup frequencyContainer;
 
     @BindView(R.id.quest_end_date_value)
     TextView endDateText;
@@ -211,7 +223,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
-    enum EditMode {ADD, EDIT_NEW_QUEST, EDIT_QUEST, EDIT_REPEATING_QUEST}
+    enum EditMode {ADD_QUEST, ADD_REPEATING_QUEST, EDIT_NEW_QUEST, EDIT_NEW_REPEATING_QUEST, EDIT_QUEST, EDIT_REPEATING_QUEST}
 
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
@@ -243,7 +255,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             onEditRepeatingQuest();
         } else {
             onAddNewQuest();
-
         }
     }
 
@@ -265,7 +276,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                     setAddSubQuestInEditMode();
                 }
                 addSubQuest.requestFocus();
-                eventBus.post(new AddSubQuestTappedEvent(EventSource.EDIT_QUEST));
+                eventBus.post(new AddSubQuestTappedEvent(EDIT_QUEST));
             } else {
                 hideUnderline(addSubQuest);
                 if (StringUtils.isEmpty(text)) {
@@ -336,7 +347,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private void onAddNewQuest() {
-        changeEditMode(EditMode.ADD);
+        boolean addNewRepeatingQuest = getIntent().getBooleanExtra(KEY_NEW_REPEATING_QUEST, false);
+        if (!addNewRepeatingQuest) {
+            changeEditMode(EditMode.ADD_QUEST);
+        } else {
+            changeEditMode(EditMode.ADD_REPEATING_QUEST);
+        }
         populateDuration(Constants.QUEST_MIN_DURATION);
         populateNoteText(null);
         populateChallenge(null);
@@ -360,9 +376,15 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void changeEditMode(EditMode editMode) {
         this.editMode = editMode;
+        if (editMode == ADD_QUEST) {
+            suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
+        } else if (editMode == ADD_REPEATING_QUEST) {
+            suggestionsManager = SuggestionsManager.createForRepeatingQuest(prettyTimeParser);
+        }
+
         switch (editMode) {
-            case ADD:
-                suggestionsManager = new SuggestionsManager(prettyTimeParser);
+            case ADD_QUEST:
+            case ADD_REPEATING_QUEST:
                 suggestionsManager.setSuggestionsUpdatedListener(this);
                 initSuggestions();
                 questText.addTextChangedListener(this);
@@ -373,6 +395,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 showKeyboard();
                 break;
             case EDIT_NEW_QUEST:
+            case EDIT_NEW_REPEATING_QUEST:
             case EDIT_QUEST:
             case EDIT_REPEATING_QUEST:
                 questText.setOnClickListener(null);
@@ -383,13 +406,25 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 questText.setAdapter(null);
                 break;
         }
+
+        this.editMode = editMode;
+        if (editMode == EDIT_NEW_QUEST || editMode == ADD_QUEST) {
+            toolbarTitle.setText(R.string.title_edit_new_quest);
+            frequencyContainer.setVisibility(View.GONE);
+        }
+
+        if (editMode == EDIT_NEW_REPEATING_QUEST || editMode == ADD_REPEATING_QUEST) {
+            toolbarTitle.setText(R.string.title_edit_new_repeating_quest);
+            endDateContainer.setVisibility(View.GONE);
+        }
+
         if (editMode == EditMode.EDIT_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
-            findViewById(R.id.quest_frequency_container).setVisibility(View.GONE);
+            frequencyContainer.setVisibility(View.GONE);
         }
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
-            findViewById(R.id.quest_end_date_container).setVisibility(View.GONE);
+            endDateContainer.setVisibility(View.GONE);
         }
         supportInvalidateOptionsMenu();
     }
@@ -440,7 +475,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
         SubQuest sq = new SubQuest(name);
         subQuestListAdapter.addSubQuest(sq);
-        eventBus.post(new NewSubQuestEvent(sq, EventSource.EDIT_QUEST));
+        eventBus.post(new NewSubQuestEvent(sq, EDIT_QUEST));
         setAddSubQuestInEditMode();
     }
 
@@ -470,8 +505,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_save).setTitle(editMode == EditMode.ADD ? R.string.done : R.string.save);
-        menu.findItem(R.id.action_delete).setVisible(!(editMode == EditMode.ADD || editMode == EditMode.EDIT_NEW_QUEST));
+        menu.findItem(R.id.action_save)
+                .setTitle(editMode == EditMode.ADD_QUEST || editMode == ADD_REPEATING_QUEST ? R.string.done : R.string.save);
+        menu.findItem(R.id.action_delete).setVisible(editMode == EditMode.EDIT_QUEST || editMode == EDIT_NEW_REPEATING_QUEST);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -487,13 +523,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                     String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
                     questPersistenceService.findById(questId, quest -> {
                         d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                            eventBus.post(new DeleteQuestRequestEvent(quest, EventSource.EDIT_QUEST));
+                            eventBus.post(new DeleteQuestRequestEvent(quest, EDIT_QUEST));
                             Toast.makeText(this, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                             setResult(Constants.RESULT_REMOVED);
                             finish();
                         });
                         d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                            eventBus.post(new CancelDeleteQuestEvent(quest, EventSource.EDIT_QUEST));
+                            eventBus.post(new CancelDeleteQuestEvent(quest, EDIT_QUEST));
                         });
                         d.show();
                     });
@@ -501,13 +537,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                     String questId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
                     repeatingQuestPersistenceService.findById(questId, repeatingQuest -> {
                         d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                            eventBus.post(new DeleteRepeatingQuestRequestEvent(repeatingQuest, EventSource.EDIT_QUEST));
+                            eventBus.post(new DeleteRepeatingQuestRequestEvent(repeatingQuest, EDIT_QUEST));
                             Toast.makeText(this, R.string.repeating_quest_deleted, Toast.LENGTH_SHORT).show();
                             setResult(Constants.RESULT_REMOVED);
                             finish();
                         });
                         d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
-                            eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest, EventSource.EDIT_QUEST));
+                            eventBus.post(new UndoDeleteRepeatingQuestEvent(repeatingQuest, EDIT_QUEST));
                         });
                         d.show();
                     });
@@ -521,10 +557,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     private void onSaveTap(EventSource source) {
-        if (editMode == EditMode.ADD) {
-            changeEditMode(EditMode.EDIT_NEW_QUEST);
+        if (editMode == EditMode.ADD_QUEST) {
+            changeEditMode(EDIT_NEW_QUEST);
             populateFormFromParser();
-        } else if (editMode == EditMode.EDIT_NEW_QUEST) {
+        } else if (editMode == ADD_REPEATING_QUEST) {
+            changeEditMode(EDIT_NEW_REPEATING_QUEST);
+            populateFormFromParser();
+        } else if (editMode == EDIT_NEW_QUEST || editMode == EDIT_NEW_REPEATING_QUEST) {
             eventBus.post(new NewQuestSavedEvent(questText.getText().toString().trim(), source));
             saveQuest();
         } else if (editMode == EditMode.EDIT_QUEST) {
@@ -631,48 +670,30 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     private void populateFormFromParser() {
         QuestParser questParser = new QuestParser(prettyTimeParser);
-        QuestParser.QuestParserResult result = questParser.parse(questText.getText().toString());
-        this.rawText = result.rawText;
-        if (result.endDate == null) {
-            populateEndDate(null);
-        } else {
-            populateEndDate(toStartOfDay(new LocalDate(result.endDate, DateTimeZone.UTC)));
-        }
-        populateStartTime(result.startMinute);
-        populateDuration(Math.max(result.duration, Constants.QUEST_MIN_DURATION));
-        populateFrequency(result);
+        String name = "";
+        if (editMode == EDIT_NEW_QUEST) {
+            Quest q = questParser.parseQuest(questText.getText().toString());
+            if (q.getEndDate() == null) {
+                populateEndDate(null);
+            } else {
+                populateEndDate(toStartOfDay(new LocalDate(q.getEndDate(), DateTimeZone.UTC)));
+            }
+            populateStartTime(q.getStartMinute());
+            populateDuration(Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION));
+            name = q.getName();
 
-        questText.setText(result.name);
-        questText.setSelection(result.name.length());
+        } else if (editMode == EDIT_NEW_REPEATING_QUEST) {
+            RepeatingQuest rq = questParser.parseRepeatingQuest(questText.getText().toString());
+            populateStartTime(rq.getStartMinute());
+            populateDuration(Math.max(rq.getDuration(), Constants.QUEST_MIN_DURATION));
+            setFrequencyText(rq.getRecurrence());
+            name = rq.getName();
+        }
+        this.rawText = questText.getText().toString();
+        questText.setText(name);
+        questText.setSelection(name.length());
         questText.clearFocus();
         hideKeyboard();
-    }
-
-    private void populateFrequency(QuestParser.QuestParserResult result) {
-        Recurrence recurrence = Recurrence.create();
-        if (result.everyDayRecurrence != null) {
-            recurrence.setRrule(result.everyDayRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
-        } else if (result.dayOfWeekRecurrence != null) {
-            recurrence.setRrule(result.dayOfWeekRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
-        } else if (result.dayOfMonthRecurrence != null) {
-            recurrence.setRrule(result.dayOfMonthRecurrence.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
-        } else if (result.timesAWeek > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
-            recurrence.setFlexibleCount(result.timesAWeek);
-            Recur recur = new Recur(Recur.WEEKLY, null);
-            recurrence.setRrule(recur.toString());
-        } else if (result.timesAMonth > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
-            recurrence.setFlexibleCount(result.timesAMonth);
-            Recur recur = new Recur(Recur.MONTHLY, null);
-            recurrence.setRrule(recur.toString());
-        } else {
-            recurrence = null;
-        }
-        setFrequencyText(recurrence);
     }
 
     @OnClick(R.id.quest_end_date_container)
@@ -882,7 +903,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (isQuestNameInvalid(name)) {
             return;
         }
-        if (isRepeatingQuest()) {
+        if (editMode == EDIT_NEW_REPEATING_QUEST) {
             createRepeatingQuest(name);
         } else {
             createQuest(name);
@@ -921,7 +942,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setChallengeId((String) challengeValue.getTag());
         q.setSubQuests(subQuestListAdapter.getSubQuests());
 
-        eventBus.post(new NewQuestEvent(q, getReminders(), EventSource.EDIT_QUEST));
+        eventBus.post(new NewQuestEvent(q, getReminders(), EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
@@ -958,10 +979,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
-    }
-
-    private boolean isRepeatingQuest() {
-        return frequencyText.getTag() != null;
     }
 
     private boolean hasStartTime(Quest q) {
@@ -1082,7 +1099,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Override
     public void onCategoryChanged(Category category) {
         colorLayout(category);
-        if (editMode == EditMode.EDIT_NEW_QUEST) {
+        if (editMode == EDIT_NEW_QUEST) {
             eventBus.post(new NewQuestCategoryChangedEvent(category));
         }
     }

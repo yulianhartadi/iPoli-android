@@ -22,16 +22,18 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.activities.EditRewardActivity;
@@ -69,6 +71,9 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     private List<Reward> rewards;
 
     @Nullable
@@ -90,6 +95,8 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         rewards = new ArrayList<>();
 
         rewardPersistenceService.findAll(this);
+
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.REWARDS)));
         return view;
     }
 
@@ -120,11 +127,6 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         unbinder.unbind();
         rewardPersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @OnClick(R.id.add_reward)
-    public void onAddReward(View view) {
-        startActivity(new Intent(getActivity(), EditRewardActivity.class));
     }
 
     @Subscribe

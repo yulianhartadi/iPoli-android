@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -74,6 +75,9 @@ public class RepeatingQuestActivity extends BaseActivity {
     @BindView(R.id.appbar)
     AppBarLayout appBar;
 
+    @BindView(R.id.quest_name)
+    TextView name;
+
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
@@ -123,6 +127,15 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
         collapsingToolbarLayout.setTitleEnabled(false);
         history.setNoDataText("");
+        getWindow().setBackgroundDrawable(null);
+
+        appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            if (collapsingToolbarLayout.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(collapsingToolbarLayout)) {
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+            } else {
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+            }
+        });
     }
 
     @Override
@@ -138,7 +151,6 @@ public class RepeatingQuestActivity extends BaseActivity {
                 Intent i = new Intent(this, EditQuestActivity.class);
                 i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, repeatingQuest.getId());
                 startActivity(i);
-                finish();
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_repeating_quest, R.string.help_dialog_repeating_quest_title, "repeating_quest").show(getSupportFragmentManager());
@@ -180,7 +192,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void displayRepeatingQuest() {
-
+        name.setText(repeatingQuest.getName());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(repeatingQuest.getName());
         }
@@ -193,7 +205,6 @@ public class RepeatingQuestActivity extends BaseActivity {
             colorLayout(category);
             setupChart();
         });
-
     }
 
     private void displaySummaryStats(Category category) {

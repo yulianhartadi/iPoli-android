@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -32,17 +31,16 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
-import io.ipoli.android.quest.activities.EditQuestActivity;
-import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
@@ -82,6 +80,9 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     private FragmentStatePagerAdapter adapter;
     private LocalDate currentMidDate;
+
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
 
     @Nullable
     @Override
@@ -129,6 +130,8 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
 
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CALENDAR)));
+
         return view;
     }
 
@@ -173,12 +176,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @OnClick(R.id.add_quest)
-    public void onAddQuest(View view) {
-        eventBus.post(new AddQuestButtonTappedEvent(EventSource.CALENDAR));
-        startActivity(new Intent(getActivity(), EditQuestActivity.class));
     }
 
     private void changeTitle(LocalDate date) {

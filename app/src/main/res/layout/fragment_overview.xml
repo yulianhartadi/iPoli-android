@@ -2,8 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/md_white">
+    android:layout_height="match_parent">
 
     <include layout="@layout/default_app_bar" />
 
@@ -15,11 +14,8 @@
         android:background="@color/md_white"
         android:scrollbars="vertical" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_quest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_white_24dp" />
+    <io.ipoli.android.app.ui.FabMenuView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fab_menu" />
 </android.support.design.widget.CoordinatorLayout>

@@ -24,15 +24,17 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeActivity;
@@ -64,6 +66,9 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     @Inject
     ChallengePersistenceService challengePersistenceService;
 
@@ -86,6 +91,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
 
         challengePersistenceService.findAllNotCompleted(this);
 
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CHALLENGES)));
         return view;
     }
 
@@ -132,11 +138,6 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
         unbinder.unbind();
         challengePersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @OnClick(R.id.add_challenge)
-    public void onAddChallenge(View view) {
-        startActivity(new Intent(getContext(), EditChallengeActivity.class));
     }
 
     @Override

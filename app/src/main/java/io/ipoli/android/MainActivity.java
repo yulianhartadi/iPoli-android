@@ -150,6 +150,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         appComponent().inject(this);
         ButterKnife.bind(this);
+        getWindow().setBackgroundDrawable(null);
 
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             startActivity(new Intent(this, SignInActivity.class));

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,27 +40,54 @@ public class SuggestionsManager {
     private final Map<MatcherType, List<TextEntityType>> matcherTypeToTextEntityTypes;
     private Map<TextEntityType, QuestTextMatcher> typeToMatcher;
 
-    TextEntityType currentType;
+    private TextEntityType currentType;
 
-    Map<MatcherType, TextEntityType> usedMatcherTypesToUsedTextEntityType = new HashMap<>();
+    private Map<MatcherType, TextEntityType> usedMatcherTypesToUsedTextEntityType = new HashMap<>();
 
     private List<SuggestionDropDownItem> currentSuggestions = new ArrayList<>();
 
-    OnSuggestionsUpdatedListener suggestionsUpdatedListener;
+    private OnSuggestionsUpdatedListener suggestionsUpdatedListener;
 
-    public SuggestionsManager(PrettyTimeParser parser) {
+    private Set<TextEntityType> excludedTypes = new HashSet<>();
+
+    public static SuggestionsManager createForQuest(PrettyTimeParser parser) {
+        return new SuggestionsManager(parser, true);
+    }
+
+    public static SuggestionsManager createForRepeatingQuest(PrettyTimeParser parser) {
+        return new SuggestionsManager(parser, false);
+    }
+
+    private SuggestionsManager(PrettyTimeParser parser, boolean disableRepeating) {
+        Set<TextEntityType> disabledEntityTypes = new HashSet<>();
+        if(disableRepeating) {
+            disabledEntityTypes.add(TextEntityType.RECURRENT);
+            disabledEntityTypes.add(TextEntityType.FLEXIBLE);
+        } else {
+            disabledEntityTypes.add(TextEntityType.DUE_DATE);
+        }
 
         typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
-            put(TextEntityType.MAIN, new MainMatcher());
+            put(TextEntityType.MAIN, new MainMatcher(disabledEntityTypes));
             put(TextEntityType.DURATION, new DurationMatcher());
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
-            put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
-            put(TextEntityType.FLEXIBLE, new FlexibleMatcher());
-            put(TextEntityType.TIMES_A_WEEK, new TimesAWeekMatcher());
-            put(TextEntityType.TIMES_A_MONTH, new TimesAMonthMatcher());
-            put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
-            put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
-            put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
+            if(disableRepeating) {
+                put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
+                excludedTypes.add(TextEntityType.FLEXIBLE);
+                excludedTypes.add(TextEntityType.TIMES_A_WEEK);
+                excludedTypes.add(TextEntityType.TIMES_A_MONTH);
+                excludedTypes.add(TextEntityType.RECURRENT);
+                excludedTypes.add(TextEntityType.RECURRENT_DAY_OF_MONTH);
+                excludedTypes.add(TextEntityType.RECURRENT_DAY_OF_WEEK);
+            } else {
+                put(TextEntityType.FLEXIBLE, new FlexibleMatcher());
+                put(TextEntityType.TIMES_A_WEEK, new TimesAWeekMatcher());
+                put(TextEntityType.TIMES_A_MONTH, new TimesAMonthMatcher());
+                put(TextEntityType.RECURRENT, new RecurrenceEveryDayMatcher());
+                put(TextEntityType.RECURRENT_DAY_OF_MONTH, new RecurrenceDayOfMonthMatcher());
+                put(TextEntityType.RECURRENT_DAY_OF_WEEK, new RecurrenceDayOfWeekMatcher());
+                excludedTypes.add(TextEntityType.DUE_DATE);
+            }
         }};
 
         matcherTypeToTextEntityTypes = new HashMap<>();
@@ -158,6 +186,10 @@ public class SuggestionsManager {
 
         for (MatcherType mt : usedMatcherTypesToUsedTextEntityType.keySet()) {
             unusedTextEntityTypes.removeAll(matcherTypeToTextEntityTypes.get(mt));
+        }
+
+        for(TextEntityType type : excludedTypes) {
+            unusedTextEntityTypes.remove(type);
         }
         return unusedTextEntityTypes;
     }

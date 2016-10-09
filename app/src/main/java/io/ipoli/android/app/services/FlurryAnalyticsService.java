@@ -42,6 +42,7 @@ import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
+import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
@@ -774,6 +775,13 @@ public class FlurryAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onAcceptChallenge(AcceptChallengeEvent e) {
         log("accept_challenge", EventParams.of("name", e.name));
+    }
+
+    @Subscribe
+    public void onFabMenuTapped(FabMenuTappedEvent e) {
+        log("fab_menu_tapped", EventParams.create()
+                .add("name", e.name)
+                .add("source", e.source.name().toLowerCase()));
     }
 
 
