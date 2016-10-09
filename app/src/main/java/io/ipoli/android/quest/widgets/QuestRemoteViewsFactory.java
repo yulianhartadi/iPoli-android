@@ -3,7 +3,6 @@ package io.ipoli.android.quest.widgets;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -80,7 +79,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
         rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
-        rv.setInt(R.id.widget_agenda_check, "setColorFilter", ContextCompat.getColor(context, Quest.getCategory(q).color500));
+        rv.setImageViewResource(R.id.widget_agenda_category, Quest.getCategory(q).colorfulImage);
 
         Bundle tapQuestBundle = new Bundle();
         tapQuestBundle.putInt(AgendaWidgetProvider.QUEST_ACTION_EXTRA_KEY, AgendaWidgetProvider.QUEST_ACTION_VIEW);

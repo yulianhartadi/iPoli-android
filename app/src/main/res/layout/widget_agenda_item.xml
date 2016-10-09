@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_agenda_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:background="@drawable/agenda_widget_item_background"
-    android:orientation="horizontal">
+    android:background="@drawable/agenda_widget_item_background">
 
     <ImageView
-        android:id="@+id/widget_agenda_check"
+        android:id="@+id/widget_agenda_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@null"
-        android:src="@drawable/ic_check_box_outline_blank_black_24dp" />
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@null" />
 
     <LinearLayout
         android:id="@+id/widget_agenda_quest_info_container"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_toEndOf="@+id/widget_agenda_category"
+        android:layout_toStartOf="@+id/widget_agenda_check"
         android:orientation="vertical"
         android:paddingEnd="8dp"
         android:paddingStart="8dp">
@@ -45,4 +45,15 @@
             android:minHeight="21dp"
             android:textColor="@color/md_dark_text_54" />
     </LinearLayout>
-</LinearLayout>
+
+    <ImageView
+        android:id="@+id/widget_agenda_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@null"
+        android:src="@drawable/ic_check_box_outline_blank_black_24dp" />
+</RelativeLayout>
