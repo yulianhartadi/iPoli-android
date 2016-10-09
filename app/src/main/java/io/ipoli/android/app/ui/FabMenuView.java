@@ -111,31 +111,31 @@ public class FabMenuView extends RelativeLayout {
 
     }
 
-    @OnClick(R.id.fab_add_quest)
+    @OnClick({R.id.fab_add_quest, R.id.fab_quest_label})
     public void onAddQuestClick(View view) {
         Intent intent = new Intent(getContext(), EditQuestActivity.class);
         intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, false);
         onFabClicked(intent, FabName.QUEST);
     }
 
-    @OnClick(R.id.fab_add_repeating_quest)
+    @OnClick({R.id.fab_add_repeating_quest, R.id.fab_repeating_quest_label})
     public void onAddRepeatingQuestClick(View view) {
         Intent intent = new Intent(getContext(), EditQuestActivity.class);
         intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, true);
         onFabClicked(intent, FabName.REPEATING_QUEST);
     }
 
-    @OnClick(R.id.fab_add_challenge)
+    @OnClick({R.id.fab_add_challenge, R.id.fab_challenge_label})
     public void onAddChallengeClick(View view) {
         onFabClicked(new Intent(getContext(), EditChallengeActivity.class), FabName.CHALLENGE);
     }
 
-    @OnClick(R.id.fab_add_reward)
+    @OnClick({R.id.fab_add_reward, R.id.fab_reward_label})
     public void onAddRewardClick(View view) {
         onFabClicked(new Intent(getContext(), EditRewardActivity.class), FabName.REWARD);
     }
 
-    @OnClick(R.id.fab_quick_add_quest)
+    @OnClick({R.id.fab_quick_add_quest, R.id.fab_quick_add_label})
     public void onQuickAddQuestClick(View view) {
         Intent intent = new Intent(getContext(), QuickAddActivity.class);
         intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getContext().getString(R.string.today).toLowerCase());
