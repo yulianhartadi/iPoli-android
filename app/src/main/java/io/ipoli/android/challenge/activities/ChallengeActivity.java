@@ -12,10 +12,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -30,6 +32,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -45,13 +48,20 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
@@ -112,6 +122,14 @@ public class ChallengeActivity extends BaseActivity {
     @BindView(R.id.challenge_total_time_spent)
     TextView totalTimeSpent;
 
+    @BindView(R.id.quest_list_container)
+    ViewGroup questListContainer;
+
+    @BindView(R.id.quest_list)
+    EmptyStateRecyclerView questList;
+
+    private ChallengeQuestListAdapter adapter;
+
     @Inject
     Bus eventBus;
 
@@ -126,6 +144,8 @@ public class ChallengeActivity extends BaseActivity {
 
     private String challengeId;
     private Challenge challenge;
+    private List<Quest> quests = new ArrayList<>();
+    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +175,14 @@ public class ChallengeActivity extends BaseActivity {
         });
 
         challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        questList.setLayoutManager(layoutManager);
+        questList.setEmptyView(questListContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+        adapter = new ChallengeQuestListAdapter(this, new ArrayList<>(), eventBus);
+        questList.setAdapter(adapter);
+
     }
 
     @Override
@@ -165,15 +193,25 @@ public class ChallengeActivity extends BaseActivity {
             displayChallenge();
             setBackgroundColors(Challenge.getCategory(challenge));
         });
+        questPersistenceService.listenForIncompleteNotRepeatingForChallenge(challengeId, results -> {
+            quests = results;
+            onQuestListUpdated();
+        });
+        repeatingQuestPersistenceService.listenForActiveForChallenge(challengeId, results -> {
+            repeatingQuests = results;
+            onQuestListUpdated();
+        });
     }
 
-    private void setBackgroundColors(Category category) {
-        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
-        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.color500));
-        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
-
+    private void onQuestListUpdated() {
+        List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
+        for (Quest q : quests) {
+            viewModels.add(new ChallengeQuestViewModel(q, false));
+        }
+        for (RepeatingQuest rq : repeatingQuests) {
+            viewModels.add(new ChallengeQuestViewModel(rq, true));
+        }
+        adapter.setViewModels(viewModels);
     }
 
     @Override
@@ -190,6 +228,9 @@ public class ChallengeActivity extends BaseActivity {
                 i.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challenge.getId());
                 startActivity(i);
                 finish();
+                return true;
+            case R.id.action_help:
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_challenge, R.string.help_dialog_challenge_title, "challenge").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -214,6 +255,8 @@ public class ChallengeActivity extends BaseActivity {
     @Override
     protected void onStop() {
         challengePersistenceService.removeAllListeners();
+        questPersistenceService.removeAllListeners();
+        repeatingQuestPersistenceService.removeAllListeners();
         super.onStop();
     }
 
@@ -423,6 +466,36 @@ public class ChallengeActivity extends BaseActivity {
             return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
         } else {
             return weekStart.getDayOfMonth() + " " + weekStart.monthOfYear().getAsShortText() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        }
+    }
+
+    private void setBackgroundColors(Category category) {
+        appBar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
+
+    }
+
+    @OnClick(R.id.add_quests)
+    public void onAddQuestsClick(View v) {
+        Intent intent = new Intent(this, PickChallengeQuestsActivity.class);
+        intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId);
+        startActivity(intent);
+    }
+
+    @Subscribe
+    public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
+        BaseQuest bq = e.baseQuest;
+        if (bq instanceof Quest) {
+            Quest q = (Quest) bq;
+            q.setChallengeId(null);
+            questPersistenceService.save(q);
+        } else {
+            RepeatingQuest rq = (RepeatingQuest) bq;
+            rq.setChallengeId(null);
+            repeatingQuestPersistenceService.save(rq);
         }
     }
 }
