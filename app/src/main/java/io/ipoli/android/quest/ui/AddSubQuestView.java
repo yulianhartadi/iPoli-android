@@ -5,23 +5,16 @@ import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnEditorAction;
-import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -32,19 +25,13 @@ import io.ipoli.android.app.utils.StringUtils;
  */
 public class AddSubQuestView extends RelativeLayout implements View.OnFocusChangeListener {
     private List<OnSubQuestAddedListener> subQuestAddedListeners = new ArrayList<>();
-    private Unbinder unbinder;
 
     public interface OnSubQuestAddedListener {
         void onSubQuestAdded(String name);
     }
 
-    @BindView(R.id.add_sub_quest_container)
     ViewGroup container;
-
-    @BindView(R.id.add_sub_quest)
     TextInputEditText editText;
-
-    @BindView(R.id.add_sub_quest_clear)
     ImageButton clearAddSubQuest;
 
     public AddSubQuestView(Context context) {
@@ -65,10 +52,31 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_add_sub_quest, this);
 
-        unbinder = ButterKnife.bind(this, view);
+        container = (ViewGroup) view.findViewById(R.id.add_sub_quest_container);
+        editText = (TextInputEditText) view.findViewById(R.id.add_sub_quest);
+        clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
 
         hideUnderline(editText);
         editText.setOnFocusChangeListener(this);
+        editText.setOnEditorActionListener((v, actionId, event) -> onEditorAction(actionId));
+        clearAddSubQuest.setOnClickListener(v -> setAddSubQuestInViewMode());
+    }
+
+    private boolean onEditorAction(int actionId) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            String name = editText.getText().toString();
+            if(StringUtils.isEmpty(name)) {
+                setAddSubQuestInViewMode();
+            } else {
+                for (OnSubQuestAddedListener l : subQuestAddedListeners) {
+                    l.onSubQuestAdded(name);
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void showUnderline(View view) {
@@ -119,40 +127,11 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         clearAddSubQuest.setVisibility(View.VISIBLE);
     }
 
-    @OnClick(R.id.add_sub_quest_clear)
-    public void onClearAddSubQuestClick(View v) {
-        setAddSubQuestInViewMode();
-    }
-
-    @OnEditorAction(R.id.add_sub_quest)
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        int result = actionId & EditorInfo.IME_MASK_ACTION;
-        if (result == EditorInfo.IME_ACTION_DONE) {
-            String name = editText.getText().toString();
-            if(StringUtils.isEmpty(name)) {
-                setAddSubQuestInViewMode();
-            } else {
-                for (OnSubQuestAddedListener l : subQuestAddedListeners) {
-                    l.onSubQuestAdded(name);
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public void addSubQuestAddedListener(OnSubQuestAddedListener listener) {
         subQuestAddedListeners.add(listener);
     }
 
     public void removeSubQuestAddedListener(OnSubQuestAddedListener listener) {
         subQuestAddedListeners.remove(listener);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        unbinder.unbind();
-        super.onDetachedFromWindow();
     }
 }
