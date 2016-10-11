@@ -134,6 +134,9 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.action_save:
                 saveReward();
                 return true;

@@ -197,6 +197,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.action_save:
                 onSaveTap(EventSource.TOOLBAR);
                 return true;

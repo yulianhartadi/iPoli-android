@@ -249,6 +249,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onStop() {
         questPersistenceService.removeAllListeners();
+        timerButton.setVisibility(View.GONE);
         super.onStop();
     }
 
@@ -297,6 +298,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 TimeUnit.MINUTES.toMillis(Constants.QUEST_WITH_NO_DURATION_TIMER_MINUTES);
         timerProgress.setMax((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
         timerProgress.setSecondaryProgress((int) TimeUnit.MILLISECONDS.toSeconds(totalTime));
+        timerButton.setVisibility(View.VISIBLE);
     }
 
     private void startTimer() {
