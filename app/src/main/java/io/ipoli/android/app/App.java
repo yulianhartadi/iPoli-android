@@ -603,10 +603,12 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
         Quest quest = e.quest;
+        if (Quest.isCompleted(quest)) {
+            quest.setExperience(experienceRewardGenerator.generate(quest));
+            quest.setCoins(coinsRewardGenerator.generate(quest));
+        }
         questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
             if (Quest.isCompleted(quest)) {
-                quest.setExperience(experienceRewardGenerator.generate(quest));
-                quest.setCoins(coinsRewardGenerator.generate(quest));
                 onQuestComplete(quest, e.source);
             }
         });
