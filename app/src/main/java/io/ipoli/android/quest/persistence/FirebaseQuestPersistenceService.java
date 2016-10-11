@@ -70,8 +70,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
-        listenForListChange(getCollectionReference(), listener, data -> data.filter(
-                q -> q.getEndDate() == null && q.getActualStartDate() == null && q.getCompletedAtDate() == null
+        listenForListChange(getCollectionReference().orderByChild("end").equalTo(null), listener, data -> data.filter(
+                q -> q.getActualStartDate() == null && q.getCompletedAtDate() == null
         ));
     }
 
