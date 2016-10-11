@@ -5,6 +5,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,6 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,7 +35,6 @@ import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
  */
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
 
-    private final PrettyTime prettyTime;
     private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
@@ -46,7 +43,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
-        prettyTime = new PrettyTime();
     }
 
     @Override
@@ -69,7 +65,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.categoryIndicatorImage.setImageResource(category.whiteImage);
 
         holder.name.setText(q.getName());
-        holder.createdAt.setText(prettyTime.format(new Date(q.getCreatedAt())));
+        holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getCreatedAt()));
 
         holder.moreMenu.setOnClickListener(v -> {
             eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
