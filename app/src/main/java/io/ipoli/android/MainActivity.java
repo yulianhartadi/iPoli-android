@@ -77,7 +77,6 @@ import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -93,15 +92,12 @@ import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.quest.ui.events.AddQuestRequestEvent;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final String ACTION_QUEST_COMPLETE = "io.ipoli.android.intent.action.QUEST_COMPLETE";
-    public static final String ACTION_ADD_QUEST_FROM_WIDGET = "io.ipoli.android.intent.action.ADD_QUEST_FROM_WIDGET";
     public static final int PICK_PLAYER_PICTURE_REQUEST_CODE = 101;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
@@ -254,28 +250,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        if (isFromAction(ACTION_QUEST_COMPLETE)) {
-            String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-            setIntent(null);
-            questPersistenceService.findById(questId, quest -> {
-                startCalendar();
-                eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.NOTIFICATION));
-            });
-        } else if (isFromAction(ACTION_ADD_QUEST_FROM_WIDGET)) {
-            eventBus.post(new AddQuestRequestEvent(EventSource.WIDGET));
-            setIntent(null);
-            startActivity(new Intent(this, EditQuestActivity.class));
-        }
-    }
-
-    private boolean isFromAction(String action) {
-        return getIntent() != null && action.equals(getIntent().getAction());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
     }
 
     @Override

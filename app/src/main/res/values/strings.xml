@@ -346,4 +346,6 @@
     <string name="quests">Quests</string>
     <string name="title_edit_new_quest">Add Quest</string>
     <string name="title_edit_new_repeating_quest">Add Repeating Quest</string>
+    <string name="quest_started">Quest started</string>
+    <string name="quest_stopped">Quest stopped</string>
 </resources>

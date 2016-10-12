@@ -146,17 +146,17 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     }
 
     private void setupAddClickListener(Context context, RemoteViews rv) {
+        rv.setOnClickPendingIntent(R.id.widget_agenda_add, getQuickAddPendingIntent(context));
+    }
+
+    private PendingIntent getQuickAddPendingIntent(Context context) {
         Intent intent = new Intent(context, QuickAddActivity.class);
         intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + context.getString(R.string.today).toLowerCase());
-        PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setOnClickPendingIntent(R.id.widget_agenda_add, startAppPendingIntent);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void setupEmptyView(Context context, RemoteViews rv) {
-        Intent addQuestIntent = new Intent(context, MainActivity.class);
-        addQuestIntent.setAction(MainActivity.ACTION_ADD_QUEST_FROM_WIDGET);
-        PendingIntent addQuestPendingIntent = PendingIntent.getActivity(context, 0, addQuestIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setOnClickPendingIntent(R.id.widget_agenda_empty, addQuestPendingIntent);
+        rv.setOnClickPendingIntent(R.id.widget_agenda_empty, getQuickAddPendingIntent(context));
         rv.setEmptyView(R.id.widget_agenda_list, R.id.widget_agenda_empty);
     }
 }

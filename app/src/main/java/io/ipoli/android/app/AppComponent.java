@@ -44,10 +44,13 @@ import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
+import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
+import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.SnoozeQuestReceiver;
+import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
@@ -170,5 +173,10 @@ public interface AppComponent {
 
     void inject(PersonalizeChallengeActivity personalizeChallengeActivity);
 
+    void inject(StartQuestReceiver startQuestReceiver);
+
+    void inject(StopQuestReceiver stopQuestReceiver);
+
+    void inject(CompleteQuestReceiver completeQuestReceiver);
 }
 

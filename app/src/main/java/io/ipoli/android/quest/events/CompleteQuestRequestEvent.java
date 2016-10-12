@@ -11,8 +11,6 @@ public class CompleteQuestRequestEvent {
     public final Quest quest;
     public final EventSource source;
 
-
-
     public CompleteQuestRequestEvent(Quest quest, EventSource source) {
         this.quest = quest;
         this.source = source;

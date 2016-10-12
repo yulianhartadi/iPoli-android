@@ -54,7 +54,6 @@ import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
-import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
@@ -90,7 +89,6 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -109,7 +107,10 @@ import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
+import io.ipoli.android.quest.receivers.StartQuestReceiver;
+import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -390,7 +391,7 @@ public class App extends MultiDexApplication {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         if (quest != null) {
             if (quest.isStarted()) {
-                builder.addAction(R.drawable.ic_clear_24dp, getString(R.string.cancel).toUpperCase(), getCancelPendingIntent(quest.getId()));
+                builder.addAction(R.drawable.ic_stop_black_24dp, getString(R.string.stop).toUpperCase(), getStopPendingIntent(quest.getId()));
             } else {
                 builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), getStartPendingIntent(quest.getId()));
             }
@@ -401,27 +402,21 @@ public class App extends MultiDexApplication {
     }
 
     private PendingIntent getStartPendingIntent(String questId) {
-        Intent intent = new Intent(this, QuestActivity.class);
+        Intent intent = new Intent(StartQuestReceiver.ACTION_START_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        intent.setAction(QuestActivity.ACTION_START_QUEST);
-
-        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, this, new Random().nextInt());
+        return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
 
-    private PendingIntent getCancelPendingIntent(String questId) {
-        Intent intent = new Intent(this, QuestActivity.class);
+    private PendingIntent getStopPendingIntent(String questId) {
+        Intent intent = new Intent(StopQuestReceiver.ACTION_STOP_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        intent.setAction(QuestActivity.ACTION_QUEST_CANCELED);
-
-        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, this);
+        return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
 
     private PendingIntent getDonePendingIntent(String questId) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        intent.setAction(MainActivity.ACTION_QUEST_COMPLETE);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
 
     private void initAppStart() {
@@ -429,9 +424,11 @@ public class App extends MultiDexApplication {
         if (versionCode != BuildConfig.VERSION_CODE) {
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
-            FlurryAgent.onStartSession(this);
-            eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
-            FlurryAgent.onEndSession(this);
+            if (versionCode > 0) {
+                FlurryAgent.onStartSession(this);
+                eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
+                FlurryAgent.onEndSession(this);
+            }
         }
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
         scheduleQuestsFor4WeeksAhead();

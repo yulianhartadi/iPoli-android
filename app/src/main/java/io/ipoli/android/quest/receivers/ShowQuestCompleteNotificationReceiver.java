@@ -14,9 +14,9 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
@@ -53,11 +53,9 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
     }
 
     private PendingIntent getPendingIntent(Context context, String questId) {
-        Intent i = new Intent(context, MainActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        i.setAction(MainActivity.ACTION_QUEST_COMPLETE);
-        i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
     @Override

@@ -147,12 +147,10 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
 
     private PendingIntent getStartPendingIntent(String questId, int notificationId, Context context) {
-        Intent intent = new Intent(context, QuestActivity.class);
+        Intent intent = new Intent(StartQuestReceiver.ACTION_START_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         intent.putExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, notificationId);
-        intent.setAction(QuestActivity.ACTION_START_QUEST);
-
-        return ActivityIntentFactory.createWithParentStack(QuestActivity.class, intent, context, new Random().nextInt());
+        return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
     private PendingIntent getSnoozePendingIntent(String questId, int notificationId, Context context) {

@@ -217,6 +217,27 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".quest.receivers.StartQuestReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.START_QUEST" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".quest.receivers.StopQuestReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.STOP_QUEST" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".quest.receivers.CompleteQuestReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="io.ipoli.android.intent.action.COMPLETE_QUEST" />
+            </intent-filter>
+        </receiver>
+        <receiver
             android:name=".challenge.receivers.ScheduleDailyChallengeReminderReceiver"
             android:exported="false">
             <intent-filter>

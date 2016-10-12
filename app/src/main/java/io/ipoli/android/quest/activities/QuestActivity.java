@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
@@ -68,8 +67,6 @@ import io.ipoli.android.quest.ui.formatters.TimerFormatter;
  */
 
 public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
-    public static final String ACTION_QUEST_CANCELED = "io.ipoli.android.intent.action.QUEST_CANCELED";
-    public static final String ACTION_START_QUEST = "io.ipoli.android.intent.action.START_QUEST";
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -111,7 +108,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     private int elapsedSeconds;
 
     private boolean isAddSubQuestInEditMode = false;
-    private boolean afterOnCreate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -135,8 +131,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
-        afterOnCreate = true;
-
         collapsingToolbarLayout.setTitleEnabled(false);
 
         appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
@@ -185,19 +179,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     protected void onStart() {
         super.onStart();
-        questPersistenceService.listenById(questId, quest -> {
-            if (afterOnCreate) {
-                afterOnCreate = false;
-                String action = getIntent().getAction();
-                if (ACTION_QUEST_CANCELED.equals(action)) {
-                    new StopQuestCommand(this, quest, questPersistenceService).execute();
-                } else if (ACTION_START_QUEST.equals(action)) {
-                    NotificationManagerCompat.from(this).cancel(getIntent().getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-                    new StartQuestCommand(this, quest, questPersistenceService).execute();
-                }
-            }
-            onQuestFound(quest);
-        });
+        questPersistenceService.listenById(questId, this::onQuestFound);
     }
 
     private void onQuestFound(Quest quest) {
