@@ -93,6 +93,10 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context, Quest q, Reminder reminder) {
+        if (q.shouldNotBeReminded()) {
+            return;
+        }
+
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
         remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());

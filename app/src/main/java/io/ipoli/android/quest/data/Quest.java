@@ -518,4 +518,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void removeSubQuest(SubQuest subQuest) {
         getSubQuests().remove(subQuest);
     }
+
+    @Exclude
+    public boolean shouldNotBeReminded() {
+        return getActualStart() != null || getCompletedAt() != null;
+    }
 }
