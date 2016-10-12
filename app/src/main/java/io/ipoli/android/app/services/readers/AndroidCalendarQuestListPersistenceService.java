@@ -53,7 +53,11 @@ public class AndroidCalendarQuestListPersistenceService implements AndroidCalend
                 }
                 DateTimeZone timeZone = DateTimeZone.getDefault();
                 if (!TextUtils.isEmpty(e.eventTimeZone)) {
-                    timeZone = DateTimeZone.forID(e.eventTimeZone);
+                    try {
+                        timeZone = DateTimeZone.forID(e.eventTimeZone);
+                    } catch (Exception ex) {
+                        // not known timezone
+                    }
                 }
                 DateTime startDateTime = new DateTime(e.dTStart, timeZone);
                 DateTime endDateTime = new DateTime(e.dTend, timeZone);
