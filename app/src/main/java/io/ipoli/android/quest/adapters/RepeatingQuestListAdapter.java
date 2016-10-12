@@ -1,8 +1,6 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -80,9 +78,6 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         questHolder.name.setText(vm.getName());
 
-        GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
-
         questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
 
         questHolder.schedule.setText(vm.getScheduleText());
@@ -103,9 +98,6 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         @BindView(R.id.quest_name)
         public TextView name;
-
-        @BindView(R.id.quest_category_indicator_background)
-        public View contextIndicatorBackground;
 
         @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;

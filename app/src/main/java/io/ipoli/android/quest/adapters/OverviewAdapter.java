@@ -229,9 +229,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 questHolder.runningIndicator.setVisibility(View.GONE);
             }
 
-            GradientDrawable drawable = (GradientDrawable) questHolder.contextIndicatorBackground.getBackground();
-            drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
-
             questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
             questHolder.dueDate.setText(vm.getDueDateText());
 
@@ -310,9 +307,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @BindView(R.id.quest_running_indicator)
         View runningIndicator;
-
-        @BindView(R.id.quest_category_indicator_background)
-        public View contextIndicatorBackground;
 
         @BindView(R.id.quest_category_indicator_image)
         public ImageView contextIndicatorImage;

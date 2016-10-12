@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content_layout"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="72dp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/challenge_category_container"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -15,19 +15,13 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp">
 
-        <View
-            android:id="@+id/challenge_category_indicator_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_context_progress_indicator" />
-
         <ImageView
             android:id="@+id/challenge_category_indicator_image"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
             android:scaleType="fitXY" />
-    </FrameLayout>
+    </LinearLayout>
 
 
     <TextView
@@ -49,8 +43,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@+id/challenge_more_menu"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_toStartOf="@+id/challenge_more_menu" />
 
     <ImageButton
         android:id="@+id/challenge_more_menu"

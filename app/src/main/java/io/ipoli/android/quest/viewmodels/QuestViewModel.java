@@ -41,7 +41,7 @@ public class QuestViewModel {
 
     @DrawableRes
     public int getCategoryImage() {
-        return getQuestCategory().whiteImage;
+        return getQuestCategory().colorfulImage;
     }
 
     public String getDueDateText() {

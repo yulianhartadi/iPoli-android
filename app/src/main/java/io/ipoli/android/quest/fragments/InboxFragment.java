@@ -28,7 +28,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
@@ -73,7 +72,6 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
-        questList.addItemDecoration(new DividerItemDecoration(getContext()));
         questList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
 
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);

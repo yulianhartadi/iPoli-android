@@ -37,7 +37,7 @@ public class RepeatingQuestViewModel {
 
     @DrawableRes
     public int getCategoryImage() {
-        return getQuestCategory().whiteImage;
+        return getQuestCategory().colorfulImage;
     }
 
     private Category getQuestCategory() {

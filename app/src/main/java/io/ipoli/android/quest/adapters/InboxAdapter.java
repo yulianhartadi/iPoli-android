@@ -1,8 +1,6 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -55,14 +53,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Quest q = quests.get(position);
 
-        Category category = Quest.getCategory(q);
-        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.color500));
-
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
 
-        holder.categoryIndicatorImage.setImageResource(category.whiteImage);
+        Category category = Quest.getCategory(q);
+        holder.categoryIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(q.getName());
         holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getCreatedAt()));
@@ -112,9 +107,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
         @BindView(R.id.quest_created_at)
         TextView createdAt;
-
-        @BindView(R.id.quest_category_indicator_background)
-        View categoryIndicatorBackground;
 
         @BindView(R.id.quest_category_indicator_image)
         ImageView categoryIndicatorImage;

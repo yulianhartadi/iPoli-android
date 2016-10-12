@@ -1,8 +1,6 @@
 package io.ipoli.android.challenge.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -55,13 +53,11 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
         final Challenge challenge = challenges.get(position);
 
         Category category = Challenge.getCategory(challenge);
-        GradientDrawable drawable = (GradientDrawable) holder.contextIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.color500));
 
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new ShowChallengeEvent(challenge, EventSource.CHALLENGES)));
 
-        holder.contextIndicatorImage.setImageResource(category.whiteImage);
+        holder.contextIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(challenge.getName());
         holder.endDate.setText(DateFormatter.format(challenge.getEndDate()));
@@ -103,9 +99,6 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
 
         @BindView(R.id.challenge_end_date)
         TextView endDate;
-
-        @BindView(R.id.challenge_category_indicator_background)
-        View contextIndicatorBackground;
 
         @BindView(R.id.challenge_category_indicator_image)
         ImageView contextIndicatorImage;
