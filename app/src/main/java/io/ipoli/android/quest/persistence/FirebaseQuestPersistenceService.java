@@ -556,9 +556,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener) {
         getPlayerReference().child("reminders").child(String.valueOf(startTime)).setValue(null);
-        if (listener != null) {
-            listener.onComplete();
-        }
+        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
