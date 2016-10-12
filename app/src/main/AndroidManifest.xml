@@ -156,10 +156,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
-            android:name=".app.activities.NoInternetActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".quest.activities.QuestActivity"
             android:label="@string/title_activity_repeating_quest"
             android:parentActivityName=".MainActivity"
