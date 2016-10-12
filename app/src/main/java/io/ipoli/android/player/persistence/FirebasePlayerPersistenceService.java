@@ -38,23 +38,17 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             DatabaseReference objRef = collectionRef.push();
             player.setId(objRef.getKey());
 
+            objRef.setValue(player);
+            DatabaseReference petsRef = objRef.child("pets");
+            DatabaseReference petRef = petsRef.push();
+            player.getPet().setId(petRef.getKey());
 
-            objRef.setValue(player, (databaseError, databaseReference) -> {
-
-                DatabaseReference petsRef = objRef.child("pets");
-                DatabaseReference petRef = petsRef.push();
-                player.getPet().setId(petRef.getKey());
-                petRef.setValue(player.getPet(), (databaseError1, databaseReference1) -> {
-                    DatabaseReference avatarsRef = objRef.child("avatars");
-                    DatabaseReference avatarRef = avatarsRef.push();
-                    player.getAvatar().setId(avatarRef.getKey());
-                    avatarRef.setValue(player.getAvatar(), (databaseError2, databaseReference2) -> {
-                        if (listener != null) {
-                            listener.onComplete();
-                        }
-                    });
-                });
-            });
+            petRef.setValue(player.getPet());
+            DatabaseReference avatarsRef = objRef.child("avatars");
+            DatabaseReference avatarRef = avatarsRef.push();
+            player.getAvatar().setId(avatarRef.getKey());
+            avatarRef.setValue(player.getAvatar());
+            FirebaseCompletionListener.listen(listener);
         } else {
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
@@ -62,11 +56,8 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             playerData.put("uid", player.getUid());
             playerData.put("updatedAt", player.getUpdatedAt());
             playerData.put("createdAt", player.getCreatedAt());
-            objRef.updateChildren(playerData, (databaseError, databaseReference) -> {
-                if (listener != null) {
-                    listener.onComplete();
-                }
-            });
+            objRef.updateChildren(playerData);
+            FirebaseCompletionListener.listen(listener);
         }
     }
 

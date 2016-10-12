@@ -67,7 +67,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 collectionRef.push() :
                 collectionRef.child(obj.getId());
         obj.setId(objRef.getKey());
-        objRef.setValue(obj, FirebaseCompletionListener.listen(listener));
+        objRef.setValue(obj);
+        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -96,7 +97,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 data.put(objMap.get("id").toString(), objMap);
             }
         }
-        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+        collectionRef.updateChildren(data);
+        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -126,7 +128,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object, OnOperationCompletedListener listener) {
-        getCollectionReference().child(object.getId()).removeValue(FirebaseCompletionListener.listen(listener));
+        getCollectionReference().child(object.getId()).removeValue();
+        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -141,7 +144,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         for (T obj : objects) {
             data.put(obj.getId(), null);
         }
-        collectionRef.updateChildren(data, FirebaseCompletionListener.listen(listener));
+        collectionRef.updateChildren(data);
+        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -214,7 +218,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected abstract DatabaseReference getCollectionReference();
 
     protected DatabaseReference getPlayerReference() {
-        if(playerRef == null) {
+        if (playerRef == null) {
             playerRef = database.getReference(Constants.API_VERSION).child("players").child(App.getPlayerId());
             playerRef.keepSynced(true);
         }
@@ -380,7 +384,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    private static class FirebaseCompletionListener implements DatabaseReference.CompletionListener {
+    protected static class FirebaseCompletionListener {
 
         private final OnOperationCompletedListener listener;
 
@@ -388,12 +392,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             this.listener = listener;
         }
 
-        public static FirebaseCompletionListener listen(OnOperationCompletedListener listener) {
-            return new FirebaseCompletionListener(listener);
+        public static void listen(OnOperationCompletedListener listener) {
+            new FirebaseCompletionListener(listener).onComplete();
         }
 
-        @Override
-        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        public void onComplete() {
             if (listener != null) {
                 listener.onComplete();
             }
