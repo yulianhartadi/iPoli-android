@@ -243,6 +243,14 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Override
     public void onPause() {
         eventBus.unregister(this);
+        if (isTimerRunning) {
+            stopTimer();
+            long elapsedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - quest.getActualStartDate().getTime());
+            boolean isOverdue = questHasDuration && quest.getDuration() - elapsedMinutes < 0;
+            if (!isOverdue) {
+                QuestNotificationScheduler.scheduleUpdateTimer(questId, this);
+            }
+        }
         super.onPause();
     }
 
