@@ -3,8 +3,11 @@ package io.ipoli.android.app.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
@@ -16,6 +19,7 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
@@ -98,5 +102,16 @@ public class QuickAddActivity extends BaseActivity {
     @OnClick(R.id.cancel)
     public void onCancel(View v) {
         finish();
+    }
+
+    @OnEditorAction(R.id.quick_add_text)
+    public boolean onSubQuestEditorAction(TextView v, int actionId, KeyEvent event) {
+        int result = actionId & EditorInfo.IME_MASK_ACTION;
+        if (result == EditorInfo.IME_ACTION_DONE) {
+            onAddQuest(v);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

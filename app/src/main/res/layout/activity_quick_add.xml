@@ -45,7 +45,8 @@
                 android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:hint="@string/quick_add_hint"
-                android:inputType="textMultiLine|textCapSentences"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences"
                 android:maxLines="2" />
         </android.support.design.widget.TextInputLayout>
 
