@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.commands;
 
 import android.content.Context;
+import android.support.v4.app.NotificationManagerCompat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -8,6 +9,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,6 +28,11 @@ public class StartQuestCommand {
     }
 
     public Quest execute() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        for (Reminder r : quest.getReminders()) {
+            notificationManagerCompat.cancel(r.getNotificationId());
+        }
+
         quest.setActualStartDate(DateUtils.nowUTC());
         questPersistenceService.save(quest);
         stopOtherRunningQuests(quest);

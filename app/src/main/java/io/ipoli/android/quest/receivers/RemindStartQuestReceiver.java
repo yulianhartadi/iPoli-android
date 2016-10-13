@@ -106,8 +106,8 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
 
-        PendingIntent startQuestPI = getStartPendingIntent(q.getId(), reminder.getNotificationId(), context);
-        PendingIntent snoozeQuestPI = getSnoozePendingIntent(q.getId(), reminder.getNotificationId(), context);
+        PendingIntent startQuestPI = getStartPendingIntent(q.getId(), context);
+        PendingIntent snoozeQuestPI = getSnoozePendingIntent(q.getId(), context);
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setContentTitle(name)
@@ -146,17 +146,15 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     }
 
 
-    private PendingIntent getStartPendingIntent(String questId, int notificationId, Context context) {
+    private PendingIntent getStartPendingIntent(String questId, Context context) {
         Intent intent = new Intent(StartQuestReceiver.ACTION_START_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        intent.putExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, notificationId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
-    private PendingIntent getSnoozePendingIntent(String questId, int notificationId, Context context) {
+    private PendingIntent getSnoozePendingIntent(String questId, Context context) {
         Intent intent = new Intent(SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        intent.putExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, notificationId);
         return IntentUtils.getBroadcastPendingIntent(context, intent, new Random().nextInt());
     }
 }

@@ -3,7 +3,6 @@ package io.ipoli.android.quest.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
 
 import javax.inject.Inject;
@@ -32,12 +31,9 @@ public class StartQuestReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
         PendingResult result = goAsync();
 
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(intent.getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        QuestNotificationScheduler.scheduleUpdateTimer(questId, context);
         questPersistenceService.findById(questId, quest -> {
+            QuestNotificationScheduler.scheduleUpdateTimer(questId, context);
             new StartQuestCommand(context, quest, questPersistenceService).execute();
             Toast.makeText(context, R.string.quest_started, Toast.LENGTH_SHORT).show();
             result.finish();

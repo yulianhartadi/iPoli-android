@@ -13,6 +13,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,13 +33,16 @@ public class SnoozeQuestReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         PendingResult result = goAsync();
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.cancel(intent.getIntExtra(Constants.REMINDER_NOTIFICATION_ID_EXTRA_KEY, 0));
-
         App.getAppComponent(context).inject(this);
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            for (Reminder r : q.getReminders()) {
+                notificationManagerCompat.cancel(r.getNotificationId());
+            }
+
             q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
             questPersistenceService.save(q);
             eventBus.post(new QuestSnoozedEvent(q));
