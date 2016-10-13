@@ -103,7 +103,10 @@ public class PricePickerFragment extends DialogFragment {
     @NonNull
     private List<Integer> generateAvailablePrices() {
         List<Integer> availablePrices = new ArrayList<>();
-        int p = MIN_PRICE;
+        availablePrices.add(MIN_PRICE);
+        availablePrices.add(20);
+        availablePrices.add(50);
+        int p = 100;
         do {
             availablePrices.add(p);
             p += PRICE_STEP;
