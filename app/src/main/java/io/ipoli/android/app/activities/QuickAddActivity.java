@@ -105,7 +105,7 @@ public class QuickAddActivity extends BaseActivity {
     }
 
     @OnEditorAction(R.id.quick_add_text)
-    public boolean onSubQuestEditorAction(TextView v, int actionId, KeyEvent event) {
+    public boolean onAddEditorAction(TextView v, int actionId, KeyEvent event) {
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
             onAddQuest(v);
