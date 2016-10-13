@@ -27,7 +27,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private static final String DISABLE_PAST_DAY_SELECTION = "disable_past_day_selection";
 
     private OnDatePickedListener datePickedListener;
-    private boolean enableUnknownDateSelection;
 
     public static DatePickerFragment newInstance(Date date, boolean disablePastDaySelection, boolean enableUnknownDateSelection, OnDatePickedListener onDatePickedListener) {
         final Calendar c = Calendar.getInstance();
@@ -88,7 +87,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         boolean disablePastDaySelection = args.getBoolean(DISABLE_PAST_DAY_SELECTION);
 
         DatePickerDialog dialog = new DatePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, year, month, day);
-        if (enableUnknownDateSelection) {
+        if (args.getBoolean(ENABLE_UNKNOWN_DATE_SELECTION)) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getString(R.string.unknown_choice), this);
         }
         if (disablePastDaySelection) {

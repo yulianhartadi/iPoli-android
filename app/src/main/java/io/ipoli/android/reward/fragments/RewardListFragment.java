@@ -30,7 +30,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.ui.DividerItemDecoration;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
@@ -89,7 +88,6 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
         rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
-        rewardList.addItemDecoration(new DividerItemDecoration(getContext()));
         RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();

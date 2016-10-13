@@ -621,7 +621,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             if (q.getEndDate() != null) {
                 Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, R.string.quest_saved_to_inbox, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
             }
             setResult(RESULT_OK);
             finish();
@@ -949,7 +949,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, R.string.quest_saved_to_inbox, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
         }
     }
 
