@@ -138,7 +138,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
             avatar.removeCoins(r.getPrice());
             avatarPersistenceService.save(avatar);
             updateRewards(rewards);
-            Snackbar.make(rootLayout, e.reward.getPrice() + " coins spent", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootLayout, String.format(getString(R.string.reward_earned), e.reward.getName()), Snackbar.LENGTH_SHORT).show();
 
         });
     }
@@ -157,7 +157,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     @Subscribe
     public void onDeleteRewardRequest(DeleteRewardRequestEvent e) {
         rewardPersistenceService.delete(e.reward);
-        Toast.makeText(getActivity(), R.string.reward_removed, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.reward_deleted, Toast.LENGTH_SHORT).show();
     }
 
     @Override

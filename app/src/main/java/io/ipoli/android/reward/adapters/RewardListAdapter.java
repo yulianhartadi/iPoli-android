@@ -82,14 +82,12 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         }
         holder.buy.setText(String.valueOf(reward.getPrice()));
 
+        holder.buy.setEnabled(true);
+        holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
         if (vm.canBeBought()) {
-            holder.buy.setEnabled(true);
             holder.buy.setBackgroundResource(R.color.colorAccent);
-            holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
         } else {
-            holder.buy.setEnabled(false);
             holder.buy.setBackgroundResource(R.color.md_grey_500);
-            holder.buy.setOnClickListener(null);
         }
     }
 

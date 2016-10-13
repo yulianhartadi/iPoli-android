@@ -184,9 +184,9 @@
 
     <string name="dialog_delete_reward_title">Delete reward</string>
     <string name="dialog_delete_reward_message">Sure you want to delete this awesome reward?</string>
-    <string name="reward_removed">Reward removed</string>
+    <string name="reward_deleted">Reward deleted</string>
     <string name="reward_activity_edit_title">Edit reward</string>
-    <string name="reward_too_expensive">Not enough coins</string>
+    <string name="reward_too_expensive">Too expensive. Go complete some quests!</string>
     <string name="level_up_title">You gained a new level</string>
     <string name="sweet">SWEET</string>
     <string name="level_up_message"><![CDATA[Good job! You are now at level <b>%d</b>! Keep up the good work!]]></string>
@@ -347,4 +347,5 @@
     <string name="title_edit_new_repeating_quest">Add Repeating Quest</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
+    <string name="reward_earned">%s earned! Enjoy!</string>
 </resources>

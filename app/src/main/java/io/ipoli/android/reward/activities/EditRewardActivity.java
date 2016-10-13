@@ -145,7 +145,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
                         .setMessage(getString(R.string.dialog_delete_reward_message)).create();
                 d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                     rewardPersistenceService.delete(reward);
-                    Toast.makeText(EditRewardActivity.this, R.string.reward_removed, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditRewardActivity.this, R.string.reward_deleted, Toast.LENGTH_SHORT).show();
                     setResult(Constants.RESULT_REMOVED);
                     finish();
                 });
