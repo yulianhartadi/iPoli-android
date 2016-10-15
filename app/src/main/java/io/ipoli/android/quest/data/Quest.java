@@ -103,6 +103,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public List<Reminder> getReminders() {
+        if(reminders == null) {
+            reminders = new ArrayList<>();
+        }
         return reminders;
     }
 

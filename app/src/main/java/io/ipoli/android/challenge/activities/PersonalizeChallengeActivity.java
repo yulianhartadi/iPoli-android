@@ -535,6 +535,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @OnClick(R.id.accept_challenge)
     public void onAcceptChallenge(View view) {
+        view.setVisibility(View.GONE);
         eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
         Toast.makeText(this, R.string.challenge_accepted, Toast.LENGTH_SHORT).show();
         challengePersistenceService.save(predefinedChallenge.challenge, () -> {

@@ -49,6 +49,8 @@ public class PickChallengeActivity extends BaseActivity {
     @BindView(R.id.challenge_view_pager)
     HorizontalInfiniteCycleViewPager viewPager;
 
+    private boolean finishAfterChoosingChallenge = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +64,9 @@ public class PickChallengeActivity extends BaseActivity {
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-            if(IntentUtils.hasExtra(getIntent(), TITLE)) {
+            if (IntentUtils.hasExtra(getIntent(), TITLE)) {
                 ab.setTitle(getIntent().getStringExtra(TITLE));
+                finishAfterChoosingChallenge = true;
             }
         }
 
@@ -114,5 +117,8 @@ public class PickChallengeActivity extends BaseActivity {
         Intent intent = new Intent(this, PersonalizeChallengeActivity.class);
         intent.putExtra(Constants.PREDEFINED_CHALLENGE_INDEX, e.index);
         startActivity(intent);
+        if (finishAfterChoosingChallenge) {
+            supportFinishAfterTransition();
+        }
     }
 }
