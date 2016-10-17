@@ -25,8 +25,6 @@ import io.ipoli.android.quest.parsers.TimesADayMatcher;
 import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
 import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
@@ -189,7 +187,7 @@ public class QuestParser {
             Recur recur = new Recur(Recur.MONTHLY, null);
             recurrence.setRrule(recur.toString());
         } else {
-            recurrence.setRrule(null);
+            recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         }
 
         recurrence.setTimesADay(Math.max(1, timesADay));

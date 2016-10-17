@@ -118,7 +118,6 @@ import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.ADD_QUEST;
 import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.ADD_REPEATING_QUEST;
 import static io.ipoli.android.quest.activities.EditQuestActivity.EditMode.EDIT_NEW_QUEST;
@@ -959,15 +958,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setDuration((int) durationText.getTag());
         rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-        if (recurrence.getRrule() == null) {
-            if (endDateText.getTag() != null) {
-                recurrence.setDtstartDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-                recurrence.setDtendDate(toStartOfDayUTC(new LocalDate((Date) endDateText.getTag())));
-            } else {
-                recurrence.setDtstartDate(null);
-                recurrence.setDtend(null);
-            }
-        }
         rq.setRecurrence(recurrence);
         rq.setCategory(categoryView.getSelectedCategory().name());
         rq.setChallengeId((String) challengeValue.getTag());
