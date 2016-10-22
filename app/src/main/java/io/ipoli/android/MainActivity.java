@@ -148,6 +148,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ButterKnife.bind(this);
         getWindow().setBackgroundDrawable(null);
 
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             startActivity(new Intent(this, SignInActivity.class));
             finish();

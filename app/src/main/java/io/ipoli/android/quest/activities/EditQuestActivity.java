@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -675,6 +676,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         String name = "";
         if (editMode == EDIT_NEW_QUEST) {
             Quest q = questParser.parseQuest(questText.getText().toString());
+            if(q == null) {
+                q = createEmptyQuest();
+            }
             if (q.getEndDate() == null) {
                 populateEndDate(null);
             } else {
@@ -686,6 +690,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
         } else if (editMode == EDIT_NEW_REPEATING_QUEST) {
             RepeatingQuest rq = questParser.parseRepeatingQuest(questText.getText().toString());
+            if(rq == null) {
+                rq = createEmptyRepeatingQuest();
+            }
             populateStartTime(rq.getStartMinute());
             populateDuration(Math.max(rq.getDuration(), Constants.QUEST_MIN_DURATION));
             setFrequencyText(rq.getRecurrence());
@@ -696,6 +703,18 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         questText.setSelection(name.length());
         questText.clearFocus();
         hideKeyboard();
+    }
+
+    @NonNull
+    private RepeatingQuest createEmptyRepeatingQuest() {
+        RepeatingQuest rq = new RepeatingQuest("");
+        rq.setName("");
+        return rq;
+    }
+
+    @NonNull
+    private Quest createEmptyQuest() {
+        return new Quest("");
     }
 
     @OnClick(R.id.quest_end_date_container)

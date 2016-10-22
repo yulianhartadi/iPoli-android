@@ -430,7 +430,7 @@ public class App extends MultiDexApplication {
                 FlurryAgent.onEndSession(this);
             }
         }
-        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
         scheduleQuestsFor4WeeksAhead();
         moveIncompleteQuestsToInbox();
         scheduleNextReminder();
