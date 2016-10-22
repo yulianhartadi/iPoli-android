@@ -645,6 +645,9 @@ public class App extends MultiDexApplication {
                 notificationManagerCompat.cancel(reminder.getNotificationId());
             }
         }
+        if(e.quest.isStarted()) {
+            QuestNotificationScheduler.stopAll(e.quest.getId(), this);
+        }
         questPersistenceService.delete(e.quest);
     }
 
