@@ -117,7 +117,6 @@ import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
-import io.ipoli.android.reminder.data.Reminder;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
@@ -528,7 +527,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
-        QuestNotificationScheduler.stopAll(q.getId(), this);
+        QuestNotificationScheduler.cancelAll(q, this);
         q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         q.setExperience(experienceRewardGenerator.generate(q));
@@ -617,7 +616,7 @@ public class App extends MultiDexApplication {
             RepeatingQuest rq = e.repeatingQuest;
             questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
                 for (Quest quest : questsToRemove) {
-                    QuestNotificationScheduler.stopAll(quest.getId(), this);
+                    QuestNotificationScheduler.cancelAll(quest, this);
                 }
                 questPersistenceService.delete(questsToRemove);
                 rq.setReminders(e.reminders);
@@ -638,16 +637,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
-        List<Reminder> reminders = e.quest.getReminders();
-        if (reminders != null && !reminders.isEmpty()) {
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-            for (Reminder reminder : reminders) {
-                notificationManagerCompat.cancel(reminder.getNotificationId());
-            }
-        }
-        if(e.quest.isStarted()) {
-            QuestNotificationScheduler.stopAll(e.quest.getId(), this);
-        }
+        QuestNotificationScheduler.cancelAll(e.quest, this);
         questPersistenceService.delete(e.quest);
     }
 

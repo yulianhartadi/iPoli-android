@@ -187,7 +187,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(quest.getName());
         }
-        QuestNotificationScheduler.stopTimer(questId, this);
+        QuestNotificationScheduler.cancelTimer(questId, this);
         this.quest = quest;
         initUI();
         if (Quest.isStarted(quest)) {

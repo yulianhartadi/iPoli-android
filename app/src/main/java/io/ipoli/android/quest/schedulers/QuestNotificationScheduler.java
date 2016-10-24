@@ -8,12 +8,15 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.IntentUtils;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.receivers.ShowQuestCompleteNotificationReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,7 +31,7 @@ public class QuestNotificationScheduler {
                 TimeUnit.MINUTES.toMillis(1), IntentUtils.getBroadcastPendingIntent(context, intent));
     }
 
-    public static void stopTimer(String questId, Context context) {
+    public static void cancelTimer(String questId, Context context) {
         cancelUpdateTimerIntent(questId, context);
         dismissTimerNotification(context);
     }
@@ -60,7 +63,7 @@ public class QuestNotificationScheduler {
         }
     }
 
-    public static void stopDone(String questId, Context context) {
+    public static void cancelDone(String questId, Context context) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(Constants.QUEST_COMPLETE_NOTIFICATION_ID);
 
@@ -74,8 +77,16 @@ public class QuestNotificationScheduler {
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
-    public static void stopAll(String questId, Context context) {
-        stopDone(questId, context);
-        stopTimer(questId, context);
+    public static void cancelReminders(List<Reminder> reminders, Context context) {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        for (Reminder reminder : reminders) {
+            notificationManagerCompat.cancel(reminder.getNotificationId());
+        }
+    }
+
+    public static void cancelAll(Quest quest, Context context) {
+        cancelDone(quest.getId(), context);
+        cancelTimer(quest.getId(), context);
+        cancelReminders(quest.getReminders(), context);
     }
 }

@@ -63,7 +63,7 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
         PendingResult result = goAsync();
         App.getAppComponent(context).inject(this);
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
-        QuestNotificationScheduler.stopTimer(questId, context);
+        QuestNotificationScheduler.cancelTimer(questId, context);
         questPersistenceService.findById(questId, q -> {
             NotificationCompat.Builder builder = createNotificationBuilder(context, q);
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
