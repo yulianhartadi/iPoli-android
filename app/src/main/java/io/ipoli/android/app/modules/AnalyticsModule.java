@@ -11,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.FlurryAnalyticsService;
+import io.ipoli.android.app.services.FirebaseAnalyticsService;
 import io.ipoli.android.app.utils.LocalStorage;
 
 /**
@@ -30,6 +30,6 @@ public class AnalyticsModule {
             firebaseAnalytics.setUserId(playerId);
         }
         firebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        return new FlurryAnalyticsService(firebaseAnalytics);
+        return new FirebaseAnalyticsService(firebaseAnalytics);
     }
 }

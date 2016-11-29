@@ -121,12 +121,12 @@ import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 
-public class FlurryAnalyticsService implements AnalyticsService {
+public class FirebaseAnalyticsService implements AnalyticsService {
 
 
     private final FirebaseAnalytics analytics;
 
-    public FlurryAnalyticsService(FirebaseAnalytics analytics) {
+    public FirebaseAnalyticsService(FirebaseAnalytics analytics) {
         this.analytics = analytics;
     }
 
