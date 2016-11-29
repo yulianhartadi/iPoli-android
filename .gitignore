@@ -9,8 +9,6 @@
 market/
 art/
 *.iml
-*APIConstants.java
-*AnalyticsConstants.java
 app/google-services.json
 app/google-services_prod.json
 app/google-services_dev.json
