@@ -18,7 +18,6 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.facebook.FacebookSdk;
-import com.flurry.android.FlurryAgent;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
@@ -424,9 +423,7 @@ public class App extends MultiDexApplication {
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             if (versionCode > 0) {
-                FlurryAgent.onStartSession(this);
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
-                FlurryAgent.onEndSession(this);
             }
         }
 

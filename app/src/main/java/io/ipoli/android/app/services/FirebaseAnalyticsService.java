@@ -2,11 +2,8 @@ package io.ipoli.android.app.services;
 
 import android.text.TextUtils;
 
-import com.flurry.android.FlurryAgent;
-import com.flurry.android.FlurryEventRecordStatus;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.otto.Subscribe;
-
-import java.util.HashMap;
 
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
@@ -124,12 +121,18 @@ import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 
-public class FlurryAnalyticsService implements AnalyticsService {
+public class FirebaseAnalyticsService implements AnalyticsService {
 
+
+    private final FirebaseAnalytics analytics;
+
+    public FirebaseAnalyticsService(FirebaseAnalytics analytics) {
+        this.analytics = analytics;
+    }
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
-        FlurryAgent.setUserId(e.playerId);
+        analytics.setUserId(e.playerId);
         log("player_created");
     }
 
@@ -785,30 +788,26 @@ public class FlurryAnalyticsService implements AnalyticsService {
     }
 
 
-    private FlurryEventRecordStatus log(String eventName) {
-        return FlurryAgent.logEvent(eventName);
+    private void log(String eventName) {
+        log(eventName, EventParams.create());
     }
 
-    private FlurryEventRecordStatus log(String eventName, EventSource source) {
-        return log(eventName, EventParams.of("source", source.name().toLowerCase()));
+    private void log(String eventName, EventParams eventParams) {
+        analytics.logEvent(eventName, eventParams.getParams());
     }
 
-    private FlurryEventRecordStatus log(String eventName, HashMap<String, String> params) {
-        return FlurryAgent.logEvent(eventName, params);
+    private void log(String eventName, EventSource source) {
+        log(eventName, EventParams.of("source", source.name().toLowerCase()));
     }
 
-    private FlurryEventRecordStatus log(String eventName, EventParams eventParams) {
-        return FlurryAgent.logEvent(eventName, eventParams.getParams());
-    }
-
-    private FlurryEventRecordStatus log(String eventName, String id, String name) {
-        return log(eventName, EventParams.create()
+    private void log(String eventName, String id, String name) {
+        log(eventName, EventParams.create()
                 .add("id", id)
                 .add("name", name));
     }
 
-    private FlurryEventRecordStatus log(String eventName, String id, String name, String source) {
-        return log(eventName, EventParams.create()
+    private void log(String eventName, String id, String name, String source) {
+        log(eventName, EventParams.create()
                 .add("id", id)
                 .add("name", name)
                 .add("source", source));

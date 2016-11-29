@@ -1,7 +1,6 @@
 package io.ipoli.android.app.services.analytics;
 
-import java.util.HashMap;
-import java.util.Map;
+import android.os.Bundle;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -9,7 +8,7 @@ import java.util.Map;
  */
 
 public class EventParams {
-    private Map<String, String> params = new HashMap<>();
+    private Bundle params = new Bundle();
 
     private EventParams() {
     }
@@ -24,7 +23,7 @@ public class EventParams {
 
     public static EventParams of(String key, String value) {
         EventParams eventParams = new EventParams();
-        eventParams.params.put(key, value);
+        eventParams.add(key, value);
         return eventParams;
     }
 
@@ -33,7 +32,7 @@ public class EventParams {
     }
 
     public EventParams add(String key, String value) {
-        params.put(key, value);
+        params.putString(key, value);
         return this;
     }
 
@@ -45,7 +44,7 @@ public class EventParams {
         return add(key, String.valueOf(value));
     }
 
-    public Map<String, String> getParams() {
+    public Bundle getParams() {
         return params;
     }
 
