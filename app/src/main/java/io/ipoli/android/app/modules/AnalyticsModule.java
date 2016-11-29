@@ -3,13 +3,12 @@ package io.ipoli.android.app.modules;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.flurry.android.FlurryAgent;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.AnalyticsConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.services.AnalyticsService;
@@ -26,20 +25,18 @@ public class AnalyticsModule {
     @Provides
     @Singleton
     public AnalyticsService provideAnalyticsService(Context context, LocalStorage localStorage) {
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(context);
         if (!BuildConfig.DEBUG) {
 
             String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
             if (!TextUtils.isEmpty(playerId)) {
-                FlurryAgent.setUserId(playerId);
+                firebaseAnalytics.setUserId(playerId);
             }
-            FlurryAgent.setLogEnabled(false);
-            FlurryAgent.init(context, AnalyticsConstants.PROD_FLURRY_KEY);
+            firebaseAnalytics.setAnalyticsCollectionEnabled(true);
         } else {
-            FlurryAgent.setLogEnabled(true);
-            FlurryAgent.setCaptureUncaughtExceptions(false);
-            FlurryAgent.init(context, AnalyticsConstants.DEV_FLURRY_KEY);
+            firebaseAnalytics.setAnalyticsCollectionEnabled(false);
         }
 
-        return new FlurryAnalyticsService();
+        return new FlurryAnalyticsService(firebaseAnalytics);
     }
 }

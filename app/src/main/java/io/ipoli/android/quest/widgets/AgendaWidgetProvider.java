@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
-import com.flurry.android.FlurryAgent;
 import com.squareup.otto.Bus;
 
 import java.text.SimpleDateFormat;
@@ -61,7 +60,6 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
-        FlurryAgent.onStartSession(context);
         if (WIDGET_QUEST_CLICK_ACTION.equals(intent.getAction())) {
             String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
 
@@ -73,7 +71,6 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
             }
         }
         super.onReceive(context, intent);
-        FlurryAgent.onEndSession(context);
     }
 
     private void onViewQuest(Context context, String questId) {
