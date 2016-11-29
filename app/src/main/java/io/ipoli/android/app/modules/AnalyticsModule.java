@@ -9,7 +9,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.services.FlurryAnalyticsService;
@@ -26,17 +25,11 @@ public class AnalyticsModule {
     @Singleton
     public AnalyticsService provideAnalyticsService(Context context, LocalStorage localStorage) {
         FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        if (!BuildConfig.DEBUG) {
-
-            String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-            if (!TextUtils.isEmpty(playerId)) {
-                firebaseAnalytics.setUserId(playerId);
-            }
-            firebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        } else {
-            firebaseAnalytics.setAnalyticsCollectionEnabled(false);
+        String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+        if (!TextUtils.isEmpty(playerId)) {
+            firebaseAnalytics.setUserId(playerId);
         }
-
+        firebaseAnalytics.setAnalyticsCollectionEnabled(true);
         return new FlurryAnalyticsService(firebaseAnalytics);
     }
 }
