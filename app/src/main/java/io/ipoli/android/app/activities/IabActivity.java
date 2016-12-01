@@ -7,6 +7,7 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.BillingConstants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.iab.IabHelper;
 import io.ipoli.android.app.utils.iab.IabResult;
@@ -14,7 +15,7 @@ import io.ipoli.android.app.utils.iab.Inventory;
 import io.ipoli.android.app.utils.iab.Purchase;
 
 public class IabActivity extends AppCompatActivity {
-    private static final String SKU_COINS_100 = "coins100";
+    private static final String SKU_COINS_100 = "test";
     private static final int RC_REQUEST = 10001;
 
     private IabHelper iabHelper;
@@ -25,8 +26,7 @@ public class IabActivity extends AppCompatActivity {
         setContentView(R.layout.activity_iab);
         ButterKnife.bind(this);
 
-        String base64EncodedPublicKey = "CONSTRUCT_YOUR_KEY_AND_PLACE_IT_HERE";
-        iabHelper = new IabHelper(this, base64EncodedPublicKey);
+        iabHelper = new IabHelper(this, BillingConstants.APP_PUBLIC_KEY);
 
         iabHelper.startSetup(result -> {
 
@@ -35,6 +35,8 @@ public class IabActivity extends AppCompatActivity {
             }
 
             if (iabHelper == null) return;
+
+            Log.d("AAAA", "setup completed");
 
             // Important: Dynamically register for broadcast messages about updated purchases.
             // We register the receiver here instead of as a <receiver> in the Manifest
