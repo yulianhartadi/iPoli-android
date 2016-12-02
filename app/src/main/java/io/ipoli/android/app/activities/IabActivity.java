@@ -1,10 +1,13 @@
 package io.ipoli.android.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.BillingConstants;
@@ -18,6 +21,9 @@ public class IabActivity extends AppCompatActivity {
     private static final String SKU_COINS_100 = "test";
     private static final int RC_REQUEST = 10001;
 
+    @BindView(R.id.coins_text)
+    TextView coinsText;
+
     private IabHelper iabHelper;
 
     @Override
@@ -27,6 +33,7 @@ public class IabActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         iabHelper = new IabHelper(this, BillingConstants.APP_PUBLIC_KEY);
+        coinsText.setText("0");
 
         iabHelper.startSetup(result -> {
 
@@ -71,8 +78,8 @@ public class IabActivity extends AppCompatActivity {
              * verifyDeveloperPayload().
              */
 
-            Purchase gasPurchase = inventory.getPurchase(SKU_COINS_100);
-            if (gasPurchase != null && verifyDeveloperPayload(gasPurchase)) {
+            Purchase coinsPurchase = inventory.getPurchase(SKU_COINS_100);
+            if (coinsPurchase != null && verifyDeveloperPayload(coinsPurchase)) {
                 try {
                     iabHelper.consumeAsync(inventory.getPurchase(SKU_COINS_100), new IabHelper.OnConsumeFinishedListener() {
                         @Override
@@ -96,14 +103,31 @@ public class IabActivity extends AppCompatActivity {
 
         try {
             iabHelper.launchPurchaseFlow(this, SKU_COINS_100, RC_REQUEST,
-                    new IabHelper.OnIabPurchaseFinishedListener() {
-                        @Override
-                        public void onIabPurchaseFinished(IabResult result, Purchase info) {
-                            Log.d("AAAA", "+ 100 coins");
+                    (result, purchase) -> {
+                        try {
+                            iabHelper.consumeAsync(purchase, (purchase1, result1) -> {
+                                Log.d("AAAA", "+ 100 coins");
+                                int coins = Integer.parseInt(String.valueOf(coinsText.getText()));
+                                coins += 100;
+                                coinsText.setText(coins + "");
+                            });
+                        } catch (IabHelper.IabAsyncInProgressException e) {
                         }
                     }, payload);
         } catch (IabHelper.IabAsyncInProgressException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (iabHelper == null) return;
+
+        // Pass on the activity result to the helper for handling
+        if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        else {
         }
     }
 
