@@ -10,6 +10,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.ipoli.android.app.activities.IabActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100"
+        android:layout_above="@+id/inapp_details"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/coins_text"/>
+
+    <TextView
+        android:id="@+id/inapp_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:layout_above="@+id/buy_coins"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,13 +34,5 @@
         android:id="@+id/buy_coins"
         android:layout_centerInParent="true"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="100"
-        android:layout_above="@+id/buy_coins"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/coins_text"/>
 
 </RelativeLayout>

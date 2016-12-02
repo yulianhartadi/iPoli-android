@@ -7,6 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -16,6 +19,7 @@ import io.ipoli.android.app.utils.iab.IabHelper;
 import io.ipoli.android.app.utils.iab.IabResult;
 import io.ipoli.android.app.utils.iab.Inventory;
 import io.ipoli.android.app.utils.iab.Purchase;
+import io.ipoli.android.app.utils.iab.SkuDetails;
 
 public class IabActivity extends AppCompatActivity {
     private static final String SKU_COINS_100 = "test";
@@ -23,6 +27,9 @@ public class IabActivity extends AppCompatActivity {
 
     @BindView(R.id.coins_text)
     TextView coinsText;
+
+    @BindView(R.id.inapp_details)
+    TextView purchaseDetails;
 
     private IabHelper iabHelper;
 
@@ -32,7 +39,7 @@ public class IabActivity extends AppCompatActivity {
         setContentView(R.layout.activity_iab);
         ButterKnife.bind(this);
 
-        iabHelper = new IabHelper(this, BillingConstants.APP_PUBLIC_KEY);
+        iabHelper = new IabHelper(this, BillingConstants.getAppPublicKey());
         coinsText.setText("0");
 
         iabHelper.startSetup(result -> {
@@ -58,7 +65,9 @@ public class IabActivity extends AppCompatActivity {
 
             // IAB is fully set up. Now, let's get an inventory of stuff we own.
             try {
-                iabHelper.queryInventoryAsync(inventoryListener);
+                ArrayList<String> skuList = new ArrayList<>();
+                skuList.add(SKU_COINS_100);
+                iabHelper.queryInventoryAsync(true, skuList, inventoryListener);
             } catch (IabHelper.IabAsyncInProgressException e) {
             }
         });
@@ -72,26 +81,8 @@ public class IabActivity extends AppCompatActivity {
                 return;
             }
 
-            /*
-             * Check for items we own. Notice that for each purchase, we check
-             * the developer payload to see if it's correct! See
-             * verifyDeveloperPayload().
-             */
-
-            Purchase coinsPurchase = inventory.getPurchase(SKU_COINS_100);
-            if (coinsPurchase != null && verifyDeveloperPayload(coinsPurchase)) {
-                try {
-                    iabHelper.consumeAsync(inventory.getPurchase(SKU_COINS_100), new IabHelper.OnConsumeFinishedListener() {
-                        @Override
-                        public void onConsumeFinished(Purchase purchase, IabResult result) {
-
-                        }
-                    });
-                } catch (IabHelper.IabAsyncInProgressException e) {
-                }
-                return;
-            }
-
+            SkuDetails skuDetails = inventory.getSkuDetails(SKU_COINS_100);
+            purchaseDetails.setText(skuDetails.getTitle() + " " + skuDetails.getDescription() + " " + skuDetails.getPrice());
 //            updateUi();
 //            setWaitScreen(false);
         }
@@ -99,24 +90,43 @@ public class IabActivity extends AppCompatActivity {
 
     @OnClick(R.id.buy_coins)
     public void onBuyCoinsClicked(View v) {
-        String payload = "";
+        String payload = UUID.randomUUID().toString();
 
         try {
             iabHelper.launchPurchaseFlow(this, SKU_COINS_100, RC_REQUEST,
                     (result, purchase) -> {
-                        try {
-                            iabHelper.consumeAsync(purchase, (purchase1, result1) -> {
-                                Log.d("AAAA", "+ 100 coins");
-                                int coins = Integer.parseInt(String.valueOf(coinsText.getText()));
-                                coins += 100;
-                                coinsText.setText(coins + "");
-                            });
-                        } catch (IabHelper.IabAsyncInProgressException e) {
+                        if(result.isFailure()) {
+                            return;
+                        }
+                        if (!verifyDeveloperPayload(payload, purchase)) {
+                            return;
+                        }
+
+                        if (result.isSuccess() && purchase.getSku().equals(SKU_COINS_100)) {
+                            consumePurchase(purchase);
                         }
                     }, payload);
         } catch (IabHelper.IabAsyncInProgressException e) {
             e.printStackTrace();
         }
+    }
+
+    private void consumePurchase(Purchase purchase) {
+        try {
+            iabHelper.consumeAsync(purchase, (purchase1, result1) -> {
+                if(result1.isSuccess()) {
+                    Log.d("AAAA", "+ 100 coins");
+                    updateCoins();
+                }
+            });
+        } catch (IabHelper.IabAsyncInProgressException e) {
+        }
+    }
+
+    private void updateCoins() {
+        int coins = Integer.parseInt(String.valueOf(coinsText.getText()));
+        coins += 100;
+        coinsText.setText(coins + "");
     }
 
     @Override
@@ -126,14 +136,13 @@ public class IabActivity extends AppCompatActivity {
         // Pass on the activity result to the helper for handling
         if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
+        } else {
         }
     }
 
 
-    boolean verifyDeveloperPayload(Purchase p) {
-        String payload = p.getDeveloperPayload();
+    boolean verifyDeveloperPayload(String payload, Purchase p) {
+        String developerPayload = p.getDeveloperPayload();
 
         /*
          * TODO: verify that the developer payload of the purchase is correct. It will be
@@ -158,7 +167,7 @@ public class IabActivity extends AppCompatActivity {
          * installations is recommended.
          */
 
-        return true;
+        return developerPayload.equals(payload);
     }
 
 
