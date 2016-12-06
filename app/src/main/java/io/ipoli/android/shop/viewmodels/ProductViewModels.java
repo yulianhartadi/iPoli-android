@@ -6,14 +6,16 @@ package io.ipoli.android.shop.viewmodels;
  */
 
 public class ProductViewModels {
-    private String sku;
-    private String name;
-    private String price;
+    private final String sku;
+    private final String name;
+    private final String price;
+    private final long value;
 
-    public ProductViewModels(String sku, String name, String price) {
+    public ProductViewModels(String sku, String name, String price, long value) {
         this.sku = sku;
         this.name = name;
         this.price = price;
+        this.value = value;
     }
 
     public String getName() {
@@ -26,5 +28,9 @@ public class ProductViewModels {
 
     public String getSku() {
         return sku;
+    }
+
+    public long getValue() {
+        return value;
     }
 }

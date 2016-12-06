@@ -41,7 +41,7 @@ public class CoinsStoreAdapter extends RecyclerView.Adapter<CoinsStoreAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final ProductViewModels vm = viewModels.get(position);
 
-        holder.name.setText(vm.getName());
+        holder.name.setText(String.valueOf(vm.getValue()));
         holder.buy.setText(vm.getPrice());
         holder.buy.setOnClickListener(view -> eventBus.post(new BuyCoinsEvent(vm.getSku())));
     }

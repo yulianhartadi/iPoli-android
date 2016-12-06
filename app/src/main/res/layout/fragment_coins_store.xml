@@ -7,11 +7,33 @@
 
     <include layout="@layout/default_app_bar" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/loader_container"
+        android:background="@color/md_white">
+
+        <ProgressBar
+            android:id="@+id/loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:id="@+id/failure_message"
+            android:text="@string/no_internet_to_buy_coins"/>
+    </RelativeLayout>
+
+
     <io.ipoli.android.app.ui.EmptyStateRecyclerView
         android:id="@+id/coins_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/md_white"
         android:scrollbars="vertical" />
-
 </LinearLayout>
