@@ -50,6 +50,11 @@
         android:id="@+id/third_group"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/buy_coins"
+            android:checked="false"
+            android:icon="@drawable/ic_life_coin_white_24dp"
+            android:title="@string/buy_coins" />
+        <item
             android:id="@+id/invite_friends"
             android:checked="false"
             android:icon="@drawable/ic_group_add_white_24dp"

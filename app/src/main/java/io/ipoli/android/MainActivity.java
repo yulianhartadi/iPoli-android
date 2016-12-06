@@ -42,7 +42,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.activities.IabActivity;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -96,6 +95,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
+import io.ipoli.android.shop.fragments.CoinsStoreFragment;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -174,7 +174,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
-        startActivity(new Intent(this, IabActivity.class));
     }
 
     @Override
@@ -531,6 +530,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.rewards:
                 source = EventSource.REWARDS;
                 changeCurrentFragment(new RewardListFragment());
+                break;
+
+            case R.id.buy_coins:
+                source = EventSource.STORE;
+                changeCurrentFragment(new CoinsStoreFragment());
                 break;
 
             case R.id.invite_friends:

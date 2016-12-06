@@ -15,11 +15,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.BillingConstants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.iab.IabHelper;
-import io.ipoli.android.app.utils.iab.IabResult;
-import io.ipoli.android.app.utils.iab.Inventory;
-import io.ipoli.android.app.utils.iab.Purchase;
-import io.ipoli.android.app.utils.iab.SkuDetails;
+import io.ipoli.android.shop.iab.IabHelper;
+import io.ipoli.android.shop.iab.IabResult;
+import io.ipoli.android.shop.iab.Inventory;
+import io.ipoli.android.shop.iab.Purchase;
+import io.ipoli.android.shop.iab.SkuDetails;
 
 public class IabActivity extends AppCompatActivity {
     private static final String SKU_COINS_100 = "test";

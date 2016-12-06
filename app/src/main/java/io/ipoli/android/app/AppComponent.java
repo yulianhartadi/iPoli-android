@@ -60,6 +60,7 @@ import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.shop.ShopActivity;
+import io.ipoli.android.shop.fragments.CoinsStoreFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -178,5 +179,7 @@ public interface AppComponent {
     void inject(StopQuestReceiver stopQuestReceiver);
 
     void inject(CompleteQuestReceiver completeQuestReceiver);
+
+    void inject(CoinsStoreFragment coinsStoreFragment);
 }
 

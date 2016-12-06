@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package io.ipoli.android.app.utils.iab;
+package io.ipoli.android.shop.iab;
 
 /**
  * Represents the result of an in-app billing operation.

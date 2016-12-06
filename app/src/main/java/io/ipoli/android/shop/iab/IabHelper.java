@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package io.ipoli.android.app.utils.iab;
+package io.ipoli.android.shop.iab;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -289,7 +290,7 @@ public class IabHelper {
         mSetupDone = false;
         if (mServiceConn != null) {
             logDebug("Unbinding from service.");
-            if (mContext != null) mContext.unbindService(mServiceConn);
+            if (mContext != null && mService != null) mContext.unbindService(mServiceConn);
         }
         mDisposed = true;
         mContext = null;
@@ -351,6 +352,17 @@ public class IabHelper {
                                    OnIabPurchaseFinishedListener listener, String extraData)
             throws IabAsyncInProgressException {
         launchPurchaseFlow(act, sku, ITEM_TYPE_INAPP, null, requestCode, listener, extraData);
+    }
+
+    public void launchPurchaseFlow(Fragment fragment, String sku, int requestCode, OnIabPurchaseFinishedListener listener)
+            throws IabAsyncInProgressException {
+        launchPurchaseFlow(fragment, sku, requestCode, listener, "");
+    }
+
+    public void launchPurchaseFlow(Fragment fragment, String sku, int requestCode,
+                                   OnIabPurchaseFinishedListener listener, String extraData)
+            throws IabAsyncInProgressException {
+        launchPurchaseFlow(fragment, sku, ITEM_TYPE_INAPP, null, requestCode, listener, extraData);
     }
 
     /**
@@ -437,6 +449,90 @@ public class IabHelper {
             if (listener != null) listener.onIabPurchaseFinished(result, null);
         }
     }
+
+    /**
+     * Initiate the UI flow for an in-app purchase. Call this method to initiate an in-app purchase,
+     * which will involve bringing up the Google Play screen. The calling activity will be paused
+     * while the user interacts with Google Play, and the result will be delivered via the
+     * activity's {@link Activity#onActivityResult} method, at which point you must call
+     * this object's {@link #handleActivityResult} method to continue the purchase flow. This method
+     * MUST be called from the UI thread of the Activity.
+     *
+     * @param fragment The calling fragment.
+     * @param sku The sku of the item to purchase.
+     * @param itemType indicates if it's a product or a subscription (ITEM_TYPE_INAPP or
+     *      ITEM_TYPE_SUBS)
+     * @param oldSkus A list of SKUs which the new SKU is replacing or null if there are none
+     * @param requestCode A request code (to differentiate from other responses -- as in
+     *      {@link Activity#startActivityForResult}).
+     * @param listener The listener to notify when the purchase process finishes
+     * @param extraData Extra data (developer payload), which will be returned with the purchase
+     *      data when the purchase completes. This extra data will be permanently bound to that
+     *      purchase and will always be returned when the purchase is queried.
+     */
+    public void launchPurchaseFlow(Fragment fragment, String sku, String itemType, List<String> oldSkus,
+                                   int requestCode, OnIabPurchaseFinishedListener listener, String extraData)
+            throws IabAsyncInProgressException {
+        checkNotDisposed();
+        checkSetupDone("launchPurchaseFlow");
+        flagStartAsync("launchPurchaseFlow");
+        IabResult result;
+
+        if (itemType.equals(ITEM_TYPE_SUBS)) {
+            IabResult r = new IabResult(IABHELPER_SUBSCRIPTIONS_NOT_AVAILABLE,
+                    "Subscriptions are not available.");
+            flagEndAsync();
+            if (listener != null) listener.onIabPurchaseFinished(r, null);
+            return;
+        }
+
+        try {
+            logDebug("Constructing buy intent for " + sku + ", item type: " + itemType);
+            Bundle buyIntentBundle = null;
+            if (oldSkus == null || oldSkus.isEmpty()) {
+                // Purchasing a new item re-signup
+                buyIntentBundle = mService.getBuyIntent(3, mContext.getPackageName(), sku, itemType,
+                        extraData);
+            }
+            if (buyIntentBundle != null) {
+                int response = getResponseCodeFromBundle(buyIntentBundle);
+                if (response != BILLING_RESPONSE_RESULT_OK) {
+                    logError("Unable to buy item, Error response: " + getResponseDesc(response));
+                    flagEndAsync();
+                    result = new IabResult(response, "Unable to buy item");
+                    if (listener != null) listener.onIabPurchaseFinished(result, null);
+                    return;
+                }
+
+                PendingIntent pendingIntent = buyIntentBundle.getParcelable(RESPONSE_BUY_INTENT);
+                logDebug("Launching buy intent for " + sku + ". Request code: " + requestCode);
+                mRequestCode = requestCode;
+                mPurchaseListener = listener;
+                mPurchasingItemType = itemType;
+                fragment.startIntentSenderForResult(pendingIntent.getIntentSender(), requestCode, new Intent(), Integer.valueOf(0), Integer.valueOf(0),
+                        Integer.valueOf(0), null);
+            } else {
+                logError("BuyIntentBundle is null in purchase flow for sku " + sku);
+            }
+        }
+        catch (SendIntentException e) {
+            logError("SendIntentException while launching purchase flow for sku " + sku);
+            e.printStackTrace();
+            flagEndAsync();
+
+            result = new IabResult(IABHELPER_SEND_INTENT_FAILED, "Failed to send intent.");
+            if (listener != null) listener.onIabPurchaseFinished(result, null);
+        }
+        catch (RemoteException e) {
+            logError("RemoteException while launching purchase flow for sku " + sku);
+            e.printStackTrace();
+            flagEndAsync();
+
+            result = new IabResult(IABHELPER_REMOTE_EXCEPTION, "Remote exception while starting purchase flow");
+            if (listener != null) listener.onIabPurchaseFinished(result, null);
+        }
+    }
+
 
     /**
      * Handles an activity result that's part of the purchase flow in in-app billing. If you
