@@ -52,7 +52,7 @@
         <item
             android:id="@+id/buy_coins"
             android:checked="false"
-            android:icon="@drawable/ic_life_coin_white_24dp"
+            android:icon="@drawable/ic_coins_white_24dp"
             android:title="@string/buy_coins" />
         <item
             android:id="@+id/invite_friends"
