@@ -44,6 +44,7 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -785,6 +786,11 @@ public class FirebaseAnalyticsService implements AnalyticsService {
         log("fab_menu_tapped", EventParams.create()
                 .add("name", e.name)
                 .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onAvatarCoinsTapped(AvatarCoinsTappedEvent e) {
+        log("avatar_coins_taped");
     }
 
 

@@ -235,11 +235,9 @@ public class CoinsStoreFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (iabHelper == null) return;
-
         // Pass on the activity result to the helper for handling
         if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
-        } else {
         }
     }
 }

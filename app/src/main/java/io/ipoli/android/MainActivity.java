@@ -63,6 +63,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
@@ -210,6 +211,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
             coins.setText(String.valueOf(this.avatar.getCoins()));
+            coins.setOnClickListener(view -> {
+                changeCurrentFragment(new CoinsStoreFragment());
+                drawerLayout.closeDrawer(GravityCompat.START);
+                navigationView.setCheckedItem(R.id.store);
+                eventBus.post(new AvatarCoinsTappedEvent());
+            });
 
             ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
             experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
@@ -532,7 +539,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 changeCurrentFragment(new RewardListFragment());
                 break;
 
-            case R.id.buy_coins:
+            case R.id.store:
                 source = EventSource.STORE;
                 changeCurrentFragment(new CoinsStoreFragment());
                 break;

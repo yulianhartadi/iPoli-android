@@ -348,8 +348,8 @@
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="reward_earned">%s earned! Enjoy!</string>
-    <string name="coins_bought">+ %d coins</string>
-    <string name="buy_coins">Buy coins</string>
+    <string name="coins_bought">+ %d coins added to your stash</string>
+    <string name="store">Store</string>
     <string name="title_fragment_store">Store</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
