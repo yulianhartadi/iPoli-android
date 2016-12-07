@@ -161,7 +161,7 @@ public class CoinsStoreFragment extends BaseFragment {
 
     @Override
     protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_inbox, R.string.help_dialog_inbox_title, "inbox").show(getActivity().getSupportFragmentManager());
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getActivity().getSupportFragmentManager());
     }
 
     @Override
