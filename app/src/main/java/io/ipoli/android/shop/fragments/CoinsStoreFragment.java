@@ -44,13 +44,17 @@ import io.ipoli.android.shop.iab.SkuDetails;
 import io.ipoli.android.shop.viewmodels.ProductViewModels;
 
 public class CoinsStoreFragment extends BaseFragment {
-    private static final String SKU_COINS_10 = "test";
     private static final String SKU_COINS_100 = "coins_100";
+    private static final String SKU_COINS_300 = "coins_300";
+    private static final String SKU_COINS_500 = "coins_500";
+    private static final String SKU_COINS_1000 = "coins_1000";
     private static final int RC_REQUEST = 10001;
 
     private Map<String, Integer> skuToValue = new HashMap<String, Integer>(){{
-        put(SKU_COINS_10, 10);
         put(SKU_COINS_100, 100);
+        put(SKU_COINS_300, 300);
+        put(SKU_COINS_500, 500);
+        put(SKU_COINS_1000, 1000);
 
     }};
 
@@ -124,8 +128,10 @@ public class CoinsStoreFragment extends BaseFragment {
     private void queryInventory() {
         try {
             ArrayList<String> skuList = new ArrayList<>();
-            skuList.add(SKU_COINS_10);
             skuList.add(SKU_COINS_100);
+            skuList.add(SKU_COINS_300);
+            skuList.add(SKU_COINS_500);
+            skuList.add(SKU_COINS_1000);
             iabHelper.queryInventoryAsync(true, skuList, (result, inv) -> {
                 if (!result.isSuccess() || iabHelper == null) {
                     showFailureMessage(R.string.something_went_wrong);
@@ -139,12 +145,16 @@ public class CoinsStoreFragment extends BaseFragment {
     }
 
     private void initItems(Inventory inventory) {
-        SkuDetails coins10 = inventory.getSkuDetails(SKU_COINS_10);
         SkuDetails coins100 = inventory.getSkuDetails(SKU_COINS_100);
+        SkuDetails coins300 = inventory.getSkuDetails(SKU_COINS_300);
+        SkuDetails coins500 = inventory.getSkuDetails(SKU_COINS_500);
+        SkuDetails coins1000 = inventory.getSkuDetails(SKU_COINS_1000);
 
         List<ProductViewModels> viewModels = new ArrayList<>();
-        viewModels.add(new ProductViewModels(SKU_COINS_10, coins10.getTitle(), coins10.getPrice(), 10));
         viewModels.add(new ProductViewModels(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
+        viewModels.add(new ProductViewModels(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
+        viewModels.add(new ProductViewModels(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
+        viewModels.add(new ProductViewModels(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
         adapter.setViewModels(viewModels);
 
         hideLoaderContainer();
