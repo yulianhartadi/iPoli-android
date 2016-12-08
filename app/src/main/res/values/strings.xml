@@ -348,4 +348,12 @@
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="reward_earned">%s earned! Enjoy!</string>
+    <string name="coins_bought">+ %d coins added to your stash</string>
+    <string name="store">Store</string>
+    <string name="title_fragment_store">Store</string>
+    <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
+    <string name="something_went_wrong">Something went wrong, please try again later!</string>
+    <string name="help_dialog_store_title">What can you buy?</string>
+    <string name="help_dialog_store_text1">For now you can buy life coins, help yourself and help us - the developers ;)</string>
+    <string name="help_dialog_store_text2">Use the coins to try a new pet or get a reward! Expect more in the near future :)</string>
 </resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content_layout"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/coin_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_life_coin_black_24dp" />
+
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/coin_icon"
+        android:layout_toStartOf="@+id/buy_reward"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/md_dark_text_87"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/product_buy"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="96dp"
+        android:layout_alignParentEnd="true"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="?attr/colorAccent"
+        android:gravity="center"
+        android:textColor="@color/md_white" />
+
+</RelativeLayout>

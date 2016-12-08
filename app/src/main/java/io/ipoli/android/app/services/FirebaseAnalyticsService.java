@@ -3,8 +3,10 @@ package io.ipoli.android.app.services;
 import android.text.TextUtils;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -44,6 +46,7 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -119,6 +122,8 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
+import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
+import io.ipoli.android.shop.events.CoinsPurchasedEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 
 public class FirebaseAnalyticsService implements AnalyticsService {
@@ -787,6 +792,25 @@ public class FirebaseAnalyticsService implements AnalyticsService {
                 .add("source", e.source.name().toLowerCase()));
     }
 
+    @Subscribe
+    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
+        log("buy_coins_tapped", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onAvatarCoinsTapped(AvatarCoinsTappedEvent e) {
+        log("avatar_coins_taped");
+    }
+
+    @Subscribe
+    public void onCoinsPurchased(CoinsPurchasedEvent e) {
+        log("coins_purchased", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onAppError(AppErrorEvent e) {
+        FirebaseCrash.report(e.exception);
+    }
 
     private void log(String eventName) {
         log(eventName, EventParams.create());

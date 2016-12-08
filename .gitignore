@@ -12,3 +12,4 @@ art/
 app/google-services.json
 app/google-services_prod.json
 app/google-services_dev.json
+*BillingConstants.java
