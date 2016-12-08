@@ -14,7 +14,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.shop.events.BuyCoinsEvent;
+import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
 import io.ipoli.android.shop.viewmodels.ProductViewModels;
 
 /**
@@ -43,7 +43,7 @@ public class CoinsStoreAdapter extends RecyclerView.Adapter<CoinsStoreAdapter.Vi
 
         holder.name.setText(String.valueOf(vm.getValue()));
         holder.buy.setText(vm.getPrice());
-        holder.buy.setOnClickListener(view -> eventBus.post(new BuyCoinsEvent(vm.getSku())));
+        holder.buy.setOnClickListener(view -> eventBus.post(new BuyCoinsTappedEvent(vm.getSku())));
     }
 
     @Override

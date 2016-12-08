@@ -36,7 +36,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.shop.adapters.CoinsStoreAdapter;
-import io.ipoli.android.shop.events.BuyCoinsEvent;
+import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
 import io.ipoli.android.shop.iab.IabHelper;
 import io.ipoli.android.shop.iab.Inventory;
 import io.ipoli.android.shop.iab.Purchase;
@@ -197,7 +197,7 @@ public class CoinsStoreFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onBuyCoins(BuyCoinsEvent e) {
+    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
         String payload = UUID.randomUUID().toString();
 
         try {

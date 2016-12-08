@@ -120,6 +120,7 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
+import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 
 public class FirebaseAnalyticsService implements AnalyticsService {
@@ -786,6 +787,11 @@ public class FirebaseAnalyticsService implements AnalyticsService {
         log("fab_menu_tapped", EventParams.create()
                 .add("name", e.name)
                 .add("source", e.source.name().toLowerCase()));
+    }
+
+    @Subscribe
+    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
+        log("buy_coins_tapped", EventParams.of("sku", e.sku));
     }
 
     @Subscribe
