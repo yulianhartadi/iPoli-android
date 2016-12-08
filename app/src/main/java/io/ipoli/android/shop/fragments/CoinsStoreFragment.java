@@ -31,6 +31,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
@@ -141,7 +142,7 @@ public class CoinsStoreFragment extends BaseFragment {
                 initItems(inv);
             });
         } catch (IabHelper.IabAsyncInProgressException e) {
-            e.printStackTrace();
+            eventBus.post(new AppErrorEvent(e));
         }
     }
 
@@ -217,7 +218,7 @@ public class CoinsStoreFragment extends BaseFragment {
                         }
                     }, payload);
         } catch (IabHelper.IabAsyncInProgressException ex) {
-            ex.printStackTrace();
+            eventBus.post(new AppErrorEvent(ex));
         }
     }
 
@@ -229,6 +230,7 @@ public class CoinsStoreFragment extends BaseFragment {
                 }
             });
         } catch (IabHelper.IabAsyncInProgressException e) {
+            eventBus.post(new AppErrorEvent(e));
         }
     }
 

@@ -3,8 +3,10 @@ package io.ipoli.android.app.services;
 import android.text.TextUtils;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -803,6 +805,11 @@ public class FirebaseAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCoinsPurchased(CoinsPurchasedEvent e) {
         log("coins_purchased", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onAppError(AppErrorEvent e) {
+        FirebaseCrash.report(e.exception);
     }
 
     private void log(String eventName) {
