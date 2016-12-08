@@ -37,6 +37,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.shop.adapters.CoinsStoreAdapter;
 import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
+import io.ipoli.android.shop.events.CoinsPurchasedEvent;
 import io.ipoli.android.shop.iab.IabHelper;
 import io.ipoli.android.shop.iab.Inventory;
 import io.ipoli.android.shop.iab.Purchase;
@@ -211,6 +212,7 @@ public class CoinsStoreFragment extends BaseFragment {
                         }
 
                         if (result.isSuccess() && purchase.getSku().equals(e.sku)) {
+                            eventBus.post(new CoinsPurchasedEvent(e.sku));
                             consumePurchase(purchase, skuToValue.get(e.sku));
                         }
                     }, payload);
