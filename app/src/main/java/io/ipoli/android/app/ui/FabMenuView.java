@@ -165,6 +165,10 @@ public class FabMenuView extends RelativeLayout {
         setFocusableInTouchMode(true);
         requestFocus();
         container.setClickable(true);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            container.getChildAt(i).setClickable(true);
+        }
+        questLabel.setClickable(true);
         container.setVisibility(VISIBLE);
         container.setAlpha(1);
         playOpenAnimation();
@@ -173,6 +177,10 @@ public class FabMenuView extends RelativeLayout {
     private void close() {
         isOpen = false;
         container.setClickable(false);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            container.getChildAt(i).setClickable(false);
+        }
+        questLabel.setClickable(false);
         playCloseAnimation();
     }
 
