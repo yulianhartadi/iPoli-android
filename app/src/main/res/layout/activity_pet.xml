@@ -112,7 +112,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="100dp"
-                    android:textColor="@color/md_light_text_87" />
+                    android:textColor="@color/md_dark_text_87" />
 
                 <ProgressBar
                     android:id="@+id/pet_hp"

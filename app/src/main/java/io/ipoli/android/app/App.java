@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
@@ -869,7 +870,7 @@ public class App extends MultiDexApplication {
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
-        long notificationTime = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime() + 5000L;
+        long notificationTime = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1)).getTime() + 5000L;
         if (Build.VERSION.SDK_INT > 22) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
         } else {
@@ -879,7 +880,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
-
+        Log.d("AAAAAA", "date changed");
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
             updatePet(-getDecreasePercentage(quests));
             scheduleQuestsFor4WeeksAhead();
