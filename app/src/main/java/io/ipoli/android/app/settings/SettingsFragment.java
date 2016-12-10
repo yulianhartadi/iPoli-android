@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -39,18 +40,18 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
+import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
-import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
-import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
-import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
-import io.ipoli.android.app.tutorial.TutorialActivity;
-import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -98,7 +99,10 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
 
         ongoingNotification.setChecked(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED));
-        ongoingNotification.setOnCheckedChangeListener((compoundButton, b) -> localStorage.saveBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, ongoingNotification.isChecked()));
+        ongoingNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+            localStorage.saveBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, ongoingNotification.isChecked());
+            eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
+        });
 
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
@@ -142,8 +146,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.ongoing_notification_container)
     public void onOngoingNotificationClicked(View view) {
         ongoingNotification.setChecked(!ongoingNotification.isChecked());
-        localStorage.saveBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, ongoingNotification.isChecked());
-        eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
     }
 
     @OnClick(R.id.show_tutorial_container)

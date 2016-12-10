@@ -880,7 +880,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
-        Log.d("AAAAAA", "date changed");
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
             updatePet(-getDecreasePercentage(quests));
             scheduleQuestsFor4WeeksAhead();
