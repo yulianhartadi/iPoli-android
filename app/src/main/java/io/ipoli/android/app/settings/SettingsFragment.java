@@ -1,23 +1,17 @@
 package io.ipoli.android.app.settings;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -37,9 +31,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -155,11 +147,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         startActivity(intent);
     }
 
-    @OnClick(R.id.sync_calendars_container)
-    public void onSyncCalendarsClicked(View view) {
-        checkForCalendarPermission();
-    }
-
     @OnClick(R.id.daily_challenge_start_time_container)
     public void onDailyChallengeStartTimeClicked(View view) {
         if (dailyChallengeNotification.isChecked()) {
@@ -218,35 +205,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
             dailyChallengeDays.setText(R.string.no_challenge_days);
         } else {
             dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
-        }
-    }
-
-    private void checkForCalendarPermission() {
-        if (ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.READ_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_CALENDAR},
-                    Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE);
-        } else {
-            eventBus.post(new SyncCalendarRequestEvent(EventSource.SETTINGS));
-            Toast.makeText(getActivity(), R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == Constants.READ_CALENDAR_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.GRANTED, EventSource.OPTIONS_MENU));
-                eventBus.post(new SyncCalendarRequestEvent(EventSource.TUTORIAL));
-                Toast.makeText(getActivity(), R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
-            } else if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                eventBus.post(new CalendarPermissionResponseEvent(CalendarPermissionResponseEvent.Response.DENIED, EventSource.OPTIONS_MENU));
-            }
         }
     }
 

@@ -261,16 +261,6 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".app.receivers.AndroidCalendarEventChangedReceiver"
-            android:priority="999">
-            <intent-filter>
-                <action android:name="android.intent.action.PROVIDER_CHANGED" />
-
-                <data android:scheme="content" />
-                <data android:host="com.android.calendar" />
-            </intent-filter>
-        </receiver>
-        <receiver
             android:name=".quest.widgets.AgendaWidgetProvider"
             android:label="@string/widget_journey_name">
             <intent-filter>
