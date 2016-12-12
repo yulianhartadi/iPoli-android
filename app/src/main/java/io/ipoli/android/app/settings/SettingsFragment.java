@@ -38,6 +38,7 @@ import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
@@ -49,7 +50,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/21/16.
  */
-public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
+public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener, TimeIntervalPickerFragment.OnTimePickedListener {
 
     @Inject
     Bus eventBus;
@@ -62,6 +63,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @BindView(R.id.ongoing_notification)
     Switch ongoingNotification;
+
+    @BindView(R.id.work_hours)
+    TextView workHours;
 
     @BindView(R.id.daily_challenge_notification)
     Switch dailyChallengeNotification;
@@ -147,6 +151,18 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         startActivity(intent);
     }
 
+    @OnClick(R.id.work_days_container)
+    public void onWorkDaysClicked(View view) {
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, Constants.DEFAULT_DAILY_CHALLENGE_DAYS, this);
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.work_hours_container)
+    public void onWorkHoursClicked(View view) {
+        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title, Time.afterHours(10), Time.afterHours(18), this);
+        fragment.show(getFragmentManager());
+    }
+
     @OnClick(R.id.daily_challenge_start_time_container)
     public void onDailyChallengeStartTimeClicked(View view) {
         if (dailyChallengeNotification.isChecked()) {
@@ -166,7 +182,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.daily_challenge_days_container)
     public void onDailyChallengeDaysClicked(View view) {
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(selectedDays, this);
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.challenge_days_question, selectedDays, this);
         fragment.show(getFragmentManager());
     }
 
@@ -185,6 +201,11 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         dailyChallengeStartTime.setText(time.toString());
         localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
         eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
+    }
+
+    @Override
+    public void onTimePicked(Time startTime, Time endTime) {
+        workHours.setText(startTime.toString() + " - " + endTime.toString());
     }
 
     @Override
@@ -214,4 +235,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(linkToMarket);
     }
+
+
 }

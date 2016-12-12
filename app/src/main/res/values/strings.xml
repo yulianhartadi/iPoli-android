@@ -356,4 +356,6 @@
     <string name="help_dialog_store_title">What can you buy?</string>
     <string name="help_dialog_store_text1">For now you can buy life coins, help yourself and help us - the developers ;)</string>
     <string name="help_dialog_store_text2">Use the coins to try a new pet or get a reward! Expect more in the near future :)</string>
+    <string name="work_days_picker_title">Which days do you work?</string>
+    <string name="work_hours_dialog_title">Set your working hours</string>
 </resources>

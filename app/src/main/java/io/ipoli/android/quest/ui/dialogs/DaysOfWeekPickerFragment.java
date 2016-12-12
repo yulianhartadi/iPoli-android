@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -26,20 +27,25 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
 
     private static final String TAG = "days-of-week-picker-dialog";
     private static final String SELECTED_DAYS = "selected_days";
+    private static final String TITLE = "title";
 
     private OnDaysOfWeekPickedListener textPickedListener;
 
     private List<Integer> preSelectedDays;
     private AlertDialog alertDialog;
 
-    public static DaysOfWeekPickerFragment newInstance(OnDaysOfWeekPickedListener listener) {
-        return newInstance(new HashSet<>(), listener);
+    @StringRes
+    private int title;
+
+    public static DaysOfWeekPickerFragment newInstance(@StringRes int title, OnDaysOfWeekPickedListener listener) {
+        return newInstance(title, new HashSet<>(), listener);
     }
 
-    public static DaysOfWeekPickerFragment newInstance(Set<Integer> selectedDays, OnDaysOfWeekPickedListener listener) {
+    public static DaysOfWeekPickerFragment newInstance(@StringRes int title, Set<Integer> selectedDays, OnDaysOfWeekPickedListener listener) {
         DaysOfWeekPickerFragment fragment = new DaysOfWeekPickerFragment();
         Bundle args = new Bundle();
         args.putIntegerArrayList(SELECTED_DAYS, new ArrayList<>(selectedDays));
+        args.putInt(TITLE, title);
         fragment.setArguments(args);
         fragment.textPickedListener = listener;
         return fragment;
@@ -53,6 +59,7 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preSelectedDays = getArguments().getIntegerArrayList(SELECTED_DAYS);
+        title = getArguments().getInt(TITLE);
     }
 
     @NonNull
@@ -73,7 +80,7 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
                 .setMultiChoiceItems(daysOfWeek, checkedDays, null)
-                .setTitle(R.string.challenge_days_question)
+                .setTitle(title)
                 .setPositiveButton(R.string.accept, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
                     Set<Integer> selectedDays = new HashSet<>();
