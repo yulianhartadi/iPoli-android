@@ -50,7 +50,7 @@ import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/21/16.
  */
-public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener, TimeIntervalPickerFragment.OnTimePickedListener {
+public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
 
     @Inject
     Bus eventBus;
@@ -66,6 +66,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @BindView(R.id.work_hours)
     TextView workHours;
+
+    @BindView(R.id.sleep_hours)
+    TextView sleepHours;
 
     @BindView(R.id.daily_challenge_notification)
     Switch dailyChallengeNotification;
@@ -159,7 +162,19 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @OnClick(R.id.work_hours_container)
     public void onWorkHoursClicked(View view) {
-        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title, Time.afterHours(10), Time.afterHours(18), this);
+        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title, Time.afterHours(10), Time.afterHours(18),
+                (startTime, endTime) -> {
+                    workHours.setText(startTime.toString() + " - " + endTime.toString());
+                });
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.sleep_hours_container)
+    public void onSleepHoursClicked(View view) {
+        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.sleep_hours_dialog_title, Time.afterHours(10), Time.afterHours(18),
+                (startTime, endTime) -> {
+                    sleepHours.setText(startTime.toString() + " - " + endTime.toString());
+                });
         fragment.show(getFragmentManager());
     }
 
@@ -203,10 +218,6 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
     }
 
-    @Override
-    public void onTimePicked(Time startTime, Time endTime) {
-        workHours.setText(startTime.toString() + " - " + endTime.toString());
-    }
 
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
