@@ -60,7 +60,7 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.quest.ui.formatters.TimerFormatter;
 
 /**

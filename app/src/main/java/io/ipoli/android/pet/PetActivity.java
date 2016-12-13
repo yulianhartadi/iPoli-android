@@ -36,7 +36,7 @@ import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.shop.ShopActivity;
 
 /**

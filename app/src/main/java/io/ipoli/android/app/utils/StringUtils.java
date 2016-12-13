@@ -27,4 +27,9 @@ public class StringUtils {
     public static String capitalize(String text) {
         return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
     }
+
+    public static String capitalizeAndFormat(String text) {
+        String t = Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
+        return t.replace("_", " ");
+    }
 }

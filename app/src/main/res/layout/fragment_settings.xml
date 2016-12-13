@@ -158,6 +158,37 @@
                 android:textSize="14sp" />
 
             <LinearLayout
+                android:id="@+id/most_productive_time_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Most productive time"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/most_productive_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Morning Afternoon"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/work_days_container"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
@@ -178,6 +209,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/work_days"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"

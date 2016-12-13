@@ -46,6 +46,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;

@@ -39,12 +39,14 @@ import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.avatar.TimeOfDay;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
-import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
-import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -63,6 +65,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @BindView(R.id.ongoing_notification)
     Switch ongoingNotification;
+
+    @BindView(R.id.most_productive_time)
+    TextView mostProductiveTime;
+
+    @BindView(R.id.work_days)
+    TextView workDays;
 
     @BindView(R.id.work_hours)
     TextView workHours;
@@ -114,7 +122,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         });
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        populateDaysOfWeekText(selectedDays);
+        populateDaysOfWeekText(dailyChallengeDays, selectedDays);
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
@@ -154,9 +162,24 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         startActivity(intent);
     }
 
+    @OnClick(R.id.most_productive_time_container)
+    public void onMostProductiveTimeClicked(View view) {
+        List<TimeOfDay> timesOfDay = new ArrayList<>();
+        timesOfDay.add(TimeOfDay.MORNING);
+        timesOfDay.add(TimeOfDay.EVENING);
+        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, timesOfDay,
+                selectedTimes -> {
+
+                });
+        fragment.show(getFragmentManager());
+    }
+
     @OnClick(R.id.work_days_container)
     public void onWorkDaysClicked(View view) {
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, Constants.DEFAULT_DAILY_CHALLENGE_DAYS, this);
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, Constants.DEFAULT_DAILY_CHALLENGE_DAYS,
+                selectedDays -> {
+                    populateDaysOfWeekText(workDays, selectedDays);
+                });
         fragment.show(getFragmentManager());
     }
 
@@ -218,15 +241,14 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
     }
 
-
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
-        populateDaysOfWeekText(selectedDays);
+        populateDaysOfWeekText(dailyChallengeDays, selectedDays);
         localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
         eventBus.post(new DailyChallengeDaysOfWeekChangedEvent(selectedDays));
     }
 
-    private void populateDaysOfWeekText(Set<Integer> selectedDays) {
+    private void populateDaysOfWeekText(TextView textView, Set<Integer> selectedDays) {
         List<String> dayNames = new ArrayList<>();
         for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
             if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
@@ -234,9 +256,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
             }
         }
         if (dayNames.isEmpty()) {
-            dailyChallengeDays.setText(R.string.no_challenge_days);
+            textView.setText(R.string.no_challenge_days);
         } else {
-            dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
+            textView.setText(TextUtils.join(", ", dayNames));
         }
     }
 

@@ -91,8 +91,8 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
@@ -347,9 +347,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
         boolean showAction = e.source != EventSource.OVERVIEW;
         if (e.date == null) {
-            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, date -> {
-                duplicateQuest(e.quest, date, showAction);
-            });
+            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true,
+                    date -> duplicateQuest(e.quest, date, showAction));
             fragment.show(getSupportFragmentManager());
         } else {
             duplicateQuest(e.quest, e.date, showAction);

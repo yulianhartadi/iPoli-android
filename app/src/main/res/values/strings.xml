@@ -359,4 +359,5 @@
     <string name="work_days_picker_title">Which days do you work?</string>
     <string name="work_hours_dialog_title">When do you work?</string>
     <string name="sleep_hours_dialog_title">When do you sleep?</string>
+    <string name="time_of_day_picker_title">Which time of the day is most productive for you?</string>
 </resources>

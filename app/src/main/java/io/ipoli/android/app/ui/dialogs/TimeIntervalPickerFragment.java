@@ -18,11 +18,10 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
 
 public class TimeIntervalPickerFragment extends DialogFragment {
 
-    public static final String TAG = "startTime-interval-picker-dialog";
+    public static final String TAG = "time-interval-picker-dialog";
     private static final String START_MINUTES_AFTER_MIDNIGHT = "start_minutes_after_midnight";
     private static final String END_MINUTES_AFTER_MIDNIGHT = "end_minutes_after_midnight";
     private static final String TITLE = "title";

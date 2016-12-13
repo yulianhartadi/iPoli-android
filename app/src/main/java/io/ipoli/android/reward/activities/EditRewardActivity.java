@@ -27,7 +27,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.formatters.PriceFormatter;
