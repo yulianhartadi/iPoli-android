@@ -38,21 +38,24 @@ import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.TimeOfDay;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
-import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
-import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/21/16.
  */
-public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
+public class SettingsFragment extends BaseFragment implements
+        TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
+        TimePickerFragment.OnTimePickedListener,
+        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
 
     @Inject
     Bus eventBus;
@@ -167,10 +170,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         List<TimeOfDay> timesOfDay = new ArrayList<>();
         timesOfDay.add(TimeOfDay.MORNING);
         timesOfDay.add(TimeOfDay.EVENING);
-        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, timesOfDay,
-                selectedTimes -> {
-
-                });
+        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, timesOfDay, this);
         fragment.show(getFragmentManager());
     }
 
@@ -187,7 +187,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     public void onWorkHoursClicked(View view) {
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title, Time.afterHours(10), Time.afterHours(18),
                 (startTime, endTime) -> {
-                    workHours.setText(startTime.toString() + " - " + endTime.toString());
+                    populateTimeInterval(workHours, startTime, endTime);
                 });
         fragment.show(getFragmentManager());
     }
@@ -196,9 +196,13 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     public void onSleepHoursClicked(View view) {
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.sleep_hours_dialog_title, Time.afterHours(10), Time.afterHours(18),
                 (startTime, endTime) -> {
-                    sleepHours.setText(startTime.toString() + " - " + endTime.toString());
+                    populateTimeInterval(sleepHours, startTime, endTime);
                 });
         fragment.show(getFragmentManager());
+    }
+
+    private void populateTimeInterval(TextView textView, Time startTime, Time endTime) {
+        textView.setText(startTime.toString() + " - " + endTime.toString());
     }
 
     @OnClick(R.id.daily_challenge_start_time_container)
@@ -232,6 +236,19 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
             dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
             dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
         }
+    }
+
+    @Override
+    public void onTimesOfDayPicked(List<TimeOfDay> selectedTimes) {
+        String text = "";
+        if (selectedTimes.contains(TimeOfDay.ANY_TIME)) {
+            text = StringUtils.capitalizeAndReplace(TimeOfDay.ANY_TIME.name());
+        } else {
+            for (TimeOfDay timeOfDay : selectedTimes) {
+                text += StringUtils.capitalizeAndReplace(timeOfDay.name()) + " ";
+            }
+        }
+        mostProductiveTime.setText(text);
     }
 
     @Override

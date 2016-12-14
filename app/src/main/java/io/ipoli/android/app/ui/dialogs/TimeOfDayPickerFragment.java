@@ -75,7 +75,7 @@ public class TimeOfDayPickerFragment extends DialogFragment {
             if (preSelectedTimes.contains(timeOfDay.name())) {
                 checkedDays[i] = true;
             }
-            timesOfDay[i] = StringUtils.capitalizeAndFormat(timeOfDay.name());
+            timesOfDay[i] = StringUtils.capitalizeAndReplace(timeOfDay.name());
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
