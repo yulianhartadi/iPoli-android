@@ -58,7 +58,7 @@ public class TimeIntervalPickerFragment extends DialogFragment {
         }
         Bundle args = new Bundle();
         args.putInt(START_MINUTES_AFTER_MIDNIGHT, startTime.toMinutesAfterMidnight());
-        args.putInt(END_MINUTES_AFTER_MIDNIGHT, startTime.toMinutesAfterMidnight());
+        args.putInt(END_MINUTES_AFTER_MIDNIGHT, endTime.toMinutesAfterMidnight());
         args.putInt(TITLE, title);
         fragment.setArguments(args);
         fragment.timePickedListener = timePickedListener;
@@ -81,6 +81,9 @@ public class TimeIntervalPickerFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_time_interval_picker, null);
         unbinder = ButterKnife.bind(this, view);
+
+        startTimeBtn.setText(startTime.toString());
+        endTimeBtn.setText(endTime.toString());
 
         startTimeBtn.setOnClickListener(view1 -> {
             TimePickerFragment fragment = TimePickerFragment.newInstance(false, startTime, time -> {
