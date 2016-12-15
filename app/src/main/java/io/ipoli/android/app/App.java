@@ -1,13 +1,11 @@
 package io.ipoli.android.app;
 
-import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -15,8 +13,6 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
@@ -50,17 +46,13 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.readers.AndroidCalendarQuestListPersistenceService;
-import io.ipoli.android.app.services.readers.AndroidCalendarRepeatingQuestListPersistenceService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
-import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -117,9 +109,6 @@ import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
-import me.everything.providers.android.calendar.Calendar;
-import me.everything.providers.android.calendar.CalendarProvider;
-import me.everything.providers.android.calendar.Event;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -169,13 +158,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     PetPersistenceService petPersistenceService;
-
-    @Inject
-    AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
-
-    @Inject
-    AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
-
     @Inject
     ExperienceRewardGenerator experienceRewardGenerator;
 
@@ -807,62 +789,9 @@ public class App extends MultiDexApplication {
         challengePersistenceService.save(e.challenge);
     }
 
-    @Subscribe
-    public void onTutorialDone(TutorialDoneEvent e) {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.READ_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        syncCalendars().subscribe();
-    }
-
-    @Subscribe
-    public void onSyncWithCalendarRequest(SyncCalendarRequestEvent e) {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.READ_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-
-        syncCalendars().subscribe();
-    }
-
-    private Observable<Object> syncCalendars() {
-        return Observable.defer(() -> {
-            CalendarProvider provider = new CalendarProvider(this);
-            List<Calendar> calendars = provider.getCalendars().getList();
-            Set<String> calendarIds = new HashSet<>();
-            List<Event> repeating = new ArrayList<>();
-            List<Event> nonRepeating = new ArrayList<>();
-            for (Calendar c : calendars) {
-                if (!c.visible) {
-                    continue;
-                }
-                calendarIds.add(String.valueOf(c.id));
-                List<Event> events = provider.getEvents(c.id).getList();
-                for (Event event : events) {
-                    if (isRepeatingAndroidCalendarEvent(event)) {
-                        repeating.add(event);
-                    } else {
-                        nonRepeating.add(event);
-                    }
-                }
-            }
-            localStorage.saveStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS, calendarIds);
-            androidCalendarQuestService.save(nonRepeating);
-            androidCalendarRepeatingQuestService.save(repeating);
-            return Observable.empty();
-        }).compose(applyAndroidSchedulers());
-    }
-
     private <T> Observable.Transformer<T, T> applyAndroidSchedulers() {
         return observable -> observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private boolean isRepeatingAndroidCalendarEvent(Event e) {
-        return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 
     private void scheduleDateChanged() {
