@@ -340,7 +340,7 @@
     <string name="pick_challenge_to_start">Pick a challenge to start with</string>
     <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="widget_agenda_empty">iPoli wants a quest!</string>
     <string name="quests">Quests</string>
     <string name="title_edit_new_quest">Add Quest</string>
@@ -359,7 +359,7 @@
     <string name="work_days_picker_title">Which days do you work?</string>
     <string name="work_hours_dialog_title">When do you work?</string>
     <string name="sleep_hours_dialog_title">When do you sleep?</string>
-    <string name="time_of_day_picker_title">Which time of the day is most productive for you?</string>
-    <string name="tutorial_schedule_title">Be ready for smarter schedule</string>
-    <string name="tutorial_schedule_desc">Smart automatic scheduling is coming soon! You can go to settings and set your preferences.</string>
+    <string name="time_of_day_picker_title">When you are most productive?</string>
+    <string name="tutorial_schedule_title">Prepare for Smart Daily Schedule</string>
+    <string name="tutorial_schedule_desc">Smart scheduling is coming soon! Go to settings and choose your preferences now.</string>
 </resources>
