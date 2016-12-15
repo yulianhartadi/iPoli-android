@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -38,18 +40,27 @@ import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
-import io.ipoli.android.quest.ui.dialogs.DaysOfWeekPickerFragment;
-import io.ipoli.android.quest.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/21/16.
  */
-public class SettingsFragment extends BaseFragment implements TimePickerFragment.OnTimePickedListener, DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
+public class SettingsFragment extends BaseFragment implements
+        TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
+        TimePickerFragment.OnTimePickedListener,
+        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener, OnDataChangedListener<Avatar> {
 
     @Inject
     Bus eventBus;
@@ -57,11 +68,29 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @Inject
     LocalStorage localStorage;
 
+    @Inject
+    AvatarPersistenceService avatarPersistenceService;
+
+    @BindView(R.id.root_container)
+    ViewGroup rootContainer;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     @BindView(R.id.ongoing_notification)
     Switch ongoingNotification;
+
+    @BindView(R.id.most_productive_time)
+    TextView mostProductiveTime;
+
+    @BindView(R.id.work_days)
+    TextView workDays;
+
+    @BindView(R.id.work_hours)
+    TextView workHours;
+
+    @BindView(R.id.sleep_hours)
+    TextView sleepHours;
 
     @BindView(R.id.daily_challenge_notification)
     Switch dailyChallengeNotification;
@@ -79,6 +108,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     TextView appVersion;
 
     private Unbinder unbinder;
+    private Avatar avatar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,6 +119,8 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
+
+        avatarPersistenceService.listen(this);
 
         ongoingNotification.setChecked(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED));
         ongoingNotification.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -107,7 +139,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         });
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        populateDaysOfWeekText(selectedDays);
+        populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
@@ -121,6 +153,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     public void onDestroyView() {
+        avatarPersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }
@@ -147,6 +180,51 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         startActivity(intent);
     }
 
+    @OnClick(R.id.most_productive_time_container)
+    public void onMostProductiveTimeClicked(View view) {
+        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, avatar.getMostProductiveTimesOfDayList(), this);
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.work_days_container)
+    public void onWorkDaysClicked(View view) {
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(avatar.getWorkDays()),
+                selectedDays -> {
+                    avatar.setWorkDays(new ArrayList<>(selectedDays));
+                    avatarPersistenceService.save(avatar);
+                });
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.work_hours_container)
+    public void onWorkHoursClicked(View view) {
+        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title,
+                avatar.getWorkStartTime(), avatar.getWorkEndTime(), (startTime, endTime) -> {
+                    avatar.setWorkStartTime(startTime);
+                    avatar.setWorkEndTime(endTime);
+                    avatarPersistenceService.save(avatar);
+                });
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.sleep_hours_container)
+    public void onSleepHoursClicked(View view) {
+        TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.sleep_hours_dialog_title,
+                avatar.getSleepStartTime(), avatar.getSleepEndTime(), (startTime, endTime) -> {
+                    avatar.setSleepStartTime(startTime);
+                    avatar.setSleepEndTime(endTime);
+                    avatarPersistenceService.save(avatar);
+                });
+        fragment.show(getFragmentManager());
+    }
+
+    private void populateTimeInterval(TextView textView, Time startTime, Time endTime) {
+        if (startTime == null || endTime == null) {
+            return;
+        }
+        textView.setText(startTime.toString() + " - " + endTime.toString());
+    }
+
     @OnClick(R.id.daily_challenge_start_time_container)
     public void onDailyChallengeStartTimeClicked(View view) {
         if (dailyChallengeNotification.isChecked()) {
@@ -166,7 +244,7 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     @OnClick(R.id.daily_challenge_days_container)
     public void onDailyChallengeDaysClicked(View view) {
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(selectedDays, this);
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.challenge_days_question, selectedDays, this);
         fragment.show(getFragmentManager());
     }
 
@@ -181,6 +259,23 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
     }
 
     @Override
+    public void onTimesOfDayPicked(List<TimeOfDay> selectedTimes) {
+        if(selectedTimes.contains(TimeOfDay.ANY_TIME) || selectedTimes.isEmpty()) {
+            selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
+        }
+        avatar.setMostProductiveTimesOfDayList(selectedTimes);
+        avatarPersistenceService.save(avatar);
+    }
+
+    private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
+        List<String> timeNames = new ArrayList<>();
+        for (TimeOfDay timeOfDay : selectedTimes) {
+            timeNames.add(StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name()));
+        }
+        mostProductiveTime.setText(TextUtils.join(", ", timeNames));
+    }
+
+    @Override
     public void onTimePicked(Time time) {
         dailyChallengeStartTime.setText(time.toString());
         localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
@@ -189,12 +284,12 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
 
     @Override
     public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
-        populateDaysOfWeekText(selectedDays);
+        populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
         localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
         eventBus.post(new DailyChallengeDaysOfWeekChangedEvent(selectedDays));
     }
 
-    private void populateDaysOfWeekText(Set<Integer> selectedDays) {
+    private void populateDaysOfWeekText(TextView textView, List<Integer> selectedDays) {
         List<String> dayNames = new ArrayList<>();
         for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
             if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
@@ -202,9 +297,9 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
             }
         }
         if (dayNames.isEmpty()) {
-            dailyChallengeDays.setText(R.string.no_challenge_days);
+            textView.setText(R.string.no_challenge_days);
         } else {
-            dailyChallengeDays.setText(TextUtils.join(", ", dayNames));
+            textView.setText(TextUtils.join(", ", dayNames));
         }
     }
 
@@ -213,5 +308,16 @@ public class SettingsFragment extends BaseFragment implements TimePickerFragment
         Uri uri = Uri.parse("market://details?id=" + getActivity().getPackageName());
         Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(linkToMarket);
+    }
+
+
+    @Override
+    public void onDataChanged(Avatar avatar) {
+        this.avatar = avatar;
+        populateMostProductiveTimesOfDay(avatar.getMostProductiveTimesOfDayList());
+        populateDaysOfWeekText(workDays, avatar.getWorkDays());
+        populateTimeInterval(workHours, avatar.getWorkStartTime(), avatar.getWorkEndTime());
+        populateTimeInterval(sleepHours, avatar.getSleepStartTime(), avatar.getSleepEndTime());
+        rootContainer.setVisibility(View.VISIBLE);
     }
 }

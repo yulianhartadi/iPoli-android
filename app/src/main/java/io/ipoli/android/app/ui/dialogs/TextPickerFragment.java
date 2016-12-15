@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.ui.dialogs;
+package io.ipoli.android.app.ui.dialogs;
 
 import android.app.Dialog;
 import android.os.Bundle;

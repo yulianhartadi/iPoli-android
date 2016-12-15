@@ -53,7 +53,7 @@ import io.ipoli.android.challenge.ui.events.CancelDeleteChallengeEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 
 public class EditChallengeActivity extends BaseActivity implements DatePickerFragment.OnDatePickedListener,

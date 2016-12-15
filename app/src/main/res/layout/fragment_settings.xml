@@ -2,7 +2,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_white">
+    android:background="@color/md_white"
+    android:visibility="gone"
+    android:id="@+id/root_container">
 
 
     <LinearLayout
@@ -128,10 +130,159 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="top"
-                    android:text="View tutorial and pick some quests"
+                    android:text="View tutorial again to find out more about iPoli"
                     android:textColor="@color/md_dark_text_54"
                     android:textSize="14sp" />
             </LinearLayout>
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_dark_text_12" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="Scheduling"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/most_productive_time_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Most productive time"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/most_productive_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Morning Afternoon"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/work_days_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Work days"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/work_days"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="Mon, Tue, Wed, Thu, Fri"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/work_hours_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Work hours"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/work_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="10:00 - 18:00"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sleep_hours_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="Sleep hours"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/sleep_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="23:00 - 07:00"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <View

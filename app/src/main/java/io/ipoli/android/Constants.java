@@ -1,8 +1,12 @@
 package io.ipoli.android;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import io.ipoli.android.avatar.TimeOfDay;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -77,6 +81,18 @@ public interface Constants {
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
+    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Arrays.asList(TimeOfDay.MORNING));
+    int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
+    int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
+    int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
+    int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
+    List<Integer> DEFAULT_PLAYER_WORK_DAYS = new ArrayList<>(Arrays.asList(new Integer[]{
+            DaysOfWeek.MONDAY.getIsoOrder(),
+            DaysOfWeek.TUESDAY.getIsoOrder(),
+            DaysOfWeek.WEDNESDAY.getIsoOrder(),
+            DaysOfWeek.THURSDAY.getIsoOrder(),
+            DaysOfWeek.FRIDAY.getIsoOrder()
+    }));
 
     int AVATAR_COUNT = 12;
 

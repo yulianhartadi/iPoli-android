@@ -53,6 +53,10 @@ public class TutorialActivity extends AppIntro2 {
                 getString(R.string.tutorial_pet_desc),
                 R.drawable.tutorial_pet,
                 R.color.md_orange_700));
+        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_schedule_title),
+                getString(R.string.tutorial_schedule_desc),
+                R.drawable.tutorial_schedule,
+                R.color.md_green_500));
 
         setImmersiveMode(true, true);
         setColorTransitionsEnabled(true);
