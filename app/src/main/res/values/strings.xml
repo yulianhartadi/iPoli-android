@@ -360,4 +360,6 @@
     <string name="work_hours_dialog_title">When do you work?</string>
     <string name="sleep_hours_dialog_title">When do you sleep?</string>
     <string name="time_of_day_picker_title">Which time of the day is most productive for you?</string>
+    <string name="tutorial_schedule_title">Ready for smarter schedule</string>
+    <string name="tutorial_schedule_desc">Smart automatic scheduling for your quests is coming soon! You can go to settings and set your preferences.</string>
 </resources>

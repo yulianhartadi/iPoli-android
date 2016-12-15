@@ -181,5 +181,6 @@ public interface AppComponent {
     void inject(CompleteQuestReceiver completeQuestReceiver);
 
     void inject(CoinsStoreFragment coinsStoreFragment);
+
 }
 
