@@ -130,7 +130,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="top"
-                    android:text="View tutorial and pick some quests"
+                    android:text="View tutorial again to find out more about iPoli"
                     android:textColor="@color/md_dark_text_54"
                     android:textSize="14sp" />
             </LinearLayout>
