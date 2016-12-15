@@ -75,14 +75,14 @@ public class TimeOfDayPickerFragment extends DialogFragment {
             if (preSelectedTimes.contains(timeOfDay.name())) {
                 checkedDays[i] = true;
             }
-            timesOfDay[i] = StringUtils.capitalizeAndFormat(timeOfDay.name());
+            timesOfDay[i] = StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name());
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
                 .setMultiChoiceItems(timesOfDay, checkedDays, null)
                 .setTitle(title)
-                .setPositiveButton(R.string.accept, (dialog, which) -> {
+                .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
                     List<TimeOfDay> selectedTimes = new ArrayList<>();
                     for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
