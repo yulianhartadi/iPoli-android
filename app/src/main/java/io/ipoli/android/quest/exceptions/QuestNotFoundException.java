@@ -5,9 +5,8 @@ package io.ipoli.android.quest.exceptions;
  * on 12/8/16.
  */
 public class QuestNotFoundException extends Exception {
-    public final String questId;
 
     public QuestNotFoundException(String questId) {
-        this.questId = questId;
+        super("Quest with id " + questId + " was not found");
     }
 }
