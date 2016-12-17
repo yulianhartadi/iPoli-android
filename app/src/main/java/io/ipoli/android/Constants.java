@@ -58,7 +58,6 @@ public interface Constants {
 
     String KEY_PLAYER_ID = "PLAYER_ID";
 
-    String KEY_SELECTED_ANDROID_CALENDARS = "SELECTED_ANDROID_CALENDARS";
     String KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS";
 
     String KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE = "DAILY_CHALLENGE_REMINDER_START_MINUTE";
@@ -74,8 +73,6 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
-    String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_AVATAR_LEVEL = 1;

@@ -7,7 +7,8 @@ package io.ipoli.android.app.scheduling;
 
 public class TimeBlock {
     private final int startMinute;
-    private int endMinute;
+    private final int endMinute;
+    private double probability;
 
     public TimeBlock(int startMinute, int endMinute) {
         this.startMinute = startMinute;
@@ -24,5 +25,13 @@ public class TimeBlock {
 
     public int getDuration() {
         return endMinute - startMinute;
+    }
+
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
+
+    public double getProbability() {
+        return probability;
     }
 }

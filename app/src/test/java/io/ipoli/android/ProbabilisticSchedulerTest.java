@@ -12,6 +12,7 @@ import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -22,12 +23,11 @@ import static org.hamcrest.Matchers.is;
 public class ProbabilisticSchedulerTest {
 
     @Test
-    public void shouldChooseAvailableSlot() {
+    public void shouldGiveAllAvailableSlots() {
         List<Task> tasks = new ArrayList<>();
         tasks.add(new Task(10, 20));
         Random random = new Random(42);
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
-
 
         int[] values = new int[61];
         for (int i = 0; i < values.length; i++) {
@@ -35,7 +35,24 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        TimeBlock timeBlock = scheduler.chooseSlotFor(new Task(10), 15, dist);
-        assertThat(timeBlock.getStartMinute(), is(45));
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, dist);
+        assertThat(slots.size(), is(3));
+    }
+
+    @Test
+    public void shouldHaveHighProbSlotAsFirstChoice() {
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(new Task(10, 20));
+        Random random = new Random(42);
+        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
+
+        int[] values = new int[61];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = random.nextInt(3);
+        }
+        DiscreteDistribution dist = new DiscreteDistribution(values, random);
+
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, dist);
+        assertThat(slots.get(0).getProbability(), greaterThan(0.20));
     }
 }
