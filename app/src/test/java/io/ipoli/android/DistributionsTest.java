@@ -24,10 +24,11 @@ public class DistributionsTest {
     private static final long SEED = 42;
 
     private static DiscreteDistribution dist;
+    private static Random random;
 
     @BeforeClass
     public static void setUp() {
-        Random random = new Random(SEED);
+        random = new Random(SEED);
         dist = new DiscreteDistribution(new int[]{20, 20, 20, 20, 20}, random);
     }
 
@@ -53,5 +54,12 @@ public class DistributionsTest {
     public void shouldNormalizeProbability() {
         double value = dist.at(0);
         assertThat(value, closeTo(0.2, 0.0001));
+    }
+
+    @Test
+    public void shouldNormalizeJointDistribution() {
+        DiscreteDistribution dist1 = new DiscreteDistribution(new int[]{10, 20, 30, 10, 10}, random);
+        DiscreteDistribution joint = dist.joint(dist1);
+        assertThat(joint.at(0), closeTo(0.1111111, 0.000001));
     }
 }

@@ -4,10 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TaskScheduler;
 import io.ipoli.android.app.scheduling.TimeBlock;
@@ -59,23 +56,5 @@ public class SchedulerTest {
         TaskScheduler scheduler = new TaskScheduler(0, 1, tasks);
         List<TimeBlock> freeBlocks = scheduler.getFreeBlocksFor(new Task(15));
         assertThat(freeBlocks.size(), is(1));
-    }
-
-    @Test
-    public void shouldChooseAvailableSlot() {
-        List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 20));
-        Random random = new Random(42);
-        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
-
-
-        int[] vals = new int[61];
-        for (int i = 0; i < vals.length; i++) {
-            vals[i] = random.nextInt(100);
-        }
-        DiscreteDistribution dist = new DiscreteDistribution(vals, random);
-
-        TimeBlock timeBlock = scheduler.chooseSlotFor(new Task(10), 15, dist);
-        assertThat(timeBlock.getStartMinute(), is(45));
     }
 }

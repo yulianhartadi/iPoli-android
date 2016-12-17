@@ -8,8 +8,10 @@ public class DiscreteDistribution {
 
     private final WeightedRandomSampler<Integer> randomSampler;
     private final List<Double> frequencies;
+    private final Random random;
 
     public DiscreteDistribution(int[] values, Random random) {
+        this.random = random;
 
         frequencies = new ArrayList<>();
         double total = 0;
@@ -32,5 +34,13 @@ public class DiscreteDistribution {
 
     public double at(int position) {
         return frequencies.get(position);
+    }
+
+    public DiscreteDistribution joint(DiscreteDistribution distribution) {
+        int[] values = new int[distribution.frequencies.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (int) ((at(i) * distribution.at(i)) * 100);
+        }
+        return new DiscreteDistribution(values, random);
     }
 }
