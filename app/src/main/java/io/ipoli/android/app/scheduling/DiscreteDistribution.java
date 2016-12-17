@@ -1,47 +1,36 @@
 package io.ipoli.android.app.scheduling;
 
-import java.util.NavigableMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.TreeMap;
-
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 12/15/16.
- */
-
-class WeightedRandomSampler<E> {
-
-    private final NavigableMap<Double, E> weightToValue = new TreeMap<>();
-    private final Random random;
-    private double totalWeight = 0;
-
-    public WeightedRandomSampler(Random random) {
-        this.random = random;
-    }
-
-    public void add(E value, double weight) {
-        totalWeight += weight;
-        weightToValue.put(totalWeight, value);
-    }
-
-    public E sample() {
-        double value = random.nextDouble() * totalWeight;
-        return weightToValue.ceilingEntry(value).getValue();
-    }
-}
 
 public class DiscreteDistribution {
 
-    private final WeightedRandomSampler<Integer> randomCollection;
+    private final WeightedRandomSampler<Integer> randomSampler;
+    private final List<Double> frequencies;
 
-    public DiscreteDistribution(int start, int end, int[] values, Random random) {
-        randomCollection = new WeightedRandomSampler<>(random);
-        for (int i = start; i <= end; i++) {
-            randomCollection.add(i, values[i - start]);
+    public DiscreteDistribution(int[] values, Random random) {
+
+        frequencies = new ArrayList<>();
+        double total = 0;
+        for (int value : values) {
+            total += value;
+        }
+        for (int value : values) {
+            frequencies.add((value / total));
+        }
+
+        randomSampler = new WeightedRandomSampler<>(random);
+        for (int i = 0; i < values.length; i++) {
+            randomSampler.add(i, values[i]);
         }
     }
 
     public int sample() {
-        return randomCollection.sample();
+        return randomSampler.sample();
+    }
+
+    public double at(int position) {
+        return frequencies.get(position);
     }
 }
