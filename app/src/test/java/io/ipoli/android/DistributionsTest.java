@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 
 import io.ipoli.android.app.scheduling.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.TimeDiscreteDistribution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -25,13 +24,11 @@ public class DistributionsTest {
     private static final long SEED = 42;
 
     private static DiscreteDistribution dist;
-    private static TimeDiscreteDistribution timeDist;
 
     @BeforeClass
     public static void setUp() {
         Random random = new Random(SEED);
         dist = new DiscreteDistribution(new int[]{20, 20, 20, 20, 20}, random);
-        timeDist = new TimeDiscreteDistribution(15, new int[]{20, 20, 20, 20, 20}, random);
     }
 
     @Test
@@ -50,12 +47,6 @@ public class DistributionsTest {
         for (int i = 0; i < 5; i++) {
             assertThat(samples.get(i), greaterThan(150));
         }
-    }
-
-    @Test
-    public void shouldSampleFromTimeDiscrete() {
-        int value = timeDist.sample();
-        assertThat(value, is(15));
     }
 
     @Test
