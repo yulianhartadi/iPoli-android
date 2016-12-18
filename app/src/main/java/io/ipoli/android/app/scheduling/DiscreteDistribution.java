@@ -10,15 +10,15 @@ public class DiscreteDistribution {
     private final List<Double> frequencies;
     private final Random random;
 
-    public DiscreteDistribution(int[] values, Random random) {
+    public DiscreteDistribution(double[] values, Random random) {
         this.random = random;
 
         frequencies = new ArrayList<>();
         double total = 0;
-        for (int value : values) {
+        for (double value : values) {
             total += value;
         }
-        for (int value : values) {
+        for (double value : values) {
             frequencies.add((value / total));
         }
 
@@ -26,6 +26,10 @@ public class DiscreteDistribution {
         for (int i = 0; i < values.length; i++) {
             randomSampler.add(i, values[i]);
         }
+    }
+
+    public DiscreteDistribution(double[] values) {
+        this(values, new Random());
     }
 
     public int sample() {
@@ -37,9 +41,9 @@ public class DiscreteDistribution {
     }
 
     public DiscreteDistribution joint(DiscreteDistribution distribution) {
-        int[] values = new int[distribution.frequencies.size()];
+        double[] values = new double[distribution.frequencies.size()];
         for (int i = 0; i < values.length; i++) {
-            values[i] = (int) ((at(i) * distribution.at(i)) * 100);
+            values[i] = (at(i) * distribution.at(i)) * 100;
         }
         return new DiscreteDistribution(values, random);
     }

@@ -31,11 +31,13 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
+import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
-import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
+import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 
 /**
@@ -76,8 +78,19 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         if (calendarEvent.shouldDisplayAsIndicator()) {
             return createIndicator(parent, calendarEvent, inflater);
+        } else if (calendarEvent.shouldDisplayAsProposedSlot()) {
+            return createProposedSlot(parent, q, calendarEvent, inflater);
         }
         return createQuest(parent, calendarEvent, q, inflater);
+    }
+
+    private View createProposedSlot(ViewGroup parent, Quest quest, QuestCalendarViewModel vm, LayoutInflater inflater) {
+        View v = inflater.inflate(R.layout.calendar_proposed_quest_item, parent, false);
+        TextView name = (TextView) v.findViewById(R.id.quest_text);
+        name.setText(quest.getName());
+        v.setOnClickListener(v1 -> eventBus.post(new SuggestionAcceptedEvent(quest, vm.getStartMinute())));
+        v.findViewById(R.id.reschedule_quest).setOnClickListener(b -> eventBus.post(new RescheduleQuestEvent(vm)));
+        return v;
     }
 
     @NonNull

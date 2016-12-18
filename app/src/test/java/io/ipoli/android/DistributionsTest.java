@@ -29,7 +29,7 @@ public class DistributionsTest {
     @BeforeClass
     public static void setUp() {
         random = new Random(SEED);
-        dist = new DiscreteDistribution(new int[]{20, 20, 20, 20, 20}, random);
+        dist = new DiscreteDistribution(new double[]{20, 20, 20, 20, 20}, random);
     }
 
     @Test
@@ -58,8 +58,8 @@ public class DistributionsTest {
 
     @Test
     public void shouldNormalizeJointDistribution() {
-        DiscreteDistribution dist1 = new DiscreteDistribution(new int[]{10, 20, 30, 10, 10}, random);
+        DiscreteDistribution dist1 = new DiscreteDistribution(new double[]{10, 20, 30, 10, 10}, random);
         DiscreteDistribution joint = dist.joint(dist1);
-        assertThat(joint.at(0), closeTo(0.1111111, 0.000001));
+        assertThat(joint.at(0), closeTo(0.125, 0.000001));
     }
 }

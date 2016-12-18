@@ -3,7 +3,10 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.DrawableRes;
 import android.text.TextUtils;
 
-import io.ipoli.android.Constants;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.quest.data.Quest;
 
@@ -13,24 +16,28 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class QuestCalendarViewModel implements CalendarEvent {
 
-    private static final int EMPIRICALLY_TESTED_MINUTES_FOR_INDICATOR = 6;
-
     private final String name;
-    private int duration;
     private final int backgroundColor;
     private final Quest quest;
+    private boolean shouldDisplayAsProposedSlot;
     private int startMinute;
+    private List<TimeBlock> proposedSlots;
 
     public QuestCalendarViewModel(Quest quest) {
         this.quest = quest;
         this.name = quest.getName();
-        if (shouldDisplayAsIndicator()) {
-            this.duration = EMPIRICALLY_TESTED_MINUTES_FOR_INDICATOR;
-        } else {
-            this.duration = Math.max(Constants.CALENDAR_EVENT_MIN_DURATION, quest.getDuration());
-        }
         this.backgroundColor = Quest.getCategory(quest).color50;
         this.startMinute = quest.getActualStartMinute();
+        this.shouldDisplayAsProposedSlot = false;
+        this.proposedSlots = new ArrayList<>();
+    }
+
+    public static QuestCalendarViewModel createWithProposedTime(Quest quest, int startMinute, List<TimeBlock> proposedSlots) {
+        QuestCalendarViewModel vm = new QuestCalendarViewModel(quest);
+        vm.setStartMinute(startMinute);
+        vm.shouldDisplayAsProposedSlot = true;
+        vm.proposedSlots = proposedSlots;
+        return vm;
     }
 
     @Override
@@ -77,10 +84,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
         return Quest.getCategory(quest).colorfulImage;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
     @Override
     public boolean isMostImportant() {
         return quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY;
@@ -89,5 +92,18 @@ public class QuestCalendarViewModel implements CalendarEvent {
     @Override
     public boolean isForChallenge() {
         return quest.getChallengeId() != null;
+    }
+
+    public boolean shouldDisplayAsProposedSlot() {
+        return shouldDisplayAsProposedSlot;
+    }
+
+    public void useNextSlot() {
+        if (!proposedSlots.isEmpty()) {
+            proposedSlots.remove(0);
+        }
+        if (!proposedSlots.isEmpty()) {
+            setStartMinute(proposedSlots.get(0).getStartMinute());
+        }
     }
 }

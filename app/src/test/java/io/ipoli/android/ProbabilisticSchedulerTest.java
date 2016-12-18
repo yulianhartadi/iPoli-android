@@ -29,7 +29,7 @@ public class ProbabilisticSchedulerTest {
         Random random = new Random(42);
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
-        int[] values = new int[61];
+        double[] values = new double[61];
         for (int i = 0; i < values.length; i++) {
             values[i] = random.nextInt(100);
         }
@@ -46,13 +46,13 @@ public class ProbabilisticSchedulerTest {
         Random random = new Random(42);
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
-        int[] values = new int[61];
+        double[] values = new double[60];
         for (int i = 0; i < values.length; i++) {
-            values[i] = random.nextInt(3);
+            values[i] = 1;
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
         List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, dist);
-        assertThat(slots.get(0).getProbability(), greaterThan(0.20));
+        assertThat(slots.get(0).getProbability(), greaterThan(0.183));
     }
 }

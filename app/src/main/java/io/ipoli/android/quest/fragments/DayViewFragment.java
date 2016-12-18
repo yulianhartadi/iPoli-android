@@ -34,6 +34,11 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
+import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.Distributions;
+import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
+import io.ipoli.android.app.scheduling.Task;
+import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -41,9 +46,11 @@ import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
@@ -52,8 +59,10 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -111,6 +120,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
+    private Avatar avatar;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -340,11 +350,30 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             return;
         }
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
+        List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
+
+        List<Task> tasks = new ArrayList<>();
+        for (QuestCalendarViewModel vm : schedule.getCalendarEvents()) {
+            tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
+        }
+
+        DiscreteDistribution posterior = Distributions.getSleepDistribution(avatar.getSleepStartMinute(), avatar.getSleepEndMinute());
+
+        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks);
 
         Map<String, List<Quest>> map = new HashMap<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             if (q.getRepeatingQuest() == null) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
+
+                if (Quest.getCategory(q) == Category.WORK) {
+                    posterior = Distributions.getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
+                }
+
+                List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
+                if (!timeBlocks.isEmpty()) {
+                    scheduledEvents.add(QuestCalendarViewModel.createWithProposedTime(q, timeBlocks.get(0).getStartMinute(), timeBlocks));
+                }
                 continue;
             }
             String key = q.getRepeatingQuest().getId();
@@ -354,6 +383,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             map.get(key).add(q);
         }
 
+
         for (String key : map.keySet()) {
             Quest q = map.get(key).get(0);
             int remainingCount = map.get(key).size();
@@ -361,7 +391,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
-        calendarAdapter.updateEvents(schedule.getCalendarEvents());
+        calendarAdapter.updateEvents(scheduledEvents);
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
@@ -403,6 +433,21 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         q.setStartMinute(qvm.getStartMinute());
         saveQuest(q);
+    }
+
+    @Subscribe
+    public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
+        Quest quest = e.quest;
+        quest.setStartMinute(e.startMinute);
+        saveQuest(quest);
+        Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onRescheduleQuest(RescheduleQuestEvent e) {
+        e.calendarEvent.useNextSlot();
+        calendarAdapter.notifyDataSetChanged();
+        calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
     }
 
     @Override
@@ -471,6 +516,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
     }
 
     private class Schedule {

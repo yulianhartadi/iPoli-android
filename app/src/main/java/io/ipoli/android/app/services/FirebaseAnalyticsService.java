@@ -375,8 +375,10 @@ public class FirebaseAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
-        Quest q = e.calendarEvent.getQuest();
-        log("reschedule_quest", q.getId(), q.getName());
+        Quest q = e.quest;
+        log("suggestion_accepted", EventParams.of("id", q.getId())
+                .add("name", q.getName())
+                .add("start_minute", e.startMinute));
     }
 
     @Subscribe

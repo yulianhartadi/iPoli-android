@@ -23,7 +23,8 @@ public class TaskScheduler {
 
     public List<TimeBlock> getFreeBlocksFor(Task task) {
         List<TimeBlock> freeBlocks = new ArrayList<>();
-        freeBlocks.add(new TimeBlock(startHour * 60, endHour * 60));
+        int endMinute = endHour > 1 ? (endHour - 1) * 60 : 60;
+        freeBlocks.add(new TimeBlock(startHour * 60, endMinute));
         int newTaskDuration = task != null ? task.getDuration() : 0;
         for (Task t : tasks) {
             freeBlocks = insertTaskInSchedule(freeBlocks, newTaskDuration, t);
@@ -63,7 +64,7 @@ public class TaskScheduler {
             while (true) {
                 slots.add(new TimeBlock(start, start + task.getDuration()));
                 start += minTimeInterval;
-                if (start + 10 > b.getEndMinute()) {
+                if (start + task.getDuration() > b.getEndMinute()) {
                     break;
                 }
             }
