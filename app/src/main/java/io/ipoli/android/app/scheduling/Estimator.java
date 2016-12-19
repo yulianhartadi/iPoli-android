@@ -86,7 +86,7 @@ public class Estimator {
 
         Category category = Quest.getCategory(q);
 
-        if (category == Category.WORK && avatar.getWorkDays().contains(currentDate.getDayOfWeek())) {
+        if (category == Category.WORK && isWorkDay(currentDate, avatar)) {
             // schedule work tasks only during work days & hours
             posterior = workDistribution;
         }
@@ -108,11 +108,16 @@ public class Estimator {
             posterior = posterior.joint(createFunDistribution());
         }
 
-        if (category == Category.LEARNING || category == Category.WELLNESS || category == Category.PERSONAL) {
+        if ((category == Category.LEARNING || category == Category.WELLNESS || category == Category.PERSONAL)
+                && isWorkDay(currentDate, avatar)) {
             posterior = posterior.joint(inverseWorkDistribution);
         }
 
         return posterior;
+    }
+
+    private static boolean isWorkDay(LocalDate currentDate, Avatar avatar) {
+        return avatar.getWorkDays().contains(currentDate.getDayOfWeek());
     }
 
     private static DiscreteDistribution inverseUniformDistribution(DiscreteDistribution distribution) {
