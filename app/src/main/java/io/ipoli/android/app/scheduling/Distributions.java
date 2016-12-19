@@ -12,11 +12,21 @@ public class Distributions {
     public static DiscreteDistribution getSleepDistribution(int sleepStartMinute, int sleepEndMinute) {
         double[] values = new double[24 * 60];
 
-        for (int i = 0; i < values.length; i++) {
-            if (i > sleepEndMinute && i < sleepStartMinute) {
-                values[i] = 1;
-            } else {
-                values[i] = 0;
+        if (sleepEndMinute < sleepStartMinute) {
+            for (int i = 0; i < values.length; i++) {
+                if (i > sleepEndMinute && i < sleepStartMinute) {
+                    values[i] = 1;
+                } else {
+                    values[i] = 0;
+                }
+            }
+        } else {
+            for (int i = 0; i < values.length; i++) {
+                if (i > sleepEndMinute || i < sleepStartMinute) {
+                    values[i] = 1;
+                } else {
+                    values[i] = 0;
+                }
             }
         }
 
@@ -26,11 +36,21 @@ public class Distributions {
     public static DiscreteDistribution getWorkDistribution(int workStartMinute, int workEndMinute) {
         double[] values = new double[24 * 60];
 
-        for (int i = 0; i < values.length; i++) {
-            if (i > workStartMinute && i < workEndMinute) {
-                values[i] = 1;
-            } else {
-                values[i] = 0;
+        if (workStartMinute < workEndMinute) {
+            for (int i = 0; i < values.length; i++) {
+                if (i > workStartMinute && i < workEndMinute) {
+                    values[i] = 1;
+                } else {
+                    values[i] = 0;
+                }
+            }
+        } else {
+            for (int i = 0; i < values.length; i++) {
+                if (i > workEndMinute || i < workStartMinute) {
+                    values[i] = 1;
+                } else {
+                    values[i] = 0;
+                }
             }
         }
 
