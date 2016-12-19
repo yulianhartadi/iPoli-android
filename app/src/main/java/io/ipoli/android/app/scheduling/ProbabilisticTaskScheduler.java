@@ -41,7 +41,9 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
             for (TimeBlock slot : slotsToConsider) {
                 sampler.add(slot, slot.getProbability());
             }
-            result.add(sampler.sample());
+            TimeBlock timeBlock = sampler.sample();
+            result.add(timeBlock);
+            slotsToConsider.remove(timeBlock);
         }
         return result;
     }
