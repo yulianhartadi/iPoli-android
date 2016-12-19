@@ -37,7 +37,11 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.MostProductiveTimesChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
+import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
+import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
@@ -190,6 +194,7 @@ public class SettingsFragment extends BaseFragment implements
     public void onWorkDaysClicked(View view) {
         DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(avatar.getWorkDays()),
                 selectedDays -> {
+                    eventBus.post(new WorkDaysChangedEvent(selectedDays));
                     avatar.setWorkDays(new ArrayList<>(selectedDays));
                     avatarPersistenceService.save(avatar);
                 });
@@ -200,6 +205,7 @@ public class SettingsFragment extends BaseFragment implements
     public void onWorkHoursClicked(View view) {
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title,
                 avatar.getWorkStartTime(), avatar.getWorkEndTime(), (startTime, endTime) -> {
+                    eventBus.post(new WorkHoursChangedEvent(startTime, endTime));
                     avatar.setWorkStartTime(startTime);
                     avatar.setWorkEndTime(endTime);
                     avatarPersistenceService.save(avatar);
@@ -211,6 +217,7 @@ public class SettingsFragment extends BaseFragment implements
     public void onSleepHoursClicked(View view) {
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.sleep_hours_dialog_title,
                 avatar.getSleepStartTime(), avatar.getSleepEndTime(), (startTime, endTime) -> {
+                    eventBus.post(new SleepHoursChangedEvent(startTime, endTime));
                     avatar.setSleepStartTime(startTime);
                     avatar.setSleepEndTime(endTime);
                     avatarPersistenceService.save(avatar);
@@ -260,6 +267,7 @@ public class SettingsFragment extends BaseFragment implements
 
     @Override
     public void onTimesOfDayPicked(List<TimeOfDay> selectedTimes) {
+        eventBus.post(new MostProductiveTimesChangedEvent(selectedTimes));
         if(selectedTimes.contains(TimeOfDay.ANY_TIME) || selectedTimes.isEmpty()) {
             selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
         }
