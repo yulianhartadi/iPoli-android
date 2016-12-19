@@ -414,14 +414,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Nullable
     private TimeBlock chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeBlock> timeBlocks) {
-        TimeBlock timeBlock = null;
         for (TimeBlock tb : timeBlocks) {
             if (!doOverlap(proposedEvents, tb)) {
-                timeBlock = tb;
-                break;
+                return tb;
             }
         }
-        return timeBlock;
+        return null;
     }
 
     private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeBlock tb) {
