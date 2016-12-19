@@ -98,12 +98,28 @@ public class QuestCalendarViewModel implements CalendarEvent {
         return shouldDisplayAsProposedSlot;
     }
 
-    public void useNextSlot() {
-        if (!proposedSlots.isEmpty()) {
-            proposedSlots.remove(0);
+    public void useNextSlot(List<QuestCalendarViewModel> eventsWithProposedSlots) {
+        TimeBlock timeBlock = null;
+        for (TimeBlock tb : proposedSlots) {
+            if (!doOverlap(eventsWithProposedSlots, tb)) {
+                timeBlock = tb;
+                break;
+            }
         }
-        if (!proposedSlots.isEmpty()) {
-            setStartMinute(proposedSlots.get(0).getStartMinute());
+        if (timeBlock != null) {
+            setStartMinute(timeBlock.getStartMinute());
+            proposedSlots.remove(timeBlock);
         }
+    }
+
+    private boolean doOverlap(List<QuestCalendarViewModel> eventsWithProposedSlots, TimeBlock tb) {
+        for (QuestCalendarViewModel vm : eventsWithProposedSlots) {
+            if (vm != this) {
+                if (tb.doOverlap(vm.getStartMinute(), vm.getStartMinute() + vm.getDuration() - 1)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

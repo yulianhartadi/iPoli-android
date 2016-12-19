@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -349,6 +351,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         if (calendarContainer == null || calendarContainer.isInEditMode()) {
             return;
         }
+        Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
+                1 - Integer.compare(q1.getDuration(), q2.getDuration()));
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
@@ -362,6 +366,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks);
 
         Map<String, List<Quest>> map = new HashMap<>();
+        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             if (q.getRepeatingQuest() == null) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
@@ -371,8 +376,13 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 }
 
                 List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
-                if (!timeBlocks.isEmpty()) {
-                    scheduledEvents.add(QuestCalendarViewModel.createWithProposedTime(q, timeBlocks.get(0).getStartMinute(), timeBlocks));
+
+                TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
+
+                if (timeBlock != null) {
+                    QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
+                    scheduledEvents.add(vm);
+                    proposedEvents.add(vm);
                 }
                 continue;
             }
@@ -395,6 +405,30 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
+    }
+
+    @Nullable
+    private TimeBlock chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeBlock> timeBlocks) {
+        TimeBlock timeBlock = null;
+        for (TimeBlock tb : timeBlocks) {
+            if (!doOverlap(proposedEvents, tb)) {
+                timeBlock = tb;
+                break;
+            }
+        }
+        return timeBlock;
+    }
+
+    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeBlock tb) {
+        for (QuestCalendarViewModel vm : proposedEvents) {
+            int sm = vm.getStartMinute();
+            int em = vm.getStartMinute() + vm.getDuration() - 1;
+
+            if (tb.doOverlap(sm, em)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -445,7 +479,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        e.calendarEvent.useNextSlot();
+        e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots());
         calendarAdapter.notifyDataSetChanged();
         calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
     }
