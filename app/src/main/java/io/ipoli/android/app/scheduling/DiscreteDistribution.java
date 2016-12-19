@@ -43,7 +43,7 @@ public class DiscreteDistribution {
     public DiscreteDistribution joint(DiscreteDistribution distribution) {
         double[] values = new double[distribution.frequencies.size()];
         for (int i = 0; i < values.length; i++) {
-            values[i] = (at(i) * distribution.at(i)) * 100;
+            values[i] = at(i) * distribution.at(i);
         }
         return new DiscreteDistribution(values, random);
     }
