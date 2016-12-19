@@ -1,5 +1,7 @@
 package io.ipoli.android.app.scheduling;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,22 +21,12 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
 
     public List<TimeBlock> chooseSlotsFor(Task task, int minTimeInterval, DiscreteDistribution posterior) {
         List<TimeBlock> slots = getAvailableSlotsFor(task, minTimeInterval);
-        List<TimeBlock> slotsToConsider = new ArrayList<>();
-        for (TimeBlock slot : slots) {
-            double slotProb = 0.0;
-            for (int i = slot.getStartMinute(); i <= slot.getEndMinute(); i++) {
-                double prob = posterior.at(i);
-                if (!(prob > 0)) {
-                    slotProb = 0.0;
-                    break;
-                }
-                slotProb += prob;
-            }
-            slot.setProbability(slotProb);
-            if (slotProb > 0) {
-                slotsToConsider.add(slot);
-            }
-        }
+        List<TimeBlock> slotsToConsider = filterPossibleSlots(posterior, slots);
+        return rankSlots(slotsToConsider);
+    }
+
+    @NonNull
+    private List<TimeBlock> rankSlots(List<TimeBlock> slotsToConsider) {
         List<TimeBlock> result = new ArrayList<>();
         for (int i = 0; i < slotsToConsider.size(); i++) {
             WeightedRandomSampler<TimeBlock> sampler = new WeightedRandomSampler<>(random);
@@ -46,5 +38,33 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
             slotsToConsider.remove(timeBlock);
         }
         return result;
+    }
+
+    @NonNull
+    private List<TimeBlock> filterPossibleSlots(DiscreteDistribution posterior, List<TimeBlock> slots) {
+        List<TimeBlock> slotsToConsider = new ArrayList<>();
+        for (TimeBlock slot : slots) {
+            double slotProb = findSlotProbabilityDistribution(posterior, slot);
+            slot.setProbability(slotProb);
+            if (slotProb > 0) {
+                slotsToConsider.add(slot);
+            }
+        }
+        return slotsToConsider;
+    }
+
+    /**
+     * If slot probability is not defined at any value - the total probability of the slot is 0
+     */
+    private double findSlotProbabilityDistribution(DiscreteDistribution posterior, TimeBlock slot) {
+        double slotProb = 0.0;
+        for (int i = slot.getStartMinute(); i <= slot.getEndMinute(); i++) {
+            double prob = posterior.at(i);
+            if (!(prob > 0)) {
+                return 0;
+            }
+            slotProb += prob;
+        }
+        return slotProb;
     }
 }
