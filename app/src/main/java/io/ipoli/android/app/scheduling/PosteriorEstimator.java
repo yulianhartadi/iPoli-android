@@ -16,7 +16,7 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/18/16.
  */
-public class Estimator {
+public class PosteriorEstimator {
 
     public static final int MORNING_6 = 6 * 60;
     public static final int MORNING_11 = 11 * 60;
@@ -29,7 +29,7 @@ public class Estimator {
     private final LocalDate currentDate;
     private final Random random;
 
-    public Estimator(Avatar avatar, LocalDate currentDate, Random random) {
+    public PosteriorEstimator(Avatar avatar, LocalDate currentDate, Random random) {
         this.avatar = avatar;
         this.currentDate = currentDate;
         this.random = random;
@@ -92,14 +92,14 @@ public class Estimator {
         return new double[24 * 60];
     }
 
-    public DiscreteDistribution getPosteriorFor(Quest q) {
+    public DiscreteDistribution posteriorFor(Quest quest) {
 
         DiscreteDistribution posterior = getSleepDistribution();
 
         DiscreteDistribution workDistribution = getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
         DiscreteDistribution inverseWorkDistribution = inverseUniformDistribution(workDistribution);
 
-        Category category = Quest.getCategory(q);
+        Category category = Quest.getCategory(quest);
 
         if (category == Category.WORK && isWorkDay(currentDate, avatar)) {
             // schedule work tasks only during work days & hours

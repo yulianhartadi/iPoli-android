@@ -38,7 +38,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.Estimator;
+import io.ipoli.android.app.scheduling.PosteriorEstimator;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
@@ -123,7 +123,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
     private Avatar avatar;
-    private Estimator estimator;
+    private PosteriorEstimator posteriorEstimator;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -173,7 +173,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
 
-        estimator = new Estimator(avatar, currentDate, new Random(Constants.RANDOM_SEED));
+        posteriorEstimator = new PosteriorEstimator(avatar, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
@@ -398,7 +398,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
-        DiscreteDistribution posterior = estimator.getPosteriorFor(q);
+        DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
 
         List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
 
