@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -122,6 +123,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
     private Avatar avatar;
+    private Estimator estimator;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -170,6 +172,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
+
+        estimator = new Estimator(avatar, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
@@ -360,7 +364,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
         }
 
-        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks);
+        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
 
         Map<String, List<Quest>> map = new HashMap<>();
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
@@ -394,7 +398,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
-        DiscreteDistribution posterior = Estimator.getPosteriorFor(q, avatar, currentDate);
+        DiscreteDistribution posterior = estimator.getPosteriorFor(q);
 
         List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
 

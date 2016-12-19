@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import org.joda.time.LocalDate;
 
 import java.util.List;
+import java.util.Random;
 
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.TimeOfDay;
@@ -24,9 +25,22 @@ public class Estimator {
     public static final int EVENING_19 = 19 * 60;
     public static final int EVENING_23 = 23 * 60;
 
+    private final Avatar avatar;
+    private final LocalDate currentDate;
+    private final Random random;
+
+    public Estimator(Avatar avatar, LocalDate currentDate, Random random) {
+        this.avatar = avatar;
+        this.currentDate = currentDate;
+        this.random = random;
+    }
+
     @NonNull
-    public static DiscreteDistribution getSleepDistribution(int sleepStartMinute, int sleepEndMinute) {
+    private DiscreteDistribution getSleepDistribution() {
         double[] values = createEmptyWholeDayValues();
+
+        int sleepStartMinute = avatar.getSleepStartMinute();
+        int sleepEndMinute = avatar.getSleepEndMinute();
 
         if (sleepEndMinute < sleepStartMinute) {
             for (int i = 0; i < values.length; i++) {
@@ -46,10 +60,11 @@ public class Estimator {
             }
         }
 
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
-    public static DiscreteDistribution getWorkDistribution(int workStartMinute, int workEndMinute) {
+    @NonNull
+    private DiscreteDistribution getWorkDistribution(int workStartMinute, int workEndMinute) {
         double[] values = createEmptyWholeDayValues();
 
         if (workStartMinute < workEndMinute) {
@@ -70,16 +85,16 @@ public class Estimator {
             }
         }
 
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
     private static double[] createEmptyWholeDayValues() {
         return new double[24 * 60];
     }
 
-    public static DiscreteDistribution getPosteriorFor(Quest q, Avatar avatar, LocalDate currentDate) {
+    public DiscreteDistribution getPosteriorFor(Quest q) {
 
-        DiscreteDistribution posterior = getSleepDistribution(avatar.getSleepStartMinute(), avatar.getSleepEndMinute());
+        DiscreteDistribution posterior = getSleepDistribution();
 
         DiscreteDistribution workDistribution = getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
         DiscreteDistribution inverseWorkDistribution = inverseUniformDistribution(workDistribution);
@@ -116,11 +131,11 @@ public class Estimator {
         return posterior;
     }
 
-    private static boolean isWorkDay(LocalDate currentDate, Avatar avatar) {
+    private boolean isWorkDay(LocalDate currentDate, Avatar avatar) {
         return avatar.getWorkDays().contains(currentDate.getDayOfWeek());
     }
 
-    private static DiscreteDistribution inverseUniformDistribution(DiscreteDistribution distribution) {
+    private DiscreteDistribution inverseUniformDistribution(DiscreteDistribution distribution) {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (distribution.at(i) > 0) {
@@ -129,10 +144,10 @@ public class Estimator {
                 values[i] = 1;
             }
         }
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
-    private static DiscreteDistribution createFunDistribution() {
+    private DiscreteDistribution createFunDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > EVENING_19 && i < EVENING_23) {
@@ -141,10 +156,10 @@ public class Estimator {
                 values[i] = 0;
             }
         }
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
-    private static DiscreteDistribution createEveningProductiveDistribution() {
+    private DiscreteDistribution createEveningProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > EVENING_19 && i < EVENING_23) {
@@ -153,10 +168,10 @@ public class Estimator {
                 values[i] = 0;
             }
         }
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
-    private static DiscreteDistribution createAfternoonProductiveDistribution() {
+    private DiscreteDistribution createAfternoonProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > AFTERNOON_13 && i < AFTERNOON_17) {
@@ -165,10 +180,10 @@ public class Estimator {
                 values[i] = 0;
             }
         }
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 
-    private static DiscreteDistribution createMorningProductiveDistribution() {
+    private DiscreteDistribution createMorningProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > MORNING_6 && i < MORNING_11) {
@@ -177,6 +192,6 @@ public class Estimator {
                 values[i] = 0;
             }
         }
-        return new DiscreteDistribution(values);
+        return new DiscreteDistribution(values, random);
     }
 }

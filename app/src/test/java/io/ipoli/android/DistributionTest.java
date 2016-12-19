@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
  * on 12/16/16.
  */
 
-public class EstimatorTest {
+public class DistributionTest {
 
     private static final long SEED = 42;
 
