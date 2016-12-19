@@ -405,6 +405,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
 
         if (timeBlock != null) {
+            timeBlocks.remove(0);
             QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
             scheduledEvents.add(vm);
             proposedEvents.add(vm);
@@ -483,9 +484,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots());
-        calendarAdapter.notifyDataSetChanged();
-        calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
+        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
+            calendarAdapter.notifyDataSetChanged();
+            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
+        } else {
+            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
