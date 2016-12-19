@@ -20,8 +20,8 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
     }
 
     public List<TimeBlock> chooseSlotsFor(Task task, int minTimeInterval, DiscreteDistribution posterior) {
-        List<TimeBlock> slots = getAvailableSlotsFor(task, minTimeInterval);
-        List<TimeBlock> slotsToConsider = filterPossibleSlots(posterior, slots);
+        List<TimeBlock> availableSlots = getAvailableSlotsFor(task, minTimeInterval);
+        List<TimeBlock> slotsToConsider = filterPossibleSlots(posterior, availableSlots);
         return rankSlots(slotsToConsider);
     }
 
