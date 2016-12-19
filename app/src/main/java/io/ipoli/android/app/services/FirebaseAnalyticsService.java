@@ -32,7 +32,11 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.MostProductiveTimesChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
+import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
+import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
@@ -807,6 +811,30 @@ public class FirebaseAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCoinsPurchased(CoinsPurchasedEvent e) {
         log("coins_purchased", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onMostProductiveTimesChanged(MostProductiveTimesChangedEvent e) {
+        log("most_productive_times_changed", EventParams.of("times", TextUtils.join(", ", e.getTimesOfDay())));
+    }
+
+    @Subscribe
+    public void onWorkDaysChanged(WorkDaysChangedEvent e) {
+        log("work_days_changed", EventParams.of("days", TextUtils.join(", ", e.workDays)));
+    }
+
+    @Subscribe
+    public void onWorkHoursChanged(WorkHoursChangedEvent e) {
+        log("work_hours_changed", EventParams.create()
+                .add("start", e.startTime.toString())
+                .add("end", e.endTime.toString()));
+    }
+
+    @Subscribe
+    public void onSleepHoursChanged(SleepHoursChangedEvent e) {
+        log("sleep_hours_changed", EventParams.create()
+                .add("start", e.startTime.toString())
+                .add("end", e.endTime.toString()));
     }
 
     @Subscribe
