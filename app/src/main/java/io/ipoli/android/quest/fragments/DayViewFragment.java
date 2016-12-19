@@ -37,7 +37,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.Distributions;
+import io.ipoli.android.app.scheduling.Estimator;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
@@ -52,7 +52,6 @@ import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
-import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
@@ -361,8 +360,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
         }
 
-        DiscreteDistribution posterior = Distributions.getSleepDistribution(avatar.getSleepStartMinute(), avatar.getSleepEndMinute());
-
         ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks);
 
         Map<String, List<Quest>> map = new HashMap<>();
@@ -371,19 +368,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             if (q.getRepeatingQuest() == null) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
 
-                if (Quest.getCategory(q) == Category.WORK) {
-                    posterior = Distributions.getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
-                }
-
-                List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
-
-                TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
-
-                if (timeBlock != null) {
-                    QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
-                    scheduledEvents.add(vm);
-                    proposedEvents.add(vm);
-                }
+                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
                 continue;
             }
             String key = q.getRepeatingQuest().getId();
@@ -398,6 +383,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             Quest q = map.get(key).get(0);
             int remainingCount = map.get(key).size();
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
+            proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
         }
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
@@ -405,6 +391,20 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
+    }
+
+    private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
+        DiscreteDistribution posterior = Estimator.getPosteriorFor(q, avatar, currentDate);
+
+        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
+
+        TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
+
+        if (timeBlock != null) {
+            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
+            scheduledEvents.add(vm);
+            proposedEvents.add(vm);
+        }
     }
 
     @Nullable
