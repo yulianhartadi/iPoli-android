@@ -360,6 +360,6 @@
     <string name="work_hours_dialog_title">When do you work?</string>
     <string name="sleep_hours_dialog_title">When do you sleep?</string>
     <string name="time_of_day_picker_title">When you are most productive?</string>
-    <string name="tutorial_schedule_title">Prepare for Smart Daily Schedule</string>
-    <string name="tutorial_schedule_desc">Smart scheduling is coming soon! Go to settings and choose your preferences now.</string>
+    <string name="tutorial_schedule_title">Automagically Organise Your Day</string>
+    <string name="tutorial_schedule_desc">iPoli automatically schedules your day in the smartest possible way. Your important quests will never be left unfinished again!</string>
 </resources>
