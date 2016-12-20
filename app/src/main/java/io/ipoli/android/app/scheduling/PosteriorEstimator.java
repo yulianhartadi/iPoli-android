@@ -123,7 +123,7 @@ public class PosteriorEstimator {
             posterior = posterior.joint(createFunDistribution());
         }
 
-        if ((category == Category.LEARNING || category == Category.WELLNESS || category == Category.PERSONAL)
+        if ((category == Category.LEARNING || category == Category.WELLNESS || category == Category.PERSONAL || category == Category.CHORES)
                 && isWorkDay(currentDate, avatar)) {
             posterior = posterior.joint(inverseWorkDistribution);
         }
