@@ -47,4 +47,12 @@ public class DiscreteDistribution {
         }
         return new DiscreteDistribution(values, random);
     }
+
+    public DiscreteDistribution add(DiscreteDistribution distribution) {
+        double[] values = new double[distribution.frequencies.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = at(i) + distribution.at(i);
+        }
+        return new DiscreteDistribution(values, random);
+    }
 }

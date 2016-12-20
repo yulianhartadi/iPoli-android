@@ -163,9 +163,9 @@ public class PosteriorEstimator {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > EVENING_19 && i < EVENING_23) {
-                values[i] = 1;
+                values[i] = 10;
             } else {
-                values[i] = 0;
+                values[i] = 1;
             }
         }
         return new DiscreteDistribution(values, random);
@@ -175,9 +175,9 @@ public class PosteriorEstimator {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > AFTERNOON_13 && i < AFTERNOON_17) {
-                values[i] = 1;
+                values[i] = 10;
             } else {
-                values[i] = 0;
+                values[i] = 1;
             }
         }
         return new DiscreteDistribution(values, random);
@@ -187,9 +187,9 @@ public class PosteriorEstimator {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
             if (i > MORNING_6 && i < MORNING_11) {
-                values[i] = 1;
+                values[i] = 10;
             } else {
-                values[i] = 0;
+                values[i] = 1;
             }
         }
         return new DiscreteDistribution(values, random);
