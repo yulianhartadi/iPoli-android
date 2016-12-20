@@ -35,12 +35,14 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.avatar.Avatar;
+import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
@@ -78,11 +80,17 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Inject
     Bus eventBus;
 
+    @Inject
+    AvatarPersistenceService avatarPersistenceService;
+
     private FragmentStatePagerAdapter adapter;
+
     private LocalDate currentMidDate;
 
     @BindView(R.id.fab_menu)
     FabMenuView fabMenu;
+
+    private Avatar avatar;
 
     @Nullable
     @Override
@@ -114,23 +122,28 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
         changeTitle(currentMidDate);
 
-        adapter = createAdapter();
+        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CALENDAR)));
 
-        calendarPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        avatarPersistenceService.find(result -> {
+            CalendarFragment.this.avatar = result;
 
-            @Override
-            public void onPageSelected(int position) {
-                LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
-                changeTitle(date);
-                toolbarCalendar.setCurrentDate(date.toDate());
-                eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.SWIPE));
-            }
+            adapter = createAdapter();
+
+            calendarPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+
+                @Override
+                public void onPageSelected(int position) {
+                    LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
+                    changeTitle(date);
+                    toolbarCalendar.setCurrentDate(date.toDate());
+                    eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.SWIPE));
+                }
+            });
+
+            calendarPager.setAdapter(adapter);
+            calendarPager.setCurrentItem(MID_POSITION);
         });
 
-        calendarPager.setAdapter(adapter);
-        calendarPager.setCurrentItem(MID_POSITION);
-
-        fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CALENDAR)));
 
         return view;
     }
@@ -208,7 +221,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         toolbarCalendar.setCurrentDate(currentMidDate.toDate());
 
         calendarPager.setCurrentItem(MID_POSITION, false);
-        if(e.time != null) {
+        if (e.time != null) {
             eventBus.post(new ScrollToTimeEvent(e.time));
         }
     }
@@ -219,7 +232,9 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
             @Override
             public Fragment getItem(int position) {
                 int plusDays = position - MID_POSITION;
-                return DayViewFragment.newInstance(currentMidDate.plusDays(plusDays));
+                DayViewFragment dayViewFragment = DayViewFragment.newInstance(currentMidDate.plusDays(plusDays));
+                dayViewFragment.setAvatar(avatar);
+                return dayViewFragment;
             }
 
             @Override

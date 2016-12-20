@@ -35,7 +35,9 @@ import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQuestsAdapter.ViewHolder> {
 
     private Context context;
+
     private List<UnscheduledQuestViewModel> viewModels;
+
     private final Bus eventBus;
 
     public UnscheduledQuestsAdapter(Context context, List<UnscheduledQuestViewModel> viewModels, Bus eventBus) {
@@ -49,6 +51,10 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                                                                   int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.unscheduled_quest_item, parent, false);
         return new ViewHolder(v);
+    }
+
+    public List<UnscheduledQuestViewModel> getViewModels() {
+        return viewModels;
     }
 
     @Override

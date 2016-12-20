@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,9 +20,11 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -34,6 +37,11 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
+import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.PosteriorEstimator;
+import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
+import io.ipoli.android.app.scheduling.Task;
+import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -41,6 +49,7 @@ import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
@@ -52,8 +61,10 @@ import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
+import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -111,6 +122,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
+    private Avatar avatar;
+    private PosteriorEstimator posteriorEstimator;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -159,6 +172,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
+
+        posteriorEstimator = new PosteriorEstimator(avatar, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
@@ -339,12 +354,25 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         if (calendarContainer == null || calendarContainer.isInEditMode()) {
             return;
         }
+        Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
+                1 - Integer.compare(q1.getDuration(), q2.getDuration()));
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
+        List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
+
+        List<Task> tasks = new ArrayList<>();
+        for (QuestCalendarViewModel vm : schedule.getCalendarEvents()) {
+            tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
+        }
+
+        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
 
         Map<String, List<Quest>> map = new HashMap<>();
+        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             if (q.getRepeatingQuest() == null) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
+
+                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
                 continue;
             }
             String key = q.getRepeatingQuest().getId();
@@ -354,17 +382,56 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             map.get(key).add(q);
         }
 
+
         for (String key : map.keySet()) {
             Quest q = map.get(key).get(0);
             int remainingCount = map.get(key).size();
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
+            proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
         }
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
-        calendarAdapter.updateEvents(schedule.getCalendarEvents());
+        calendarAdapter.updateEvents(scheduledEvents);
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
+    }
+
+    private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
+        DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
+
+        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
+
+        TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
+
+        if (timeBlock != null) {
+            timeBlocks.remove(0);
+            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
+            scheduledEvents.add(vm);
+            proposedEvents.add(vm);
+        }
+    }
+
+    @Nullable
+    private TimeBlock chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeBlock> timeBlocks) {
+        for (TimeBlock tb : timeBlocks) {
+            if (!doOverlap(proposedEvents, tb)) {
+                return tb;
+            }
+        }
+        return null;
+    }
+
+    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeBlock tb) {
+        for (QuestCalendarViewModel vm : proposedEvents) {
+            int sm = vm.getStartMinute();
+            int em = vm.getStartMinute() + vm.getDuration() - 1;
+
+            if (tb.doOverlap(sm, em)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -403,6 +470,24 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         q.setStartMinute(qvm.getStartMinute());
         saveQuest(q);
+    }
+
+    @Subscribe
+    public void onSuggestionAccepted(SuggestionAcceptedEvent e) {
+        Quest quest = e.quest;
+        quest.setStartMinute(e.startMinute);
+        saveQuest(quest);
+        Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onRescheduleQuest(RescheduleQuestEvent e) {
+        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
+            calendarAdapter.notifyDataSetChanged();
+            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
+        } else {
+            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -471,6 +556,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
     }
 
     private class Schedule {

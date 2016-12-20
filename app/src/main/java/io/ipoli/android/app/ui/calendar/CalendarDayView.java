@@ -1,5 +1,6 @@
 package io.ipoli.android.app.ui.calendar;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
@@ -274,14 +275,10 @@ public class CalendarDayView extends FrameLayout {
     }
 
     public void smoothScrollToTime(final Time time) {
-        scrollView.post(() -> {
-            int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
-            if (hour == 0) {
-                scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
-            } else {
-                scrollView.smoothScrollTo(scrollView.getScrollX(), getYPositionFor(hour, time.getMinutes()));
-            }
-        });
+        int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+        int scrollTo = hour == 0 ? 0 : getYPositionFor(hour, time.getMinutes());
+        int animationDuration = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+        ObjectAnimator.ofInt(scrollView, "scrollY", scrollTo).setDuration(animationDuration).start();
     }
 
     public void removeAllEvents() {

@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.exceptions;
 
+import io.ipoli.android.app.App;
+
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 12/8/16.
@@ -7,6 +9,6 @@ package io.ipoli.android.quest.exceptions;
 public class QuestNotFoundException extends Exception {
 
     public QuestNotFoundException(String questId) {
-        super("Quest with id " + questId + " was not found");
+        super("Quest with id " + questId + " of player with id " + App.getPlayerId() + " was not found");
     }
 }

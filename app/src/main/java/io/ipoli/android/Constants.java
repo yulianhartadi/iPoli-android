@@ -58,7 +58,6 @@ public interface Constants {
 
     String KEY_PLAYER_ID = "PLAYER_ID";
 
-    String KEY_SELECTED_ANDROID_CALENDARS = "SELECTED_ANDROID_CALENDARS";
     String KEY_DAILY_CHALLENGE_DAYS = "DAILY_CHALLENGE_DAYS";
 
     String KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE = "DAILY_CHALLENGE_REMINDER_START_MINUTE";
@@ -74,8 +73,6 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
-    String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_AVATAR_LEVEL = 1;
@@ -97,7 +94,6 @@ public interface Constants {
     int AVATAR_COUNT = 12;
 
     String PICTURE_NAME_EXTRA_KEY = "avatar_name";
-    String EXTERNAL_SOURCE_ANDROID_CALENDAR = "androidCalendar";
 
     int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
 
@@ -146,6 +142,7 @@ public interface Constants {
 
     int REVIVE_PET_COST = 300;
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
+    int RANDOM_SEED = 42; // duh!
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

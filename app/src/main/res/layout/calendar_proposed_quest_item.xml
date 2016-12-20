@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="72dp"
+    android:alpha="0.54"
+    android:background="@color/md_grey_300"
+    android:clickable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/quest_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/md_dark_text_87"
+            android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/reschedule_quest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_smart_schedule" />
+    </RelativeLayout>
+</FrameLayout>
