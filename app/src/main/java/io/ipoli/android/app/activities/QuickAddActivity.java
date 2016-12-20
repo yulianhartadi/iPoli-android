@@ -5,6 +5,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
@@ -36,9 +37,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
 import io.ipoli.android.quest.events.SuggestionItemTapEvent;
 import io.ipoli.android.quest.suggestions.OnSuggestionsUpdatedListener;
@@ -52,7 +51,9 @@ import io.ipoli.android.reminder.data.Reminder;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/4/16.
  */
-public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener{
+
+    private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 
     @BindView(R.id.quick_add_text)
     AddQuestAutocompleteTextView questText;
@@ -62,23 +63,12 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
 
     private QuestParser questParser;
     private SuggestionsManager suggestionsManager;
-
-    private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
-
     private int selectionStartIdx = 0;
     private SuggestionsAdapter adapter;
-
-    @Override
-    public void onSuggestionsUpdated() {
-        if (adapter != null) {
-            adapter.setSuggestions(suggestionsManager.getSuggestions());
-        }
-    }
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,29 +80,30 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         String additionalText = getIntent().getStringExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT);
 
         suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
-
-        questText.setOnClickListener(v -> {
-            int selStart = questText.getSelectionStart();
-            String text = questText.getText().toString();
-            int newSel = suggestionsManager.getSelectionIndex(text, selStart);
-            if (newSel != selStart) {
-                selectionStartIdx = newSel;
-                questText.setSelection(selectionStartIdx);
-                colorParsedParts(suggestionsManager.parse(text, 0));
-            } else if (Math.abs(selStart - selectionStartIdx) > 1) {
-                selectionStartIdx = selStart;
-                questText.setSelection(selectionStartIdx);
-                colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
-            }
-        });
-
         suggestionsManager.setSuggestionsUpdatedListener(this);
+        
         initSuggestions();
+        questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         questText.addTextChangedListener(this);
         questText.setShowSoftInputOnFocus(true);
         questText.requestFocus();
         questText.setText(additionalText);
         showKeyboard();
+    }
+
+    private void onQuestTextClicked() {
+        int selStart = questText.getSelectionStart();
+        String text = questText.getText().toString();
+        int newSel = suggestionsManager.getSelectionIndex(text, selStart);
+        if (newSel != selStart) {
+            selectionStartIdx = newSel;
+            questText.setSelection(selectionStartIdx);
+            colorParsedParts(suggestionsManager.parse(text, 0));
+        } else if (Math.abs(selStart - selectionStartIdx) > 1) {
+            selectionStartIdx = selStart;
+            questText.setSelection(selectionStartIdx);
+            colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
+        }
     }
 
     private void initSuggestions() {
@@ -147,6 +138,11 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         }
     }
 
+    @OnClick(R.id.quick_add_text)
+    public void onQuestTextClicked(View v) {
+        onQuestTextClicked();
+    }
+
     @OnClick(R.id.add)
     public void onAddQuest(View v) {
         String text = questText.getText().toString();
@@ -158,19 +154,6 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         Reminder reminder = new Reminder(0, new Random().nextInt());
         List<Reminder> reminders = new ArrayList<>();
         reminders.add(reminder);
-
-        if (questParser.isRepeatingQuest(text)) {
-            RepeatingQuest repeatingQuest = questParser.parseRepeatingQuest(text);
-            if (repeatingQuest == null) {
-                Toast.makeText(this, R.string.quest_name_validation, Toast.LENGTH_LONG).show();
-                return;
-            }
-            repeatingQuest.setCategory(categoryView.getSelectedCategory().name());
-            eventBus.post(new NewRepeatingQuestEvent(repeatingQuest, reminders));
-            Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         Quest quest = questParser.parseQuest(text);
         if (quest == null) {
@@ -263,6 +246,13 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             ParsedPart partialPart = suggestionsManager.findPartialPart(parsedParts);
             String parsedText = partialPart == null ? "" : StringUtils.substring(result.text, partialPart.startIdx, partialPart.endIdx);
             suggestionsManager.changeCurrentSuggestionsProvider(suggestion.nextTextEntityType, parsedText);
+        }
+    }
+
+    @Override
+    public void onSuggestionsUpdated() {
+        if (adapter != null) {
+            adapter.setSuggestions(suggestionsManager.getSuggestions());
         }
     }
 
