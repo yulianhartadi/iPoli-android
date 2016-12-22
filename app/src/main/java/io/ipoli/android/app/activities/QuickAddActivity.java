@@ -25,12 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.StringUtils;
@@ -51,9 +54,7 @@ import io.ipoli.android.reminder.data.Reminder;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/4/16.
  */
-public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener{
-
-    private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
+public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
 
     @BindView(R.id.quick_add_text)
     AddQuestAutocompleteTextView questText;
@@ -62,9 +63,13 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     CategoryView categoryView;
 
     private QuestParser questParser;
+
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;
     private SuggestionsAdapter adapter;
+
+    @Inject
+    PrettyTimeParser prettyTimeParser;
 
     enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
@@ -76,12 +81,13 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_quick_add);
         ButterKnife.bind(this);
+        App.getAppComponent(this).inject(this);
         questParser = new QuestParser(prettyTimeParser);
         String additionalText = getIntent().getStringExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT);
 
         suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
         suggestionsManager.setSuggestionsUpdatedListener(this);
-        
+
         initSuggestions();
         questText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         questText.addTextChangedListener(this);
