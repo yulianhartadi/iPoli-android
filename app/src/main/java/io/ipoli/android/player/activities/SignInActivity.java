@@ -40,7 +40,7 @@ public class SignInActivity extends BaseActivity {
 
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
-        Player player = new Player("", pet, avatar);
+        Player player = new Player(pet, avatar);
         playerPersistenceService.save(player, () -> {
             localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
             localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());

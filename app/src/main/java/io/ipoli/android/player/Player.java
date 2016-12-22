@@ -13,7 +13,6 @@ import io.ipoli.android.pet.data.Pet;
  */
 public class Player extends PersistedObject {
 
-    private String uid;
     @Exclude
     private Pet pet;
     @Exclude
@@ -22,8 +21,7 @@ public class Player extends PersistedObject {
     public Player() {
     }
 
-    public Player(String uid, Pet pet, Avatar avatar) {
-        this.uid = uid;
+    public Player(Pet pet, Avatar avatar) {
         this.pet = pet;
         this.avatar = avatar;
         setCreatedAt(DateUtils.nowUTC().getTime());
@@ -48,14 +46,6 @@ public class Player extends PersistedObject {
     @Exclude
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public Long getUpdatedAt() {

@@ -53,7 +53,6 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
             Map<String, Object> playerData = new HashMap<>();
-            playerData.put("uid", player.getUid());
             playerData.put("updatedAt", player.getUpdatedAt());
             playerData.put("createdAt", player.getCreatedAt());
             objRef.updateChildren(playerData);
