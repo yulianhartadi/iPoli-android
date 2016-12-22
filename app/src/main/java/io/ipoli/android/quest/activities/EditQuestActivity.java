@@ -211,11 +211,12 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @Inject
     ChallengePersistenceService challengePersistenceService;
 
+    @Inject
+    PrettyTimeParser prettyTimeParser;
+
     private BaseSuggestionsAdapter adapter;
 
     private EditQuestSubQuestListAdapter subQuestListAdapter;
-
-    private final PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 
     private SuggestionsManager suggestionsManager;
     private int selectionStartIdx = 0;

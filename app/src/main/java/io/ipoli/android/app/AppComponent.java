@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AppModule;
@@ -14,6 +15,7 @@ import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
+import io.ipoli.android.app.modules.TimeParserModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
@@ -73,7 +75,8 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 RewardGeneratorModule.class,
-                SchedulerModule.class
+                SchedulerModule.class,
+                TimeParserModule.class
         }
 )
 public interface AppComponent {
@@ -173,6 +176,8 @@ public interface AppComponent {
     void inject(CompleteQuestReceiver completeQuestReceiver);
 
     void inject(CoinsStoreFragment coinsStoreFragment);
+
+    void inject(QuickAddActivity quickAddActivity);
 
 }
 

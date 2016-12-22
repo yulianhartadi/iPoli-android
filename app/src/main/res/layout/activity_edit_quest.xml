@@ -38,9 +38,7 @@
                     android:hint="@string/add_quest_name_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textNoSuggestions"
-                    android:maxLines="2">
-
-                </io.ipoli.android.quest.ui.AddQuestAutocompleteTextView>
+                    android:maxLines="2" />
 
             </android.support.design.widget.TextInputLayout>
 

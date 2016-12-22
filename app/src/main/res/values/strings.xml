@@ -295,7 +295,7 @@
     <string name="help_dialog_challenge_due_date">Due date for the challenge</string>
     <string name="help_dialog_challenge_quest_list">List of remaining quests. Add more or swipe left to remove one.</string>
     <string name="activity_quick_add_title">Quick Add</string>
-    <string name="quick_add_hint">Enter name, duration, frequency …</string>
+    <string name="quick_add_hint">Enter name, duration, start time …</string>
     <string name="quest_name_validation">Please, add quest name</string>
 
     <string name="calendar">Calendar</string>
