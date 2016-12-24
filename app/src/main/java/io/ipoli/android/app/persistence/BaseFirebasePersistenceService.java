@@ -283,6 +283,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
     }
 
+    @Override
+    public void listenForAll(OnDataChangedListener<List<T>> listener) {
+        listenForListChange(getCollectionReference(), listener);
+    }
+
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();

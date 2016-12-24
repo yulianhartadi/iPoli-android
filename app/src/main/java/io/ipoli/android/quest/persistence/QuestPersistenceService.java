@@ -79,4 +79,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void listenForReminderChange(OnChangeListener<Void> onChangeListener);
 
     void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener);
+
+    void saveNewQuest(Quest quest);
+
 }

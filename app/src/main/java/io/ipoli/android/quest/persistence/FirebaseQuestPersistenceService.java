@@ -14,6 +14,7 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,8 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.quest.data.DayQuest;
+import io.ipoli.android.quest.data.InboxQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
@@ -96,7 +99,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date.minusDays(1)).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAtDate() == null));
+        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAtDate() == null && q.getEnd() != null));
     }
 
     @Override
@@ -438,6 +441,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             }
         }
         super.save(quest, listener);
+
         DatabaseReference remindersRef = getPlayerReference().child("reminders");
 
         if (shouldCreate) {
@@ -453,6 +457,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             addNewRemindersIfNeeded(data, quest);
             remindersRef.updateChildren(data);
         }
+
     }
 
     @Override
@@ -557,6 +562,40 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener) {
         getPlayerReference().child("reminders").child(String.valueOf(startTime)).setValue(null);
         FirebaseCompletionListener.listen(listener);
+    }
+
+    @Override
+    public void saveNewQuest(Quest quest) {
+        DatabaseReference questRef = getCollectionReference().push();
+        quest.setId(questRef.getKey());
+        Map<String, Object> data = new HashMap<>();
+        if (quest.getStartDate() == null && quest.getEndDate() == null) {
+            InboxQuest inboxQuest = new InboxQuest();
+            DatabaseReference inboxQuestRef = getPlayerReference().child("inboxQuests").push();
+            inboxQuest.setId(inboxQuestRef.getKey());
+            inboxQuest.setQuestId(quest.getId());
+            inboxQuest.setName(quest.getName());
+            inboxQuest.setCategory(quest.getCategory());
+            inboxQuest.setQuestCreatedAt(quest.getCreatedAt());
+            data.put("/inboxQuests/" + inboxQuest.getId(), inboxQuest);
+        } else {
+            String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+            DatabaseReference dayQuestRef = getPlayerReference().child("dayQuests").child(dateString).push();
+            DayQuest dayQuest = new DayQuest();
+            dayQuest.setId(dayQuestRef.getKey());
+            dayQuest.setQuestId(quest.getId());
+            dayQuest.setName(quest.getName());
+            dayQuest.setCategory(quest.getCategory());
+            dayQuest.setStartMinute(quest.getStartMinute());
+            dayQuest.setDuration(quest.getDuration());
+            dayQuest.setIsFromRepeatingQuest(quest.isRepeatingQuest());
+            dayQuest.setIsForChallenge(!StringUtils.isEmpty(quest.getChallengeId()));
+            dayQuest.setCompletedAt(quest.getCompletedAt());
+            dayQuest.setPriority(quest.getPriority());
+            data.put("/dayQuests/" + dateString + "/" + dayQuest.getId(), dayQuest);
+        }
+        data.put("/quests/" + quest.getId(), quest);
+        getPlayerReference().updateChildren(data);
     }
 
     @Override

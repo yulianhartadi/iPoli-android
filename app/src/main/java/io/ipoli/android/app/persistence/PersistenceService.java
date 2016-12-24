@@ -37,4 +37,6 @@ public interface PersistenceService<T extends PersistedObject> {
     void removeAllListeners();
 
     void removeDataChangedListener(OnDataChangedListener<?> listener);
+
+    void listenForAll(OnDataChangedListener<List<T>> listener);
 }
