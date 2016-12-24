@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import io.ipoli.android.reminder.data.Reminder;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/24/16.
@@ -12,6 +14,18 @@ public class QuestReminder {
     private String questName;
     private Long start;
     private Integer notificationId;
+
+    public QuestReminder() {
+        
+    }
+    
+    public QuestReminder(Quest quest, Reminder reminder) {
+        setQuestName(quest.getName());
+        setQuestId(quest.getId());
+        setMinutesFromStart(reminder.getMinutesFromStart());
+        setNotificationId(reminder.getNotificationId());
+        setStart(reminder.getStart());
+    }
 
     public Long getMinutesFromStart() {
         return minutesFromStart;

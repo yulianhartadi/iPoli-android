@@ -571,43 +571,22 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         quest.setId(questRef.getKey());
         Map<String, Object> data = new HashMap<>();
         if (quest.getStartDate() == null && quest.getEndDate() == null) {
-            InboxQuest inboxQuest = new InboxQuest();
             DatabaseReference inboxQuestRef = getPlayerReference().child("inboxQuests").push();
-            inboxQuest.setId(inboxQuestRef.getKey());
-            inboxQuest.setQuestId(quest.getId());
-            inboxQuest.setName(quest.getName());
-            inboxQuest.setCategory(quest.getCategory());
-            inboxQuest.setQuestCreatedAt(quest.getCreatedAt());
+            InboxQuest inboxQuest = new InboxQuest(inboxQuestRef.getKey(), quest);
             data.put("/inboxQuests/" + inboxQuest.getId(), inboxQuest);
         } else {
             String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
             DatabaseReference dayQuestRef = getPlayerReference().child("dayQuests").child(dateString).push();
-            DayQuest dayQuest = new DayQuest();
-            dayQuest.setId(dayQuestRef.getKey());
-            dayQuest.setQuestId(quest.getId());
-            dayQuest.setName(quest.getName());
-            dayQuest.setCategory(quest.getCategory());
-            dayQuest.setStartMinute(quest.getStartMinute());
-            dayQuest.setDuration(quest.getDuration());
-            dayQuest.setIsFromRepeatingQuest(quest.isRepeatingQuest());
-            dayQuest.setIsForChallenge(!StringUtils.isEmpty(quest.getChallengeId()));
-            dayQuest.setCompletedAt(quest.getCompletedAt());
-            dayQuest.setPriority(quest.getPriority());
+            DayQuest dayQuest = new DayQuest(dayQuestRef.getKey(), quest);
             data.put("/dayQuests/" + dateString + "/" + dayQuest.getId(), dayQuest);
 
             if (quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
                 Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
                 for (Reminder reminder : quest.getReminders()) {
                     reminder.calculateStartTime(quest);
-                    QuestReminder qr = new QuestReminder();
-                    qr.setQuestName(quest.getName());
-                    qr.setQuestId(quest.getId());
-                    qr.setMinutesFromStart(reminder.getMinutesFromStart());
-                    qr.setNotificationId(reminder.getNotificationId());
-                    qr.setStart(reminder.getStart());
                     quest.addReminderStartTime(reminder.getStart());
                     HashMap<String, QuestReminder> val = new HashMap<>();
-                    val.put(quest.getId(), qr);
+                    val.put(quest.getId(), new QuestReminder(quest, reminder));
                     questReminders.put(String.valueOf(reminder.getStart()), val);
                 }
                 data.put("/questReminders", questReminders);

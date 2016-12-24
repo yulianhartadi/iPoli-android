@@ -2,6 +2,7 @@ package io.ipoli.android.quest.data;
 
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -19,8 +20,22 @@ public class DayQuest extends PersistedObject {
     private int priority;
 
     public DayQuest() {
+        
+    }
+    
+    public DayQuest(String id, Quest quest) {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+        setId(id);
+        setQuestId(quest.getId());
+        setName(quest.getName());
+        setCategory(quest.getCategory());
+        setStartMinute(quest.getStartMinute());
+        setDuration(quest.getDuration());
+        setIsFromRepeatingQuest(quest.isRepeatingQuest());
+        setIsForChallenge(!StringUtils.isEmpty(quest.getChallengeId()));
+        setCompletedAt(quest.getCompletedAt());
+        setPriority(quest.getPriority());
     }
 
     public void setQuestId(String questId) {

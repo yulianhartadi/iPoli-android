@@ -15,8 +15,17 @@ public class InboxQuest extends PersistedObject {
     private Long questCreatedAt;
 
     public InboxQuest() {
+        
+    }
+    
+    public InboxQuest(String id, Quest quest) {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+        setId(id);
+        setQuestId(quest.getId());
+        setName(quest.getName());
+        setCategory(quest.getCategory());
+        setQuestCreatedAt(quest.getCreatedAt());
     }
 
     @Override
