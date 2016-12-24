@@ -27,6 +27,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.DayQuest;
 import io.ipoli.android.quest.data.InboxQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 import rx.Observable;
@@ -593,7 +594,27 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             dayQuest.setCompletedAt(quest.getCompletedAt());
             dayQuest.setPriority(quest.getPriority());
             data.put("/dayQuests/" + dateString + "/" + dayQuest.getId(), dayQuest);
+
+            if (quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
+                Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
+                for (Reminder reminder : quest.getReminders()) {
+                    reminder.calculateStartTime(quest);
+                    QuestReminder qr = new QuestReminder();
+                    qr.setQuestName(quest.getName());
+                    qr.setQuestId(quest.getId());
+                    qr.setMinutesFromStart(reminder.getMinutesFromStart());
+                    qr.setNotificationId(reminder.getNotificationId());
+                    qr.setStart(reminder.getStart());
+                    quest.addReminderStartTime(reminder.getStart());
+                    HashMap<String, QuestReminder> val = new HashMap<>();
+                    val.put(quest.getId(), qr);
+                    questReminders.put(String.valueOf(reminder.getStart()), val);
+                }
+                data.put("/questReminders", questReminders);
+            }
         }
+
+
         data.put("/quests/" + quest.getId(), quest);
         getPlayerReference().updateChildren(data);
     }
