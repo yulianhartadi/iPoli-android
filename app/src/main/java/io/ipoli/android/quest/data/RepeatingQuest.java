@@ -53,7 +53,54 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private Map<String, Boolean> scheduledPeriodEndDates;
 
+    private Long totalMinutesSpent;
+    private Long streak;
+    private Long nextScheduledDate;
+    private Map<Long, Boolean> scheduledDates;
+
+    // In chronological order
+    private List<WeekHistory> weekHistories;
+
     public RepeatingQuest() {
+    }
+
+    public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
+        this.scheduledPeriodEndDates = scheduledPeriodEndDates;
+    }
+
+    public Long getTotalMinutesSpent() {
+        return totalMinutesSpent;
+    }
+
+    public void setTotalMinutesSpent(Long totalMinutesSpent) {
+        this.totalMinutesSpent = totalMinutesSpent;
+    }
+
+    public Long getStreak() {
+        return streak;
+    }
+
+    public void setStreak(Long streak) {
+        this.streak = streak;
+    }
+
+    public Long getNextScheduledDate() {
+        return nextScheduledDate;
+    }
+
+    public void setNextScheduledDate(Long nextScheduledDate) {
+        this.nextScheduledDate = nextScheduledDate;
+    }
+
+    public Map<Long, Boolean> getScheduledDates() {
+        if (scheduledDates == null) {
+            scheduledDates = new HashMap<>();
+        }
+        return scheduledDates;
+    }
+
+    public void setScheduledDates(Map<Long, Boolean> scheduledDates) {
+        this.scheduledDates = scheduledDates;
     }
 
     public void setDuration(Integer duration) {
@@ -61,7 +108,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public List<Reminder> getReminders() {
-        if(reminders == null) {
+        if (reminders == null) {
             reminders = new ArrayList<>();
         }
         return reminders;
@@ -101,7 +148,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.scheduledPeriodEndDates = new HashMap<>();
+        this.streak = 0L;
+        this.totalMinutesSpent = 0L;
     }
 
     public String getName() {
@@ -263,10 +311,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return scheduledPeriodEndDates;
     }
 
-    public void setScheduledPeriodEndDates(HashMap<String, Boolean> scheduledPeriodEndDates) {
-        this.scheduledPeriodEndDates = scheduledPeriodEndDates;
-    }
-
     @Exclude
     public boolean shouldBeScheduledForPeriod(Date periodEnd) {
         if (scheduledPeriodEndDates == null) {
@@ -294,6 +338,66 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
+    }
 
+    public List<WeekHistory> getWeekHistories() {
+        if (weekHistories == null) {
+            weekHistories = new ArrayList<>();
+        }
+        return weekHistories;
+    }
+
+    public void setWeekHistories(List<WeekHistory> weekHistories) {
+        this.weekHistories = weekHistories;
+    }
+
+    public static class WeekHistory {
+        private Long start;
+        private Long end;
+        private Integer completedCount;
+        private Integer totalCount;
+
+        public WeekHistory() {
+
+        }
+
+        public WeekHistory(Long start, Long end, Integer completedCount, Integer totalCount) {
+            this.start = start;
+            this.end = end;
+            this.completedCount = completedCount;
+            this.totalCount = totalCount;
+        }
+
+        public Long getStart() {
+            return start;
+        }
+
+        public void setStart(Long start) {
+            this.start = start;
+        }
+
+        public Long getEnd() {
+            return end;
+        }
+
+        public void setEnd(Long end) {
+            this.end = end;
+        }
+
+        public Integer getCompletedCount() {
+            return completedCount;
+        }
+
+        public void setCompletedCount(Integer completedCount) {
+            this.completedCount = completedCount;
+        }
+
+        public Integer getTotalCount() {
+            return totalCount;
+        }
+
+        public void setTotalCount(Integer totalCount) {
+            this.totalCount = totalCount;
+        }
     }
 }

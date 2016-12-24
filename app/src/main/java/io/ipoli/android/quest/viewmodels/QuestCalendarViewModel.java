@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.DrawableRes;
-import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,12 +70,14 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isRepeating() {
-        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
+        return quest.isRepeatingQuest();
+//        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 
     @Override
     public boolean shouldDisplayAsIndicator() {
-        return quest.isIndicator();
+//        return quest.isIndicator();
+        return false;
     }
 
     @DrawableRes

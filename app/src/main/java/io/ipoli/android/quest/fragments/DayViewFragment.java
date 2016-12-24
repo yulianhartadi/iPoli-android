@@ -369,13 +369,13 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         Map<String, List<Quest>> map = new HashMap<>();
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
-            if (q.getRepeatingQuest() == null) {
+            if (!q.isRepeatingQuest()) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
 
                 proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
                 continue;
             }
-            String key = q.getRepeatingQuest().getId();
+            String key = q.getRepeatingQuestId();
             if (map.get(key) == null) {
                 map.put(key, new ArrayList<>());
             }
@@ -523,13 +523,15 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private Quest savePlaceholderQuest(Quest quest) {
-        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-        return persistentRepeatingQuestScheduler.schedulePlaceholderQuest(quest, quest.getRepeatingQuest(), startOfWeek);
+//        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
+//        return persistentRepeatingQuestScheduler.schedulePlaceholderQuest(quest, quest.getRepeatingQuest(), startOfWeek);
+        return null;
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
-        int duration = q.isIndicator() ? 3 : Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
-        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
+        return null;
+//        int duration = q.isIndicator() ? 3 : Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
+//        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private boolean currentDateIsInTheFuture() {

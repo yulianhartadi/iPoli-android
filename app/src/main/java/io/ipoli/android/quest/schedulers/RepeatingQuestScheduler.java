@@ -242,7 +242,7 @@ public class RepeatingQuestScheduler {
         quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setSubQuests(repeatingQuest.getSubQuests());
         quest.setNotes(repeatingQuest.getNotes());
-        quest.setRepeatingQuest(repeatingQuest);
+        quest.setRepeatingQuestId(repeatingQuest.getId());
         List<Reminder> questReminders = new ArrayList<>();
         if (repeatingQuest.getReminders() != null) {
             for (Reminder r : repeatingQuest.getReminders()) {

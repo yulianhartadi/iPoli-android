@@ -100,7 +100,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date.minusDays(1)).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null && q.getCompletedAtDate() == null && q.getEnd() != null));
+        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isRepeatingQuest() && q.getCompletedAtDate() == null && q.getEnd() != null));
     }
 
     @Override
@@ -361,7 +361,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && q.getRepeatingQuest() == null));
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && !q.isRepeatingQuest()));
     }
 
     @Override
@@ -369,7 +369,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         listenForListChange(getCollectionReference(), listener, data -> data
                 .filter(q -> !challengeId.equals(q.getChallengeId()))
                 .filter(q -> q.getCompletedAtDate() == null)
-                .filter(q -> q.getRepeatingQuest() == null)
+                .filter(q -> !q.isRepeatingQuest())
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
     }
 
@@ -420,7 +420,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getRepeatingQuest() == null));
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> !q.isRepeatingQuest()));
     }
 
     @Override

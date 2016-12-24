@@ -43,7 +43,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -146,7 +145,8 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     }
 
     private boolean hasDailyRrule(Quest q) {
-        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesADay() > 1;
+//        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesADay() > 1;
+        return false;
     }
 
     @Override
@@ -163,7 +163,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
         Map<String, List<Quest>> map = new HashMap<>();
         for (Quest q : recurrent) {
-            String key = q.getRepeatingQuest().getId();
+            String key = q.getRepeatingQuestId();
             if (map.get(key) == null) {
                 map.put(key, new ArrayList<>());
             }
@@ -172,10 +172,11 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
         for (String key : map.keySet()) {
             Quest q = map.get(key).get(0);
-            RepeatingQuest rq = q.getRepeatingQuest();
-            int repeatCount = rq.getRecurrence().getTimesADay();
-            int remainingCount = map.get(key).size();
-            viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
+//            RepeatingQuest rq = q.getRepeatingQuest();
+//            int repeatCount = rq.getRecurrence().getTimesADay();
+//            int remainingCount = map.get(key).size();
+//            viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
+            viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
         }
 
         Collections.sort(viewModels, new Comparator<QuestViewModel>() {

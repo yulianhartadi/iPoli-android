@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
@@ -49,7 +50,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Long originalStart;
     private Long end;
 
-    private RepeatingQuest repeatingQuest;
+    private String repeatingQuestId;
 
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
@@ -141,12 +142,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.startMinute = startMinute;
     }
 
-    public RepeatingQuest getRepeatingQuest() {
-        return repeatingQuest;
+    public String getRepeatingQuestId() {
+        return repeatingQuestId;
     }
 
-    public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
-        this.repeatingQuest = repeatingQuest;
+    public void setRepeatingQuestId(String repeatingQuestId) {
+        this.repeatingQuestId = repeatingQuestId;
     }
 
     public void addReminderStartTime(long startTime) {
@@ -397,22 +398,21 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getEndDate(), DateTimeZone.UTC)));
     }
 
-    @Exclude
-    public boolean isIndicator() {
-        boolean isCompleted = getCompletedAtDate() != null;
-        return isCompleted && repeatPerDayWithShortOrNoDuration();
-    }
+//    @Exclude
+//    public boolean isIndicator() {
+//        boolean isCompleted = getCompletedAtDate() != null;
+//        return isCompleted && repeatPerDayWithShortOrNoDuration();
+//    }
 
-    public boolean repeatPerDayWithShortOrNoDuration() {
-        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesADay() > 1;
-        boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
-        return repeatsPerDay && hasShortOrNoDuration;
-    }
-
+//    public boolean repeatPerDayWithShortOrNoDuration() {
+//        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesADay() > 1;
+//        boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
+//        return repeatsPerDay && hasShortOrNoDuration;
+//    }
 
     @Exclude
     public boolean isRepeatingQuest() {
-        return getRepeatingQuest() != null;
+        return !StringUtils.isEmpty(getRepeatingQuestId());
     }
 
     public SourceMapping getSourceMapping() {
