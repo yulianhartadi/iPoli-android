@@ -62,6 +62,9 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+        setCompletedCount(0);
+        setTotalCount(0);
+        setTotalMinutesSpent(0L);
     }
 
     public Integer getCompletedCount() {
