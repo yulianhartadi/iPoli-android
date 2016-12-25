@@ -1,14 +1,12 @@
 package io.ipoli.android.quest.data;
 
-import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/24/16.
  */
-public class DayQuest extends PersistedObject {
+public class DayQuest {
     private String questId;
     private String name;
     private String category;
@@ -23,10 +21,7 @@ public class DayQuest extends PersistedObject {
         
     }
     
-    public DayQuest(String id, Quest quest) {
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-        setId(id);
+    public DayQuest(Quest quest) {
         setQuestId(quest.getId());
         setName(quest.getName());
         setCategory(quest.getCategory());
@@ -36,10 +31,6 @@ public class DayQuest extends PersistedObject {
         setIsForChallenge(!StringUtils.isEmpty(quest.getChallengeId()));
         setCompletedAt(quest.getCompletedAt());
         setPriority(quest.getPriority());
-    }
-
-    public void setQuestId(String questId) {
-        this.questId = questId;
     }
 
     public void setName(String name) {
@@ -74,40 +65,6 @@ public class DayQuest extends PersistedObject {
         this.priority = priority;
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getQuestId() {
-        return questId;
-    }
-
     public String getName() {
         return name;
     }
@@ -138,5 +95,13 @@ public class DayQuest extends PersistedObject {
 
     public int getPriority() {
         return priority;
+    }
+
+    public String getQuestId() {
+        return questId;
+    }
+
+    public void setQuestId(String questId) {
+        this.questId = questId;
     }
 }

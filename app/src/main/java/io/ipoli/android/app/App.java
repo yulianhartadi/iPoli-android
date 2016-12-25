@@ -619,7 +619,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         QuestNotificationScheduler.cancelAll(e.quest, this);
-        questPersistenceService.delete(e.quest);
+        questPersistenceService.deleteNewQuest(e.quest);
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {

@@ -82,4 +82,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void saveNewQuest(Quest quest);
 
+    void deleteNewQuest(Quest quest);
+
 }

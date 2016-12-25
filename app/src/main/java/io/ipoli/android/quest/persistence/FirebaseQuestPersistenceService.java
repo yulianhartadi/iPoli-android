@@ -571,14 +571,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         quest.setId(questRef.getKey());
         Map<String, Object> data = new HashMap<>();
         if (quest.getStartDate() == null && quest.getEndDate() == null) {
-            DatabaseReference inboxQuestRef = getPlayerReference().child("inboxQuests").push();
-            InboxQuest inboxQuest = new InboxQuest(inboxQuestRef.getKey(), quest);
-            data.put("/inboxQuests/" + inboxQuest.getId(), inboxQuest);
+            InboxQuest inboxQuest = new InboxQuest(quest);
+            data.put("/inboxQuests/" + inboxQuest.getQuestId(), inboxQuest);
         } else {
+            DayQuest dayQuest = new DayQuest(quest);
             String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
-            DatabaseReference dayQuestRef = getPlayerReference().child("dayQuests").child(dateString).push();
-            DayQuest dayQuest = new DayQuest(dayQuestRef.getKey(), quest);
-            data.put("/dayQuests/" + dateString + "/" + dayQuest.getId(), dayQuest);
+            data.put("/dayQuests/" + dateString + "/" + dayQuest.getQuestId(), dayQuest);
 
             if (quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
                 Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
@@ -593,10 +591,23 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             }
         }
 
-
         data.put("/quests/" + quest.getId(), quest);
         getPlayerReference().updateChildren(data);
     }
+
+    @Override
+    public void deleteNewQuest(Quest quest) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("/inboxQuests/" + quest.getId(), null);
+        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+        data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
+        for (Reminder reminder : quest.getReminders()) {
+            data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);
+        }
+        data.put("/quests/" + quest.getId(), null);
+        getPlayerReference().updateChildren(data);
+    }
+
 
     @Override
     public void delete(Quest quest, OnOperationCompletedListener listener) {

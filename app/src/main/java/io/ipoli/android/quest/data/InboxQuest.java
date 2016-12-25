@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.data;
 
 import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -15,55 +14,14 @@ public class InboxQuest extends PersistedObject {
     private Long questCreatedAt;
 
     public InboxQuest() {
-        
+
     }
-    
-    public InboxQuest(String id, Quest quest) {
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-        setId(id);
+
+    public InboxQuest(Quest quest) {
         setQuestId(quest.getId());
         setName(quest.getName());
         setCategory(quest.getCategory());
         setQuestCreatedAt(quest.getCreatedAt());
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getQuestId() {
-        return questId;
-    }
-
-    public void setQuestId(String questId) {
-        this.questId = questId;
     }
 
     public String getName() {
@@ -92,5 +50,43 @@ public class InboxQuest extends PersistedObject {
 
     public static Category getCategory(InboxQuest quest) {
         return Category.valueOf(quest.getCategory());
+    }
+
+    public String getQuestId() {
+        return questId;
+    }
+
+    public void setQuestId(String questId) {
+        this.questId = questId;
+    }
+
+    @Override
+    public void setId(String id) {
+
+    }
+
+    @Override
+    public String getId() {
+        return null;
+    }
+
+    @Override
+    public void setCreatedAt(Long createdAt) {
+
+    }
+
+    @Override
+    public void setUpdatedAt(Long updatedAt) {
+
+    }
+
+    @Override
+    public Long getCreatedAt() {
+        return null;
+    }
+
+    @Override
+    public Long getUpdatedAt() {
+        return null;
     }
 }
