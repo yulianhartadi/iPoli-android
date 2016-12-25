@@ -2,13 +2,16 @@ package io.ipoli.android.challenge.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.generators.RewardProvider;
 
 /**
@@ -38,6 +41,16 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Long coins;
     private Long experience;
 
+    private Integer completedCount;
+    private Integer totalCount;
+    private Long totalMinutesSpent;
+    private Long nextScheduledDate;
+
+    // In chronological order
+    private List<PeriodHistory> periodHistories;
+
+    private List<ChallengeQuest> challengeQuests;
+
     private String source;
 
     public Challenge() {
@@ -49,6 +62,46 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+    }
+
+    public Integer getCompletedCount() {
+        return completedCount;
+    }
+
+    public void setCompletedCount(Integer completedCount) {
+        this.completedCount = completedCount;
+    }
+
+    public Integer getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public Long getTotalMinutesSpent() {
+        return totalMinutesSpent;
+    }
+
+    public void setTotalMinutesSpent(Long totalMinutesSpent) {
+        this.totalMinutesSpent = totalMinutesSpent;
+    }
+
+    public Long getNextScheduledDate() {
+        return nextScheduledDate;
+    }
+
+    public void setNextScheduledDate(Long nextScheduledDate) {
+        this.nextScheduledDate = nextScheduledDate;
+    }
+
+    public List<PeriodHistory> getPeriodHistories() {
+        return periodHistories;
+    }
+
+    public void setPeriodHistories(List<PeriodHistory> periodHistories) {
+        this.periodHistories = periodHistories;
     }
 
     public Long getCreatedAt() {
@@ -246,5 +299,20 @@ public class Challenge extends PersistedObject implements RewardProvider {
     @Override
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void addChallengeQuest(ChallengeQuest challengeQuest) {
+        getChallengeQuests().add(challengeQuest);
+    }
+
+    public List<ChallengeQuest> getChallengeQuests() {
+        if (challengeQuests == null) {
+            challengeQuests = new ArrayList<>();
+        }
+        return challengeQuests;
+    }
+
+    public void setChallengeQuests(List<ChallengeQuest> challengeQuests) {
+        this.challengeQuests = challengeQuests;
     }
 }

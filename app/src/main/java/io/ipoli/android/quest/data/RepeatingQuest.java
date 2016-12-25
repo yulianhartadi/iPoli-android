@@ -59,7 +59,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Map<Long, Boolean> scheduledDates;
 
     // In chronological order
-    private List<WeekHistory> weekHistories;
+    private List<PeriodHistory> periodHistories;
 
     public RepeatingQuest() {
     }
@@ -340,64 +340,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getNotes().removeAll(txtNotes);
     }
 
-    public List<WeekHistory> getWeekHistories() {
-        if (weekHistories == null) {
-            weekHistories = new ArrayList<>();
+    public List<PeriodHistory> getPeriodHistories() {
+        if (periodHistories == null) {
+            periodHistories = new ArrayList<>();
         }
-        return weekHistories;
+        return periodHistories;
     }
 
-    public void setWeekHistories(List<WeekHistory> weekHistories) {
-        this.weekHistories = weekHistories;
+    public void setPeriodHistories(List<PeriodHistory> periodHistories) {
+        this.periodHistories = periodHistories;
     }
 
-    public static class WeekHistory {
-        private Long start;
-        private Long end;
-        private Integer completedCount;
-        private Integer totalCount;
-
-        public WeekHistory() {
-
-        }
-
-        public WeekHistory(Long start, Long end, Integer completedCount, Integer totalCount) {
-            this.start = start;
-            this.end = end;
-            this.completedCount = completedCount;
-            this.totalCount = totalCount;
-        }
-
-        public Long getStart() {
-            return start;
-        }
-
-        public void setStart(Long start) {
-            this.start = start;
-        }
-
-        public Long getEnd() {
-            return end;
-        }
-
-        public void setEnd(Long end) {
-            this.end = end;
-        }
-
-        public Integer getCompletedCount() {
-            return completedCount;
-        }
-
-        public void setCompletedCount(Integer completedCount) {
-            this.completedCount = completedCount;
-        }
-
-        public Integer getTotalCount() {
-            return totalCount;
-        }
-
-        public void setTotalCount(Integer totalCount) {
-            this.totalCount = totalCount;
-        }
-    }
 }
