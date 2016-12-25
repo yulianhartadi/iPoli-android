@@ -576,25 +576,19 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         } else {
             quest.setLastScheduledDate(quest.getEnd());
 
-            DayQuest dayQuest = new DayQuest(quest);
-            String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
-            data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
+            addDayQuest(quest, data);
 
-            if (quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
-                Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
-                for (Reminder reminder : quest.getReminders()) {
-                    reminder.calculateStartTime(quest);
-                    quest.addReminderStartTime(reminder.getStart());
-                    HashMap<String, QuestReminder> val = new HashMap<>();
-                    val.put(quest.getId(), new QuestReminder(quest, reminder));
-                    questReminders.put(String.valueOf(reminder.getStart()), val);
-                }
-                data.put("/questReminders", questReminders);
+            if (shouldAddQuestReminders(quest)) {
+                addQuestReminders(quest, data);
             }
         }
 
         data.put("/quests/" + quest.getId(), quest);
         getPlayerReference().updateChildren(data);
+    }
+
+    private boolean shouldAddQuestReminders(Quest quest) {
+        return quest.isScheduled() && !quest.getReminders().isEmpty();
     }
 
     @Override
@@ -630,27 +624,46 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             InboxQuest inboxQuest = new InboxQuest(quest);
             data.put("/inboxQuests/" + quest.getId(), inboxQuest);
 
-            // remove reminders
-            for (long startTime : quest.getReminderStartTimes()) {
-                Map<String, Map<String, Object>> val = new HashMap<>();
-                Map<String, Object> val1 = new HashMap<>();
-                val1.put(quest.getId(), null);
-                val.put(String.valueOf(startTime), val1);
-                data.put("/questReminders", val);
-            }
-
         } else {
 
             // remove inbox
             data.put("/inboxQuests/" + quest.getId(), null);
 
-            // add new day quest
-            DayQuest dayQuest = new DayQuest(quest);
-            String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
-            data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
+            addDayQuest(quest, data);
         }
 
         // remove reminders
+        removeOldReminders(quest, data);
+
+        quest.setReminderStartTimes(new ArrayList<>());
+        if (shouldAddQuestReminders(quest)) {
+            addQuestReminders(quest, data);
+        }
+
+        quest.setLastScheduledDate(quest.getEnd());
+        data.put("/quests/" + quest.getId(), quest);
+        getPlayerReference().updateChildren(data);
+    }
+
+    private void addQuestReminders(Quest quest, Map<String, Object> data) {
+        Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
+        for (Reminder reminder : quest.getReminders()) {
+            reminder.calculateStartTime(quest);
+            quest.addReminderStartTime(reminder.getStart());
+            HashMap<String, QuestReminder> val = new HashMap<>();
+            val.put(quest.getId(), new QuestReminder(quest, reminder));
+            questReminders.put(String.valueOf(reminder.getStart()), val);
+        }
+        data.put("/questReminders", questReminders);
+    }
+
+    private void addDayQuest(Quest quest, Map<String, Object> data) {
+        DayQuest dayQuest = new DayQuest(quest);
+        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+        data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
+    }
+
+    private void removeOldReminders(Quest quest, Map<String, Object> data) {
         for (long startTime : quest.getReminderStartTimes()) {
             Map<String, Map<String, Object>> val = new HashMap<>();
             Map<String, Object> val1 = new HashMap<>();
@@ -658,23 +671,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             val.put(String.valueOf(startTime), val1);
             data.put("/questReminders", val);
         }
-
-        quest.setReminderStartTimes(new ArrayList<>());
-        if (quest.isScheduled() && !quest.getReminders().isEmpty()) {
-            Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
-            for (Reminder reminder : quest.getReminders()) {
-                reminder.calculateStartTime(quest);
-                quest.addReminderStartTime(reminder.getStart());
-                HashMap<String, QuestReminder> val = new HashMap<>();
-                val.put(quest.getId(), new QuestReminder(quest, reminder));
-                questReminders.put(String.valueOf(reminder.getStart()), val);
-            }
-            data.put("/questReminders", questReminders);
-        }
-
-        quest.setLastScheduledDate(quest.getEnd());
-        data.put("/quests/" + quest.getId(), quest);
-        getPlayerReference().updateChildren(data);
     }
 
     private boolean shouldMoveToInbox(Quest quest) {
