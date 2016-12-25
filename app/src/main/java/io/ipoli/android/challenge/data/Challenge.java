@@ -42,8 +42,6 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Long coins;
     private Long experience;
 
-    private Integer completedCount;
-    private Integer totalCount;
     private Long totalMinutesSpent;
     private Long nextScheduledDate;
 
@@ -67,25 +65,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-        setCompletedCount(0);
-        setTotalCount(0);
         setTotalMinutesSpent(0L);
-    }
-
-    public Integer getCompletedCount() {
-        return completedCount;
-    }
-
-    public void setCompletedCount(Integer completedCount) {
-        this.completedCount = completedCount;
-    }
-
-    public Integer getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(Integer totalCount) {
-        this.totalCount = totalCount;
     }
 
     public Long getTotalMinutesSpent() {
