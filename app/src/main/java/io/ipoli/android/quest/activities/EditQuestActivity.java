@@ -585,6 +585,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
             q.setName(name);
+            q.setStartDateFromLocal((Date) endDateText.getTag());
             q.setEndDateFromLocal((Date) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
@@ -618,7 +619,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
 
             q.setSubQuests(subQuestListAdapter.getSubQuests());
-            eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
+            q.setReminders(getReminders());
+            eventBus.post(new UpdateQuestEvent(q, source));
             if (q.getEndDate() != null) {
                 Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
             } else {

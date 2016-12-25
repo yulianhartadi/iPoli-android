@@ -584,11 +584,12 @@ public class App extends MultiDexApplication {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
-        questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
-            if (Quest.isCompleted(quest)) {
-                onQuestComplete(quest, e.source);
-            }
-        });
+        questPersistenceService.updateNewQuest(quest);
+//        questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
+        if (Quest.isCompleted(quest)) {
+            onQuestComplete(quest, e.source);
+        }
+//        });
     }
 
     @Subscribe

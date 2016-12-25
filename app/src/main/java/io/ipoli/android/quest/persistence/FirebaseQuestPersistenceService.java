@@ -572,11 +572,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         Map<String, Object> data = new HashMap<>();
         if (quest.getStartDate() == null && quest.getEndDate() == null) {
             InboxQuest inboxQuest = new InboxQuest(quest);
-            data.put("/inboxQuests/" + inboxQuest.getQuestId(), inboxQuest);
+            data.put("/inboxQuests/" + quest.getId(), inboxQuest);
         } else {
+            quest.addScheduledDate(quest.getEnd());
+
             DayQuest dayQuest = new DayQuest(quest);
             String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
-            data.put("/dayQuests/" + dateString + "/" + dayQuest.getQuestId(), dayQuest);
+            data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
 
             if (quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
                 Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
@@ -597,6 +599,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void deleteNewQuest(Quest quest) {
+        /**
+         * @TODO handle delete when quest is from repeating quest or challenge
+         */
         Map<String, Object> data = new HashMap<>();
         data.put("/inboxQuests/" + quest.getId(), null);
         String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
@@ -606,6 +611,58 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
         data.put("/quests/" + quest.getId(), null);
         getPlayerReference().updateChildren(data);
+    }
+
+    @Override
+    public void updateNewQuest(Quest quest) {
+        Map<String, Object> data = new HashMap<>();
+
+        InboxQuest inboxQuest = null;
+        if (quest.getStartDate() == null && quest.getEndDate() == null) {
+            inboxQuest = new InboxQuest(quest);
+        } else {
+            DayQuest dayQuest = new DayQuest(quest);
+
+            List<Long> scheduledDates = quest.getScheduledDates();
+            long lastScheduledDate = scheduledDates.get(scheduledDates.size() - 1);
+            if (quest.getEnd() != lastScheduledDate) {
+                quest.addScheduledDate(lastScheduledDate);
+                removeOldScheduledDate(quest, data, lastScheduledDate);
+            }
+
+            String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+            data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
+        }
+        data.put("/inboxQuests/" + quest.getId(), inboxQuest);
+
+        for (long startTime : quest.getReminderStartTimes()) {
+            Map<String, Map<String, Object>> val = new HashMap<>();
+            Map<String, Object> val1 = new HashMap<>();
+            val1.put(quest.getId(), null);
+            val.put(String.valueOf(startTime), val1);
+            data.put("/questReminders", val);
+        }
+
+        quest.setReminderStartTimes(new ArrayList<>());
+        if (quest.getEndDate() != null && quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
+            Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
+            for (Reminder reminder : quest.getReminders()) {
+                reminder.calculateStartTime(quest);
+                quest.addReminderStartTime(reminder.getStart());
+                HashMap<String, QuestReminder> val = new HashMap<>();
+                val.put(quest.getId(), new QuestReminder(quest, reminder));
+                questReminders.put(String.valueOf(reminder.getStart()), val);
+            }
+            data.put("/questReminders", questReminders);
+        }
+
+        data.put("/quests/" + quest.getId(), quest);
+        getPlayerReference().updateChildren(data);
+    }
+
+    private void removeOldScheduledDate(Quest quest, Map<String, Object> data, long lastScheduledDate) {
+        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(new Date(lastScheduledDate));
+        data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
     }
 
 

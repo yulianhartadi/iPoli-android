@@ -73,6 +73,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private SourceMapping sourceMapping;
 
+    private List<Long> scheduledDates;
+
     @Exclude
     private transient boolean isPlaceholder;
 
@@ -94,6 +96,21 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+    }
+
+    public void addScheduledDate(Long scheduledDate) {
+        getScheduledDates().add(scheduledDate);
+    }
+
+    public List<Long> getScheduledDates() {
+        if (scheduledDates == null) {
+            scheduledDates = new ArrayList<>();
+        }
+        return scheduledDates;
+    }
+
+    public void setScheduledDates(List<Long> scheduledDates) {
+        this.scheduledDates = scheduledDates;
     }
 
     public void setDuration(Integer duration) {
