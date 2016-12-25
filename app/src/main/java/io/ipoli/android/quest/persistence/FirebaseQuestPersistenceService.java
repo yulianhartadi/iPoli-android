@@ -24,6 +24,7 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.data.ChallengeQuest;
 import io.ipoli.android.quest.data.DayQuest;
 import io.ipoli.android.quest.data.InboxQuest;
 import io.ipoli.android.quest.data.Quest;
@@ -582,6 +583,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 addQuestReminders(quest, data);
             }
         }
+        if (!StringUtils.isEmpty(quest.getChallengeId())) {
+            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), Quest.isCompleted(quest));
+            data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
+        }
 
         data.put("/quests/" + quest.getId(), quest);
         getPlayerReference().updateChildren(data);
@@ -594,7 +599,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void deleteNewQuest(Quest quest) {
         /**
-         * @TODO handle delete when quest is from repeating quest or challenge
+         * @TODO handle delete when quest is from repeating quest
          */
         Map<String, Object> data = new HashMap<>();
         data.put("/inboxQuests/" + quest.getId(), null);
@@ -603,7 +608,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         for (Reminder reminder : quest.getReminders()) {
             data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);
         }
+
+        if (!StringUtils.isEmpty(quest.getChallengeId())) {
+            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), null);
+            data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
+        }
+
         data.put("/quests/" + quest.getId(), null);
+
         getPlayerReference().updateChildren(data);
     }
 
@@ -638,6 +650,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         quest.setReminderStartTimes(new ArrayList<>());
         if (shouldAddQuestReminders(quest)) {
             addQuestReminders(quest, data);
+        }
+
+        if (StringUtils.isEmpty(quest.getChallengeId())) {
+            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), null);
+            data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
+        } else {
+            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), Quest.isCompleted(quest));
+            data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
         }
 
         quest.setLastScheduledDate(quest.getEnd());

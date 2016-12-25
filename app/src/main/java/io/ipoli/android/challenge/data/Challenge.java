@@ -2,9 +2,10 @@ package io.ipoli.android.challenge.data;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -49,7 +50,11 @@ public class Challenge extends PersistedObject implements RewardProvider {
     // In chronological order
     private List<PeriodHistory> periodHistories;
 
-    private List<ChallengeQuest> challengeQuests;
+    private Map<String, ChallengeQuest> challengeQuests;
+
+    // true - quest is complete, false - not complete
+    private Map<String, Boolean> questIds;
+    private Map<String, Boolean> repeatingQuestIds;
 
     private String source;
 
@@ -304,18 +309,51 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.updatedAt = updatedAt;
     }
 
+    @Exclude
     public void addChallengeQuest(ChallengeQuest challengeQuest) {
-        getChallengeQuests().add(challengeQuest);
+        getChallengeQuests().put(challengeQuest.getQuestId(), challengeQuest);
     }
 
-    public List<ChallengeQuest> getChallengeQuests() {
+    public Map<String, ChallengeQuest> getChallengeQuests() {
         if (challengeQuests == null) {
-            challengeQuests = new ArrayList<>();
+            challengeQuests = new HashMap<>();
         }
         return challengeQuests;
     }
 
-    public void setChallengeQuests(List<ChallengeQuest> challengeQuests) {
+    public void setChallengeQuests(Map<String, ChallengeQuest> challengeQuests) {
         this.challengeQuests = challengeQuests;
+    }
+
+    public Map<String, Boolean> getQuestIds() {
+        if (questIds == null) {
+            questIds = new HashMap<>();
+        }
+        return questIds;
+    }
+
+    public void setQuestIds(Map<String, Boolean> questIds) {
+        this.questIds = questIds;
+    }
+
+    public Map<String, Boolean> getRepeatingQuestIds() {
+        if (repeatingQuestIds == null) {
+            repeatingQuestIds = new HashMap<>();
+        }
+        return repeatingQuestIds;
+    }
+
+    public void setRepeatingQuestIds(Map<String, Boolean> repeatingQuestIds) {
+        this.repeatingQuestIds = repeatingQuestIds;
+    }
+
+    @Exclude
+    public void addQuestId(String id, boolean isComplete) {
+        getQuestIds().put(id, isComplete);
+    }
+
+    @Exclude
+    public void addRepeatingQuestId(String id, boolean isComplete) {
+        getRepeatingQuestIds().put(id, isComplete);
     }
 }

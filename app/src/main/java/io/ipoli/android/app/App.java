@@ -736,22 +736,23 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        questPersistenceService.findAllForChallenge(e.challenge.getId(), quests -> {
-            for (Quest quest : quests) {
-                quest.setChallengeId(null);
-            }
-
-            questPersistenceService.save(quests);
-
-            repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
-                for (RepeatingQuest repeatingQuest : repeatingQuests) {
-                    repeatingQuest.setChallengeId(null);
-                }
-                repeatingQuestPersistenceService.save(repeatingQuests);
-            });
-
-            challengePersistenceService.delete(e.challenge);
-        });
+        challengePersistenceService.deleteNewChallenge(e.challenge);
+//        questPersistenceService.findAllForChallenge(e.challenge.getId(), quests -> {
+//            for (Quest quest : quests) {
+//                quest.setChallengeId(null);
+//            }
+//
+//            questPersistenceService.save(quests);
+//
+//            repeatingQuestPersistenceService.findAllForChallenge(e.challenge, repeatingQuests -> {
+//                for (RepeatingQuest repeatingQuest : repeatingQuests) {
+//                    repeatingQuest.setChallengeId(null);
+//                }
+//                repeatingQuestPersistenceService.save(repeatingQuests);
+//            });
+//
+//            challengePersistenceService.delete(e.challenge);
+//        });
     }
 
     @Subscribe
