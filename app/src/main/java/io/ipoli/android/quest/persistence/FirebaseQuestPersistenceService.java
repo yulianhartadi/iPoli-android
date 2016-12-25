@@ -570,11 +570,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         DatabaseReference questRef = getCollectionReference().push();
         quest.setId(questRef.getKey());
         Map<String, Object> data = new HashMap<>();
-        if (quest.getStartDate() == null && quest.getEndDate() == null) {
+        if (shouldMoveToInbox(quest)) {
             InboxQuest inboxQuest = new InboxQuest(quest);
             data.put("/inboxQuests/" + quest.getId(), inboxQuest);
         } else {
-            quest.addScheduledDate(quest.getEnd());
+            quest.setLastScheduledDate(quest.getEnd());
 
             DayQuest dayQuest = new DayQuest(quest);
             String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
@@ -617,24 +617,40 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void updateNewQuest(Quest quest) {
         Map<String, Object> data = new HashMap<>();
 
-        InboxQuest inboxQuest = null;
-        if (quest.getStartDate() == null && quest.getEndDate() == null) {
-            inboxQuest = new InboxQuest(quest);
-        } else {
-            DayQuest dayQuest = new DayQuest(quest);
+        Long lastScheduled = quest.getLastScheduledDate();
 
-            List<Long> scheduledDates = quest.getScheduledDates();
-            long lastScheduledDate = scheduledDates.get(scheduledDates.size() - 1);
-            if (quest.getEnd() != lastScheduledDate) {
-                quest.addScheduledDate(lastScheduledDate);
-                removeOldScheduledDate(quest, data, lastScheduledDate);
+        // remove old day quest
+        if (lastScheduled != null) {
+            removeOldScheduledDate(quest, data, lastScheduled);
+        }
+
+        if (shouldMoveToInbox(quest)) {
+
+            // add inbox
+            InboxQuest inboxQuest = new InboxQuest(quest);
+            data.put("/inboxQuests/" + quest.getId(), inboxQuest);
+
+            // remove reminders
+            for (long startTime : quest.getReminderStartTimes()) {
+                Map<String, Map<String, Object>> val = new HashMap<>();
+                Map<String, Object> val1 = new HashMap<>();
+                val1.put(quest.getId(), null);
+                val.put(String.valueOf(startTime), val1);
+                data.put("/questReminders", val);
             }
 
+        } else {
+
+            // remove inbox
+            data.put("/inboxQuests/" + quest.getId(), null);
+
+            // add new day quest
+            DayQuest dayQuest = new DayQuest(quest);
             String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
             data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
         }
-        data.put("/inboxQuests/" + quest.getId(), inboxQuest);
 
+        // remove reminders
         for (long startTime : quest.getReminderStartTimes()) {
             Map<String, Map<String, Object>> val = new HashMap<>();
             Map<String, Object> val1 = new HashMap<>();
@@ -644,7 +660,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
 
         quest.setReminderStartTimes(new ArrayList<>());
-        if (quest.getEndDate() != null && quest.getStartMinute() >= 0 && !quest.getReminders().isEmpty()) {
+        if (quest.isScheduled() && !quest.getReminders().isEmpty()) {
             Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
             for (Reminder reminder : quest.getReminders()) {
                 reminder.calculateStartTime(quest);
@@ -656,8 +672,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             data.put("/questReminders", questReminders);
         }
 
+        quest.setLastScheduledDate(quest.getEnd());
         data.put("/quests/" + quest.getId(), quest);
         getPlayerReference().updateChildren(data);
+    }
+
+    private boolean shouldMoveToInbox(Quest quest) {
+        return quest.getStartDate() == null && quest.getEndDate() == null;
     }
 
     private void removeOldScheduledDate(Quest quest, Map<String, Object> data, long lastScheduledDate) {

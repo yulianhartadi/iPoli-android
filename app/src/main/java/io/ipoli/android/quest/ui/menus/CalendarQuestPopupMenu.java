@@ -81,7 +81,7 @@ public class CalendarQuestPopupMenu {
                     eventBus.post(new SnoozeQuestRequestEvent(quest, DateUtils.getTomorrow(), source));
                     return true;
                 case R.id.quest_edit:
-                    eventBus.post(new EditQuestRequestEvent(quest, source));
+                    eventBus.post(new EditQuestRequestEvent(quest.getId(), source));
                     return true;
                 case R.id.quest_delete:
                     eventBus.post(new DeleteQuestRequestEvent(quest, source));

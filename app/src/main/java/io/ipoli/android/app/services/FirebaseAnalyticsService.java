@@ -166,7 +166,7 @@ public class FirebaseAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
-        log("edit_quest_requested", e.quest.getId(), e.quest.getName(), e.source.name().toLowerCase());
+        log("edit_quest_requested", EventParams.of("id", e.questId));
     }
 
     @Subscribe

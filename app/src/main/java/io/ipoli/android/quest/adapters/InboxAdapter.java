@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -17,8 +18,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.InboxQuest;
+import io.ipoli.android.quest.events.EditQuestRequestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -55,29 +59,29 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.name.setText(q.getName());
         holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getQuestCreatedAt()));
 
-//        holder.moreMenu.setOnClickListener(v -> {
-//            eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
-//            PopupMenu popupMenu = new PopupMenu(context, v);
-//            popupMenu.inflate(R.menu.quest_actions_menu);
-//            popupMenu.setOnMenuItemClickListener(item -> {
-//                switch (item.getItemId()) {
+        holder.moreMenu.setOnClickListener(v -> {
+            eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.quest_actions_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
 //                    case R.id.schedule_quest:
 //                        eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
 //                        return true;
 //                    case R.id.complete_quest:
 //                        eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
 //                        return true;
-//                    case R.id.edit_quest:
-//                        eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
-//                        return true;
+                    case R.id.edit_quest:
+                        eventBus.post(new EditQuestRequestEvent(q.getQuestId(), EventSource.INBOX));
+                        return true;
 //                    case R.id.delete_quest:
 //                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX));
 //                        return true;
-//                }
-//                return false;
-//            });
-//            popupMenu.show();
-//        });
+                }
+                return false;
+            });
+            popupMenu.show();
+        });
 
     }
 

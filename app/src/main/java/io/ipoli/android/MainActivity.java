@@ -331,7 +331,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
         startActivity(i);
     }
 

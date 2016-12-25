@@ -206,7 +206,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
                             return true;
                         case R.id.edit_quest:
-                            eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
+                            eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.OVERVIEW));
                             return true;
                         case R.id.delete_quest:
                             eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));

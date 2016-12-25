@@ -73,7 +73,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private SourceMapping sourceMapping;
 
-    private List<Long> scheduledDates;
+    private Long lastScheduledDate;
 
     @Exclude
     private transient boolean isPlaceholder;
@@ -90,7 +90,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
         setOriginalStartDate(endDate);
-        this.setStartMinute(null);
+        setStartMinute(null);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
@@ -98,19 +98,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
-    public void addScheduledDate(Long scheduledDate) {
-        getScheduledDates().add(scheduledDate);
+    public Long getLastScheduledDate() {
+        return lastScheduledDate;
     }
 
-    public List<Long> getScheduledDates() {
-        if (scheduledDates == null) {
-            scheduledDates = new ArrayList<>();
-        }
-        return scheduledDates;
-    }
-
-    public void setScheduledDates(List<Long> scheduledDates) {
-        this.scheduledDates = scheduledDates;
+    public void setLastScheduledDate(Long lastScheduledDate) {
+        this.lastScheduledDate = lastScheduledDate;
     }
 
     public void setDuration(Integer duration) {
@@ -376,6 +369,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         } else {
             quest.setStartMinute(null);
         }
+    }
+
+    @Exclude
+    public boolean isScheduled() {
+        return getEndDate() != null && getStartMinute() >= 0;
     }
 
     @Exclude
