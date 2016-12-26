@@ -33,6 +33,7 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,7 +49,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -211,23 +212,24 @@ public class RepeatingQuestActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), completed -> {
-            questPersistenceService.findCompletedWithStartTimeForRepeatingQuest(repeatingQuest.getId(), completedWithStartTime -> {
-                long timeSpent = (completed - completedWithStartTime.size()) * repeatingQuest.getDuration();
-                for (Quest completedQuest : completedWithStartTime) {
-                    timeSpent += completedQuest.getActualDuration();
-                }
-                totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
+        int timeSpent = 0;
+        for (QuestData questData : repeatingQuest.getQuestsData().values()) {
+            if (questData.isComplete()) {
+                timeSpent += questData.getDuration();
+            }
+        }
 
-                frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
 
-                questPersistenceService.findNextUncompletedQuestEndDate(repeatingQuest, nextDate -> {
-                    nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled)));
-                });
+        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
 
-                setCurrentStreak();
-            });
-        });
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+                repeatingQuest.getNextScheduledDate() == null ? null : new Date(repeatingQuest.getNextScheduledDate()),
+                getString(R.string.unscheduled)
+        );
+        nextScheduledDate.setText(nextScheduledDateText);
+
+        setCurrentStreak();
     }
 
     private void showFrequencyProgress(Category category, long completed) {
