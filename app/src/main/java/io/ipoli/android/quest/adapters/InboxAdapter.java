@@ -21,8 +21,11 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.InboxQuest;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
+import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
+import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -31,10 +34,10 @@ import io.ipoli.android.quest.events.EditQuestRequestEvent;
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> {
 
     private Context context;
-    private List<InboxQuest> quests;
+    private List<Quest> quests;
     private final Bus eventBus;
 
-    public InboxAdapter(Context context, List<InboxQuest> quests, Bus eventBus) {
+    public InboxAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
@@ -48,16 +51,16 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final InboxQuest q = quests.get(position);
+        final Quest q = quests.get(position);
 
-//        holder.contentLayout.setOnClickListener(view ->
-//                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
+        holder.contentLayout.setOnClickListener(view ->
+                eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.INBOX)));
 
-        Category category = InboxQuest.getCategory(q);
+        Category category = Quest.getCategory(q);
         holder.categoryIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(q.getName());
-        holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getQuestCreatedAt()));
+        holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getCreatedAt()));
 
         holder.moreMenu.setOnClickListener(v -> {
             eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
@@ -65,18 +68,18 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
             popupMenu.inflate(R.menu.quest_actions_menu);
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
-//                    case R.id.schedule_quest:
-//                        eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
-//                        return true;
-//                    case R.id.complete_quest:
-//                        eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
-//                        return true;
-                    case R.id.edit_quest:
-                        eventBus.post(new EditQuestRequestEvent(q.getQuestId(), EventSource.INBOX));
+                    case R.id.schedule_quest:
+                        eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.INBOX));
                         return true;
-//                    case R.id.delete_quest:
-//                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX));
-//                        return true;
+                    case R.id.complete_quest:
+                        eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
+                        return true;
+                    case R.id.edit_quest:
+                        eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.INBOX));
+                        return true;
+                    case R.id.delete_quest:
+                        eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX));
+                        return true;
                 }
                 return false;
             });
@@ -88,6 +91,10 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     @Override
     public int getItemCount() {
         return quests.size();
+    }
+
+    public List<Quest> getQuests() {
+        return quests;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

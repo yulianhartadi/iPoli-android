@@ -17,7 +17,7 @@ import io.ipoli.android.reminder.data.Reminder;
  */
 public interface QuestPersistenceService extends PersistenceService<Quest> {
 
-    void listenForUnplanned(OnDataChangedListener<List<Quest>> listener);
+    void listenForInboxQuests(OnDataChangedListener<List<Quest>> listener);
 
     void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 

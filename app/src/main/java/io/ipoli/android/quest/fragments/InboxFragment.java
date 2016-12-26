@@ -8,10 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,11 +32,12 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.quest.adapters.InboxAdapter;
-import io.ipoli.android.quest.data.InboxQuest;
-import io.ipoli.android.quest.persistence.InboxQuestPersistenceService;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-public class InboxFragment extends BaseFragment implements OnDataChangedListener<List<InboxQuest>> {
+public class InboxFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
 
     @Inject
     Bus eventBus;
@@ -51,7 +55,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
     FabMenuView fabMenu;
 
     @Inject
-    InboxQuestPersistenceService questPersistenceService;
+    QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
 
@@ -73,7 +77,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(inboxAdapter);
 
-        questPersistenceService.listenForAll(this);
+        questPersistenceService.listenForInboxQuests(this);
         fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.INBOX)));
         return view;
     }
@@ -95,7 +99,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         super.onDestroyView();
     }
 
-    private void updateQuests(List<InboxQuest> quests) {
+    private void updateQuests(List<Quest> quests) {
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), quests, eventBus);
         questList.setAdapter(inboxAdapter);
     }
@@ -112,16 +116,16 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         super.onPause();
     }
 
-//    @Subscribe
-//    public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
-//        Quest q = e.quest;
-//        q.setEndDateFromLocal(new Date());
-//        questPersistenceService.save(q);
-//        Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
-//    }
+    @Subscribe
+    public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
+        Quest q = e.quest;
+        q.setEndDateFromLocal(new Date());
+        questPersistenceService.save(q);
+        Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
+    }
 
     @Override
-    public void onDataChanged(List<InboxQuest> quests) {
+    public void onDataChanged(List<Quest> quests) {
         updateQuests(quests);
     }
 }

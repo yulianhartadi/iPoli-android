@@ -567,7 +567,6 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
-        repeatingQuest.setReminders(e.reminders);
         questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), repeatingQuest.getId(), questsToRemove -> {
             for (Quest quest : questsToRemove) {
                 QuestNotificationScheduler.cancelAll(quest, this);

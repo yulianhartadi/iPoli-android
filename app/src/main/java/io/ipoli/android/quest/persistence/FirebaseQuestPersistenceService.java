@@ -25,8 +25,6 @@ import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.ChallengeQuest;
-import io.ipoli.android.quest.data.DayQuest;
-import io.ipoli.android.quest.data.InboxQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -74,10 +72,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForUnplanned(OnDataChangedListener<List<Quest>> listener) {
-        listenForListChange(getCollectionReference().orderByChild("end").equalTo(null), listener, data -> data.filter(
-                q -> q.getActualStartDate() == null && q.getCompletedAtDate() == null
-        ));
+    public void listenForInboxQuests(OnDataChangedListener<List<Quest>> listener) {
+        listenForListChange(getPlayerReference().child("inboxQuests"), listener);
     }
 
     @Override
@@ -578,8 +574,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         DatabaseReference questRef = getCollectionReference().push();
         quest.setId(questRef.getKey());
         if (shouldMoveToInbox(quest)) {
-            InboxQuest inboxQuest = new InboxQuest(quest);
-            data.put("/inboxQuests/" + quest.getId(), inboxQuest);
+            data.put("/inboxQuests/" + quest.getId(), quest);
         } else {
             quest.setPreviousScheduledDate(quest.getEnd());
 
@@ -624,7 +619,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void deleteNewQuest(Quest quest) {
         Map<String, Object> data = new HashMap<>();
-        populateQuestData(quest, data);
+        populateDeleteQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
 
@@ -642,8 +637,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         if (shouldMoveToInbox(quest)) {
 
             // add inbox
-            InboxQuest inboxQuest = new InboxQuest(quest);
-            data.put("/inboxQuests/" + quest.getId(), inboxQuest);
+            data.put("/inboxQuests/" + quest.getId(), quest);
 
         } else {
 
@@ -687,9 +681,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addDayQuest(Quest quest, Map<String, Object> data) {
-        DayQuest dayQuest = new DayQuest(quest);
         String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
-        data.put("/dayQuests/" + dateString + "/" + quest.getId(), dayQuest);
+        data.put("/dayQuests/" + dateString + "/" + quest.getId(), quest);
     }
 
     private void removeOldReminders(Quest quest, Map<String, Object> data) {

@@ -14,10 +14,8 @@ import io.ipoli.android.pet.persistence.FirebasePetPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.persistence.FirebasePlayerPersistenceService;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.quest.persistence.FirebaseInboxQuestPersistenceService;
 import io.ipoli.android.quest.persistence.FirebaseQuestPersistenceService;
 import io.ipoli.android.quest.persistence.FirebaseRepeatingQuestPersistenceService;
-import io.ipoli.android.quest.persistence.InboxQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.reward.persistence.FirebaseRewardPersistenceService;
@@ -63,10 +61,5 @@ public class PersistenceModule {
     @Provides
     public RewardPersistenceService provideRewardPersistenceService(Bus eventBus, Gson gson) {
         return new FirebaseRewardPersistenceService(eventBus, gson);
-    }
-
-    @Provides
-    public InboxQuestPersistenceService provideInboxQuestPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseInboxQuestPersistenceService(eventBus, gson);
     }
 }
