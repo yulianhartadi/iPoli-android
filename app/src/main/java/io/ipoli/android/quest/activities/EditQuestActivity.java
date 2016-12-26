@@ -659,7 +659,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
 
             rq.setSubQuests(subQuestListAdapter.getSubQuests());
-            eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
+            rq.setReminders(getReminders());
+            eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
             Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
             finish();
