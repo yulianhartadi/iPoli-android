@@ -209,7 +209,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
     }
 
@@ -599,19 +599,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         data.put("/quests/" + quest.getId(), quest);
     }
 
-    private boolean shouldAddQuestReminders(Quest quest) {
-        return quest.isScheduled() && !quest.getReminders().isEmpty();
-    }
-
     @Override
-    public void deleteNewQuest(Quest quest) {
-        /**
-         * @TODO handle delete when quest is from repeating quest
-         */
-        Map<String, Object> data = new HashMap<>();
+    public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
         data.put("/inboxQuests/" + quest.getId(), null);
         String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
         data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
+
         for (Reminder reminder : quest.getReminders()) {
             data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);
         }
@@ -622,7 +615,16 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
 
         data.put("/quests/" + quest.getId(), null);
+    }
 
+    private boolean shouldAddQuestReminders(Quest quest) {
+        return quest.isScheduled() && !quest.getReminders().isEmpty();
+    }
+
+    @Override
+    public void deleteNewQuest(Quest quest) {
+        Map<String, Object> data = new HashMap<>();
+        populateQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
 
