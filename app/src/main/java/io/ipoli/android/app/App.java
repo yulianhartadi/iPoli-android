@@ -713,8 +713,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        deleteQuestsForRepeating(repeatingQuest);
-        repeatingQuestPersistenceService.delete(repeatingQuest);
+        repeatingQuestPersistenceService.deleteNewRepeatingQuest(repeatingQuest);
+//        deleteQuestsForRepeating(repeatingQuest);
+//        repeatingQuestPersistenceService.delete(repeatingQuest);
     }
 
     private void deleteQuestsForRepeating(RepeatingQuest repeatingQuest) {

@@ -144,6 +144,17 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         getPlayerReference().updateChildren(data);
     }
 
+    @Override
+    public void deleteNewRepeatingQuest(RepeatingQuest repeatingQuest) {
+        Map<String, Object> data = new HashMap<>();
+        if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeQuests/" + repeatingQuest.getId(), null);
+        }
+        data.put("/repeatingQuests/" + repeatingQuest.getId(), null);
+        getPlayerReference().updateChildren(data);
+    }
+
     @NonNull
     private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
         return data.filter(activeRepeatingQuestFilter());

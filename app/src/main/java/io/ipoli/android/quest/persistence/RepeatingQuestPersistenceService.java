@@ -30,4 +30,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void saveNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests);
+
+    void deleteNewRepeatingQuest(RepeatingQuest repeatingQuest);
 }
