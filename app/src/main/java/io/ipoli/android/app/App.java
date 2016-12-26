@@ -479,6 +479,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
+        // change end date to today
         QuestNotificationScheduler.cancelAll(q, this);
         q.setCompletedAtDate(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());

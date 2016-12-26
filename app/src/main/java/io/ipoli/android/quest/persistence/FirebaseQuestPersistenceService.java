@@ -124,36 +124,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-
-        List<Quest> endDateQuests = new ArrayList<>();
-        List<Quest> completedQuests = new ArrayList<>();
-        Date startDateUTC = toStartOfDayUTC(currentDate);
-
-        DatabaseReference collectionReference = getCollectionReference();
-
-        Query endAt = collectionReference.orderByChild("end").equalTo(startDateUTC.getTime());
-
-        listenForListChange(endAt, quests -> {
-            endDateQuests.clear();
-            endDateQuests.addAll(quests);
-            List<Quest> result = new ArrayList<>(endDateQuests);
-            result.addAll(completedQuests);
-            listener.onDataChanged(result);
-
-        }, data -> data.filter(q -> !Quest.isCompleted(q)));
-
-        Date startDate = toStartOfDay(currentDate);
-        Date endDate = toStartOfDay(currentDate.plusDays(1));
-
-        Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
-
-        listenForListChange(completedAt, quests -> {
-            completedQuests.clear();
-            completedQuests.addAll(quests);
-            List<Quest> result = new ArrayList<>(completedQuests);
-            result.addAll(endDateQuests);
-            listener.onDataChanged(result);
-        });
+        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(toStartOfDayUTC(currentDate));
+        Query query = getPlayerReference().child("dayQuests").child(dateString);
+        listenForListChange(query, listener);
     }
 
     @Override
