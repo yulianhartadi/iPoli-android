@@ -35,6 +35,22 @@ public class PersistentRepeatingQuestScheduler {
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
     }
 
+    public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate) {
+        LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
+        List<Quest> quests = new ArrayList<>();
+        if (repeatingQuest.isFlexible()) {
+            Recurrence.RecurrenceType recurrenceType = repeatingQuest.getRecurrence().getRecurrenceType();
+            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                quests.addAll(scheduleFlexibleForMonth(repeatingQuest, currentDate));
+            } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+                quests.addAll(scheduleFlexibleFor4WeeksAhead(currentDate, repeatingQuest));
+            }
+        } else {
+            quests.addAll(scheduleFor4WeeksAhead(repeatingQuest, currentDate));
+        }
+        return quests;
+    }
+
     public void schedule(List<RepeatingQuest> repeatingQuests, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
         List<Quest> quests = new ArrayList<>();
@@ -52,20 +68,6 @@ public class PersistentRepeatingQuestScheduler {
         }
         questPersistenceService.save(quests);
         repeatingQuestPersistenceService.save(repeatingQuests);
-    }
-
-    public Quest schedulePlaceholderQuest(Quest quest, RepeatingQuest repeatingQuest, LocalDate startDate) {
-        List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(startDate));
-        questPersistenceService.save(questsToCreate);
-        repeatingQuest.addScheduledPeriodEndDate(DateUtils.toStartOfDayUTC(startDate.dayOfWeek().withMaximumValue()));
-        repeatingQuestPersistenceService.save(repeatingQuest);
-        for (Quest q : questsToCreate) {
-            if (quest.getStartDate().equals(q.getStartDate())) {
-                quest.setId(q.getId());
-                return quest;
-            }
-        }
-        return null;
     }
 
     private List<Quest> scheduleFlexibleFor4WeeksAhead(LocalDate currentDate, RepeatingQuest rq) {

@@ -4,6 +4,7 @@ import org.joda.time.LocalDate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
@@ -85,4 +86,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void deleteNewQuest(Quest quest);
 
     void updateNewQuest(Quest quest);
+
+    void populateQuestData(Quest quest, Map<String, Object> data);
 }

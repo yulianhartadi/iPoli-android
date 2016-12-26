@@ -568,9 +568,15 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void saveNewQuest(Quest quest) {
+        Map<String, Object> data = new HashMap<>();
+        populateQuestData(quest, data);
+        getPlayerReference().updateChildren(data);
+    }
+
+    @Override
+    public void populateQuestData(Quest quest, Map<String, Object> data) {
         DatabaseReference questRef = getCollectionReference().push();
         quest.setId(questRef.getKey());
-        Map<String, Object> data = new HashMap<>();
         if (shouldMoveToInbox(quest)) {
             InboxQuest inboxQuest = new InboxQuest(quest);
             data.put("/inboxQuests/" + quest.getId(), inboxQuest);
@@ -585,11 +591,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
         if (!StringUtils.isEmpty(quest.getChallengeId())) {
             data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), Quest.isCompleted(quest));
-            data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
+            if (StringUtils.isEmpty(quest.getRepeatingQuestId())) {
+                data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
+            }
         }
 
         data.put("/quests/" + quest.getId(), quest);
-        getPlayerReference().updateChildren(data);
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {
@@ -666,15 +673,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addQuestReminders(Quest quest, Map<String, Object> data) {
-        Map<String, Map<String, QuestReminder>> questReminders = new HashMap<>();
         for (Reminder reminder : quest.getReminders()) {
             reminder.calculateStartTime(quest);
             quest.addReminderStartTime(reminder.getStart());
-            HashMap<String, QuestReminder> val = new HashMap<>();
-            val.put(quest.getId(), new QuestReminder(quest, reminder));
-            questReminders.put(String.valueOf(reminder.getStart()), val);
+            data.put("/questReminders/" + reminder.getStart() + "/" + quest.getId(), new QuestReminder(quest, reminder));
         }
-        data.put("/questReminders", questReminders);
     }
 
     private void addDayQuest(Quest quest, Map<String, Object> data) {

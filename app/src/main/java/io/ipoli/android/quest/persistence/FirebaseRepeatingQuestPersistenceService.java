@@ -10,11 +10,15 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.data.ChallengeQuest;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
 import rx.functions.Func1;
@@ -27,8 +31,11 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersistenceService<RepeatingQuest> implements RepeatingQuestPersistenceService {
 
-    public FirebaseRepeatingQuestPersistenceService(Bus eventBus, Gson gson) {
+    private final QuestPersistenceService questPersistenceService;
+
+    public FirebaseRepeatingQuestPersistenceService(Bus eventBus, Gson gson, QuestPersistenceService questPersistenceService) {
         super(eventBus, gson);
+        this.questPersistenceService = questPersistenceService;
     }
 
     @Override
@@ -113,6 +120,28 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
         listenForSingleListChange(query, listener);
+    }
+
+    @Override
+    public void saveNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests) {
+        Map<String, Object> data = new HashMap<>();
+        DatabaseReference rqRef = getCollectionReference().push();
+        repeatingQuest.setId(rqRef.getKey());
+        for (Quest q : quests) {
+            q.setRepeatingQuestId(rqRef.getKey());
+            questPersistenceService.populateQuestData(q, data);
+            repeatingQuest.addQuestId(q.getId(), false);
+            repeatingQuest.addScheduledDate(q.getEnd(), false);
+        }
+        if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), false);
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeQuests/" + repeatingQuest.getId(), new ChallengeQuest(repeatingQuest));
+        }
+        if (!quests.isEmpty()) {
+            repeatingQuest.setNextScheduledDate(quests.get(0).getEnd());
+        }
+        data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
+        getPlayerReference().updateChildren(data);
     }
 
     @NonNull

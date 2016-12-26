@@ -56,10 +56,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Long totalMinutesSpent;
     private Long streak;
     private Long nextScheduledDate;
-    private Map<Long, Boolean> scheduledDates;
+
+    // true - quest is complete, false - not complete
+    private Map<String, Boolean> scheduledDates;
 
     // In chronological order
     private List<PeriodHistory> periodHistories;
+
+    // true - quest is complete, false - not complete
+    private Map<String, Boolean> questIds;
 
     public RepeatingQuest() {
     }
@@ -92,15 +97,20 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.nextScheduledDate = nextScheduledDate;
     }
 
-    public Map<Long, Boolean> getScheduledDates() {
+    public Map<String, Boolean> getScheduledDates() {
         if (scheduledDates == null) {
             scheduledDates = new HashMap<>();
         }
         return scheduledDates;
     }
 
-    public void setScheduledDates(Map<Long, Boolean> scheduledDates) {
+    public void setScheduledDates(Map<String, Boolean> scheduledDates) {
         this.scheduledDates = scheduledDates;
+    }
+
+    @Exclude
+    public void addScheduledDate(long scheduledDate, boolean isComplete) {
+        getScheduledDates().put(String.valueOf(scheduledDate), isComplete);
     }
 
     public void setDuration(Integer duration) {
@@ -351,4 +361,19 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.periodHistories = periodHistories;
     }
 
+    public Map<String, Boolean> getQuestIds() {
+        if (questIds == null) {
+            questIds = new HashMap<>();
+        }
+        return questIds;
+    }
+
+    public void setQuestIds(Map<String, Boolean> questIds) {
+        this.questIds = questIds;
+    }
+
+    @Exclude
+    public void addQuestId(String id, boolean isComplete) {
+        getQuestIds().put(id, isComplete);
+    }
 }

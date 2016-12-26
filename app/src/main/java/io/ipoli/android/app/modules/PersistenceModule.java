@@ -36,8 +36,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseRepeatingQuestPersistenceService(eventBus, gson);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, Gson gson, QuestPersistenceService questPersistenceService) {
+        return new FirebaseRepeatingQuestPersistenceService(eventBus, gson, questPersistenceService);
     }
 
     @Provides

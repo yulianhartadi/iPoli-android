@@ -418,27 +418,27 @@ public class App extends MultiDexApplication {
     }
 
     private void listenForRepeatingQuestChange() {
-        repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
-            @Override
-            public void onNew(List<RepeatingQuest> data) {
-                Observable.defer(() -> {
-                    for (RepeatingQuest rq : data) {
-                        onRepeatingQuestSaved(rq);
-                    }
-                    return Observable.empty();
-                }).compose(applyAndroidSchedulers()).subscribe();
-            }
-
-            @Override
-            public void onChanged(List<RepeatingQuest> data) {
-
-            }
-
-            @Override
-            public void onDeleted() {
-
-            }
-        });
+//        repeatingQuestPersistenceService.listenForChange(new OnChangeListener<List<RepeatingQuest>>() {
+//            @Override
+//            public void onNew(List<RepeatingQuest> data) {
+//                Observable.defer(() -> {
+//                    for (RepeatingQuest rq : data) {
+//                        onRepeatingQuestSaved(rq);
+//                    }
+//                    return Observable.empty();
+//                }).compose(applyAndroidSchedulers()).subscribe();
+//            }
+//
+//            @Override
+//            public void onChanged(List<RepeatingQuest> data) {
+//
+//            }
+//
+//            @Override
+//            public void onDeleted() {
+//
+//            }
+//        });
     }
 
     private void scheduleDailyChallenge() {
@@ -700,7 +700,10 @@ public class App extends MultiDexApplication {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
         repeatingQuest.setReminders(e.reminders);
-        repeatingQuestPersistenceService.save(repeatingQuest);
+
+        List<Quest> quests = persistentRepeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+
+        repeatingQuestPersistenceService.saveNewRepeatingQuest(repeatingQuest, quests);
     }
 
     public void onRepeatingQuestSaved(RepeatingQuest repeatingQuest) {
