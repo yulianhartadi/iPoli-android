@@ -63,8 +63,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     // In chronological order
     private List<PeriodHistory> periodHistories;
 
-    // true - quest is complete, false - not complete
-    private Map<String, Boolean> questIds;
+    private Map<String, QuestData> questsData;
 
     @Exclude
     private String previousChallengeId;
@@ -362,20 +361,20 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.periodHistories = periodHistories;
     }
 
-    public Map<String, Boolean> getQuestIds() {
-        if (questIds == null) {
-            questIds = new HashMap<>();
+    public Map<String, QuestData> getQuestsData() {
+        if (questsData == null) {
+            questsData = new HashMap<>();
         }
-        return questIds;
+        return questsData;
     }
 
-    public void setQuestIds(Map<String, Boolean> questIds) {
-        this.questIds = questIds;
+    public void setQuestsData(Map<String, QuestData> questsData) {
+        this.questsData = questsData;
     }
 
     @Exclude
-    public void addQuestId(String id, boolean isComplete) {
-        getQuestIds().put(id, isComplete);
+    public void addQuestData(String id, QuestData questData) {
+        getQuestsData().put(id, questData);
     }
 
     @Exclude

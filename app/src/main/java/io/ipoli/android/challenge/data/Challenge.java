@@ -13,6 +13,9 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestData;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.RewardProvider;
 
 /**
@@ -48,10 +51,11 @@ public class Challenge extends PersistedObject implements RewardProvider {
     // In chronological order
     private List<PeriodHistory> periodHistories;
 
-    private Map<String, ChallengeQuest> challengeQuests;
+    private Map<String, Quest> challengeQuests;
+    private Map<String, RepeatingQuest> challengeRepeatingQuests;
 
     // true - quest is complete, false - not complete
-    private Map<String, Boolean> questIds;
+    private Map<String, QuestData> questsData;
     private Map<String, Boolean> repeatingQuestIds;
 
     private String source;
@@ -289,31 +293,52 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.updatedAt = updatedAt;
     }
 
-    @Exclude
-    public void addChallengeQuest(ChallengeQuest challengeQuest) {
-        getChallengeQuests().put(challengeQuest.getQuestId(), challengeQuest);
-    }
-
-    public Map<String, ChallengeQuest> getChallengeQuests() {
+    public Map<String, Quest> getChallengeQuests() {
         if (challengeQuests == null) {
             challengeQuests = new HashMap<>();
         }
         return challengeQuests;
     }
 
-    public void setChallengeQuests(Map<String, ChallengeQuest> challengeQuests) {
+    public void setChallengeQuests(Map<String, Quest> challengeQuests) {
         this.challengeQuests = challengeQuests;
     }
 
-    public Map<String, Boolean> getQuestIds() {
-        if (questIds == null) {
-            questIds = new HashMap<>();
-        }
-        return questIds;
+    @Exclude
+    public void addChallengeQuest(Quest quest) {
+        getChallengeQuests().put(quest.getId(), quest);
     }
 
-    public void setQuestIds(Map<String, Boolean> questIds) {
-        this.questIds = questIds;
+    public Map<String, RepeatingQuest> getChallengeRepeatingQuests() {
+        if (challengeRepeatingQuests == null) {
+            challengeRepeatingQuests = new HashMap<>();
+        }
+        return challengeRepeatingQuests;
+    }
+
+    @Exclude
+    public void addChallengeRepeatingQuest(RepeatingQuest repeatingQuest) {
+        getChallengeRepeatingQuests().put(repeatingQuest.getId(), repeatingQuest);
+    }
+
+    public void setChallengeRepeatingQuests(Map<String, RepeatingQuest> challengeRepeatingQuests) {
+        this.challengeRepeatingQuests = challengeRepeatingQuests;
+    }
+
+    public Map<String, QuestData> getQuestsData() {
+        if (questsData == null) {
+            questsData = new HashMap<>();
+        }
+        return questsData;
+    }
+
+    public void setQuestsData(Map<String, QuestData> questsData) {
+        this.questsData = questsData;
+    }
+
+    @Exclude
+    public void addQuestData(String id, QuestData questData) {
+        getQuestsData().put(id, questData);
     }
 
     public Map<String, Boolean> getRepeatingQuestIds() {
@@ -328,12 +353,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @Exclude
-    public void addQuestId(String id, boolean isComplete) {
-        getQuestIds().put(id, isComplete);
-    }
-
-    @Exclude
-    public void addRepeatingQuestId(String id, boolean isComplete) {
-        getRepeatingQuestIds().put(id, isComplete);
+    public void addRepeatingQuestId(String id) {
+        getRepeatingQuestIds().put(id, true);
     }
 }

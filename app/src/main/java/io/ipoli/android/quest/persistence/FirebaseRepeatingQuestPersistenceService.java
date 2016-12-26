@@ -18,8 +18,8 @@ import java.util.Set;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.challenge.data.ChallengeQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import rx.Observable;
 import rx.functions.Func1;
@@ -131,12 +131,12 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         for (Quest q : quests) {
             q.setRepeatingQuestId(rqRef.getKey());
             questPersistenceService.populateQuestData(q, data);
-            repeatingQuest.addQuestId(q.getId(), false);
+            repeatingQuest.addQuestData(q.getId(), new QuestData(q));
             repeatingQuest.addScheduledDate(q.getEnd(), false);
         }
         if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
-            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), false);
-            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeQuests/" + repeatingQuest.getId(), new ChallengeQuest(repeatingQuest));
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), true);
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeRepeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
         }
         if (!quests.isEmpty()) {
             repeatingQuest.setNextScheduledDate(quests.get(0).getEnd());
@@ -150,11 +150,11 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         Map<String, Object> data = new HashMap<>();
         if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
             data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
-            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeQuests/" + repeatingQuest.getId(), null);
+            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeRepeatingQuests/" + repeatingQuest.getId(), null);
         }
         data.put("/repeatingQuests/" + repeatingQuest.getId(), null);
 
-        Set<String> orphanQuestIds = repeatingQuest.getQuestIds().keySet();
+        Set<String> orphanQuestIds = repeatingQuest.getQuestsData().keySet();
         for (Quest quest : quests) {
             orphanQuestIds.remove(quest.getId());
             questPersistenceService.populateDeleteQuestData(quest, data);
@@ -173,24 +173,24 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         if (repeatingQuest.getPreviousChallengeId() != null) {
             String challengeId = repeatingQuest.getPreviousChallengeId();
             data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
-            data.put("/challenges/" + challengeId + "/challengeQuests/" + repeatingQuest.getId(), null);
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), null);
         }
 
         if (repeatingQuest.getChallengeId() != null) {
             String challengeId = repeatingQuest.getChallengeId();
             // @TODO check if repeating quest is complete
             data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), false);
-            data.put("/challenges/" + challengeId + "/challengeQuests/" + repeatingQuest.getId(), new ChallengeQuest(repeatingQuest));
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
         }
 
         for (Quest quest : questsToRemove) {
             questPersistenceService.populateDeleteQuestData(quest, data);
-            repeatingQuest.getQuestIds().remove(quest.getId());
+            repeatingQuest.getQuestsData().remove(quest.getId());
         }
 
         for (Quest quest : questsToCreate) {
             questPersistenceService.populateQuestData(quest, data);
-            repeatingQuest.addQuestId(quest.getId(), false);
+            repeatingQuest.addQuestData(quest.getId(), new QuestData(quest));
         }
 
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);

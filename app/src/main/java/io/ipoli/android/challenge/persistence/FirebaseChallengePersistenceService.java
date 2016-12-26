@@ -12,6 +12,7 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
@@ -61,7 +62,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     public void deleteNewChallenge(Challenge challenge) {
         Map<String, Object> data = new HashMap<>();
 
-        Map<String, Boolean> questIds = challenge.getQuestIds();
+        Map<String, QuestData> questIds = challenge.getQuestsData();
         for (String questId : questIds.keySet()) {
             data.put("/quests/" + questId + "/challengeId", null);
         }

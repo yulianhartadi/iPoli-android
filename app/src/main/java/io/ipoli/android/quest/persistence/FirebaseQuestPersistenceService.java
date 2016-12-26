@@ -24,8 +24,8 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.challenge.data.ChallengeQuest;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
@@ -558,9 +558,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             }
         }
         if (!StringUtils.isEmpty(quest.getChallengeId())) {
-            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), Quest.isCompleted(quest));
+            data.put("/challenges/" + quest.getChallengeId() + "/questsData/" + quest.getId(), new QuestData(quest));
             if (StringUtils.isEmpty(quest.getRepeatingQuestId())) {
-                data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
+                data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), quest);
             }
         }
 
@@ -578,7 +578,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }
 
         if (!StringUtils.isEmpty(quest.getChallengeId())) {
-            data.put("/challenges/" + quest.getChallengeId() + "/questIds/" + quest.getId(), null);
+            data.put("/challenges/" + quest.getChallengeId() + "/questsData/" + quest.getId(), null);
             data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
         }
 
@@ -630,14 +630,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
         if (quest.getPreviousChallengeId() != null) {
             String challengeId = quest.getPreviousChallengeId();
-            data.put("/challenges/" + challengeId + "/questIds/" + quest.getId(), null);
+            data.put("/challenges/" + challengeId + "/questsData/" + quest.getId(), null);
             data.put("/challenges/" + challengeId + "/challengeQuests/" + quest.getId(), null);
         }
 
         if (quest.getChallengeId() != null) {
             String challengeId = quest.getChallengeId();
-            data.put("/challenges/" + challengeId + "/questIds/" + quest.getId(), Quest.isCompleted(quest));
-            data.put("/challenges/" + challengeId + "/challengeQuests/" + quest.getId(), new ChallengeQuest(quest));
+            data.put("/challenges/" + challengeId + "/questsData/" + quest.getId(), new QuestData(quest));
+            data.put("/challenges/" + challengeId + "/challengeQuests/" + quest.getId(), quest);
         }
 
         quest.setPreviousScheduledDate(quest.getEnd());
