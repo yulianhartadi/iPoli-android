@@ -66,6 +66,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     // true - quest is complete, false - not complete
     private Map<String, Boolean> questIds;
 
+    @Exclude
+    private String previousChallengeId;
+
     public RepeatingQuest() {
     }
 
@@ -270,6 +273,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public void setChallengeId(String challengeId) {
+        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
@@ -323,10 +327,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     @Exclude
     public boolean shouldBeScheduledForPeriod(Date periodEnd) {
-        if (scheduledPeriodEndDates == null) {
-            return true;
-        }
-        return !scheduledPeriodEndDates.containsKey(String.valueOf(periodEnd.getTime()));
+        return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
     }
 
     @Exclude
@@ -375,5 +376,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @Exclude
     public void addQuestId(String id, boolean isComplete) {
         getQuestIds().put(id, isComplete);
+    }
+
+    @Exclude
+    public String getPreviousChallengeId() {
+        return previousChallengeId;
+    }
+
+    @Exclude
+    public void setPreviousChallengeId(String previousChallengeId) {
+        this.previousChallengeId = previousChallengeId;
     }
 }

@@ -594,27 +594,24 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        Observable.defer(() -> {
-            RepeatingQuest rq = e.repeatingQuest;
-            questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), rq.getId(), questsToRemove -> {
-                for (Quest quest : questsToRemove) {
-                    QuestNotificationScheduler.cancelAll(quest, this);
-                }
-                questPersistenceService.delete(questsToRemove);
-                rq.setReminders(e.reminders);
+        RepeatingQuest repeatingQuest = e.repeatingQuest;
+        repeatingQuest.setReminders(e.reminders);
+        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), repeatingQuest.getId(), questsToRemove -> {
+            for (Quest quest : questsToRemove) {
+                QuestNotificationScheduler.cancelAll(quest, this);
+            }
 
-                long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
-                List<String> periodsToDelete = new ArrayList<>();
-                for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
-                    if (Long.valueOf(periodEnd) >= todayStartOfDay) {
-                        periodsToDelete.add(periodEnd);
-                    }
+            long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
+            List<String> periodsToDelete = new ArrayList<>();
+            for (String periodEnd : repeatingQuest.getScheduledPeriodEndDates().keySet()) {
+                if (Long.valueOf(periodEnd) >= todayStartOfDay) {
+                    periodsToDelete.add(periodEnd);
                 }
-                rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-                scheduleRepeatingQuest(rq);
-            });
-            return Observable.empty();
-        }).compose(applyAndroidSchedulers()).subscribe();
+            }
+            repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
+            List<Quest> questsToCreate = persistentRepeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            repeatingQuestPersistenceService.updateNewRepeatingQuest(repeatingQuest, questsToRemove, questsToCreate);
+        });
     }
 
     @Subscribe
@@ -713,7 +710,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        repeatingQuestPersistenceService.deleteNewRepeatingQuest(repeatingQuest);
+        questPersistenceService.findAllNotCompletedForRepeatingQuest(repeatingQuest.getId(), quests -> {
+            repeatingQuestPersistenceService.deleteNewRepeatingQuest(repeatingQuest, quests);
+        });
 //        deleteQuestsForRepeating(repeatingQuest);
 //        repeatingQuestPersistenceService.delete(repeatingQuest);
     }

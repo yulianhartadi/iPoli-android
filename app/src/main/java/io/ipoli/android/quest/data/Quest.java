@@ -73,7 +73,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private SourceMapping sourceMapping;
 
-    private Long lastScheduledDate;
+    @Exclude
+    private Long previousScheduledDate;
+
+    @Exclude
+    private String previousChallengeId;
 
     @Exclude
     private transient boolean isPlaceholder;
@@ -98,12 +102,14 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
-    public Long getLastScheduledDate() {
-        return lastScheduledDate;
+    @Exclude
+    public Long getPreviousScheduledDate() {
+        return previousScheduledDate;
     }
 
-    public void setLastScheduledDate(Long lastScheduledDate) {
-        this.lastScheduledDate = lastScheduledDate;
+    @Exclude
+    public void setPreviousScheduledDate(Long previousScheduledDate) {
+        this.previousScheduledDate = previousScheduledDate;
     }
 
     public void setDuration(Integer duration) {
@@ -228,7 +234,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public void setEndDate(Date endDate) {
-        end = endDate != null ? endDate.getTime() : null;
+        setEnd(endDate != null ? endDate.getTime() : null);
     }
 
     @Exclude
@@ -241,6 +247,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setEnd(Long end) {
+        setPreviousScheduledDate(this.end);
         this.end = end;
     }
 
@@ -477,6 +484,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setChallengeId(String challengeId) {
+        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
@@ -556,5 +564,15 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setReminderStartTimes(List<Long> reminderStartTimes) {
         this.reminderStartTimes = reminderStartTimes;
+    }
+
+    @Exclude
+    public String getPreviousChallengeId() {
+        return previousChallengeId;
+    }
+
+    @Exclude
+    public void setPreviousChallengeId(String previousChallengeId) {
+        this.previousChallengeId = previousChallengeId;
     }
 }
