@@ -9,7 +9,7 @@ public class QuestData {
     private Integer duration;
 
     public QuestData() {
-        
+
     }
 
     public QuestData(Quest quest) {

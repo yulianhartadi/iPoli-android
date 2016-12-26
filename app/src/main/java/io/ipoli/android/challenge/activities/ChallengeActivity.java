@@ -34,15 +34,11 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -64,7 +60,7 @@ import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -128,8 +124,6 @@ public class ChallengeActivity extends BaseActivity {
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
 
-    private ChallengeQuestListAdapter adapter;
-
     @Inject
     Bus eventBus;
 
@@ -142,10 +136,10 @@ public class ChallengeActivity extends BaseActivity {
     @Inject
     ChallengePersistenceService challengePersistenceService;
 
+    private ChallengeQuestListAdapter adapter;
+
     private String challengeId;
     private Challenge challenge;
-    private List<Quest> quests = new ArrayList<>();
-    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,7 +177,6 @@ public class ChallengeActivity extends BaseActivity {
         questList.setEmptyView(questListContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
         adapter = new ChallengeQuestListAdapter(this, new ArrayList<>(), eventBus);
         questList.setAdapter(adapter);
-
     }
 
     @Override
@@ -193,23 +186,16 @@ public class ChallengeActivity extends BaseActivity {
             this.challenge = challenge;
             displayChallenge();
             setBackgroundColors(Challenge.getCategory(challenge));
-        });
-        questPersistenceService.listenForIncompleteNotRepeatingForChallenge(challengeId, results -> {
-            quests = results;
-            onQuestListUpdated();
-        });
-        repeatingQuestPersistenceService.listenForActiveForChallenge(challengeId, results -> {
-            repeatingQuests = results;
             onQuestListUpdated();
         });
     }
 
     private void onQuestListUpdated() {
         List<ChallengeQuestViewModel> viewModels = new ArrayList<>();
-        for (Quest q : quests) {
+        for (Quest q : challenge.getChallengeQuests().values()) {
             viewModels.add(new ChallengeQuestViewModel(q, false));
         }
-        for (RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : challenge.getChallengeRepeatingQuests().values()) {
             viewModels.add(new ChallengeQuestViewModel(rq, true));
         }
         adapter.setViewModels(viewModels);
@@ -270,95 +256,36 @@ public class ChallengeActivity extends BaseActivity {
         setupChart();
     }
 
-    private long totalCount = 0;
-
     private void showProgress() {
-        totalCount = 0;
-        Date challengeEnd = challenge.getEndDate();
-        LocalDate today = LocalDate.now();
-        LocalDate scheduledQuestsEndDate = today.plusWeeks(3).dayOfWeek().withMaximumValue();
 
-        if (notAllQuestsAreScheduledForChallenge(challengeEnd, scheduledQuestsEndDate)) {
-            repeatingQuestPersistenceService.findByChallenge(challenge, repeatingQuests -> {
-                Date challengeStart = DateUtils.toStartOfDayUTC(new LocalDate(challenge.getCreatedAt(), DateTimeZone.UTC));
-                for (RepeatingQuest rq : repeatingQuests) {
-                    Recurrence recurrence = rq.getRecurrence();
-                    Date rqStart = recurrence.getDtstartDate();
-                    Date rqEnd = recurrence.getDtendDate();
-
-                    Date progressStart = challengeStart.after(rqStart) ? challengeStart : rqStart;
-                    Date progressEnd = rqEnd == null || challengeEnd.before(rqEnd) ? challengeEnd : rqEnd;
-
-                    float questsPerDayCoefficient = calculateQuestsPerDayCoefficient(recurrence) * recurrence.getTimesADay();
-
-                    int dayCount = (int) TimeUnit.MILLISECONDS.toDays(progressEnd.getTime() - progressStart.getTime()) + 1;
-                    totalCount += Math.ceil(dayCount * questsPerDayCoefficient);
-                }
-                questPersistenceService.countNotRepeating(challenge.getId(), count -> {
-                    totalCount += count;
-                    populateProgress();
-                });
-            });
-        } else {
-            questPersistenceService.countNotDeleted(challenge.getId(), count -> {
-                totalCount = count;
-                populateProgress();
-            });
+        int totalCount = challenge.getQuestsData().size();
+        int completed = 0;
+        for (QuestData questData : challenge.getQuestsData().values()) {
+            if (questData.isComplete()) {
+                completed++;
+            }
         }
 
-    }
+        progressFraction.setText(completed + " / " + totalCount);
 
-    private void populateProgress() {
-        questPersistenceService.countCompletedForChallenge(challenge.getId(), completed -> {
-            progressFraction.setText(completed + " / " + totalCount);
+        int percentDone = Math.round((completed / (float) totalCount) * 100);
 
-            int percentDone = Math.round((completed / (float) totalCount) * 100);
+        progressPercent.setText(String.valueOf(percentDone) + "% done");
 
-            progressPercent.setText(String.valueOf(percentDone) + "% done");
+        int progressColor = R.color.colorAccent;
 
-            int progressColor = R.color.colorAccent;
-
-            Category category = Challenge.getCategory(challenge);
-            if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
-                progressColor = R.color.colorAccentAlternative;
-            }
-            progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(this, progressColor), PorterDuff.Mode.SRC_IN);
-            progress.setProgress(percentDone);
-
-            ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
-            int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
-            animation.setDuration(animationTime);
-            animation.setInterpolator(new DecelerateInterpolator());
-            animation.start();
-        });
-
-    }
-
-    private float calculateQuestsPerDayCoefficient(Recurrence recurrence) {
-        Recurrence.RecurrenceType recurrenceType = recurrence.getRecurrenceType();
-        if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
-            if (recurrence.isFlexible()) {
-                return recurrence.getFlexibleCount() / 31f;
-            } else {
-                return 1f / 31f;
-            }
-        } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
-            if (recurrence.isFlexible()) {
-                return recurrence.getFlexibleCount() / 7f;
-            } else {
-                try {
-                    return new Recur(recurrence.getRrule()).getDayList().size() / 7f;
-                } catch (ParseException e) {
-                    return 0.0f;
-                }
-            }
-        } else {
-            return 1f;
+        Category category = Challenge.getCategory(challenge);
+        if (category == Category.WORK || category == Category.FUN || category == Category.CHORES) {
+            progressColor = R.color.colorAccentAlternative;
         }
-    }
+        progress.getProgressDrawable().setColorFilter(ContextCompat.getColor(this, progressColor), PorterDuff.Mode.SRC_IN);
+        progress.setProgress(percentDone);
 
-    private boolean notAllQuestsAreScheduledForChallenge(Date challengeEnd, LocalDate scheduledQuestsEndDate) {
-        return new LocalDate(challengeEnd, DateTimeZone.UTC).isAfter(scheduledQuestsEndDate);
+        ObjectAnimator animation = ObjectAnimator.ofInt(progress, "progress", 0, percentDone);
+        int animationTime = getResources().getInteger(percentDone > 50 ? android.R.integer.config_longAnimTime : android.R.integer.config_mediumAnimTime);
+        animation.setDuration(animationTime);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
     }
 
     private void showSummaryStats() {
@@ -369,24 +296,21 @@ public class ChallengeActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        questPersistenceService.findNextUncompletedQuestEndDate(challenge.getId(), nextDate ->
-                nextScheduledDate.setText(DateFormatter.formatWithoutYear(nextDate, getString(R.string.unscheduled))));
-
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+                challenge.getNextScheduledDate() == null ? null : new Date(challenge.getNextScheduledDate()),
+                getString(R.string.unscheduled)
+        );
+        nextScheduledDate.setText(nextScheduledDateText);
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 
-        questPersistenceService.findAllCompleted(challenge.getId(), quests -> {
-            int timeSpent = (int) getTotalTimeSpent(quests);
-            totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
-        });
-    }
-
-    private long getTotalTimeSpent(List<Quest> completedQuests) {
-        long totalTime = 0;
-        for (Quest completedQuest : completedQuests) {
-            totalTime += completedQuest.getActualDuration();
+        int timeSpent = 0;
+        for (QuestData questData : challenge.getQuestsData().values()) {
+            if (questData.isComplete()) {
+                timeSpent += questData.getDuration();
+            }
         }
-        return totalTime;
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
     }
 
     private void setupChart() {
