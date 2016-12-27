@@ -68,6 +68,7 @@ import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.NewChallengeEvent;
+import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
@@ -81,6 +82,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -489,6 +491,21 @@ public class App extends MultiDexApplication {
 //        questPersistenceService.save(q, () -> {
         onQuestComplete(q, e.source);
 //        });
+    }
+
+
+    @Subscribe
+    public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
+        BaseQuest bq = e.baseQuest;
+        if (bq instanceof Quest) {
+            Quest q = (Quest) bq;
+            q.setChallengeId(null);
+            questPersistenceService.save(q);
+        } else {
+            RepeatingQuest rq = (RepeatingQuest) bq;
+            rq.setChallengeId(null);
+            repeatingQuestPersistenceService.save(rq);
+        }
     }
 
     @Subscribe

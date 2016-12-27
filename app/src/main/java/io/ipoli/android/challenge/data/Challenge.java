@@ -1,6 +1,10 @@
 package io.ipoli.android.challenge.data;
 
+import android.support.v4.util.Pair;
+
 import com.google.firebase.database.Exclude;
+
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +22,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.RewardProvider;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -63,10 +69,6 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-    }
-
-    public List<PeriodHistory> getPeriodHistories() {
-        return new ArrayList<>();
     }
 
     public Long getCreatedAt() {
@@ -328,5 +330,54 @@ public class Challenge extends PersistedObject implements RewardProvider {
     @Exclude
     public void addRepeatingQuestId(String id) {
         getRepeatingQuestIds().put(id, true);
+    }
+
+    @Exclude
+    public Date getNextScheduledDate(long currentDate) {
+        Date nextDate = null;
+        for (QuestData qd : questsData.values()) {
+            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
+                if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
+                    nextDate = new Date(qd.getScheduledDate());
+                }
+            }
+        }
+        return nextDate;
+    }
+
+    @Exclude
+    public int getTotalTimeSpent() {
+        int timeSpent = 0;
+        for (QuestData questData : getQuestsData().values()) {
+            if (questData.isComplete()) {
+                timeSpent += questData.getDuration();
+            }
+        }
+        return timeSpent;
+    }
+
+    @Exclude
+    public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
+        List<PeriodHistory> result = new ArrayList<>();
+        List<Pair<LocalDate, LocalDate>> pairs =
+                DateUtils.getBoundsFor4WeeksInThePast(currentDate);
+
+        for (Pair<LocalDate, LocalDate> p : pairs) {
+            result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime()));
+        }
+
+        for (QuestData qd : getQuestsData().values()) {
+            if (!qd.isComplete()) {
+                continue;
+            }
+            for (PeriodHistory p : result) {
+                if (DateUtils.isBetween(new Date(qd.getScheduledDate()), new Date(p.getStart()), new Date(p.getEnd()))) {
+                    p.increaseCompletedCount();
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

@@ -5,27 +5,27 @@ package io.ipoli.android.quest.data;
  * on 12/25/16.
  */
 public class PeriodHistory {
-    private Long start;
-    private Long end;
-    private Integer completedCount;
-    private Integer totalCount;
+    private long start;
+    private long end;
+    private int completedCount;
+    private int totalCount;
 
     private String type;
 
-    public void increaseCompletedCount() {
-        completedCount++;
-        totalCount = Math.max(completedCount, totalCount);
-    }
-
-    public PeriodHistory() {
-
-    }
-
-    public PeriodHistory(Long start, Long end, Integer totalCount) {
+    public PeriodHistory(long start, long end, int totalCount) {
         this.start = start;
         this.end = end;
         this.totalCount = totalCount;
         this.completedCount = 0;
+    }
+
+    public PeriodHistory(long start, long end) {
+        this(start, end, -1);
+    }
+
+    public void increaseCompletedCount() {
+        completedCount++;
+        totalCount = Math.max(completedCount, totalCount);
     }
 
     public String getType() {
@@ -36,35 +36,35 @@ public class PeriodHistory {
         this.type = type;
     }
 
-    public Long getStart() {
+    public long getStart() {
         return start;
     }
 
-    public void setStart(Long start) {
+    public void setStart(long start) {
         this.start = start;
     }
 
-    public Long getEnd() {
+    public long getEnd() {
         return end;
     }
 
-    public void setEnd(Long end) {
+    public void setEnd(long end) {
         this.end = end;
     }
 
-    public Integer getCompletedCount() {
+    public int getCompletedCount() {
         return completedCount;
     }
 
-    public void setCompletedCount(Integer completedCount) {
+    public void setCompletedCount(int completedCount) {
         this.completedCount = completedCount;
     }
 
-    public Integer getTotalCount() {
+    public int getTotalCount() {
         return totalCount;
     }
 
-    public void setTotalCount(Integer totalCount) {
+    public void setTotalCount(int totalCount) {
         this.totalCount = totalCount;
     }
 }

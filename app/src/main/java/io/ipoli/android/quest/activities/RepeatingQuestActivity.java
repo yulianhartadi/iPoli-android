@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -49,10 +48,8 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
-import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -104,9 +101,6 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
-
-    @Inject
-    QuestPersistenceService questPersistenceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,16 +176,6 @@ public class RepeatingQuestActivity extends BaseActivity {
         super.onPause();
     }
 
-
-    private Pair<LocalDate, LocalDate> getCurrentInterval() {
-        LocalDate today = LocalDate.now();
-        if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            return new Pair<>(today.dayOfMonth().withMinimumValue(), today.dayOfMonth().withMaximumValue());
-        } else {
-            return new Pair<>(today.dayOfWeek().withMinimumValue(), today.dayOfWeek().withMaximumValue());
-        }
-    }
-
     private void displayRepeatingQuest() {
         name.setText(repeatingQuest.getName());
         if (getSupportActionBar() != null) {
@@ -199,33 +183,24 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
 
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-//        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
         List<PeriodHistory> periodHistories = repeatingQuest.getPeriodHistories(LocalDate.now());
         showFrequencyProgress(category, periodHistories.get(periodHistories.size() - 1));
         displaySummaryStats(category);
         colorLayout(category);
         setupChart(periodHistories);
-//        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), interval.first, interval.second, count -> {
-//
-//        });
     }
 
     private void displaySummaryStats(Category category) {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        int timeSpent = 0;
-        for (QuestData questData : repeatingQuest.getQuestsData().values()) {
-            if (questData.isComplete()) {
-                timeSpent += questData.getDuration();
-            }
-        }
+        int timeSpent = repeatingQuest.getTotalTimeSpent();
 
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
-        Date scheduledDate = repeatingQuest.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        Date scheduledDate = repeatingQuest.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()).getTime());
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
                 scheduledDate,

@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
 import com.google.firebase.database.Exclude;
@@ -165,10 +164,10 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
 
     @Exclude
-    public Date getNextScheduledDate(Date currentDate) {
+    public Date getNextScheduledDate(long currentDate) {
         Date nextDate = null;
         for (QuestData qd : questsData.values()) {
-            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate.getTime()) {
+            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
                 if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
                     nextDate = new Date(qd.getScheduledDate());
                 }
@@ -414,8 +413,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         List<PeriodHistory> result = new ArrayList<>();
         int frequency = getFrequency();
         List<Pair<LocalDate, LocalDate>> pairs = recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY ?
-                getBoundsFor4MonthsInThePast(currentDate) :
-                getBoundsFor4WeeksInThePast(currentDate);
+                DateUtils.getBoundsFor4MonthsInThePast(currentDate) :
+                DateUtils.getBoundsFor4WeeksInThePast(currentDate);
 
         for (Pair<LocalDate, LocalDate> p : pairs) {
             result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime(), frequency));
@@ -434,36 +433,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
 
         return result;
-    }
-
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
-        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < 3; i++) {
-            weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            weekBounds.add(new Pair<>(weekStart, weekEnd));
-        }
-        return weekBounds;
-    }
-
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
-        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
-        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
-        monthBounds.add(new Pair<>(monthStart, monthEnd));
-        for (int i = 0; i < 3; i++) {
-            monthStart = monthStart.plusMonths(1);
-            monthEnd = monthStart.dayOfMonth().withMaximumValue();
-            monthBounds.add(new Pair<>(monthStart, monthEnd));
-        }
-        return monthBounds;
     }
 
     public Map<String, QuestData> getQuestsData() {
@@ -490,5 +459,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @Exclude
     public void setPreviousChallengeId(String previousChallengeId) {
         this.previousChallengeId = previousChallengeId;
+    }
+
+    @Exclude
+    public int getTotalTimeSpent() {
+        int timeSpent = 0;
+        for (QuestData questData : getQuestsData().values()) {
+            if (questData.isComplete()) {
+                timeSpent += questData.getDuration();
+            }
+        }
+        return timeSpent;
     }
 }

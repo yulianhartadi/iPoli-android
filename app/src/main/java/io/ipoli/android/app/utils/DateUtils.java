@@ -153,4 +153,34 @@ public class DateUtils {
         }
         return weekBounds;
     }
+
+    @NonNull
+    public static List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
+        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
+        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
+        monthBounds.add(new Pair<>(monthStart, monthEnd));
+        for (int i = 0; i < 3; i++) {
+            monthStart = monthStart.plusMonths(1);
+            monthEnd = monthStart.dayOfMonth().withMaximumValue();
+            monthBounds.add(new Pair<>(monthStart, monthEnd));
+        }
+        return monthBounds;
+    }
+
+    @NonNull
+    public static List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
+        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
+        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(weekStart, weekEnd));
+        for (int i = 0; i < 3; i++) {
+            weekStart = weekStart.plusWeeks(1);
+            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekBounds.add(new Pair<>(weekStart, weekEnd));
+        }
+        return weekBounds;
+    }
 }

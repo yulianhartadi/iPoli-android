@@ -9,7 +9,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,7 +31,6 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
@@ -53,16 +51,13 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.challenge.events.RemoveBaseQuestFromChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
-import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 
@@ -125,12 +120,6 @@ public class ChallengeActivity extends BaseActivity {
 
     @Inject
     Bus eventBus;
-
-    @Inject
-    QuestPersistenceService questPersistenceService;
-
-    @Inject
-    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
     ChallengePersistenceService challengePersistenceService;
@@ -240,8 +229,6 @@ public class ChallengeActivity extends BaseActivity {
     @Override
     protected void onStop() {
         challengePersistenceService.removeAllListeners();
-        questPersistenceService.removeAllListeners();
-        repeatingQuestPersistenceService.removeAllListeners();
         super.onStop();
     }
 
@@ -295,20 +282,15 @@ public class ChallengeActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-//        String nextScheduledDateText = DateFormatter.formatWithoutYear(
-//                challenge.getNextScheduledDate() == null ? null : new Date(challenge.getNextScheduledDate()),
-//                getString(R.string.unscheduled)
-//        );
-//        nextScheduledDate.setText(nextScheduledDateText);
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+                challenge.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()).getTime()),
+                getString(R.string.unscheduled)
+        );
+        nextScheduledDate.setText(nextScheduledDateText);
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 
-        int timeSpent = 0;
-        for (QuestData questData : challenge.getQuestsData().values()) {
-            if (questData.isComplete()) {
-                timeSpent += questData.getDuration();
-            }
-        }
+        int timeSpent = challenge.getTotalTimeSpent();
         totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
     }
 
@@ -326,6 +308,7 @@ public class ChallengeActivity extends BaseActivity {
 
         YAxis leftAxis = history.getAxisLeft();
         leftAxis.setAxisMinValue(0f);
+        leftAxis.setSpaceTop(0);
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
 
@@ -339,24 +322,24 @@ public class ChallengeActivity extends BaseActivity {
         xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
-        questPersistenceService.countCompletedByWeek(challenge.getId(), Constants.DEFAULT_BAR_COUNT, counts -> {
-            List<BarEntry> yValues = new ArrayList<>();
-            List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), Constants.DEFAULT_BAR_COUNT);
-            for (int i = 0; i < counts.size(); i++) {
-                yValues.add(new BarEntry(counts.get(i), i));
-            }
+        List<PeriodHistory> periodHistories = challenge.getPeriodHistories(LocalDate.now());
 
-            BarDataSet dataSet = new BarDataSet(yValues, "");
-            dataSet.setColors(getColors());
-            dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
+        List<BarEntry> yValues = new ArrayList<>();
+        for (int i = 0; i < periodHistories.size(); i++) {
+            PeriodHistory p = periodHistories.get(i);
+            yValues.add(new BarEntry(p.getCompletedCount(), i));
+        }
 
-            List<String> xValues = new ArrayList<>();
-            xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
-            xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
-            xValues.add("last week");
-            xValues.add("this week");
-            setHistoryData(dataSet, xValues);
-        });
+        BarDataSet dataSet = new BarDataSet(yValues, "");
+        dataSet.setColors(getColors());
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
+
+        List<String> xValues = new ArrayList<>();
+        xValues.add(getWeekRangeText(periodHistories.get(0).getStart(), periodHistories.get(0).getEnd()));
+        xValues.add(getWeekRangeText(periodHistories.get(1).getStart(), periodHistories.get(1).getEnd()));
+        xValues.add("last week");
+        xValues.add("this week");
+        setHistoryData(dataSet, xValues);
 
     }
 
@@ -384,6 +367,10 @@ public class ChallengeActivity extends BaseActivity {
         return colors;
     }
 
+    private String getWeekRangeText(long weekStart, long weekEnd) {
+        return getWeekRangeText(new LocalDate(weekStart), new LocalDate(weekEnd));
+    }
+
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
         if (weekStart.getMonthOfYear() == weekEnd.getMonthOfYear()) {
             return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
@@ -406,19 +393,5 @@ public class ChallengeActivity extends BaseActivity {
         Intent intent = new Intent(this, PickChallengeQuestsActivity.class);
         intent.putExtra(Constants.CHALLENGE_ID_EXTRA_KEY, challengeId);
         startActivity(intent);
-    }
-
-    @Subscribe
-    public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
-        BaseQuest bq = e.baseQuest;
-        if (bq instanceof Quest) {
-            Quest q = (Quest) bq;
-            q.setChallengeId(null);
-            questPersistenceService.save(q);
-        } else {
-            RepeatingQuest rq = (RepeatingQuest) bq;
-            rq.setChallengeId(null);
-            repeatingQuestPersistenceService.save(rq);
-        }
     }
 }
