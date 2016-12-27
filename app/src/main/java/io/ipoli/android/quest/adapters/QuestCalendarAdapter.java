@@ -119,6 +119,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         CheckBox checkBox = createCheckBox(q, context);
         detailsRoot.addView(checkBox, 0);
 
+        View moreMenu = v.findViewById(R.id.quest_more_menu);
+
         if (!q.isPlaceholder()) {
             v.setOnClickListener(view -> {
 
@@ -149,8 +151,12 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
                     eventBus.post(new UndoCompletedQuestRequestEvent(q));
                 }
             });
+
+            moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_DAY_VIEW));
+
         } else {
             checkBox.setVisibility(View.GONE);
+            moreMenu.setVisibility(View.GONE);
         }
 
         if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
@@ -162,13 +168,10 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
             name.setEllipsize(TextUtils.TruncateAt.END);
         }
 
-
         v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
 
-        View moreMenu = v.findViewById(R.id.quest_more_menu);
-        moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_DAY_VIEW));
 
         return v;
     }

@@ -182,7 +182,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuest.getId());
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuest.getId());
         listenForSingleCountChange(query, listener, data -> data
                 .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
     }

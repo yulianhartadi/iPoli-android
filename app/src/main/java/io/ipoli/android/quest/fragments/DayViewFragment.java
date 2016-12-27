@@ -183,10 +183,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         } else if (currentDateIsInTheFuture()) {
 
             repeatingQuestPersistenceService.listenForNonFlexibleNonAllDayActiveRepeatingQuests(repeatingQuests -> {
-                getPlaceholderQuestsFromRepeatingQuests(repeatingQuests, quests -> {
-                    futurePlaceholderQuests = quests;
-                    questsForFutureUpdated();
-                });
+                futurePlaceholderQuests = getPlaceholderQuestsFromRepeatingQuests(repeatingQuests);
+                questsForFutureUpdated();
             });
 
             questPersistenceService.listenForAllNonAllDayIncompleteForDate(currentDate, quests -> {
@@ -204,26 +202,21 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return currentDate.isBefore(new LocalDate());
     }
 
-    private void getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests, PlaceholderQuestsListener listener) {
+    private List<Quest> getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
         List<Quest> res = new ArrayList<>();
         for (int i = 0; i < repeatingQuests.size(); i++) {
             RepeatingQuest rq = repeatingQuests.get(i);
-            boolean isLast = i == repeatingQuests.size() - 1;
-            questPersistenceService.countAllForRepeatingQuest(rq, currentDate, currentDate, createdQuestsCount -> {
-                if (createdQuestsCount == 0) {
-                    List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
-                            DateUtils.toStartOfDayUTC(currentDate),
-                            DateUtils.toStartOfDayUTC(currentDate));
-                    res.addAll(questsToCreate);
+            if (!rq.isScheduledForDate(currentDate)) {
+                List<Quest> questsToCreate = repeatingQuestScheduler.scheduleForDateRange(rq,
+                        DateUtils.toStartOfDayUTC(currentDate),
+                        DateUtils.toStartOfDayUTC(currentDate));
+                for (Quest quest : questsToCreate) {
+                    quest.setPlaceholder(true);
                 }
-                if (isLast) {
-                    for (Quest q : res) {
-                        q.setPlaceholder(true);
-                    }
-                    listener.onPlaceholderQuestsCreated(res);
-                }
-            });
+                res.addAll(questsToCreate);
+            }
         }
+        return res;
     }
 
     private void questsForFutureUpdated() {

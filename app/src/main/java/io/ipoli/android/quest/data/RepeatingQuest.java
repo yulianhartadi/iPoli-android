@@ -471,4 +471,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
         return timeSpent;
     }
+
+    @Exclude
+    public boolean isScheduledForDate(LocalDate date) {
+        for (String dateString : getScheduledPeriodEndDates().keySet()) {
+            LocalDate periodEnd = new LocalDate(Long.valueOf(dateString));
+
+            if (date.isBefore(periodEnd) || date.equals(periodEnd)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
