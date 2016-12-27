@@ -55,7 +55,6 @@ import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
@@ -290,17 +289,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     @Subscribe
-    public void onCompletePlaceholderRequest(CompletePlaceholderRequestEvent e) {
-        Quest quest = savePlaceholderQuest(e.quest);
-        eventBus.post(new CompleteQuestRequestEvent(quest, e.source));
-    }
-
-    @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         Quest quest = e.viewModel.getQuest();
-        if (quest.isPlaceholder()) {
-            quest = savePlaceholderQuest(quest);
-        }
         eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.CALENDAR_UNSCHEDULED_SECTION));
         calendarDayView.smoothScrollToTime(Time.now());
     }
@@ -355,7 +345,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             return;
         }
         Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
-                - Integer.compare(q1.getDuration(), q2.getDuration()));
+                -Integer.compare(q1.getDuration(), q2.getDuration()));
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
@@ -464,10 +454,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onQuestAddedToCalendar(QuestAddedToCalendarEvent e) {
         QuestCalendarViewModel qvm = e.questCalendarViewModel;
         Quest q = qvm.getQuest();
-        if (q.isPlaceholder()) {
-            q.setId(savePlaceholderQuest(q).getId());
-        }
-
         q.setStartMinute(qvm.getStartMinute());
         saveQuest(q);
     }
@@ -509,9 +495,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onShowQuestEvent(ShowQuestEvent e) {
         Quest quest = e.quest;
-        if (quest.isPlaceholder()) {
-            quest = savePlaceholderQuest(quest);
-        }
         Intent i = new Intent(getActivity(), QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
         startActivity(i);
@@ -520,12 +503,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onScrollToTime(ScrollToTimeEvent e) {
         calendarDayView.smoothScrollToTime(e.time);
-    }
-
-    private Quest savePlaceholderQuest(Quest quest) {
-//        LocalDate startOfWeek = currentDate.dayOfWeek().withMinimumValue();
-//        return persistentRepeatingQuestScheduler.schedulePlaceholderQuest(quest, quest.getRepeatingQuest(), startOfWeek);
-        return null;
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {

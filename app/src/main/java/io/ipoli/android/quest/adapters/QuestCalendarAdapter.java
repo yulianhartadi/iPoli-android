@@ -29,7 +29,6 @@ import io.ipoli.android.app.ui.calendar.BaseCalendarAdapter;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompletePlaceholderRequestEvent;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
@@ -120,39 +119,39 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         CheckBox checkBox = createCheckBox(q, context);
         detailsRoot.addView(checkBox, 0);
 
-        v.setOnClickListener(view -> {
+        if (!q.isPlaceholder()) {
+            v.setOnClickListener(view -> {
 
-            if (!Quest.isCompleted(q)) {
-                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
-            } else {
-                Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        v.setOnLongClickListener(view -> {
-            eventBus.post(new EditCalendarEventEvent(view, q));
-            return true;
-        });
-
-        if (Quest.isCompleted(q)) {
-            checkBox.setChecked(true);
-        }
-
-        checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if (checked) {
-                if (q.isPlaceholder()) {
-                    eventBus.post(new CompletePlaceholderRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                if (!Quest.isCompleted(q)) {
+                    eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
                 } else {
-                    eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                    Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                if (q.isScheduledForThePast()) {
-                    removeEvent(calendarEvent);
-                    eventBus.post(new UndoQuestForThePast(q));
-                }
-                eventBus.post(new UndoCompletedQuestRequestEvent(q));
+            });
+
+            v.setOnLongClickListener(view -> {
+                eventBus.post(new EditCalendarEventEvent(view, q));
+                return true;
+            });
+
+            if (Quest.isCompleted(q)) {
+                checkBox.setChecked(true);
             }
-        });
+
+            checkBox.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (checked) {
+                    eventBus.post(new CompleteQuestRequestEvent(q, EventSource.CALENDAR_DAY_VIEW));
+                } else {
+                    if (q.isScheduledForThePast()) {
+                        removeEvent(calendarEvent);
+                        eventBus.post(new UndoQuestForThePast(q));
+                    }
+                    eventBus.post(new UndoCompletedQuestRequestEvent(q));
+                }
+            });
+        } else {
+            checkBox.setVisibility(View.GONE);
+        }
 
         if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
             adjustQuestDetailsView(v);
