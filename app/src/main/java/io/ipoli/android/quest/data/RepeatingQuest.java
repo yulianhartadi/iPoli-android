@@ -2,7 +2,12 @@ package io.ipoli.android.quest.data;
 
 import com.google.firebase.database.Exclude;
 
+import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,10 +16,16 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
+
+import static io.ipoli.android.app.utils.DateUtils.getTodayAtMidnight;
+import static io.ipoli.android.app.utils.DateUtils.isBetween;
+import static io.ipoli.android.app.utils.DateUtils.isSameDay;
+import static io.ipoli.android.app.utils.DateUtils.isTodayUTC;
+import static io.ipoli.android.app.utils.DateUtils.nowUTC;
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -54,11 +65,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Map<String, Boolean> scheduledPeriodEndDates;
 
     private Long totalMinutesSpent;
-    private Long streak;
-    private Long nextScheduledDate;
-
-    // true - quest is complete, false - not complete
-    private Map<String, Boolean> scheduledDates;
 
     // In chronological order
     private List<PeriodHistory> periodHistories;
@@ -83,36 +89,102 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.totalMinutesSpent = totalMinutesSpent;
     }
 
-    public Long getStreak() {
-        return streak;
-    }
-
-    public void setStreak(Long streak) {
-        this.streak = streak;
-    }
-
-    public Long getNextScheduledDate() {
-        return nextScheduledDate;
-    }
-
-    public void setNextScheduledDate(Long nextScheduledDate) {
-        this.nextScheduledDate = nextScheduledDate;
-    }
-
-    public Map<String, Boolean> getScheduledDates() {
-        if (scheduledDates == null) {
-            scheduledDates = new HashMap<>();
+    @Exclude
+    public int getStreak() {
+        Recurrence recurrence = getRecurrence();
+        List<QuestData> questsData = new ArrayList<>(getQuestsData().values());
+        Collections.sort(questsData, (q1, q2) -> -Long.compare(q1.getOriginalScheduledDate(), q2.getOriginalScheduledDate()));
+        if (isFlexible()) {
+            return getFlexibleStreak(recurrence.getRecurrenceType(), questsData);
+        } else {
+            return getFixedStreak(questsData);
         }
-        return scheduledDates;
-    }
-
-    public void setScheduledDates(Map<String, Boolean> scheduledDates) {
-        this.scheduledDates = scheduledDates;
     }
 
     @Exclude
-    public void addScheduledDate(long scheduledDate, boolean isComplete) {
-        getScheduledDates().put(String.valueOf(scheduledDate), isComplete);
+    public int getFrequency() {
+        Recurrence recurrence = getRecurrence();
+        if (recurrence.isFlexible()) {
+            return recurrence.getFlexibleCount();
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
+            return 7;
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return 1;
+        }
+        try {
+            Recur recur = new Recur(recurrence.getRrule());
+            return recur.getDayList().size();
+        } catch (ParseException e) {
+            return 0;
+        }
+    }
+
+    private int getFixedStreak(List<QuestData> questsData) {
+        int streak = 0;
+        for (QuestData qd : questsData) {
+            if (new Date(qd.getOriginalScheduledDate()).after(getTodayAtMidnight().getTime())) {
+                continue;
+            }
+
+            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+                continue;
+            }
+
+            if (qd.isComplete() && isSameDay(new Date(qd.getScheduledDate()), new Date(qd.getOriginalScheduledDate()))) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        return streak;
+    }
+
+    private int getFlexibleStreak(Recurrence.RecurrenceType recurrenceType, List<QuestData> questsData) {
+        int streak = 0;
+        for (QuestData qd : questsData) {
+
+            if (new Date(qd.getOriginalScheduledDate()).after(getTodayAtMidnight().getTime())) {
+                continue;
+            }
+
+            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+                continue;
+            }
+
+            LocalDate periodStart = null;
+            LocalDate periodEnd = null;
+            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfMonth().withMinimumValue();
+                periodEnd = periodStart.dayOfMonth().withMaximumValue();
+            } else {
+                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfWeek().withMinimumValue();
+                periodEnd = periodStart.dayOfWeek().withMaximumValue();
+            }
+
+            if (qd.isComplete()
+                    && isBetween(new Date(qd.getScheduledDate()), toStartOfDayUTC(periodStart), toStartOfDayUTC(periodEnd))) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        return streak;
+    }
+
+
+    @Exclude
+    public Date getNextScheduledDate(Date currentDate) {
+        Date nextDate = null;
+        for (QuestData qd : questsData.values()) {
+            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate.getTime()) {
+                if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
+                    nextDate = new Date(qd.getScheduledDate());
+                }
+            }
+        }
+        return nextDate;
     }
 
     public void setDuration(Integer duration) {
@@ -155,12 +227,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public RepeatingQuest(String rawText) {
         this.rawText = rawText;
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
+        setCreatedAt(nowUTC().getTime());
+        setUpdatedAt(nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.streak = 0L;
         this.totalMinutesSpent = 0L;
     }
 

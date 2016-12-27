@@ -97,7 +97,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date.minusDays(1)).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isRepeatingQuest() && q.getCompletedAtDate() == null && q.getEnd() != null));
+        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isFromRepeatingQuest() && q.getCompletedAtDate() == null && q.getEnd() != null));
     }
 
     @Override
@@ -331,7 +331,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && !q.isRepeatingQuest()));
+        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && !q.isFromRepeatingQuest()));
     }
 
     @Override
@@ -339,7 +339,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         listenForListChange(getCollectionReference(), listener, data -> data
                 .filter(q -> !challengeId.equals(q.getChallengeId()))
                 .filter(q -> q.getCompletedAtDate() == null)
-                .filter(q -> !q.isRepeatingQuest())
+                .filter(q -> !q.isFromRepeatingQuest())
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
     }
 
@@ -390,7 +390,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> !q.isRepeatingQuest()));
+        listenForSingleCountChange(query, listener, data -> data.filter(q -> !q.isFromRepeatingQuest()));
     }
 
     @Override
@@ -538,12 +538,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void saveNewQuest(Quest quest) {
         Map<String, Object> data = new HashMap<>();
-        populateQuestData(quest, data);
+        populateNewQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
 
     @Override
-    public void populateQuestData(Quest quest, Map<String, Object> data) {
+    public void populateNewQuestData(Quest quest, Map<String, Object> data) {
         DatabaseReference questRef = getCollectionReference().push();
         quest.setId(questRef.getKey());
         if (shouldMoveToInbox(quest)) {
@@ -577,7 +577,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);
         }
 
-        if (!StringUtils.isEmpty(quest.getChallengeId())) {
+        if (quest.isFromChallenge()) {
             data.put("/challenges/" + quest.getChallengeId() + "/questsData/" + quest.getId(), null);
             data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
         }
@@ -638,6 +638,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             String challengeId = quest.getChallengeId();
             data.put("/challenges/" + challengeId + "/questsData/" + quest.getId(), new QuestData(quest));
             data.put("/challenges/" + challengeId + "/challengeQuests/" + quest.getId(), quest);
+        }
+
+        if (quest.isFromRepeatingQuest()) {
+            String repeatingQuestId = quest.getRepeatingQuestId();
+            data.put("/repeatingQuests/" + repeatingQuestId + "/questsData/" + quest.getId(), new QuestData(quest));
         }
 
         quest.setPreviousScheduledDate(quest.getEnd());

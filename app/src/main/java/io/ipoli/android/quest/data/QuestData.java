@@ -7,6 +7,8 @@ package io.ipoli.android.quest.data;
 public class QuestData {
     private boolean isComplete;
     private Integer duration;
+    private Long scheduledDate;
+    private Long originalScheduledDate;
 
     public QuestData() {
 
@@ -15,6 +17,8 @@ public class QuestData {
     public QuestData(Quest quest) {
         isComplete = Quest.isCompleted(quest);
         duration = quest.getActualDuration();
+        scheduledDate = quest.getEnd();
+        originalScheduledDate = quest.getOriginalStart();
     }
 
     public boolean isComplete() {
@@ -31,5 +35,21 @@ public class QuestData {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public Long getScheduledDate() {
+        return scheduledDate;
+    }
+
+    public void setScheduledDate(Long scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
+
+    public void setOriginalScheduledDate(Long originalScheduledDate) {
+        this.originalScheduledDate = originalScheduledDate;
+    }
+
+    public Long getOriginalScheduledDate() {
+        return originalScheduledDate;
     }
 }

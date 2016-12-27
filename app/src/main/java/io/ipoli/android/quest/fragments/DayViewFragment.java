@@ -355,7 +355,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             return;
         }
         Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
-                1 - Integer.compare(q1.getDuration(), q2.getDuration()));
+                - Integer.compare(q1.getDuration(), q2.getDuration()));
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
@@ -369,7 +369,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         Map<String, List<Quest>> map = new HashMap<>();
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
-            if (!q.isRepeatingQuest()) {
+            if (!q.isFromRepeatingQuest()) {
                 unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
 
                 proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);

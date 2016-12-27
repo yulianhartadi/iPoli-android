@@ -52,7 +52,7 @@ public class UnscheduledQuestViewModel {
     }
 
     public boolean isRepeating() {
-        return quest.isRepeatingQuest();
+        return quest.isFromRepeatingQuest();
 //        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 

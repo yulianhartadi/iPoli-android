@@ -29,9 +29,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +44,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
@@ -221,22 +220,23 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort((int) timeSpent, "") : "0");
 
-        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(getFrequency(), repeatingQuest.getRecurrence()));
+        frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
+
+        Date scheduledDate = repeatingQuest.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                repeatingQuest.getNextScheduledDate() == null ? null : new Date(repeatingQuest.getNextScheduledDate()),
+                scheduledDate,
                 getString(R.string.unscheduled)
         );
         nextScheduledDate.setText(nextScheduledDateText);
-
-        setCurrentStreak();
+        streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }
 
     private void showFrequencyProgress(Category category, long completed) {
         LayoutInflater inflater = LayoutInflater.from(this);
         progressContainer.removeAllViews();
 
-        int frequency = getFrequency();
+        int frequency = repeatingQuest.getFrequency();
         if (frequency > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
             progressText.setText(completed + " completed this month");
@@ -284,7 +284,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         YAxis leftAxis = history.getAxisLeft();
         leftAxis.setAxisMinValue(0f);
-        leftAxis.setAxisMaxValue(getFrequency());
+        leftAxis.setAxisMaxValue(repeatingQuest.getFrequency());
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
 
@@ -431,76 +431,5 @@ public class RepeatingQuestActivity extends BaseActivity {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
         return colors;
-    }
-
-    private int getFrequency() {
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.isFlexible()) {
-            return recurrence.getFlexibleCount();
-        }
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
-            return 7;
-        }
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            return 1;
-        }
-        try {
-            Recur recur = new Recur(recurrence.getRrule());
-            return recur.getDayList().size();
-        } catch (ParseException e) {
-            return 0;
-        }
-    }
-
-    private void setCurrentStreak() {
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            getMonthlyStreak(streak -> streakText.setText(String.valueOf(streak)));
-        } else {
-            getWeeklyStreak(streak -> streakText.setText(String.valueOf(streak)));
-        }
-
-    }
-
-    private void getMonthlyStreak(StreakListener streakListener) {
-        LocalDate monthStart = LocalDate.now().dayOfMonth().withMinimumValue();
-        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-        countMonthlyStreak(monthStart, monthEnd, 0, streakListener);
-    }
-
-    private void getWeeklyStreak(StreakListener streakListener) {
-        LocalDate weekStart = LocalDate.now().dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-        countWeeklyStreak(weekStart, weekEnd, 0, streakListener);
-    }
-
-    private void countMonthlyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
-        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
-            if (count < getFrequency()) {
-                long streakResult = streak == 0 ? streak + count : streak;
-                listener.onStreakCounted(streakResult);
-            } else {
-                LocalDate monthStart = start.minusMonths(1);
-                LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-                countMonthlyStreak(monthStart, monthEnd, streak + count, listener);
-            }
-        });
-    }
-
-    private void countWeeklyStreak(LocalDate start, LocalDate end, long streak, StreakListener listener) {
-        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), start, end, count -> {
-            if (count < getFrequency()) {
-                long streakResult = streak == 0 ? streak + count : streak;
-                listener.onStreakCounted(streakResult);
-            } else {
-                LocalDate weekStart = start.minusWeeks(1);
-                LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-                countWeeklyStreak(weekStart, weekEnd, streak + count, listener);
-            }
-        });
-    }
-
-    interface StreakListener {
-        void onStreakCounted(long streak);
     }
 }

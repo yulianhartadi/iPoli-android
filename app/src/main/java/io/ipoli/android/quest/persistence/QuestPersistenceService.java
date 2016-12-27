@@ -87,7 +87,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void updateNewQuest(Quest quest);
 
-    void populateQuestData(Quest quest, Map<String, Object> data);
+    void populateNewQuestData(Quest quest, Map<String, Object> data);
 
     void populateDeleteQuestData(Quest quest, Map<String, Object> data);
 }

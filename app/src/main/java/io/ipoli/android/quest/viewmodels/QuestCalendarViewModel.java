@@ -70,7 +70,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isRepeating() {
-        return quest.isRepeatingQuest();
+        return quest.isFromRepeatingQuest();
 //        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 

@@ -27,7 +27,7 @@ public class DayQuest {
         setCategory(quest.getCategory());
         setStartMinute(quest.getStartMinute());
         setDuration(quest.getDuration());
-        setIsFromRepeatingQuest(quest.isRepeatingQuest());
+        setIsFromRepeatingQuest(quest.isFromRepeatingQuest());
         setIsForChallenge(!StringUtils.isEmpty(quest.getChallengeId()));
         setCompletedAt(quest.getCompletedAt());
         setPriority(quest.getPriority());

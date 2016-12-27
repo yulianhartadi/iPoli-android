@@ -132,6 +132,13 @@ public class DateUtils {
         return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
     }
 
+    public static boolean isBetween(Date date, Date start, Date end) {
+        if (date == null || start == null || end == null) {
+            return false;
+        }
+        return !date.before(start) && !date.after(end);
+    }
+
     @NonNull
     public static List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
         LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();

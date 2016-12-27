@@ -433,8 +433,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 //    }
 
     @Exclude
-    public boolean isRepeatingQuest() {
+    public boolean isFromRepeatingQuest() {
         return !StringUtils.isEmpty(getRepeatingQuestId());
+    }
+
+    @Exclude
+    public boolean isFromChallenge() {
+        return !StringUtils.isEmpty(getChallengeId());
     }
 
     public SourceMapping getSourceMapping() {

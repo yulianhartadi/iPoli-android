@@ -79,7 +79,7 @@ public class QuestViewModel {
     }
 
     public boolean isRecurrent() {
-        return quest.isRepeatingQuest();
+        return quest.isFromRepeatingQuest();
     }
 
     public boolean hasTimesADay() {

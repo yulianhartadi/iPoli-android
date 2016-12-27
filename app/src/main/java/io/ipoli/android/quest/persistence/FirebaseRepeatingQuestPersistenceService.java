@@ -130,16 +130,12 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         repeatingQuest.setId(rqRef.getKey());
         for (Quest q : quests) {
             q.setRepeatingQuestId(rqRef.getKey());
-            questPersistenceService.populateQuestData(q, data);
+            questPersistenceService.populateNewQuestData(q, data);
             repeatingQuest.addQuestData(q.getId(), new QuestData(q));
-            repeatingQuest.addScheduledDate(q.getEnd(), false);
         }
         if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
             data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), true);
             data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeRepeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
-        }
-        if (!quests.isEmpty()) {
-            repeatingQuest.setNextScheduledDate(quests.get(0).getEnd());
         }
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
         getPlayerReference().updateChildren(data);
@@ -189,7 +185,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         }
 
         for (Quest quest : questsToCreate) {
-            questPersistenceService.populateQuestData(quest, data);
+            questPersistenceService.populateNewQuestData(quest, data);
             repeatingQuest.addQuestData(quest.getId(), new QuestData(quest));
         }
 
