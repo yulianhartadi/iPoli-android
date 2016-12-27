@@ -14,13 +14,13 @@ import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -124,7 +124,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(toStartOfDayUTC(currentDate));
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
         listenForListChange(query, listener);
     }
@@ -150,20 +150,18 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         }, data -> data.filter(q -> !Quest.isCompleted(q)));
     }
 
-
     @Override
     public void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Date startDate = toStartOfDay(currentDate);
-        Date endDate = toStartOfDay(currentDate.plusDays(1));
-        DatabaseReference collectionReference = getCollectionReference();
-        Query completedAt = collectionReference.orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
-        listenForListChange(completedAt, listener);
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
+        Query query = getPlayerReference().child("dayQuests").child(dateString);
+        listenForListChange(query, listener, data -> data.filter(Quest::isCompleted));
     }
 
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(currentDate).getTime());
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null), (q1, q2) -> {
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
+        Query query = getPlayerReference().child("dayQuests").child(dateString);
+        listenForListChange(query, listener, data -> data.filter(q -> !Quest.isCompleted(q)), (q1, q2) -> {
             int q1Start = q1.getStartMinute();
             if (q1Start < 0) {
                 return -1;
@@ -570,7 +568,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
         data.put("/inboxQuests/" + quest.getId(), null);
-        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(quest.getEndDate());
         data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
 
         for (Reminder reminder : quest.getReminders()) {
@@ -659,7 +657,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void addDayQuest(Quest quest, Map<String, Object> data) {
-        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(quest.getEndDate());
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(quest.getEndDate());
         data.put("/dayQuests/" + dateString + "/" + quest.getId(), quest);
     }
 
@@ -674,7 +672,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private void removeOldScheduledDate(Quest quest, Map<String, Object> data, long lastScheduledDate) {
-        String dateString = new SimpleDateFormat("dd-MM-yyyy").format(new Date(lastScheduledDate));
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(new Date(lastScheduledDate));
         data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
     }
 
