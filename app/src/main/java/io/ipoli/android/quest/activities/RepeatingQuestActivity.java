@@ -48,6 +48,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -198,13 +199,15 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
 
         Category category = RepeatingQuest.getCategory(repeatingQuest);
-        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
-        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), interval.first, interval.second, count -> {
-            showFrequencyProgress(category, count);
-            displaySummaryStats(category);
-            colorLayout(category);
-            setupChart();
-        });
+//        Pair<LocalDate, LocalDate> interval = getCurrentInterval();
+        List<PeriodHistory> periodHistories = repeatingQuest.getPeriodHistories(LocalDate.now());
+        showFrequencyProgress(category, periodHistories.get(periodHistories.size() - 1));
+        displaySummaryStats(category);
+        colorLayout(category);
+        setupChart(periodHistories);
+//        questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), interval.first, interval.second, count -> {
+//
+//        });
     }
 
     private void displaySummaryStats(Category category) {
@@ -232,19 +235,20 @@ public class RepeatingQuestActivity extends BaseActivity {
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }
 
-    private void showFrequencyProgress(Category category, long completed) {
+    private void showFrequencyProgress(Category category, PeriodHistory currentWeekHistory) {
         LayoutInflater inflater = LayoutInflater.from(this);
         progressContainer.removeAllViews();
 
-        int frequency = repeatingQuest.getFrequency();
-        if (frequency > 7) {
+        int totalCount = currentWeekHistory.getTotalCount();
+        int completedCount = currentWeekHistory.getCompletedCount();
+        if (totalCount > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
-            progressText.setText(completed + " completed this month");
+            progressText.setText(completedCount + " completed this month");
             progressContainer.addView(progressText);
             return;
         }
 
-        long incomplete = frequency - completed;
+        long incomplete = totalCount - completedCount;
 
         int progressColor = R.color.colorAccent;
 
@@ -252,7 +256,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             progressColor = R.color.colorAccentAlternative;
         }
 
-        for (int i = 1; i <= completed; i++) {
+        for (int i = 1; i <= completedCount; i++) {
             View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_indicator_empty, progressContainer, false);
             GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
 
@@ -270,7 +274,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         }
     }
 
-    private void setupChart() {
+    private void setupChart(List<PeriodHistory> periodHistories) {
         history.setDescription("");
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
@@ -298,7 +302,8 @@ public class RepeatingQuestActivity extends BaseActivity {
         xLabels.setYOffset(5);
         history.getLegend().setEnabled(false);
 
-        setHistoryData();
+        List<String> xValues = getXValues(periodHistories);
+        setHistoryData(periodHistories, xValues);
     }
 
     private void colorLayout(Category category) {
@@ -309,99 +314,25 @@ public class RepeatingQuestActivity extends BaseActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
-    private void setHistoryData() {
+    private List<String> getXValues(List<PeriodHistory> periodHistories) {
+        List<String> xValues = new ArrayList<>();
         if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
-            setMonthlyHistoryData();
+            xValues.add(getMonthText(periodHistories.get(0).getStart()));
+            xValues.add(getMonthText(periodHistories.get(1).getStart()));
+            xValues.add(getMonthText(periodHistories.get(2).getStart()));
+            xValues.add("this month");
         } else {
-            setWeeklyHistoryData();
+            xValues.add(getWeekRangeText(periodHistories.get(0).getStart(), periodHistories.get(0).getEnd()));
+            xValues.add(getWeekRangeText(periodHistories.get(1).getStart(), periodHistories.get(1).getEnd()));
+            xValues.add("last week");
+            xValues.add("this week");
         }
-    }
-
-    private void setMonthlyHistoryData() {
-        List<BarEntry> yValues = new ArrayList<>();
-        List<Pair<LocalDate, LocalDate>> monthPairs = getBoundsFor4MonthsInThePast(LocalDate.now());
-        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            Pair<LocalDate, LocalDate> monthPair = monthPairs.get(i);
-            int finalI = i;
-            questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), monthPair.first, monthPair.second, count -> {
-                yValues.add(new BarEntry(count, finalI));
-                if (yValues.size() == Constants.DEFAULT_BAR_COUNT) {
-                    BarDataSet dataSet = new BarDataSet(yValues, "");
-                    dataSet.setColors(getColors());
-                    dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
-
-                    List<String> xValues = new ArrayList<>();
-                    xValues.add(getMonthText(monthPairs.get(0).first));
-                    xValues.add(getMonthText(monthPairs.get(1).first));
-                    xValues.add(getMonthText(monthPairs.get(2).first));
-                    xValues.add("this month");
-                    setHistoryData(dataSet, xValues);
-                }
-            });
-        }
-    }
-
-    private String getMonthText(LocalDate date) {
-        return date.monthOfYear().getAsShortText();
-    }
-
-    private void setWeeklyHistoryData() {
-        List<BarEntry> yValues = new ArrayList<>();
-        List<Pair<LocalDate, LocalDate>> weekPairs = getBoundsFor4WeeksInThePast(LocalDate.now());
-        for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
-            Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-            int finalI = i;
-            questPersistenceService.countCompletedForRepeatingQuest(repeatingQuest.getId(), weekPair.first, weekPair.second, count -> {
-                yValues.add(new BarEntry(count, finalI));
-                if (yValues.size() == Constants.DEFAULT_BAR_COUNT) {
-                    BarDataSet dataSet = new BarDataSet(yValues, "");
-                    dataSet.setColors(getColors());
-                    dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
-
-                    List<String> xValues = new ArrayList<>();
-                    xValues.add(getWeekRangeText(weekPairs.get(0).first, weekPairs.get(0).second));
-                    xValues.add(getWeekRangeText(weekPairs.get(1).first, weekPairs.get(1).second));
-                    xValues.add("last week");
-                    xValues.add("this week");
-                    setHistoryData(dataSet, xValues);
-                }
-            });
-        }
+        return xValues;
 
     }
 
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
-        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
-        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
-        monthBounds.add(new Pair<>(monthStart, monthEnd));
-        for (int i = 0; i < 3; i++) {
-            monthStart = monthStart.plusMonths(1);
-            monthEnd = monthStart.dayOfMonth().withMaximumValue();
-            monthBounds.add(new Pair<>(monthStart, monthEnd));
-        }
-        return monthBounds;
-    }
-
-    @NonNull
-    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
-        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < 3; i++) {
-            weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            weekBounds.add(new Pair<>(weekStart, weekEnd));
-        }
-        return weekBounds;
-    }
-
-    private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
-        BarData data = new BarData(xValues, dataSet);
+    private void setHistoryData(List<PeriodHistory> periodHistories, List<String> xValues) {
+        BarData data = new BarData(xValues, createBarDataSet(periodHistories));
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
         data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
@@ -414,6 +345,32 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.setData(data);
         history.invalidate();
         history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
+    }
+
+    @NonNull
+    private BarDataSet createBarDataSet(List<PeriodHistory> periodHistories) {
+        List<BarEntry> yValues = new ArrayList<>();
+        for (int i = 0; i < periodHistories.size(); i++) {
+            PeriodHistory p = periodHistories.get(i);
+            yValues.add(new BarEntry(p.getCompletedCount(), i));
+        }
+
+        BarDataSet dataSet = new BarDataSet(yValues, "");
+        dataSet.setColors(getColors());
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+        return dataSet;
+    }
+
+    private String getMonthText(long date) {
+        return getMonthText(new LocalDate(date));
+    }
+
+    private String getMonthText(LocalDate date) {
+        return date.monthOfYear().getAsShortText();
+    }
+
+    private String getWeekRangeText(long weekStart, long weekEnd) {
+        return getWeekRangeText(new LocalDate(weekStart), new LocalDate(weekEnd));
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {

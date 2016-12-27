@@ -1,5 +1,8 @@
 package io.ipoli.android.quest.data;
 
+import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
+
 import com.google.firebase.database.Exclude;
 
 import org.joda.time.LocalDate;
@@ -16,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
@@ -64,11 +68,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private Map<String, Boolean> scheduledPeriodEndDates;
 
-    private Long totalMinutesSpent;
-
-    // In chronological order
-    private List<PeriodHistory> periodHistories;
-
     private Map<String, QuestData> questsData;
 
     @Exclude
@@ -79,14 +78,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
         this.scheduledPeriodEndDates = scheduledPeriodEndDates;
-    }
-
-    public Long getTotalMinutesSpent() {
-        return totalMinutesSpent;
-    }
-
-    public void setTotalMinutesSpent(Long totalMinutesSpent) {
-        this.totalMinutesSpent = totalMinutesSpent;
     }
 
     @Exclude
@@ -232,7 +223,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
-        this.totalMinutesSpent = 0L;
     }
 
     public String getName() {
@@ -421,15 +411,60 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getNotes().removeAll(txtNotes);
     }
 
-    public List<PeriodHistory> getPeriodHistories() {
-        if (periodHistories == null) {
-            periodHistories = new ArrayList<>();
+    public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
+        List<PeriodHistory> result = new ArrayList<>();
+        int frequency = getFrequency();
+        List<Pair<LocalDate, LocalDate>> pairs = recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY ?
+                getBoundsFor4MonthsInThePast(currentDate) :
+                getBoundsFor4WeeksInThePast(currentDate);
+
+        for (Pair<LocalDate, LocalDate> p : pairs) {
+            result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime(), frequency));
         }
-        return periodHistories;
+
+        for (QuestData qd : getQuestsData().values()) {
+            if (!qd.isComplete()) {
+                continue;
+            }
+            for (PeriodHistory p : result) {
+                if (DateUtils.isBetween(new Date(qd.getScheduledDate()), new Date(p.getStart()), new Date(p.getEnd()))) {
+                    p.increaseCompletedCount();
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
-    public void setPeriodHistories(List<PeriodHistory> periodHistories) {
-        this.periodHistories = periodHistories;
+    @NonNull
+    private List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
+        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
+        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(weekStart, weekEnd));
+        for (int i = 0; i < 3; i++) {
+            weekStart = weekStart.plusWeeks(1);
+            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekBounds.add(new Pair<>(weekStart, weekEnd));
+        }
+        return weekBounds;
+    }
+
+    @NonNull
+    private List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
+        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
+        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
+        monthBounds.add(new Pair<>(monthStart, monthEnd));
+        for (int i = 0; i < 3; i++) {
+            monthStart = monthStart.plusMonths(1);
+            monthEnd = monthStart.dayOfMonth().withMaximumValue();
+            monthBounds.add(new Pair<>(monthStart, monthEnd));
+        }
+        return monthBounds;
     }
 
     public Map<String, QuestData> getQuestsData() {

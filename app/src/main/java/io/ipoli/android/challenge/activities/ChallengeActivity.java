@@ -37,7 +37,6 @@ import com.squareup.otto.Subscribe;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -296,11 +295,11 @@ public class ChallengeActivity extends BaseActivity {
         categoryName.setText(StringUtils.capitalize(category.name()));
         categoryImage.setImageResource(category.whiteImage);
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                challenge.getNextScheduledDate() == null ? null : new Date(challenge.getNextScheduledDate()),
-                getString(R.string.unscheduled)
-        );
-        nextScheduledDate.setText(nextScheduledDateText);
+//        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+//                challenge.getNextScheduledDate() == null ? null : new Date(challenge.getNextScheduledDate()),
+//                getString(R.string.unscheduled)
+//        );
+//        nextScheduledDate.setText(nextScheduledDateText);
 
         dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
 

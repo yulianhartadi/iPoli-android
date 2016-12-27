@@ -12,18 +12,20 @@ public class PeriodHistory {
 
     private String type;
 
-    public enum PeriodType {WEEK, MONTH;}
+    public void increaseCompletedCount() {
+        completedCount++;
+        totalCount = Math.max(completedCount, totalCount);
+    }
 
     public PeriodHistory() {
 
     }
 
-    public PeriodHistory(Long start, Long end, Integer completedCount, Integer totalCount, PeriodType periodType) {
+    public PeriodHistory(Long start, Long end, Integer totalCount) {
         this.start = start;
         this.end = end;
-        this.completedCount = completedCount;
         this.totalCount = totalCount;
-        this.type = periodType.name();
+        this.completedCount = 0;
     }
 
     public String getType() {

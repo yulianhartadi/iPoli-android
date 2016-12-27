@@ -2,6 +2,7 @@ package io.ipoli.android.challenge.data;
 
 import com.google.firebase.database.Exclude;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,16 +46,9 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Long coins;
     private Long experience;
 
-    private Long totalMinutesSpent;
-    private Long nextScheduledDate;
-
-    // In chronological order
-    private List<PeriodHistory> periodHistories;
-
     private Map<String, Quest> challengeQuests;
     private Map<String, RepeatingQuest> challengeRepeatingQuests;
 
-    // true - quest is complete, false - not complete
     private Map<String, QuestData> questsData;
     private Map<String, Boolean> repeatingQuestIds;
 
@@ -69,31 +63,10 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-        setTotalMinutesSpent(0L);
-    }
-
-    public Long getTotalMinutesSpent() {
-        return totalMinutesSpent;
-    }
-
-    public void setTotalMinutesSpent(Long totalMinutesSpent) {
-        this.totalMinutesSpent = totalMinutesSpent;
-    }
-
-    public Long getNextScheduledDate() {
-        return nextScheduledDate;
-    }
-
-    public void setNextScheduledDate(Long nextScheduledDate) {
-        this.nextScheduledDate = nextScheduledDate;
     }
 
     public List<PeriodHistory> getPeriodHistories() {
-        return periodHistories;
-    }
-
-    public void setPeriodHistories(List<PeriodHistory> periodHistories) {
-        this.periodHistories = periodHistories;
+        return new ArrayList<>();
     }
 
     public Long getCreatedAt() {
