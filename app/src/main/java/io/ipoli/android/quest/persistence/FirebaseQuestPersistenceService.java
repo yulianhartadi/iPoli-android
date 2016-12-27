@@ -586,7 +586,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {
-        return quest.isScheduled() && !quest.getReminders().isEmpty();
+        return !Quest.isCompleted(quest) && quest.isScheduled() && !quest.getReminders().isEmpty();
     }
 
     @Override
@@ -665,11 +665,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     private void removeOldReminders(Quest quest, Map<String, Object> data) {
         for (long startTime : quest.getReminderStartTimes()) {
-            Map<String, Map<String, Object>> val = new HashMap<>();
-            Map<String, Object> val1 = new HashMap<>();
-            val1.put(quest.getId(), null);
-            val.put(String.valueOf(startTime), val1);
-            data.put("/questReminders", val);
+            data.put("/questReminders/" + String.valueOf(startTime) + "/" + quest.getId(), null);
         }
     }
 

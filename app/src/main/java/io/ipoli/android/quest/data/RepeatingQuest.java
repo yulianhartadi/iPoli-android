@@ -124,7 +124,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private int getFixedStreak(List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
-            if (new Date(qd.getOriginalScheduledDate()).after(getTodayAtMidnight().getTime())) {
+            if (new Date(qd.getOriginalScheduledDate()).after(toStartOfDayUTC(LocalDate.now()))) {
                 continue;
             }
 

@@ -479,15 +479,16 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
-        // change end date to today
         QuestNotificationScheduler.cancelAll(q, this);
         q.setCompletedAtDate(new Date());
+        q.setEndDateFromLocal(new Date());
         q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
         q.setExperience(experienceRewardGenerator.generate(q));
         q.setCoins(coinsRewardGenerator.generate(q));
-        questPersistenceService.save(q, () -> {
-            onQuestComplete(q, e.source);
-        });
+        questPersistenceService.updateNewQuest(q);
+//        questPersistenceService.save(q, () -> {
+        onQuestComplete(q, e.source);
+//        });
     }
 
     @Subscribe
@@ -506,23 +507,24 @@ public class App extends MultiDexApplication {
         Long coins = quest.getCoins();
         quest.setExperience(null);
         quest.setCoins(null);
-        questPersistenceService.save(quest, () -> {
-            avatarPersistenceService.find(avatar -> {
-                avatar.removeExperience(xp);
-                if (shouldDecreaseLevel(avatar)) {
+        questPersistenceService.updateNewQuest(quest);
+//        questPersistenceService.save(quest, () -> {
+        avatarPersistenceService.find(avatar -> {
+            avatar.removeExperience(xp);
+            if (shouldDecreaseLevel(avatar)) {
+                avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
+                while (shouldDecreaseLevel(avatar)) {
                     avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
-                    while (shouldDecreaseLevel(avatar)) {
-                        avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
-                    }
-                    eventBus.post(new LevelDownEvent(avatar.getLevel()));
                 }
-                avatar.removeCoins(coins);
-                avatarPersistenceService.save(avatar);
-            });
-
-            updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
-            eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
+                eventBus.post(new LevelDownEvent(avatar.getLevel()));
+            }
+            avatar.removeCoins(coins);
+            avatarPersistenceService.save(avatar);
         });
+
+        updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
+        eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
+//        });
     }
 
     private boolean shouldIncreaseLevel(Avatar avatar) {
