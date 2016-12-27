@@ -24,7 +24,6 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
 
-import static io.ipoli.android.app.utils.DateUtils.getTodayAtMidnight;
 import static io.ipoli.android.app.utils.DateUtils.isBetween;
 import static io.ipoli.android.app.utils.DateUtils.isSameDay;
 import static io.ipoli.android.app.utils.DateUtils.isTodayUTC;
@@ -136,7 +135,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         int streak = 0;
         for (QuestData qd : questsData) {
 
-            if (new Date(qd.getOriginalScheduledDate()).after(getTodayAtMidnight().getTime())) {
+            if (new Date(qd.getOriginalScheduledDate()).after(DateUtils.toStartOfDayUTC(LocalDate.now()))) {
                 continue;
             }
 
