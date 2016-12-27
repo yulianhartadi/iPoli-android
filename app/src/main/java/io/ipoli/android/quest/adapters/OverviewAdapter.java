@@ -67,9 +67,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void setItems(List<QuestViewModel> viewModels) {
-        items = new ArrayList<>();
+        items = new ArrayList<>(viewModels);
         calculateHeaderIndices(viewModels);
-        items.addAll(viewModels);
         if (headerIndices[0] >= 0) {
             items.add(headerIndices[0], R.string.today);
         }
