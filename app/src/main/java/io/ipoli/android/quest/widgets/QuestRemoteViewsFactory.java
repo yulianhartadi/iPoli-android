@@ -31,7 +31,7 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
-    private List<Quest> quests = new ArrayList<>();
+    private List<Quest> quests;
 
     @Inject
     Bus eventBus;
@@ -47,6 +47,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
+        this.quests = new ArrayList<>();
         this.context = context;
     }
 
