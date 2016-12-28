@@ -518,6 +518,7 @@ public class App extends MultiDexApplication {
             quest.setEndDate(null);
             quest.setStartDate(null);
         }
+        quest.setCompletedCount(0);
         Long xp = quest.getExperience();
         Long coins = quest.getCoins();
         quest.setExperience(null);
