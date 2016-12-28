@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -134,7 +136,15 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), (q1, q2) -> {
+        listenForListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), createIncompleteForDateSortQuery());
+    }
+
+    @NonNull
+    private QuerySort<Quest> createIncompleteForDateSortQuery() {
+        return (q1, q2) -> {
+            if (q1.shouldBeDoneMultipleTimesPerDay() || q2.shouldBeDoneMultipleTimesPerDay()) {
+                return Integer.compare(q1.getTimesADay(), q2.getTimesADay());
+            }
             int q1Start = q1.getStartMinute();
             if (q1Start < 0) {
                 return -1;
@@ -144,24 +154,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 return 1;
             }
             return q1Start - q2Start;
-        });
+        };
     }
 
     @Override
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), (q1, q2) -> {
-            int q1Start = q1.getStartMinute();
-            if (q1Start < 0) {
-                return -1;
-            }
-            int q2Start = q2.getStartMinute();
-            if (q2Start < 0) {
-                return 1;
-            }
-            return q1Start - q2Start;
-        });
+        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), createIncompleteForDateSortQuery());
     }
 
     @Override
