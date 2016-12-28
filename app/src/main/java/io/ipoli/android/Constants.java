@@ -123,7 +123,6 @@ public interface Constants {
 
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
     int DEFAULT_BAR_COUNT = 4;
-    String WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
     String REMINDER_START_TIME = "reminder_start_time";
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
 

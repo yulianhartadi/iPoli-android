@@ -16,7 +16,6 @@ import android.support.v7.app.NotificationCompat;
 
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -130,9 +129,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     LocalStorage localStorage;
-
-    @Inject
-    Gson gson;
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
@@ -753,13 +749,29 @@ public class App extends MultiDexApplication {
     }
 
     private void listenForWidgetQuestsChange() {
-        questPersistenceService.listenForAllNonAllDayIncompleteForDate(new LocalDate(), quests -> {
-            localStorage.saveString(Constants.WIDGET_AGENDA_QUESTS, gson.toJson(quests));
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                    new ComponentName(this, AgendaWidgetProvider.class));
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
+        questPersistenceService.listenForDayQuestChange(LocalDate.now(), new OnChangeListener<Void>() {
+            @Override
+            public void onNew(Void data) {
+                requestWidgetUpdate();
+            }
+
+            @Override
+            public void onChanged(Void data) {
+                requestWidgetUpdate();
+            }
+
+            @Override
+            public void onDeleted() {
+                requestWidgetUpdate();
+            }
         });
+    }
+
+    private void requestWidgetUpdate() {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(this, AgendaWidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_agenda_list);
     }
 
     @Subscribe

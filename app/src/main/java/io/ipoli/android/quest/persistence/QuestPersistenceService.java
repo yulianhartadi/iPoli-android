@@ -32,6 +32,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
+    void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
+
     void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
@@ -61,4 +63,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void saveNewQuests(List<Quest> quests);
 
     void updateNewQuests(List<Quest> quests);
+
+    void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener);
 }

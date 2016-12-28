@@ -148,6 +148,23 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
+        Query query = getPlayerReference().child("dayQuests").child(dateString);
+        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), (q1, q2) -> {
+            int q1Start = q1.getStartMinute();
+            if (q1Start < 0) {
+                return -1;
+            }
+            int q2Start = q2.getStartMinute();
+            if (q2Start < 0) {
+                return 1;
+            }
+            return q1Start - q2Start;
+        });
+    }
+
+    @Override
     public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
@@ -318,6 +335,42 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             populateUpdateQuest(quest, data);
         }
         getPlayerReference().updateChildren(data);
+    }
+
+    @Override
+    public void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener) {
+        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(date));
+        Query query = getPlayerReference().child("dayQuests").child(dateString);
+
+        ChildEventListener childListener = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
+                onChangeListener.onNew(null);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
+                onChangeListener.onChanged(null);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                onChangeListener.onDeleted();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        childListeners.put(childListener, query);
+        query.addChildEventListener(childListener);
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {

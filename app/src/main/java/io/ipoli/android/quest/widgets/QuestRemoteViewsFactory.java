@@ -9,12 +9,13 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -55,9 +56,16 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        Type type = new TypeToken<List<Quest>>() {
-        }.getType();
-        quests = gson.fromJson(localStorage.readString(Constants.WIDGET_AGENDA_QUESTS), type);
+        final CountDownLatch latch = new CountDownLatch(1);
+        questPersistenceService.findAllNonAllDayIncompleteForDate(LocalDate.now(), result -> {
+            quests = result;
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
