@@ -20,7 +20,9 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.reminder.data.Reminder;
 
 /**
@@ -82,6 +85,10 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+
+    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     private ArrayList<PredefinedChallengeQuestViewModel> viewModels;
 
@@ -555,6 +562,14 @@ public class PersonalizeChallengeActivity extends BaseActivity {
             }
         }
         questPersistenceService.saveNewQuests(quests);
-        repeatingQuestPersistenceService.saveNewRepeatingQuests(repeatingQuests);
+
+        Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
+        for (RepeatingQuest repeatingQuest : repeatingQuests) {
+            List<Quest> scheduledQuests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
+        }
+
+        repeatingQuestPersistenceService.saveNewRepeatingQuests(repeatingQuestToScheduledQuests);
+        finish();
     }
 }

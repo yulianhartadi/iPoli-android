@@ -488,9 +488,7 @@ public class App extends MultiDexApplication {
         q.setExperience(experienceRewardGenerator.generate(q));
         q.setCoins(coinsRewardGenerator.generate(q));
         questPersistenceService.updateNewQuest(q);
-//        questPersistenceService.save(q, () -> {
         onQuestComplete(q, e.source);
-//        });
     }
 
 
@@ -515,7 +513,6 @@ public class App extends MultiDexApplication {
         quest.setActualStartDate(null);
         quest.setCompletedAtDate(null);
         quest.setCompletedAtMinute(null);
-
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);
             quest.setStartDate(null);
@@ -525,7 +522,6 @@ public class App extends MultiDexApplication {
         quest.setExperience(null);
         quest.setCoins(null);
         questPersistenceService.updateNewQuest(quest);
-//        questPersistenceService.save(quest, () -> {
         avatarPersistenceService.find(avatar -> {
             avatar.removeExperience(xp);
             if (shouldDecreaseLevel(avatar)) {
@@ -541,7 +537,6 @@ public class App extends MultiDexApplication {
 
         updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
         eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
-//        });
     }
 
     private boolean shouldIncreaseLevel(Avatar avatar) {
@@ -620,7 +615,7 @@ public class App extends MultiDexApplication {
                 }
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            List<Quest> questsToCreate = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             repeatingQuestPersistenceService.updateNewRepeatingQuest(repeatingQuest, questsToRemove, questsToCreate);
         });
     }
@@ -709,7 +704,7 @@ public class App extends MultiDexApplication {
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
         repeatingQuest.setReminders(e.reminders);
 
-        List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+        List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
 
         repeatingQuestPersistenceService.saveNewRepeatingQuest(repeatingQuest, quests);
     }
@@ -723,12 +718,12 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
-        Map<String, List<Quest>> questsToCreate = new HashMap<>();
+        Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
-            questsToCreate.put(repeatingQuest.getId(), quests);
+            List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            repeatingQuestToScheduledQuests.put(repeatingQuest, quests);
         }
-        // @TODO save
+        repeatingQuestPersistenceService.saveScheduledRepeatingQuests(repeatingQuestToScheduledQuests);
     }
 
     private void scheduleNextReminder() {

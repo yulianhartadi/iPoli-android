@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
@@ -30,4 +31,8 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void updateNewRepeatingQuest(RepeatingQuest repeatingQuest);
 
     void saveNewRepeatingQuests(List<RepeatingQuest> repeatingQuests);
+
+    void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
+
+    void saveNewRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 }
