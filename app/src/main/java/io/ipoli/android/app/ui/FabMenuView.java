@@ -28,8 +28,6 @@ import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/27/16.
@@ -104,10 +102,10 @@ public class FabMenuView extends RelativeLayout {
 
         setElevation(ViewUtils.dpToPx(5, getResources()));
 
-        fabOpenAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fabCloseAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-        rotateForwardAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_forward);
-        rotateBackwardAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_backward);
+        fabOpenAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
+        fabCloseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
+        rotateForwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_forward);
+        rotateBackwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_backward);
 
     }
 

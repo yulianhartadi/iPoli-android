@@ -320,9 +320,8 @@ public class App extends MultiDexApplication {
         registerServices();
         if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             return;
-        } else {
-            playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         }
+        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         initAppStart();
     }
