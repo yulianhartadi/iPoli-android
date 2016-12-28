@@ -37,7 +37,7 @@ public class CalendarQuestPopupMenu {
         eventBus.post(new ItemActionsShownEvent(source));
         context = view.getContext();
         PopupMenu pm = new PopupMenu(context, view);
-        boolean isCompleted = Quest.isCompleted(quest);
+        boolean isCompleted = quest.isCompleted();
         int menuRes = isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
         pm.inflate(menuRes);
 

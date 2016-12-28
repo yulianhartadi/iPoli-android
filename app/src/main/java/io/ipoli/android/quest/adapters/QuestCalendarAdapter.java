@@ -124,7 +124,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         if (!q.isPlaceholder()) {
             v.setOnClickListener(view -> {
 
-                if (!Quest.isCompleted(q)) {
+                if (!q.isCompleted()) {
                     eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR));
                 } else {
                     Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
@@ -136,7 +136,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
                 return true;
             });
 
-            if (Quest.isCompleted(q)) {
+            if (q.isCompleted()) {
                 checkBox.setChecked(true);
             }
 

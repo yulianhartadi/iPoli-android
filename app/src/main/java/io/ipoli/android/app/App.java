@@ -22,10 +22,12 @@ import com.squareup.otto.Subscribe;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,7 +171,7 @@ public class App extends MultiDexApplication {
 
         List<Quest> uncompletedQuests = new ArrayList<>();
         for (Quest q : quests) {
-            if (!Quest.isCompleted(q)) {
+            if (!q.isCompleted()) {
                 uncompletedQuests.add(q);
             }
         }
@@ -260,7 +262,7 @@ public class App extends MultiDexApplication {
         Set<Quest> uncompletedQuests = new HashSet<>();
         int uncompletedImportantQuestCount = 0;
         for (Quest q : quests) {
-            if (!Quest.isCompleted(q)) {
+            if (!q.isCompleted()) {
                 uncompletedQuests.add(q);
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     uncompletedImportantQuestCount++;
@@ -555,31 +557,51 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
         quest.setReminders(e.reminders);
-        if (Quest.isCompleted(quest)) {
+        if (quest.isScheduledForThePast()) {
+            setQuestCompletedAt(quest);
+        }
+        if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
         questPersistenceService.saveNewQuest(quest);
 //        questPersistenceService.save(quest, () -> {
-//            if (Quest.isCompleted(quest)) {
-//                onQuestComplete(quest, e.source);
-//            }
+        if (quest.isCompleted()) {
+            onQuestComplete(quest, e.source);
+        }
 //        });
     }
 
     @Subscribe
     public void onUpdateQuest(UpdateQuestEvent e) {
         Quest quest = e.quest;
-        if (Quest.isCompleted(quest)) {
+        if (quest.isScheduledForThePast() && !quest.isCompleted()) {
+            setQuestCompletedAt(quest);
+        }
+        if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
         questPersistenceService.updateNewQuest(quest);
 //        questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
-        if (Quest.isCompleted(quest)) {
+        if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
 //        });
+    }
+
+    private void setQuestCompletedAt(Quest quest) {
+        Date completedAt = new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDate();
+        Calendar c = Calendar.getInstance();
+        c.setTime(completedAt);
+
+        int completedAtMinute = Time.now().toMinutesAfterMidnight();
+        if (quest.hasStartTime()) {
+            completedAtMinute = quest.getStartMinute();
+        }
+        c.add(Calendar.MINUTE, completedAtMinute);
+        quest.setCompletedAtDate(c.getTime());
+        quest.setCompletedAtMinute(completedAtMinute);
     }
 
     @Subscribe
@@ -702,7 +724,7 @@ public class App extends MultiDexApplication {
 
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
         Map<String, List<Quest>> questsToCreate = new HashMap<>();
-        for(RepeatingQuest repeatingQuest : repeatingQuests) {
+        for (RepeatingQuest repeatingQuest : repeatingQuests) {
             List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             questsToCreate.put(repeatingQuest.getId(), quests);
         }

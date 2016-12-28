@@ -184,7 +184,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
                 vm.select();
                 previouslySelectedQuests.add(q);
             }
-            if (Quest.isCompleted(q)) {
+            if (q.isCompleted()) {
                 vm.markCompleted();
             }
             viewModels.add(vm);

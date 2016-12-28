@@ -42,7 +42,6 @@ import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -589,19 +588,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setEndDateFromLocal((Date) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-            if (isQuestForThePast(q)) {
-                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-                Calendar c = Calendar.getInstance();
-                c.setTime(completedAt);
-
-                int completedAtMinute = Time.now().toMinutesAfterMidnight();
-                if (hasStartTime(q)) {
-                    completedAtMinute = q.getStartMinute();
-                }
-                c.add(Calendar.MINUTE, completedAtMinute);
-                q.setCompletedAtDate(c.getTime());
-                q.setCompletedAtMinute(completedAtMinute);
-            }
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
 
@@ -680,7 +666,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         String name = "";
         if (editMode == EDIT_NEW_QUEST) {
             Quest q = questParser.parseQuest(questText.getText().toString());
-            if(q == null) {
+            if (q == null) {
                 q = createEmptyQuest();
             }
             if (q.getEndDate() == null) {
@@ -694,7 +680,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
         } else if (editMode == EDIT_NEW_REPEATING_QUEST) {
             RepeatingQuest rq = questParser.parseRepeatingQuest(questText.getText().toString());
-            if(rq == null) {
+            if (rq == null) {
                 rq = createEmptyRepeatingQuest();
             }
             populateStartTime(rq.getStartMinute());
@@ -943,19 +929,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setEndDateFromLocal((Date) endDateText.getTag());
         q.setDuration((int) durationText.getTag());
         q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-        if (isQuestForThePast(q)) {
-            Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-            Calendar c = Calendar.getInstance();
-            c.setTime(completedAt);
-
-            int completedAtMinute = Time.now().toMinutesAfterMidnight();
-            if (hasStartTime(q)) {
-                completedAtMinute = q.getStartMinute();
-            }
-            c.add(Calendar.MINUTE, completedAtMinute);
-            q.setCompletedAtDate(c.getTime());
-            q.setCompletedAtMinute(completedAtMinute);
-        }
         q.setCategory(categoryView.getSelectedCategory().name());
 
         List<Note> notes = new ArrayList<>();
@@ -994,14 +967,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
-    }
-
-    private boolean hasStartTime(Quest q) {
-        return q.getStartMinute() >= 0;
-    }
-
-    private boolean isQuestForThePast(Quest q) {
-        return q.getEndDate() != null && new LocalDate(q.getEndDate(), DateTimeZone.UTC).isBefore(new LocalDate());
     }
 
     @OnEditorAction(R.id.quest_text)

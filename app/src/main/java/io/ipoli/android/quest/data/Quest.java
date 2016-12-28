@@ -103,6 +103,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @Exclude
+    public boolean isCompleted() {
+        return getCompletedAtDate() != null;
+    }
+
+    @Exclude
     public Long getPreviousScheduledDate() {
         return previousScheduledDate;
     }
@@ -366,10 +371,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
-    public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAtDate() != null;
-    }
-
     public static void setStartTime(Quest quest, Time time) {
         if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());
@@ -495,7 +496,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public int getActualDuration() {
-        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+        if (this.isCompleted() && getActualStartDate() != null) {
             return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAtDate().getTime() - getActualStartDate().getTime());
         }
         return getDuration();
@@ -503,7 +504,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public int getActualStartMinute() {
-        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+        if (this.isCompleted() && getActualStartDate() != null) {
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
@@ -579,5 +580,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public void setPreviousChallengeId(String previousChallengeId) {
         this.previousChallengeId = previousChallengeId;
+    }
+
+    @Exclude
+    public boolean hasStartTime() {
+        return getStartMinute() >= 0;
     }
 }

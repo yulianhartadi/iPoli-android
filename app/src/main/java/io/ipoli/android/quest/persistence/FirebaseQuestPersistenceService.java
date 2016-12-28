@@ -120,7 +120,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 listener.onDataChanged(endAtQuests);
             });
 
-        }, data -> data.filter(q -> !Quest.isCompleted(q)));
+        }, data -> data.filter(q -> !q.isCompleted()));
     }
 
     @Override
@@ -134,7 +134,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForListChange(query, listener, data -> data.filter(q -> !Quest.isCompleted(q)), (q1, q2) -> {
+        listenForListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), (q1, q2) -> {
             int q1Start = q1.getStartMinute();
             if (q1Start < 0) {
                 return -1;
@@ -261,7 +261,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void populateNewQuestData(Quest quest, Map<String, Object> data) {
         DatabaseReference questRef = getCollectionReference().push();
         quest.setId(questRef.getKey());
-        if (shouldMoveToInbox(quest)) {
+        if (quest.isCompleted()) {
+            addDayQuest(quest, data);
+        } else if (shouldMoveToInbox(quest)) {
             data.put("/inboxQuests/" + quest.getId(), quest);
         } else {
             quest.setPreviousScheduledDate(quest.getEnd());
@@ -319,7 +321,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {
-        return !Quest.isCompleted(quest) && quest.isScheduled() && !quest.getReminders().isEmpty();
+        return !quest.isCompleted() && quest.isScheduled() && !quest.getReminders().isEmpty();
     }
 
     @Override
