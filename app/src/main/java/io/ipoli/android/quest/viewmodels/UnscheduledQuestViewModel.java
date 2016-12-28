@@ -11,11 +11,9 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class UnscheduledQuestViewModel {
     private final Quest quest;
-    private int remainingCount;
 
     public UnscheduledQuestViewModel(Quest quest) {
         this.quest = quest;
-        this.remainingCount = quest.getTimesADay() - quest.getCompletedCount();
     }
 
     public Quest getQuest() {
@@ -37,18 +35,18 @@ public class UnscheduledQuestViewModel {
 
     public String getName() {
         String name = quest.getName();
-        if (remainingCount == 1) {
+        if (quest.getRemainingCount() == 1) {
             return name;
         }
-        return name + " (x" + remainingCount + ")";
+        return name + " (x" + quest.getRemainingCount() + ")";
     }
 
     public int getRemainingCount() {
-        return remainingCount;
+        return quest.getRemainingCount();
     }
 
     public void decreaseRemainingCount() {
-        remainingCount--;
+        quest.increaseCompletedCount();
     }
 
     public boolean isRepeating() {

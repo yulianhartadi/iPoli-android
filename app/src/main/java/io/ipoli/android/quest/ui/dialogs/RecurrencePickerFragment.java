@@ -202,7 +202,6 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             initDaysOfMonth();
             initWeekDays();
         }
-//        initTimesADay();
         initUntilDate();
     }
 
@@ -320,19 +319,6 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         return selection;
     }
 
-//    private void initTimesADay() {
-//        List<String> timesADayValues = new ArrayList<>();
-//        int selectedPosition = 0;
-//        for (int i = 1; i <= 7; i++) {
-//            timesADayValues.add(FlexibleTimesFormatter.formatReadable(i));
-//            if (recurrence.getTimesADay() == i) {
-//                selectedPosition = i - 1;
-//            }
-//        }
-//        timesADay.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, timesADayValues));
-//        timesADay.setSelection(selectedPosition);
-//    }
-
     @OnCheckedChanged(R.id.recurrence_flexibility)
     public void onFlexibilityChanged(boolean checked) {
         isFlexible = checked;
@@ -399,8 +385,6 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             setRrule(recurrenceType);
             recurrence.setFlexibleCount(0);
         }
-
-//        recurrence.setTimesADay(FlexibleTimesFormatter.parse(timesADay.getSelectedItem().toString()));
 
         if (until.getTag() != null) {
             Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));

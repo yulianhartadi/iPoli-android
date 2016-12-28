@@ -595,4 +595,19 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public int getCompletedCount() {
         return completedCount;
     }
+
+    @Exclude
+    public int getRemainingCount() {
+        return getTimesADay() - getCompletedCount();
+    }
+
+    @Exclude
+    public void increaseCompletedCount() {
+        completedCount++;
+    }
+
+    @Exclude
+    public boolean isOneTime() {
+        return getTimesADay() == 1;
+    }
 }

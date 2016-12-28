@@ -64,6 +64,7 @@ import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
+import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -277,9 +278,14 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        Quest quest = e.viewModel.getQuest();
-        eventBus.post(new CompleteQuestRequestEvent(quest, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-        calendarDayView.smoothScrollToTime(Time.now());
+        if (e.viewModel.getRemainingCount() > 1) {
+            e.viewModel.decreaseRemainingCount();
+            eventBus.post(new UpdateQuestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            Toast.makeText(getContext(), R.string.quest_complete, Toast.LENGTH_SHORT).show();
+        } else {
+            eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            calendarDayView.smoothScrollToTime(Time.now());
+        }
     }
 
     @Subscribe
@@ -346,7 +352,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
+            if (q.isOneTime()) {
+                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
+            }
         }
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);

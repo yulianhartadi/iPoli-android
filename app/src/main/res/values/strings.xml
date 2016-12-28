@@ -18,7 +18,8 @@
     <string name="title_activity_level_up">Level Up!</string>
     <string name="level_up_reward">You are now level %d! Your reward is:</string>
     <string name="attribution">Source: %s</string>
-    <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
+    <string name="quest_complete">Quest complete</string>
+    <string name="quest_complete_with_bounty">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>

@@ -831,7 +831,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 //            if (frequencyText.getTag() != null) {
 //                ((Recurrence) frequencyText.getTag()).setTimesADay(1);
 //            }
-            frequencyText.setTag(1);
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {

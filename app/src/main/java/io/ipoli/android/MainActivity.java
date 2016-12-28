@@ -283,7 +283,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         Snackbar snackbar = Snackbar
                 .make(contentContainer,
-                        getString(R.string.quest_complete, experience, coins),
+                        getString(R.string.quest_complete_with_bounty, experience, coins),
                         Snackbar.LENGTH_LONG);
 
         snackbar.setAction(R.string.share, view -> {
