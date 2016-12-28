@@ -144,6 +144,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     SimpleDateFormat DAY_QUESTS_DATE_FORMATTER = new SimpleDateFormat("dd-MM-yyyy");
+    int MAX_TIMES_A_DAY_COUNT = 8;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

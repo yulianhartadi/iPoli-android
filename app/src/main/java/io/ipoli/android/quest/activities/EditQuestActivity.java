@@ -106,12 +106,14 @@ import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.quest.ui.formatters.TimesADayFormatter;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
@@ -134,7 +136,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
-        CategoryView.OnCategoryChangedListener {
+        CategoryView.OnCategoryChangedListener, TimesADayPickerFragment.OnTimesADayPickedListener {
 
     public static final String KEY_NEW_REPEATING_QUEST = "key_new_repeating_quest";
 
@@ -193,7 +195,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     ViewGroup remindersContainer;
 
     @BindView(R.id.quest_times_a_day_value)
-    TextView timesADay;
+    TextView timesADayText;
 
     @BindView(R.id.add_sub_quest)
     TextInputEditText addSubQuest;
@@ -359,6 +361,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             changeEditMode(EditMode.ADD_REPEATING_QUEST);
         }
         populateDuration(Constants.QUEST_MIN_DURATION);
+        populateTimesADay(1);
         populateNoteText(null);
         populateChallenge(null);
         notificationId = new Random().nextInt();
@@ -377,11 +380,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
-    }
-
-    private void populateTimesADay(int timesADay) {
-        this.timesADay.setText("Once");
-        this.timesADay.setTag(timesADay);
     }
 
     private void changeEditMode(EditMode editMode) {
@@ -600,7 +598,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
-            q.setTimesADay((int) timesADay.getTag());
+            q.setTimesADay((int) timesADayText.getTag());
             List<Note> textNotes = q.getTextNotes();
             String txt = (String) noteText.getTag();
 
@@ -640,7 +638,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setRecurrence((Recurrence) frequencyText.getTag());
             rq.setCategory(categoryView.getSelectedCategory().name());
             rq.setChallengeId((String) challengeValue.getTag());
-            rq.setTimesADay((int) timesADay.getTag());
+            rq.setTimesADay((int) timesADayText.getTag());
             List<Note> textNotes = rq.getTextNotes();
             String txt = (String) noteText.getTag();
 
@@ -762,6 +760,17 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         f.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_times_a_day_container)
+    public void onTimesADayClick(View view) {
+        TimesADayPickerFragment fragment;
+        if (timesADayText.getTag() != null && (int) timesADayText.getTag() > 0) {
+            fragment = TimesADayPickerFragment.newInstance((int) timesADayText.getTag(), this);
+        } else {
+            fragment = TimesADayPickerFragment.newInstance(this);
+        }
+        fragment.show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.quest_challenge_container)
     public void onChallengeClick(View view) {
         ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
@@ -781,6 +790,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         eventBus.post(new QuestDatePickedEvent(editMode.name().toLowerCase()));
     }
 
+    @Override
+    public void onTimesADayPicked(int timesADay) {
+        populateTimesADay(timesADay);
+        eventBus.post(new QuestDurationPickedEvent(editMode.name().toLowerCase()));
+    }
 
     @Override
     public void onTextPicked(String text) {
@@ -836,11 +850,17 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         endDateText.setTag(date);
     }
 
+    private void populateTimesADay(int timesADay) {
+        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
+        timesADayText.setTag(timesADay);
+        if(timesADay > 1) {
+            populateStartTime(-1);
+        }
+    }
+
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
-//            if (frequencyText.getTag() != null) {
-//                ((Recurrence) frequencyText.getTag()).setTimesADay(1);
-//            }
+            populateTimesADay(1);
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
