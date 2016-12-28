@@ -70,6 +70,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     @Exclude
     private String previousChallengeId;
+    private Integer timesADay;
 
     public RepeatingQuest() {
     }
@@ -482,5 +483,13 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             }
         }
         return false;
+    }
+
+    public void setTimesADay(int timesADay) {
+        this.timesADay = timesADay;
+    }
+
+    public Integer getTimesADay() {
+        return timesADay;
     }
 }

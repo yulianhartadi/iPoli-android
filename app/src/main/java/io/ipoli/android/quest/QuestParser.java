@@ -190,7 +190,7 @@ public class QuestParser {
             recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         }
 
-        recurrence.setTimesADay(Math.max(1, timesADay));
+        rq.setTimesADay(Math.max(1, timesADay));
         rq.setRecurrence(recurrence);
 
         return rq;

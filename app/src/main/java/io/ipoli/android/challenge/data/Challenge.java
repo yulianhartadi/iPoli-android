@@ -380,4 +380,20 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
         return result;
     }
+
+    @Exclude
+    public int getTotalQuestCount() {
+        return getQuestsData().size();
+    }
+
+    @Exclude
+    public int getCompletedQuestCount() {
+        int count = 0;
+        for (QuestData questData : getQuestsData().values()) {
+            if (questData.isComplete()) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

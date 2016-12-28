@@ -487,7 +487,6 @@ public class App extends MultiDexApplication {
         onQuestComplete(q, e.source);
     }
 
-
     @Subscribe
     public void onRemoveBaseQuestFromChallenge(RemoveBaseQuestFromChallengeEvent e) {
         BaseQuest bq = e.baseQuest;
@@ -556,11 +555,9 @@ public class App extends MultiDexApplication {
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
         questPersistenceService.saveNewQuest(quest);
-//        questPersistenceService.save(quest, () -> {
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
-//        });
     }
 
     @Subscribe
@@ -574,11 +571,9 @@ public class App extends MultiDexApplication {
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
         questPersistenceService.updateNewQuest(quest);
-//        questPersistenceService.saveWithNewReminders(quest, e.reminders, () -> {
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
-//        });
     }
 
     private void setQuestCompletedAt(Quest quest) {

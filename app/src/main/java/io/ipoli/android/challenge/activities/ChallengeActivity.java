@@ -56,7 +56,6 @@ import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
@@ -244,13 +243,8 @@ public class ChallengeActivity extends BaseActivity {
 
     private void showProgress() {
 
-        int totalCount = challenge.getQuestsData().size();
-        int completed = 0;
-        for (QuestData questData : challenge.getQuestsData().values()) {
-            if (questData.isComplete()) {
-                completed++;
-            }
-        }
+        int totalCount = challenge.getTotalQuestCount();
+        int completed = challenge.getCompletedQuestCount();
 
         progressFraction.setText(completed + " / " + totalCount);
 

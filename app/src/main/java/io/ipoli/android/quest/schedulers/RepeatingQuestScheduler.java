@@ -137,10 +137,8 @@ public class RepeatingQuestScheduler {
         List<LocalDate> possibleDates = findMonthlyPossibleDates(recurrence, start);
         List<Quest> result = new ArrayList<>();
         for (LocalDate date : possibleDates) {
-            for (int j = 0; j < recurrence.getTimesADay(); j++) {
-                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(date)));
-            }
-            if (result.size() == recurrence.getFlexibleCount() * recurrence.getTimesADay()) {
+            result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(date)));
+            if (result.size() == recurrence.getFlexibleCount()) {
                 break;
             }
         }
@@ -193,9 +191,7 @@ public class RepeatingQuestScheduler {
 
         List<Quest> result = new ArrayList<>();
         for (LocalDate endDate : possibleDates) {
-            for (int j = 0; j < recurrence.getTimesADay(); j++) {
-                result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(endDate)));
-            }
+            result.add(createQuestFromRepeating(repeatingQuest, toStartOfDayUTC(endDate)));
         }
         return result;
     }
@@ -280,9 +276,7 @@ public class RepeatingQuestScheduler {
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
-            for (int i = 0; i < recurrence.getTimesADay(); i++) {
-                res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
-            }
+            res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
         }
         return res;
     }
