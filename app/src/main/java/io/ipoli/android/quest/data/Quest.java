@@ -570,6 +570,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setTimesADay(Integer timesADay) {
+        setCompletedCount(Math.min(timesADay, getCompletedCount()));
         this.timesADay = timesADay;
     }
 

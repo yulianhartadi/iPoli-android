@@ -192,6 +192,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_reminders_container)
     ViewGroup remindersContainer;
 
+    @BindView(R.id.quest_times_a_day_value)
+    TextView timesADay;
+
     @BindView(R.id.add_sub_quest)
     TextInputEditText addSubQuest;
 
@@ -295,6 +298,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             questText.setSelection(quest.getName().length());
             populateDuration(quest.getDuration());
             populateStartTime(quest.getStartMinute());
+            populateTimesADay(quest.getTimesADay());
             if (quest.getEndDate() != null) {
                 populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
             } else {
@@ -325,6 +329,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             questText.setText(rq.getName());
             questText.setSelection(rq.getName().length());
             populateDuration(rq.getDuration());
+            populateTimesADay(rq.getTimesADay());
             if (rq.getStartMinute() >= 0) {
                 populateStartTime(rq.getStartMinute());
             }
@@ -372,6 +377,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 colorParsedParts(suggestionsManager.parse(text, selectionStartIdx));
             }
         });
+    }
+
+    private void populateTimesADay(int timesADay) {
+        this.timesADay.setText("Once");
+        this.timesADay.setTag(timesADay);
     }
 
     private void changeEditMode(EditMode editMode) {
@@ -590,7 +600,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
-
+            q.setTimesADay((int) timesADay.getTag());
             List<Note> textNotes = q.getTextNotes();
             String txt = (String) noteText.getTag();
 
@@ -630,7 +640,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setRecurrence((Recurrence) frequencyText.getTag());
             rq.setCategory(categoryView.getSelectedCategory().name());
             rq.setChallengeId((String) challengeValue.getTag());
-
+            rq.setTimesADay((int) timesADay.getTag());
             List<Note> textNotes = rq.getTextNotes();
             String txt = (String) noteText.getTag();
 
