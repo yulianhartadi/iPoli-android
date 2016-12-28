@@ -322,7 +322,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createHealthyAndFit() {
         RepeatingQuest rq1 = makeRepeatingQuest("Drink 6 glasses of water every day", "Drink glass of water", 10, category);
-//        Recurrence recurrence = new Recurrence(6);
+        rq1.setTimesADay(6);
         Recurrence recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq1.setRecurrence(recurrence);
@@ -491,7 +491,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(quest3));
 
         RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", 20, category);
-//        Recurrence recurrence = new Recurrence(2);
+        rq1.setTimesADay(2);
         Recurrence recurrence = Recurrence.create();
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
         recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));

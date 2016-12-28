@@ -71,13 +71,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
     @Override
     public boolean isRepeating() {
         return quest.isFromRepeatingQuest();
-//        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
-    }
-
-    @Override
-    public boolean shouldDisplayAsIndicator() {
-//        return quest.isIndicator();
-        return false;
     }
 
     @DrawableRes

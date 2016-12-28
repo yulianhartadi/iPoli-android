@@ -21,9 +21,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -345,27 +343,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
 
-        Map<String, List<Quest>> map = new HashMap<>();
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
-            if (!q.isFromRepeatingQuest()) {
-                unscheduledViewModels.add(new UnscheduledQuestViewModel(q, 1));
-
-                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
-                continue;
-            }
-            String key = q.getRepeatingQuestId();
-            if (map.get(key) == null) {
-                map.put(key, new ArrayList<>());
-            }
-            map.get(key).add(q);
-        }
-
-
-        for (String key : map.keySet()) {
-            Quest q = map.get(key).get(0);
-            int remainingCount = map.get(key).size();
-            unscheduledViewModels.add(new UnscheduledQuestViewModel(q, remainingCount));
+            unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
             proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
         }
 

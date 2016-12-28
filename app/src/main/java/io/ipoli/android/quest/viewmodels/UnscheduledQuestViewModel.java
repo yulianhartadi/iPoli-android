@@ -13,9 +13,9 @@ public class UnscheduledQuestViewModel {
     private final Quest quest;
     private int remainingCount;
 
-    public UnscheduledQuestViewModel(Quest quest, int remainingCount) {
+    public UnscheduledQuestViewModel(Quest quest) {
         this.quest = quest;
-        this.remainingCount = remainingCount;
+        this.remainingCount = quest.getTimesADay() - quest.getCompletedCount();
     }
 
     public Quest getQuest() {
@@ -53,7 +53,6 @@ public class UnscheduledQuestViewModel {
 
     public boolean isRepeating() {
         return quest.isFromRepeatingQuest();
-//        return quest.getRepeatingQuest() != null && !TextUtils.isEmpty(quest.getRepeatingQuest().getRecurrence().getRrule());
     }
 
     public boolean isMostImportant() {

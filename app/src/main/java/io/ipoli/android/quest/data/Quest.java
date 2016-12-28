@@ -69,6 +69,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private List<Note> notes;
 
+    private Integer timesADay;
+
     private String source;
 
     private SourceMapping sourceMapping;
@@ -81,6 +83,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     private transient boolean isPlaceholder;
+    private int completedCount;
 
     public Quest() {
     }
@@ -100,6 +103,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+        this.setCompletedCount(0);
+        this.setTimesADay(1);
     }
 
     @Exclude
@@ -421,18 +426,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getEndDate(), DateTimeZone.UTC)));
     }
 
-//    @Exclude
-//    public boolean isIndicator() {
-//        boolean isCompleted = getCompletedAtDate() != null;
-//        return isCompleted && repeatPerDayWithShortOrNoDuration();
-//    }
-
-//    public boolean repeatPerDayWithShortOrNoDuration() {
-//        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesADay() > 1;
-//        boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
-//        return repeatsPerDay && hasShortOrNoDuration;
-//    }
-
     @Exclude
     public boolean isFromRepeatingQuest() {
         return !StringUtils.isEmpty(getRepeatingQuestId());
@@ -572,6 +565,14 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.reminderStartTimes = reminderStartTimes;
     }
 
+    public Integer getTimesADay() {
+        return timesADay;
+    }
+
+    public void setTimesADay(Integer timesADay) {
+        this.timesADay = timesADay;
+    }
+
     @Exclude
     public String getPreviousChallengeId() {
         return previousChallengeId;
@@ -585,5 +586,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public boolean hasStartTime() {
         return getStartMinute() >= 0;
+    }
+
+    public void setCompletedCount(int completedCount) {
+        this.completedCount = completedCount;
+    }
+
+    public int getCompletedCount() {
+        return completedCount;
     }
 }

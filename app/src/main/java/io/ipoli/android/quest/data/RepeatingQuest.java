@@ -60,19 +60,30 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private String challengeId;
 
+    private Integer timesADay;
+
     private String source;
 
     private SourceMapping sourceMapping;
 
     private Map<String, Boolean> scheduledPeriodEndDates;
 
-    private Map<String, QuestData> questsData;
-
     @Exclude
     private String previousChallengeId;
-    private Integer timesADay;
+
+    private Map<String, QuestData> questsData;
 
     public RepeatingQuest() {
+    }
+
+    public RepeatingQuest(String rawText) {
+        this.rawText = rawText;
+        setCreatedAt(nowUTC().getTime());
+        setUpdatedAt(nowUTC().getTime());
+        this.category = Category.PERSONAL.name();
+        setTimesADay(1);
+        this.flexibleStartTime = false;
+        this.source = Constants.API_RESOURCE_SOURCE;
     }
 
     public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
@@ -131,6 +142,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return streak;
     }
 
+
     private int getFlexibleStreak(Recurrence.RecurrenceType recurrenceType, List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
@@ -162,7 +174,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
         return streak;
     }
-
 
     @Exclude
     public Date getNextScheduledDate(long currentDate) {
@@ -213,15 +224,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             return null;
         }
         return Time.of(quest.getStartMinute());
-    }
-
-    public RepeatingQuest(String rawText) {
-        this.rawText = rawText;
-        setCreatedAt(nowUTC().getTime());
-        setUpdatedAt(nowUTC().getTime());
-        this.category = Category.PERSONAL.name();
-        this.flexibleStartTime = false;
-        this.source = Constants.API_RESOURCE_SOURCE;
     }
 
     public String getName() {

@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -76,9 +75,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        if (calendarEvent.shouldDisplayAsIndicator()) {
-            return createIndicator(parent, calendarEvent, inflater);
-        } else if (calendarEvent.shouldDisplayAsProposedSlot()) {
+        if (calendarEvent.shouldDisplayAsProposedSlot()) {
             return createProposedSlot(parent, q, calendarEvent, inflater);
         }
         return createQuest(parent, calendarEvent, q, inflater);
@@ -90,14 +87,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         name.setText(quest.getName());
         v.setOnClickListener(v1 -> eventBus.post(new SuggestionAcceptedEvent(quest, vm.getStartMinute())));
         v.findViewById(R.id.reschedule_quest).setOnClickListener(b -> eventBus.post(new RescheduleQuestEvent(vm)));
-        return v;
-    }
-
-    @NonNull
-    private View createIndicator(ViewGroup parent, QuestCalendarViewModel calendarEvent, LayoutInflater inflater) {
-        View v = inflater.inflate(R.layout.calendar_repeating_quest_completed_item, parent, false);
-        ImageView indicatorView = (ImageView) v.findViewById(R.id.repeating_quest_indicator);
-        indicatorView.setImageResource(calendarEvent.getContextImage());
         return v;
     }
 
@@ -122,6 +111,9 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         View moreMenu = v.findViewById(R.id.quest_more_menu);
 
         if (!q.isPlaceholder()) {
+
+            // @TODO show times a day
+
             v.setOnClickListener(view -> {
 
                 if (!q.isCompleted()) {
