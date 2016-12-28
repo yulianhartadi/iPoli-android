@@ -87,7 +87,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
-        rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
+        rv.setTextViewText(R.id.widget_agenda_quest_name, getQuestName(q));
         rv.setImageViewResource(R.id.widget_agenda_category, Quest.getCategory(q).colorfulImage);
 
         Bundle tapQuestBundle = new Bundle();
@@ -124,6 +124,14 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             rv.setTextViewText(R.id.widget_agenda_quest_time, questTime);
         }
         return rv;
+    }
+
+    public String getQuestName(Quest quest) {
+        String name = quest.getName();
+        if (quest.getRemainingCount() == 1) {
+            return name;
+        }
+        return name + " (x" + quest.getRemainingCount() + ")";
     }
 
     @Override

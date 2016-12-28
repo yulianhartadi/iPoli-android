@@ -13,6 +13,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
@@ -476,14 +477,20 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onCompleteQuestRequest(CompleteQuestRequestEvent e) {
         Quest q = e.quest;
-        QuestNotificationScheduler.cancelAll(q, this);
-        q.setCompletedAtDate(new Date());
-        q.setEndDateFromLocal(new Date());
-        q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-        q.setExperience(experienceRewardGenerator.generate(q));
-        q.setCoins(coinsRewardGenerator.generate(q));
-        questPersistenceService.updateNewQuest(q);
-        onQuestComplete(q, e.source);
+        q.increaseCompletedCount();
+        if (q.completedAllTimesForDay()) {
+            QuestNotificationScheduler.cancelAll(q, this);
+            q.setCompletedAtDate(new Date());
+            q.setEndDateFromLocal(new Date());
+            q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+            q.setExperience(experienceRewardGenerator.generate(q));
+            q.setCoins(coinsRewardGenerator.generate(q));
+            questPersistenceService.updateNewQuest(q);
+            onQuestComplete(q, e.source);
+        } else {
+            questPersistenceService.updateNewQuest(q);
+            Toast.makeText(this, R.string.quest_complete, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Subscribe

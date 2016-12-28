@@ -607,7 +607,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @Exclude
-    public boolean isOneTime() {
-        return getTimesADay() == 1;
+    public boolean completedAllTimesForDay() {
+        return getRemainingCount() == 0;
+    }
+
+    @Exclude
+    public boolean shouldBeDoneMultipleTimesPerDay() {
+        return getTimesADay() > 1;
     }
 }

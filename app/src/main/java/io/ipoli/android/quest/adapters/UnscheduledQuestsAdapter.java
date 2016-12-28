@@ -90,10 +90,14 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
                 eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
             });
 
-            holder.itemView.setOnLongClickListener(view -> {
-                eventBus.post(new MoveQuestToCalendarRequestEvent(vm, holder.getAdapterPosition()));
-                return true;
-            });
+            if (vm.getQuest().shouldBeDoneMultipleTimesPerDay()) {
+                holder.itemView.setOnLongClickListener(null);
+            } else {
+                holder.itemView.setOnLongClickListener(view -> {
+                    eventBus.post(new MoveQuestToCalendarRequestEvent(vm, holder.getAdapterPosition()));
+                    return true;
+                });
+            }
 
             holder.check.setOnCheckedChangeListener(null);
             holder.check.setChecked(false);
@@ -119,11 +123,6 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
     public void removeQuest(UnscheduledQuestViewModel viewModel) {
         int position = viewModels.indexOf(viewModel);
-        if (viewModel.getRemainingCount() > 1) {
-            viewModel.decreaseRemainingCount();
-            notifyItemChanged(position);
-            return;
-        }
         viewModels.remove(viewModel);
         notifyItemRemoved(position);
     }

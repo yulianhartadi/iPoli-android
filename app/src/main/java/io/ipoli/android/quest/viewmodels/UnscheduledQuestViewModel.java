@@ -41,14 +41,6 @@ public class UnscheduledQuestViewModel {
         return name + " (x" + quest.getRemainingCount() + ")";
     }
 
-    public int getRemainingCount() {
-        return quest.getRemainingCount();
-    }
-
-    public void decreaseRemainingCount() {
-        quest.increaseCompletedCount();
-    }
-
     public boolean isRepeating() {
         return quest.isFromRepeatingQuest();
     }

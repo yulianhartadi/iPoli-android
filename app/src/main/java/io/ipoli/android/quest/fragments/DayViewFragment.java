@@ -64,7 +64,6 @@ import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
-import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -278,12 +277,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        if (e.viewModel.getRemainingCount() > 1) {
-            e.viewModel.decreaseRemainingCount();
-            eventBus.post(new UpdateQuestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
-            Toast.makeText(getContext(), R.string.quest_complete, Toast.LENGTH_SHORT).show();
-        } else {
-            eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+        if (e.viewModel.getQuest().isCompleted()) {
             calendarDayView.smoothScrollToTime(Time.now());
         }
     }
@@ -352,7 +347,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (q.isOneTime()) {
+            if (q.completedAllTimesForDay()) {
                 proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
             }
         }
