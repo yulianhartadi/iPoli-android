@@ -7,6 +7,7 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestReminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -40,7 +41,9 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
-    void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener);
+    void findQuestRemindersAtStartTime(long startTime, OnDataChangedListener<List<QuestReminder>> listener);
+
+    void findNextReminderTime(OnDataChangedListener<Long> listener);
 
     void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
@@ -48,7 +51,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForReminderChange(OnChangeListener<Void> onChangeListener);
 
-    void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener);
+    void deleteRemindersAtTime(long startTime);
 
     void saveNewQuest(Quest quest);
 

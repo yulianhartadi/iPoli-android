@@ -183,8 +183,32 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findNextQuestIdsToRemind(OnDataChangedListener<ReminderStart> listener) {
-        Query query = getPlayerReference().child("reminders").orderByKey().startAt(String.valueOf(new Date().getTime())).limitToFirst(1);
+    public void findQuestRemindersAtStartTime(long startTime, OnDataChangedListener<List<QuestReminder>> listener) {
+        Query query = getPlayerReference().child("questReminders").child(String.valueOf(startTime));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    listener.onDataChanged(new ArrayList<>());
+                    return;
+                }
+                GenericTypeIndicator<Map<String, QuestReminder>> indicator = new GenericTypeIndicator<Map<String, QuestReminder>>() {
+                };
+                Map<String, QuestReminder> remindersMap = dataSnapshot.getValue(indicator);
+                listener.onDataChanged(new ArrayList<>(remindersMap.values()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void findNextReminderTime(OnDataChangedListener<Long> listener) {
+        Query query = getPlayerReference().child("questReminders").orderByKey().startAt(String.valueOf(new Date().getTime())).limitToFirst(1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -193,12 +217,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                     listener.onDataChanged(null);
                     return;
                 }
-                GenericTypeIndicator<Map<String, Map<String, Boolean>>> indicator = new GenericTypeIndicator<Map<String, Map<String, Boolean>>>() {
-                };
-                Map<String, Map<String, Boolean>> value = dataSnapshot.getValue(indicator);
-                String startTimeKey = value.keySet().iterator().next();
-                ReminderStart reminderStart = new ReminderStart(Long.valueOf(startTimeKey), new ArrayList<>(value.get(startTimeKey).keySet()));
-                listener.onDataChanged(reminderStart);
+                Map<String, Object> value = (Map<String, Object>) dataSnapshot.getValue();
+                listener.onDataChanged(Long.valueOf(value.keySet().iterator().next()));
             }
 
             @Override
@@ -228,7 +248,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForReminderChange(OnChangeListener<Void> onChangeListener) {
-        Query query = getPlayerReference().child("reminders");
+        Query query = getPlayerReference().child("questReminders");
 
         ChildEventListener childListener = new ChildEventListener() {
 
@@ -262,9 +282,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void deleteRemindersAtTime(long startTime, OnOperationCompletedListener listener) {
-        getPlayerReference().child("reminders").child(String.valueOf(startTime)).setValue(null);
-        FirebaseCompletionListener.listen(listener);
+    public void deleteRemindersAtTime(long startTime) {
+        getPlayerReference().child("questReminders").child(String.valueOf(startTime)).setValue(null);
     }
 
     @Override
@@ -374,7 +393,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {
-        return !quest.isCompleted() && quest.isScheduled() && !quest.getReminders().isEmpty();
+        return !quest.isCompleted() && quest.isScheduled() && !quest.getReminders().isEmpty() && !quest.isStarted();
     }
 
     @Override

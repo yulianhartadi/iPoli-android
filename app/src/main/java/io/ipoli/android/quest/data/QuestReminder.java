@@ -14,17 +14,19 @@ public class QuestReminder {
     private String questName;
     private Long start;
     private Integer notificationId;
+    private String message;
 
     public QuestReminder() {
         
     }
-    
+
     public QuestReminder(Quest quest, Reminder reminder) {
         setQuestName(quest.getName());
         setQuestId(quest.getId());
         setMinutesFromStart(reminder.getMinutesFromStart());
         setNotificationId(reminder.getNotificationId());
         setStart(reminder.getStart());
+        setMessage(reminder.getMessage());
     }
 
     public Long getMinutesFromStart() {
@@ -65,5 +67,13 @@ public class QuestReminder {
 
     public void setNotificationId(Integer notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
