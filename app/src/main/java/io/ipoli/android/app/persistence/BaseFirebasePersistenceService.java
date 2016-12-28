@@ -8,13 +8,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +19,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 import rx.Observable;
 
 /**
@@ -34,15 +29,13 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected final FirebaseDatabase database;
     protected final Bus eventBus;
-    private final Gson gson;
     private final Map<ValueEventListener, Query> valueListeners;
     protected final Map<ChildEventListener, Query> childListeners;
     private final Map<OnDataChangedListener<?>, ValueEventListener> listenerToValueListener;
     private DatabaseReference playerRef;
 
-    public BaseFirebasePersistenceService(Bus eventBus, Gson gson) {
+    public BaseFirebasePersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
-        this.gson = gson;
         this.database = FirebaseDatabase.getInstance();
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
@@ -52,11 +45,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(T obj) {
-        save(obj, null);
-    }
-
-    @Override
-    public void save(T obj, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(obj.getId());
         if (!isNew) {
@@ -67,37 +55,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 collectionRef.child(obj.getId());
         obj.setId(objRef.getKey());
         objRef.setValue(obj);
-        FirebaseCompletionListener.listen(listener);
-    }
-
-    @Override
-    public void save(List<T> objects) {
-        save(objects, null);
-    }
-
-    @Override
-    public void save(List<T> objects, OnOperationCompletedListener listener) {
-        String json = gson.toJson(objects);
-        Type type = new TypeToken<List<Map<String, Object>>>() {
-        }.getType();
-        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (int i = 0; i < objMaps.size(); i++) {
-            Map<String, Object> objMap = objMaps.get(i);
-            boolean isNew = !objMap.containsKey("id");
-            if (isNew) {
-                String id = collectionRef.push().getKey();
-                objects.get(i).setId(id);
-                objMap.put("id", id);
-                data.put(id, objMap);
-            } else {
-                objMap.put("updatedAt", new Date().getTime());
-                data.put(objMap.get("id").toString(), objMap);
-            }
-        }
-        collectionRef.updateChildren(data);
-        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -122,29 +79,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object) {
-        delete(object, null);
-    }
-
-    @Override
-    public void delete(T object, OnOperationCompletedListener listener) {
         getCollectionReference().child(object.getId()).removeValue();
-        FirebaseCompletionListener.listen(listener);
-    }
-
-    @Override
-    public void delete(List<T> objects) {
-        delete(objects, null);
-    }
-
-    @Override
-    public void delete(List<T> objects, OnOperationCompletedListener listener) {
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (T obj : objects) {
-            data.put(obj.getId(), null);
-        }
-        collectionRef.updateChildren(data);
-        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -346,25 +281,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
             }
         };
-    }
-
-    protected static class FirebaseCompletionListener {
-
-        private final OnOperationCompletedListener listener;
-
-        private FirebaseCompletionListener(OnOperationCompletedListener listener) {
-            this.listener = listener;
-        }
-
-        public static void listen(OnOperationCompletedListener listener) {
-            new FirebaseCompletionListener(listener).onComplete();
-        }
-
-        public void onComplete() {
-            if (listener != null) {
-                listener.onComplete();
-            }
-        }
     }
 
     public interface QueryFilter<T> {

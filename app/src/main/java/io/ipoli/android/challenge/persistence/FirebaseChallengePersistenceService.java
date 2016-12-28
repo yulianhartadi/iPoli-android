@@ -3,7 +3,6 @@ package io.ipoli.android.challenge.persistence;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.HashMap;
@@ -21,8 +20,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class FirebaseChallengePersistenceService extends BaseFirebasePersistenceService<Challenge> implements ChallengePersistenceService {
 
-    public FirebaseChallengePersistenceService(Bus eventBus, Gson gson) {
-        super(eventBus, gson);
+    public FirebaseChallengePersistenceService(Bus eventBus) {
+        super(eventBus);
     }
 
     @Override

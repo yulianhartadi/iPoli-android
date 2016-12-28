@@ -1,6 +1,5 @@
 package io.ipoli.android.app.modules;
 
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import dagger.Module;
@@ -29,37 +28,37 @@ import io.ipoli.android.reward.persistence.RewardPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    public QuestPersistenceService provideQuestPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseQuestPersistenceService(eventBus, gson);
+    public QuestPersistenceService provideQuestPersistenceService(Bus eventBus) {
+        return new FirebaseQuestPersistenceService(eventBus);
     }
 
     @Provides
-    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, Gson gson, QuestPersistenceService questPersistenceService) {
-        return new FirebaseRepeatingQuestPersistenceService(eventBus, gson, questPersistenceService);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, QuestPersistenceService questPersistenceService) {
+        return new FirebaseRepeatingQuestPersistenceService(eventBus, questPersistenceService);
     }
 
     @Provides
-    public PlayerPersistenceService providePlayerPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebasePlayerPersistenceService(eventBus, gson);
+    public PlayerPersistenceService providePlayerPersistenceService(Bus eventBus) {
+        return new FirebasePlayerPersistenceService(eventBus);
     }
 
     @Provides
-    public AvatarPersistenceService provideAvatarPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseAvatarPersistenceService(eventBus, gson);
+    public AvatarPersistenceService provideAvatarPersistenceService(Bus eventBus) {
+        return new FirebaseAvatarPersistenceService(eventBus);
     }
 
     @Provides
-    public PetPersistenceService providePetPersistenceService(Bus eventBus, Gson gson, LocalStorage localStorage) {
-        return new FirebasePetPersistenceService(eventBus, gson, localStorage);
+    public PetPersistenceService providePetPersistenceService(Bus eventBus, LocalStorage localStorage) {
+        return new FirebasePetPersistenceService(eventBus, localStorage);
     }
 
     @Provides
-    public ChallengePersistenceService provideChallengePersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseChallengePersistenceService(eventBus, gson);
+    public ChallengePersistenceService provideChallengePersistenceService(Bus eventBus) {
+        return new FirebaseChallengePersistenceService(eventBus);
     }
 
     @Provides
-    public RewardPersistenceService provideRewardPersistenceService(Bus eventBus, Gson gson) {
-        return new FirebaseRewardPersistenceService(eventBus, gson);
+    public RewardPersistenceService provideRewardPersistenceService(Bus eventBus) {
+        return new FirebaseRewardPersistenceService(eventBus);
     }
 }

@@ -2,7 +2,6 @@ package io.ipoli.android.reward.persistence;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -18,8 +17,8 @@ import io.ipoli.android.reward.data.Reward;
  */
 public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceService<Reward> implements RewardPersistenceService {
 
-    public FirebaseRewardPersistenceService(Bus eventBus, Gson gson) {
-        super(eventBus, gson);
+    public FirebaseRewardPersistenceService(Bus eventBus) {
+        super(eventBus);
     }
 
     @Override

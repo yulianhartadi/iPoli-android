@@ -2,7 +2,6 @@ package io.ipoli.android.player.persistence;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.HashMap;
@@ -13,7 +12,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,17 +19,12 @@ import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
  */
 public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceService<Player> implements PlayerPersistenceService {
 
-    public FirebasePlayerPersistenceService(Bus eventBus, Gson gson) {
-        super(eventBus, gson);
+    public FirebasePlayerPersistenceService(Bus eventBus) {
+        super(eventBus);
     }
 
     @Override
-    public void save(Player obj) {
-        save(obj, null);
-    }
-
-    @Override
-    public void save(Player player, OnOperationCompletedListener listener) {
+    public void save(Player player) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(player.getId());
         if (isNew) {
@@ -48,7 +41,6 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             DatabaseReference avatarRef = avatarsRef.push();
             player.getAvatar().setId(avatarRef.getKey());
             avatarRef.setValue(player.getAvatar());
-            FirebaseCompletionListener.listen(listener);
         } else {
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
@@ -56,7 +48,6 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             playerData.put("updatedAt", player.getUpdatedAt());
             playerData.put("createdAt", player.getCreatedAt());
             objRef.updateChildren(playerData);
-            FirebaseCompletionListener.listen(listener);
         }
     }
 

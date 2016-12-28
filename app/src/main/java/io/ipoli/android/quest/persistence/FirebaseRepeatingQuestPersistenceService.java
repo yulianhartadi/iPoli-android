@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
@@ -34,8 +33,8 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     private final QuestPersistenceService questPersistenceService;
 
-    public FirebaseRepeatingQuestPersistenceService(Bus eventBus, Gson gson, QuestPersistenceService questPersistenceService) {
-        super(eventBus, gson);
+    public FirebaseRepeatingQuestPersistenceService(Bus eventBus, QuestPersistenceService questPersistenceService) {
+        super(eventBus);
         this.questPersistenceService = questPersistenceService;
     }
 

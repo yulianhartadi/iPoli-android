@@ -5,7 +5,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -21,8 +20,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class FirebaseAvatarPersistenceService extends BaseFirebasePersistenceService<Avatar> implements AvatarPersistenceService {
 
-    public FirebaseAvatarPersistenceService(Bus eventBus, Gson gson) {
-        super(eventBus, gson);
+    public FirebaseAvatarPersistenceService(Bus eventBus) {
+        super(eventBus);
     }
 
     @Override
