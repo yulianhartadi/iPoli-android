@@ -495,9 +495,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private Time getStartTimeForUnscheduledQuest(Quest q) {
-        return null;
-//        int duration = q.isIndicator() ? 3 : Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
-//        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
+        int duration = Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
+        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private boolean currentDateIsInTheFuture() {
