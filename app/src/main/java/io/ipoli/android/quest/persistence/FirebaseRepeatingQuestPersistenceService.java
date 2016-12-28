@@ -85,42 +85,12 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener) {
-        Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
-        listenForSingleListChange(query, result -> {
-            if (result.isEmpty()) {
-                listener.onDataChanged(null);
-                return;
-            }
-            listener.onDataChanged(result.get(0));
-        });
-    }
-
-    @Override
-    public void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
-        listenForSingleListChange(query, listener);
-    }
-
-    @Override
-    public void listenForActiveForChallenge(String challengeId, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
-    }
-
-    @Override
     public void findActiveNotForChallenge(String searchText, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
         listenForSingleListChange(getCollectionReference(), listener, data -> data
                 .filter(rq -> !challenge.getId().equals(rq.getChallengeId()))
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase()))
                 .filter(activeRepeatingQuestFilter())
         );
-    }
-
-    @Override
-    public void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challenge.getId());
-        listenForSingleListChange(query, listener);
     }
 
     @Override

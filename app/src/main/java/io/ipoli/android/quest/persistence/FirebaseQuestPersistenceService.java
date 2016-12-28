@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.support.v4.util.Pair;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,14 +20,11 @@ import java.util.Map;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.QuestReminder;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
-import rx.Observable;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -101,28 +96,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findCompletedWithStartTimeForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().child("repeatingQuest").orderByChild("id").equalTo(repeatingQuestId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getActualStartDate() != null && q.getCompletedAtDate() != null));
-    }
-
-    @Override
-    public void countCompletedForRepeatingQuest(String repeatingQuestId, LocalDate fromDate, LocalDate toDate, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
-        listenForSingleCountChange(query, listener, data -> data.filter(quest -> quest.getCompletedAtDate() != null
-                        && quest.getCompletedAtDate().getTime() >= toStartOfDayUTC(fromDate).getTime()
-                        && quest.getCompletedAtDate().getTime() <= toStartOfDayUTC(toDate).getTime()
-                )
-        );
-    }
-
-    @Override
-    public void countCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuest/id").equalTo(repeatingQuestId);
-        listenForCountChange(query, listener, data -> data.filter(Quest::isCompleted));
-    }
-
-    @Override
     public void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
@@ -181,25 +154,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void countAllForRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuest.getId());
-        listenForSingleCountChange(query, listener, data -> data
-                .filter(q -> isBetweenDatesFilter(q.getOriginalStartDate(), startDate, endDate)));
-    }
-
-    @Override
-    public void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<Quest> listener) {
-        Query query = getCollectionReference().orderByChild("sourceMapping/" + source).equalTo(sourceId);
-        listenForSingleListChange(query, result -> {
-            if (result.isEmpty()) {
-                listener.onDataChanged(null);
-                return;
-            }
-            listener.onDataChanged(result.get(0));
-        });
-    }
-
-    @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, data -> data.filter(q -> q.getEndDate() == null || !q.getEndDate().before(toStartOfDayUTC(startDate))));
@@ -209,12 +163,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(date).getTime());
         listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null && q.getPriority() == priority));
-    }
-
-    @Override
-    public void findAllForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleListChange(query, listener);
     }
 
     @Override
@@ -253,148 +201,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findNextUncompletedQuestEndDate(RepeatingQuest repeatingQuest, OnDataChangedListener<Date> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuest/id")
-                .equalTo(repeatingQuest.getId());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
-                Date startDate = toStartOfDayUTC(LocalDate.now());
-                Date nextDate = null;
-                for (Quest q : quests) {
-                    if (q.getEndDate() == null) {
-                        continue;
-                    }
-                    if (q.getEndDate().before(startDate)) {
-                        continue;
-                    }
-                    if (Quest.isCompleted(q)) {
-                        continue;
-                    }
-                    if (nextDate == null) {
-                        nextDate = q.getEndDate();
-                    }
-                    if (q.getEndDate().before(nextDate)) {
-                        nextDate = q.getEndDate();
-                    }
-                }
-                listener.onDataChanged(nextDate);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    @Override
-    public void findNextUncompletedQuestEndDate(String challengeId, OnDataChangedListener<Date> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId")
-                .equalTo(challengeId);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
-                Date startDate = toStartOfDayUTC(LocalDate.now());
-                Date nextDate = null;
-                for (Quest q : quests) {
-                    if (q.getEndDate() == null) {
-                        continue;
-                    }
-                    if (q.getEndDate().before(startDate)) {
-                        continue;
-                    }
-                    if (Quest.isCompleted(q)) {
-                        continue;
-                    }
-                    if (nextDate == null) {
-                        nextDate = q.getEndDate();
-                    }
-                    if (q.getEndDate().before(nextDate)) {
-                        nextDate = q.getEndDate();
-                    }
-                }
-                listener.onDataChanged(nextDate);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    @Override
-    public void listenForIncompleteNotRepeatingForChallenge(String challengeId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null && !q.isFromRepeatingQuest()));
-    }
-
-    @Override
     public void findIncompleteNotRepeatingNotForChallenge(String searchText, String challengeId, OnDataChangedListener<List<Quest>> listener) {
         listenForListChange(getCollectionReference(), listener, data -> data
                 .filter(q -> !challengeId.equals(q.getChallengeId()))
                 .filter(q -> q.getCompletedAtDate() == null)
                 .filter(q -> !q.isFromRepeatingQuest())
                 .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
-    }
-
-    @Override
-    public void findAllCompleted(String challengeId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null));
-    }
-
-    @Override
-    public void countCompletedByWeek(String challengeId, int weeks, OnDataChangedListener<List<Long>> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId")
-                .equalTo(challengeId);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Quest> quests = getListFromMapSnapshot(dataSnapshot);
-                List<Long> counts = new ArrayList<>();
-                List<Pair<LocalDate, LocalDate>> weekPairs = DateUtils.getBoundsForWeeksInThePast(LocalDate.now(), weeks);
-                for (int i = 0; i < weeks; i++) {
-                    Pair<LocalDate, LocalDate> weekPair = weekPairs.get(i);
-                    Integer count = Observable.from(quests).filter(
-                            q -> isBetweenDatesFilter(q.getCompletedAtDate(), weekPair.first, weekPair.second))
-                            .count().toBlocking().single();
-                    counts.add(Long.valueOf(count));
-                }
-                listener.onDataChanged(counts);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private boolean isBetweenDatesFilter(Date date, LocalDate start, LocalDate end) {
-        return date != null && !date.before(toStartOfDayUTC(start)) && !date.after(toStartOfDayUTC(end));
-    }
-
-    @Override
-    public void countCompletedForChallenge(String challengeId, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null));
-    }
-
-    @Override
-    public void countNotRepeating(String challengeId, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> !q.isFromRepeatingQuest()));
-    }
-
-    @Override
-    public void countNotDeleted(String challengeId, OnDataChangedListener<Long> listener) {
-        Query query = getCollectionReference().orderByChild("challengeId").equalTo(challengeId);
-        listenForSingleCountChange(query, listener);
     }
 
     @Override
@@ -467,28 +279,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 addNewRemindersIfNeeded(data, quest);
             }
         }
-        remindersRef.updateChildren(data);
-    }
-
-    public void saveWithNewReminders(Quest quest, List<Reminder> newReminders, OnOperationCompletedListener listener) {
-        List<Long> oldStartTimes = new ArrayList<>();
-        if (quest.getReminders() != null) {
-            for (Reminder r : quest.getReminders()) {
-                oldStartTimes.add(r.getStart());
-            }
-        }
-        quest.setReminders(newReminders);
-        if (quest.getReminders() != null) {
-            for (Reminder r : quest.getReminders()) {
-                r.calculateStartTime(quest);
-            }
-        }
-        super.save(quest, listener);
-
-        Map<String, Object> data = new HashMap<>();
-        addRemindersToDelete(quest, oldStartTimes, data);
-        addNewRemindersIfNeeded(data, quest);
-        DatabaseReference remindersRef = getPlayerReference().child("reminders");
         remindersRef.updateChildren(data);
     }
 

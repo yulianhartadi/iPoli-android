@@ -19,15 +19,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void findByExternalSourceMappingId(String source, String sourceId, OnDataChangedListener<RepeatingQuest> listener);
-
-    void findAllForChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
-
-    void listenForActiveForChallenge(String challengeId, OnDataChangedListener<List<RepeatingQuest>> listener);
-
     void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
-
-    void findByChallenge(Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void saveNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests);
 
