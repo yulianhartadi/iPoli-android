@@ -34,7 +34,7 @@ public class StartQuestCommand {
         }
 
         quest.setActualStartDate(DateUtils.nowUTC());
-        questPersistenceService.save(quest);
+        questPersistenceService.updateNewQuest(quest);
         stopOtherRunningQuests(quest);
 
         if (quest.getDuration() > 0) {
@@ -50,7 +50,7 @@ public class StartQuestCommand {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
                     cq.setActualStartDate(null);
-                    questPersistenceService.save(cq);
+                    questPersistenceService.updateNewQuest(cq);
                 }
             }
         });

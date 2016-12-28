@@ -136,18 +136,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     public void updateNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {
         Map<String, Object> data = new HashMap<>();
 
-        if (repeatingQuest.getPreviousChallengeId() != null) {
-            String challengeId = repeatingQuest.getPreviousChallengeId();
-            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
-            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), null);
-        }
-
-        if (repeatingQuest.getChallengeId() != null) {
-            String challengeId = repeatingQuest.getChallengeId();
-            // @TODO check if repeating quest is complete
-            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), false);
-            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
-        }
+        updateChallenge(repeatingQuest, data);
 
         for (Quest quest : questsToRemove) {
             questPersistenceService.populateDeleteQuestData(quest, data);
@@ -161,6 +150,42 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
         getPlayerReference().updateChildren(data);
+    }
+
+    @Override
+    public void updateNewRepeatingQuest(RepeatingQuest repeatingQuest) {
+        Map<String, Object> data = new HashMap<>();
+        populateUpdateRepeatingQuest(repeatingQuest, data);
+        getPlayerReference().updateChildren(data);
+    }
+
+    private void populateUpdateRepeatingQuest(RepeatingQuest repeatingQuest, Map<String, Object> data) {
+        updateChallenge(repeatingQuest, data);
+        data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
+    }
+
+    @Override
+    public void saveNewRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
+        Map<String, Object> data = new HashMap<>();
+        for (RepeatingQuest repeatingQuest : repeatingQuests) {
+            populateUpdateRepeatingQuest(repeatingQuest, data);
+        }
+        getPlayerReference().updateChildren(data);
+    }
+
+    private void updateChallenge(RepeatingQuest repeatingQuest, Map<String, Object> data) {
+        if (repeatingQuest.getPreviousChallengeId() != null) {
+            String challengeId = repeatingQuest.getPreviousChallengeId();
+            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), null);
+        }
+
+        if (repeatingQuest.getChallengeId() != null) {
+            String challengeId = repeatingQuest.getChallengeId();
+            // @TODO check if repeating quest is complete
+            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), false);
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
+        }
     }
 
     @NonNull

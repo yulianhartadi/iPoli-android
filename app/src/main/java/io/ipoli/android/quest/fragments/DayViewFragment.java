@@ -68,7 +68,6 @@ import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
@@ -99,9 +98,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
-
-    @Inject
-    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
 
     private int movingQuestPosition;
 
@@ -476,7 +472,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void saveQuest(Quest q) {
-        questPersistenceService.save(q);
+        questPersistenceService.updateNewQuest(q);
     }
 
     @Override

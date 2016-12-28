@@ -432,7 +432,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
-        questPersistenceService.save(quest);
+        questPersistenceService.updateNewQuest(quest);
         String message = getString(R.string.quest_snoozed);
         if (quest.getEndDate() == null) {
             message = getString(R.string.quest_moved_to_inbox);

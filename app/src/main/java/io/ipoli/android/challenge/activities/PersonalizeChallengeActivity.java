@@ -426,7 +426,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(2);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        
+
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -437,7 +437,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(3);
         recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        
+
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -538,25 +538,23 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         view.setVisibility(View.GONE);
         eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
         Toast.makeText(this, R.string.challenge_accepted, Toast.LENGTH_SHORT).show();
-        challengePersistenceService.save(predefinedChallenge.challenge, () -> {
-            String challengeId = predefinedChallenge.challenge.getId();
-            List<Quest> quests = new ArrayList<>();
-            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-            List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
-            for (BaseQuest bq : selectedQuests) {
-                if (bq instanceof Quest) {
-                    Quest q = (Quest) bq;
-                    q.setChallengeId(challengeId);
-                    quests.add(q);
-                } else {
-                    RepeatingQuest rq = (RepeatingQuest) bq;
-                    rq.setChallengeId(challengeId);
-                    repeatingQuests.add(rq);
-                }
+        challengePersistenceService.save(predefinedChallenge.challenge);
+        String challengeId = predefinedChallenge.challenge.getId();
+        List<Quest> quests = new ArrayList<>();
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
+        for (BaseQuest bq : selectedQuests) {
+            if (bq instanceof Quest) {
+                Quest q = (Quest) bq;
+                q.setChallengeId(challengeId);
+                quests.add(q);
+            } else {
+                RepeatingQuest rq = (RepeatingQuest) bq;
+                rq.setChallengeId(challengeId);
+                repeatingQuests.add(rq);
             }
-            questPersistenceService.save(quests, () -> {
-                repeatingQuestPersistenceService.save(repeatingQuests, this::finish);
-            });
-        });
+        }
+        questPersistenceService.saveNewQuests(quests);
+        repeatingQuestPersistenceService.saveNewRepeatingQuests(repeatingQuests);
     }
 }

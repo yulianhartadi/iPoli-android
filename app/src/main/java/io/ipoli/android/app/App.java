@@ -28,8 +28,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -105,7 +107,6 @@ import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.receivers.StopQuestReceiver;
-import io.ipoli.android.quest.schedulers.PersistentRepeatingQuestScheduler;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
@@ -133,9 +134,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
-
-    @Inject
-    PersistentRepeatingQuestScheduler persistentRepeatingQuestScheduler;
 
     @Inject
     AnalyticsService analyticsService;
@@ -448,8 +446,8 @@ public class App extends MultiDexApplication {
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     q.setPriority(null);
                 }
-                questPersistenceService.save(q);
             }
+            questPersistenceService.updateNewQuests(quests);
         });
     }
 
@@ -500,11 +498,11 @@ public class App extends MultiDexApplication {
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
             q.setChallengeId(null);
-            questPersistenceService.save(q);
+            questPersistenceService.updateNewQuest(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
             rq.setChallengeId(null);
-            repeatingQuestPersistenceService.save(rq);
+            repeatingQuestPersistenceService.updateNewRepeatingQuest(rq);
         }
     }
 
@@ -600,7 +598,7 @@ public class App extends MultiDexApplication {
                 }
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            List<Quest> questsToCreate = persistentRepeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             repeatingQuestPersistenceService.updateNewRepeatingQuest(repeatingQuest, questsToRemove, questsToCreate);
         });
     }
@@ -689,7 +687,7 @@ public class App extends MultiDexApplication {
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
         repeatingQuest.setReminders(e.reminders);
 
-        List<Quest> quests = persistentRepeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+        List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
 
         repeatingQuestPersistenceService.saveNewRepeatingQuest(repeatingQuest, quests);
     }
@@ -703,7 +701,12 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
-        persistentRepeatingQuestScheduler.schedule(repeatingQuests, DateUtils.toStartOfDayUTC(LocalDate.now()));
+        Map<String, List<Quest>> questsToCreate = new HashMap<>();
+        for(RepeatingQuest repeatingQuest : repeatingQuests) {
+            List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            questsToCreate.put(repeatingQuest.getId(), quests);
+        }
+        // @TODO save
     }
 
     private void scheduleNextReminder() {

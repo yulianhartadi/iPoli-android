@@ -234,10 +234,10 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         }
 
         if (!quests.isEmpty()) {
-            questPersistenceService.save(quests);
+            questPersistenceService.saveNewQuests(quests);
         }
         if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.save(repeatingQuests);
+            repeatingQuestPersistenceService.saveNewRepeatingQuests(repeatingQuests);
         }
         finish();
     }

@@ -22,7 +22,6 @@ import java.util.Map;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 import rx.Observable;
@@ -176,41 +175,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         listenerToValueListener.remove(listener);
     }
 
-    @Override
-    public void listenForChange(OnChangeListener<List<T>> listener) {
-        Query query = getCollectionReference().orderByChild("updatedAt").startAt(new Date().getTime());
-        ChildEventListener childListener = new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                List<T> result = new ArrayList<>();
-                result.add(dataSnapshot.getValue(getModelClass()));
-                listener.onNew(result);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        childListeners.put(childListener, query);
-        query.addChildEventListener(childListener);
-    }
-
     protected abstract Class<T> getModelClass();
 
     protected abstract String getCollectionName();
@@ -281,11 +245,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
         query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
-    }
-
-    @Override
-    public void listenForAll(OnDataChangedListener<List<T>> listener) {
-        listenForListChange(getCollectionReference(), listener);
     }
 
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
