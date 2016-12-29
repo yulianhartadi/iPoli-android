@@ -261,18 +261,18 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    public interface Predicate<T> {
+    protected interface Predicate<T> {
         boolean shouldInclude(T obj);
     }
 
-    public static class QueryFilter<T> {
+    private static class QueryFilter<T> {
 
         public static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
             QueryFilter<T> queryFilter = new QueryFilter<T>();
             return queryFilter.filterData(data, predicate);
         }
 
-        public List<T> filterData(List<T> data, Predicate<T> predicate) {
+        private List<T> filterData(List<T> data, Predicate<T> predicate) {
             List<T> result = new ArrayList<>();
             for (T obj : data) {
                 if (predicate.shouldInclude(obj)) {
@@ -283,7 +283,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         }
     }
 
-    public interface QuerySort<T> {
+    protected interface QuerySort<T> {
         int sort(T obj1, T obj2);
     }
 }
