@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
@@ -157,8 +156,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
             if (questData.getScheduledDate() == null) {
                 data.put("/inboxQuests/" + questId + "/challengeId", challengeId);
             } else {
-                String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(questData.getScheduledDate());
-                data.put("/dayQuests/" + dateString + "/" + questId + "/challengeId", challengeId);
+                data.put("/dayQuests/" + questData.getScheduledDate() + "/" + questId + "/challengeId", challengeId);
             }
             data.put("/quests/" + questId + "/challengeId", challengeId);
         }

@@ -1,6 +1,5 @@
 package io.ipoli.android;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -142,7 +141,6 @@ public interface Constants {
     int REVIVE_PET_COST = 300;
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
-    SimpleDateFormat DAY_QUESTS_DATE_FORMATTER = new SimpleDateFormat("dd-MM-yyyy");
     int MAX_TIMES_A_DAY_COUNT = 8;
 
     enum DaysOfWeek {
