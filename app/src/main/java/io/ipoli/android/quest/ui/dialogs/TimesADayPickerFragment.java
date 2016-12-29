@@ -10,7 +10,7 @@ import android.support.v7.app.AlertDialog;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.ui.formatters.TimesADayFormatter;
+import io.ipoli.android.app.ui.formatters.TimesADayFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

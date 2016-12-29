@@ -43,7 +43,9 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
@@ -51,9 +53,6 @@ import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.quest.ui.formatters.DateFormatter;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -200,7 +199,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
-        Date scheduledDate = repeatingQuest.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()).getTime());
+        Date scheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
                 scheduledDate,
@@ -210,12 +209,12 @@ public class RepeatingQuestActivity extends BaseActivity {
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }
 
-    private void showFrequencyProgress(Category category, PeriodHistory currentWeekHistory) {
+    private void showFrequencyProgress(Category category, PeriodHistory currentPeriodHistory) {
         LayoutInflater inflater = LayoutInflater.from(this);
         progressContainer.removeAllViews();
 
-        int totalCount = currentWeekHistory.getTotalCount();
-        int completedCount = currentWeekHistory.getCompletedCount();
+        int totalCount = currentPeriodHistory.getTotalCount();
+        int completedCount = currentPeriodHistory.getCompletedCount();
         if (totalCount > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
             progressText.setText(completedCount + " completed this month");
@@ -223,7 +222,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
 
-        long incomplete = totalCount - completedCount;
+        long incomplete = currentPeriodHistory.getRemainingCount();
 
         int progressColor = R.color.colorAccent;
 

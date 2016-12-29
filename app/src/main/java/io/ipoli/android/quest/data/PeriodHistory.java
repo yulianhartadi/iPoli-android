@@ -9,6 +9,7 @@ public class PeriodHistory {
     private long end;
     private int completedCount;
     private int totalCount;
+    private int scheduledCount;
 
     private String type;
 
@@ -66,5 +67,21 @@ public class PeriodHistory {
 
     public void setTotalCount(int totalCount) {
         this.totalCount = totalCount;
+    }
+
+    public int getRemainingCount() {
+        return getTotalCount() - getCompletedCount();
+    }
+
+    public int getRemainingScheduledCount() {
+        return getScheduledCount() - getCompletedCount();
+    }
+
+    public void increaseScheduledCount() {
+        scheduledCount++;
+    }
+
+    public int getScheduledCount() {
+        return scheduledCount;
     }
 }

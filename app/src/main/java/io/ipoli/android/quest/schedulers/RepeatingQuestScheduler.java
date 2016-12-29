@@ -49,7 +49,6 @@ public class RepeatingQuestScheduler {
     public List<Quest> scheduleAhead(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
         List<Quest> quests = new ArrayList<>();
-//        for (RepeatingQuest rq : repeatingQuests) {
         if (repeatingQuest.isFlexible()) {
             Recurrence.RecurrenceType recurrenceType = repeatingQuest.getRecurrence().getRecurrenceType();
             if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
@@ -60,7 +59,6 @@ public class RepeatingQuestScheduler {
         } else {
             quests.addAll(scheduleFor4WeeksAhead(repeatingQuest, currentDate));
         }
-//        }
         return quests;
 
     }
@@ -290,7 +288,7 @@ public class RepeatingQuestScheduler {
         return new DateTime(toStartOfDayUTC(new LocalDate(endDate.getTime(), DateTimeZone.UTC).plusDays(1)));
     }
 
-    public Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
+    private Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
         Quest quest = new Quest();
         quest.setName(repeatingQuest.getName());
         quest.setCategory(repeatingQuest.getCategory());

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.ui.formatters;
+package io.ipoli.android.app.ui.formatters;
 
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Recurrence;
