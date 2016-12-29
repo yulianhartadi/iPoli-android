@@ -61,7 +61,7 @@ import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
-import io.ipoli.android.quest.ui.formatters.TimerFormatter;
+import io.ipoli.android.app.ui.formatters.TimerFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

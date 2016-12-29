@@ -1,8 +1,5 @@
 package io.ipoli.android.quest.events;
 
-import java.util.List;
-
-import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -11,10 +8,8 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public class NewRepeatingQuestEvent {
     public final RepeatingQuest repeatingQuest;
-    public final List<Reminder> reminders;
 
-    public NewRepeatingQuestEvent(RepeatingQuest repeatingQuest, List<Reminder> reminders) {
+    public NewRepeatingQuestEvent(RepeatingQuest repeatingQuest) {
         this.repeatingQuest = repeatingQuest;
-        this.reminders = reminders;
     }
 }

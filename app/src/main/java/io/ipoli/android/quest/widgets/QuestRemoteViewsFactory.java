@@ -26,7 +26,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 

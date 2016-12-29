@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.ui.formatters;
+package io.ipoli.android.app.ui.formatters;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

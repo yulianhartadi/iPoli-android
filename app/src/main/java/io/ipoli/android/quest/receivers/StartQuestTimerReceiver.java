@@ -23,7 +23,7 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

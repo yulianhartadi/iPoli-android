@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.ui.formatters.FlexibleTimesFormatter;
+import io.ipoli.android.app.ui.formatters.FlexibleTimesFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

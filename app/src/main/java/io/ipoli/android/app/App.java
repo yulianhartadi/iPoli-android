@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.amplitude.api.Amplitude;
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
@@ -39,6 +40,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.AnalyticsConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -48,7 +50,6 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
-import io.ipoli.android.app.events.ScheduleRepeatingQuestsEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
@@ -112,7 +113,7 @@ import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 
 /**
@@ -154,6 +155,7 @@ public class App extends MultiDexApplication {
 
     @Inject
     PetPersistenceService petPersistenceService;
+
     @Inject
     ExperienceRewardGenerator experienceRewardGenerator;
 
@@ -314,6 +316,7 @@ public class App extends MultiDexApplication {
 
         JodaTimeAndroid.init(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
+        Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
@@ -467,11 +470,6 @@ public class App extends MultiDexApplication {
     public void onPlayerCreated(PlayerCreatedEvent e) {
         playerId = e.playerId;
         initAppStart();
-    }
-
-    @Subscribe
-    public void onScheduleRepeatingQuests(ScheduleRepeatingQuestsEvent e) {
-        scheduleQuestsFor4WeeksAhead();
     }
 
     @Subscribe
@@ -700,7 +698,6 @@ public class App extends MultiDexApplication {
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
-        repeatingQuest.setReminders(e.reminders);
 
         List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
 

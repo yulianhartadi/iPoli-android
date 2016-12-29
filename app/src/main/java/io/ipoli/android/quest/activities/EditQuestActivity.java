@@ -109,11 +109,11 @@ import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
-import io.ipoli.android.quest.ui.formatters.DateFormatter;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
-import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
-import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
-import io.ipoli.android.quest.ui.formatters.TimesADayFormatter;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
+import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.ui.formatters.TimesADayFormatter;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
@@ -931,9 +931,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void setFrequencyText(Recurrence recurrence) {
         if (recurrence != null) {
             populateEndDate(null);
-//            if (recurrence.getTimesADay() > 1) {
-//                populateStartTime(-1);
-//            }
         }
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
@@ -995,7 +992,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         }
         rq.setNotes(notes);
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
-        eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
+        rq.setReminders(getReminders());
+        eventBus.post(new NewRepeatingQuestEvent(rq));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
 

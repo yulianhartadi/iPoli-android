@@ -25,7 +25,7 @@ import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

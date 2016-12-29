@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.ui.formatters;
+package io.ipoli.android.app.ui.formatters;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

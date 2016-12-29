@@ -176,10 +176,10 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @Exclude
-    public Date getNextScheduledDate(long currentDate) {
+    public Date getNextScheduledDate(LocalDate currentDate) {
         Date nextDate = null;
         for (QuestData qd : questsData.values()) {
-            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
+            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= DateUtils.toStartOfDayUTC(currentDate).getTime()) {
                 if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
                     nextDate = new Date(qd.getScheduledDate());
                 }
@@ -364,10 +364,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     @Exclude
     public void addScheduledPeriodEndDate(Date date) {
-        if (scheduledPeriodEndDates == null) {
-            scheduledPeriodEndDates = new HashMap<>();
-        }
-        scheduledPeriodEndDates.put(String.valueOf(date.getTime()), true);
+        getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
     }
 
     @Exclude
@@ -424,12 +421,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
 
         for (QuestData qd : getQuestsData().values()) {
-            if (!qd.isComplete()) {
-                continue;
-            }
             for (PeriodHistory p : result) {
                 if (DateUtils.isBetween(new Date(qd.getScheduledDate()), new Date(p.getStart()), new Date(p.getEnd()))) {
-                    p.increaseCompletedCount();
+                    if (qd.isComplete()) {
+                        p.increaseCompletedCount();
+                    }
+                    p.increaseScheduledCount();
                     break;
                 }
             }

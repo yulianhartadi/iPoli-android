@@ -6,7 +6,7 @@ import java.util.List;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
-import io.ipoli.android.quest.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

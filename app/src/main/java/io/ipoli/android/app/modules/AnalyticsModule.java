@@ -1,17 +1,17 @@
 package io.ipoli.android.app.modules;
 
-import android.content.Context;
 import android.text.TextUtils;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.amplitude.api.Amplitude;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.services.AmplitudeAnalyticsService;
 import io.ipoli.android.app.services.AnalyticsService;
-import io.ipoli.android.app.services.FirebaseAnalyticsService;
 import io.ipoli.android.app.utils.LocalStorage;
 
 /**
@@ -23,13 +23,15 @@ public class AnalyticsModule {
 
     @Provides
     @Singleton
-    public AnalyticsService provideAnalyticsService(Context context, LocalStorage localStorage) {
-        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(context);
+    public AnalyticsService provideAnalyticsService(LocalStorage localStorage) {
         String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         if (!TextUtils.isEmpty(playerId)) {
-            firebaseAnalytics.setUserId(playerId);
+            Amplitude.getInstance().setUserId(playerId);
         }
-        firebaseAnalytics.setAnalyticsCollectionEnabled(true);
-        return new FirebaseAnalyticsService(firebaseAnalytics);
+        Amplitude.getInstance().setLogLevel(0);
+        if (BuildConfig.DEBUG) {
+            Amplitude.getInstance().setOptOut(true);
+        }
+        return new AmplitudeAnalyticsService();
     }
 }

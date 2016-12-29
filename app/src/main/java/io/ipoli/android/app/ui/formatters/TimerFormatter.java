@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.ui.formatters;
+package io.ipoli.android.app.ui.formatters;
 
 import java.util.concurrent.TimeUnit;
 

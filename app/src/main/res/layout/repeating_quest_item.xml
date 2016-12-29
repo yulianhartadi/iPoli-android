@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/content_layout"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
+    android:layout_height="88dp"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
@@ -43,8 +43,34 @@
             android:textColor="@color/md_dark_text_87"
             android:textSize="16sp" />
 
+        <LinearLayout
+            android:id="@+id/quest_repeating_quest_indicators_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/quest_progress_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal" />
+
+            <android.support.v4.widget.Space
+                android:id="@+id/quest_progress_space"
+                android:layout_width="6dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/quest_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/md_dark_text_54" />
+        </LinearLayout>
+
         <TextView
-            android:id="@+id/quest_schedule"
+            android:id="@+id/quest_next_datetime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -56,7 +82,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/quest_details_container"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:background="?android:attr/selectableItemBackground"

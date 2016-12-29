@@ -68,7 +68,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
-import io.ipoli.android.quest.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
