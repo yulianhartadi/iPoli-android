@@ -31,8 +31,6 @@ public class AnalyticsModule {
         Amplitude.getInstance().setLogLevel(0);
         if (BuildConfig.DEBUG) {
             Amplitude.getInstance().setOptOut(true);
-        } else {
-            Amplitude.getInstance().setOptOut(false);
         }
         return new AmplitudeAnalyticsService();
     }
