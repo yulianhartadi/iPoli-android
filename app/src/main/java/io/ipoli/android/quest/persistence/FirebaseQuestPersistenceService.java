@@ -91,7 +91,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getPlayerReference().child("dayQuests").child(String.valueOf(toStartOfDayUTC(currentDate).getTime()));
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
         listenForListChange(query, listener);
     }
 
@@ -118,13 +118,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getPlayerReference().child("dayQuests").child(String.valueOf(toStartOfDayUTC(currentDate).getTime()));
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
         listenForListChange(query, listener, Quest::isCompleted);
     }
 
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getPlayerReference().child("dayQuests").child(String.valueOf(toStartOfDayUTC(currentDate).getTime()));
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
         listenForListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
     }
 
@@ -148,7 +148,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getPlayerReference().child("dayQuests").child(String.valueOf(toStartOfDayUTC(currentDate).getTime()));
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
         listenForSingleListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
     }
 
@@ -352,7 +352,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener) {
-        Query query = getPlayerReference().child("dayQuests").child(String.valueOf(toStartOfDayUTC(date).getTime()));
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(date));
 
         ChildEventListener childListener = new ChildEventListener() {
 
@@ -383,6 +383,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         };
         childListeners.put(childListener, query);
         query.addChildEventListener(childListener);
+    }
+
+    @NonNull
+    private String createDayQuestKey(LocalDate date) {
+        return String.valueOf(toStartOfDayUTC(date).getTime());
     }
 
     private boolean shouldAddQuestReminders(Quest quest) {
