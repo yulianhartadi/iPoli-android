@@ -181,11 +181,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected abstract GenericTypeIndicator<Map<String, T>> getGenericMapIndicator();
 
-    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
+    private ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
         return createListListener(listener, null);
     }
 
-    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
+    private ValueEventListener createListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -204,7 +204,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected ValueEventListener createSortedListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
+    private ValueEventListener createSortedListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -226,7 +226,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener, Predicate<T> predicate) {
+    private ValueEventListener createCountListener(OnDataChangedListener<Long> listener, Predicate<T> predicate) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -247,7 +247,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected ValueEventListener createModelListener(OnDataChangedListener<T> listener) {
+    private ValueEventListener createModelListener(OnDataChangedListener<T> listener) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -268,7 +268,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     private static class QueryFilter<T> {
 
         public static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
-            QueryFilter<T> queryFilter = new QueryFilter<T>();
+            QueryFilter<T> queryFilter = new QueryFilter<>();
             return queryFilter.filterData(data, predicate);
         }
 
