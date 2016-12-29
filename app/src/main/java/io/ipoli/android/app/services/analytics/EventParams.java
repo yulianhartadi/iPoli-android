@@ -1,6 +1,7 @@
 package io.ipoli.android.app.services.analytics;
 
-import android.os.Bundle;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -8,7 +9,7 @@ import android.os.Bundle;
  */
 
 public class EventParams {
-    private Bundle params = new Bundle();
+    private JSONObject params = new JSONObject();
 
     private EventParams() {
     }
@@ -32,7 +33,11 @@ public class EventParams {
     }
 
     public EventParams add(String key, String value) {
-        params.putString(key, value);
+        try {
+            params.put(key, value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -44,7 +49,7 @@ public class EventParams {
         return add(key, String.valueOf(value));
     }
 
-    public Bundle getParams() {
+    public JSONObject getParams() {
         return params;
     }
 

@@ -2,7 +2,7 @@ package io.ipoli.android.app.services;
 
 import android.text.TextUtils;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.amplitude.api.Amplitude;
 import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
@@ -130,18 +130,11 @@ import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
 import io.ipoli.android.shop.events.CoinsPurchasedEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 
-public class FirebaseAnalyticsService implements AnalyticsService {
-
-
-    private final FirebaseAnalytics analytics;
-
-    public FirebaseAnalyticsService(FirebaseAnalytics analytics) {
-        this.analytics = analytics;
-    }
+public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
-        analytics.setUserId(e.playerId);
+        Amplitude.getInstance().setUserId(e.playerId);
         log("player_created");
     }
 
@@ -847,7 +840,7 @@ public class FirebaseAnalyticsService implements AnalyticsService {
     }
 
     private void log(String eventName, EventParams eventParams) {
-        analytics.logEvent(eventName, eventParams.getParams());
+        Amplitude.getInstance().logEvent(eventName, eventParams.getParams());
     }
 
     private void log(String eventName, EventSource source) {
