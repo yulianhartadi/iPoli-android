@@ -1,0 +1,20 @@
+package io.ipoli.android.quest.ui.formatters;
+
+/**
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * on 6/15/16.
+ */
+public class TimesADayFormatter {
+
+    public static String formatReadable(int value) {
+        if(value <= 0) {
+            value = 1;
+        }
+        if(value == 1) {
+            return "Once";
+        } else if(value == 2) {
+            return "Twice";
+        }
+        return value + " times";
+    }
+}

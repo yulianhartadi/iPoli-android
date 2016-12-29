@@ -37,7 +37,7 @@ public class CalendarQuestPopupMenu {
         eventBus.post(new ItemActionsShownEvent(source));
         context = view.getContext();
         PopupMenu pm = new PopupMenu(context, view);
-        boolean isCompleted = Quest.isCompleted(quest);
+        boolean isCompleted = quest.isCompleted();
         int menuRes = isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
         pm.inflate(menuRes);
 
@@ -81,7 +81,7 @@ public class CalendarQuestPopupMenu {
                     eventBus.post(new SnoozeQuestRequestEvent(quest, DateUtils.getTomorrow(), source));
                     return true;
                 case R.id.quest_edit:
-                    eventBus.post(new EditQuestRequestEvent(quest, source));
+                    eventBus.post(new EditQuestRequestEvent(quest.getId(), source));
                     return true;
                 case R.id.quest_delete:
                     eventBus.post(new DeleteQuestRequestEvent(quest, source));

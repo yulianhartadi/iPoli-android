@@ -162,7 +162,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         }
         questsToSave.addAll(selectedQuests);
 
-        questPersistenceService.save(questsToSave);
+        questPersistenceService.update(questsToSave);
 
         if (!selectedBaseQuests.isEmpty()) {
             Toast.makeText(this, R.string.miq_saved, Toast.LENGTH_LONG).show();
@@ -176,15 +176,15 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         previouslySelectedQuests.clear();
         List<PickQuestViewModel> viewModels = new ArrayList<>();
         for (Quest q : quests) {
-            if (q.repeatPerDayWithShortOrNoDuration()) {
-                continue;
-            }
+//            if (q.repeatPerDayWithShortOrNoDuration()) {
+//                continue;
+//            }
             PickQuestViewModel vm = new PickQuestViewModel(q, q.getName());
             if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                 vm.select();
                 previouslySelectedQuests.add(q);
             }
-            if (Quest.isCompleted(q)) {
+            if (q.isCompleted()) {
                 vm.markCompleted();
             }
             viewModels.add(vm);

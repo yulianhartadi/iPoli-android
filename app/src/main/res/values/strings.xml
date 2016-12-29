@@ -18,7 +18,8 @@
     <string name="title_activity_level_up">Level Up!</string>
     <string name="level_up_reward">You are now level %d! Your reward is:</string>
     <string name="attribution">Source: %s</string>
-    <string name="quest_complete">Quest complete! +%1$d XP +%2$d coins.</string>
+    <string name="quest_complete">Quest complete</string>
+    <string name="quest_complete_with_bounty">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
@@ -360,4 +361,5 @@
     <string name="time_of_day_picker_title">When you are most productive?</string>
     <string name="tutorial_schedule_title">Automagically Organise Your Day</string>
     <string name="tutorial_schedule_desc">iPoli automatically schedules your day in the smartest possible way. Your important quests will never be left unfinished again!</string>
+    <string name="quest_times_a_day_question">How many times a day?</string>
 </resources>

@@ -114,12 +114,12 @@ public class ShopActivity extends BaseActivity {
                     .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
                         eventBus.post(new PetBoughtEvent(e.petViewModel));
                         avatar.removeCoins(vm.getPrice());
-                        avatarPersistenceService.save(avatar, () -> {
-                            petPersistenceService.find(pet -> {
-                                pet.setPicture(vm.getPictureName());
-                                pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
-                                petPersistenceService.save(pet, this::finish);
-                            });
+                        avatarPersistenceService.save(avatar);
+                        petPersistenceService.find(pet -> {
+                            pet.setPicture(vm.getPictureName());
+                            pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
+                            petPersistenceService.save(pet);
+                            finish();
                         });
                     })
                     .setNegativeButton(R.string.cancel, (dialog, which) -> {

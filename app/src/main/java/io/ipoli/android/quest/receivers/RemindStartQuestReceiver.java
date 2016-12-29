@@ -12,9 +12,7 @@ import android.support.v7.app.NotificationCompat;
 
 import com.squareup.otto.Bus;
 
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -25,11 +23,10 @@ import io.ipoli.android.app.navigation.ActivityIntentFactory;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
-import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,70 +45,35 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
-        List<String> questIds = intent.getStringArrayListExtra(Constants.QUEST_IDS_EXTRA_KEY);
-        if (questIds.isEmpty()) {
-            context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
-            return;
-        }
         long startTime = intent.getLongExtra(Constants.REMINDER_START_TIME, 0);
         PendingResult result = goAsync();
-        new Thread() {
-            @Override
-            public void run() {
-                CountDownLatch latch = new CountDownLatch(questIds.size());
-                for (String questId : questIds) {
-                    questPersistenceService.findById(questId, quest -> {
-                        Reminder reminder = null;
-                        for (Reminder r : quest.getReminders()) {
-                            if (r.getStart() == startTime) {
-                                reminder = r;
-                                break;
-                            }
-                        }
-                        if (reminder == null) {
-                            latch.countDown();
-                            return;
-                        }
-                        showNotification(context, quest, reminder);
-                        latch.countDown();
-                    });
-
-
-                }
-                try {
-                    latch.await();
-                    questPersistenceService.deleteRemindersAtTime(startTime, () -> {
-                        context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
-                        result.finish();
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    result.finish();
-                }
+        questPersistenceService.findQuestRemindersAtStartTime(startTime, questReminders -> {
+            for (QuestReminder qr : questReminders) {
+                showNotification(context, qr);
             }
-        }.start();
+            questPersistenceService.deleteRemindersAtTime(startTime);
+            context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+            result.finish();
+        });
     }
 
-    private void showNotification(Context context, Quest q, Reminder reminder) {
-        if (q.shouldNotBeReminded()) {
-            return;
-        }
+    private void showNotification(Context context, QuestReminder questReminder) {
 
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
-        remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, q.getId());
-        String name = q.getName();
+        remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questReminder.getQuestId());
+        String name = questReminder.getQuestName();
 
         PendingIntent pendingNotificationIntent = ActivityIntentFactory.createWithParentStack(QuestActivity.class, remindStartQuestIntent, context, new Random().nextInt());
 
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
 
-        PendingIntent startQuestPI = getStartPendingIntent(q.getId(), context);
-        PendingIntent snoozeQuestPI = getSnoozePendingIntent(q.getId(), context);
+        PendingIntent startQuestPI = getStartPendingIntent(questReminder.getQuestId(), context);
+        PendingIntent snoozeQuestPI = getSnoozePendingIntent(questReminder.getQuestId(), context);
 
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
                 .setContentTitle(name)
-                .setContentText(getContentText(context, reminder))
+                .setContentText(getContentText(context, questReminder))
                 .setContentIntent(pendingNotificationIntent)
                 .setShowWhen(true)
                 .setSmallIcon(R.drawable.ic_notification_small)
@@ -124,15 +86,15 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(reminder.getNotificationId(), builder.build());
+        notificationManagerCompat.notify(questReminder.getNotificationId(), builder.build());
     }
 
-    private String getContentText(Context context, Reminder reminder) {
-        if (StringUtils.isEmpty(reminder.getMessage())) {
-            if (reminder.getMinutesFromStart() == 0) {
+    private String getContentText(Context context, QuestReminder questReminder) {
+        if (StringUtils.isEmpty(questReminder.getMessage())) {
+            if (questReminder.getMinutesFromStart() == 0) {
                 return context.getString(R.string.ready_to_start);
             } else {
-                Pair<Long, TimeOffsetType> parseResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
+                Pair<Long, TimeOffsetType> parseResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(questReminder.getMinutesFromStart()));
                 long timeValue = parseResult.first;
                 TimeOffsetType timeOffsetType = parseResult.second;
                 String type = timeOffsetType.name().toLowerCase();
@@ -142,7 +104,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 return "Starts in " + timeValue + " " + type;
             }
         }
-        return reminder.getMessage();
+        return questReminder.getMessage();
     }
 
 

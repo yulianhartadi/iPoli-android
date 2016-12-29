@@ -19,7 +19,6 @@ public class Recurrence extends PersistedObject {
 
     public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
 
-    private int timesADay;
     private int flexibleCount;
 
     private String rrule;
@@ -36,21 +35,14 @@ public class Recurrence extends PersistedObject {
 
     }
 
-    public Recurrence(int timesADay) {
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-        setRecurrenceType(RecurrenceType.DAILY);
-        setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
-        this.timesADay = timesADay;
-        this.flexibleCount = 0;
-    }
-
-    public void setTimesADay(int timesADay) {
-        this.timesADay = timesADay;
-    }
-
     public static Recurrence create() {
-        return new Recurrence(1);
+        Recurrence recurrence = new Recurrence();
+        recurrence.setCreatedAt(DateUtils.nowUTC().getTime());
+        recurrence.setUpdatedAt(DateUtils.nowUTC().getTime());
+        recurrence.setRecurrenceType(RecurrenceType.DAILY);
+        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setFlexibleCount(0);
+        return recurrence;
     }
 
     @Exclude
@@ -64,10 +56,6 @@ public class Recurrence extends PersistedObject {
 
     public String getType() {
         return type;
-    }
-
-    public int getTimesADay() {
-        return timesADay;
     }
 
     public String getRrule() {

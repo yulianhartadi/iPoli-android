@@ -8,13 +8,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +19,7 @@ import java.util.Map;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
-import rx.Observable;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -35,15 +29,13 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected final FirebaseDatabase database;
     protected final Bus eventBus;
-    private final Gson gson;
     private final Map<ValueEventListener, Query> valueListeners;
     protected final Map<ChildEventListener, Query> childListeners;
     private final Map<OnDataChangedListener<?>, ValueEventListener> listenerToValueListener;
     private DatabaseReference playerRef;
 
-    public BaseFirebasePersistenceService(Bus eventBus, Gson gson) {
+    public BaseFirebasePersistenceService(Bus eventBus) {
         this.eventBus = eventBus;
-        this.gson = gson;
         this.database = FirebaseDatabase.getInstance();
         this.valueListeners = new HashMap<>();
         this.childListeners = new HashMap<>();
@@ -53,11 +45,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void save(T obj) {
-        save(obj, null);
-    }
-
-    @Override
-    public void save(T obj, OnOperationCompletedListener listener) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(obj.getId());
         if (!isNew) {
@@ -68,37 +55,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
                 collectionRef.child(obj.getId());
         obj.setId(objRef.getKey());
         objRef.setValue(obj);
-        FirebaseCompletionListener.listen(listener);
-    }
-
-    @Override
-    public void save(List<T> objects) {
-        save(objects, null);
-    }
-
-    @Override
-    public void save(List<T> objects, OnOperationCompletedListener listener) {
-        String json = gson.toJson(objects);
-        Type type = new TypeToken<List<Map<String, Object>>>() {
-        }.getType();
-        List<Map<String, Object>> objMaps = gson.fromJson(json, type);
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (int i = 0; i < objMaps.size(); i++) {
-            Map<String, Object> objMap = objMaps.get(i);
-            boolean isNew = !objMap.containsKey("id");
-            if (isNew) {
-                String id = collectionRef.push().getKey();
-                objects.get(i).setId(id);
-                objMap.put("id", id);
-                data.put(id, objMap);
-            } else {
-                objMap.put("updatedAt", new Date().getTime());
-                data.put(objMap.get("id").toString(), objMap);
-            }
-        }
-        collectionRef.updateChildren(data);
-        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -123,29 +79,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     @Override
     public void delete(T object) {
-        delete(object, null);
-    }
-
-    @Override
-    public void delete(T object, OnOperationCompletedListener listener) {
         getCollectionReference().child(object.getId()).removeValue();
-        FirebaseCompletionListener.listen(listener);
-    }
-
-    @Override
-    public void delete(List<T> objects) {
-        delete(objects, null);
-    }
-
-    @Override
-    public void delete(List<T> objects, OnOperationCompletedListener listener) {
-        DatabaseReference collectionRef = getCollectionReference();
-        Map<String, Object> data = new HashMap<>();
-        for (T obj : objects) {
-            data.put(obj.getId(), null);
-        }
-        collectionRef.updateChildren(data);
-        FirebaseCompletionListener.listen(listener);
     }
 
     @Override
@@ -176,41 +110,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         listenerToValueListener.remove(listener);
     }
 
-    @Override
-    public void listenForChange(OnChangeListener<List<T>> listener) {
-        Query query = getCollectionReference().orderByChild("updatedAt").startAt(new Date().getTime());
-        ChildEventListener childListener = new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                List<T> result = new ArrayList<>();
-                result.add(dataSnapshot.getValue(getModelClass()));
-                listener.onNew(result);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        childListeners.put(childListener, query);
-        query.addChildEventListener(childListener);
-    }
-
     protected abstract Class<T> getModelClass();
 
     protected abstract String getCollectionName();
@@ -229,12 +128,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         listenForQuery(query, createListListener(listener), listener);
     }
 
-    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
-        listenForQuery(query, createListListener(listener, queryFilter), listener);
+    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
+        listenForQuery(query, createListListener(listener, predicate), listener);
     }
 
-    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
-        listenForQuery(query, createSortedListListener(listener, queryFilter, querySort), listener);
+    protected void listenForListChange(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
+        listenForQuery(query, createSortedListListener(listener, predicate, querySort), listener);
     }
 
     protected void listenForModelChange(Query query, OnDataChangedListener<T> listener) {
@@ -251,12 +150,12 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(valueListener);
     }
 
-    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
-        query.addListenerForSingleValueEvent(createListListener(listener, queryFilter));
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
+        query.addListenerForSingleValueEvent(createListListener(listener, predicate));
     }
 
-    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
-        query.addListenerForSingleValueEvent(createSortedListListener(listener, queryFilter, querySort));
+    protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
+        query.addListenerForSingleValueEvent(createSortedListListener(listener, predicate, querySort));
     }
 
     protected void listenForSingleListChange(Query query, OnDataChangedListener<List<T>> listener) {
@@ -267,20 +166,8 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createModelListener(listener));
     }
 
-    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener) {
-        listenForQuery(query, createCountListener(listener), listener);
-    }
-
-    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
-        listenForQuery(query, createCountListener(listener, queryFilter), listener);
-    }
-
-    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener) {
-        query.addListenerForSingleValueEvent(createCountListener(listener));
-    }
-
-    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
-        query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
+    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener, Predicate<T> predicate) {
+        query.addListenerForSingleValueEvent(createCountListener(listener, predicate));
     }
 
     protected List<T> getListFromMapSnapshot(DataSnapshot dataSnapshot) {
@@ -294,23 +181,20 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
     protected abstract GenericTypeIndicator<Map<String, T>> getGenericMapIndicator();
 
-    protected abstract GenericTypeIndicator<List<T>> getGenericListIndicator();
-
     protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
         return createListListener(listener, null);
     }
 
-    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter) {
+    protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<T> data = getListFromMapSnapshot(dataSnapshot);
-                if (queryFilter == null) {
+                if (predicate == null) {
                     listener.onDataChanged(data);
                     return;
                 }
-                List<T> filteredData = queryFilter.filter(Observable.from(data)).toList().toBlocking().single();
-                listener.onDataChanged(filteredData);
+                listener.onDataChanged(QueryFilter.filter(data, predicate));
             }
 
             @Override
@@ -320,23 +204,19 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected ValueEventListener createSortedListListener(OnDataChangedListener<List<T>> listener, QueryFilter<T> queryFilter, QuerySort<T> querySort) {
+    protected ValueEventListener createSortedListListener(OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<T> data = getListFromMapSnapshot(dataSnapshot);
-                Observable<T> observableData = Observable.from(data);
-                if (queryFilter != null) {
-                    observableData = queryFilter.filter(observableData);
+                if (predicate != null) {
+                    data = QueryFilter.filter(data, predicate);
                 }
 
-                List<T> filteredData;
                 if (querySort != null) {
-                    filteredData = observableData.toSortedList(querySort::sort).toBlocking().single();
-                } else {
-                    filteredData = observableData.toSortedList().toBlocking().single();
+                    Collections.sort(data, querySort::sort);
                 }
-                listener.onDataChanged(filteredData);
+                listener.onDataChanged(data);
             }
 
             @Override
@@ -346,20 +226,17 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener) {
-        return createCountListener(listener, null);
-    }
-
-    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
+    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener, Predicate<T> predicate) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (queryFilter == null) {
+                if (predicate == null) {
+
                     listener.onDataChanged(dataSnapshot.getChildrenCount());
                     return;
                 }
                 List<T> data = getListFromMapSnapshot(dataSnapshot);
-                List<T> filteredData = queryFilter.filter(Observable.from(data)).toList().toBlocking().single();
+                List<T> filteredData = QueryFilter.filter(data, predicate);
                 listener.onDataChanged((long) filteredData.size());
             }
 
@@ -384,27 +261,26 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         };
     }
 
-    protected static class FirebaseCompletionListener {
-
-        private final OnOperationCompletedListener listener;
-
-        private FirebaseCompletionListener(OnOperationCompletedListener listener) {
-            this.listener = listener;
-        }
-
-        public static void listen(OnOperationCompletedListener listener) {
-            new FirebaseCompletionListener(listener).onComplete();
-        }
-
-        public void onComplete() {
-            if (listener != null) {
-                listener.onComplete();
-            }
-        }
+    public interface Predicate<T> {
+        boolean shouldInclude(T obj);
     }
 
-    public interface QueryFilter<T> {
-        Observable<T> filter(Observable<T> data);
+    public static class QueryFilter<T> {
+
+        public static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
+            QueryFilter<T> queryFilter = new QueryFilter<T>();
+            return queryFilter.filterData(data, predicate);
+        }
+
+        public List<T> filterData(List<T> data, Predicate<T> predicate) {
+            List<T> result = new ArrayList<>();
+            for (T obj : data) {
+                if (predicate.shouldInclude(obj)) {
+                    result.add(obj);
+                }
+            }
+            return result;
+        }
     }
 
     public interface QuerySort<T> {

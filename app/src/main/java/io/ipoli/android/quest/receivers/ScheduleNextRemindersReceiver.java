@@ -7,9 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
@@ -33,22 +30,20 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
 
         App.getAppComponent(context).inject(this);
         PendingResult result = goAsync();
-        questPersistenceService.findNextQuestIdsToRemind(reminderStart -> {
+        questPersistenceService.findNextReminderTime(nextReminderTime -> {
             Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(context, i));
-            if (reminderStart == null) {
+            if (nextReminderTime == null) {
                 result.finish();
                 return;
             }
-            List<String> questIds = reminderStart.questIds;
-            i.putStringArrayListExtra(Constants.QUEST_IDS_EXTRA_KEY, (ArrayList<String>) questIds);
-            i.putExtra(Constants.REMINDER_START_TIME, reminderStart.startTime);
+            i.putExtra(Constants.REMINDER_START_TIME, nextReminderTime);
             PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(context, i);
             if (Build.VERSION.SDK_INT > 22) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderStart.startTime, pendingIntent);
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextReminderTime, pendingIntent);
             } else {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderStart.startTime, pendingIntent);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextReminderTime, pendingIntent);
             }
             result.finish();
         });

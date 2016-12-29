@@ -9,12 +9,13 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -30,7 +31,7 @@ import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
-    private List<Quest> quests = new ArrayList<>();
+    private List<Quest> quests;
 
     @Inject
     Bus eventBus;
@@ -46,6 +47,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
+        this.quests = new ArrayList<>();
         this.context = context;
     }
 
@@ -55,9 +57,16 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        Type type = new TypeToken<List<Quest>>() {
-        }.getType();
-        quests = gson.fromJson(localStorage.readString(Constants.WIDGET_AGENDA_QUESTS), type);
+        final CountDownLatch latch = new CountDownLatch(1);
+        questPersistenceService.findAllNonAllDayIncompleteForDate(LocalDate.now(), result -> {
+            quests = result;
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -78,7 +87,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
-        rv.setTextViewText(R.id.widget_agenda_quest_name, q.getName());
+        rv.setTextViewText(R.id.widget_agenda_quest_name, getQuestName(q));
         rv.setImageViewResource(R.id.widget_agenda_category, Quest.getCategory(q).colorfulImage);
 
         Bundle tapQuestBundle = new Bundle();
@@ -115,6 +124,14 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             rv.setTextViewText(R.id.widget_agenda_quest_time, questTime);
         }
         return rv;
+    }
+
+    public String getQuestName(Quest quest) {
+        String name = quest.getName();
+        if (quest.getRemainingCount() == 1) {
+            return name;
+        }
+        return name + " (x" + quest.getRemainingCount() + ")";
     }
 
     @Override

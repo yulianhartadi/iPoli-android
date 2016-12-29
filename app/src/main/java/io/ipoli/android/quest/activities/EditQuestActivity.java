@@ -42,7 +42,6 @@ import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -60,6 +59,9 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.CategoryView;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
@@ -101,18 +103,17 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
-import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
-import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
-import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.quest.ui.events.QuestReminderPickedEvent;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.quest.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.quest.ui.formatters.TimesADayFormatter;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
@@ -135,7 +136,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
-        CategoryView.OnCategoryChangedListener {
+        CategoryView.OnCategoryChangedListener, TimesADayPickerFragment.OnTimesADayPickedListener {
 
     public static final String KEY_NEW_REPEATING_QUEST = "key_new_repeating_quest";
 
@@ -192,6 +193,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @BindView(R.id.quest_reminders_container)
     ViewGroup remindersContainer;
+
+    @BindView(R.id.quest_times_a_day_value)
+    TextView timesADayText;
 
     @BindView(R.id.add_sub_quest)
     TextInputEditText addSubQuest;
@@ -296,6 +300,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             questText.setSelection(quest.getName().length());
             populateDuration(quest.getDuration());
             populateStartTime(quest.getStartMinute());
+            populateTimesADay(quest.getTimesADay());
             if (quest.getEndDate() != null) {
                 populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
             } else {
@@ -326,6 +331,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             questText.setText(rq.getName());
             questText.setSelection(rq.getName().length());
             populateDuration(rq.getDuration());
+            populateTimesADay(rq.getTimesADay());
             if (rq.getStartMinute() >= 0) {
                 populateStartTime(rq.getStartMinute());
             }
@@ -355,6 +361,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             changeEditMode(EditMode.ADD_REPEATING_QUEST);
         }
         populateDuration(Constants.QUEST_MIN_DURATION);
+        populateTimesADay(1);
         populateNoteText(null);
         populateChallenge(null);
         notificationId = new Random().nextInt();
@@ -585,25 +592,13 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
             q.setName(name);
+            q.setStartDateFromLocal((Date) endDateText.getTag());
             q.setEndDateFromLocal((Date) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-            if (isQuestForThePast(q)) {
-                Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-                Calendar c = Calendar.getInstance();
-                c.setTime(completedAt);
-
-                int completedAtMinute = Time.now().toMinutesAfterMidnight();
-                if (hasStartTime(q)) {
-                    completedAtMinute = q.getStartMinute();
-                }
-                c.add(Calendar.MINUTE, completedAtMinute);
-                q.setCompletedAtDate(c.getTime());
-                q.setCompletedAtMinute(completedAtMinute);
-            }
             q.setCategory(categoryView.getSelectedCategory().name());
             q.setChallengeId((String) challengeValue.getTag());
-
+            q.setTimesADay((int) timesADayText.getTag());
             List<Note> textNotes = q.getTextNotes();
             String txt = (String) noteText.getTag();
 
@@ -618,7 +613,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
 
             q.setSubQuests(subQuestListAdapter.getSubQuests());
-            eventBus.post(new UpdateQuestEvent(q, getReminders(), source));
+            q.setReminders(getReminders());
+            eventBus.post(new UpdateQuestEvent(q, source));
             if (q.getEndDate() != null) {
                 Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
             } else {
@@ -642,7 +638,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             rq.setRecurrence((Recurrence) frequencyText.getTag());
             rq.setCategory(categoryView.getSelectedCategory().name());
             rq.setChallengeId((String) challengeValue.getTag());
-
+            rq.setTimesADay((int) timesADayText.getTag());
             List<Note> textNotes = rq.getTextNotes();
             String txt = (String) noteText.getTag();
 
@@ -657,7 +653,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             }
 
             rq.setSubQuests(subQuestListAdapter.getSubQuests());
-            eventBus.post(new UpdateRepeatingQuestEvent(rq, getReminders(), source));
+            rq.setReminders(getReminders());
+            eventBus.post(new UpdateRepeatingQuestEvent(rq, source));
             Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
             finish();
@@ -677,7 +674,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         String name = "";
         if (editMode == EDIT_NEW_QUEST) {
             Quest q = questParser.parseQuest(questText.getText().toString());
-            if(q == null) {
+            if (q == null) {
                 q = createEmptyQuest();
             }
             if (q.getEndDate() == null) {
@@ -691,7 +688,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
         } else if (editMode == EDIT_NEW_REPEATING_QUEST) {
             RepeatingQuest rq = questParser.parseRepeatingQuest(questText.getText().toString());
-            if(rq == null) {
+            if (rq == null) {
                 rq = createEmptyRepeatingQuest();
             }
             populateStartTime(rq.getStartMinute());
@@ -763,6 +760,17 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         f.show(getSupportFragmentManager());
     }
 
+    @OnClick(R.id.quest_times_a_day_container)
+    public void onTimesADayClick(View view) {
+        TimesADayPickerFragment fragment;
+        if (timesADayText.getTag() != null && (int) timesADayText.getTag() > 0) {
+            fragment = TimesADayPickerFragment.newInstance((int) timesADayText.getTag(), this);
+        } else {
+            fragment = TimesADayPickerFragment.newInstance(this);
+        }
+        fragment.show(getSupportFragmentManager());
+    }
+
     @OnClick(R.id.quest_challenge_container)
     public void onChallengeClick(View view) {
         ChallengePickerFragment.newInstance((String) challengeValue.getTag(), this).show(getSupportFragmentManager());
@@ -782,6 +790,11 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         eventBus.post(new QuestDatePickedEvent(editMode.name().toLowerCase()));
     }
 
+    @Override
+    public void onTimesADayPicked(int timesADay) {
+        populateTimesADay(timesADay);
+        eventBus.post(new QuestDurationPickedEvent(editMode.name().toLowerCase()));
+    }
 
     @Override
     public void onTextPicked(String text) {
@@ -837,11 +850,17 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         endDateText.setTag(date);
     }
 
+    private void populateTimesADay(int timesADay) {
+        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
+        timesADayText.setTag(timesADay);
+        if(timesADay > 1) {
+            populateStartTime(-1);
+        }
+    }
+
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
-            if (frequencyText.getTag() != null) {
-                ((Recurrence) frequencyText.getTag()).setTimesADay(1);
-            }
+            populateTimesADay(1);
             startTimeText.setText(Time.of(startMinute).toString());
             startTimeText.setTag(startMinute);
         } else {
@@ -912,9 +931,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void setFrequencyText(Recurrence recurrence) {
         if (recurrence != null) {
             populateEndDate(null);
-            if (recurrence.getTimesADay() > 1) {
-                populateStartTime(-1);
-            }
+//            if (recurrence.getTimesADay() > 1) {
+//                populateStartTime(-1);
+//            }
         }
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
@@ -940,19 +959,6 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setEndDateFromLocal((Date) endDateText.getTag());
         q.setDuration((int) durationText.getTag());
         q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-        if (isQuestForThePast(q)) {
-            Date completedAt = new LocalDate(q.getEndDate(), DateTimeZone.UTC).toDate();
-            Calendar c = Calendar.getInstance();
-            c.setTime(completedAt);
-
-            int completedAtMinute = Time.now().toMinutesAfterMidnight();
-            if (hasStartTime(q)) {
-                completedAtMinute = q.getStartMinute();
-            }
-            c.add(Calendar.MINUTE, completedAtMinute);
-            q.setCompletedAtDate(c.getTime());
-            q.setCompletedAtMinute(completedAtMinute);
-        }
         q.setCategory(categoryView.getSelectedCategory().name());
 
         List<Note> notes = new ArrayList<>();
@@ -988,18 +994,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             notes.add(new Note(txt));
         }
         rq.setNotes(notes);
-
         rq.setSubQuests(subQuestListAdapter.getSubQuests());
         eventBus.post(new NewRepeatingQuestEvent(rq, getReminders()));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
-    }
-
-    private boolean hasStartTime(Quest q) {
-        return q.getStartMinute() >= 0;
-    }
-
-    private boolean isQuestForThePast(Quest q) {
-        return q.getEndDate() != null && new LocalDate(q.getEndDate(), DateTimeZone.UTC).isBefore(new LocalDate());
     }
 
     @OnEditorAction(R.id.quest_text)

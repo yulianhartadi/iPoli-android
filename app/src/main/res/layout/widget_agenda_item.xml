@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_agenda_container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
     android:background="@drawable/agenda_widget_item_background">
 
-    <ImageView
-        android:id="@+id/widget_agenda_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@null" />
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/widget_agenda_quest_info_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/widget_agenda_category"
-        android:layout_toStartOf="@+id/widget_agenda_check"
-        android:orientation="vertical"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground">
 
-        <TextView
-            android:id="@+id/widget_agenda_quest_name"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/widget_agenda_category"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:minHeight="21dp"
-            android:textColor="@color/md_dark_text_87" />
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@null" />
 
-        <TextView
-            android:id="@+id/widget_agenda_quest_time"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:minHeight="21dp"
-            android:textColor="@color/md_dark_text_54" />
-    </LinearLayout>
+            android:layout_toEndOf="@+id/widget_agenda_category"
+            android:layout_toStartOf="@+id/widget_agenda_check"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp">
 
-    <ImageView
-        android:id="@+id/widget_agenda_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@null"
-        android:src="@drawable/ic_check_box_outline_blank_black_24dp" />
-</RelativeLayout>
+            <TextView
+                android:id="@+id/widget_agenda_quest_name"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:minHeight="21dp"
+                android:textColor="@color/md_dark_text_87" />
+
+            <TextView
+                android:id="@+id/widget_agenda_quest_time"
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:minHeight="21dp"
+                android:textColor="@color/md_dark_text_54" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/widget_agenda_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@null"
+            android:src="@drawable/ic_check_box_outline_blank_black_24dp" />
+    </RelativeLayout>
+</LinearLayout>

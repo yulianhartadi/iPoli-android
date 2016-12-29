@@ -76,7 +76,6 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     private void onViewQuest(Context context, String questId) {
         Intent i = new Intent(context, QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Intent[] intentWithParentStack = ActivityIntentFactory.createIntentWithParentStack(QuestActivity.class, i, context);
         context.startActivities(intentWithParentStack);
     }
@@ -138,7 +137,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
 
     private void setupHeadClickListener(Context context, RemoteViews rv) {
         Intent startAppIntent = new Intent(context, MainActivity.class);
-        PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent startAppPendingIntent = PendingIntent.getActivity(context, 0, startAppIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         rv.setOnClickPendingIntent(R.id.widget_agenda_header, startAppPendingIntent);
     }
 
@@ -149,6 +148,8 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     private PendingIntent getQuickAddPendingIntent(Context context) {
         Intent intent = new Intent(context, QuickAddActivity.class);
         intent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + context.getString(R.string.today).toLowerCase());
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

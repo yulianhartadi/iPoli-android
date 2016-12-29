@@ -20,7 +20,9 @@ import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -48,6 +50,7 @@ import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.reminder.data.Reminder;
 
 /**
@@ -82,6 +85,10 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+
+    @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
 
     private ArrayList<PredefinedChallengeQuestViewModel> viewModels;
 
@@ -315,7 +322,8 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createHealthyAndFit() {
         RepeatingQuest rq1 = makeRepeatingQuest("Drink 6 glasses of water every day", "Drink glass of water", 10, category);
-        Recurrence recurrence = new Recurrence(6);
+        rq1.setTimesADay(6);
+        Recurrence recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -426,7 +434,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(2);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        
+
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -437,7 +445,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setFlexibleCount(3);
         recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        
+
         recurrence.setDtendDate(predefinedChallenge.challenge.getEndDate());
         rq1.setRecurrence(recurrence);
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
@@ -483,7 +491,8 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(quest3));
 
         RepeatingQuest rq1 = makeRepeatingQuest("Practice presenting alone twice a day for a week", "Practice presenting alone", 20, category);
-        Recurrence recurrence = new Recurrence(2);
+        rq1.setTimesADay(2);
+        Recurrence recurrence = Recurrence.create();
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(2)));
         recurrence.setDtendDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(9)));
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
@@ -538,25 +547,31 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         view.setVisibility(View.GONE);
         eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
         Toast.makeText(this, R.string.challenge_accepted, Toast.LENGTH_SHORT).show();
-        challengePersistenceService.save(predefinedChallenge.challenge, () -> {
-            String challengeId = predefinedChallenge.challenge.getId();
-            List<Quest> quests = new ArrayList<>();
-            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-            List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
-            for (BaseQuest bq : selectedQuests) {
-                if (bq instanceof Quest) {
-                    Quest q = (Quest) bq;
-                    q.setChallengeId(challengeId);
-                    quests.add(q);
-                } else {
-                    RepeatingQuest rq = (RepeatingQuest) bq;
-                    rq.setChallengeId(challengeId);
-                    repeatingQuests.add(rq);
-                }
+        challengePersistenceService.save(predefinedChallenge.challenge);
+        String challengeId = predefinedChallenge.challenge.getId();
+        List<Quest> quests = new ArrayList<>();
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+        List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
+        for (BaseQuest bq : selectedQuests) {
+            if (bq instanceof Quest) {
+                Quest q = (Quest) bq;
+                q.setChallengeId(challengeId);
+                quests.add(q);
+            } else {
+                RepeatingQuest rq = (RepeatingQuest) bq;
+                rq.setChallengeId(challengeId);
+                repeatingQuests.add(rq);
             }
-            questPersistenceService.save(quests, () -> {
-                repeatingQuestPersistenceService.save(repeatingQuests, this::finish);
-            });
-        });
+        }
+        questPersistenceService.save(quests);
+
+        Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
+        for (RepeatingQuest repeatingQuest : repeatingQuests) {
+            List<Quest> scheduledQuests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
+        }
+
+        repeatingQuestPersistenceService.save(repeatingQuestToScheduledQuests);
+        finish();
     }
 }

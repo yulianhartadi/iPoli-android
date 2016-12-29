@@ -1,15 +1,14 @@
 package io.ipoli.android.quest.events;
 
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.quest.data.Quest;
 
 public class EditQuestRequestEvent {
 
-    public final Quest quest;
     public final EventSource source;
+    public final String questId;
 
-    public EditQuestRequestEvent(Quest quest, EventSource source) {
-        this.quest = quest;
+    public EditQuestRequestEvent(String questId, EventSource source) {
+        this.questId = questId;
         this.source = source;
     }
 }

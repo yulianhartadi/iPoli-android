@@ -5,7 +5,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.quest.persistence.OnOperationCompletedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,8 +24,8 @@ public class FirebasePetPersistenceService extends BaseFirebasePersistenceServic
 
     private final LocalStorage localStorage;
 
-    public FirebasePetPersistenceService(Bus eventBus, Gson gson, LocalStorage localStorage) {
-        super(eventBus, gson);
+    public FirebasePetPersistenceService(Bus eventBus, LocalStorage localStorage) {
+        super(eventBus);
         this.localStorage = localStorage;
     }
 
@@ -72,8 +70,8 @@ public class FirebasePetPersistenceService extends BaseFirebasePersistenceServic
     }
 
     @Override
-    public void save(Pet pet, OnOperationCompletedListener listener) {
-        super.save(pet, listener);
+    public void save(Pet pet) {
+        super.save(pet);
         localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
         localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
 
@@ -98,12 +96,6 @@ public class FirebasePetPersistenceService extends BaseFirebasePersistenceServic
     protected GenericTypeIndicator<Map<String, Pet>> getGenericMapIndicator() {
         return new GenericTypeIndicator<Map<String, Pet>>() {
 
-        };
-    }
-
-    @Override
-    protected GenericTypeIndicator<List<Pet>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<Pet>>() {
         };
     }
 }

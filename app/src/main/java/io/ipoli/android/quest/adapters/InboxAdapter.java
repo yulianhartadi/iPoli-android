@@ -54,7 +54,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         final Quest q = quests.get(position);
 
         holder.contentLayout.setOnClickListener(view ->
-                eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX)));
+                eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.INBOX)));
 
         Category category = Quest.getCategory(q);
         holder.categoryIndicatorImage.setImageResource(category.colorfulImage);
@@ -75,7 +75,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                         eventBus.post(new CompleteQuestRequestEvent(q, EventSource.INBOX));
                         return true;
                     case R.id.edit_quest:
-                        eventBus.post(new EditQuestRequestEvent(q, EventSource.INBOX));
+                        eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.INBOX));
                         return true;
                     case R.id.delete_quest:
                         eventBus.post(new DeleteQuestRequestEvent(q, EventSource.INBOX));

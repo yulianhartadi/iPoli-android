@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
@@ -49,10 +50,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Long originalStart;
     private Long end;
 
-    private RepeatingQuest repeatingQuest;
+    private String repeatingQuestId;
 
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
+    private List<Long> reminderStartTimes;
     private Integer difficulty;
 
     private Long completedAt;
@@ -67,12 +69,21 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private List<Note> notes;
 
+    private Integer timesADay;
+
     private String source;
 
     private SourceMapping sourceMapping;
 
     @Exclude
+    private Long previousScheduledDate;
+
+    @Exclude
+    private String previousChallengeId;
+
+    @Exclude
     private transient boolean isPlaceholder;
+    private int completedCount;
 
     public Quest() {
     }
@@ -86,12 +97,29 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
         setOriginalStartDate(endDate);
-        this.setStartMinute(null);
+        setStartMinute(null);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+        this.setCompletedCount(0);
+        this.setTimesADay(1);
+    }
+
+    @Exclude
+    public boolean isCompleted() {
+        return getCompletedAtDate() != null;
+    }
+
+    @Exclude
+    public Long getPreviousScheduledDate() {
+        return previousScheduledDate;
+    }
+
+    @Exclude
+    public void setPreviousScheduledDate(Long previousScheduledDate) {
+        this.previousScheduledDate = previousScheduledDate;
     }
 
     public void setDuration(Integer duration) {
@@ -103,7 +131,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public List<Reminder> getReminders() {
-        if(reminders == null) {
+        if (reminders == null) {
             reminders = new ArrayList<>();
         }
         return reminders;
@@ -140,12 +168,16 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.startMinute = startMinute;
     }
 
-    public RepeatingQuest getRepeatingQuest() {
-        return repeatingQuest;
+    public String getRepeatingQuestId() {
+        return repeatingQuestId;
     }
 
-    public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
-        this.repeatingQuest = repeatingQuest;
+    public void setRepeatingQuestId(String repeatingQuestId) {
+        this.repeatingQuestId = repeatingQuestId;
+    }
+
+    public void addReminderStartTime(long startTime) {
+        getReminderStartTimes().add(startTime);
     }
 
     public boolean isAllDay() {
@@ -212,7 +244,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public void setEndDate(Date endDate) {
-        end = endDate != null ? endDate.getTime() : null;
+        setEnd(endDate != null ? endDate.getTime() : null);
     }
 
     @Exclude
@@ -225,6 +257,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setEnd(Long end) {
+        setPreviousScheduledDate(this.end);
         this.end = end;
     }
 
@@ -343,16 +376,17 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
-    public static boolean isCompleted(Quest quest) {
-        return quest.getCompletedAtDate() != null;
-    }
-
     public static void setStartTime(Quest quest, Time time) {
         if (time != null) {
             quest.setStartMinute(time.toMinutesAfterMidnight());
         } else {
             quest.setStartMinute(null);
         }
+    }
+
+    @Exclude
+    public boolean isScheduled() {
+        return getEndDate() != null && getStartMinute() >= 0;
     }
 
     @Exclude
@@ -393,21 +427,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @Exclude
-    public boolean isIndicator() {
-        boolean isCompleted = getCompletedAtDate() != null;
-        return isCompleted && repeatPerDayWithShortOrNoDuration();
+    public boolean isFromRepeatingQuest() {
+        return !StringUtils.isEmpty(getRepeatingQuestId());
     }
-
-    public boolean repeatPerDayWithShortOrNoDuration() {
-        boolean repeatsPerDay = getRepeatingQuest() != null && getRepeatingQuest().getRecurrence().getTimesADay() > 1;
-        boolean hasShortOrNoDuration = getDuration() < Constants.CALENDAR_EVENT_MIN_DURATION;
-        return repeatsPerDay && hasShortOrNoDuration;
-    }
-
 
     @Exclude
-    public boolean isRepeatingQuest() {
-        return getRepeatingQuest() != null;
+    public boolean isFromChallenge() {
+        return !StringUtils.isEmpty(getChallengeId());
     }
 
     public SourceMapping getSourceMapping() {
@@ -457,12 +483,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setChallengeId(String challengeId) {
+        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
     @Exclude
     public int getActualDuration() {
-        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+        if (this.isCompleted() && getActualStartDate() != null) {
             return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAtDate().getTime() - getActualStartDate().getTime());
         }
         return getDuration();
@@ -470,7 +497,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public int getActualStartMinute() {
-        if (Quest.isCompleted(this) && getActualStartDate() != null) {
+        if (this.isCompleted() && getActualStartDate() != null) {
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
@@ -525,5 +552,68 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public boolean shouldNotBeReminded() {
         return getActualStart() != null || getCompletedAt() != null;
+    }
+
+    public List<Long> getReminderStartTimes() {
+        if (reminderStartTimes == null) {
+            reminderStartTimes = new ArrayList<>();
+        }
+        return reminderStartTimes;
+    }
+
+    public void setReminderStartTimes(List<Long> reminderStartTimes) {
+        this.reminderStartTimes = reminderStartTimes;
+    }
+
+    public Integer getTimesADay() {
+        return timesADay;
+    }
+
+    public void setTimesADay(Integer timesADay) {
+        setCompletedCount(Math.min(timesADay, getCompletedCount()));
+        this.timesADay = timesADay;
+    }
+
+    @Exclude
+    public String getPreviousChallengeId() {
+        return previousChallengeId;
+    }
+
+    @Exclude
+    public void setPreviousChallengeId(String previousChallengeId) {
+        this.previousChallengeId = previousChallengeId;
+    }
+
+    @Exclude
+    public boolean hasStartTime() {
+        return getStartMinute() >= 0;
+    }
+
+    public void setCompletedCount(int completedCount) {
+        this.completedCount = completedCount;
+    }
+
+    public int getCompletedCount() {
+        return completedCount;
+    }
+
+    @Exclude
+    public int getRemainingCount() {
+        return getTimesADay() - getCompletedCount();
+    }
+
+    @Exclude
+    public void increaseCompletedCount() {
+        completedCount++;
+    }
+
+    @Exclude
+    public boolean completedAllTimesForDay() {
+        return getRemainingCount() == 0;
+    }
+
+    @Exclude
+    public boolean shouldBeDoneMultipleTimesPerDay() {
+        return getTimesADay() > 1;
     }
 }

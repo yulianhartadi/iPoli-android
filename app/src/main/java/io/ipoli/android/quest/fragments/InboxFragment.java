@@ -77,7 +77,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
         InboxAdapter inboxAdapter = new InboxAdapter(getContext(), new ArrayList<>(), eventBus);
         questList.setAdapter(inboxAdapter);
 
-        questPersistenceService.listenForUnplanned(this);
+        questPersistenceService.listenForInboxQuests(this);
         fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.INBOX)));
         return view;
     }
@@ -120,7 +120,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
         q.setEndDateFromLocal(new Date());
-        questPersistenceService.save(q);
+        questPersistenceService.update(q);
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
     }
 

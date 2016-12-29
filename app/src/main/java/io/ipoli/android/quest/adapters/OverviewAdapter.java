@@ -67,19 +67,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void setItems(List<QuestViewModel> viewModels) {
-        items = new ArrayList<>();
-        List<QuestViewModel> visibleQuests = new ArrayList<>();
-        for (QuestViewModel vm : viewModels) {
-            Quest q = vm.getQuest();
-            if (q.isScheduledForToday() || !q.isIndicator()) {
-                visibleQuests.add(vm);
-            }
-        }
-        if (visibleQuests.isEmpty()) {
-            return;
-        }
-        calculateHeaderIndices(visibleQuests);
-        items.addAll(visibleQuests);
+        items = new ArrayList<>(viewModels);
+        calculateHeaderIndices(viewModels);
         if (headerIndices[0] >= 0) {
             items.add(headerIndices[0], R.string.today);
         }
@@ -163,7 +152,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 pm.inflate(R.menu.overview_quest_actions_menu);
 
                 MenuItem startItem = pm.getMenu().findItem(R.id.quest_start);
-                if(q.isScheduledForToday()) {
+                if (q.isScheduledForToday()) {
                     startItem.setTitle(q.isStarted() ? R.string.stop : R.string.start);
                 } else {
                     startItem.setVisible(false);
@@ -205,7 +194,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             eventBus.post(new ScheduleQuestForTodayEvent(q, EventSource.OVERVIEW));
                             return true;
                         case R.id.edit_quest:
-                            eventBus.post(new EditQuestRequestEvent(q, EventSource.OVERVIEW));
+                            eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.OVERVIEW));
                             return true;
                         case R.id.delete_quest:
                             eventBus.post(new DeleteQuestRequestEvent(q, EventSource.OVERVIEW));

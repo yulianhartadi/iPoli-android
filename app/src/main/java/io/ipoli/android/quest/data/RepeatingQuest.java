@@ -1,8 +1,15 @@
 package io.ipoli.android.quest.data;
 
+import android.support.v4.util.Pair;
+
 import com.google.firebase.database.Exclude;
 
+import org.joda.time.LocalDate;
+import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +22,12 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
+
+import static io.ipoli.android.app.utils.DateUtils.isBetween;
+import static io.ipoli.android.app.utils.DateUtils.isSameDay;
+import static io.ipoli.android.app.utils.DateUtils.isTodayUTC;
+import static io.ipoli.android.app.utils.DateUtils.nowUTC;
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -47,13 +60,132 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private String challengeId;
 
+    private Integer timesADay;
+
     private String source;
 
     private SourceMapping sourceMapping;
 
     private Map<String, Boolean> scheduledPeriodEndDates;
 
+    @Exclude
+    private String previousChallengeId;
+
+    private Map<String, QuestData> questsData;
+
     public RepeatingQuest() {
+    }
+
+    public RepeatingQuest(String rawText) {
+        this.rawText = rawText;
+        setCreatedAt(nowUTC().getTime());
+        setUpdatedAt(nowUTC().getTime());
+        this.category = Category.PERSONAL.name();
+        setTimesADay(1);
+        this.flexibleStartTime = false;
+        this.source = Constants.API_RESOURCE_SOURCE;
+    }
+
+    public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
+        this.scheduledPeriodEndDates = scheduledPeriodEndDates;
+    }
+
+    @Exclude
+    public int getStreak() {
+        Recurrence recurrence = getRecurrence();
+        List<QuestData> questsData = new ArrayList<>(getQuestsData().values());
+        Collections.sort(questsData, (q1, q2) -> -Long.compare(q1.getOriginalScheduledDate(), q2.getOriginalScheduledDate()));
+        if (isFlexible()) {
+            return getFlexibleStreak(recurrence.getRecurrenceType(), questsData);
+        } else {
+            return getFixedStreak(questsData);
+        }
+    }
+
+    @Exclude
+    public int getFrequency() {
+        Recurrence recurrence = getRecurrence();
+        if (recurrence.isFlexible()) {
+            return recurrence.getFlexibleCount();
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
+            return 7;
+        }
+        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+            return 1;
+        }
+        try {
+            Recur recur = new Recur(recurrence.getRrule());
+            return recur.getDayList().size();
+        } catch (ParseException e) {
+            return 0;
+        }
+    }
+
+    private int getFixedStreak(List<QuestData> questsData) {
+        int streak = 0;
+        for (QuestData qd : questsData) {
+            if (new Date(qd.getOriginalScheduledDate()).after(toStartOfDayUTC(LocalDate.now()))) {
+                continue;
+            }
+
+            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+                continue;
+            }
+
+            if (qd.isComplete() && isSameDay(new Date(qd.getScheduledDate()), new Date(qd.getOriginalScheduledDate()))) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        return streak;
+    }
+
+
+    private int getFlexibleStreak(Recurrence.RecurrenceType recurrenceType, List<QuestData> questsData) {
+        int streak = 0;
+        for (QuestData qd : questsData) {
+
+            if (new Date(qd.getOriginalScheduledDate()).after(DateUtils.toStartOfDayUTC(LocalDate.now()))) {
+                continue;
+            }
+
+            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+                continue;
+            }
+
+            LocalDate periodStart = null;
+            LocalDate periodEnd = null;
+            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfMonth().withMinimumValue();
+                periodEnd = periodStart.dayOfMonth().withMaximumValue();
+            } else {
+                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfWeek().withMinimumValue();
+                periodEnd = periodStart.dayOfWeek().withMaximumValue();
+            }
+
+            if (qd.isComplete()
+                    && isBetween(new Date(qd.getScheduledDate()), toStartOfDayUTC(periodStart), toStartOfDayUTC(periodEnd))) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        return streak;
+    }
+
+    @Exclude
+    public Date getNextScheduledDate(long currentDate) {
+        Date nextDate = null;
+        for (QuestData qd : questsData.values()) {
+            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
+                if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
+                    nextDate = new Date(qd.getScheduledDate());
+                }
+            }
+        }
+        return nextDate;
     }
 
     public void setDuration(Integer duration) {
@@ -61,7 +193,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public List<Reminder> getReminders() {
-        if(reminders == null) {
+        if (reminders == null) {
             reminders = new ArrayList<>();
         }
         return reminders;
@@ -92,16 +224,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             return null;
         }
         return Time.of(quest.getStartMinute());
-    }
-
-    public RepeatingQuest(String rawText) {
-        this.rawText = rawText;
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-        this.category = Category.PERSONAL.name();
-        this.flexibleStartTime = false;
-        this.source = Constants.API_RESOURCE_SOURCE;
-        this.scheduledPeriodEndDates = new HashMap<>();
     }
 
     public String getName() {
@@ -212,6 +334,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public void setChallengeId(String challengeId) {
+        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
@@ -263,16 +386,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return scheduledPeriodEndDates;
     }
 
-    public void setScheduledPeriodEndDates(HashMap<String, Boolean> scheduledPeriodEndDates) {
-        this.scheduledPeriodEndDates = scheduledPeriodEndDates;
-    }
-
     @Exclude
     public boolean shouldBeScheduledForPeriod(Date periodEnd) {
-        if (scheduledPeriodEndDates == null) {
-            return true;
-        }
-        return !scheduledPeriodEndDates.containsKey(String.valueOf(periodEnd.getTime()));
+        return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
     }
 
     @Exclude
@@ -294,6 +410,88 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
+    }
 
+    public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
+        List<PeriodHistory> result = new ArrayList<>();
+        int frequency = getFrequency();
+        List<Pair<LocalDate, LocalDate>> pairs = recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY ?
+                DateUtils.getBoundsFor4MonthsInThePast(currentDate) :
+                DateUtils.getBoundsFor4WeeksInThePast(currentDate);
+
+        for (Pair<LocalDate, LocalDate> p : pairs) {
+            result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime(), frequency));
+        }
+
+        for (QuestData qd : getQuestsData().values()) {
+            if (!qd.isComplete()) {
+                continue;
+            }
+            for (PeriodHistory p : result) {
+                if (DateUtils.isBetween(new Date(qd.getScheduledDate()), new Date(p.getStart()), new Date(p.getEnd()))) {
+                    p.increaseCompletedCount();
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public Map<String, QuestData> getQuestsData() {
+        if (questsData == null) {
+            questsData = new HashMap<>();
+        }
+        return questsData;
+    }
+
+    public void setQuestsData(Map<String, QuestData> questsData) {
+        this.questsData = questsData;
+    }
+
+    @Exclude
+    public void addQuestData(String id, QuestData questData) {
+        getQuestsData().put(id, questData);
+    }
+
+    @Exclude
+    public String getPreviousChallengeId() {
+        return previousChallengeId;
+    }
+
+    @Exclude
+    public void setPreviousChallengeId(String previousChallengeId) {
+        this.previousChallengeId = previousChallengeId;
+    }
+
+    @Exclude
+    public int getTotalTimeSpent() {
+        int timeSpent = 0;
+        for (QuestData questData : getQuestsData().values()) {
+            if (questData.isComplete()) {
+                timeSpent += questData.getDuration();
+            }
+        }
+        return timeSpent;
+    }
+
+    @Exclude
+    public boolean isScheduledForDate(LocalDate date) {
+        for (String dateString : getScheduledPeriodEndDates().keySet()) {
+            LocalDate periodEnd = new LocalDate(Long.valueOf(dateString));
+
+            if (date.isBefore(periodEnd) || date.equals(periodEnd)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setTimesADay(int timesADay) {
+        this.timesADay = timesADay;
+    }
+
+    public Integer getTimesADay() {
+        return timesADay;
     }
 }

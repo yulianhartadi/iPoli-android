@@ -1,5 +1,6 @@
 package io.ipoli.android;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +39,6 @@ public interface Constants {
     int MAX_QUEST_DURATION_HOURS = 4;
     String QUEST_ID_EXTRA_KEY = "quest_id";
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
-    String QUEST_IDS_EXTRA_KEY = "quest_ids";
 
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
 
@@ -122,7 +122,6 @@ public interface Constants {
 
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
     int DEFAULT_BAR_COUNT = 4;
-    String WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
     String REMINDER_START_TIME = "reminder_start_time";
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
 
@@ -143,6 +142,8 @@ public interface Constants {
     int REVIVE_PET_COST = 300;
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
+    SimpleDateFormat DAY_QUESTS_DATE_FORMATTER = new SimpleDateFormat("dd-MM-yyyy");
+    int MAX_TIMES_A_DAY_COUNT = 8;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

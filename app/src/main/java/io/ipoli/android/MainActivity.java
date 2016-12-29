@@ -283,7 +283,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         Snackbar snackbar = Snackbar
                 .make(contentContainer,
-                        getString(R.string.quest_complete, experience, coins),
+                        getString(R.string.quest_complete_with_bounty, experience, coins),
                         Snackbar.LENGTH_LONG);
 
         snackbar.setAction(R.string.share, view -> {
@@ -331,7 +331,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void onEditQuestRequest(EditQuestRequestEvent e) {
         Intent i = new Intent(this, EditQuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.questId);
         startActivity(i);
     }
 
@@ -432,7 +432,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
-        questPersistenceService.save(quest);
+        questPersistenceService.update(quest);
         String message = getString(R.string.quest_snoozed);
         if (quest.getEndDate() == null) {
             message = getString(R.string.quest_moved_to_inbox);

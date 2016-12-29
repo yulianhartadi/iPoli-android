@@ -132,6 +132,13 @@ public class DateUtils {
         return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
     }
 
+    public static boolean isBetween(Date date, Date start, Date end) {
+        if (date == null || start == null || end == null) {
+            return false;
+        }
+        return !date.before(start) && !date.after(end);
+    }
+
     @NonNull
     public static List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
         LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();
@@ -140,6 +147,36 @@ public class DateUtils {
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
         weekBounds.add(new Pair<>(weekStart, weekEnd));
         for (int i = 0; i < weeks - 1; i++) {
+            weekStart = weekStart.plusWeeks(1);
+            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekBounds.add(new Pair<>(weekStart, weekEnd));
+        }
+        return weekBounds;
+    }
+
+    @NonNull
+    public static List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
+        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
+        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
+        monthBounds.add(new Pair<>(monthStart, monthEnd));
+        for (int i = 0; i < 3; i++) {
+            monthStart = monthStart.plusMonths(1);
+            monthEnd = monthStart.dayOfMonth().withMaximumValue();
+            monthBounds.add(new Pair<>(monthStart, monthEnd));
+        }
+        return monthBounds;
+    }
+
+    @NonNull
+    public static List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
+        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
+        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+
+        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
+        weekBounds.add(new Pair<>(weekStart, weekEnd));
+        for (int i = 0; i < 3; i++) {
             weekStart = weekStart.plusWeeks(1);
             weekEnd = weekStart.dayOfWeek().withMaximumValue();
             weekBounds.add(new Pair<>(weekStart, weekEnd));

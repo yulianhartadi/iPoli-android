@@ -61,9 +61,12 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final UnscheduledQuestViewModel vm = viewModels.get(position);
         Quest q = vm.getQuest();
-        holder.itemView.setOnClickListener(view -> {
-            eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
-        });
+
+        holder.name.setText(vm.getName());
+
+        holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
+        holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
+        holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
 
         GradientDrawable drawable = (GradientDrawable) holder.categoryIndicator.getBackground();
         drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
@@ -73,25 +76,39 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             holder.categoryIndicator.startAnimation(blinkAnimation);
         }
 
-        holder.name.setText(vm.getName());
-        holder.itemView.setOnLongClickListener(view -> {
-            eventBus.post(new MoveQuestToCalendarRequestEvent(vm, holder.getAdapterPosition()));
-            return true;
-        });
+        if (vm.getQuest().isPlaceholder()) {
+            holder.itemView.setOnClickListener(null);
+            holder.itemView.setOnLongClickListener(null);
+            holder.check.setVisibility(View.GONE);
+            holder.moreMenu.setVisibility(View.GONE);
+        } else {
 
-        holder.check.setOnCheckedChangeListener(null);
-        holder.check.setChecked(false);
-        holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if (checked) {
-                eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
+            holder.check.setVisibility(View.VISIBLE);
+            holder.moreMenu.setVisibility(View.VISIBLE);
+
+            holder.itemView.setOnClickListener(view -> {
+                eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            });
+
+            if (vm.getQuest().shouldBeDoneMultipleTimesPerDay()) {
+                holder.itemView.setOnLongClickListener(null);
+            } else {
+                holder.itemView.setOnLongClickListener(view -> {
+                    eventBus.post(new MoveQuestToCalendarRequestEvent(vm, holder.getAdapterPosition()));
+                    return true;
+                });
             }
-        });
 
-        holder.repeatingIndicator.setVisibility(vm.isRepeating() ? View.VISIBLE : View.GONE);
-        holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
-        holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
+            holder.check.setOnCheckedChangeListener(null);
+            holder.check.setChecked(false);
+            holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (checked) {
+                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
+                }
+            });
 
-        holder.moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+            holder.moreMenu.setOnClickListener(view -> CalendarQuestPopupMenu.show(view, q, eventBus, EventSource.CALENDAR_UNSCHEDULED_SECTION));
+        }
     }
 
     @Override
@@ -106,11 +123,6 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
     public void removeQuest(UnscheduledQuestViewModel viewModel) {
         int position = viewModels.indexOf(viewModel);
-        if (viewModel.getRemainingCount() > 1) {
-            viewModel.decreaseRemainingCount();
-            notifyItemChanged(position);
-            return;
-        }
         viewModels.remove(viewModel);
         notifyItemRemoved(position);
     }
