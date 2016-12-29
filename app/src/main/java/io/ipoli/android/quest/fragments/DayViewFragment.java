@@ -348,7 +348,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (q.completedAllTimesForDay()) {
+            if (!q.completedAllTimesForDay()) {
                 proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
             }
         }
