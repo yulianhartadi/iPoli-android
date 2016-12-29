@@ -69,7 +69,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
-        listenForListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
+        listenForListChange(query, listener, q -> q.getCompletedAtDate() == null);
     }
 
     @Override
@@ -81,13 +81,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(LocalDate.now()).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() == null));
+        listenForSingleListChange(query, listener, q -> q.getCompletedAtDate() == null);
     }
 
     @Override
     public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").endAt(toStartOfDayUTC(date.minusDays(1)).getTime());
-        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isFromRepeatingQuest() && q.getCompletedAtDate() == null && q.getEnd() != null));
+        listenForSingleListChange(query, listener, q -> !q.isFromRepeatingQuest() && q.getCompletedAtDate() == null && q.getEnd() != null);
     }
 
     @Override
@@ -115,21 +115,21 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                 listener.onDataChanged(endAtQuests);
             });
 
-        }, data -> data.filter(q -> !q.isCompleted()));
+        }, q -> !q.isCompleted());
     }
 
     @Override
     public void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForListChange(query, listener, data -> data.filter(Quest::isCompleted));
+        listenForListChange(query, listener, Quest::isCompleted);
     }
 
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), createIncompleteForDateSortQuery());
+        listenForListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
     }
 
     @NonNull
@@ -154,25 +154,25 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(toStartOfDayUTC(currentDate));
         Query query = getPlayerReference().child("dayQuests").child(dateString);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> !q.isCompleted()), createIncompleteForDateSortQuery());
+        listenForSingleListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
     }
 
     @Override
     public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getCompletedAt() == null));
+        listenForSingleListChange(query, listener, q -> q.getCompletedAt() == null);
     }
 
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
-        listenForSingleListChange(query, listener, data -> data.filter(q -> q.getEndDate() == null || !q.getEndDate().before(toStartOfDayUTC(startDate))));
+        listenForSingleListChange(query, listener, q -> q.getEndDate() == null || !q.getEndDate().before(toStartOfDayUTC(startDate)));
     }
 
     @Override
     public void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener) {
         Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(date).getTime());
-        listenForSingleCountChange(query, listener, data -> data.filter(q -> q.getCompletedAtDate() != null && q.getPriority() == priority));
+        listenForSingleCountChange(query, listener, q -> q.getCompletedAtDate() != null && q.getPriority() == priority);
     }
 
     @Override
@@ -224,19 +224,18 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").equalTo(toStartOfDayUTC(date).getTime());
-        listenForListChange(query, listener, data -> data
-                        .filter(q -> !q.isAllDay())
-                        .filter(q -> q.getCompletedAtDate() == null || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY),
+        listenForListChange(query, listener,
+                q -> !q.isAllDay() && (q.getCompletedAtDate() == null || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY),
                 (q1, q2) -> Integer.compare(q1.getStartMinute(), q2.getStartMinute()));
     }
 
     @Override
     public void findIncompleteNotRepeatingNotForChallenge(String searchText, String challengeId, OnDataChangedListener<List<Quest>> listener) {
-        listenForListChange(getCollectionReference(), listener, data -> data
-                .filter(q -> !challengeId.equals(q.getChallengeId()))
-                .filter(q -> q.getCompletedAtDate() == null)
-                .filter(q -> !q.isFromRepeatingQuest())
-                .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase())));
+        listenForListChange(getCollectionReference(), listener, q -> !challengeId.equals(q.getChallengeId()) &&
+                q.getCompletedAtDate() == null &&
+                !q.isFromRepeatingQuest() &&
+                q.getName().toLowerCase().contains(searchText.toLowerCase())
+        );
     }
 
     @Override

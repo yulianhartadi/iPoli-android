@@ -48,7 +48,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     @Override
     public void findAllNotCompleted(OnDataChangedListener<List<Challenge>> listener) {
         Query query = getCollectionReference().orderByChild("end");
-        listenForListChange(query, listener, data -> data.filter(c -> c.getCompletedAtDate() == null));
+        listenForListChange(query, listener, c -> c.getCompletedAtDate() == null);
     }
 
     @Override

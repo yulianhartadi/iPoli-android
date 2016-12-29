@@ -20,8 +20,6 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import rx.Observable;
-import rx.functions.Func1;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -62,27 +60,28 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("allDay").equalTo(false);
-        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+        listenForListChange(query, listener, createActiveRepeatingQuestPredicate());
     }
 
     @Override
     public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("allDay").equalTo(false);
-        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+        listenForListChange(query, listener, createActiveRepeatingQuestPredicate());
     }
 
     @Override
     public void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("recurrence/flexibleCount").equalTo(0);
-        listenForListChange(query, listener, this::applyActiveRepeatingQuestFilter);
+        listenForListChange(query, listener, createActiveRepeatingQuestPredicate());
     }
 
     @Override
     public void findActiveNotForChallenge(String searchText, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        listenForSingleListChange(getCollectionReference(), listener, data -> data
-                .filter(rq -> !challenge.getId().equals(rq.getChallengeId()))
-                .filter(rq -> rq.getName().toLowerCase().contains(searchText.toLowerCase()))
-                .filter(activeRepeatingQuestFilter())
+        listenForSingleListChange(getCollectionReference(), listener, rq ->
+                !challenge.getId().equals(rq.getChallengeId()) &&
+                        rq.getName().toLowerCase().contains(searchText.toLowerCase()) &&
+                        (rq.getRecurrence().getDtendDate() == null ||
+                                rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
         );
     }
 
@@ -221,13 +220,8 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @NonNull
-    private Observable<RepeatingQuest> applyActiveRepeatingQuestFilter(Observable<RepeatingQuest> data) {
-        return data.filter(activeRepeatingQuestFilter());
-    }
-
-    @NonNull
-    private Func1<RepeatingQuest, Boolean> activeRepeatingQuestFilter() {
-        return rq -> rq.getRecurrence().getDtendDate() == null
-                || rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
+    private Predicate<RepeatingQuest> createActiveRepeatingQuestPredicate() {
+        return repeatingQuest -> repeatingQuest.getRecurrence().getDtendDate() == null
+                || repeatingQuest.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime();
     }
 }

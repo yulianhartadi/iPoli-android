@@ -26,7 +26,7 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
         return new GenericTypeIndicator<Map<String, Reward>>() {
         };
     }
-    
+
     @Override
     protected DatabaseReference getCollectionReference() {
         return getPlayerReference().child(getCollectionName());
