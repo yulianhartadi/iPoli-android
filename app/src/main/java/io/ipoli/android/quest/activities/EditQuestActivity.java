@@ -170,6 +170,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     @BindView(R.id.quest_frequency_container)
     ViewGroup frequencyContainer;
 
+    @BindView(R.id.quest_challenge_container)
+    ViewGroup challengeContainer;
+
     @BindView(R.id.quest_end_date_value)
     TextView endDateText;
 
@@ -305,6 +308,9 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
             } else {
                 populateEndDate(null);
+            }
+            if(quest.isFromRepeatingQuest()) {
+                challengeContainer.setClickable(false);
             }
             categoryView.changeCategory(Quest.getCategory(quest));
             List<Note> notes = quest.getTextNotes();
