@@ -140,7 +140,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         }
         final String toastMessage = toast;
         q.setEndDateFromLocal(endDate);
-        questPersistenceService.updateNewQuest(q);
+        questPersistenceService.update(q);
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 

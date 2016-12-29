@@ -286,7 +286,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void saveNewQuest(Quest quest) {
+    public void save(Quest quest) {
         Map<String, Object> data = new HashMap<>();
         populateNewQuestData(quest, data);
         getPlayerReference().updateChildren(data);
@@ -338,7 +338,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void saveNewQuests(List<Quest> quests) {
+    public void save(List<Quest> quests) {
         Map<String, Object> data = new HashMap<>();
         for (Quest quest : quests) {
             populateNewQuestData(quest, data);
@@ -347,7 +347,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void updateNewQuests(List<Quest> quests) {
+    public void update(List<Quest> quests) {
         Map<String, Object> data = new HashMap<>();
         for (Quest quest : quests) {
             populateUpdateQuest(quest, data);
@@ -396,14 +396,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void deleteNewQuest(Quest quest) {
+    public void delete(Quest quest) {
         Map<String, Object> data = new HashMap<>();
         populateDeleteQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
 
     @Override
-    public void updateNewQuest(Quest quest) {
+    public void update(Quest quest) {
         Map<String, Object> data = new HashMap<>();
 
         populateUpdateQuest(quest, data);

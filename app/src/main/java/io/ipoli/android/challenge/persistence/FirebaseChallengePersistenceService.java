@@ -58,7 +58,7 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     }
 
     @Override
-    public void deleteNewChallenge(Challenge challenge) {
+    public void delete(Challenge challenge) {
         Map<String, Object> data = new HashMap<>();
 
         Map<String, QuestData> questIds = challenge.getQuestsData();

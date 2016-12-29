@@ -22,17 +22,17 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void saveNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests);
+    void save(RepeatingQuest repeatingQuest, List<Quest> quests);
 
-    void deleteNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests);
-
-    void updateNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate);
-
-    void updateNewRepeatingQuest(RepeatingQuest repeatingQuest);
-
-    void saveNewRepeatingQuests(List<RepeatingQuest> repeatingQuests);
+    void save(List<RepeatingQuest> repeatingQuests);
 
     void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
-    void saveNewRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
+    void save(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
+
+    void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate);
+
+    void update(RepeatingQuest repeatingQuest);
+
+    void deleteNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests);
 }

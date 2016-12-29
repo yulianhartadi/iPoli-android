@@ -254,6 +254,7 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (queryFilter == null) {
+
                     listener.onDataChanged(dataSnapshot.getChildrenCount());
                     return;
                 }

@@ -445,7 +445,7 @@ public class App extends MultiDexApplication {
                     q.setPriority(null);
                 }
             }
-            questPersistenceService.updateNewQuests(quests);
+            questPersistenceService.update(quests);
         });
     }
 
@@ -485,10 +485,10 @@ public class App extends MultiDexApplication {
             q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
-            questPersistenceService.updateNewQuest(q);
+            questPersistenceService.update(q);
             onQuestComplete(q, e.source);
         } else {
-            questPersistenceService.updateNewQuest(q);
+            questPersistenceService.update(q);
             Toast.makeText(this, R.string.quest_complete, Toast.LENGTH_SHORT).show();
         }
     }
@@ -499,11 +499,11 @@ public class App extends MultiDexApplication {
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
             q.setChallengeId(null);
-            questPersistenceService.updateNewQuest(q);
+            questPersistenceService.update(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
             rq.setChallengeId(null);
-            repeatingQuestPersistenceService.updateNewRepeatingQuest(rq);
+            repeatingQuestPersistenceService.update(rq);
         }
     }
 
@@ -523,7 +523,7 @@ public class App extends MultiDexApplication {
         Long coins = quest.getCoins();
         quest.setExperience(null);
         quest.setCoins(null);
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
         avatarPersistenceService.find(avatar -> {
             avatar.removeExperience(xp);
             if (shouldDecreaseLevel(avatar)) {
@@ -561,7 +561,7 @@ public class App extends MultiDexApplication {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
-        questPersistenceService.saveNewQuest(quest);
+        questPersistenceService.save(quest);
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
@@ -577,7 +577,7 @@ public class App extends MultiDexApplication {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
@@ -614,14 +614,14 @@ public class App extends MultiDexApplication {
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
             List<Quest> questsToCreate = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
-            repeatingQuestPersistenceService.updateNewRepeatingQuest(repeatingQuest, questsToRemove, questsToCreate);
+            repeatingQuestPersistenceService.update(repeatingQuest, questsToRemove, questsToCreate);
         });
     }
 
     @Subscribe
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         QuestNotificationScheduler.cancelAll(e.quest, this);
-        questPersistenceService.deleteNewQuest(e.quest);
+        questPersistenceService.delete(e.quest);
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
@@ -704,7 +704,7 @@ public class App extends MultiDexApplication {
 
         List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
 
-        repeatingQuestPersistenceService.saveNewRepeatingQuest(repeatingQuest, quests);
+        repeatingQuestPersistenceService.save(repeatingQuest, quests);
     }
 
     @Subscribe
@@ -730,7 +730,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        challengePersistenceService.deleteNewChallenge(e.challenge);
+        challengePersistenceService.delete(e.challenge);
     }
 
     @Subscribe

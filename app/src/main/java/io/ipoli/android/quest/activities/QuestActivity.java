@@ -275,7 +275,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 quest.addNote(new Note(text));
             }
         }
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     private void initUI() {
@@ -366,28 +366,28 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public void onNewSubQuestEvent(NewSubQuestEvent e) {
         quest.addSubQuest(e.subQuest);
         isAddSubQuestInEditMode = true;
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     @Subscribe
     public void onUpdateSubQuestEvent(UpdateSubQuestNameEvent e) {
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     @Subscribe
     public void onDeleteSubQuestEvent(DeleteSubQuestEvent e) {
         quest.removeSubQuest(e.subQuest);
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     @Subscribe
     public void onCompleteSubQuest(CompleteSubQuestEvent e) {
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     @Subscribe
     public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvent e) {
-        questPersistenceService.updateNewQuest(quest);
+        questPersistenceService.update(quest);
     }
 
     @Subscribe

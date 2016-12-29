@@ -93,7 +93,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void saveNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests) {
+    public void save(RepeatingQuest repeatingQuest, List<Quest> quests) {
         Map<String, Object> data = new HashMap<>();
         populateNewRepeatingQuest(data, repeatingQuest, quests);
         getPlayerReference().updateChildren(data);
@@ -121,7 +121,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void updateNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {
+    public void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {
         Map<String, Object> data = new HashMap<>();
 
         updateChallenge(repeatingQuest, data);
@@ -141,7 +141,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void updateNewRepeatingQuest(RepeatingQuest repeatingQuest) {
+    public void update(RepeatingQuest repeatingQuest) {
         Map<String, Object> data = new HashMap<>();
         populateUpdateRepeatingQuest(repeatingQuest, data);
         getPlayerReference().updateChildren(data);
@@ -153,7 +153,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void saveNewRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
+    public void save(List<RepeatingQuest> repeatingQuests) {
         Map<String, Object> data = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
             populateUpdateRepeatingQuest(repeatingQuest, data);
@@ -173,7 +173,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void saveNewRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
+    public void save(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
         Map<String, Object> data = new HashMap<>();
         for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
             RepeatingQuest repeatingQuest = entry.getKey();

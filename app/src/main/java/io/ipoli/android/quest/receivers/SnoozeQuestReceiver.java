@@ -44,7 +44,7 @@ public class SnoozeQuestReceiver extends BroadcastReceiver {
             }
 
             q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
-            questPersistenceService.updateNewQuest(q);
+            questPersistenceService.update(q);
             eventBus.post(new QuestSnoozedEvent(q));
             result.finish();
         });

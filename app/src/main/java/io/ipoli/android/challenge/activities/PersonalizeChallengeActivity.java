@@ -563,7 +563,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
                 repeatingQuests.add(rq);
             }
         }
-        questPersistenceService.saveNewQuests(quests);
+        questPersistenceService.save(quests);
 
         Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
@@ -571,7 +571,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
             repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
         }
 
-        repeatingQuestPersistenceService.saveNewRepeatingQuests(repeatingQuestToScheduledQuests);
+        repeatingQuestPersistenceService.save(repeatingQuestToScheduledQuests);
         finish();
     }
 }

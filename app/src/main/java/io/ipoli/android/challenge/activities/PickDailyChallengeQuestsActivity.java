@@ -162,7 +162,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         }
         questsToSave.addAll(selectedQuests);
 
-        questPersistenceService.updateNewQuests(questsToSave);
+        questPersistenceService.update(questsToSave);
 
         if (!selectedBaseQuests.isEmpty()) {
             Toast.makeText(this, R.string.miq_saved, Toast.LENGTH_LONG).show();

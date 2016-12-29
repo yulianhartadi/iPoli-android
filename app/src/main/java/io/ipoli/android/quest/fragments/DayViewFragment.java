@@ -455,7 +455,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void saveQuest(Quest q) {
-        questPersistenceService.updateNewQuest(q);
+        questPersistenceService.update(q);
     }
 
     @Override

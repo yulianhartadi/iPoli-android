@@ -53,19 +53,15 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void deleteRemindersAtTime(long startTime);
 
-    void saveNewQuest(Quest quest);
-
-    void deleteNewQuest(Quest quest);
-
-    void updateNewQuest(Quest quest);
+    void update(Quest quest);
 
     void populateNewQuestData(Quest quest, Map<String, Object> data);
 
     void populateDeleteQuestData(Quest quest, Map<String, Object> data);
 
-    void saveNewQuests(List<Quest> quests);
+    void save(List<Quest> quests);
 
-    void updateNewQuests(List<Quest> quests);
+    void update(List<Quest> quests);
 
     void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener);
 }
