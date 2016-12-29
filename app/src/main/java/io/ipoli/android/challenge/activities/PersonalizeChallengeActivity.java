@@ -354,21 +354,21 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(3);
         rq5.setRecurrence(recurrence);
-        viewModels.add(new PredefinedChallengeQuestViewModel(rq5.getRawText(), rq5));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq5.getRawText(), rq5, false));
 
         RepeatingQuest rq6 = makeRepeatingQuest("Cook healthy dinner 5 times a week", "Cook healthy dinner", 60, category);
         recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(5);
         rq6.setRecurrence(recurrence);
-        viewModels.add(new PredefinedChallengeQuestViewModel(rq6.getRawText(), rq6));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq6.getRawText(), rq6, false));
 
         RepeatingQuest rq7 = makeRepeatingQuest("Meditate 3 times a week", "Meditate", 60, category);
         recurrence = Recurrence.create();
         recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
         recurrence.setFlexibleCount(3);
         rq7.setRecurrence(recurrence);
-        viewModels.add(new PredefinedChallengeQuestViewModel(rq7.getRawText(), rq7));
+        viewModels.add(new PredefinedChallengeQuestViewModel(rq7.getRawText(), rq7, false));
 
         RepeatingQuest rq8 = makeRepeatingQuest("Say 3 things I am grateful for every day", "Say 3 things I am grateful for", 10, category);
         recurrence = Recurrence.create();

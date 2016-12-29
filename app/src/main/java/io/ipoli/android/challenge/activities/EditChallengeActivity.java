@@ -211,13 +211,19 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                         .create();
                 String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
                 challengePersistenceService.findById(challengeId, challenge -> {
-                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
-                        eventBus.post(new DeleteChallengeRequestEvent(challenge, EventSource.EDIT_CHALLENGE));
+                    d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.dialog_yes), (dialogInterface, i) -> {
+                        eventBus.post(new DeleteChallengeRequestEvent(challenge, true, EventSource.EDIT_CHALLENGE));
+                        Toast.makeText(this, R.string.challenge_with_quests_deleted, Toast.LENGTH_SHORT).show();
+                        setResult(Constants.RESULT_REMOVED);
+                        finish();
+                    });
+                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.dialog_no), (dialog, which) -> {
+                        eventBus.post(new DeleteChallengeRequestEvent(challenge, false, EventSource.EDIT_CHALLENGE));
                         Toast.makeText(this, R.string.challenge_deleted, Toast.LENGTH_SHORT).show();
                         setResult(Constants.RESULT_REMOVED);
                         finish();
                     });
-                    d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel), (dialogInterface, i) -> {
+                    d.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.cancel), (dialogInterface, i) -> {
                         eventBus.post(new CancelDeleteChallengeEvent(challenge, EventSource.EDIT_CHALLENGE));
                     });
                     d.show();

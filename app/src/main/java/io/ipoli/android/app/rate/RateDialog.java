@@ -109,11 +109,11 @@ public class RateDialog extends DialogFragment {
         builder.setIcon(R.drawable.logo)
                 .setTitle(getString(R.string.rate_dialog_initial_title))
                 .setMessage(getString(R.string.rate_dialog_initial_message))
-                .setPositiveButton(getString(R.string.rate_dialog_yes), (dialog, which) -> {
+                .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
                     eventBus.post(new RateDialogLoveTappedEvent(appRun, DialogAnswer.YES));
                     showNewDialog(State.RATE_APP);
                 })
-                .setNegativeButton(getString(R.string.rate_dialog_no), (dialog, which) -> {
+                .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
                     eventBus.post(new RateDialogLoveTappedEvent(appRun, DialogAnswer.NO));
                     showNewDialog(State.FEEDBACK);
                 })
@@ -131,12 +131,12 @@ public class RateDialog extends DialogFragment {
         builder.setIcon(R.drawable.logo)
                 .setTitle(getString(R.string.rate_dialog_rate_title))
                 .setMessage(getString(R.string.rate_dialog_rate_message))
-                .setPositiveButton(R.string.rate_dialog_ok, (dialog, which) -> {
+                .setPositiveButton(R.string.dialog_ok, (dialog, which) -> {
                     eventBus.post(new RateDialogRateTappedEvent(appRun, DialogAnswer.YES));
                     saveNeverShowAgain();
                     rateApp();
                 })
-                .setNegativeButton(R.string.rate_dialog_no, (dialog, which) -> {
+                .setNegativeButton(R.string.dialog_no, (dialog, which) -> {
                     eventBus.post(new RateDialogRateTappedEvent(appRun, DialogAnswer.NO));
                 });
 

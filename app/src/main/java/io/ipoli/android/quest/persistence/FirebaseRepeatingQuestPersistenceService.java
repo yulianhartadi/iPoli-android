@@ -94,7 +94,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void deleteNewRepeatingQuest(RepeatingQuest repeatingQuest, List<Quest> quests) {
+    public void delete(RepeatingQuest repeatingQuest, List<Quest> quests) {
         Map<String, Object> data = new HashMap<>();
         if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
             data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), null);

@@ -47,6 +47,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
@@ -57,8 +59,6 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.app.ui.formatters.DateFormatter;
-import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -170,6 +170,10 @@ public class ChallengeActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         challengePersistenceService.listenById(challengeId, challenge -> {
+            if (challenge == null) {
+                finish();
+                return;
+            }
             this.challenge = challenge;
             displayChallenge();
             setBackgroundColors(Challenge.getCategory(challenge));

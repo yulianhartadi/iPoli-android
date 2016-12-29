@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -46,6 +47,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -58,6 +60,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -113,7 +116,6 @@ import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
-import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 
 /**
@@ -708,7 +710,7 @@ public class App extends MultiDexApplication {
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
         questPersistenceService.findAllNotCompletedForRepeatingQuest(repeatingQuest.getId(), quests -> {
-            repeatingQuestPersistenceService.deleteNewRepeatingQuest(repeatingQuest, quests);
+            repeatingQuestPersistenceService.delete(repeatingQuest, quests);
         });
     }
 
@@ -727,7 +729,32 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
-        challengePersistenceService.delete(e.challenge);
+        Challenge challenge = e.challenge;
+        if (e.shouldDeleteQuests) {
+
+            new Thread(() -> {
+
+                CountDownLatch latch = new CountDownLatch(challenge.getRepeatingQuestIds().size());
+                final List<Quest> quests = new ArrayList<>();
+                for (String repeatingQuestId : challenge.getRepeatingQuestIds().keySet()) {
+                    questPersistenceService.findAllForRepeatingQuest(repeatingQuestId, qs -> {
+                        quests.addAll(qs);
+                        latch.countDown();
+                    });
+                }
+
+                try {
+                    latch.await();
+                } catch (InterruptedException ex) {
+                    eventBus.post(new AppErrorEvent(ex));
+                }
+                quests.addAll(challenge.getChallengeQuests().values());
+                challengePersistenceService.deleteWithQuests(challenge, quests);
+            }).start();
+
+        } else {
+            challengePersistenceService.delete(challenge);
+        }
     }
 
     @Subscribe

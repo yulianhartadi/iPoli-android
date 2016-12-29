@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
@@ -14,4 +15,6 @@ public interface ChallengePersistenceService extends PersistenceService<Challeng
     void findAllNotCompleted(OnDataChangedListener<List<Challenge>> listener);
 
     void delete(Challenge challenge);
+
+    void deleteWithQuests(Challenge challenge, List<Quest> repeatingQuestInstances);
 }

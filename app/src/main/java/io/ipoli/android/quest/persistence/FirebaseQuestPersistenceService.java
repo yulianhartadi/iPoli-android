@@ -158,6 +158,12 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    public void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
+        listenForSingleListChange(query, listener);
+    }
+
+    @Override
     public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, q -> q.getCompletedAt() == null);
@@ -315,8 +321,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
         data.put("/inboxQuests/" + quest.getId(), null);
-        String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(quest.getEndDate());
-        data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
+        if (quest.getEndDate() != null) {
+            String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(quest.getEndDate());
+            data.put("/dayQuests/" + dateString + "/" + quest.getId(), null);
+        }
 
         for (Reminder reminder : quest.getReminders()) {
             data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);

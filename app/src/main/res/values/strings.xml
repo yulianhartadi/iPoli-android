@@ -53,7 +53,7 @@
     <string name="dialog_delete_quest_title">Delete quest</string>
     <string name="dialog_delete_quest_message">Sure you want to delete this awesome quest?</string>
     <string name="dialog_delete_challenge_title">Delete challenge</string>
-    <string name="dialog_delete_challenge_message">Sure you want to delete this epic challenge?</string>
+    <string name="dialog_delete_challenge_message">Would you like to remove all quests for the challenge as well?</string>
     <string name="inbox">Inbox</string>
     <string name="feedback">Improve iPoli</string>
     <string name="contact_us">Contact Us</string>
@@ -111,9 +111,9 @@
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
     <string name="rate_dialog_initial_message">Do you love iPoli?</string>
-    <string name="rate_dialog_yes">Yes</string>
-    <string name="rate_dialog_no">No</string>
-    <string name="rate_dialog_ok">OK</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_ok">OK</string>
     <string name="rate_dialog_never_ask_again">Never ask again</string>
     <string name="rate_dialog_rate_title">Me too!</string>
     <string name="rate_dialog_rate_message">Encourage us by rating iPoli on Google Play?</string>
@@ -255,6 +255,7 @@
     <string name="challenge_saved">Challenge accepted</string>
     <string name="title_edit_challenge">Edit Challenge</string>
     <string name="challenge_deleted">Challenge deleted</string>
+    <string name="challenge_with_quests_deleted">Challenge and quests deleted</string>
     <string name="quest_challenge_question">Challenge</string>
     <string name="quest_pick_challenge">Pick a challenge</string>
     <string name="help_dialog_complete_challenge">Complete the challenge</string>
