@@ -146,7 +146,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void save(List<RepeatingQuest> repeatingQuests) {
+    public void update(List<RepeatingQuest> repeatingQuests) {
         Map<String, Object> data = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
             populateUpdateRepeatingQuest(repeatingQuest, data);
