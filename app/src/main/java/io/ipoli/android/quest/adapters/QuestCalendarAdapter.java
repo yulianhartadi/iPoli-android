@@ -2,6 +2,7 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
@@ -38,6 +39,8 @@ import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
+
+import static io.ipoli.android.R.id.quest_more_menu;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -96,7 +99,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         Context context = parent.getContext();
 
-        Category category = Quest.getCategory(q);
+        Category category = q.getCategoryType();
         v.findViewById(R.id.quest_background).setBackgroundResource(category.color500);
         v.findViewById(R.id.quest_category_indicator).setBackgroundResource(category.color500);
 
@@ -108,7 +111,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         CheckBox checkBox = createCheckBox(q, context);
         detailsRoot.addView(checkBox, 0);
 
-        View moreMenu = v.findViewById(R.id.quest_more_menu);
+        View moreMenu = v.findViewById(quest_more_menu);
 
         if (!q.isPlaceholder()) {
 
@@ -170,7 +173,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @NonNull
     private CheckBox createCheckBox(Quest q, Context context) {
-        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(Quest.getCategory(q))));
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(q.getCategoryType())));
         LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int marginEndDP = 16;
@@ -211,7 +214,11 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     @Override
     public void onDragStarted(View dragView, Time time) {
         View background = dragView.findViewById(R.id.quest_background);
-        background.setAlpha(0.26f);
+        background.setAlpha(1.0F);
+        TextView questText = (TextView) dragView.findViewById(R.id.quest_text);
+        questText.setTextColor(ContextCompat.getColor(dragView.getContext(), R.color.md_light_text_87));
+        dragView.findViewById(R.id.quest_more_menu).setVisibility(View.GONE);
+        dragView.findViewById(R.id.quest_check).setVisibility(View.GONE);
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
         currentTimeIndicator.setText(time.toString());
     }
@@ -224,8 +231,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
     @Override
     public void onDragEnded(View dragView) {
-        View background = dragView.findViewById(R.id.quest_background);
-        background.setAlpha(0.12f);
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
         currentTimeIndicator.setText("");
     }

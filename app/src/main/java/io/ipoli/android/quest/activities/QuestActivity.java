@@ -279,7 +279,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     }
 
     private void initUI() {
-        setBackgroundColors(Quest.getCategory(quest));
+        setBackgroundColors(quest.getCategoryType());
         questHasDuration = quest.getDuration() > 0;
         resetTimerUI();
         elapsedSeconds = 0;

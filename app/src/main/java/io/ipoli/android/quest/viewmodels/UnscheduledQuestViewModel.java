@@ -30,7 +30,7 @@ public class UnscheduledQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return Quest.getCategory(quest);
+        return quest.getCategoryType();
     }
 
     public String getName() {

@@ -16,6 +16,9 @@ public interface CalendarEvent {
     @ColorRes
     int getBackgroundColor();
 
+    @ColorRes
+    int getDragBackgroundColor();
+
     boolean isRepeating();
 
     String getName();

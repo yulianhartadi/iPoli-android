@@ -17,6 +17,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     private final String name;
     private final int backgroundColor;
+    private final int dragBackgroundColor;
     private final Quest quest;
     private boolean shouldDisplayAsProposedSlot;
     private int startMinute;
@@ -25,7 +26,8 @@ public class QuestCalendarViewModel implements CalendarEvent {
     public QuestCalendarViewModel(Quest quest) {
         this.quest = quest;
         this.name = quest.getName();
-        this.backgroundColor = Quest.getCategory(quest).color50;
+        this.backgroundColor = quest.getCategoryType().color50;
+        this.dragBackgroundColor = quest.getCategoryType().color500;
         this.startMinute = quest.getActualStartMinute();
         this.shouldDisplayAsProposedSlot = false;
         this.proposedSlots = new ArrayList<>();
@@ -60,6 +62,11 @@ public class QuestCalendarViewModel implements CalendarEvent {
     }
 
     @Override
+    public int getDragBackgroundColor() {
+        return dragBackgroundColor;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -75,7 +82,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @DrawableRes
     public int getContextImage() {
-        return Quest.getCategory(quest).colorfulImage;
+        return quest.getCategoryType().colorfulImage;
     }
 
     @Override

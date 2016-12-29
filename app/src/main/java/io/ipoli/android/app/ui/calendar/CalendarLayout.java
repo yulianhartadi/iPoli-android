@@ -76,7 +76,7 @@ public class CalendarLayout extends FrameLayout {
     public void acceptNewEvent(CalendarEvent calendarEvent) {
 
         View dragView = inflater.inflate(R.layout.calendar_drag_item, this, false);
-        dragView.findViewById(R.id.quest_details_container).setBackgroundResource(calendarEvent.getBackgroundColor());
+        dragView.findViewById(R.id.quest_details_container).setBackgroundResource(calendarEvent.getDragBackgroundColor());
         CalendarLayout.LayoutParams params = (CalendarLayout.LayoutParams) dragView.getLayoutParams();
         params.height = calendarDayView.getHeightFor(Math.max(calendarEvent.getDuration(), Constants.CALENDAR_EVENT_MIN_DURATION));
         params.topMargin = (int) y - params.height / 2;

@@ -88,7 +88,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_agenda_item);
         Quest q = quests.get(position);
         rv.setTextViewText(R.id.widget_agenda_quest_name, getQuestName(q));
-        rv.setImageViewResource(R.id.widget_agenda_category, Quest.getCategory(q).colorfulImage);
+        rv.setImageViewResource(R.id.widget_agenda_category, q.getCategoryType().colorfulImage);
 
         Bundle tapQuestBundle = new Bundle();
         tapQuestBundle.putInt(AgendaWidgetProvider.QUEST_ACTION_EXTRA_KEY, AgendaWidgetProvider.QUEST_ACTION_VIEW);

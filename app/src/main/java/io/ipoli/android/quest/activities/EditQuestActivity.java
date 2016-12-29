@@ -312,7 +312,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             if(quest.isFromRepeatingQuest()) {
                 challengeContainer.setClickable(false);
             }
-            categoryView.changeCategory(Quest.getCategory(quest));
+            categoryView.changeCategory(quest.getCategoryType());
             List<Note> notes = quest.getTextNotes();
             populateNoteText(notes.isEmpty() ? null : notes.get(0).getText());
             subQuestListAdapter.setSubQuests(quest.getSubQuests());

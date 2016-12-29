@@ -99,7 +99,7 @@ public class PosteriorEstimator {
         DiscreteDistribution workDistribution = getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
         DiscreteDistribution inverseWorkDistribution = inverseUniformDistribution(workDistribution);
 
-        Category category = Quest.getCategory(quest);
+        Category category = quest.getCategoryType();
 
         if (category == Category.WORK && isWorkDay(currentDate, avatar)) {
             // schedule work tasks only during work days & hours

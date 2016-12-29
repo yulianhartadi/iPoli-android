@@ -107,6 +107,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.setTimesADay(1);
     }
 
+    public Category getCategoryType() {
+        return Category.valueOf(getCategory());
+    }
+
     @Exclude
     public boolean isCompleted() {
         return getCompletedAtDate() != null;
@@ -501,10 +505,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return Math.max(0, getCompletedAtMinute() - getActualDuration());
         }
         return getStartMinute();
-    }
-
-    public static Category getCategory(Quest quest) {
-        return Category.valueOf(quest.getCategory());
     }
 
     public List<Note> getNotes() {

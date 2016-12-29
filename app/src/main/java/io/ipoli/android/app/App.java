@@ -346,8 +346,8 @@ public class App extends MultiDexApplication {
         boolean showWhen = quest != null && quest.getStartMinute() > -1;
         long when = showWhen ? Quest.getStartDateTime(quest).getTime() : 0;
         String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
-        int smallIcon = quest == null ? R.drawable.ic_notification_small : Quest.getCategory(quest).whiteImage;
-        int iconColor = quest == null ? R.color.md_grey_500 : Quest.getCategory(quest).color500;
+        int smallIcon = quest == null ? R.drawable.ic_notification_small : quest.getCategoryType().whiteImage;
+        int iconColor = quest == null ? R.color.md_grey_500 : quest.getCategoryType().color500;
 
         Intent startAppIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT);

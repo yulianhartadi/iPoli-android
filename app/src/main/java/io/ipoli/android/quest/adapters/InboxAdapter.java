@@ -56,7 +56,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.contentLayout.setOnClickListener(view ->
                 eventBus.post(new EditQuestRequestEvent(q.getId(), EventSource.INBOX)));
 
-        Category category = Quest.getCategory(q);
+        Category category = q.getCategoryType();
         holder.categoryIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(q.getName());
