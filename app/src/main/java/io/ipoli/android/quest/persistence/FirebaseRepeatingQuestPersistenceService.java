@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
@@ -117,7 +118,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     public void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {
         Map<String, Object> data = new HashMap<>();
 
-        updateChallenge(repeatingQuest, data);
+        populateRepeatingQuestChallenge(repeatingQuest, data);
 
         for (Quest quest : questsToRemove) {
             questPersistenceService.populateDeleteQuestData(quest, data);
@@ -141,12 +142,31 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     private void populateUpdateRepeatingQuest(RepeatingQuest repeatingQuest, Map<String, Object> data) {
-        updateChallenge(repeatingQuest, data);
+        populateRepeatingQuestChallenge(repeatingQuest, data);
+
+        for (String questId : repeatingQuest.getQuestsData().keySet()) {
+            QuestData questData = repeatingQuest.getQuestsData().get(questId);
+            if (repeatingQuest.getPreviousChallengeId() != null) {
+                data.put("/challenges/" + repeatingQuest.getPreviousChallengeId() + "/questsData/" + questId, null);
+            }
+            String challengeId = repeatingQuest.getChallengeId();
+            if (challengeId != null) {
+                data.put("/challenges/" + challengeId + "/questsData/" + questId, questData);
+
+            }
+            if (questData.getScheduledDate() == null) {
+                data.put("/inboxQuests/" + questId + "/challengeId", challengeId);
+            } else {
+                String dateString = Constants.DAY_QUESTS_DATE_FORMATTER.format(questData.getScheduledDate());
+                data.put("/dayQuests/" + dateString + "/" + questId + "/challengeId", challengeId);
+            }
+            data.put("/quests/" + questId + "/challengeId", challengeId);
+        }
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
     }
 
     @Override
-    public void update(List<RepeatingQuest> repeatingQuests) {
+    public void updateChallengeId(List<RepeatingQuest> repeatingQuests) {
         Map<String, Object> data = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
             populateUpdateRepeatingQuest(repeatingQuest, data);
@@ -204,7 +224,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
     }
 
-    private void updateChallenge(RepeatingQuest repeatingQuest, Map<String, Object> data) {
+    private void populateRepeatingQuestChallenge(RepeatingQuest repeatingQuest, Map<String, Object> data) {
         if (repeatingQuest.getPreviousChallengeId() != null) {
             String challengeId = repeatingQuest.getPreviousChallengeId();
             data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
