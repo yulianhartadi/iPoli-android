@@ -107,6 +107,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.setTimesADay(1);
     }
 
+    @Exclude
     public Category getCategoryType() {
         return Category.valueOf(getCategory());
     }
