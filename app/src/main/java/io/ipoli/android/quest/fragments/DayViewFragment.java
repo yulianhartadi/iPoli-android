@@ -45,6 +45,7 @@ import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
@@ -57,6 +58,7 @@ import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
+import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
@@ -68,7 +70,6 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
-import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
@@ -486,6 +487,13 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return currentDate.isAfter(new LocalDate());
     }
 
+    @Subscribe
+    public void onQuestCompleted(QuestCompletedEvent e) {
+        Quest quest = e.quest;
+        int completeMinute = quest.getStartMinute() >= 0 ? quest.getStartMinute() : quest.getCompletedAtMinute();
+        calendarDayView.smoothScrollToTime(Time.of(completeMinute));
+    }
+
     private boolean hasNoStartTime(Quest q) {
         return q.getStartMinute() < 0;
     }
@@ -514,6 +522,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     private class Schedule {
         private List<Quest> unscheduledQuests;
+
         private List<QuestCalendarViewModel> calendarEvents;
 
         private Schedule(List<Quest> unscheduledQuests, List<QuestCalendarViewModel> calendarEvents) {
@@ -528,9 +537,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         public List<QuestCalendarViewModel> getCalendarEvents() {
             return calendarEvents;
         }
-    }
 
-    private interface PlaceholderQuestsListener {
-        void onPlaceholderQuestsCreated(List<Quest> quests);
+
     }
 }

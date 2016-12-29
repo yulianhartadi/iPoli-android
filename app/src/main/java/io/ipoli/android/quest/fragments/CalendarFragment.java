@@ -43,7 +43,6 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
-import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
 /**
@@ -258,13 +257,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Override
     public void onMonthScroll(Date firstDayOfNewMonth) {
         eventBus.post(new CalendarDayChangedEvent(new LocalDate(firstDayOfNewMonth), CalendarDayChangedEvent.Source.CALENDAR));
-    }
-
-    @Subscribe
-    public void onQuestCompleted(QuestCompletedEvent e) {
-        if (new LocalDate(e.quest.getEndDate()).isAfter(new LocalDate()) && (e.source == EventSource.CALENDAR_DAY_VIEW || e.source == EventSource.CALENDAR_UNSCHEDULED_SECTION)) {
-            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
-        }
     }
 
     @Override
