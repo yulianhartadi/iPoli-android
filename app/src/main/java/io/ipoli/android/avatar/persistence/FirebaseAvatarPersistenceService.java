@@ -85,10 +85,4 @@ public class FirebaseAvatarPersistenceService extends BaseFirebasePersistenceSer
 
         };
     }
-
-    @Override
-    protected GenericTypeIndicator<List<Avatar>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<Avatar>>() {
-        };
-    }
 }

@@ -98,10 +98,4 @@ public class FirebasePetPersistenceService extends BaseFirebasePersistenceServic
 
         };
     }
-
-    @Override
-    protected GenericTypeIndicator<List<Pet>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<Pet>>() {
-        };
-    }
 }

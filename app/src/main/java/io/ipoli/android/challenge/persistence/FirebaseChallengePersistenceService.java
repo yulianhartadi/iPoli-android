@@ -31,12 +31,6 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     }
 
     @Override
-    protected GenericTypeIndicator<List<Challenge>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<Challenge>>() {
-        };
-    }
-
-    @Override
     protected Class<Challenge> getModelClass() {
         return Challenge.class;
     }

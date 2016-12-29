@@ -166,18 +166,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         query.addListenerForSingleValueEvent(createModelListener(listener));
     }
 
-    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener) {
-        listenForQuery(query, createCountListener(listener), listener);
-    }
-
-    protected void listenForCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
-        listenForQuery(query, createCountListener(listener, queryFilter), listener);
-    }
-
-    protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener) {
-        query.addListenerForSingleValueEvent(createCountListener(listener));
-    }
-
     protected void listenForSingleCountChange(Query query, OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {
         query.addListenerForSingleValueEvent(createCountListener(listener, queryFilter));
     }
@@ -192,8 +180,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
 
     protected abstract GenericTypeIndicator<Map<String, T>> getGenericMapIndicator();
-
-    protected abstract GenericTypeIndicator<List<T>> getGenericListIndicator();
 
     protected ValueEventListener createListListener(OnDataChangedListener<List<T>> listener) {
         return createListListener(listener, null);
@@ -243,10 +229,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
 
             }
         };
-    }
-
-    protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener) {
-        return createCountListener(listener, null);
     }
 
     protected ValueEventListener createCountListener(OnDataChangedListener<Long> listener, QueryFilter<T> queryFilter) {

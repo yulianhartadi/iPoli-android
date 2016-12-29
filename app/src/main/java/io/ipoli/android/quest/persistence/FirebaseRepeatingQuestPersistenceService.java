@@ -50,12 +50,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    protected GenericTypeIndicator<List<RepeatingQuest>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<RepeatingQuest>>() {
-        };
-    }
-
-    @Override
     protected Class<RepeatingQuest> getModelClass() {
         return RepeatingQuest.class;
     }

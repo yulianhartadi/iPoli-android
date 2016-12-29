@@ -47,12 +47,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    protected GenericTypeIndicator<List<Quest>> getGenericListIndicator() {
-        return new GenericTypeIndicator<List<Quest>>() {
-        };
-    }
-
-    @Override
     protected Class<Quest> getModelClass() {
         return Quest.class;
     }
