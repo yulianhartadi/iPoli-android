@@ -2,6 +2,7 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.content.ClipData;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -101,16 +102,20 @@ public class CalendarLayout extends FrameLayout {
 
             private boolean hasDropped;
 
-            public View dragView;
+            private View dragView;
             private CalendarEvent calendarEvent;
-            public int initialTouchHeight;
+            private int initialTouchHeight;
 
             @Override
             public void onDragStarted(DragEvent event) {
                 hasDropped = false;
-                int[] loc = new int[2];
-                CalendarLayout.this.getLocationOnScreen(loc);
-                initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    initialTouchHeight = (int) (event.getY() - dragView.getTop());
+                } else {
+                    int[] loc = new int[2];
+                    CalendarLayout.this.getLocationOnScreen(loc);
+                    initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
+                }
             }
 
             @Override

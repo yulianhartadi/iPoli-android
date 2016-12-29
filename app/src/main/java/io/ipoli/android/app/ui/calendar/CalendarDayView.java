@@ -2,6 +2,7 @@ package io.ipoli.android.app.ui.calendar;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
@@ -288,8 +289,8 @@ public class CalendarDayView extends FrameLayout {
 
     DragStrategy getEditViewDragStrategy(final View dragView) {
         return new DragStrategy() {
-            public boolean hasDropped;
-            public int initialTouchHeight;
+            private boolean hasDropped;
+            private int initialTouchHeight;
 
             @Override
             public void onDragStarted(DragEvent event) {
@@ -300,12 +301,16 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragEntered(DragEvent event) {
-                int[] dragViewLoc = new int[2];
-                dragView.getLocationOnScreen(dragViewLoc);
-                int[] calendarViewLoc = new int[2];
-                getLocationOnScreen(calendarViewLoc);
-                int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
-                initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    initialTouchHeight = (int) (event.getY() - getTop() + ViewUtils.dpToPx(16, getResources()));
+                } else {
+                    int[] dragViewLoc = new int[2];
+                    dragView.getLocationOnScreen(dragViewLoc);
+                    int[] calendarViewLoc = new int[2];
+                    getLocationOnScreen(calendarViewLoc);
+                    int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
+                    initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
+                }
             }
 
             @Override
