@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -43,6 +44,7 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
 /**
@@ -267,6 +269,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Override
     public void onClick(View v) {
         boolean isExpanded = (boolean) appBar.getTag();
+        startActivity(new Intent(getContext(), AgendaActivity.class));
         calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
         appBar.setExpanded(!isExpanded, true);
         appBar.setTag(!isExpanded);

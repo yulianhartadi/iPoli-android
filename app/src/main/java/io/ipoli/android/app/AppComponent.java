@@ -35,6 +35,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
@@ -178,6 +179,8 @@ public interface AppComponent {
     void inject(CoinsStoreFragment coinsStoreFragment);
 
     void inject(QuickAddActivity quickAddActivity);
+
+    void inject(AgendaActivity agendaActivity);
 
 }
 
