@@ -17,10 +17,7 @@ import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.FacebookSdk;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -68,7 +65,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -325,32 +321,19 @@ public class App extends MultiDexApplication {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-        //first update
-        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-        if(versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
-                    Map<String, Object> playerData = (Map<String, Object>) data.get(playerId);
-                }
+//        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+//        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+//            return;
+//        }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-        getAppComponent(this).inject(this);
-        registerServices();
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-            return;
-        }
-        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-
-        initAppStart();
+//        getAppComponent(this).inject(this);
+//        registerServices();
+//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+//            return;
+//        }
+//        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+//
+//        initAppStart();
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
