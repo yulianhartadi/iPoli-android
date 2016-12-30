@@ -17,7 +17,10 @@ import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.FacebookSdk;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -321,6 +324,24 @@ public class App extends MultiDexApplication {
         Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+        //first update
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if(versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+            FirebaseDatabase db = FirebaseDatabase.getInstance();
+            db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
+                    Map<String, Object> playerData = (Map<String, Object>) data.get(playerId);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
 
         getAppComponent(this).inject(this);
         registerServices();
