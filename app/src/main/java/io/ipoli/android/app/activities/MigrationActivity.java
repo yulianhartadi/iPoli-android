@@ -65,8 +65,22 @@ public class MigrationActivity extends BaseActivity {
                         data.put("/quests/" + quest.get("id"), quest);
                     }
 
-                    db.getReference("/v1/players/" + playerId).updateChildren(data);
+                    Map<String, List<Map<String, Object>>> rqIdToQuests = new HashMap<>();
+                    for(Map<String, Object> quest : rqQuests) {
+                        String rqId = ((Map<String, Object>)quest.get("repeatingQuest")).get("id").toString();
+                        if(!rqIdToQuests.containsKey(rqId)) {
+                            rqIdToQuests.put(rqId, new ArrayList<>());
+                        }
+                        rqIdToQuests.get(rqId).add(quest);
+                    }
 
+                    for (Map<String, Object> rq : oldRepeatingQuests.values()) {
+                        rq = copyRepeatingQuest(rq);
+                        populateRepeatingQuest(rq, rqIdToQuests.get(rq.get("id").toString()), data);
+                        data.put("/repeatingQuests/" + rq.get("id"), rq);
+                    }
+
+                    db.getReference("/v1/players/" + playerId).updateChildren(data);
                 });
             }
 
@@ -75,6 +89,65 @@ public class MigrationActivity extends BaseActivity {
 
             }
         });
+    }
+
+    private void populateRepeatingQuest(Map<String, Object> repeatingQuest, List<Map<String,Object>> quests, Map<String, Object> data) {
+        List<Map<String, Object>> questsToSave = new ArrayList<>();
+        Long timesADay = (Long) repeatingQuest.get("timesADay");
+        String rqId = repeatingQuest.get("id").toString();
+        if(timesADay == 1) {
+            for(Map<String, Object> quest : quests) {
+                quest = copyQuest(quest);
+                quest.put("repeatingQuestId", rqId);
+                quest.remove("repeatingQuest");
+                questsToSave.add(quest);
+            }
+        } else {
+            Map<Long, List<Map<String, Object>>> dateToQuests = new HashMap<>();
+            for(Map<String, Object> quest : quests) {
+                quest = copyQuest(quest);
+                quest.put("timesADay", timesADay);
+                quest.put("repeatingQuestId", rqId);
+                quest.remove("repeatingQuest");
+
+                if(!dateToQuests.containsKey(quest.get("end"))) {
+                    dateToQuests.put((Long) quest.get("end"), new ArrayList<>());
+                }
+                dateToQuests.get(quest.get("end")).add(quest);
+            }
+
+            for(List<Map<String, Object>> dateQuests : dateToQuests.values()) {
+                int completedCount = 0;
+                for(Map<String, Object> quest : dateQuests) {
+                    if(quest.containsKey("completedAt")) {
+                        completedCount ++;
+                    }
+                }
+                Map<String, Object> questToSave = dateQuests.get(0);
+                questToSave.put("completedCount", completedCount);
+                questsToSave.add(questToSave);
+            }
+
+        }
+
+        for(Map<String, Object> quest : questsToSave) {
+            populateQuest(quest, data);
+            data.put("/quests/" + quest.get("id"), quest);
+            ((Map<String, Object>)repeatingQuest.get("questData")).put(quest.get("id").toString(), createQuestData(quest));
+        }
+
+        if(repeatingQuest.containsKey("challengeId")) {
+            String challengeId = repeatingQuest.get("challengeId").toString();
+            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + rqId, true);
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + rqId, repeatingQuest);
+        }
+    }
+
+    private Map<String, Object> copyRepeatingQuest(Map<String, Object> rq) {
+        rq.put("timesADay", ((Map<String, Object>)rq.get("recurrence")).get("timesADay"));
+        ((Map<String, Object>)rq.get("recurrence")).remove("timesADay");
+        rq.put("questData", new HashMap<>());
+        return rq;
     }
 
     private Map<String, Object> copyQuest(Map<String, Object> quest) {
@@ -148,7 +221,7 @@ public class MigrationActivity extends BaseActivity {
 
     private boolean shouldAddQuestReminders(Map<String, Object> quest) {
         return !quest.containsKey("completedAt") && quest.containsKey("end") && quest.containsKey("startMinute") &&
-                (((int) quest.get("startMinute")) >= 0) && quest.containsKey("reminders") && ((List<Object>) quest.get("reminders")).size() > 0 &&
+                (((Long) quest.get("startMinute")) >= 0) && quest.containsKey("reminders") && ((List<Object>) quest.get("reminders")).size() > 0 &&
                 !quest.containsKey("actualStart");
     }
 }
