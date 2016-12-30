@@ -24,23 +24,42 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="8">
 
         <com.github.sundeepk.compactcalendarview.CompactCalendarView
             android:id="@+id/agenda_calendar"
             android:layout_width="match_parent"
-            android:layout_height="280dp"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
+            android:layout_weight="3"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             app:compactCalendarBackgroundColor="@color/md_white"
             app:compactCalendarCurrentDayBackgroundColor="@color/md_dark_text_12"
             app:compactCalendarCurrentSelectedDayBackgroundColor="?attr/colorAccent"
             app:compactCalendarCurrentSelectedDayIndicatorStyle="no_fill_large_indicator"
+            app:compactCalendarDisplayOtherMonthDays="true"
+            app:compactCalendarOtherMonthDaysTextColor="@color/md_blue_300"
             app:compactCalendarTextColor="?attr/colorPrimaryDark"
             app:compactCalendarTextSize="14sp" />
 
-    </LinearLayout>
+        <TextView
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical"
+            android:text="Quests for 30 August"
+            android:textColor="@color/colorAccent" />
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/agenda_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4" />
+
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

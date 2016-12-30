@@ -108,6 +108,15 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @Exclude
+    public void setStartTime(Time time) {
+        if (time != null) {
+            setStartMinute(time.toMinutesAfterMidnight());
+        } else {
+            setStartMinute(null);
+        }
+    }
+
+    @Exclude
     public Category getCategoryType() {
         return Category.valueOf(getCategory());
     }
@@ -381,14 +390,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
-    public static void setStartTime(Quest quest, Time time) {
-        if (time != null) {
-            quest.setStartMinute(time.toMinutesAfterMidnight());
-        } else {
-            quest.setStartMinute(null);
-        }
-    }
-
     @Exclude
     public boolean isScheduled() {
         return getEndDate() != null && getStartMinute() >= 0;
@@ -616,5 +617,10 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public boolean shouldBeDoneMultipleTimesPerDay() {
         return getTimesADay() > 1;
+    }
+
+    @Exclude
+    public void setCategoryType(Category category) {
+        this.category = category.name();
     }
 }
