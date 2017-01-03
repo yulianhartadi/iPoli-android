@@ -66,9 +66,9 @@ public class MigrationActivity extends BaseActivity {
                     }
 
                     Map<String, List<Map<String, Object>>> rqIdToQuests = new HashMap<>();
-                    for(Map<String, Object> quest : rqQuests) {
-                        String rqId = ((Map<String, Object>)quest.get("repeatingQuest")).get("id").toString();
-                        if(!rqIdToQuests.containsKey(rqId)) {
+                    for (Map<String, Object> quest : rqQuests) {
+                        String rqId = ((Map<String, Object>) quest.get("repeatingQuest")).get("id").toString();
+                        if (!rqIdToQuests.containsKey(rqId)) {
                             rqIdToQuests.put(rqId, new ArrayList<>());
                         }
                         rqIdToQuests.get(rqId).add(quest);
@@ -91,12 +91,12 @@ public class MigrationActivity extends BaseActivity {
         });
     }
 
-    private void populateRepeatingQuest(Map<String, Object> repeatingQuest, List<Map<String,Object>> quests, Map<String, Object> data) {
+    private void populateRepeatingQuest(Map<String, Object> repeatingQuest, List<Map<String, Object>> quests, Map<String, Object> data) {
         List<Map<String, Object>> questsToSave = new ArrayList<>();
         Long timesADay = (Long) repeatingQuest.get("timesADay");
         String rqId = repeatingQuest.get("id").toString();
-        if(timesADay == 1) {
-            for(Map<String, Object> quest : quests) {
+        if (timesADay == 1) {
+            for (Map<String, Object> quest : quests) {
                 quest = copyQuest(quest);
                 quest.put("repeatingQuestId", rqId);
                 quest.remove("repeatingQuest");
@@ -104,23 +104,23 @@ public class MigrationActivity extends BaseActivity {
             }
         } else {
             Map<Long, List<Map<String, Object>>> dateToQuests = new HashMap<>();
-            for(Map<String, Object> quest : quests) {
+            for (Map<String, Object> quest : quests) {
                 quest = copyQuest(quest);
                 quest.put("timesADay", timesADay);
                 quest.put("repeatingQuestId", rqId);
                 quest.remove("repeatingQuest");
 
-                if(!dateToQuests.containsKey(quest.get("end"))) {
+                if (!dateToQuests.containsKey(quest.get("end"))) {
                     dateToQuests.put((Long) quest.get("end"), new ArrayList<>());
                 }
                 dateToQuests.get(quest.get("end")).add(quest);
             }
 
-            for(List<Map<String, Object>> dateQuests : dateToQuests.values()) {
+            for (List<Map<String, Object>> dateQuests : dateToQuests.values()) {
                 int completedCount = 0;
-                for(Map<String, Object> quest : dateQuests) {
-                    if(quest.containsKey("completedAt")) {
-                        completedCount ++;
+                for (Map<String, Object> quest : dateQuests) {
+                    if (quest.containsKey("completedAt")) {
+                        completedCount++;
                     }
                 }
                 Map<String, Object> questToSave = dateQuests.get(0);
@@ -130,13 +130,13 @@ public class MigrationActivity extends BaseActivity {
 
         }
 
-        for(Map<String, Object> quest : questsToSave) {
+        for (Map<String, Object> quest : questsToSave) {
             populateQuest(quest, data);
             data.put("/quests/" + quest.get("id"), quest);
-            ((Map<String, Object>)repeatingQuest.get("questData")).put(quest.get("id").toString(), createQuestData(quest));
+            ((Map<String, Object>) repeatingQuest.get("questData")).put(quest.get("id").toString(), createQuestData(quest));
         }
 
-        if(repeatingQuest.containsKey("challengeId")) {
+        if (repeatingQuest.containsKey("challengeId")) {
             String challengeId = repeatingQuest.get("challengeId").toString();
             data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + rqId, true);
             data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + rqId, repeatingQuest);
@@ -144,8 +144,8 @@ public class MigrationActivity extends BaseActivity {
     }
 
     private Map<String, Object> copyRepeatingQuest(Map<String, Object> rq) {
-        rq.put("timesADay", ((Map<String, Object>)rq.get("recurrence")).get("timesADay"));
-        ((Map<String, Object>)rq.get("recurrence")).remove("timesADay");
+        rq.put("timesADay", ((Map<String, Object>) rq.get("recurrence")).get("timesADay"));
+        ((Map<String, Object>) rq.get("recurrence")).remove("timesADay");
         rq.put("questData", new HashMap<>());
         return rq;
     }
@@ -157,9 +157,10 @@ public class MigrationActivity extends BaseActivity {
             quest.put("end", newEnd.getTime());
             completedCount = 1;
         }
+
         quest.put("timesADay", 1);
         quest.put("completedCount", completedCount);
-        quest.put("reminderStartTimes", new ArrayList<String>());
+        quest.put("reminderStartTimes", new ArrayList<Long>());
         return quest;
     }
 
@@ -187,11 +188,11 @@ public class MigrationActivity extends BaseActivity {
 
     private Map<String, Object> createQuestData(Map<String, Object> quest) {
         Long duration = (Long) quest.get("duration");
-        if(quest.containsKey("completedAt") && quest.containsKey("actualStart")) {
+        if (quest.containsKey("completedAt") && quest.containsKey("actualStart")) {
             duration = ((((Long) quest.get("completedAt")) - ((Long) quest.get("actualStart"))) / 60000);
         }
         Long finalDuration = duration;
-        return new HashMap<String, Object>(){{
+        return new HashMap<String, Object>() {{
             put("complete", quest.containsKey("completedAt"));
             put("duration", finalDuration);
             put("originalScheduledDate", quest.containsKey("originalStart") ? quest.get("originalStart") : null);
@@ -209,7 +210,7 @@ public class MigrationActivity extends BaseActivity {
     }
 
     private Map<String, Object> createQuestReminder(Map<String, Object> quest, Map<String, Object> reminder) {
-        return new HashMap<String, Object>(){{
+        return new HashMap<String, Object>() {{
             put("minutesFromStart", reminder.get("minutesFromStart"));
             put("notificationId", reminder.get("notificationId"));
             put("questId", quest.get("id"));
