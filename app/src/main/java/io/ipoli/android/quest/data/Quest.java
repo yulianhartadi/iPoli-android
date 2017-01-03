@@ -83,7 +83,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     private transient boolean isPlaceholder;
-    private int completedCount;
+    private Integer completedCount;
 
     public Quest() {
     }
@@ -181,6 +181,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.repeatingQuestId = repeatingQuestId;
     }
 
+    @Exclude
     public void addReminderStartTime(long startTime) {
         getReminderStartTimes().add(startTime);
     }
@@ -215,7 +216,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return start;
     }
 
-    public void setStart(long start) {
+    public void setStart(Long start) {
         this.start = start;
     }
 
@@ -238,7 +239,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return originalStart;
     }
 
-    public void setOriginalStart(long originalStart) {
+    public void setOriginalStart(Long originalStart) {
         this.originalStart = originalStart;
     }
 

@@ -305,6 +305,7 @@ public class RepeatingQuestScheduler {
         quest.setSubQuests(repeatingQuest.getSubQuests());
         quest.setNotes(repeatingQuest.getNotes());
         quest.setRepeatingQuestId(repeatingQuest.getId());
+        quest.setCompletedCount(0);
         quest.setTimesADay(repeatingQuest.getTimesADay());
         List<Reminder> questReminders = new ArrayList<>();
         if (repeatingQuest.getReminders() != null) {

@@ -174,7 +174,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
         if (dataSnapshot.getChildrenCount() == 0) {
             return new ArrayList<>();
         }
-
         return new ArrayList<>(dataSnapshot.getValue(getGenericMapIndicator()).values());
     }
 

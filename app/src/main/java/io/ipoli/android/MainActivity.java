@@ -42,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -54,6 +55,8 @@ import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
@@ -91,8 +94,6 @@ import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
@@ -145,8 +146,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
         appComponent().inject(this);
+
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+            // should migrate
+            startActivity(new Intent(this, MigrationActivity.class));
+            finish();
+            return;
+        }
+
+        setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         getWindow().setBackgroundDrawable(null);
 
