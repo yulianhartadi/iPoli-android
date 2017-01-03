@@ -37,7 +37,7 @@ public class MigrationActivity extends BaseActivity {
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
 //        String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        final String playerId = "-K_AcxWKh-x1sMsz945k";
+        final String playerId = "-KRiVjXZpn3xHtTMKHGj";
         db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
