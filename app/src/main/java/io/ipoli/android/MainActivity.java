@@ -147,6 +147,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        appComponent().inject(this);
+
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
             // should migrate
@@ -156,7 +158,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         setContentView(R.layout.activity_main);
-        appComponent().inject(this);
         ButterKnife.bind(this);
         getWindow().setBackgroundDrawable(null);
 

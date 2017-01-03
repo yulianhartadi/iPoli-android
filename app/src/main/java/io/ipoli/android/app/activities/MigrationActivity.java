@@ -3,6 +3,8 @@ package io.ipoli.android.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +24,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.InitAppEvent;
+import io.ipoli.android.app.exceptions.MigrationException;
 import io.ipoli.android.app.utils.DateUtils;
 
 /**
@@ -35,13 +39,20 @@ public class MigrationActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quick_add);
+        setContentView(R.layout.activity_migration);
         ButterKnife.bind(this);
         App.getAppComponent(this).inject(this);
 
+        int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        getWindow().getDecorView().setSystemUiVisibility(flags);
+
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-//        final String playerId = "-KRiVjXZpn3xHtTMKHGj";
         db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -51,7 +62,17 @@ public class MigrationActivity extends BaseActivity {
                 v0data.remove("quests");
                 v0data.remove("repeatingQuests");
                 v0data.remove("reminders");
+                v0data.remove("uid");
+                v0data.put("schemaVersion", Constants.SCHEMA_VERSION);
                 db.getReference("/v1/players/" + playerId).setValue(v0data, (databaseError, databaseReference) -> {
+
+                    if (databaseError != null) {
+                        eventBus.post(new AppErrorEvent(new MigrationException("Unable to create player in v1 : " + playerId, databaseError.toException())));
+                        Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
+
                     List<Map<String, Object>> simpleQuests = new ArrayList<>();
                     List<Map<String, Object>> rqQuests = new ArrayList<>();
                     for (Map<String, Object> q : oldQuests.values()) {
@@ -85,6 +106,13 @@ public class MigrationActivity extends BaseActivity {
                     }
 
                     db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
+
+                        if (error != null) {
+                            eventBus.post(new AppErrorEvent(new MigrationException("Unable to update player children: " + playerId, error.toException())));
+                            Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
+                            finish();
+                            return;
+                        }
                         eventBus.post(new InitAppEvent());
                         startActivity(new Intent(MigrationActivity.this, MainActivity.class));
                         finish();
@@ -94,7 +122,9 @@ public class MigrationActivity extends BaseActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                eventBus.post(new AppErrorEvent(new MigrationException("Unable to find player: " + playerId, databaseError.toException())));
+                Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
@@ -236,5 +266,10 @@ public class MigrationActivity extends BaseActivity {
         return !quest.containsKey("completedAt") && quest.containsKey("end") && quest.containsKey("startMinute") &&
                 (((Long) quest.get("startMinute")) >= 0) && quest.containsKey("reminders") && ((List<Object>) quest.get("reminders")).size() > 0 &&
                 !quest.containsKey("actualStart");
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

@@ -22,8 +22,6 @@ public interface Constants {
     String SHARE_URL = "http://bit.ly/ipoli-android";
     String TWITTER_USERNAME = "@iPoliHQ";
 
-    int EDIT_QUEST_RESULT_REQUEST_CODE = 11;
-
     int REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101;
     int ONGOING_NOTIFICATION_ID = 102;
 
@@ -142,6 +140,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
+    int SCHEMA_VERSION = 1;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
