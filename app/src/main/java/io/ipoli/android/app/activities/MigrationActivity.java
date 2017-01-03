@@ -125,6 +125,10 @@ public class MigrationActivity extends BaseActivity {
                 }
                 Map<String, Object> questToSave = dateQuests.get(0);
                 questToSave.put("completedCount", completedCount);
+                if(completedCount != timesADay) {
+                    questToSave.remove("completedAt");
+                    questToSave.remove("completedAtMinute");
+                }
                 questsToSave.add(questToSave);
             }
 
@@ -202,8 +206,8 @@ public class MigrationActivity extends BaseActivity {
 
     private void createQuestReminders(Map<String, Object> quest, Map<String, Object> data) {
         for (Map<String, Object> reminder : (List<Map<String, Object>>) quest.get("reminders")) {
-            List<String> reminderStartTimes = (List<String>) quest.get("reminderStartTimes");
-            String reminderStart = reminder.get("start").toString();
+            List<Long> reminderStartTimes = (List<Long>) quest.get("reminderStartTimes");
+            Long reminderStart = (Long) reminder.get("start");
             reminderStartTimes.add(reminderStart);
             data.put("/questReminders/" + reminderStart + "/" + quest.get("id").toString(), createQuestReminder(quest, reminder));
         }
