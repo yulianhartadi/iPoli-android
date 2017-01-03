@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
@@ -181,6 +182,8 @@ public interface AppComponent {
     void inject(QuickAddActivity quickAddActivity);
 
     void inject(AgendaActivity agendaActivity);
+    
+    void inject(MigrationActivity migrationActivity);
 
 }
 

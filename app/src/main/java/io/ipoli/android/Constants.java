@@ -14,15 +14,13 @@ import io.ipoli.android.avatar.TimeOfDay;
  */
 public interface Constants {
 
-    String API_VERSION = "v0";
+    String API_VERSION = "v1";
 
     String FACEBOOK_APP_LINK = "https://fb.me/1609677589354576";
     String FACEBOOK_IPOLI_LOGO_URL = "https://scontent-vie1-1.xx.fbcdn.net/v/t1.0-1/p320x320/12805840_980283392053167_8375277495702561179_n.png?oh=fa2926a5ab2e10b227f283d21b670e83&oe=57ACFC48";
     String FACEBOOK_INVITE_IMAGE_URL = "https://scontent-vie1-1.xx.fbcdn.net/v/t1.0-9/13091967_1022897927791713_5208044433494824774_n.png?oh=e96baa01cf046a5164e8053102deb9aa&oe=57A4913D";
     String SHARE_URL = "http://bit.ly/ipoli-android";
     String TWITTER_USERNAME = "@iPoliHQ";
-
-    int EDIT_QUEST_RESULT_REQUEST_CODE = 11;
 
     int REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101;
     int ONGOING_NOTIFICATION_ID = 102;
@@ -142,6 +140,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
+    int SCHEMA_VERSION = 1;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

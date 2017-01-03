@@ -51,6 +51,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -89,7 +90,6 @@ import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -148,9 +148,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     ChallengePersistenceService challengePersistenceService;
-
-    @Inject
-    PlayerPersistenceService playerPersistenceService;
 
     @Inject
     AvatarPersistenceService avatarPersistenceService;
@@ -329,6 +326,11 @@ public class App extends MultiDexApplication {
         }
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+            return;
+        }
+
         initAppStart();
     }
 
@@ -471,6 +473,11 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
         playerId = e.playerId;
+        initAppStart();
+    }
+
+    @Subscribe
+    public void onInitApp(InitAppEvent e) {
         initAppStart();
     }
 
