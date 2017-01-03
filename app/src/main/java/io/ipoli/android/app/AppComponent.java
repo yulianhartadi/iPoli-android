@@ -182,7 +182,7 @@ public interface AppComponent {
     void inject(QuickAddActivity quickAddActivity);
 
     void inject(AgendaActivity agendaActivity);
-    
+
     void inject(MigrationActivity migrationActivity);
 
 }
