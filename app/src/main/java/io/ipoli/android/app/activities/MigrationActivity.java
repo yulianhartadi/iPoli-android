@@ -58,12 +58,20 @@ public class MigrationActivity extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Map<String, Object> v0data = (Map<String, Object>) dataSnapshot.getValue();
                 Map<String, Map<String, Object>> oldQuests = (Map<String, Map<String, Object>>) v0data.get("quests");
+                if (oldQuests == null) {
+                    oldQuests = new HashMap<>();
+                }
                 Map<String, Map<String, Object>> oldRepeatingQuests = (Map<String, Map<String, Object>>) v0data.get("repeatingQuests");
+                if (oldRepeatingQuests == null) {
+                    oldRepeatingQuests = new HashMap<>();
+                }
                 v0data.remove("quests");
                 v0data.remove("repeatingQuests");
                 v0data.remove("reminders");
                 v0data.remove("uid");
                 v0data.put("schemaVersion", Constants.SCHEMA_VERSION);
+                final Map<String, Map<String, Object>> finalOldQuests = oldQuests;
+                final Map<String, Map<String, Object>> finalOldRepeatingQuests = oldRepeatingQuests;
                 db.getReference("/v1/players/" + playerId).setValue(v0data, (databaseError, databaseReference) -> {
 
                     if (databaseError != null) {
@@ -75,7 +83,7 @@ public class MigrationActivity extends BaseActivity {
 
                     List<Map<String, Object>> simpleQuests = new ArrayList<>();
                     List<Map<String, Object>> rqQuests = new ArrayList<>();
-                    for (Map<String, Object> q : oldQuests.values()) {
+                    for (Map<String, Object> q : finalOldQuests.values()) {
                         if (q.containsKey("repeatingQuest")) {
                             rqQuests.add(q);
                         } else {
@@ -99,7 +107,7 @@ public class MigrationActivity extends BaseActivity {
                         rqIdToQuests.get(rqId).add(quest);
                     }
 
-                    for (Map<String, Object> rq : oldRepeatingQuests.values()) {
+                    for (Map<String, Object> rq : finalOldRepeatingQuests.values()) {
                         rq = copyRepeatingQuest(rq);
                         populateRepeatingQuest(rq, rqIdToQuests.get(rq.get("id").toString()), data);
                         data.put("/repeatingQuests/" + rq.get("id"), rq);
