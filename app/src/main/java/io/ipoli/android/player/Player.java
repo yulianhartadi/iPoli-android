@@ -2,6 +2,7 @@ package io.ipoli.android.player;
 
 import com.google.firebase.database.Exclude;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.avatar.Avatar;
@@ -15,8 +16,11 @@ public class Player extends PersistedObject {
 
     @Exclude
     private Pet pet;
+
     @Exclude
     private Avatar avatar;
+
+    private Integer schemaVersion;
 
     public Player() {
     }
@@ -24,6 +28,7 @@ public class Player extends PersistedObject {
     public Player(Pet pet, Avatar avatar) {
         this.pet = pet;
         this.avatar = avatar;
+        this.schemaVersion = Constants.SCHEMA_VERSION;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
     }
@@ -34,18 +39,8 @@ public class Player extends PersistedObject {
     }
 
     @Exclude
-    public void setPet(Pet pet) {
-        this.pet = pet;
-    }
-
-    @Exclude
     public Avatar getAvatar() {
         return avatar;
-    }
-
-    @Exclude
-    public void setAvatar(Avatar avatar) {
-        this.avatar = avatar;
     }
 
     public Long getUpdatedAt() {
@@ -72,5 +67,13 @@ public class Player extends PersistedObject {
 
     public Long getCreatedAt() {
         return createdAt;
+    }
+
+    public Integer getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(Integer schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 }
