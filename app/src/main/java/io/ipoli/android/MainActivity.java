@@ -39,6 +39,7 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
@@ -62,6 +63,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
@@ -71,6 +73,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -144,43 +147,43 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-//        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
             // should migrate
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
-//            return;
-//        }
+            return;
+        }
 
-//        setContentView(R.layout.activity_main);
-//        appComponent().inject(this);
-//        ButterKnife.bind(this);
-//        getWindow().setBackgroundDrawable(null);
-//
-//        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-//
-//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-//            startActivity(new Intent(this, SignInActivity.class));
-//            finish();
-//            return;
-//        }
-//
-//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-//            startTutorial();
-//        }
-//
-//        loadingIndicator.getIndeterminateDrawable().setColorFilter(
-//                ContextCompat.getColor(this, R.color.colorPrimary),
-//                android.graphics.PorterDuff.Mode.SRC_IN);
-//
-//        isRateDialogShown = false;
-//
-//        navigationView.setNavigationItemSelectedListener(this);
-//
-//        startCalendar();
-//        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
-//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        setContentView(R.layout.activity_main);
+        appComponent().inject(this);
+        ButterKnife.bind(this);
+        getWindow().setBackgroundDrawable(null);
+
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        }
+
+        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+            startTutorial();
+        }
+
+        loadingIndicator.getIndeterminateDrawable().setColorFilter(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
+
+        isRateDialogShown = false;
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+        startCalendar();
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
     @Override

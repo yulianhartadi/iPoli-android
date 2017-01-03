@@ -1,5 +1,6 @@
 package io.ipoli.android.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -17,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.utils.DateUtils;
 
 /**
@@ -36,8 +40,8 @@ public class MigrationActivity extends BaseActivity {
         App.getAppComponent(this).inject(this);
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-//        String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        final String playerId = "-KRiVjXZpn3xHtTMKHGj";
+        String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+//        final String playerId = "-KRiVjXZpn3xHtTMKHGj";
         db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -80,7 +84,11 @@ public class MigrationActivity extends BaseActivity {
                         data.put("/repeatingQuests/" + rq.get("id"), rq);
                     }
 
-                    db.getReference("/v1/players/" + playerId).updateChildren(data);
+                    db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
+                        eventBus.post(new InitAppEvent());
+                        startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+                        finish();
+                    });
                 });
             }
 
@@ -125,7 +133,7 @@ public class MigrationActivity extends BaseActivity {
                 }
                 Map<String, Object> questToSave = dateQuests.get(0);
                 questToSave.put("completedCount", completedCount);
-                if(completedCount != timesADay) {
+                if (completedCount != timesADay) {
                     questToSave.remove("completedAt");
                     questToSave.remove("completedAtMinute");
                 }

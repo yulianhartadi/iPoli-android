@@ -42,8 +42,8 @@ public class SignInActivity extends BaseActivity {
         Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
         Player player = new Player(pet, avatar);
         playerPersistenceService.save(player);
-//        localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
-        localStorage.saveString(Constants.KEY_PLAYER_ID, "-KRiVjXZpn3xHtTMKHGj");
+        localStorage.saveString(Constants.KEY_PLAYER_ID, player.getId());
+//        localStorage.saveString(Constants.KEY_PLAYER_ID, "-KRiVjXZpn3xHtTMKHGj");
         localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
         localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
         eventBus.post(new PlayerCreatedEvent(player.getId()));

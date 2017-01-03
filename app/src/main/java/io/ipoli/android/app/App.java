@@ -51,6 +51,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -65,6 +66,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -321,19 +323,19 @@ public class App extends MultiDexApplication {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-//        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-//        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
-//            return;
-//        }
+        getAppComponent(this).inject(this);
+        registerServices();
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+            return;
+        }
+        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-//        getAppComponent(this).inject(this);
-//        registerServices();
-//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-//            return;
-//        }
-//        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-//
-//        initAppStart();
+        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
+        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+            return;
+        }
+
+        initAppStart();
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
@@ -475,6 +477,11 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
         playerId = e.playerId;
+        initAppStart();
+    }
+
+    @Subscribe
+    public void onInitApp(InitAppEvent e) {
         initAppStart();
     }
 
