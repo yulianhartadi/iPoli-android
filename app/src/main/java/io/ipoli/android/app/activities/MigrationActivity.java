@@ -175,7 +175,7 @@ public class MigrationActivity extends BaseActivity {
         for (Map<String, Object> quest : questsToSave) {
             populateQuest(quest, data);
             data.put("/quests/" + quest.get("id"), quest);
-            ((Map<String, Object>) repeatingQuest.get("questData")).put(quest.get("id").toString(), createQuestData(quest));
+            ((Map<String, Object>) repeatingQuest.get("questsData")).put(quest.get("id").toString(), createQuestData(quest));
         }
 
         if (repeatingQuest.containsKey("challengeId")) {
@@ -188,7 +188,7 @@ public class MigrationActivity extends BaseActivity {
     private Map<String, Object> copyRepeatingQuest(Map<String, Object> rq) {
         rq.put("timesADay", ((Map<String, Object>) rq.get("recurrence")).get("timesADay"));
         ((Map<String, Object>) rq.get("recurrence")).remove("timesADay");
-        rq.put("questData", new HashMap<>());
+        rq.put("questsData", new HashMap<>());
         return rq;
     }
 
