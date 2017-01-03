@@ -90,7 +90,6 @@ import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -149,9 +148,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     ChallengePersistenceService challengePersistenceService;
-
-    @Inject
-    PlayerPersistenceService playerPersistenceService;
 
     @Inject
     AvatarPersistenceService avatarPersistenceService;
