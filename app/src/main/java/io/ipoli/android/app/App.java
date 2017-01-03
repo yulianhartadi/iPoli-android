@@ -65,7 +65,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
@@ -327,14 +326,14 @@ public class App extends MultiDexApplication {
 //            return;
 //        }
 
-        getAppComponent(this).inject(this);
-        registerServices();
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-            return;
-        }
-        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-
-        initAppStart();
+//        getAppComponent(this).inject(this);
+//        registerServices();
+//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+//            return;
+//        }
+//        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+//
+//        initAppStart();
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
