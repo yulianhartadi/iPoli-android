@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -90,7 +91,20 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            onClose();
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
     public void onBackPressed() {
+        onClose();
+    }
+
+    private void onClose() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, R.anim.slide_out_bottom);
     }
