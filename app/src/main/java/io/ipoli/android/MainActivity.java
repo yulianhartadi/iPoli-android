@@ -3,6 +3,7 @@ package io.ipoli.android;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -57,8 +58,6 @@ import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.app.ui.events.HideLoaderEvent;
-import io.ipoli.android.app.ui.events.ShowLoaderEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
@@ -113,15 +112,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.content_container)
     View contentContainer;
 
-    @BindView(R.id.loading_container)
-    View loadingContainer;
-
-    @BindView(R.id.loading_indicator)
-    ProgressBar loadingIndicator;
-
-    @BindView(R.id.loading_message)
-    TextView loadingMessage;
-
     @Inject
     Bus eventBus;
 
@@ -173,10 +163,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
             startTutorial();
         }
-
-        loadingIndicator.getIndeterminateDrawable().setColorFilter(
-                ContextCompat.getColor(this, R.color.colorPrimary),
-                android.graphics.PorterDuff.Mode.SRC_IN);
 
         isRateDialogShown = false;
 
@@ -470,23 +456,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
-    public void onShowLoader(ShowLoaderEvent e) {
-        if (!TextUtils.isEmpty(e.message)) {
-            loadingMessage.setText(e.message);
-        } else {
-            loadingMessage.setText(R.string.loading_message);
-        }
-        loadingContainer.setVisibility(View.VISIBLE);
-        contentContainer.setVisibility(View.GONE);
-    }
-
-    @Subscribe
-    public void onHideLoader(HideLoaderEvent e) {
-        loadingContainer.setVisibility(View.GONE);
-        contentContainer.setVisibility(View.VISIBLE);
-    }
-
-    @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
         ShareQuestDialog.show(this, e.quest, eventBus);
     }
@@ -507,7 +476,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         navigationView.setCheckedItem(item.getItemId());
 
         EventSource source = null;
