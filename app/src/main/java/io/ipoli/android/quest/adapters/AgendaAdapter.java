@@ -12,7 +12,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.viewmodels.QuestViewModel;
+import io.ipoli.android.quest.viewmodels.AgendaViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,9 +21,9 @@ import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<QuestViewModel> viewModels;
+    private final List<AgendaViewModel> viewModels;
 
-    public AgendaAdapter(List<QuestViewModel> viewModels) {
+    public AgendaAdapter(List<AgendaViewModel> viewModels) {
         this.viewModels = viewModels;
     }
 
@@ -36,11 +36,15 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         AgendaViewHolder vh = (AgendaViewHolder) holder;
-        QuestViewModel vm = viewModels.get(position);
+        AgendaViewModel vm = viewModels.get(position);
         vh.name.setText(vm.getName());
+        if (vm.isCompleted()) {
+            vh.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_done_black_24dp, 0, 0, 0);
+        } else {
+            vh.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
         vh.categoryIndicatorImage.setImageResource(vm.getCategoryImage());
-//        vh.startEnd.setText(Time.of(vm.getStartMinute()) + "\n" + Time.of(vm.getStartMinute() + vm.getDuration()));
-        vh.startEnd.setText(vm.get2LinesScheduleText());
+        vh.startEnd.setText(vm.getScheduleText());
     }
 
     @Override

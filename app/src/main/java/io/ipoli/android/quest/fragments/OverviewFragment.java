@@ -48,7 +48,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 public class OverviewFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
-    
+
     @Inject
     Bus eventBus;
 

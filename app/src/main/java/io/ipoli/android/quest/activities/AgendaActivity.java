@@ -28,7 +28,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.quest.viewmodels.QuestViewModel;
+import io.ipoli.android.quest.viewmodels.AgendaViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -102,9 +102,9 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
         journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(newDate)));
         questPersistenceService.findAllNonAllDayForDate(date, quests -> {
-            List<QuestViewModel> vms = new ArrayList<>();
+            List<AgendaViewModel> vms = new ArrayList<>();
             for (Quest quest : quests) {
-                vms.add(new QuestViewModel(this, quest));
+                vms.add(new AgendaViewModel(this, quest));
             }
             questList.setAdapter(new AgendaAdapter(vms));
         });
