@@ -3,7 +3,6 @@ package io.ipoli.android.quest.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -63,14 +61,8 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindView(R.id.toolbar_calendar_indicator)
-    ImageView calendarIndicator;
-
     @BindView(R.id.calendar_pager)
     ViewPager calendarPager;
-
-    @BindView(R.id.appbar)
-    AppBarLayout appBar;
 
     @Inject
     Bus eventBus;
@@ -105,9 +97,6 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
         toolbarExpandContainer.setOnClickListener(this);
-
-        appBar.setExpanded(false, false);
-        appBar.setTag(false);
 
         currentMidDate = new LocalDate();
 
@@ -235,11 +224,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        boolean isExpanded = (boolean) appBar.getTag();
         startActivity(new Intent(getContext(), AgendaActivity.class));
-        calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        appBar.setExpanded(!isExpanded, true);
-        appBar.setTag(!isExpanded);
-        eventBus.post(new ToolbarCalendarTapEvent(!isExpanded));
+        eventBus.post(new ToolbarCalendarTapEvent());
     }
 }
