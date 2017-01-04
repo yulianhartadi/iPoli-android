@@ -44,7 +44,6 @@ import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
-import io.ipoli.android.app.ui.events.HideLoaderEvent;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
@@ -399,7 +398,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
         if (getUserVisibleHint()) {
             eventBus.unregister(this);
