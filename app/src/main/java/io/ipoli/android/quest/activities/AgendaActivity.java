@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
@@ -71,15 +72,21 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        calendar.setListener(this);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         questList.setLayoutManager(layoutManager);
         questList.setHasFixedSize(true);
 
         questList.setEmptyView(questListContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
 
-        showQuestsForDate(new Date());
+        long selectedDayTime = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
+        if (selectedDayTime == 0) {
+            finish();
+            return;
+        }
+        Date currentDate = new Date(selectedDayTime);
+        calendar.setCurrentDate(currentDate);
+        showQuestsForDate(currentDate);
+        calendar.setListener(this);
     }
 
     private String getDayNumberSuffix(int day) {

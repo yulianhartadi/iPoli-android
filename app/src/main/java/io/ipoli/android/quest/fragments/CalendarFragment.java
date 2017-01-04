@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -64,6 +65,9 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.calendar_pager)
     ViewPager calendarPager;
 
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
+
     @Inject
     Bus eventBus;
 
@@ -73,9 +77,6 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     private FragmentStatePagerAdapter adapter;
 
     private LocalDate currentMidDate;
-
-    @BindView(R.id.fab_menu)
-    FabMenuView fabMenu;
 
     private Avatar avatar;
 
@@ -224,7 +225,10 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(getContext(), AgendaActivity.class));
+        LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
+        Intent i = new Intent(getContext(), AgendaActivity.class);
+        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, currentDate.toDate().getTime());
+        startActivity(i);
         eventBus.post(new ToolbarCalendarTapEvent());
     }
 }
