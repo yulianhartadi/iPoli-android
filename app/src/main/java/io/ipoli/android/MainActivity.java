@@ -132,6 +132,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     private Avatar avatar;
+    private MenuItem navigationItemSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,8 +170,89 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navigationView.setNavigationItemSelectedListener(this);
 
         startCalendar();
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                onNavigationDrawerClosed();
+            }
+        };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+    }
+
+    private void onNavigationDrawerClosed() {
+        navigationView.setCheckedItem(navigationItemSelected.getItemId());
+
+        EventSource source = null;
+        switch (navigationItemSelected.getItemId()) {
+
+            case R.id.home:
+                source = EventSource.CALENDAR;
+                startCalendar();
+                break;
+
+            case R.id.overview:
+                source = EventSource.OVERVIEW;
+                startOverview();
+                break;
+
+            case R.id.inbox:
+                source = EventSource.INBOX;
+                changeCurrentFragment(new InboxFragment());
+                break;
+
+            case R.id.repeating_quests:
+                source = EventSource.REPEATING_QUESTS;
+                changeCurrentFragment(new RepeatingQuestListFragment());
+                break;
+
+            case R.id.challenges:
+                source = EventSource.CHALLENGES;
+                changeCurrentFragment(new ChallengeListFragment());
+                break;
+
+            case R.id.growth:
+                source = EventSource.GROWTH;
+                changeCurrentFragment(new GrowthFragment());
+                break;
+
+            case R.id.rewards:
+                source = EventSource.REWARDS;
+                changeCurrentFragment(new RewardListFragment());
+                break;
+
+            case R.id.store:
+                source = EventSource.STORE;
+                changeCurrentFragment(new CoinsStoreFragment());
+                break;
+
+            case R.id.invite_friends:
+                eventBus.post(new InviteFriendEvent());
+                inviteFriend();
+                break;
+
+            case R.id.settings:
+                source = EventSource.SETTINGS;
+                changeCurrentFragment(new SettingsFragment());
+                break;
+
+            case R.id.feedback:
+                eventBus.post(new FeedbackTapEvent());
+                RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
+                break;
+
+            case R.id.contact_us:
+                eventBus.post(new ContactUsTapEvent());
+                EmailUtils.send(MainActivity.this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
+                break;
+        }
+
+        if (source != null) {
+            eventBus.post(new ScreenShownEvent(source));
+        }
     }
 
     @Override
@@ -477,75 +559,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        navigationView.setCheckedItem(item.getItemId());
 
-        EventSource source = null;
-        switch (item.getItemId()) {
+        navigationItemSelected = item;
 
-            case R.id.home:
-                source = EventSource.CALENDAR;
-                startCalendar();
-                break;
-
-            case R.id.overview:
-                source = EventSource.OVERVIEW;
-                startOverview();
-                break;
-
-            case R.id.inbox:
-                source = EventSource.INBOX;
-                changeCurrentFragment(new InboxFragment());
-                break;
-
-            case R.id.repeating_quests:
-                source = EventSource.REPEATING_QUESTS;
-                changeCurrentFragment(new RepeatingQuestListFragment());
-                break;
-
-            case R.id.challenges:
-                source = EventSource.CHALLENGES;
-                changeCurrentFragment(new ChallengeListFragment());
-                break;
-
-            case R.id.growth:
-                source = EventSource.GROWTH;
-                changeCurrentFragment(new GrowthFragment());
-                break;
-
-            case R.id.rewards:
-                source = EventSource.REWARDS;
-                changeCurrentFragment(new RewardListFragment());
-                break;
-
-            case R.id.store:
-                source = EventSource.STORE;
-                changeCurrentFragment(new CoinsStoreFragment());
-                break;
-
-            case R.id.invite_friends:
-                eventBus.post(new InviteFriendEvent());
-                inviteFriend();
-                break;
-
-            case R.id.settings:
-                source = EventSource.SETTINGS;
-                changeCurrentFragment(new SettingsFragment());
-                break;
-
-            case R.id.feedback:
-                eventBus.post(new FeedbackTapEvent());
-                RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
-                break;
-
-            case R.id.contact_us:
-                eventBus.post(new ContactUsTapEvent());
-                EmailUtils.send(this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
-                break;
-        }
-
-        if (source != null) {
-            eventBus.post(new ScreenShownEvent(source));
-        }
 
         drawerLayout.closeDrawer(GravityCompat.START);
 

@@ -398,7 +398,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     public void onPause() {
-        eventBus.post(new HideLoaderEvent());
         getContext().unregisterReceiver(tickReceiver);
         if (getUserVisibleHint()) {
             eventBus.unregister(this);
