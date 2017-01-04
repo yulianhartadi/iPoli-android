@@ -12,8 +12,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,10 +21,10 @@ import io.ipoli.android.quest.data.Quest;
 
 public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<Quest> quests;
+    private final List<QuestViewModel> viewModels;
 
-    public AgendaAdapter(List<Quest> quests) {
-        this.quests = quests;
+    public AgendaAdapter(List<QuestViewModel> viewModels) {
+        this.viewModels = viewModels;
     }
 
     @Override
@@ -37,15 +36,16 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         AgendaViewHolder vh = (AgendaViewHolder) holder;
-        Quest quest = quests.get(position);
-        vh.name.setText(quest.getName());
-        vh.categoryIndicatorImage.setImageResource(quest.getCategoryType().colorfulImage);
-        vh.startEnd.setText(Time.of(quest.getStartMinute()) + "\n" + Time.of(quest.getStartMinute() + quest.getDuration()));
+        QuestViewModel vm = viewModels.get(position);
+        vh.name.setText(vm.getName());
+        vh.categoryIndicatorImage.setImageResource(vm.getCategoryImage());
+//        vh.startEnd.setText(Time.of(vm.getStartMinute()) + "\n" + Time.of(vm.getStartMinute() + vm.getDuration()));
+        vh.startEnd.setText(vm.get2LinesScheduleText());
     }
 
     @Override
     public int getItemCount() {
-        return quests.size();
+        return viewModels.size();
     }
 
     static class AgendaViewHolder extends RecyclerView.ViewHolder {

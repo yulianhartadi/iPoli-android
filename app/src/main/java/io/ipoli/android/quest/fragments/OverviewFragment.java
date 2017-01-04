@@ -20,9 +20,7 @@ import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collecti
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -50,6 +48,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 public class OverviewFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
+    
     @Inject
     Bus eventBus;
 
@@ -67,7 +66,9 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
     @Inject
     QuestPersistenceService questPersistenceService;
+
     private OverviewAdapter overviewAdapter;
+
     private Unbinder unbinder;
 
     @Override
@@ -144,56 +145,32 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 
-    private boolean hasDailyRrule(Quest q) {
-//        return q.getRepeatingQuest() != null && q.getRepeatingQuest().getRecurrence().getTimesADay() > 1;
-        return false;
-    }
-
     @Override
     public void onDataChanged(List<Quest> quests) {
         List<QuestViewModel> viewModels = new ArrayList<>();
-        List<Quest> recurrent = new ArrayList<>();
         for (Quest q : quests) {
-            if (q.isScheduledForToday() && hasDailyRrule(q)) {
-                recurrent.add(q);
-            } else if (q.isScheduledForToday() || !hasDailyRrule(q)) {
-                viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
+            if (q.isScheduledForToday() && q.shouldBeDoneMultipleTimesPerDay()) {
+                viewModels.add(new QuestViewModel(getContext(), q));
+            } else if (q.isScheduledForToday() || !q.shouldBeDoneMultipleTimesPerDay()) {
+                viewModels.add(new QuestViewModel(getContext(), q));
             }
-        }
-
-        Map<String, List<Quest>> map = new HashMap<>();
-        for (Quest q : recurrent) {
-            String key = q.getRepeatingQuestId();
-            if (map.get(key) == null) {
-                map.put(key, new ArrayList<>());
-            }
-            map.get(key).add(q);
-        }
-
-        for (String key : map.keySet()) {
-            Quest q = map.get(key).get(0);
-//            RepeatingQuest rq = q.getRepeatingQuest();
-//            int repeatCount = rq.getRecurrence().getTimesADay();
-//            int remainingCount = map.get(key).size();
-//            viewModels.add(new QuestViewModel(getContext(), q, repeatCount, remainingCount));
-            viewModels.add(new QuestViewModel(getContext(), q, 1, 1));
         }
 
         Collections.sort(viewModels, new Comparator<QuestViewModel>() {
             @Override
-            public int compare(QuestViewModel lhs, QuestViewModel rhs) {
-                Quest lq = lhs.getQuest();
-                Quest rq = rhs.getQuest();
-                if (lq.getEndDate().before(rq.getEndDate())) {
+            public int compare(QuestViewModel qvm1, QuestViewModel qvm2) {
+                Quest q1 = qvm1.getQuest();
+                Quest q2 = qvm2.getQuest();
+                if (q1.getEndDate().before(q2.getEndDate())) {
                     return -1;
                 }
-                if (lq.getEndDate().after(rq.getEndDate())) {
+                if (q1.getEndDate().after(q2.getEndDate())) {
                     return 1;
                 }
-                if (lhs.getQuest().getStartMinute() > rhs.getQuest().getStartMinute()) {
+                if (qvm1.getQuest().getStartMinute() > qvm2.getQuest().getStartMinute()) {
                     return 1;
                 }
-                if (lhs.getQuest().getStartMinute() < rhs.getQuest().getStartMinute()) {
+                if (qvm1.getQuest().getStartMinute() < qvm2.getQuest().getStartMinute()) {
                     return -1;
                 }
                 return 0;

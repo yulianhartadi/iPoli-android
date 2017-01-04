@@ -14,7 +14,9 @@ import org.joda.time.LocalDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -24,7 +26,9 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -97,7 +101,13 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         String dayNumberSuffix = getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
         journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(newDate)));
-        questPersistenceService.findAllNonAllDayForDate(date, quests -> questList.setAdapter(new AgendaAdapter(quests)));
+        questPersistenceService.findAllNonAllDayForDate(date, quests -> {
+            List<QuestViewModel> vms = new ArrayList<>();
+            for (Quest quest : quests) {
+                vms.add(new QuestViewModel(this, quest));
+            }
+            questList.setAdapter(new AgendaAdapter(vms));
+        });
     }
 
     private int getToolbarText(LocalDate date) {

@@ -97,23 +97,8 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        Date startDateUTC = toStartOfDayUTC(currentDate);
-
-        Query endAt = getCollectionReference().orderByChild("end").equalTo(startDateUTC.getTime());
-
-        listenForSingleListChange(endAt, endAtQuests -> {
-
-            Date startDate = toStartOfDay(currentDate);
-            Date endDate = toStartOfDay(currentDate.plusDays(1));
-
-            Query completedAt = getCollectionReference().orderByChild("completedAt").startAt(startDate.getTime()).endAt(endDate.getTime());
-
-            listenForSingleListChange(completedAt, completedAtQuests -> {
-                endAtQuests.addAll(completedAtQuests);
-                listener.onDataChanged(endAtQuests);
-            });
-
-        }, q -> !q.isCompleted());
+        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
+        listenForSingleListChange(query, listener, null, createDefaultQuestSortQuery());
     }
 
     @Override
@@ -125,11 +110,11 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
-        listenForListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
+        listenForListChange(query, listener, q -> !q.isCompleted(), createDefaultQuestSortQuery());
     }
 
     @NonNull
-    private QuerySort<Quest> createIncompleteForDateSortQuery() {
+    private QuerySort<Quest> createDefaultQuestSortQuery() {
         return (q1, q2) -> {
             if (q1.shouldBeDoneMultipleTimesPerDay() || q2.shouldBeDoneMultipleTimesPerDay()) {
                 return Integer.compare(q1.getTimesADay(), q2.getTimesADay());
@@ -149,7 +134,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     @Override
     public void findAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
         Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(currentDate));
-        listenForSingleListChange(query, listener, q -> !q.isCompleted(), createIncompleteForDateSortQuery());
+        listenForSingleListChange(query, listener, q -> !q.isCompleted(), createDefaultQuestSortQuery());
     }
 
     @Override
