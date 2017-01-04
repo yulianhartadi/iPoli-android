@@ -182,13 +182,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (navigationItemSelected == null) {
                     return;
                 }
-                onNavigationDrawerClosed();
+                onItemSelectedFromDrawer();
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
-    private void onNavigationDrawerClosed() {
+    private void onItemSelectedFromDrawer() {
         navigationView.setCheckedItem(navigationItemSelected.getItemId());
 
         EventSource source = null;
@@ -564,12 +564,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         navigationItemSelected = item;
-
-
         drawerLayout.closeDrawer(GravityCompat.START);
-
         return true;
     }
 
