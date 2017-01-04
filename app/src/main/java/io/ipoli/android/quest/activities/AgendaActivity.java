@@ -89,6 +89,12 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         calendar.setListener(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, R.anim.slide_out_bottom);
+    }
+
     private String getDayNumberSuffix(int day) {
         if (day >= 11 && day <= 13) {
             return "th";

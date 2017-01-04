@@ -124,7 +124,6 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
             calendarPager.setCurrentItem(MID_POSITION);
         });
 
-
         return view;
     }
 
@@ -229,6 +228,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         Intent i = new Intent(getContext(), AgendaActivity.class);
         i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, currentDate.toDate().getTime());
         startActivity(i);
+        getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
         eventBus.post(new ToolbarCalendarTapEvent());
     }
 }
