@@ -140,8 +140,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         appComponent().inject(this);
 
-        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if (schemaVersion != Constants.SCHEMA_VERSION) {
             // should migrate
             startActivity(new Intent(this, MigrationActivity.class));
             finish();

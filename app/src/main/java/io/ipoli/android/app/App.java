@@ -329,7 +329,13 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-        if (versionCode > 0 && versionCode != BuildConfig.VERSION_CODE) {
+
+        if (versionCode > 102) {
+            localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+        }
+
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if (schemaVersion != Constants.SCHEMA_VERSION) {
             return;
         }
 

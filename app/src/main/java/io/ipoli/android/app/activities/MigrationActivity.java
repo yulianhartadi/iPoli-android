@@ -69,7 +69,6 @@ public class MigrationActivity extends BaseActivity {
                 v0data.remove("repeatingQuests");
                 v0data.remove("reminders");
                 v0data.remove("uid");
-                v0data.put("schemaVersion", Constants.SCHEMA_VERSION);
                 final Map<String, Map<String, Object>> finalOldQuests = oldQuests;
                 final Map<String, Map<String, Object>> finalOldRepeatingQuests = oldRepeatingQuests;
                 db.getReference("/v1/players/" + playerId).setValue(v0data, (databaseError, databaseReference) -> {
@@ -113,6 +112,8 @@ public class MigrationActivity extends BaseActivity {
                         data.put("/repeatingQuests/" + rq.get("id"), rq);
                     }
 
+                    data.put("/schemaVersion", Constants.SCHEMA_VERSION);
+
                     db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
 
                         if (error != null) {
@@ -121,6 +122,7 @@ public class MigrationActivity extends BaseActivity {
                             finish();
                             return;
                         }
+                        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
                         eventBus.post(new InitAppEvent());
                         startActivity(new Intent(MigrationActivity.this, MainActivity.class));
                         finish();

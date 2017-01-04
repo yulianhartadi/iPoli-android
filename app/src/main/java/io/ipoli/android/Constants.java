@@ -40,6 +40,9 @@ public interface Constants {
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
 
     String REWARD_ID_EXTRA_KEY = "reward_id";
+
+    String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
+
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
     int CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION = 20;
@@ -67,7 +70,7 @@ public interface Constants {
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 
-    String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
+    String KEY_SCHEMA_VERSION = "SCHEMA_VERSION";
 
     String IPOLI_EMAIL = "hi@ipoli.io";
 
