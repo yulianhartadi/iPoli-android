@@ -2,12 +2,12 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -49,20 +49,17 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         AgendaViewModel vm = viewModels.get(holder.getAdapterPosition());
         vh.name.setText(vm.getName());
         if (vm.isCompleted()) {
-            vh.itemView.setBackground(null);
-            vh.itemView.setFocusable(false);
-            vh.itemView.setClickable(false);
-            vh.itemView.setOnClickListener(null);
             vh.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_done_black_24dp, 0, 0, 0);
         } else {
-            TypedValue outValue = new TypedValue();
-            context.getTheme().resolveAttribute(R.attr.selectableItemBackground, outValue, true);
-            vh.itemView.setBackgroundResource(outValue.resourceId);
-            vh.itemView.setFocusable(true);
-            vh.itemView.setClickable(true);
             vh.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-            vh.itemView.setOnClickListener(v -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.AGENDA_CALENDAR)));
         }
+        vh.itemView.setOnClickListener(v -> {
+            if (vm.isCompleted()) {
+                Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
+            } else {
+                eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.AGENDA_CALENDAR));
+            }
+        });
         vh.categoryIndicatorImage.setImageResource(vm.getCategoryImage());
         vh.startEnd.setText(vm.getScheduleText());
     }
