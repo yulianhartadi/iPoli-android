@@ -106,7 +106,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
             for (Quest quest : quests) {
                 vms.add(new AgendaViewModel(this, quest));
             }
-            questList.setAdapter(new AgendaAdapter(vms));
+            questList.setAdapter(new AgendaAdapter(this, eventBus, vms));
         });
     }
 

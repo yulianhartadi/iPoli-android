@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.fragments;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,7 +26,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -38,11 +36,9 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
@@ -121,13 +117,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
-    }
-
-    @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Intent i = new Intent(getActivity(), QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(i);
     }
 
     @Subscribe

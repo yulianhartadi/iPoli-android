@@ -1,17 +1,23 @@
 package io.ipoli.android.quest.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.viewmodels.AgendaViewModel;
 
 /**
@@ -21,9 +27,13 @@ import io.ipoli.android.quest.viewmodels.AgendaViewModel;
 
 public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final Context context;
+    private final Bus eventBus;
     private final List<AgendaViewModel> viewModels;
 
-    public AgendaAdapter(List<AgendaViewModel> viewModels) {
+    public AgendaAdapter(Context context, Bus eventBus, List<AgendaViewModel> viewModels) {
+        this.context = context;
+        this.eventBus = eventBus;
         this.viewModels = viewModels;
     }
 
@@ -36,12 +46,22 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         AgendaViewHolder vh = (AgendaViewHolder) holder;
-        AgendaViewModel vm = viewModels.get(position);
+        AgendaViewModel vm = viewModels.get(holder.getAdapterPosition());
         vh.name.setText(vm.getName());
         if (vm.isCompleted()) {
+            vh.itemView.setBackground(null);
+            vh.itemView.setFocusable(false);
+            vh.itemView.setClickable(false);
+            vh.itemView.setOnClickListener(null);
             vh.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_done_black_24dp, 0, 0, 0);
         } else {
+            TypedValue outValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.selectableItemBackground, outValue, true);
+            vh.itemView.setBackgroundResource(outValue.resourceId);
+            vh.itemView.setFocusable(true);
+            vh.itemView.setClickable(true);
             vh.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            vh.itemView.setOnClickListener(v -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.AGENDA_CALENDAR)));
         }
         vh.categoryIndicatorImage.setImageResource(vm.getCategoryImage());
         vh.startEnd.setText(vm.getScheduleText());
