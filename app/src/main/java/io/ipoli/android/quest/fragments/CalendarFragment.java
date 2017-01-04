@@ -18,14 +18,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -51,7 +49,7 @@ import io.ipoli.android.quest.events.ScrollToTimeEvent;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/29/16.
  */
-public class CalendarFragment extends BaseFragment implements CompactCalendarView.CompactCalendarViewListener, View.OnClickListener {
+public class CalendarFragment extends BaseFragment implements View.OnClickListener {
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
@@ -61,10 +59,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
 
     @BindView(R.id.toolbar_expand_container)
     View toolbarExpandContainer;
-
-    @BindView(R.id.toolbar_calendar)
-    CompactCalendarView toolbarCalendar;
-
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -110,11 +104,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         }
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
-        toolbarCalendar.setCurrentDate(new Date());
-
         toolbarExpandContainer.setOnClickListener(this);
-
-        toolbarCalendar.setListener(this);
 
         appBar.setExpanded(false, false);
         appBar.setTag(false);
@@ -136,7 +126,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 public void onPageSelected(int position) {
                     LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
                     changeTitle(date);
-                    toolbarCalendar.setCurrentDate(date.toDate());
                     eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.SWIPE));
                 }
             });
@@ -154,7 +143,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         switch (item.getItemId()) {
             case R.id.action_today:
                 eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.MENU));
-                closeToolbarCalendar();
                 return true;
 
         }
@@ -169,15 +157,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Override
     protected boolean useOptionsMenu() {
         return true;
-    }
-
-    public void closeToolbarCalendar() {
-        boolean isExpanded = (boolean) appBar.getTag();
-        if (isExpanded) {
-            calendarIndicator.animate().rotation(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-            appBar.setExpanded(false, true);
-        }
-        appBar.setTag(false);
     }
 
     @Override
@@ -219,7 +198,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         currentMidDate = e.date;
         changeTitle(currentMidDate);
         adapter.notifyDataSetChanged();
-        toolbarCalendar.setCurrentDate(currentMidDate.toDate());
 
         calendarPager.setCurrentItem(MID_POSITION, false);
         if (e.time != null) {
@@ -248,17 +226,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 return POSITION_NONE;
             }
         };
-    }
-
-    @Override
-    public void onDayClick(Date dateClicked) {
-        eventBus.post(new CalendarDayChangedEvent(new LocalDate(dateClicked), CalendarDayChangedEvent.Source.CALENDAR));
-        closeToolbarCalendar();
-    }
-
-    @Override
-    public void onMonthScroll(Date firstDayOfNewMonth) {
-        eventBus.post(new CalendarDayChangedEvent(new LocalDate(firstDayOfNewMonth), CalendarDayChangedEvent.Source.CALENDAR));
     }
 
     @Override
