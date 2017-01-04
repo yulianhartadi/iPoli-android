@@ -496,6 +496,7 @@ public class App extends MultiDexApplication {
     public void onShowQuestEvent(ShowQuestEvent e) {
         Intent i = new Intent(this, QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }
 
