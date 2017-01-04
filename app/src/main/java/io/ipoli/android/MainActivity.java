@@ -140,6 +140,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         appComponent().inject(this);
 
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+            return;
+        }
+
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
         if (schemaVersion != Constants.SCHEMA_VERSION) {
             // should migrate
@@ -153,12 +159,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         getWindow().setBackgroundDrawable(null);
 
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        }
 
         if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
             localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);

@@ -322,16 +322,17 @@ public class App extends MultiDexApplication {
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         getAppComponent(this).inject(this);
-        registerServices();
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-            return;
-        }
-        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
 
-        if (versionCode > 102) {
+        if (versionCode == 0 || versionCode > 102) {
             localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+        }
+
+        registerServices();
+        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+        if (StringUtils.isEmpty(playerId)) {
+            return;
         }
 
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
@@ -480,6 +481,8 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+        localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
     }
