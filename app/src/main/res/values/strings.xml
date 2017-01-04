@@ -61,6 +61,7 @@
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
     <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
     <string name="calendar_format">EEE, d MMM</string>
+    <string name="agenda_calendar_format">EEEE, d MMM</string>
     <string name="widget_agenda_title_format">EEE, d MMM</string>
     <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
@@ -366,5 +367,7 @@
     <string name="title_activity_agenda">Your calendar</string>
     <string name="migration_text">Oh no, you have to wait!\niPoli is eating a biscuit and upgrading your experience</string>
     <string name="migration_error_message">An error occurred. Please, wait for app update.</string>
->>>>>>> dev
+    <string name="agenda_daily_journey">Daily Journey for %s</string>
+    <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
+    >>>>>>> dev
 </resources>
