@@ -1,6 +1,7 @@
 package io.ipoli.android.app.services;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.amplitude.api.Amplitude;
 import com.google.firebase.crash.FirebaseCrash;
@@ -833,6 +834,9 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onAppError(AppErrorEvent e) {
         FirebaseCrash.report(e.exception);
+        log("app_error", EventParams.create()
+                .add("message", e.exception.getMessage())
+                .add("stack_trace", Log.getStackTraceString(e.exception)));
     }
 
     private void log(String eventName) {
