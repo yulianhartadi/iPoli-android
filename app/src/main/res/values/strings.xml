@@ -369,5 +369,5 @@
     <string name="migration_error_message">An error occurred. Please, wait for app update.</string>
     <string name="agenda_daily_journey">Daily Journey for %s</string>
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
-    >>>>>>> dev
+    <string name="empty_agenda_text">No quests for this date</string>
 </resources>

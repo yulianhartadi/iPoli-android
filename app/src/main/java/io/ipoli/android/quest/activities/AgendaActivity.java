@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -46,8 +47,11 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
     @BindView(R.id.agenda_calendar)
     CompactCalendarView calendar;
 
+    @BindView(R.id.agenda_list_container)
+    ViewGroup questListContainer;
+
     @BindView(R.id.agenda_list)
-    RecyclerView questList;
+    EmptyStateRecyclerView questList;
 
     @BindView(R.id.agenda_journey_text)
     TextView journeyText;
@@ -72,6 +76,8 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         questList.setLayoutManager(layoutManager);
         questList.setHasFixedSize(true);
+
+        questList.setEmptyView(questListContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
 
         showQuestsForDate(new Date());
     }

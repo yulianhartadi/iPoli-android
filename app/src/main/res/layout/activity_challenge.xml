@@ -241,10 +241,10 @@
                 android:text="@string/quests"
                 android:textColor="@color/colorAccent" />
 
-            <RelativeLayout
+            <FrameLayout
+                android:id="@+id/quest_list_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/quest_list_container">
+                android:layout_height="wrap_content">
 
                 <io.ipoli.android.app.ui.EmptyStateRecyclerView
                     android:id="@+id/quest_list"
@@ -252,7 +252,7 @@
                     android:layout_height="match_parent"
                     android:scrollbars="vertical" />
 
-            </RelativeLayout>
+            </FrameLayout>
 
         </LinearLayout>
 

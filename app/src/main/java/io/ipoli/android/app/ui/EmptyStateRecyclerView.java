@@ -77,9 +77,7 @@ public class EmptyStateRecyclerView extends RecyclerView {
         textView.setText(text);
         imageView.setImageResource(image);
 
-        ViewGroup.LayoutParams layoutParams = rootView.getLayoutParams();
-        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         emptyView.setLayoutParams(layoutParams);
 
         rootView.addView(emptyView);
