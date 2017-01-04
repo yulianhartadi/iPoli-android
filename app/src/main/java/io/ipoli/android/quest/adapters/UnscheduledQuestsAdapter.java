@@ -59,7 +59,7 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final UnscheduledQuestViewModel vm = viewModels.get(position);
+        final UnscheduledQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
         Quest q = vm.getQuest();
 
         holder.name.setText(vm.getName());
