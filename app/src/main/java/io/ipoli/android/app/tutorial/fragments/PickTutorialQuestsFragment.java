@@ -56,7 +56,7 @@ public class PickTutorialQuestsFragment extends BaseTutorialPickQuestsFragment<Q
         viewModels = new ArrayList<>();
 
         Quest q = makeQuest("Try out iPoli", Category.FUN);
-        Quest.setStartTime(q, Time.afterMinutes(5));
+        q.setStartTime(Time.afterMinutes(5));
         q.setDuration(Constants.QUEST_MIN_DURATION);
         viewModels.add(new PickQuestViewModel(q, q.getName(), true));
 

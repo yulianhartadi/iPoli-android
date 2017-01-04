@@ -1,8 +1,8 @@
 package io.ipoli.android.quest.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,23 +14,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -43,13 +41,14 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/29/16.
  */
-public class CalendarFragment extends BaseFragment implements CompactCalendarView.CompactCalendarViewListener, View.OnClickListener {
+public class CalendarFragment extends BaseFragment implements View.OnClickListener {
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
@@ -60,21 +59,14 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @BindView(R.id.toolbar_expand_container)
     View toolbarExpandContainer;
 
-    @BindView(R.id.toolbar_calendar)
-    CompactCalendarView toolbarCalendar;
-
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    @BindView(R.id.toolbar_calendar_indicator)
-    ImageView calendarIndicator;
 
     @BindView(R.id.calendar_pager)
     ViewPager calendarPager;
 
-    @BindView(R.id.appbar)
-    AppBarLayout appBar;
+    @BindView(R.id.fab_menu)
+    FabMenuView fabMenu;
 
     @Inject
     Bus eventBus;
@@ -85,9 +77,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     private FragmentStatePagerAdapter adapter;
 
     private LocalDate currentMidDate;
-
-    @BindView(R.id.fab_menu)
-    FabMenuView fabMenu;
 
     private Avatar avatar;
 
@@ -108,14 +97,7 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         }
         ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
 
-        toolbarCalendar.setCurrentDate(new Date());
-
         toolbarExpandContainer.setOnClickListener(this);
-
-        toolbarCalendar.setListener(this);
-
-        appBar.setExpanded(false, false);
-        appBar.setTag(false);
 
         currentMidDate = new LocalDate();
 
@@ -134,7 +116,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
                 public void onPageSelected(int position) {
                     LocalDate date = currentMidDate.plusDays(position - MID_POSITION);
                     changeTitle(date);
-                    toolbarCalendar.setCurrentDate(date.toDate());
                     eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.SWIPE));
                 }
             });
@@ -142,7 +123,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
             calendarPager.setAdapter(adapter);
             calendarPager.setCurrentItem(MID_POSITION);
         });
-
 
         return view;
     }
@@ -152,7 +132,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         switch (item.getItemId()) {
             case R.id.action_today:
                 eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.MENU));
-                closeToolbarCalendar();
                 return true;
 
         }
@@ -167,15 +146,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     @Override
     protected boolean useOptionsMenu() {
         return true;
-    }
-
-    public void closeToolbarCalendar() {
-        boolean isExpanded = (boolean) appBar.getTag();
-        if (isExpanded) {
-            calendarIndicator.animate().rotation(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-            appBar.setExpanded(false, true);
-        }
-        appBar.setTag(false);
     }
 
     @Override
@@ -217,7 +187,6 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
         currentMidDate = e.date;
         changeTitle(currentMidDate);
         adapter.notifyDataSetChanged();
-        toolbarCalendar.setCurrentDate(currentMidDate.toDate());
 
         calendarPager.setCurrentItem(MID_POSITION, false);
         if (e.time != null) {
@@ -249,27 +218,17 @@ public class CalendarFragment extends BaseFragment implements CompactCalendarVie
     }
 
     @Override
-    public void onDayClick(Date dateClicked) {
-        eventBus.post(new CalendarDayChangedEvent(new LocalDate(dateClicked), CalendarDayChangedEvent.Source.CALENDAR));
-        closeToolbarCalendar();
-    }
-
-    @Override
-    public void onMonthScroll(Date firstDayOfNewMonth) {
-        eventBus.post(new CalendarDayChangedEvent(new LocalDate(firstDayOfNewMonth), CalendarDayChangedEvent.Source.CALENDAR));
-    }
-
-    @Override
     protected void showHelpDialog() {
         HelpDialog.newInstance(R.layout.fragment_help_dialog_calendar, R.string.help_dialog_calendar_title, "calendar").show(getActivity().getSupportFragmentManager());
     }
 
     @Override
     public void onClick(View v) {
-        boolean isExpanded = (boolean) appBar.getTag();
-        calendarIndicator.animate().rotation(isExpanded ? 0 : 180).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime));
-        appBar.setExpanded(!isExpanded, true);
-        appBar.setTag(!isExpanded);
-        eventBus.post(new ToolbarCalendarTapEvent(!isExpanded));
+        LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
+        Intent i = new Intent(getContext(), AgendaActivity.class);
+        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, currentDate.toDate().getTime());
+        startActivity(i);
+        getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
+        eventBus.post(new ToolbarCalendarTapEvent());
     }
 }

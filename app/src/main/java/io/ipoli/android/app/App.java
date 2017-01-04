@@ -90,6 +90,7 @@ import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -100,6 +101,7 @@ import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
+import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -479,6 +481,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onInitApp(InitAppEvent e) {
         initAppStart();
+    }
+
+    @Subscribe
+    public void onShowQuestEvent(ShowQuestEvent e) {
+        Intent i = new Intent(this, QuestActivity.class);
+        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(i);
     }
 
     @Subscribe

@@ -73,8 +73,8 @@
     <style name="Theme.iPoli.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SlideInDialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_in_top</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+        <item name="android:windowEnterAnimation">@anim/slide_in_top_long</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom_long</item>
     </style>
 
     <style name="ScaleInDialogAnimation">

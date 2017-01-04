@@ -20,14 +20,14 @@ public class QuestViewModel {
 
     private final Context context;
     private final Quest quest;
-    private final int repeatCount;
+    private final int timesADay;
     private final int remainingCount;
 
-    public QuestViewModel(Context context, Quest quest, int repeatCount, int remainingCount) {
+    public QuestViewModel(Context context, Quest quest) {
         this.context = context;
         this.quest = quest;
-        this.repeatCount = repeatCount;
-        this.remainingCount = remainingCount;
+        this.timesADay = quest.getTimesADay();
+        this.remainingCount = quest.getRemainingCount();
     }
 
     public String getName() {
@@ -70,8 +70,22 @@ public class QuestViewModel {
         return "";
     }
 
+    public String get2LinesScheduleText() {
+        int duration = quest.getDuration();
+        Time startTime = Quest.getStartTime(quest);
+        if (duration > 0 && startTime != null) {
+            Time endTime = Time.plusMinutes(startTime, duration);
+            return startTime + "\n" + endTime;
+        } else if (duration > 0) {
+            return "for\n" + DurationFormatter.format(context, duration);
+        } else if (startTime != null) {
+            return "at\n" + startTime;
+        }
+        return "";
+    }
+
     public int getCompletedCount() {
-        return repeatCount - remainingCount;
+        return timesADay - remainingCount;
     }
 
     public int getRemainingCount() {
@@ -83,11 +97,11 @@ public class QuestViewModel {
     }
 
     public boolean hasTimesADay() {
-        return repeatCount > 1;
+        return timesADay > 1;
     }
 
     public String getRemainingText() {
-        if (repeatCount == 1) {
+        if (timesADay == 1) {
             return "";
         }
         return String.format(Locale.getDefault(), "x%d more", remainingCount);
@@ -103,5 +117,9 @@ public class QuestViewModel {
 
     public boolean isForChallenge() {
         return quest.getChallengeId() != null;
+    }
+
+    public boolean isCompleted() {
+        return quest.isCompleted();
     }
 }

@@ -143,7 +143,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             }
         });
 
-
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
 

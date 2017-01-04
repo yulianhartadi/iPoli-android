@@ -48,7 +48,6 @@ import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
-import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -61,7 +60,6 @@ import io.ipoli.android.quest.events.QuestCompletedEvent;
 import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
-import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
@@ -461,14 +459,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onAcceptEvent(QuestCalendarViewModel calendarEvent) {
         eventBus.post(new QuestAddedToCalendarEvent(calendarEvent));
         setUnscheduledQuestsHeight();
-    }
-
-    @Subscribe
-    public void onShowQuestEvent(ShowQuestEvent e) {
-        Quest quest = e.quest;
-        Intent i = new Intent(getActivity(), QuestActivity.class);
-        i.putExtra(Constants.QUEST_ID_EXTRA_KEY, quest.getId());
-        startActivity(i);
     }
 
     @Subscribe

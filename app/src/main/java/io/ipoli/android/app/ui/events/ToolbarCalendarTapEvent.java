@@ -5,9 +5,7 @@ package io.ipoli.android.app.ui.events;
  * on 5/3/16.
  */
 public class ToolbarCalendarTapEvent {
-    public final boolean isExpanded;
 
-    public ToolbarCalendarTapEvent(boolean isExpanded) {
-        this.isExpanded = isExpanded;
+    public ToolbarCalendarTapEvent() {
     }
 }

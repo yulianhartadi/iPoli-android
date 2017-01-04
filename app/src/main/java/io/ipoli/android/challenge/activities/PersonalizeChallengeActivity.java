@@ -213,18 +213,18 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     private void createFamousWriter() {
 
         Quest q1 = makeQuest("Create a blog at Medium", category);
-        Quest.setStartTime(q1, Time.afterMinutes(30));
+        q1.setStartTime(Time.afterMinutes(30));
         q1.setDuration(15);
         q1.addNote(new Note(Note.Type.URL, "Create my blog at Medium", "https://medium.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(q1));
 
         Quest q2 = makeQuest("Choose what I am going to write about", category);
-        Quest.setStartTime(q2, Time.afterMinutes(90));
+        q2.setStartTime(Time.afterMinutes(90));
         q2.setDuration(45);
         viewModels.add(new PredefinedChallengeQuestViewModel(q2));
 
         Quest q3 = makeQuest("Pick 5 bloggers who inspire you and read most of their posts", category, LocalDate.now().plusDays(1).toDate());
-        Quest.setStartTime(q3, Time.at(20, 30));
+        q3.setStartTime(Time.at(20, 30));
         q3.setDuration(60);
         viewModels.add(new PredefinedChallengeQuestViewModel(q3));
 
@@ -244,7 +244,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createProgrammingNinja() {
         Quest quest1 = makeQuest("Sign up at freeCodeCamp", category);
-        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setStartTime(Time.afterMinutes(15));
         quest1.setDuration(30);
         quest1.addNote(new Note(Note.Type.URL, "Sign up at freeCodeCamp", "https://www.freecodecamp.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1));
@@ -279,7 +279,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createEnglishJedi() {
         Quest quest1 = makeQuest("Sign up at Duolingo", category);
-        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setStartTime(Time.afterMinutes(15));
         quest1.setDuration(15);
         quest1.addNote(new Note(Note.Type.INTENT, "Sign up at Duolingo", "com.duolingo"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1));
@@ -400,7 +400,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq2.getRawText(), rq2));
 
         Quest quest1 = makeQuest("Share your troubles with a friend", Category.PERSONAL, LocalDate.now().plusDays(5).toDate());
-        Quest.setStartTime(quest1, Time.at(21, 0));
+        quest1.setStartTime(Time.at(21, 0));
         quest1.setDuration(60);
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1));
 
@@ -424,7 +424,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     private void createWeightCutter() {
 
         Quest quest1 = makeQuest("Sign up for a gym club card", category);
-        Quest.setStartTime(quest1, Time.afterMinutes(60));
+        quest1.setStartTime(Time.afterMinutes(60));
         quest1.setDuration(30);
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1));
 
@@ -471,21 +471,21 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
     private void createMasterPresenter() {
         Quest quest1 = makeQuest("Learn how to give great presentation", category);
-        Quest.setStartTime(quest1, Time.afterMinutes(15));
+        quest1.setStartTime(Time.afterMinutes(15));
         quest1.setDuration(30);
         quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by Princeton University", "https://www.princeton.edu/~archss/webpdfs08/BaharMartonosi.pdf"));
         quest1.addNote(new Note(Note.Type.URL, "Presentation Tips by University of Kent", "https://www.kent.ac.uk/careers/presentationskills.htm"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest1));
 
         Quest quest2 = makeQuest("Sign up at Canva", category);
-        Quest.setStartTime(quest2, Time.afterHours(1));
+        quest2.setStartTime(Time.afterHours(1));
         quest2.setDuration(15);
         quest2.addNote(new Note(Note.Type.URL, "Sign up at Canva", "https://www.canva.com/"));
 
         viewModels.add(new PredefinedChallengeQuestViewModel(quest2));
 
         Quest quest3 = makeQuest("Create my presentation at Canva", category, DateUtils.getTomorrow());
-        Quest.setStartTime(quest3, Time.atHours(11));
+        quest3.setStartTime(Time.atHours(11));
         quest3.setDuration(120);
         quest3.addNote(new Note(Note.Type.URL, "Open Canva", "https://www.canva.com/"));
         viewModels.add(new PredefinedChallengeQuestViewModel(quest3));

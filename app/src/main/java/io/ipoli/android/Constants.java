@@ -67,10 +67,11 @@ public interface Constants {
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 
+    String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
+
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
@@ -80,6 +81,7 @@ public interface Constants {
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
     int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
     int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
+
     List<Integer> DEFAULT_PLAYER_WORK_DAYS = new ArrayList<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
             DaysOfWeek.TUESDAY.getIsoOrder(),
@@ -101,12 +103,11 @@ public interface Constants {
     boolean DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true;
 
     boolean DEFAULT_ONGOING_NOTIFICATION_ENABLED = true;
-
     int[] REMINDER_PREDEFINED_MINUTES = new int[]{0, 10, 15, 30, 60};
     int MIN_FLEXIBLE_TIMES_A_WEEK_COUNT = 1;
     int MAX_FLEXIBLE_TIMES_A_WEEK_COUNT = 6;
-    int MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1;
 
+    int MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1;
     int MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15;
     Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
@@ -115,27 +116,27 @@ public interface Constants {
             DaysOfWeek.THURSDAY.getIsoOrder(),
             DaysOfWeek.FRIDAY.getIsoOrder()
     }));
-    int DAILY_CHALLENGE_QUEST_COUNT = 3;
 
+    int DAILY_CHALLENGE_QUEST_COUNT = 3;
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
     int DEFAULT_BAR_COUNT = 4;
     String REMINDER_START_TIME = "reminder_start_time";
-    String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
 
+    String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
     String DEFAULT_PET_NAME = "Flopsy";
     String DEFAULT_PET_AVATAR = "pet_3";
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
-    Integer DEFAULT_PET_HP = 80;
 
+    Integer DEFAULT_PET_HP = 80;
     String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
     String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
+
     int MAX_PET_XP_BONUS = 20;
 
     double XP_TO_PET_HP_RATIO = 13.2;
-
     int REVIVE_PET_COST = 300;
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!

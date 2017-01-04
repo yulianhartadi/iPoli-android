@@ -411,7 +411,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onToolbarCalendarTap(ToolbarCalendarTapEvent e) {
-        log("toolbar_calendar_tap", EventParams.of("is_expanded", String.valueOf(e.isExpanded)));
+        log("toolbar_calendar_tap");
     }
 
     @Subscribe
