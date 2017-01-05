@@ -109,7 +109,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     private boolean isTimerRunning;
     private int elapsedSeconds;
 
-    private boolean isAddSubQuestInEditMode = false;
+    private QuestDetailsAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -201,9 +201,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
         }
-        QuestDetailsAdapter adapter = new QuestDetailsAdapter(this, quest, isAddSubQuestInEditMode, eventBus);
-        details.setAdapter(adapter);
-        isAddSubQuestInEditMode = false;
+        if(adapter == null) {
+            adapter = new QuestDetailsAdapter(this, quest, eventBus);
+            details.setAdapter(adapter);
+        }
     }
 
     @OnClick(R.id.quest_details_timer)
@@ -364,7 +365,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Subscribe
     public void onNewSubQuestEvent(NewSubQuestEvent e) {
         quest.addSubQuest(e.subQuest);
-        isAddSubQuestInEditMode = true;
         questPersistenceService.update(quest);
     }
 
