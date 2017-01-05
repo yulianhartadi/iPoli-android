@@ -25,7 +25,7 @@ import io.ipoli.android.app.utils.StringUtils;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/27/16.
  */
-public class AddSubQuestView extends RelativeLayout implements View.OnFocusChangeListener, View.OnClickListener {
+public class AddSubQuestView extends RelativeLayout implements View.OnClickListener {
     private List<OnSubQuestAddedListener> subQuestAddedListeners = new ArrayList<>();
 
     public interface OnSubQuestAddedListener {
@@ -60,11 +60,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
 
-//        editText.setOnFocusChangeListener(this);
         addButton.setOnClickListener(this);
         editText.setOnEditorActionListener((v, actionId, event) -> onEditorAction(actionId));
         clearAddSubQuest.setOnClickListener(v -> setInViewMode());
-//        container.requestFocus();
+        setInViewMode();
     }
 
     private boolean onEditorAction(int actionId) {
@@ -95,27 +94,8 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     }
 
     @Override
-    public void onFocusChange(View view, boolean isFocused) {
-//        if (editText == null) {
-//            return;
-//        }
-//        String text = editText.getText().toString();
-//        if (isFocused) {
-//            showUnderline(editText);
-//            if (text.equals(getContext().getString(R.string.add_sub_quest))) {
-//                setInEditMode();
-//            }
-//            editText.requestFocus();
-//        } else {
-//            hideUnderline(editText);
-//            if (StringUtils.isEmpty(text)) {
-//                setInViewMode();
-//            }
-//        }
-    }
-
-    @Override
     public void onClick(View v) {
+        KeyboardUtils.showKeyboard(getContext());
         setInEditMode();
     }
 
@@ -134,7 +114,6 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         editText.postDelayed(() -> {
             if(!editText.isFocused()) {
                 editText.requestFocus();
-//                KeyboardUtils.showKeyboard(getContext());
             }
         }, 100);
         editText.setText("");

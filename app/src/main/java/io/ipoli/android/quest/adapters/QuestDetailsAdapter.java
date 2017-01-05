@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.note.data.Note;
@@ -179,15 +180,15 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                holder.check.setFocusable(false);
-                holder.check.setFocusableInTouchMode(false);
+                holder.name.setFocusable(false);
+                holder.name.setFocusableInTouchMode(false);
                 sq.setCompletedAtDate(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
                 eventBus.post(new CompleteSubQuestEvent(sq));
                 strike(holder);
             } else {
-                holder.check.setFocusable(true);
-                holder.check.setFocusableInTouchMode(true);
+                holder.name.setFocusable(true);
+                holder.name.setFocusableInTouchMode(true);
                 sq.setCompletedAtDate(null);
                 sq.setCompletedAtMinute(null);
                 eventBus.post(new UndoCompleteSubQuestEvent(sq));
@@ -235,6 +236,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void updateSubQuest(SubQuest sq, SubQuestViewHolder holder) {
+        KeyboardUtils.showKeyboard(context);
         sq.setName(holder.name.getText().toString());
         eventBus.post(new UpdateSubQuestNameEvent(sq, EventSource.QUEST));
     }
