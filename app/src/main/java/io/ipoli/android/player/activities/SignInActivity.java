@@ -12,9 +12,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.avatar.Avatar;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
-import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
@@ -26,12 +24,6 @@ public class SignInActivity extends BaseActivity {
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
-
-    @Inject
-    AvatarPersistenceService avatarPersistenceService;
-
-    @Inject
-    PetPersistenceService petPersistenceService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
