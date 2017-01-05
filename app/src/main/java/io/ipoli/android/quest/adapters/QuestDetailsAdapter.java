@@ -48,7 +48,7 @@ import io.ipoli.android.quest.ui.AddSubQuestView;
  */
 
 public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AddSubQuestView.OnSubQuestAddedListener {
-    
+
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int SUB_QUEST_ITEM_VIEW_TYPE = 1;
     public static final int ADD_SUB_QUEST_ITEM_VIEW_TYPE = 2;
@@ -58,18 +58,16 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private final Context context;
     private final Bus eventBus;
-    private Quest quest;
 
     private List<Object> items;
 
     public QuestDetailsAdapter(Context context, Quest quest, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
-        this.quest = quest;
-        createItems();
+        createItems(quest);
     }
 
-    private void createItems() {
+    private void createItems(Quest quest) {
         items = new ArrayList<>();
         items.add("Sub Quests");
         for (SubQuest sq : quest.getSubQuests()) {
@@ -87,8 +85,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void updateData(Quest quest) {
-        this.quest = quest;
-        createItems();
+        createItems(quest);
         notifyDataSetChanged();
     }
 
