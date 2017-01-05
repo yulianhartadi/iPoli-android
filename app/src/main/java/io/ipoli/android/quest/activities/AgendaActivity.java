@@ -27,6 +27,9 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.CalendarDayChangedEvent;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -66,6 +69,14 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         ButterKnife.bind(this);
         appComponent().inject(this);
 
+        long selectedDayTime = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
+        if (selectedDayTime == 0) {
+            finish();
+            return;
+        }
+
+        eventBus.post(new ScreenShownEvent(EventSource.AGENDA_CALENDAR));
+
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -79,11 +90,6 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
 
         questList.setEmptyView(questListContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
 
-        long selectedDayTime = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
-        if (selectedDayTime == 0) {
-            finish();
-            return;
-        }
         Date currentDate = new Date(selectedDayTime);
         calendar.setCurrentDate(currentDate);
         showQuestsForDate(currentDate);
@@ -127,6 +133,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
 
     private void showQuestsForDate(Date newDate) {
         LocalDate date = new LocalDate(newDate);
+        eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.AGENDA_CALENDAR));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(simpleDateFormat.format(date.toDate()));

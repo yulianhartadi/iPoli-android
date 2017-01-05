@@ -25,5 +25,5 @@ public class CalendarDayChangedEvent {
         this.time = time;
     }
 
-    public enum Source {SWIPE, MENU, CALENDAR}
+    public enum Source {SWIPE, MENU, DUPLICATE_QUEST_SNACKBAR, SNOOZE_QUEST_SNACKBAR, DATE_CHANGE, AGENDA_CALENDAR}
 }

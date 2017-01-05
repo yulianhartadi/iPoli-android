@@ -465,7 +465,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (quest.getStartMinute() > -1) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
-                eventBus.post(new CalendarDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CalendarDayChangedEvent.Source.CALENDAR));
+                eventBus.post(new CalendarDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CalendarDayChangedEvent.Source.DUPLICATE_QUEST_SNACKBAR));
             });
         }
 
@@ -533,7 +533,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (quest.getStartMinute() > -1) {
                         scrollToTime = Time.of(quest.getStartMinute());
                     }
-                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CalendarDayChangedEvent.Source.CALENDAR));
+                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));
                 }
             });
         }

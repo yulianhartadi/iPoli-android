@@ -854,7 +854,7 @@ public class App extends MultiDexApplication {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
             updatePet(-getDecreasePercentage(quests));
             scheduleQuestsFor4WeeksAhead();
-            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.CALENDAR));
+            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
             moveIncompleteQuestsToInbox();
             listenForChanges();
         });
