@@ -80,7 +80,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (quest.getTextNotes().isEmpty()) {
             items.add(new EmptyNoteHint("Tap to add a note"));
         }
-        for (Note note : quest.getTextNotes()) {
+        for (Note note : quest.getNotes()) {
             items.add(note);
         }
     }
