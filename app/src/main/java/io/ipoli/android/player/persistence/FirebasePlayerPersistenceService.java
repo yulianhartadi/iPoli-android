@@ -30,16 +30,22 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             DatabaseReference objRef = collectionRef.push();
             player.setId(objRef.getKey());
 
-            objRef.setValue(player);
             DatabaseReference petsRef = objRef.child("pets");
             DatabaseReference petRef = petsRef.push();
             player.getPet().setId(petRef.getKey());
 
-            petRef.setValue(player.getPet());
             DatabaseReference avatarsRef = objRef.child("avatars");
             DatabaseReference avatarRef = avatarsRef.push();
             player.getAvatar().setId(avatarRef.getKey());
-            avatarRef.setValue(player.getAvatar());
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("/id", player.getId());
+            data.put("/avatars/" + player.getAvatar().getId(), player.getAvatar());
+            data.put("/pets/" + player.getPet().getId(), player.getPet());
+            data.put("/schemaVersion", player.getSchemaVersion());
+            data.put("/updatedAt", player.getUpdatedAt());
+            data.put("/createdAt", player.getCreatedAt());
+            objRef.updateChildren(data);
         } else {
             player.markUpdated();
             DatabaseReference objRef = collectionRef.child(player.getId());
