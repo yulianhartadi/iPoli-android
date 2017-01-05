@@ -60,7 +60,6 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
 
-        hideUnderline(editText);
 //        editText.setOnFocusChangeListener(this);
         addButton.setOnClickListener(this);
         editText.setOnEditorActionListener((v, actionId, event) -> onEditorAction(actionId));
@@ -132,10 +131,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnFocusChang
     }
 
     public void setInEditMode() {
-                KeyboardUtils.showKeyboard(getContext());
         editText.postDelayed(() -> {
             if(!editText.isFocused()) {
                 editText.requestFocus();
+//                KeyboardUtils.showKeyboard(getContext());
             }
         }, 100);
         editText.setText("");

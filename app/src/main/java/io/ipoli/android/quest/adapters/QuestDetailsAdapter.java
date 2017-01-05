@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +48,7 @@ import io.ipoli.android.quest.ui.AddSubQuestView;
  */
 
 public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AddSubQuestView.OnSubQuestAddedListener {
-
-    private static final int HEADER_COUNT = 3;
-
+    
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int SUB_QUEST_ITEM_VIEW_TYPE = 1;
     public static final int ADD_SUB_QUEST_ITEM_VIEW_TYPE = 2;
@@ -59,31 +56,24 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public static final int NOTE_LINK_ITEM_VIEW_TYPE = 4;
     public static final int EMPTY_NOTE_HINT_VIEW_TYPE = 5;
 
-    private final Quest quest;
     private final Context context;
     private final Bus eventBus;
-
-    private int lastSubQuestPosition = 0;
+    private Quest quest;
 
     private List<Object> items;
-    private AddSubQuestView addSubQuestView;
-    private boolean isAddSubQuestInEdit = false;
 
     public QuestDetailsAdapter(Context context, Quest quest, Bus eventBus) {
         this.context = context;
-        this.quest = quest;
         this.eventBus = eventBus;
-        createItems(quest);
+        this.quest = quest;
+        createItems();
     }
 
-    private void createItems(Quest quest) {
+    private void createItems() {
         items = new ArrayList<>();
         items.add("Sub Quests");
         for (SubQuest sq : quest.getSubQuests()) {
             items.add(sq);
-        }
-        if(!quest.getSubQuests().isEmpty()) {
-            lastSubQuestPosition = quest.getSubQuests().size();
         }
 
         items.add(new AddSubQuestButton(context.getString(R.string.add_sub_quest)));
@@ -91,9 +81,15 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (quest.getTextNotes().isEmpty()) {
             items.add(new EmptyNoteHint("Tap to add a note"));
         }
-        for (Note note : quest.getNotes()) {
+        for (Note note : quest.getTextNotes()) {
             items.add(note);
         }
+    }
+
+    public void updateData(Quest quest) {
+        this.quest = quest;
+        createItems();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -124,7 +120,6 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.d("AAAA", String.valueOf(holder.getItemViewType()));
         if (holder.getItemViewType() == SUB_QUEST_ITEM_VIEW_TYPE) {
             final SubQuest sq = (SubQuest) items.get(holder.getAdapterPosition());
             bindSubQuestViewHolder(sq, (SubQuestViewHolder) holder);
@@ -139,6 +134,8 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             h.button.setOnClickListener(v -> eventBus.post(new OpenNoteEvent(n)));
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
             TextView header = (TextView) holder.itemView;
+            header.setFocusable(true);
+            header.setFocusableInTouchMode(true);
             String text = (String) items.get(position);
             header.setText(text);
         } else if (holder.getItemViewType() == ADD_SUB_QUEST_ITEM_VIEW_TYPE) {
@@ -150,17 +147,6 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             h.text.setHint(hint.textHint);
             h.text.setOnClickListener(v -> eventBus.post(new EditNoteRequestEvent()));
         }
-    }
-
-    @Override
-    public void onSubQuestAdded(String name) {
-        SubQuest subQuest = new SubQuest(name);
-        eventBus.post(new NewSubQuestEvent(subQuest, EventSource.QUEST));
-        lastSubQuestPosition ++;
-        items.add(lastSubQuestPosition, subQuest);
-//        isAddSubQuestInEdit = true;
-        notifyDataSetChanged();
-//        notifyItemInserted(lastSubQuestPosition);
     }
 
     private void bindNote(Note note, NoteViewHolder holder) {
@@ -178,7 +164,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             popupMenu.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                     case R.id.delete_sub_quest:
-                        eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
+                        deleteSubQuest(sq);
                         return true;
                 }
                 return false;
@@ -196,15 +182,19 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                holder.check.setFocusable(false);
+                holder.check.setFocusableInTouchMode(false);
                 sq.setCompletedAtDate(new Date());
                 sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
-                strike(holder);
                 eventBus.post(new CompleteSubQuestEvent(sq));
+                strike(holder);
             } else {
+                holder.check.setFocusable(true);
+                holder.check.setFocusableInTouchMode(true);
                 sq.setCompletedAtDate(null);
                 sq.setCompletedAtMinute(null);
-                unstrike(holder);
                 eventBus.post(new UndoCompleteSubQuestEvent(sq));
+                unstrike(holder);
             }
         });
 
@@ -212,11 +202,12 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         holder.name.setOnFocusChangeListener((view, isFocused) -> {
             if (isFocused) {
                 if (sq.isCompleted()) {
-//                    holder.name.clearFocus();
                     return;
                 }
                 showUnderline(holder.name);
                 holder.name.requestFocus();
+            } else {
+                hideUnderline(holder.name);
             }
         });
 
@@ -225,7 +216,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (result == EditorInfo.IME_ACTION_DONE) {
                 String name = holder.name.getText().toString();
                 if (StringUtils.isEmpty(name)) {
-                    eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
+                    deleteSubQuest(sq);
                 } else {
                     updateSubQuest(sq, holder);
                 }
@@ -236,6 +227,21 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
     }
 
+    private void deleteSubQuest(SubQuest sq) {
+        eventBus.post(new DeleteSubQuestEvent(sq, EventSource.QUEST));
+    }
+
+    @Override
+    public void onSubQuestAdded(String name) {
+        SubQuest subQuest = new SubQuest(name);
+        eventBus.post(new NewSubQuestEvent(subQuest, EventSource.QUEST));
+    }
+
+    private void updateSubQuest(SubQuest sq, SubQuestViewHolder holder) {
+        sq.setName(holder.name.getText().toString());
+        eventBus.post(new UpdateSubQuestNameEvent(sq, EventSource.QUEST));
+    }
+
     private void unstrike(SubQuestViewHolder holder) {
         holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         holder.name.setEnabled(true);
@@ -244,12 +250,6 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void strike(SubQuestViewHolder holder) {
         holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         holder.name.setEnabled(false);
-    }
-
-    private void updateSubQuest(SubQuest sq, SubQuestViewHolder holder) {
-        hideUnderline(holder.name);
-        sq.setName(holder.name.getText().toString());
-        eventBus.post(new UpdateSubQuestNameEvent(sq, EventSource.QUEST));
     }
 
     private void showUnderline(TextInputEditText editText) {
@@ -284,12 +284,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        int itemCount = quest.getSubQuests().size() + quest.getNotes().size() + HEADER_COUNT;
-        if (quest.getTextNotes().isEmpty()) {
-            // add note hint
-            itemCount++;
-        }
-        return itemCount;
+        return items.size();
     }
 
     static class HeaderViewHolder extends RecyclerView.ViewHolder {

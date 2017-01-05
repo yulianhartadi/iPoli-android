@@ -204,6 +204,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if(adapter == null) {
             adapter = new QuestDetailsAdapter(this, quest, eventBus);
             details.setAdapter(adapter);
+        } else {
+            adapter.updateData(quest);
         }
     }
 
