@@ -31,7 +31,8 @@
             android:id="@+id/agenda_calendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4" />
+            android:layout_weight="4"
+            android:weekDayTextAppearance="@style/AgendaCalendarWeekDayTextAppearance" />
 
         <TextView
             android:id="@+id/agenda_journey_text"
