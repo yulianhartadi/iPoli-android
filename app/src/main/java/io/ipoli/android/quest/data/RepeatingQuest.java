@@ -178,7 +178,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @Exclude
     public Date getNextScheduledDate(LocalDate currentDate) {
         Date nextDate = null;
-        for (QuestData qd : questsData.values()) {
+        for (QuestData qd : getQuestsData().values()) {
             if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= DateUtils.toStartOfDayUTC(currentDate).getTime()) {
                 if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
                     nextDate = new Date(qd.getScheduledDate());
