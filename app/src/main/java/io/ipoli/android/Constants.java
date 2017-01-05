@@ -146,6 +146,10 @@ public interface Constants {
     int MAX_TIMES_A_DAY_COUNT = 8;
     int SCHEMA_VERSION = 1;
 
+    double MAX_PENALTY_COEFFICIENT = 0.5;
+    double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
+    double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
+
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
 

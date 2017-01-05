@@ -56,6 +56,7 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
+import io.ipoli.android.app.exceptions.PetNotFoundException;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
@@ -192,8 +193,6 @@ public class App extends MultiDexApplication {
         Quest quest = uncompletedQuests.get(0);
         updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
     };
-    public static final double MAX_PENALTY_COEFFICIENT = 0.5;
-    public static final double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -205,8 +204,13 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void updatePet(int healthPoints) {
+    private void updatePet(int healthPoints, String tag) {
         petPersistenceService.find(pet -> {
+
+            if (pet == null) {
+                eventBus.post(new AppErrorEvent(new PetNotFoundException(playerId, tag)));
+                return;
+            }
 
             if (pet.getState() == Pet.PetState.DEAD) {
                 return;
@@ -247,7 +251,7 @@ public class App extends MultiDexApplication {
 
     private int getDecreasePercentage(List<Quest> quests) {
         if (quests.isEmpty()) {
-            return (int) (MAX_PENALTY_COEFFICIENT * 100);
+            return (int) (Constants.NO_QUESTS_PENALTY_COEFFICIENT * 100);
         }
 
         int decreasePercentage = 0;
@@ -273,8 +277,8 @@ public class App extends MultiDexApplication {
         double uncompletedRatio = uncompletedQuests.size() / quests.size();
 
         int randomNoise = new Random().nextInt(21) - 10;
-        decreasePercentage += (int) (uncompletedRatio * MAX_PENALTY_COEFFICIENT + (uncompletedImportantQuestCount * IMPORTANT_QUEST_PENALTY_PERCENT) + randomNoise);
-        decreasePercentage = (int) Math.min(decreasePercentage, MAX_PENALTY_COEFFICIENT * 100);
+        decreasePercentage += (int) (uncompletedRatio * Constants.MAX_PENALTY_COEFFICIENT + (uncompletedImportantQuestCount * Constants.IMPORTANT_QUEST_PENALTY_PERCENT) + randomNoise);
+        decreasePercentage = (int) Math.min(decreasePercentage, Constants.MAX_PENALTY_COEFFICIENT * 100);
         return decreasePercentage;
     }
 
@@ -420,11 +424,9 @@ public class App extends MultiDexApplication {
             }
         }
 
-        scheduleQuestsFor4WeeksAhead();
-        moveIncompleteQuestsToInbox();
+        scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
-        scheduleDateChanged();
     }
 
     private void scheduleDailyChallenge() {
@@ -563,7 +565,7 @@ public class App extends MultiDexApplication {
             avatarPersistenceService.save(avatar);
         });
 
-        updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
+        updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO), "undo_quest");
         eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
     }
 
@@ -653,7 +655,7 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
-        updatePet((int) (Math.floor(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
+        updatePet((int) (Math.floor(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
@@ -795,7 +797,7 @@ public class App extends MultiDexApplication {
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updateAvatar(challenge);
-        updatePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
+        updatePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "challenge_complete");
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
@@ -841,7 +843,7 @@ public class App extends MultiDexApplication {
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
-        long notificationTime = DateUtils.toStartOfDayUTC(LocalDate.now().plusDays(1)).getTime() + 5000L;
+        long notificationTime = DateUtils.toStartOfDay(LocalDate.now().plusDays(1)).getTime() + 5000L;
         if (Build.VERSION.SDK_INT > 22) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, notificationTime, pendingIntent);
         } else {
@@ -852,13 +854,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
-            updatePet(-getDecreasePercentage(quests));
+            updatePet(-getDecreasePercentage(quests), "date_change");
             scheduleQuestsFor4WeeksAhead();
-            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
             moveIncompleteQuestsToInbox();
+            scheduleDateChanged();
             listenForChanges();
+            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
         });
-
     }
 
     public static String getPlayerId() {
