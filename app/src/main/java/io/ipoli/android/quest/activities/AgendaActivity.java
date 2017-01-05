@@ -7,16 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
 import android.widget.TextView;
-
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 
 import org.joda.time.LocalDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,7 +39,7 @@ import io.ipoli.android.quest.viewmodels.AgendaViewModel;
  * on 12/30/16.
  */
 
-public class AgendaActivity extends BaseActivity implements CompactCalendarView.CompactCalendarViewListener {
+public class AgendaActivity extends BaseActivity implements CalendarView.OnDateChangeListener {
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -50,7 +48,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
     Toolbar toolbar;
 
     @BindView(R.id.agenda_calendar)
-    CompactCalendarView calendar;
+    CalendarView calendar;
 
     @BindView(R.id.agenda_list_container)
     ViewGroup questListContainer;
@@ -69,8 +67,8 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         ButterKnife.bind(this);
         appComponent().inject(this);
 
-        long selectedDayTime = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
-        if (selectedDayTime == 0) {
+        long selectedDate = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
+        if (selectedDate == 0) {
             finish();
             return;
         }
@@ -90,10 +88,9 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
 
         questList.setEmptyView(questListContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
 
-        Date currentDate = new Date(selectedDayTime);
-        calendar.setCurrentDate(currentDate);
-        showQuestsForDate(currentDate);
-        calendar.setListener(this);
+        calendar.setDate(selectedDate, true, true);
+        showQuestsForDate(new LocalDate(selectedDate));
+        calendar.setOnDateChangeListener(this);
     }
 
     @Override
@@ -131,8 +128,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         }
     }
 
-    private void showQuestsForDate(Date newDate) {
-        LocalDate date = new LocalDate(newDate);
+    private void showQuestsForDate(LocalDate date) {
         eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.AGENDA_CALENDAR));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
         if (getSupportActionBar() != null) {
@@ -140,7 +136,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
         }
         String dayNumberSuffix = getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
-        journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(newDate)));
+        journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(date.toDate())));
         questPersistenceService.findAllNonAllDayForDate(date, quests -> {
             List<AgendaViewModel> vms = new ArrayList<>();
             for (Quest quest : quests) {
@@ -164,12 +160,7 @@ public class AgendaActivity extends BaseActivity implements CompactCalendarView.
     }
 
     @Override
-    public void onDayClick(Date dateClicked) {
-        showQuestsForDate(dateClicked);
-    }
-
-    @Override
-    public void onMonthScroll(Date firstDayOfNewMonth) {
-        showQuestsForDate(firstDayOfNewMonth);
+    public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+        showQuestsForDate(new LocalDate(year, month + 1, dayOfMonth));
     }
 }

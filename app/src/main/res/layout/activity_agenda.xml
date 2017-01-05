@@ -27,22 +27,11 @@
         android:orientation="vertical"
         android:weightSum="8">
 
-        <com.github.sundeepk.compactcalendarview.CompactCalendarView
+        <CalendarView
             android:id="@+id/agenda_calendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="3"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            app:compactCalendarBackgroundColor="@color/md_white"
-            app:compactCalendarCurrentDayBackgroundColor="@color/md_dark_text_12"
-            app:compactCalendarCurrentSelectedDayBackgroundColor="?attr/colorAccent"
-            app:compactCalendarCurrentSelectedDayIndicatorStyle="no_fill_large_indicator"
-            app:compactCalendarDisplayOtherMonthDays="true"
-            app:compactCalendarOtherMonthDaysTextColor="@color/md_blue_300"
-            app:compactCalendarTextColor="?attr/colorPrimaryDark"
-            app:compactCalendarTextSize="14sp" />
+            android:layout_weight="4" />
 
         <TextView
             android:id="@+id/agenda_journey_text"
@@ -59,7 +48,7 @@
             android:id="@+id/agenda_list_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4">
+            android:layout_weight="3">
 
             <io.ipoli.android.app.ui.EmptyStateRecyclerView
                 android:id="@+id/agenda_list"
