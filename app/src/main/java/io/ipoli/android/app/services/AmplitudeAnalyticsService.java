@@ -190,7 +190,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onShowQuest(ShowQuestEvent e) {
-        log("quest_shown", e.quest.getId(), e.quest.getName());
+        Quest quest = e.quest;
+        log("quest_shown",
+                EventParams.of("id", quest.getId())
+                        .add("name", e.quest.getName())
+                        .add("source", e.source.name()));
     }
 
     @Subscribe

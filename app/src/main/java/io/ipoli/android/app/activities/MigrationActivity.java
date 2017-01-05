@@ -143,7 +143,19 @@ public class MigrationActivity extends BaseActivity {
         List<Map<String, Object>> questsToSave = new ArrayList<>();
         Long timesADay = (Long) repeatingQuest.get("timesADay");
         String rqId = repeatingQuest.get("id").toString();
+
+        if (repeatingQuest.containsKey("challengeId")) {
+            String challengeId = repeatingQuest.get("challengeId").toString();
+            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + rqId, true);
+            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + rqId, repeatingQuest);
+        }
+
+        if (quests == null || quests.isEmpty()) {
+            return;
+        }
+
         if (timesADay == 1) {
+
             for (Map<String, Object> quest : quests) {
                 quest = copyQuest(quest);
                 quest.put("repeatingQuestId", rqId);
@@ -179,19 +191,12 @@ public class MigrationActivity extends BaseActivity {
                 }
                 questsToSave.add(questToSave);
             }
-
         }
 
         for (Map<String, Object> quest : questsToSave) {
             populateQuest(quest, data);
             data.put("/quests/" + quest.get("id"), quest);
             ((Map<String, Object>) repeatingQuest.get("questsData")).put(quest.get("id").toString(), createQuestData(quest));
-        }
-
-        if (repeatingQuest.containsKey("challengeId")) {
-            String challengeId = repeatingQuest.get("challengeId").toString();
-            data.put("/challenges/" + challengeId + "/repeatingQuestIds/" + rqId, true);
-            data.put("/challenges/" + challengeId + "/challengeRepeatingQuests/" + rqId, repeatingQuest);
         }
     }
 
