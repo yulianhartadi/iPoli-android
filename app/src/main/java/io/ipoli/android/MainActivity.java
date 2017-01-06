@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -288,6 +289,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         avatarPersistenceService.listen(avatar -> {
             this.avatar = avatar;
 
+            if (localStorage.readInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, -1) == -1) {
+                saveAvatarSettings(avatar);
+            }
+
             View header = navigationView.getHeaderView(0);
             TextView level = (TextView) header.findViewById(R.id.avatar_level);
             level.setText(String.format(getString(R.string.nav_header_player_level), this.avatar.getLevel()));
@@ -312,6 +317,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
             currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), this.avatar.getExperience()));
         });
+    }
+
+    private void saveAvatarSettings(Avatar avatar) {
+        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
+        localStorage.saveIntSet(Constants.KEY_AVATAR_WORK_DAYS, new HashSet<>(avatar.getWorkDays()));
+        localStorage.saveInt(Constants.KEY_AVATAR_WORK_START_MINUTE, avatar.getWorkStartMinute());
+        localStorage.saveInt(Constants.KEY_AVATAR_WORK_END_MINUTE, avatar.getWorkEndMinute());
+        localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_START_MINUTE, avatar.getSleepStartMinute());
+        localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, avatar.getSleepEndMinute());
     }
 
     private void updatePetInDrawer() {

@@ -173,7 +173,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 .setSleepEndMinute(localStorage.readInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE))
                 .setWorkStartMinute(localStorage.readInt(Constants.KEY_AVATAR_WORK_START_MINUTE, Constants.DEFAULT_PLAYER_WORK_START_MINUTE))
                 .setWorkEndMinute(localStorage.readInt(Constants.KEY_AVATAR_WORK_END_MINUTE, Constants.DEFAULT_PLAYER_WORK_END_MINUTE))
-                .setMostProductiveTimesOfDay(localStorage.readStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES_OF_DAY, Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES));
+                .setMostProductiveTimesOfDay(localStorage.readStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES, Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES));
 
         posteriorEstimator = new PosteriorEstimator(posteriorSettings, currentDate, new Random(Constants.RANDOM_SEED));
 

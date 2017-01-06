@@ -277,7 +277,7 @@ public class SettingsFragment extends BaseFragment implements
             selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
         }
         avatar.setMostProductiveTimesOfDayList(selectedTimes);
-        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES_OF_DAY, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
+        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
         avatarPersistenceService.save(avatar);
     }
 
