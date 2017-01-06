@@ -50,9 +50,9 @@ public class StartQuestCommand {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
                     cq.setActualStartDate(null);
-                    questPersistenceService.update(cq);
                 }
             }
+            questPersistenceService.update(quests);
         });
     }
 }
