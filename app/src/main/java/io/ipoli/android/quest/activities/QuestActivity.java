@@ -34,10 +34,11 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.ui.formatters.TimerFormatter;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
@@ -57,11 +58,8 @@ import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
-import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
-import io.ipoli.android.app.ui.formatters.TimerFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -69,6 +67,8 @@ import io.ipoli.android.app.ui.formatters.TimerFormatter;
  */
 
 public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
+
+    public static final int EDIT_QUEST_REQUEST_CODE = 101;
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -162,7 +162,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             case R.id.action_edit:
                 Intent i = new Intent(this, EditQuestActivity.class);
                 i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
-                startActivity(i);
+                startActivityForResult(i, EDIT_QUEST_REQUEST_CODE);
                 return true;
             case R.id.action_done:
                 eventBus.post(new DoneQuestTapEvent(quest));
@@ -188,7 +188,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             eventBus.post(new AppErrorEvent(new QuestNotFoundException(questId)));
             return;
         }
-        
+
         name.setText(quest.getName());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(quest.getName());
@@ -201,7 +201,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             resumeTimer();
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
         }
-        if(adapter == null) {
+        if (adapter == null) {
             adapter = new QuestDetailsAdapter(this, quest, eventBus);
             details.setAdapter(adapter);
         } else {
@@ -409,6 +409,14 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + packageName)));
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_QUEST_REQUEST_CODE && resultCode == Constants.RESULT_REMOVED) {
+            finish();
         }
     }
 }
