@@ -858,6 +858,7 @@ public class App extends MultiDexApplication {
             scheduleQuestsFor4WeeksAhead();
             moveIncompleteQuestsToInbox();
             scheduleDateChanged();
+            requestWidgetUpdate();
             listenForChanges();
             eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
         });
