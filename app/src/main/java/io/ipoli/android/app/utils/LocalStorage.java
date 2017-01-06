@@ -50,9 +50,13 @@ public class LocalStorage {
     }
 
     public Set<String> readStringSet(String key) {
+        return readStringSet(key, new CopyOnWriteArraySet<>());
+    }
+
+    public Set<String> readStringSet(String key, Set<String> defaultValue) {
         String json = sharedPreferences.getString(key, "");
         if (TextUtils.isEmpty(json)) {
-            return new CopyOnWriteArraySet<>();
+            return defaultValue;
         }
         Type typeToken = new TypeToken<CopyOnWriteArraySet<String>>() {
         }.getType();
