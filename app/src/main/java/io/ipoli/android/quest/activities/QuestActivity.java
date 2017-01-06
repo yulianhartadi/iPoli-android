@@ -34,6 +34,7 @@ import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
@@ -58,6 +59,7 @@ import io.ipoli.android.quest.events.subquests.DeleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UndoCompleteSubQuestEvent;
 import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
+import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 
@@ -184,8 +186,9 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     }
 
     private void onQuestFound(Quest quest) {
-        if(quest == null) {
+        if (quest == null) {
             eventBus.post(new AppErrorEvent(new QuestNotFoundException(questId)));
+            finish();
             return;
         }
 
