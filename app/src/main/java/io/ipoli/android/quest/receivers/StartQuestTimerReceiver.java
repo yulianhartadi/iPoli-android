@@ -19,11 +19,11 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.navigation.ActivityIntentFactory;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
-import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -49,7 +49,9 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
 
         String questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
-            showQuestTimerNotification(q);
+            if (q.isStarted()) {
+                showQuestTimerNotification(q);
+            }
             result.finish();
         });
     }
