@@ -13,7 +13,9 @@ import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.FriendsInvitedEvent;
+import io.ipoli.android.app.events.InviteFriendsEvent;
+import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
@@ -410,8 +412,18 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onInviteFriendTapped(InviteFriendEvent e) {
-        log("invite_friend_tapped");
+    public void onInviteFriendsTapped(InviteFriendsEvent e) {
+        log("invite_friends_tapped");
+    }
+
+    @Subscribe
+    public void onFriendsInvited(FriendsInvitedEvent e) {
+        log("friends_invited", EventParams.of("count", e.invitationIds.length));
+    }
+
+    @Subscribe
+    public void onInviteFriendsCanceled(InviteFriendsCanceledEvent e) {
+        log("invite_friends_canceled");
     }
 
     @Subscribe

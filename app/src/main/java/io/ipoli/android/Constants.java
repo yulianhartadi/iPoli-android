@@ -17,7 +17,7 @@ public interface Constants {
     String API_VERSION = "v1";
 
     String FACEBOOK_APP_LINK = "https://fb.me/1609677589354576";
-    String FACEBOOK_IPOLI_LOGO_URL = "https://scontent-vie1-1.xx.fbcdn.net/v/t1.0-1/p320x320/12805840_980283392053167_8375277495702561179_n.png?oh=fa2926a5ab2e10b227f283d21b670e83&oe=57ACFC48";
+    String IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png";
     String FACEBOOK_INVITE_IMAGE_URL = "https://scontent-vie1-1.xx.fbcdn.net/v/t1.0-9/13091967_1022897927791713_5208044433494824774_n.png?oh=e96baa01cf046a5164e8053102deb9aa&oe=57A4913D";
     String SHARE_URL = "http://bit.ly/ipoli-android";
     String TWITTER_USERNAME = "@iPoliHQ";

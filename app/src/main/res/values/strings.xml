@@ -370,4 +370,7 @@
     <string name="agenda_daily_journey">Daily Journey for %s</string>
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
     <string name="empty_agenda_text">No quests for this date</string>
+    <string name="invite_title">Invite Your Friends</string>
+    <string name="invite_message">I\'ll tell you a secret. I use this app to really get things done! Here is your invite!</string>
+    <string name="invite_call_to_action">Download Now</string>
 </resources>

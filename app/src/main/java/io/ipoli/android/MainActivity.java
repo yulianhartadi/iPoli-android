@@ -2,6 +2,7 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -20,10 +21,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.share.model.AppInviteContent;
-import com.facebook.share.widget.AppInviteDialog;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -48,7 +47,9 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.InviteFriendEvent;
+import io.ipoli.android.app.events.FriendsInvitedEvent;
+import io.ipoli.android.app.events.InviteFriendsEvent;
+import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
@@ -101,6 +102,7 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static final int PICK_PLAYER_PICTURE_REQUEST_CODE = 101;
+    public static final int INVITE_FRIEND_REQUEST_CODE = 102;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
     @BindView(R.id.drawer_layout)
@@ -234,8 +236,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.invite_friends:
-                eventBus.post(new InviteFriendEvent());
-                inviteFriend();
+                inviteFriends();
                 break;
 
             case R.id.settings:
@@ -574,16 +575,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startActivity(intent);
     }
 
-    private void inviteFriend() {
-        if (AppInviteDialog.canShow()) {
-            AppInviteContent content = new AppInviteContent.Builder()
-                    .setApplinkUrl(Constants.FACEBOOK_APP_LINK)
-                    .setPreviewImageUrl(Constants.FACEBOOK_INVITE_IMAGE_URL)
-                    .build();
-            AppInviteDialog.show(this, content);
-        } else {
-            Toast.makeText(this, R.string.show_invite_failed, Toast.LENGTH_LONG).show();
-        }
+    private void inviteFriends() {
+        eventBus.post(new InviteFriendsEvent());
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invite_title))
+                .setMessage(getString(R.string.invite_message))
+                .setCustomImage(Uri.parse(Constants.IPOLI_LOGO_URL))
+                .setCallToActionText(getString(R.string.invite_call_to_action))
+                .build();
+        startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
     }
 
     @Subscribe
@@ -601,6 +600,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
                 this.avatar.setPicture(picture);
                 avatarPersistenceService.save(this.avatar);
+            }
+        }
+
+        if (requestCode == INVITE_FRIEND_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                String[] inviteIds = AppInviteInvitation.getInvitationIds(resultCode, data);
+                if (inviteIds == null) {
+                    inviteIds = new String[]{};
+                }
+                eventBus.post(new FriendsInvitedEvent(inviteIds));
+            } else {
+                eventBus.post(new InviteFriendsCanceledEvent());
             }
         }
     }

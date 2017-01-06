@@ -70,7 +70,7 @@ public class ShareQuestDialog {
                 .setContentUrl(Uri.parse(Constants.FACEBOOK_APP_LINK))
                 .setContentTitle(title)
                 .setContentDescription(desc)
-                .setImageUrl(Uri.parse(Constants.FACEBOOK_IPOLI_LOGO_URL))
+                .setImageUrl(Uri.parse(Constants.IPOLI_LOGO_URL))
                 .build();
 
         ShareDialog sd = new ShareDialog(context);
