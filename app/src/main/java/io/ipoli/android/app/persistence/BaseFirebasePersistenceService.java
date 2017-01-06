@@ -119,7 +119,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     protected DatabaseReference getPlayerReference() {
         if (playerRef == null) {
             playerRef = database.getReference(Constants.API_VERSION).child("players").child(App.getPlayerId());
-            playerRef.keepSynced(true);
         }
         return playerRef;
     }

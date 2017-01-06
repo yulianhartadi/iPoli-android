@@ -4,6 +4,7 @@ import org.joda.time.LocalDate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
@@ -17,7 +18,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForInboxQuests(OnDataChangedListener<List<Quest>> listener);
 
-    void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
+    void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<Long, List<Quest>>> listener);
 
     void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 

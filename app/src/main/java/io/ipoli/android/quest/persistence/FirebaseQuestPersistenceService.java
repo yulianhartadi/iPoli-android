@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
@@ -66,9 +68,53 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
-        listenForListChange(query, listener, q -> q.getCompletedAtDate() == null);
+    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<Long, List<Quest>>> listener) {
+//        Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
+        Query query = getPlayerReference().child("dayQuests").orderByKey().startAt(String.valueOf(toStartOfDayUTC(startDate).getTime())).endAt(String.valueOf(toStartOfDayUTC(endDate).getTime()));
+//        listenForListChange(query, listener, q -> q.getCompletedAtDate() == null);
+
+
+//        listenForQuery(query, createListListener(listener, predicate), listener);
+
+        GenericTypeIndicator<Map<String, Map<String, Quest>>> typeIndicator = new GenericTypeIndicator<Map<String, Map<String, Quest>>>() {
+        };
+
+        ValueEventListener valueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Map<String, Map<String, Quest>> value = dataSnapshot.getValue(typeIndicator);
+
+                if (value == null) {
+                    listener.onDataChanged(new TreeMap<>());
+                    return;
+                }
+
+                SortedMap<Long, List<Quest>> result = new TreeMap<>();
+                for (Map.Entry<String, Map<String, Quest>> entry : value.entrySet()) {
+                    List<Quest> dayQuests = new ArrayList<>();
+                    for (Quest quest : entry.getValue().values()) {
+                        dayQuests.add(quest);
+                    }
+                    result.put(Long.valueOf(entry.getKey()), dayQuests);
+                }
+                listener.onDataChanged(result);
+
+//                List<Quest> data = getListFromMapSnapshot(dataSnapshot);
+//                if (predicate == null) {
+//                    listener.onDataChanged(data);
+//                    return;
+//                }
+//                listener.onDataChanged(QueryFilter.filter(data, predicate));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        listenForQuery(query, valueListener, listener);
     }
 
     @Override

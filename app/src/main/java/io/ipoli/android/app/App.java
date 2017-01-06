@@ -423,7 +423,7 @@ public class App extends MultiDexApplication {
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             }
         }
-
+        FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();

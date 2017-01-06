@@ -14,12 +14,13 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -43,7 +44,7 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {
+public class OverviewFragment extends BaseFragment implements OnDataChangedListener<SortedMap<Long, List<Quest>>> {
 
     @Inject
     Bus eventBus;
@@ -135,36 +136,47 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     }
 
     @Override
-    public void onDataChanged(List<Quest> quests) {
-        List<QuestViewModel> viewModels = new ArrayList<>();
-        for (Quest q : quests) {
-            if (q.isScheduledForToday() && q.shouldBeDoneMultipleTimesPerDay()) {
-                viewModels.add(new QuestViewModel(getContext(), q));
-            } else if (q.isScheduledForToday() || !q.shouldBeDoneMultipleTimesPerDay()) {
-                viewModels.add(new QuestViewModel(getContext(), q));
+    public void onDataChanged(SortedMap<Long, List<Quest>> dateToQuests) {
+        SortedMap<LocalDate, List<QuestViewModel>> viewModels = new TreeMap<>();
+
+        for (Map.Entry<Long, List<Quest>> entry : dateToQuests.entrySet()) {
+            LocalDate date = new LocalDate(entry.getKey());
+            List<QuestViewModel> vms = new ArrayList<>();
+            for (Quest quest : entry.getValue()) {
+                vms.add(new QuestViewModel(getContext(), quest));
             }
+            viewModels.put(date, vms);
         }
 
-        Collections.sort(viewModels, new Comparator<QuestViewModel>() {
-            @Override
-            public int compare(QuestViewModel qvm1, QuestViewModel qvm2) {
-                Quest q1 = qvm1.getQuest();
-                Quest q2 = qvm2.getQuest();
-                if (q1.getEndDate().before(q2.getEndDate())) {
-                    return -1;
-                }
-                if (q1.getEndDate().after(q2.getEndDate())) {
-                    return 1;
-                }
-                if (qvm1.getQuest().getStartMinute() > qvm2.getQuest().getStartMinute()) {
-                    return 1;
-                }
-                if (qvm1.getQuest().getStartMinute() < qvm2.getQuest().getStartMinute()) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
+
+//        for (Quest q : quests) {
+//            if (q.isScheduledForToday() && q.shouldBeDoneMultipleTimesPerDay()) {
+//                viewModels.add(new QuestViewModel(getContext(), q));
+//            } else if (q.isScheduledForToday() || !q.shouldBeDoneMultipleTimesPerDay()) {
+//                viewModels.add(new QuestViewModel(getContext(), q));
+//            }
+//        }
+//
+//        Collections.sort(viewModels, new Comparator<QuestViewModel>() {
+//            @Override
+//            public int compare(QuestViewModel qvm1, QuestViewModel qvm2) {
+//                Quest q1 = qvm1.getQuest();
+//                Quest q2 = qvm2.getQuest();
+//                if (q1.getEndDate().before(q2.getEndDate())) {
+//                    return -1;
+//                }
+//                if (q1.getEndDate().after(q2.getEndDate())) {
+//                    return 1;
+//                }
+//                if (qvm1.getQuest().getStartMinute() > qvm2.getQuest().getStartMinute()) {
+//                    return 1;
+//                }
+//                if (qvm1.getQuest().getStartMinute() < qvm2.getQuest().getStartMinute()) {
+//                    return -1;
+//                }
+//                return 0;
+//            }
+//        });
         overviewAdapter.updateQuests(viewModels);
     }
 }

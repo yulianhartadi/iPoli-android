@@ -19,9 +19,12 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -281,9 +284,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return items.size();
     }
 
-    public void updateQuests(List<QuestViewModel> viewModels) {
-        setItems(viewModels);
-        notifyDataSetChanged();
+    public void updateQuests(SortedMap<LocalDate, List<QuestViewModel>> viewModels) {
+//        setItems(viewModels);
+//        notifyDataSetChanged();
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
