@@ -196,6 +196,7 @@ public class SettingsFragment extends BaseFragment implements
                 selectedDays -> {
                     eventBus.post(new WorkDaysChangedEvent(selectedDays));
                     avatar.setWorkDays(new ArrayList<>(selectedDays));
+                    localStorage.saveIntSet(Constants.KEY_AVATAR_WORK_DAYS, new HashSet<>(avatar.getWorkDays()));
                     avatarPersistenceService.save(avatar);
                 });
         fragment.show(getFragmentManager());
@@ -208,6 +209,8 @@ public class SettingsFragment extends BaseFragment implements
                     eventBus.post(new WorkHoursChangedEvent(startTime, endTime));
                     avatar.setWorkStartTime(startTime);
                     avatar.setWorkEndTime(endTime);
+                    localStorage.saveInt(Constants.KEY_AVATAR_WORK_START_MINUTE, avatar.getWorkStartMinute());
+                    localStorage.saveInt(Constants.KEY_AVATAR_WORK_END_MINUTE, avatar.getWorkEndMinute());
                     avatarPersistenceService.save(avatar);
                 });
         fragment.show(getFragmentManager());
@@ -220,6 +223,8 @@ public class SettingsFragment extends BaseFragment implements
                     eventBus.post(new SleepHoursChangedEvent(startTime, endTime));
                     avatar.setSleepStartTime(startTime);
                     avatar.setSleepEndTime(endTime);
+                    localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_START_MINUTE, avatar.getSleepStartMinute());
+                    localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, avatar.getSleepEndMinute());
                     avatarPersistenceService.save(avatar);
                 });
         fragment.show(getFragmentManager());
@@ -272,6 +277,7 @@ public class SettingsFragment extends BaseFragment implements
             selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
         }
         avatar.setMostProductiveTimesOfDayList(selectedTimes);
+        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES_OF_DAY, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
         avatarPersistenceService.save(avatar);
     }
 

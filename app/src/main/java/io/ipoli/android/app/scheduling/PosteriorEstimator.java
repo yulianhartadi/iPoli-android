@@ -4,10 +4,11 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
-import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.TimeOfDay;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -25,12 +26,12 @@ public class PosteriorEstimator {
     public static final int EVENING_19 = 19 * 60;
     public static final int EVENING_23 = 23 * 60;
 
-    private final Avatar avatar;
+    private final PosteriorSettings posteriorSettings;
     private final LocalDate currentDate;
     private final Random random;
 
-    public PosteriorEstimator(Avatar avatar, LocalDate currentDate, Random random) {
-        this.avatar = avatar;
+    public PosteriorEstimator(PosteriorSettings posteriorSettings, LocalDate currentDate, Random random) {
+        this.posteriorSettings = posteriorSettings;
         this.currentDate = currentDate;
         this.random = random;
     }
@@ -39,8 +40,8 @@ public class PosteriorEstimator {
     private DiscreteDistribution getSleepDistribution() {
         double[] values = createEmptyWholeDayValues();
 
-        int sleepStartMinute = avatar.getSleepStartMinute();
-        int sleepEndMinute = avatar.getSleepEndMinute();
+        int sleepStartMinute = posteriorSettings.getSleepStartMinute();
+        int sleepEndMinute = posteriorSettings.getSleepEndMinute();
 
         if (sleepEndMinute < sleepStartMinute) {
             for (int i = 0; i < values.length; i++) {
@@ -96,17 +97,17 @@ public class PosteriorEstimator {
 
         DiscreteDistribution posterior = getSleepDistribution();
 
-        DiscreteDistribution workDistribution = getWorkDistribution(avatar.getWorkStartMinute(), avatar.getWorkEndMinute());
+        DiscreteDistribution workDistribution = getWorkDistribution(posteriorSettings.getWorkStartMinute(), posteriorSettings.getWorkEndMinute());
         DiscreteDistribution inverseWorkDistribution = inverseUniformDistribution(workDistribution);
 
         Category category = quest.getCategoryType();
 
-        if (category == Category.WORK && isWorkDay(currentDate, avatar)) {
+        if (category == Category.WORK && isWorkDay(currentDate, posteriorSettings.getWorkDays())) {
             // schedule work tasks only during work days & hours
             posterior = workDistribution;
         }
 
-        List<TimeOfDay> productiveTimesOfDay = avatar.getMostProductiveTimesOfDayList();
+        List<TimeOfDay> productiveTimesOfDay = posteriorSettings.getMostProductiveTimesOfDayList();
         if (!productiveTimesOfDay.contains(TimeOfDay.ANY_TIME) && (category == Category.WORK || category == Category.LEARNING)) {
             if (productiveTimesOfDay.contains(TimeOfDay.MORNING)) {
                 posterior = posterior.joint(createMorningProductiveDistribution());
@@ -124,15 +125,15 @@ public class PosteriorEstimator {
         }
 
         if ((category == Category.LEARNING || category == Category.WELLNESS || category == Category.PERSONAL || category == Category.CHORES)
-                && isWorkDay(currentDate, avatar)) {
+                && isWorkDay(currentDate, posteriorSettings.getWorkDays())) {
             posterior = posterior.joint(inverseWorkDistribution);
         }
 
         return posterior;
     }
 
-    private boolean isWorkDay(LocalDate currentDate, Avatar avatar) {
-        return avatar.getWorkDays().contains(currentDate.getDayOfWeek());
+    private boolean isWorkDay(LocalDate currentDate, List<Integer> workDays) {
+        return workDays.contains(currentDate.getDayOfWeek());
     }
 
     private DiscreteDistribution inverseUniformDistribution(DiscreteDistribution distribution) {
@@ -193,5 +194,84 @@ public class PosteriorEstimator {
             }
         }
         return new DiscreteDistribution(values, random);
+    }
+
+    public static class PosteriorSettings {
+        private List<String> mostProductiveTimesOfDay;
+        private List<Integer> workDays;
+        private Integer workStartMinute;
+        private Integer workEndMinute;
+        private Integer sleepStartMinute;
+        private Integer sleepEndMinute;
+
+        public static PosteriorSettings create() {
+            return new PosteriorSettings();
+        }
+
+        public List<String> getMostProductiveTimesOfDay() {
+            return mostProductiveTimesOfDay;
+        }
+
+        public PosteriorSettings setMostProductiveTimesOfDay(Set<String> mostProductiveTimesOfDay) {
+            this.mostProductiveTimesOfDay = new ArrayList<>(mostProductiveTimesOfDay);
+            return this;
+        }
+
+        public List<Integer> getWorkDays() {
+            return workDays;
+        }
+
+        public PosteriorSettings setWorkDays(Set<Integer> workDays) {
+            this.workDays = new ArrayList<>(workDays);
+            return this;
+        }
+
+        public Integer getWorkStartMinute() {
+            return workStartMinute;
+        }
+
+        public PosteriorSettings setWorkStartMinute(Integer workStartMinute) {
+            this.workStartMinute = workStartMinute;
+            return this;
+        }
+
+        public Integer getWorkEndMinute() {
+            return workEndMinute;
+        }
+
+        public PosteriorSettings setWorkEndMinute(Integer workEndMinute) {
+            this.workEndMinute = workEndMinute;
+            return this;
+        }
+
+        public Integer getSleepStartMinute() {
+            return sleepStartMinute;
+        }
+
+        public PosteriorSettings setSleepStartMinute(Integer sleepStartMinute) {
+            this.sleepStartMinute = sleepStartMinute;
+            return this;
+        }
+
+        public Integer getSleepEndMinute() {
+            return sleepEndMinute;
+        }
+
+        public PosteriorSettings setSleepEndMinute(Integer sleepEndMinute) {
+            this.sleepEndMinute = sleepEndMinute;
+            return this;
+        }
+
+        public List<TimeOfDay> getMostProductiveTimesOfDayList() {
+            List<TimeOfDay> timesOfDay = new ArrayList<>();
+            if(mostProductiveTimesOfDay == null) {
+                mostProductiveTimesOfDay = new ArrayList<>();
+                return timesOfDay;
+            }
+            for(String timeOfDay : mostProductiveTimesOfDay) {
+                timesOfDay.add(TimeOfDay.valueOf(timeOfDay));
+            }
+            return timesOfDay;
+        }
     }
 }

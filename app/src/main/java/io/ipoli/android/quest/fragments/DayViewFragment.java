@@ -21,6 +21,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -46,8 +47,8 @@ import io.ipoli.android.app.ui.calendar.CalendarLayout;
 import io.ipoli.android.app.ui.calendar.CalendarListener;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -76,6 +77,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Inject
     protected Bus eventBus;
+
+    @Inject
+    LocalStorage localStorage;
 
     @BindView(R.id.unscheduled_quests)
     RecyclerView unscheduledQuestList;
@@ -113,7 +117,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
-    private Avatar avatar;
     private PosteriorEstimator posteriorEstimator;
 
     public static DayViewFragment newInstance(LocalDate date) {
@@ -164,7 +167,15 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
 
-        posteriorEstimator = new PosteriorEstimator(avatar, currentDate, new Random(Constants.RANDOM_SEED));
+        PosteriorEstimator.PosteriorSettings posteriorSettings = PosteriorEstimator.PosteriorSettings.create()
+                .setWorkDays(localStorage.readIntSet(Constants.KEY_AVATAR_WORK_DAYS, new HashSet<>(Constants.DEFAULT_PLAYER_WORK_DAYS)))
+                .setSleepStartMinute(localStorage.readInt(Constants.KEY_AVATAR_SLEEP_START_MINUTE, Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE))
+                .setSleepEndMinute(localStorage.readInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE))
+                .setWorkStartMinute(localStorage.readInt(Constants.KEY_AVATAR_WORK_START_MINUTE, Constants.DEFAULT_PLAYER_WORK_START_MINUTE))
+                .setWorkEndMinute(localStorage.readInt(Constants.KEY_AVATAR_WORK_END_MINUTE, Constants.DEFAULT_PLAYER_WORK_END_MINUTE))
+                .setMostProductiveTimesOfDay(localStorage.readStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES_OF_DAY, Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES));
+
+        posteriorEstimator = new PosteriorEstimator(posteriorSettings, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(new LocalDate())) {
             calendarDayView.hideTimeLine();
@@ -502,10 +513,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));
-    }
-
-    public void setAvatar(Avatar avatar) {
-        this.avatar = avatar;
     }
 
     private class Schedule {
