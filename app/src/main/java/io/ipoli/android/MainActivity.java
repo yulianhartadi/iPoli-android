@@ -48,8 +48,8 @@ import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.FriendsInvitedEvent;
-import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
+import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
@@ -579,7 +579,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         eventBus.post(new InviteFriendsEvent());
         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invite_title))
                 .setMessage(getString(R.string.invite_message))
-                .setCustomImage(Uri.parse(Constants.IPOLI_LOGO_URL))
+                .setCustomImage(Uri.parse(Constants.INVITE_IMAGE_URL))
                 .setCallToActionText(getString(R.string.invite_call_to_action))
                 .build();
         startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
