@@ -39,6 +39,9 @@ public class DateFormatter {
         if (DateUtils.isTomorrow(date)) {
             return "Tomorrow";
         }
+        if (DateUtils.isYesterday(date)) {
+            return "Yesterday";
+        }
         DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         return DATE_NO_YEAR_FORMAT.format(date);
     }

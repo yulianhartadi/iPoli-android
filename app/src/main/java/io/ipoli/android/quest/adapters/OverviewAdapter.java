@@ -2,6 +2,7 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -74,6 +76,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         items = new ArrayList<>();
         List<QuestViewModel> completed = new ArrayList<>();
         LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
         LocalDate tomorrow = today.plusDays(1);
 
         if (viewModels.containsKey(today) && !viewModels.get(today).isEmpty()) {
@@ -91,10 +94,10 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             viewModels.remove(today);
         }
 
-        Collections.sort(completed, Collections.reverseOrder((vm1, vm2) -> Integer.compare(vm1.getCompletedAtMinute(), vm2.getCompletedAtMinute())));
+        Collections.sort(completed, createCompletedQuestsComparator());
 
         if (viewModels.containsKey(tomorrow)) {
-            items.add(R.string.tomorrow);
+            items.add(tomorrow);
             List<QuestViewModel> vms = viewModels.get(tomorrow);
             for (QuestViewModel vm : vms) {
                 if (!vm.hasTimesADay()) {
@@ -102,6 +105,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             }
             viewModels.remove(tomorrow);
+        }
+
+        if (viewModels.containsKey(yesterday)) {
+            Collections.sort(viewModels.get(yesterday), createCompletedQuestsComparator());
+            completed.addAll(viewModels.get(yesterday));
+            viewModels.remove(yesterday);
         }
 
         if (!viewModels.isEmpty()) {
@@ -119,6 +128,11 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             items.add(R.string.completed);
             items.addAll(completed);
         }
+    }
+
+    @NonNull
+    private Comparator<QuestViewModel> createCompletedQuestsComparator() {
+        return Collections.reverseOrder((vm1, vm2) -> Integer.compare(vm1.getCompletedAtMinute(), vm2.getCompletedAtMinute()));
     }
 
     @Override

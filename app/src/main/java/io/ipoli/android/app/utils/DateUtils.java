@@ -61,6 +61,12 @@ public class DateUtils {
         return c.getTime();
     }
 
+    public static Date getYesterday() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, -1);
+        return c.getTime();
+    }
+
     public static Date getDate(Date dueDate) {
         if (dueDate == null) {
             return null;
@@ -182,5 +188,9 @@ public class DateUtils {
             weekBounds.add(new Pair<>(weekStart, weekEnd));
         }
         return weekBounds;
+    }
+
+    public static boolean isYesterday(Date date) {
+        return isSameDay(date, getYesterday());
     }
 }

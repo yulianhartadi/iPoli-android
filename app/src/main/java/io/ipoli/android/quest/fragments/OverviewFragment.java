@@ -85,7 +85,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         overviewAdapter = new OverviewAdapter(getContext(), eventBus);
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
-        questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
+        questPersistenceService.listenForPlannedNonAllDayBetween(LocalDate.now().minusDays(1), LocalDate.now().plusDays(7), this);
 
         fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.OVERVIEW)));
         return view;
