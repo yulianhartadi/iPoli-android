@@ -18,7 +18,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.CategoryView;
-import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 
@@ -50,7 +49,6 @@ public class QuestNameFragment extends BaseFragment implements CategoryView.OnCa
         View view = inflater.inflate(R.layout.fragment_wizard_quest_name, container, false);
         unbinder = ButterKnife.bind(this, view);
         category.addCategoryChangedListener(this);
-        KeyboardUtils.showKeyboardForced(getContext());
         return view;
     }
 
