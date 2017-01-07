@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
     <android.support.design.widget.TextInputLayout
@@ -13,6 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="24dp"
+        android:hint="@string/add_quest_name_hint"
         android:paddingTop="?attr/actionBarSize"
         app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
 
@@ -20,9 +21,10 @@
             android:id="@+id/quest_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/add_quest_name_hint"
             android:imeOptions="actionDone"
-            android:maxLines="2" />
+            android:maxLines="2">
+            <requestFocus />
+        </android.support.design.widget.TextInputEditText>
     </android.support.design.widget.TextInputLayout>
 
     <io.ipoli.android.app.ui.CategoryView

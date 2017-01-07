@@ -5,15 +5,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.squareup.otto.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.fragments.QuestDateFragment;
 import io.ipoli.android.quest.fragments.QuestNameFragment;
 
 /**
@@ -44,9 +50,8 @@ public class AddQuestActivity extends BaseActivity {
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
-
-//        vpPager.setCurrentItem(2, true);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -56,6 +61,29 @@ public class AddQuestActivity extends BaseActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe
+    public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
+        colorLayout(e.category);
+    }
+
+    private void colorLayout(Category category) {
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
@@ -78,7 +106,7 @@ public class AddQuestActivity extends BaseActivity {
                 case 0: // Fragment # 0 - This will show FirstFragment
                     return new QuestNameFragment();
                 case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return new QuestNameFragment();
+                    return new QuestDateFragment();
                 case 2: // Fragment # 1 - This will show SecondFragment
                     return new QuestNameFragment();
                 default:

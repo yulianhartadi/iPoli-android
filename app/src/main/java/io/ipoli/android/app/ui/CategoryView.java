@@ -3,6 +3,7 @@ package io.ipoli.android.app.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -26,6 +27,9 @@ import io.ipoli.android.quest.data.Category;
 public class CategoryView extends LinearLayout {
     private static final int DEFAULT_GAP_DP = 12;
     private float gap;
+
+    @ColorInt
+    private int categoryNameColor;
     private List<OnCategoryChangedListener> categoryChangedListeners = new ArrayList<>();
     private View view;
 
@@ -54,7 +58,8 @@ public class CategoryView extends LinearLayout {
 
         try {
             gap = typedArray.getDimensionPixelSize(R.styleable.CategoryView_category_gap, (int) ViewUtils.dpToPx(DEFAULT_GAP_DP, getResources()));
-        }finally {
+            categoryNameColor = typedArray.getColor(R.styleable.CategoryView_categoryName_color, ContextCompat.getColor(context, R.color.md_dark_text_87));
+        } finally {
             typedArray.recycle();
         }
 
@@ -68,13 +73,14 @@ public class CategoryView extends LinearLayout {
                 R.layout.layout_category, this);
 
         categoryName = (TextView) view.findViewById(R.id.category_name);
+        categoryName.setTextColor(categoryNameColor);
         LinearLayout categoryContainer = (LinearLayout) view.findViewById(R.id.category_container);
         doChangeCategory(Category.LEARNING);
 
         final Category[] categories = Category.values();
         for (int i = 0; i < categoryContainer.getChildCount(); i++) {
             final ImageView iv = (ImageView) categoryContainer.getChildAt(i);
-            if(i < categoryContainer.getChildCount() - 1) {
+            if (i < categoryContainer.getChildCount() - 1) {
                 LinearLayout.LayoutParams lp = (LayoutParams) iv.getLayoutParams();
                 lp.setMarginEnd((int) gap);
                 iv.setLayoutParams(lp);
@@ -103,7 +109,7 @@ public class CategoryView extends LinearLayout {
     private void doChangeCategory(Category category) {
         this.category = category;
         setSelectedCategory();
-        for(OnCategoryChangedListener listener : categoryChangedListeners) {
+        for (OnCategoryChangedListener listener : categoryChangedListeners) {
             listener.onCategoryChanged(category);
         }
     }
