@@ -36,6 +36,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -184,6 +185,8 @@ public interface AppComponent {
     void inject(AgendaActivity agendaActivity);
 
     void inject(MigrationActivity migrationActivity);
+
+    void inject(AddQuestActivity addQuestActivity);
 
 }
 

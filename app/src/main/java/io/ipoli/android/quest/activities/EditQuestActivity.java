@@ -1125,4 +1125,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
+
+    @Override
+    protected void onDestroy() {
+        categoryView.removeCategoryChangedListener(this);
+        super.onDestroy();
+    }
 }

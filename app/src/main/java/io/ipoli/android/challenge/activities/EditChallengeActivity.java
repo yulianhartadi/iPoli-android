@@ -428,4 +428,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
+    @Override
+    protected void onDestroy() {
+        categoryView.removeCategoryChangedListener(this);
+        super.onDestroy();
+    }
 }
