@@ -76,7 +76,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             items.add(R.string.today);
             List<QuestViewModel> vms = viewModels.get(today);
             for (QuestViewModel vm : vms) {
-                items.add(vm);
+                if (!vm.isCompleted()) {
+                    items.add(vm);
+                }
             }
             viewModels.remove(today);
         }
