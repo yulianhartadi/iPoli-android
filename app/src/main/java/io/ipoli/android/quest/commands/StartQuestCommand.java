@@ -46,7 +46,7 @@ public class StartQuestCommand {
     }
 
     private void stopOtherRunningQuests(Quest q) {
-        questPersistenceService.findAllPlannedAndStartedToday(quests -> {
+        questPersistenceService.findAllPlannedAndStarted(quests -> {
             for (Quest cq : quests) {
                 if (!cq.getId().equals(q.getId()) && Quest.isStarted(cq)) {
                     cq.setActualStartDate(null);

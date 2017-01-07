@@ -121,7 +121,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllPlannedAndStartedToday(OnDataChangedListener<List<Quest>> listener) {
+    public void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(LocalDate.now()).getTime());
         listenForSingleListChange(query, listener, q -> q.isStarted());
     }
