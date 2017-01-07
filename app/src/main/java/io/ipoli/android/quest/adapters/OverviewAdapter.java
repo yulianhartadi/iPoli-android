@@ -108,8 +108,14 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         if (viewModels.containsKey(yesterday)) {
-            Collections.sort(viewModels.get(yesterday), createCompletedQuestsComparator());
-            completed.addAll(viewModels.get(yesterday));
+            List<QuestViewModel> completedYesterday = new ArrayList<>();
+            for (QuestViewModel vm : viewModels.get(yesterday)) {
+                if (vm.isCompleted()) {
+                    completedYesterday.add(vm);
+                }
+            }
+            Collections.sort(completedYesterday, createCompletedQuestsComparator());
+            completed.addAll(completedYesterday);
             viewModels.remove(yesterday);
         }
 
