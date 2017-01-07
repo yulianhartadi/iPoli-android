@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content_layout"
     android:layout_width="match_parent"
     android:layout_height="72dp"
@@ -8,32 +9,32 @@
     android:focusable="true">
 
     <ImageView
+        android:id="@+id/coin_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_gift_black_24dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/coin_icon"
-        android:layout_marginStart="16dp"/>
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_gift_black_24dp" />
 
     <LinearLayout
         android:id="@+id/reward_details_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/coin_icon"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/coin_icon"
         android:layout_toStartOf="@+id/buy_reward"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/reward_name"
-            android:textColor="@color/md_dark_text_87"
-            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="@color/md_dark_text_87"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/reward_description"
@@ -51,7 +52,7 @@
         android:layout_height="32dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="16dp"
-        android:layout_toStartOf="@+id/reward_more_menu"
+        android:layout_toStartOf="@+id/reward_more_menu_container"
         android:background="?attr/colorAccent"
         android:drawableStart="@drawable/ic_life_coin_white_24dp"
         android:gravity="center"
@@ -59,16 +60,26 @@
         android:paddingStart="8dp"
         android:textColor="@color/md_white" />
 
-    <ImageButton
-        android:id="@+id/reward_more_menu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <com.lnikkila.extendedtouchview.ExtendedTouchView
+        android:id="@+id/reward_more_menu_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_more_vert_black_24dp" />
+        app:touchHeight="@dimen/extended_touch_height"
+        app:touchWidth="@dimen/extended_touch_width">
+
+        <ImageButton
+            android:id="@+id/reward_more_menu"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_more_vert_black_24dp" />
+    </com.lnikkila.extendedtouchview.ExtendedTouchView>
+
 </RelativeLayout>
