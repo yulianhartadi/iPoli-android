@@ -6,11 +6,11 @@ import android.support.annotation.DrawableRes;
 
 import java.util.Locale;
 
+import io.ipoli.android.app.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.app.ui.formatters.DateFormatter;
-import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -121,5 +121,9 @@ public class QuestViewModel {
 
     public boolean isCompleted() {
         return quest.isCompleted();
+    }
+
+    public Integer getCompletedAtMinute() {
+        return quest.getCompletedAtMinute();
     }
 }

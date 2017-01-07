@@ -22,6 +22,7 @@ import com.squareup.otto.Bus;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -75,8 +76,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
 
-        if (viewModels.containsKey(today)) {
-            items.add(R.string.today);
+        if (viewModels.containsKey(today) && !viewModels.get(today).isEmpty()) {
             List<QuestViewModel> vms = viewModels.get(today);
             for (QuestViewModel vm : vms) {
                 if (!vm.isCompleted()) {
@@ -85,8 +85,13 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     completed.add(vm);
                 }
             }
+            if (!items.isEmpty()) {
+                items.add(0, R.string.today);
+            }
             viewModels.remove(today);
         }
+
+        Collections.sort(completed, Collections.reverseOrder((vm1, vm2) -> Integer.compare(vm1.getCompletedAtMinute(), vm2.getCompletedAtMinute())));
 
         if (viewModels.containsKey(tomorrow)) {
             items.add(R.string.tomorrow);
