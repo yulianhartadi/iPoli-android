@@ -45,6 +45,7 @@ import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.fragments.QuestDateFragment;
 import io.ipoli.android.quest.fragments.QuestNameFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
@@ -190,5 +191,7 @@ public interface AppComponent {
     void inject(AddQuestActivity addQuestActivity);
 
     void inject(QuestNameFragment questNameFragment);
+
+    void inject(QuestDateFragment questDateFragment);
 }
 

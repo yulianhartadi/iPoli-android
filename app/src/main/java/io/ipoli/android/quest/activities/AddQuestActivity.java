@@ -28,7 +28,7 @@ import io.ipoli.android.quest.fragments.QuestNameFragment;
  * on 1/7/17.
  */
 
-public class AddQuestActivity extends BaseActivity {
+public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -51,6 +51,7 @@ public class AddQuestActivity extends BaseActivity {
         ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
+        vpPager.addOnPageChangeListener(this);
 
         KeyboardUtils.showKeyboard(this);
     }
@@ -84,15 +85,40 @@ public class AddQuestActivity extends BaseActivity {
     }
 
     private void colorLayout(Category category) {
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, category.color500));
+        toolbar.setBackgroundResource(category.color500);
+        findViewById(R.id.root_container).setBackgroundResource(category.color500);
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        String title = "";
+        switch (position) {
+            case 0:
+                title = getString(R.string.title_activity_add_quest);
+                break;
+            case 1:
+                title = "When will you do it?";
+                break;
+        }
+        setTitle(title);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 3;
 
-        public MyPagerAdapter(FragmentManager fragmentManager) {
+        MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
@@ -115,12 +141,6 @@ public class AddQuestActivity extends BaseActivity {
                 default:
                     return null;
             }
-        }
-
-        // Returns the page title for the top indicator
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return "Page " + position;
         }
 
     }
