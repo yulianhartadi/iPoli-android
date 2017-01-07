@@ -54,9 +54,10 @@ import io.ipoli.android.quest.viewmodels.QuestViewModel;
  */
 public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final int HEADER_ITEM_VIEW_TYPE = 0;
-    public static final int QUEST_ITEM_VIEW_TYPE = 1;
-    public static final int COMPLETED_QUEST_ITEM_VIEW_TYPE = 2;
+    private static final int HEADER_ITEM_VIEW_TYPE = 0;
+    private static final int QUEST_ITEM_VIEW_TYPE = 1;
+    private static final int COMPLETED_QUEST_ITEM_VIEW_TYPE = 2;
+
     private final Context context;
 
     private List<Object> items;
