@@ -159,12 +159,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void bindCompletedQuestViewHolder(CompletedQuestViewHolder holder) {
         final QuestViewModel vm = (QuestViewModel) items.get(holder.getAdapterPosition());
-
-        Quest q = vm.getQuest();
-
         holder.name.setText(vm.getName());
-
-//        holder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
         holder.dueDate.setText(vm.getDueDateText());
     }
 
@@ -326,9 +321,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @BindView(R.id.quest_name)
         public TextView name;
-
-        @BindView(R.id.quest_category_indicator_image)
-        public ImageView contextIndicatorImage;
 
         @BindView(R.id.quest_due_date)
         public TextView dueDate;

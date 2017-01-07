@@ -4,7 +4,6 @@
     android:layout_height="60dp">
 
     <LinearLayout
-        android:id="@+id/quest_category_container"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentStart="true"
@@ -12,7 +11,6 @@
         android:layout_marginStart="16dp">
 
         <ImageView
-            android:id="@+id/quest_category_indicator_image"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
