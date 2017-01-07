@@ -18,7 +18,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForInboxQuests(OnDataChangedListener<List<Quest>> listener);
 
-    void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<Long, List<Quest>>> listener);
+    void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<LocalDate, List<Quest>>> listener);
 
     void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 

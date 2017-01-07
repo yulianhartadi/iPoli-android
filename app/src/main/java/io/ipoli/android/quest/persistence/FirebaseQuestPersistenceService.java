@@ -14,6 +14,7 @@ import com.squareup.otto.Bus;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,13 +69,13 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<Long, List<Quest>>> listener) {
-//        Query query = getCollectionReference().orderByChild("end").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
-        Query query = getPlayerReference().child("dayQuests").orderByKey().startAt(String.valueOf(toStartOfDayUTC(startDate).getTime())).endAt(String.valueOf(toStartOfDayUTC(endDate).getTime()));
-//        listenForListChange(query, listener, q -> q.getCompletedAtDate() == null);
-
-
-//        listenForQuery(query, createListListener(listener, predicate), listener);
+    public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<LocalDate, List<Quest>>> listener) {
+        String start = String.valueOf(toStartOfDayUTC(startDate).getTime());
+        String end = String.valueOf(toStartOfDayUTC(endDate).getTime());
+        Query query = getPlayerReference().child("dayQuests")
+                .orderByKey()
+                .startAt(start)
+                .endAt(end);
 
         GenericTypeIndicator<Map<String, Map<String, Quest>>> typeIndicator = new GenericTypeIndicator<Map<String, Map<String, Quest>>>() {
         };
@@ -90,22 +91,18 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
                     return;
                 }
 
-                SortedMap<Long, List<Quest>> result = new TreeMap<>();
-                for (Map.Entry<String, Map<String, Quest>> entry : value.entrySet()) {
-                    List<Quest> dayQuests = new ArrayList<>();
-                    for (Quest quest : entry.getValue().values()) {
-                        dayQuests.add(quest);
-                    }
-                    result.put(Long.valueOf(entry.getKey()), dayQuests);
-                }
-                listener.onDataChanged(result);
+                listener.onDataChanged(prepareResult(value));
+            }
 
-//                List<Quest> data = getListFromMapSnapshot(dataSnapshot);
-//                if (predicate == null) {
-//                    listener.onDataChanged(data);
-//                    return;
-//                }
-//                listener.onDataChanged(QueryFilter.filter(data, predicate));
+            @NonNull
+            private SortedMap<LocalDate, List<Quest>> prepareResult(Map<String, Map<String, Quest>> value) {
+                SortedMap<LocalDate, List<Quest>> result = new TreeMap<>();
+                for (Map.Entry<String, Map<String, Quest>> entry : value.entrySet()) {
+                    List<Quest> questsForDate = new ArrayList<>(entry.getValue().values());
+                    Collections.sort(questsForDate, createDefaultQuestSortQuery()::sort);
+                    result.put(new LocalDate(Long.valueOf(entry.getKey())), questsForDate);
+                }
+                return result;
             }
 
             @Override

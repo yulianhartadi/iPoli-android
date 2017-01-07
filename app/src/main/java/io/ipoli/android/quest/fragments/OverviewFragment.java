@@ -44,7 +44,7 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
-public class OverviewFragment extends BaseFragment implements OnDataChangedListener<SortedMap<Long, List<Quest>>> {
+public class OverviewFragment extends BaseFragment implements OnDataChangedListener<SortedMap<LocalDate, List<Quest>>> {
 
     @Inject
     Bus eventBus;
@@ -82,7 +82,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        overviewAdapter = new OverviewAdapter(getContext(), new ArrayList<>(), eventBus);
+        overviewAdapter = new OverviewAdapter(getContext(), eventBus);
         questList.setAdapter(overviewAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_overview_text, R.drawable.ic_compass_grey_24dp);
         questPersistenceService.listenForPlannedNonAllDayBetween(new LocalDate(), new LocalDate().plusDays(7), this);
@@ -136,47 +136,16 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     }
 
     @Override
-    public void onDataChanged(SortedMap<Long, List<Quest>> dateToQuests) {
+    public void onDataChanged(SortedMap<LocalDate, List<Quest>> dateToQuests) {
         SortedMap<LocalDate, List<QuestViewModel>> viewModels = new TreeMap<>();
 
-        for (Map.Entry<Long, List<Quest>> entry : dateToQuests.entrySet()) {
-            LocalDate date = new LocalDate(entry.getKey());
+        for (Map.Entry<LocalDate, List<Quest>> entry : dateToQuests.entrySet()) {
             List<QuestViewModel> vms = new ArrayList<>();
             for (Quest quest : entry.getValue()) {
                 vms.add(new QuestViewModel(getContext(), quest));
             }
-            viewModels.put(date, vms);
+            viewModels.put(entry.getKey(), vms);
         }
-
-
-//        for (Quest q : quests) {
-//            if (q.isScheduledForToday() && q.shouldBeDoneMultipleTimesPerDay()) {
-//                viewModels.add(new QuestViewModel(getContext(), q));
-//            } else if (q.isScheduledForToday() || !q.shouldBeDoneMultipleTimesPerDay()) {
-//                viewModels.add(new QuestViewModel(getContext(), q));
-//            }
-//        }
-//
-//        Collections.sort(viewModels, new Comparator<QuestViewModel>() {
-//            @Override
-//            public int compare(QuestViewModel qvm1, QuestViewModel qvm2) {
-//                Quest q1 = qvm1.getQuest();
-//                Quest q2 = qvm2.getQuest();
-//                if (q1.getEndDate().before(q2.getEndDate())) {
-//                    return -1;
-//                }
-//                if (q1.getEndDate().after(q2.getEndDate())) {
-//                    return 1;
-//                }
-//                if (qvm1.getQuest().getStartMinute() > qvm2.getQuest().getStartMinute()) {
-//                    return 1;
-//                }
-//                if (qvm1.getQuest().getStartMinute() < qvm2.getQuest().getStartMinute()) {
-//                    return -1;
-//                }
-//                return 0;
-//            }
-//        });
         overviewAdapter.updateQuests(viewModels);
     }
 }

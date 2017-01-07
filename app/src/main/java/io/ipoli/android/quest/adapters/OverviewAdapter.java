@@ -61,58 +61,46 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Object> items;
     private Bus eventBus;
 
-    private int[] headerIndices;
-
-    public OverviewAdapter(Context context, List<QuestViewModel> viewModels, Bus eventBus) {
+    public OverviewAdapter(Context context, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
-        setItems(viewModels);
+        items = new ArrayList<>();
     }
 
-    private void setItems(List<QuestViewModel> viewModels) {
-        items = new ArrayList<>(viewModels);
-        calculateHeaderIndices(viewModels);
-        if (headerIndices[0] >= 0) {
-            items.add(headerIndices[0], R.string.today);
-        }
-        if (headerIndices[1] >= 0) {
-            items.add(headerIndices[1], R.string.tomorrow);
-        }
-        if (headerIndices[2] >= 0) {
-            items.add(headerIndices[2], R.string.next_7_days);
-        }
-    }
+    private void setItems(SortedMap<LocalDate, List<QuestViewModel>> viewModels) {
+        items = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
 
-    private void calculateHeaderIndices(List<QuestViewModel> quests) {
-        headerIndices = new int[]{-1, -1, -1};
-        List<Quest> todayQuests = new ArrayList<>();
-        List<Quest> tomorrowQuests = new ArrayList<>();
-        List<Quest> upcomingQuests = new ArrayList<>();
-
-        for (QuestViewModel vm : quests) {
-            Quest q = vm.getQuest();
-            if (q.isScheduledForToday()) {
-                todayQuests.add(q);
-            } else if (q.isScheduledForTomorrow()) {
-                tomorrowQuests.add(q);
-            } else {
-                upcomingQuests.add(q);
+        if (viewModels.containsKey(today)) {
+            items.add(R.string.today);
+            List<QuestViewModel> vms = viewModels.get(today);
+            for (QuestViewModel vm : vms) {
+                items.add(vm);
             }
+            viewModels.remove(today);
         }
 
-        int freeIndex = 0;
-        if (!todayQuests.isEmpty()) {
-            headerIndices[0] = 0;
-            freeIndex = todayQuests.size() + 1;
+        if (viewModels.containsKey(tomorrow)) {
+            items.add(R.string.tomorrow);
+            List<QuestViewModel> vms = viewModels.get(tomorrow);
+            for (QuestViewModel vm : vms) {
+                if (!vm.hasTimesADay()) {
+                    items.add(vm);
+                }
+            }
+            viewModels.remove(tomorrow);
         }
 
-        if (!tomorrowQuests.isEmpty()) {
-            headerIndices[1] = freeIndex;
-            freeIndex = freeIndex + tomorrowQuests.size() + 1;
-        }
-
-        if (!upcomingQuests.isEmpty()) {
-            headerIndices[2] = freeIndex;
+        if (!viewModels.isEmpty()) {
+            items.add(R.string.next_7_days);
+            for (List<QuestViewModel> questsForDay : viewModels.values()) {
+                for (QuestViewModel vm : questsForDay) {
+                    if (!vm.hasTimesADay()) {
+                        items.add(vm);
+                    }
+                }
+            }
         }
     }
 
@@ -285,8 +273,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateQuests(SortedMap<LocalDate, List<QuestViewModel>> viewModels) {
-//        setItems(viewModels);
-//        notifyDataSetChanged();
+        setItems(viewModels);
+        notifyDataSetChanged();
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
