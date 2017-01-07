@@ -175,9 +175,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         Quest q = vm.getQuest();
 
-        holder.moreMenu.setOnClickListener(v -> {
-            showPopupMenu(q, v);
-        });
+        holder.moreMenu.setOnClickListener(v -> showPopupMenu(q, v));
 
         holder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
         holder.name.setText(vm.getName());
@@ -310,70 +308,70 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
+    private static class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-        public HeaderViewHolder(View itemView) {
+        HeaderViewHolder(View itemView) {
             super(itemView);
         }
     }
 
-    public static class CompletedQuestViewHolder extends RecyclerView.ViewHolder {
+    static class CompletedQuestViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)
-        public TextView name;
+        TextView name;
 
         @BindView(R.id.quest_due_date)
-        public TextView dueDate;
+        TextView dueDate;
 
-        public CompletedQuestViewHolder(View itemView) {
+        CompletedQuestViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    public static class QuestViewHolder extends RecyclerView.ViewHolder {
+    static class QuestViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_name)
-        public TextView name;
+        TextView name;
 
         @BindView(R.id.quest_running_indicator)
         View runningIndicator;
 
         @BindView(R.id.quest_category_indicator_image)
-        public ImageView contextIndicatorImage;
+        ImageView contextIndicatorImage;
 
         @BindView(R.id.quest_duration)
-        public TextView scheduleText;
+        TextView scheduleText;
 
         @BindView(R.id.quest_due_date)
-        public TextView dueDate;
+        TextView dueDate;
 
         @BindView(R.id.quest_details_container)
-        public ViewGroup detailsContainer;
+        ViewGroup detailsContainer;
 
         @BindView(R.id.quest_remaining)
-        public TextView remainingText;
+        TextView remainingText;
 
         @BindView(R.id.quest_progress_container)
-        public ViewGroup progressContainer;
+        ViewGroup progressContainer;
 
         @BindView(R.id.quest_repeating_indicator)
-        public ImageView repeatingIndicator;
+        ImageView repeatingIndicator;
 
         @BindView(R.id.quest_priority_indicator)
-        public ImageView priorityIndicator;
+        ImageView priorityIndicator;
 
         @BindView(R.id.quest_challenge_indicator)
-        public ImageView challengeIndicator;
+        ImageView challengeIndicator;
 
         @BindView(R.id.content_layout)
-        public RelativeLayout contentLayout;
+        RelativeLayout contentLayout;
 
         @BindView(R.id.quest_more_menu)
-        public ImageButton moreMenu;
+        ImageButton moreMenu;
 
 
-        public QuestViewHolder(View v) {
+        QuestViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
         }
