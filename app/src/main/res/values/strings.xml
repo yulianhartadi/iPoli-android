@@ -373,4 +373,5 @@
     <string name="invite_title">Invite Your Friends</string>
     <string name="invite_message">I\'ll tell you a secret. I use this app to really get things done! Here is your invite!</string>
     <string name="invite_call_to_action">Download Now</string>
+    <string name="completed">Completed</string>
 </resources>

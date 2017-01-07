@@ -56,6 +56,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public static final int HEADER_ITEM_VIEW_TYPE = 0;
     public static final int QUEST_ITEM_VIEW_TYPE = 1;
+    public static final int COMPLETED_QUEST_ITEM_VIEW_TYPE = 2;
     private final Context context;
 
     private List<Object> items;
@@ -69,6 +70,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void setItems(SortedMap<LocalDate, List<QuestViewModel>> viewModels) {
         items = new ArrayList<>();
+        List<QuestViewModel> completed = new ArrayList<>();
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
 
@@ -78,6 +80,8 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             for (QuestViewModel vm : vms) {
                 if (!vm.isCompleted()) {
                     items.add(vm);
+                } else {
+                    completed.add(vm);
                 }
             }
             viewModels.remove(today);
@@ -104,12 +108,22 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             }
         }
+
+        if (!completed.isEmpty()) {
+            items.add(R.string.completed);
+            items.addAll(completed);
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (items.get(position) instanceof Integer) {
+        Object item = items.get(position);
+        if (item instanceof Integer) {
             return HEADER_ITEM_VIEW_TYPE;
+        }
+        QuestViewModel vm = (QuestViewModel) item;
+        if (vm.isCompleted()) {
+            return COMPLETED_QUEST_ITEM_VIEW_TYPE;
         }
         return QUEST_ITEM_VIEW_TYPE;
     }
@@ -123,6 +137,9 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case HEADER_ITEM_VIEW_TYPE:
                 return new HeaderViewHolder(inflater.inflate(R.layout.overview_quest_header_item, parent, false));
 
+            case COMPLETED_QUEST_ITEM_VIEW_TYPE:
+                return new CompletedQuestViewHolder(inflater.inflate(R.layout.overview_completed_quest_item, parent, false));
+
             default:
                 return new QuestViewHolder(inflater.inflate(R.layout.overview_quest_item, parent, false));
         }
@@ -132,81 +149,100 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
         if (holder.getItemViewType() == QUEST_ITEM_VIEW_TYPE) {
-
-            QuestViewHolder questHolder = (QuestViewHolder) holder;
-
-            final QuestViewModel vm = (QuestViewModel) items.get(questHolder.getAdapterPosition());
-
-            Quest q = vm.getQuest();
-
-            questHolder.moreMenu.setOnClickListener(v -> {
-                showPopupMenu(q, v);
-            });
-
-            questHolder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
-            questHolder.name.setText(vm.getName());
-
-            if (vm.isStarted()) {
-                GradientDrawable drawable = (GradientDrawable) questHolder.runningIndicator.getBackground();
-                drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
-                Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
-                questHolder.runningIndicator.startAnimation(blinkAnimation);
-                questHolder.runningIndicator.setVisibility(View.VISIBLE);
-            } else {
-                questHolder.runningIndicator.setVisibility(View.GONE);
-            }
-
-            questHolder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
-            questHolder.dueDate.setText(vm.getDueDateText());
-
-            String scheduleText = vm.getScheduleText();
-
-            questHolder.progressContainer.removeAllViews();
-
-            questHolder.repeatingIndicator.setVisibility(vm.isRecurrent() ? View.VISIBLE : View.GONE);
-            questHolder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
-            questHolder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
-
-            if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(vm.getRemainingText())) {
-                questHolder.detailsContainer.setVisibility(View.GONE);
-                return;
-            }
-
-            questHolder.detailsContainer.setVisibility(View.VISIBLE);
-
-            if (TextUtils.isEmpty(vm.getScheduleText())) {
-                questHolder.scheduleText.setVisibility(View.GONE);
-            } else {
-                questHolder.scheduleText.setVisibility(View.VISIBLE);
-                questHolder.scheduleText.setText(vm.getScheduleText());
-            }
-            questHolder.remainingText.setText(vm.getRemainingText());
-
-            if (!vm.hasTimesADay()) {
-                return;
-            }
-
-            LayoutInflater inflater = LayoutInflater.from(context);
-
-            for (int i = 1; i <= vm.getCompletedCount(); i++) {
-                View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, questHolder.progressContainer, false);
-                GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
-                progressViewBackground.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
-                questHolder.progressContainer.addView(progressView);
-            }
-
-            for (int i = 1; i <= vm.getRemainingCount(); i++) {
-                View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, questHolder.progressContainer, false);
-                GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
-
-                progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
-                questHolder.progressContainer.addView(progressViewEmpty);
-            }
-
+            bindQuestViewHolder((QuestViewHolder) holder);
+        } else if (holder.getItemViewType() == COMPLETED_QUEST_ITEM_VIEW_TYPE) {
+            bindCompletedQuestViewHolder((CompletedQuestViewHolder) holder);
         } else if (holder.getItemViewType() == HEADER_ITEM_VIEW_TYPE) {
-            TextView header = (TextView) holder.itemView;
-            Integer textRes = (Integer) items.get(position);
-            header.setText(textRes);
+            bindHeaderView(holder, position);
+        }
+    }
+
+    private void bindCompletedQuestViewHolder(CompletedQuestViewHolder holder) {
+        final QuestViewModel vm = (QuestViewModel) items.get(holder.getAdapterPosition());
+
+        Quest q = vm.getQuest();
+
+        holder.name.setText(vm.getName());
+
+//        holder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
+        holder.dueDate.setText(vm.getDueDateText());
+    }
+
+    private void bindHeaderView(RecyclerView.ViewHolder holder, int position) {
+        TextView header = (TextView) holder.itemView;
+        Integer textRes = (Integer) items.get(position);
+        header.setText(textRes);
+    }
+
+    private void bindQuestViewHolder(QuestViewHolder holder) {
+
+        final QuestViewModel vm = (QuestViewModel) items.get(holder.getAdapterPosition());
+
+        Quest q = vm.getQuest();
+
+        holder.moreMenu.setOnClickListener(v -> {
+            showPopupMenu(q, v);
+        });
+
+        holder.contentLayout.setOnClickListener(view -> eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.OVERVIEW)));
+        holder.name.setText(vm.getName());
+
+        if (vm.isStarted()) {
+            GradientDrawable drawable = (GradientDrawable) holder.runningIndicator.getBackground();
+            drawable.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
+            Animation blinkAnimation = AnimationUtils.loadAnimation(context, R.anim.blink);
+            holder.runningIndicator.startAnimation(blinkAnimation);
+            holder.runningIndicator.setVisibility(View.VISIBLE);
+        } else {
+            holder.runningIndicator.setVisibility(View.GONE);
+        }
+
+        holder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
+        holder.dueDate.setText(vm.getDueDateText());
+
+        String scheduleText = vm.getScheduleText();
+
+        holder.progressContainer.removeAllViews();
+
+        holder.repeatingIndicator.setVisibility(vm.isRecurrent() ? View.VISIBLE : View.GONE);
+        holder.priorityIndicator.setVisibility(vm.isMostImportant() ? View.VISIBLE : View.GONE);
+        holder.challengeIndicator.setVisibility(vm.isForChallenge() ? View.VISIBLE : View.GONE);
+
+        String remainingText = vm.getRemainingText();
+        if (TextUtils.isEmpty(scheduleText) && TextUtils.isEmpty(remainingText)) {
+            holder.detailsContainer.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.detailsContainer.setVisibility(View.VISIBLE);
+
+        if (TextUtils.isEmpty(scheduleText)) {
+            holder.scheduleText.setVisibility(View.GONE);
+        } else {
+            holder.scheduleText.setVisibility(View.VISIBLE);
+            holder.scheduleText.setText(scheduleText);
+        }
+        holder.remainingText.setText(remainingText);
+
+        if (!vm.hasTimesADay()) {
+            return;
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        for (int i = 1; i <= vm.getCompletedCount(); i++) {
+            View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, holder.progressContainer, false);
+            GradientDrawable progressViewBackground = (GradientDrawable) progressView.getBackground();
+            progressViewBackground.setColor(ContextCompat.getColor(context, vm.getCategoryColor()));
+            holder.progressContainer.addView(progressView);
+        }
+
+        for (int i = 1; i <= vm.getRemainingCount(); i++) {
+            View progressViewEmpty = inflater.inflate(R.layout.repeating_quest_progress_context_indicator_empty, holder.progressContainer, false);
+            GradientDrawable progressViewEmptyBackground = (GradientDrawable) progressViewEmpty.getBackground();
+
+            progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
+            holder.progressContainer.addView(progressViewEmpty);
         }
     }
 
@@ -283,6 +319,23 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
+        }
+    }
+
+    public static class CompletedQuestViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.quest_name)
+        public TextView name;
+
+        @BindView(R.id.quest_category_indicator_image)
+        public ImageView contextIndicatorImage;
+
+        @BindView(R.id.quest_due_date)
+        public TextView dueDate;
+
+        public CompletedQuestViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 

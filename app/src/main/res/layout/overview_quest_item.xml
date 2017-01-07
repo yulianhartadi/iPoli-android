@@ -97,7 +97,7 @@
             android:id="@+id/quest_due_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right" />
+            android:layout_gravity="end" />
 
         <LinearLayout
             android:layout_width="wrap_content"
