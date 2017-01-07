@@ -115,8 +115,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         if (!q.isPlaceholder()) {
 
-            // @TODO show times a day
-
             v.setOnClickListener(view -> {
 
                 if (!q.isCompleted()) {
@@ -151,7 +149,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         } else {
             checkBox.setVisibility(View.GONE);
-            moreMenu.setVisibility(View.GONE);
+            v.findViewById(R.id.quest_more_menu_container).setVisibility(View.GONE);
         }
 
         if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_DURATION) {
@@ -217,7 +215,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         background.setAlpha(1.0F);
         TextView questText = (TextView) dragView.findViewById(R.id.quest_text);
         questText.setTextColor(ContextCompat.getColor(dragView.getContext(), R.color.md_light_text_87));
-        dragView.findViewById(R.id.quest_more_menu).setVisibility(View.GONE);
+        dragView.findViewById(R.id.quest_more_menu_container).setVisibility(View.GONE);
         dragView.findViewById(R.id.quest_check).setVisibility(View.GONE);
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
         currentTimeIndicator.setText(time.toString());

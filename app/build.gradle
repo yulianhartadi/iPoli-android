@@ -69,6 +69,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
     compile 'com.github.devlight:infinitecycleviewpager:1.0.2'
+    compile 'com.lnikkila:extendedtouchview:0.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

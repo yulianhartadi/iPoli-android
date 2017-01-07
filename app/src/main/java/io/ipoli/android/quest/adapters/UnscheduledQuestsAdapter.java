@@ -80,11 +80,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             holder.itemView.setOnClickListener(null);
             holder.itemView.setOnLongClickListener(null);
             holder.check.setVisibility(View.GONE);
-            holder.moreMenu.setVisibility(View.GONE);
+            holder.moreMenuContainer.setVisibility(View.GONE);
         } else {
 
             holder.check.setVisibility(View.VISIBLE);
-            holder.moreMenu.setVisibility(View.VISIBLE);
+            holder.moreMenuContainer.setVisibility(View.VISIBLE);
 
             holder.itemView.setOnClickListener(view -> {
                 eventBus.post(new ShowQuestEvent(q, EventSource.CALENDAR_UNSCHEDULED_SECTION));
@@ -153,6 +153,9 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
 
         @BindView(R.id.quest_more_menu)
         ImageButton moreMenu;
+
+        @BindView(R.id.quest_more_menu_container)
+        ViewGroup moreMenuContainer;
 
         public ViewHolder(View v) {
             super(v);
