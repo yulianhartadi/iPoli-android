@@ -97,7 +97,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Collections.sort(completed, createCompletedQuestsComparator());
 
         if (viewModels.containsKey(tomorrow)) {
-            items.add(tomorrow);
+            items.add(R.string.tomorrow);
             List<QuestViewModel> vms = viewModels.get(tomorrow);
             for (QuestViewModel vm : vms) {
                 if (!vm.hasTimesADay()) {
