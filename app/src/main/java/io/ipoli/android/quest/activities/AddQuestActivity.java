@@ -66,6 +66,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(this);
+        category = Category.LEARNING;
     }
 
 
@@ -114,7 +115,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     private void colorLayout(Category category) {
-
         toolbar.setBackgroundResource(category.color500);
         findViewById(R.id.root_container).setBackgroundResource(category.color500);
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
