@@ -17,9 +17,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
@@ -37,6 +39,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     private Quest quest;
 
+    private ViewPager vpPager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +56,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             ab.setDisplayShowTitleEnabled(true);
         }
 
-        ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
+        vpPager = (ViewPager) findViewById(R.id.wizard_pager);
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(this);
-        vpPager.setCurrentItem(3);
+//        vpPager.setCurrentItem(3);
 //        KeyboardUtils.showKeyboard(this);
     }
 
@@ -66,6 +70,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.action_next:
+                KeyboardUtils.hideKeyboard(this);
+                vpPager.setCurrentItem(1, true);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -86,6 +94,12 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
         colorLayout(e.category);
+    }
+
+    @Subscribe
+    public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
+        vpPager.postDelayed(() -> vpPager.setCurrentItem(vpPager.getCurrentItem() + 1),
+                getResources().getInteger(android.R.integer.config_shortAnimTime));
     }
 
     private void colorLayout(Category category) {

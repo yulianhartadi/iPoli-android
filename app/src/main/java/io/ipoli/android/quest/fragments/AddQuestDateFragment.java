@@ -2,13 +2,17 @@ package io.ipoli.android.quest.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -17,7 +21,9 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.adapters.QuestOptionsAdapter;
+import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -41,19 +47,45 @@ public class AddQuestDateFragment extends BaseFragment {
         dateOptions.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         dateOptions.setHasFixedSize(true);
 
-        List<String> options = new ArrayList<>();
-        options.add("By the end of the week");
-        options.add("By the end of the month");
-        options.add("Someday by...");
-        options.add("Today");
-        options.add("Tomorrow");
-        options.add("On...");
+        List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
+
+        options.add(new Pair<>("By the end of the week", v -> {
+            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfWeek().withMaximumValue()));
+        }));
+
+        options.add(new Pair<>("By the end of the month", v -> {
+            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfMonth().withMaximumValue()));
+        }));
+
+        options.add(new Pair<>("Someday by...", v -> {
+            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
+                    date -> {
+                        postEvent(new NewQuestDatePickedEvent(LocalDate.now(), new LocalDate(date.getTime())));
+                    });
+            fragment.show(getFragmentManager());
+        }));
+
+        options.add(new Pair<>("Today", v -> {
+            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now()));
+        }));
+
+        options.add(new Pair<>("Tomorrow", v -> {
+            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().plusDays(1)));
+        }));
+
+        options.add(new Pair<>("On...", v -> {
+            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
+                    date -> {
+                        LocalDate onDate = new LocalDate(date.getTime());
+                        postEvent(new NewQuestDatePickedEvent(onDate, onDate));
+                    });
+            fragment.show(getFragmentManager());
+        }));
 
         dateOptions.setAdapter(new QuestOptionsAdapter(options));
 
         return view;
     }
-
 
     @Override
     public void onDestroyView() {

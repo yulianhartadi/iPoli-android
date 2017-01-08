@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.adapters;
 
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,9 @@ import io.ipoli.android.R;
  */
 public class QuestOptionsAdapter extends RecyclerView.Adapter {
 
-    private final List<String> options;
+    private final List<Pair<String, View.OnClickListener>> options;
 
-    public QuestOptionsAdapter(List<String> options) {
+    public QuestOptionsAdapter(List<Pair<String, View.OnClickListener>> options) {
         this.options = options;
     }
 
@@ -31,7 +32,9 @@ public class QuestOptionsAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         TextView textView = (TextView) holder.itemView;
-        textView.setText(options.get(holder.getAdapterPosition()));
+        Pair<String, View.OnClickListener> pair = options.get(holder.getAdapterPosition());
+        textView.setText(pair.first);
+        textView.setOnClickListener(pair.second);
     }
 
     @Override

@@ -9,8 +9,12 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
         android:text="Read a book"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/md_white" />
 
     <LinearLayout
