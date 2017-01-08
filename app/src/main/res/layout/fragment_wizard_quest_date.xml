@@ -16,5 +16,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/new_learning_quest"/>
+        android:src="@drawable/new_wellness_quest"/>
 </RelativeLayout>
