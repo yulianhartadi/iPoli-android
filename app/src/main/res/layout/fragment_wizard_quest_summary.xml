@@ -118,21 +118,6 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/md_light_text_54" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/add_quest_summary_misc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/add_quest_summary_date_time"
-        android:layout_marginTop="64dp"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/md_light_text_54" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -174,6 +159,22 @@
                 android:checked="true" />
 
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/md_light_text_54" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/add_quest_summary_misc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_quest_summary_date_time"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical">
+
 
         <View
             android:layout_width="match_parent"
