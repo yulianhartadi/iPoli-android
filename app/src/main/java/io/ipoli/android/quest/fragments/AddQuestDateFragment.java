@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.joda.time.LocalDate;
 
@@ -23,6 +24,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.quest.adapters.QuestOptionsAdapter;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 
 /**
@@ -34,6 +36,9 @@ public class AddQuestDateFragment extends BaseFragment {
 
     @BindView(R.id.new_quest_date_options)
     RecyclerView dateOptions;
+
+    @BindView(R.id.new_quest_date_image)
+    ImageView image;
 
     private Unbinder unbinder;
 
@@ -78,7 +83,31 @@ public class AddQuestDateFragment extends BaseFragment {
 
         dateOptions.setAdapter(new QuestOptionsAdapter(options));
 
+
         return view;
+    }
+
+    public void setCategory(Category category) {
+        switch (category) {
+            case LEARNING:
+                image.setImageResource(R.drawable.new_learning_quest);
+                break;
+            case WELLNESS:
+                image.setImageResource(R.drawable.new_wellness_quest);
+                break;
+            case WORK:
+                image.setImageResource(R.drawable.new_work_quest);
+                break;
+            case PERSONAL:
+                image.setImageResource(R.drawable.new_personal_quest);
+                break;
+            case FUN:
+                image.setImageResource(R.drawable.new_fun_quest);
+                break;
+            case CHORES:
+                image.setImageResource(R.drawable.new_chores_quest);
+                break;
+        }
     }
 
     @Override

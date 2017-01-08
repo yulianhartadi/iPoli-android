@@ -11,6 +11,7 @@
         android:layout_marginTop="16dp" />
     
     <ImageView
+        android:id="@+id/new_quest_date_image"
         android:layout_below="@id/new_quest_date_options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

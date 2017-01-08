@@ -617,6 +617,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public boolean shouldBeDoneMultipleTimesPerDay() {
+        if (getTimesADay() == null) {
+            return false;
+        }
         return getTimesADay() > 1;
     }
 

@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
@@ -41,6 +42,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     private Quest quest;
 
     private ViewPager vpPager;
+
+    private AddQuestDateFragment dateFragment;
+    private AddQuestTimeFragment timeFragment;
+    private Category category;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +97,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Subscribe
     public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
+        this.category = e.category;
         colorLayout(e.category);
     }
 
@@ -108,6 +114,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     private void colorLayout(Category category) {
+
         toolbar.setBackgroundResource(category.color500);
         findViewById(R.id.root_container).setBackgroundResource(category.color500);
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, category.color500));
@@ -128,9 +135,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 break;
             case 1:
                 title = "When will you do it?";
+                dateFragment.setCategory(category);
                 break;
             case 2:
                 title = "At what time?";
+                timeFragment.setCategory(category);
                 break;
             default:
                 title = "";
@@ -143,8 +152,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     }
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 4;
+    private class MyPagerAdapter extends FragmentPagerAdapter {
 
         MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -152,7 +160,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
         @Override
         public int getCount() {
-            return NUM_ITEMS;
+            return 4;
         }
 
         @Override
@@ -169,5 +177,15 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             }
         }
 
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+            if (position == 1) {
+                dateFragment = (AddQuestDateFragment) createdFragment;
+            } else if (position == 2) {
+                timeFragment = (AddQuestTimeFragment) createdFragment;
+            }
+            return createdFragment;
+        }
     }
 }

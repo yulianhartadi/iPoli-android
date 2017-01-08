@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.adapters.QuestOptionsAdapter;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 
 /**
@@ -32,6 +34,9 @@ public class AddQuestTimeFragment extends BaseFragment {
 
     @BindView(R.id.new_quest_time_options)
     RecyclerView timeOptions;
+
+    @BindView(R.id.new_quest_time_image)
+    ImageView image;
 
     private Unbinder unbinder;
 
@@ -76,6 +81,29 @@ public class AddQuestTimeFragment extends BaseFragment {
         timeOptions.setAdapter(new QuestOptionsAdapter(options));
 
         return view;
+    }
+
+    public void setCategory(Category category) {
+        switch (category) {
+            case LEARNING:
+                image.setImageResource(R.drawable.new_learning_quest);
+                break;
+            case WELLNESS:
+                image.setImageResource(R.drawable.new_wellness_quest);
+                break;
+            case WORK:
+                image.setImageResource(R.drawable.new_work_quest);
+                break;
+            case PERSONAL:
+                image.setImageResource(R.drawable.new_personal_quest);
+                break;
+            case FUN:
+                image.setImageResource(R.drawable.new_fun_quest);
+                break;
+            case CHORES:
+                image.setImageResource(R.drawable.new_chores_quest);
+                break;
+        }
     }
 
 
