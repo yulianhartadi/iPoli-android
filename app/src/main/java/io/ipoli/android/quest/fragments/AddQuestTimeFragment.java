@@ -49,34 +49,27 @@ public class AddQuestTimeFragment extends BaseFragment {
 
         List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
 
-        options.add(new Pair<>("Any reasonable time", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.ANY));
-        }));
+        options.add(new Pair<>(getString(R.string.any_reasonable_time), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.ANY))));
 
-        options.add(new Pair<>("Work hours", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.WORK_HOURS));
-        }));
+        options.add(new Pair<>(getString(R.string.work_hours), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.WORK_HOURS))));
 
-        options.add(new Pair<>("Personal hours", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.PERSONAL_HOURS));
-        }));
+        options.add(new Pair<>(getString(R.string.personal_hours), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.PERSONAL_HOURS))));
 
-        options.add(new Pair<>("Morning", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.MORNING));
-        }));
+        options.add(new Pair<>(getString(R.string.morning), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.MORNING))));
 
-        options.add(new Pair<>("Afternoon", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.AFTERNOON));
-        }));
+        options.add(new Pair<>(getString(R.string.afternoon), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.AFTERNOON))));
 
-        options.add(new Pair<>("Evening", v -> {
-            postEvent(new NewQuestTimePickedEvent(TimePreference.EVENING));
-        }));
+        options.add(new Pair<>(getString(R.string.evening), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.EVENING))));
 
-        options.add(new Pair<>("At exactly...", v -> {
-            TimePickerFragment fragment = TimePickerFragment.newInstance(false, time -> {
-                postEvent(new NewQuestTimePickedEvent(time));
-            });
+        options.add(new Pair<>(getString(R.string.at_exactly), v -> {
+            TimePickerFragment fragment = TimePickerFragment.newInstance(false, time ->
+                    postEvent(new NewQuestTimePickedEvent(time)));
             fragment.show(getFragmentManager());
         }));
 
