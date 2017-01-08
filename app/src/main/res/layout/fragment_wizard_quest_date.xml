@@ -11,10 +11,10 @@
         android:layout_marginTop="16dp" />
     
     <ImageView
+        android:layout_below="@id/new_quest_date_options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/add_learning_quest"/>
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/new_learning_quest"/>
 </RelativeLayout>
