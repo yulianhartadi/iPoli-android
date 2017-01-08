@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
@@ -15,17 +14,12 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/17.
  */
-public class QuestDateOptionsAdapter extends RecyclerView.Adapter {
+public class QuestOptionsAdapter extends RecyclerView.Adapter {
 
-    private final List<String> items = new ArrayList<>();
+    private final List<String> options;
 
-    public QuestDateOptionsAdapter() {
-        items.add("By the end of the week");
-        items.add("By the end of the month");
-        items.add("Someday by...");
-        items.add("Today");
-        items.add("Tomorrow");
-        items.add("On...");
+    public QuestOptionsAdapter(List<String> options) {
+        this.options = options;
     }
 
     @Override
@@ -37,12 +31,12 @@ public class QuestDateOptionsAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         TextView textView = (TextView) holder.itemView;
-        textView.setText(items.get(holder.getAdapterPosition()));
+        textView.setText(options.get(holder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return options.size();
     }
 
     private static class DateOptionsViewHolder extends RecyclerView.ViewHolder {

@@ -2,14 +2,14 @@ package io.ipoli.android.quest.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
-
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,28 +17,17 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.ui.CategoryView;
-import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.adapters.QuestOptionsAdapter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/17.
  */
 
-public class QuestNameFragment extends BaseFragment implements CategoryView.OnCategoryChangedListener {
+public class AddQuestDateFragment extends BaseFragment {
 
-    @Inject
-    Bus eventBus;
-
-    @BindView(R.id.root_container)
-    ViewGroup rootContainer;
-
-    @BindView(R.id.quest_name)
-    TextInputEditText name;
-
-    @BindView(R.id.quest_category)
-    CategoryView category;
+    @BindView(R.id.new_quest_date_options)
+    RecyclerView dateOptions;
 
     private Unbinder unbinder;
 
@@ -46,15 +35,28 @@ public class QuestNameFragment extends BaseFragment implements CategoryView.OnCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         App.getAppComponent(getContext()).inject(this);
-        View view = inflater.inflate(R.layout.fragment_wizard_quest_name, container, false);
+        View view = inflater.inflate(R.layout.fragment_wizard_quest_date, container, false);
         unbinder = ButterKnife.bind(this, view);
-        category.addCategoryChangedListener(this);
+
+        dateOptions.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        dateOptions.setHasFixedSize(true);
+
+        List<String> options = new ArrayList<>();
+        options.add("By the end of the week");
+        options.add("By the end of the month");
+        options.add("Someday by...");
+        options.add("Today");
+        options.add("Tomorrow");
+        options.add("On...");
+
+        dateOptions.setAdapter(new QuestOptionsAdapter(options));
+
         return view;
     }
 
+
     @Override
     public void onDestroyView() {
-        category.removeCategoryChangedListener(this);
         unbinder.unbind();
         super.onDestroyView();
     }
@@ -62,10 +64,5 @@ public class QuestNameFragment extends BaseFragment implements CategoryView.OnCa
     @Override
     protected boolean useOptionsMenu() {
         return false;
-    }
-
-    @Override
-    public void onCategoryChanged(Category category) {
-        eventBus.post(new NewQuestCategoryChangedEvent(category));
     }
 }

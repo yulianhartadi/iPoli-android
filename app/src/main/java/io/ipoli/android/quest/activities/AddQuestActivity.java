@@ -17,11 +17,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
-import io.ipoli.android.quest.fragments.QuestDateFragment;
-import io.ipoli.android.quest.fragments.QuestNameFragment;
+import io.ipoli.android.quest.fragments.AddQuestDateFragment;
+import io.ipoli.android.quest.fragments.AddQuestNameFragment;
+import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
+import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,6 +34,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    private Quest quest;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,8 +56,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(this);
-
-        KeyboardUtils.showKeyboard(this);
+        vpPager.setCurrentItem(3);
+//        KeyboardUtils.showKeyboard(this);
     }
 
 
@@ -106,6 +110,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             case 1:
                 title = "When will you do it?";
                 break;
+            case 2:
+                title = "At what time?";
+                break;
+            default:
+                title = "";
         }
         setTitle(title);
     }
@@ -116,30 +125,28 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+        private static int NUM_ITEMS = 4;
 
         MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
-        // Returns total number of pages
         @Override
         public int getCount() {
             return NUM_ITEMS;
         }
 
-        // Returns the fragment to display for that page
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: // Fragment # 0 - This will show FirstFragment
-                    return new QuestNameFragment();
-                case 1: // Fragment # 0 - This will show FirstFragment different title
-                    return new QuestDateFragment();
-                case 2: // Fragment # 1 - This will show SecondFragment
-                    return new QuestNameFragment();
+                case 0:
+                    return new AddQuestNameFragment();
+                case 1:
+                    return new AddQuestDateFragment();
+                case 2:
+                    return new AddQuestTimeFragment();
                 default:
-                    return null;
+                    return new AddQuestSummaryFragment();
             }
         }
 
