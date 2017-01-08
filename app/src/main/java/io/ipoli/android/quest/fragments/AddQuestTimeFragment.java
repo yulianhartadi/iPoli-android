@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +18,10 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.adapters.QuestOptionsAdapter;
+import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -47,32 +49,28 @@ public class AddQuestTimeFragment extends BaseFragment {
 
         List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
 
-        options.add(new Pair<>("Any reasonable time", v -> {
-            Log.d("TEST", "Any reasonable time");
-        }));
+        options.add(new Pair<>(getString(R.string.any_reasonable_time), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.ANY))));
 
-        options.add(new Pair<>("Work hours", v -> {
-            Log.d("TEST", "Work hours");
-        }));
+        options.add(new Pair<>(getString(R.string.work_hours), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.WORK_HOURS))));
 
-        options.add(new Pair<>("Personal hours", v -> {
-            Log.d("TEST", "Personal hours");
-        }));
+        options.add(new Pair<>(getString(R.string.personal_hours), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.PERSONAL_HOURS))));
 
-        options.add(new Pair<>("Morning", v -> {
-            Log.d("TEST", "Morning");
-        }));
+        options.add(new Pair<>(getString(R.string.morning), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.MORNING))));
 
-        options.add(new Pair<>("Afternoon", v -> {
-            Log.d("TEST", "Afternoon");
-        }));
+        options.add(new Pair<>(getString(R.string.afternoon), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.AFTERNOON))));
 
-        options.add(new Pair<>("Evening", v -> {
-            Log.d("TEST", "Evening");
-        }));
+        options.add(new Pair<>(getString(R.string.evening), v ->
+                postEvent(new NewQuestTimePickedEvent(TimePreference.EVENING))));
 
-        options.add(new Pair<>("At exactly...", v -> {
-            Log.d("TEST", "At exactly");
+        options.add(new Pair<>(getString(R.string.at_exactly), v -> {
+            TimePickerFragment fragment = TimePickerFragment.newInstance(false, time ->
+                    postEvent(new NewQuestTimePickedEvent(time)));
+            fragment.show(getFragmentManager());
         }));
 
         timeOptions.setAdapter(new QuestOptionsAdapter(options));

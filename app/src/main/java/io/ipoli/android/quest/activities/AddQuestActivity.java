@@ -22,6 +22,7 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
+import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
@@ -60,9 +61,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(this);
-//        vpPager.setCurrentItem(3);
-//        vpPager.setCurrentItem(1);
-//        KeyboardUtils.showKeyboard(this);
     }
 
 
@@ -99,6 +97,12 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
+        vpPager.postDelayed(() -> vpPager.setCurrentItem(vpPager.getCurrentItem() + 1),
+                getResources().getInteger(android.R.integer.config_shortAnimTime));
+    }
+
+    @Subscribe
+    public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
         vpPager.postDelayed(() -> vpPager.setCurrentItem(vpPager.getCurrentItem() + 1),
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
     }

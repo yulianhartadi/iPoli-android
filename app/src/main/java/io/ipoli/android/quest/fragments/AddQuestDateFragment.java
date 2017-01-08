@@ -49,31 +49,25 @@ public class AddQuestDateFragment extends BaseFragment {
 
         List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
 
-        options.add(new Pair<>("By the end of the week", v -> {
-            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfWeek().withMaximumValue()));
-        }));
+        options.add(new Pair<>(getString(R.string.by_the_end_of_week), v ->
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfWeek().withMaximumValue()))));
 
-        options.add(new Pair<>("By the end of the month", v -> {
-            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfMonth().withMaximumValue()));
-        }));
+        options.add(new Pair<>(getString(R.string.by_the_end_of_month), v ->
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfMonth().withMaximumValue()))));
 
-        options.add(new Pair<>("Someday by...", v -> {
+        options.add(new Pair<>(getString(R.string.someday_by), v -> {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
-                    date -> {
-                        postEvent(new NewQuestDatePickedEvent(LocalDate.now(), new LocalDate(date.getTime())));
-                    });
+                    date -> postEvent(new NewQuestDatePickedEvent(LocalDate.now(), new LocalDate(date.getTime()))));
             fragment.show(getFragmentManager());
         }));
 
-        options.add(new Pair<>("Today", v -> {
-            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now()));
-        }));
+        options.add(new Pair<>(getString(R.string.today), v ->
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now()))));
 
-        options.add(new Pair<>("Tomorrow", v -> {
-            postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().plusDays(1)));
-        }));
+        options.add(new Pair<>(getString(R.string.tomorrow), v ->
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().plusDays(1)))));
 
-        options.add(new Pair<>("On...", v -> {
+        options.add(new Pair<>(getString(R.string.on), v -> {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
                     date -> {
                         LocalDate onDate = new LocalDate(date.getTime());

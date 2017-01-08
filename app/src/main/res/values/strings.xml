@@ -375,4 +375,15 @@
     <string name="invite_call_to_action">Download Now</string>
     <string name="completed">Completed</string>
     <string name="next">Next</string>
+    <string name="any_reasonable_time">Any reasonable time</string>
+    <string name="work_hours">Work hours</string>
+    <string name="personal_hours">Personal hours</string>
+    <string name="morning">Morning</string>
+    <string name="afternoon">Afternoon</string>
+    <string name="evening">Evening</string>
+    <string name="at_exactly">At exactly...</string>
+    <string name="on">On...</string>
+    <string name="someday_by">Someday by...</string>
+    <string name="by_the_end_of_month">By the end of the month</string>
+    <string name="by_the_end_of_week">By the end of the week</string>
 </resources>
