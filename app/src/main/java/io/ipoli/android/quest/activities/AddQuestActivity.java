@@ -56,7 +56,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         MyPagerAdapter adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         vpPager.setAdapter(adapterViewPager);
         vpPager.addOnPageChangeListener(this);
-        vpPager.setCurrentItem(3);
+        vpPager.setCurrentItem(1);
 //        KeyboardUtils.showKeyboard(this);
     }
 
