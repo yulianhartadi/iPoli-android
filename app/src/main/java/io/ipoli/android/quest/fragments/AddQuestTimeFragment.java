@@ -2,8 +2,10 @@ package io.ipoli.android.quest.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,17 +40,40 @@ public class AddQuestTimeFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_wizard_quest_time, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        timeOptions.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        timeOptions.setLayoutManager(layoutManager);
         timeOptions.setHasFixedSize(true);
 
-        List<String> options = new ArrayList<>();
-        options.add("At any reasonable time");
-        options.add("Work hours");
-        options.add("Personal hours");
-        options.add("Morning");
-        options.add("Afternoon");
-        options.add("Evening");
-        options.add("At exactly...");
+        List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
+
+        options.add(new Pair<>("Any reasonable time", v -> {
+            Log.d("TEST", "Any reasonable time");
+        }));
+
+        options.add(new Pair<>("Work hours", v -> {
+            Log.d("TEST", "Work hours");
+        }));
+
+        options.add(new Pair<>("Personal hours", v -> {
+            Log.d("TEST", "Personal hours");
+        }));
+
+        options.add(new Pair<>("Morning", v -> {
+            Log.d("TEST", "Morning");
+        }));
+
+        options.add(new Pair<>("Afternoon", v -> {
+            Log.d("TEST", "Afternoon");
+        }));
+
+        options.add(new Pair<>("Evening", v -> {
+            Log.d("TEST", "Evening");
+        }));
+
+        options.add(new Pair<>("At exactly...", v -> {
+            Log.d("TEST", "At exactly");
+        }));
 
         timeOptions.setAdapter(new QuestOptionsAdapter(options));
 

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -53,6 +55,12 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.add_quest_wizard_name_menu, menu);
+    }
+
+
+    @Override
     public void onDestroyView() {
         category.removeCategoryChangedListener(this);
         unbinder.unbind();
@@ -61,7 +69,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
 
     @Override
     protected boolean useOptionsMenu() {
-        return false;
+        return true;
     }
 
     @Override

@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.MenuItem;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import io.ipoli.android.R;
 
 /**
@@ -12,11 +16,15 @@ import io.ipoli.android.R;
  */
 public abstract class BaseFragment extends Fragment{
 
+    @Inject
+    Bus eventBus;
+
     protected abstract boolean useOptionsMenu();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getAppComponent(getContext()).inject(this);
         setHasOptionsMenu(useOptionsMenu());
     }
 
@@ -30,5 +38,9 @@ public abstract class BaseFragment extends Fragment{
     }
 
     protected void showHelpDialog() {
+    }
+
+    protected void postEvent(Object event) {
+        eventBus.post(event);
     }
 }

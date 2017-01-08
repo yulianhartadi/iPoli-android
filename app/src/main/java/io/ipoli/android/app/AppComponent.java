@@ -199,5 +199,7 @@ public interface AppComponent {
     void inject(AddQuestTimeFragment addQuestTimeFragment);
 
     void inject(AddQuestSummaryFragment addQuestSummaryFragment);
+
+    void inject(BaseFragment baseFragment);
 }
 
