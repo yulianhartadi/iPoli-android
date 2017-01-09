@@ -2,7 +2,7 @@
 <android.support.design.widget.TextInputEditText
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/add_sub_quest"
-    style="@style/SubQuestEditText"
+    style="@style/SubQuestWhiteEditText"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerVertical="true"
@@ -17,4 +17,6 @@
     android:text="@string/add_sub_quest"
     android:textColor="@color/md_light_text_87"
     android:textSize="@dimen/sub_quest_item_text_size"
-    android:visibility="gone" />
+    android:visibility="gone" >
+    <requestFocus/>
+</android.support.design.widget.TextInputEditText>
