@@ -31,7 +31,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/md_white" />
+            android:background="@color/md_light_text_54" />
 
         <TextView
             android:layout_width="0dp"
@@ -49,7 +49,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/md_white" />
+        android:background="@color/md_light_text_54" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,7 +73,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/md_white" />
+            android:background="@color/md_light_text_54" />
 
         <TextView
             android:layout_width="0dp"
@@ -82,7 +82,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
-            android:text="not imporatant \n not urgent"
+            android:text="not important \n not urgent"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
