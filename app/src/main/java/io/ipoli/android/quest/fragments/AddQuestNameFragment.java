@@ -6,6 +6,7 @@ import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,8 +17,10 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.CategoryView;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,6 +39,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     CategoryView category;
 
     private Unbinder unbinder;
+    private Category currentCategory;
 
     @Nullable
     @Override
@@ -53,6 +57,17 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_next:
+
+                postEvent(new NewQuestNameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onDestroyView() {
         category.removeCategoryChangedListener(this);
         unbinder.unbind();
@@ -66,6 +81,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
 
     @Override
     public void onCategoryChanged(Category category) {
+        this.currentCategory = category;
         postEvent(new NewQuestCategoryChangedEvent(category));
     }
 

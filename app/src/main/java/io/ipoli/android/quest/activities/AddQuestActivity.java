@@ -27,6 +27,7 @@ import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
+import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
@@ -57,9 +58,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     private AddQuestDateFragment dateFragment;
     private AddQuestTimeFragment timeFragment;
-    private AddQuestNameFragment nameFragment;
-
-    private Category category;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +69,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
+
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setDisplayShowTitleEnabled(true);
@@ -79,12 +78,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         WizardFragmentPagerAdapter adapterViewPager = new WizardFragmentPagerAdapter(getSupportFragmentManager());
         fragmentPager.setAdapter(adapterViewPager);
         fragmentPager.addOnPageChangeListener(this);
-        category = Category.LEARNING;
-
-        fragmentPager.setCurrentItem(4);
         KeyboardUtils.hideKeyboard(this);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -95,12 +90,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 } else {
                     fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() - 1);
                 }
-                return true;
-            case R.id.action_next:
-                KeyboardUtils.hideKeyboard(this);
-                fragmentPager.setCurrentItem(1, true);
-                this.quest = new Quest(nameFragment.getName());
-                this.quest.setCategoryType(category);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -120,14 +109,25 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Subscribe
     public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
-        this.category = e.category;
         colorLayout(e.category);
+    }
+
+    @Subscribe
+    public void onNewQuestNameAndCategoryPicked(NewQuestNameAndCategoryPickedEvent e) {
+        quest = new Quest(e.name);
+        quest.setCategoryType(e.category);
+        KeyboardUtils.hideKeyboard(this);
+        goToNextPage();
     }
 
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
         quest.setStartDate(e.start.toDate());
         quest.setEndDate(e.end.toDate());
+        goToNextPage();
+    }
+
+    private void goToNextPage() {
         fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
     }
@@ -135,15 +135,13 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
         quest.setStartTime(e.time);
-        fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
-                getResources().getInteger(android.R.integer.config_shortAnimTime));
+        goToNextPage();
     }
 
     @Subscribe
     public void onNewQuestPriorityPicked(NewQuestPriorityPickedEvent e) {
         quest.setPriority(e.priority);
-        fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
-                getResources().getInteger(android.R.integer.config_shortAnimTime));
+        goToNextPage();
     }
 
     @Subscribe
@@ -187,11 +185,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 break;
             case QUEST_DATE_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_date);
-                dateFragment.setCategory(category);
+                dateFragment.setCategory(quest.getCategoryType());
                 break;
             case QUEST_TIME_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_time);
-                timeFragment.setCategory(category);
+                timeFragment.setCategory(quest.getCategoryType());
                 break;
             case QUEST_PRIORITY_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_priority);
@@ -237,9 +235,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            if (position == QUEST_NAME_FRAGMENT_INDEX) {
-                nameFragment = (AddQuestNameFragment) createdFragment;
-            } else if (position == QUEST_DATE_FRAGMENT_INDEX) {
+            if (position == QUEST_DATE_FRAGMENT_INDEX) {
                 dateFragment = (AddQuestDateFragment) createdFragment;
             } else if (position == QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
