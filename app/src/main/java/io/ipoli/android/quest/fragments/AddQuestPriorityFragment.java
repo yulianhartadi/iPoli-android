@@ -7,16 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/9/17.
  */
-
 public class AddQuestPriorityFragment extends BaseFragment {
 
     private Unbinder unbinder;
@@ -39,5 +40,15 @@ public class AddQuestPriorityFragment extends BaseFragment {
     @Override
     protected boolean useOptionsMenu() {
         return false;
+    }
+
+    @OnClick({
+            R.id.quest_priority_important_urgent,
+            R.id.quest_priority_important_not_urgent,
+            R.id.quest_priority_not_important_urgent,
+            R.id.quest_priority_not_important_not_urgent
+    })
+    public void onPriorityClick(View view) {
+        postEvent(new NewQuestPriorityPickedEvent());
     }
 }
