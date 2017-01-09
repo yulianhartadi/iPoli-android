@@ -173,18 +173,18 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         String title = "";
         switch (position) {
             case QUEST_NAME_FRAGMENT_INDEX:
-                title = getString(R.string.title_activity_add_quest);
+                title = getString(R.string.title_fragment_wizard_quest_name);
                 break;
             case QUEST_DATE_FRAGMENT_INDEX:
-                title = "When will you do it?";
+                title = getString(R.string.title_fragment_wizard_quest_date);
                 dateFragment.setCategory(category);
                 break;
             case QUEST_TIME_FRAGMENT_INDEX:
-                title = "At what time?";
+                title = getString(R.string.title_fragment_wizard_quest_time);
                 timeFragment.setCategory(category);
                 break;
             case QUEST_PRIORITY_FRAGMENT_INDEX:
-                title = "How important is it?";
+                title = getString(R.string.title_fragment_wizard_quest_priority);
                 break;
             default:
                 title = "";

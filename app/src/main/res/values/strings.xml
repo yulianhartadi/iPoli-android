@@ -46,7 +46,7 @@
     <string name="next_7_days">Next 7 days</string>
     <string name="cancel">Cancel</string>
     <string name="add_quest">add quest</string>
-    <string name="title_activity_add_quest">New Quest</string>
+    <string name="title_fragment_wizard_quest_name">New Quest</string>
     <string name="unknown_choice">Don\'t know</string>
     <string name="delete">Delete</string>
     <string name="delete_it">DELETE IT</string>
@@ -390,4 +390,7 @@
     <string name="important_not_urgent">Important \n Not Urgent</string>
     <string name="not_important_urgent">Not Important \n Urgent</string>
     <string name="not_important_not_urgent">Not Important \n Not Urgent</string>
+    <string name="title_fragment_wizard_quest_date">When will you do it?</string>
+    <string name="title_fragment_wizard_quest_time">At what time?</string>
+    <string name="title_fragment_wizard_quest_priority">How important is it?</string>
 </resources>
