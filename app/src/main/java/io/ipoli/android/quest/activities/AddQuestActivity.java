@@ -49,9 +49,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private Quest quest;
-
+    @BindView(R.id.wizard_pager)
     private ViewPager fragmentPager;
+
+    private Quest quest;
 
     private AddQuestDateFragment dateFragment;
     private AddQuestTimeFragment timeFragment;
@@ -74,7 +75,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             ab.setDisplayShowTitleEnabled(true);
         }
 
-        fragmentPager = (ViewPager) findViewById(R.id.wizard_pager);
         WizardFragmentPagerAdapter adapterViewPager = new WizardFragmentPagerAdapter(getSupportFragmentManager());
         fragmentPager.setAdapter(adapterViewPager);
         fragmentPager.addOnPageChangeListener(this);
