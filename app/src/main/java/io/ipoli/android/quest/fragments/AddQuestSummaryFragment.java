@@ -3,9 +3,12 @@ package io.ipoli.android.quest.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -24,10 +27,17 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
+import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
+import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+
+import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -42,7 +52,21 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_quest_reminders_container)
     ViewGroup questRemindersContainer;
+
+    @BindView(R.id.sub_quests_container)
+    ViewGroup subQuestsContainer;
+
+    @BindView(R.id.sub_quests_list)
+    RecyclerView subQuestsList;
+
+    @BindView(R.id.add_sub_quest_container)
+    AddSubQuestView addSubQuestView;
+
+    @BindView(R.id.add_sub_quest_clear)
+    ImageButton clearAddSubQuest;
+
     private int notificationId;
+    private EditQuestSubQuestListAdapter subQuestListAdapter;
 
     @Nullable
     @Override
@@ -62,6 +86,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
 //            }
 //        }
 
+        initSubQuestsUI();
 
         return view;
     }
@@ -133,5 +158,33 @@ public class AddQuestSummaryFragment extends BaseFragment {
             reminders.add((Reminder) questRemindersContainer.getChildAt(i).getTag());
         }
         return reminders;
+    }
+
+    private void initSubQuestsUI() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        subQuestsList.setLayoutManager(layoutManager);
+
+        subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>());
+        subQuestsList.setAdapter(subQuestListAdapter);
+
+        addSubQuestView.setSubQuestAddedListener(name -> addSubQuest(name));
+        addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
+    }
+
+    @OnClick(R.id.sub_quests_container)
+    public void onAddSubQuestClicked(View v) {
+        addSubQuestView.setVisibility(View.VISIBLE);
+        addSubQuestView.setInEditMode();
+    }
+
+    private void addSubQuest(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return;
+        }
+
+        SubQuest sq = new SubQuest(name);
+        subQuestListAdapter.addSubQuest(sq);
+        eventBus.post(new NewSubQuestEvent(sq, EDIT_QUEST));
     }
 }

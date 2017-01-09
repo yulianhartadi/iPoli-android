@@ -1,11 +1,11 @@
 package io.ipoli.android.quest.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +27,22 @@ import io.ipoli.android.app.utils.StringUtils;
  */
 public class AddSubQuestView extends RelativeLayout implements View.OnClickListener {
     private List<OnSubQuestAddedListener> subQuestAddedListeners = new ArrayList<>();
+    private List<OnAddSubQuestClosedListener> addSubQuestClosedListeners = new ArrayList<>();
 
     public interface OnSubQuestAddedListener {
         void onSubQuestAdded(String name);
+    }
+
+    public interface OnAddSubQuestClosedListener {
+        void onAddSubQuestClosed();
     }
 
     private ViewGroup container;
     private TextInputEditText editText;
     private ImageButton clearAddSubQuest;
     private TextView addButton;
+
+    private boolean showIcon = true;
 
     public AddSubQuestView(Context context) {
         super(context);
@@ -46,6 +53,18 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
 
     public AddSubQuestView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.AddSubQuestView,
+                0, 0);
+
+        try {
+            showIcon = typedArray.getBoolean(R.styleable.AddSubQuestView_showIcon, true);
+        } finally {
+            typedArray.recycle();
+        }
+
         if (!isInEditMode()) {
             initUI(context);
         }
@@ -59,10 +78,18 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         editText = (TextInputEditText) view.findViewById(R.id.add_sub_quest);
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
+        if(!showIcon) {
+            view.findViewById(R.id.add_icon).setVisibility(INVISIBLE);
+        }
 
         addButton.setOnClickListener(this);
         editText.setOnEditorActionListener((v, actionId, event) -> onEditorAction(actionId));
-        clearAddSubQuest.setOnClickListener(v -> setInViewMode());
+        clearAddSubQuest.setOnClickListener(v -> {
+            setInViewMode();
+            for(OnAddSubQuestClosedListener l : addSubQuestClosedListeners) {
+                l.onAddSubQuestClosed();
+            }
+        });
         setInViewMode();
     }
 
@@ -70,7 +97,6 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         int result = actionId & EditorInfo.IME_MASK_ACTION;
         if (result == EditorInfo.IME_ACTION_DONE) {
             String name = editText.getText().toString();
-            Log.d("AAA focusable", String.valueOf(editText.isFocusableInTouchMode()));
             if (StringUtils.isEmpty(name)) {
                 setInViewMode();
             } else {
@@ -134,6 +160,20 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
     public void setSubQuestAddedListener(OnSubQuestAddedListener listener) {
         if (!subQuestAddedListeners.contains(listener)) {
             subQuestAddedListeners.add(listener);
+        }
+    }
+
+    public void addOnClosedListener(OnAddSubQuestClosedListener listener) {
+        addSubQuestClosedListeners.add(listener);
+    }
+
+    public void removeOnClosedListener(OnAddSubQuestClosedListener listener) {
+        addSubQuestClosedListeners.remove(listener);
+    }
+
+    public void setOnClosedListener(OnAddSubQuestClosedListener listener) {
+        if (!addSubQuestClosedListeners.contains(listener)) {
+            addSubQuestClosedListeners.add(listener);
         }
     }
 
