@@ -50,7 +50,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     Toolbar toolbar;
 
     @BindView(R.id.wizard_pager)
-    private ViewPager fragmentPager;
+    ViewPager fragmentPager;
 
     private Quest quest;
 
