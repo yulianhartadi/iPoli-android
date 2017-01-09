@@ -26,7 +26,6 @@
             android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/important_urgent"
-            android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
 
@@ -42,10 +41,9 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/important_not_urgent"
-            android:textAllCaps="true"
-            android:fontFamily="sans-serif"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
     </LinearLayout>
@@ -69,10 +67,9 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/not_important_urgent"
-            android:textAllCaps="true"
-            android:fontFamily="sans-serif"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
 
@@ -88,10 +85,9 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:fontFamily="sans-serif"
             android:gravity="center"
             android:text="@string/not_important_not_urgent"
-            android:textAllCaps="true"
-            android:fontFamily="sans-serif"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
     </LinearLayout>

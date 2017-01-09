@@ -50,11 +50,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".quest.activities.AddQuestActivity"
-            android:label="@string/title_activity_add_quest"
+            android:label=""
             android:screenOrientation="portrait" />
         <activity
             android:name=".quest.activities.EditQuestActivity"
-            android:label="@string/title_activity_add_quest"
+            android:label="@string/title_fragment_wizard_quest_name"
             android:screenOrientation="portrait" />
         <activity
             android:name=".quest.activities.RepeatingQuestActivity"

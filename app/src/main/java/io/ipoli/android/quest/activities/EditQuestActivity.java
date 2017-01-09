@@ -247,7 +247,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         App.getAppComponent(this).inject(this);
 
         setSupportActionBar(toolbar);
-        toolbarTitle.setText(R.string.title_activity_add_quest);
+        toolbarTitle.setText(R.string.title_fragment_wizard_quest_name);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayShowTitleEnabled(false);

@@ -87,7 +87,7 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         editText = (TextInputEditText) editTextContainer.findViewById(R.id.add_sub_quest);
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
-        
+
         if(!showIcon) {
             view.findViewById(R.id.add_icon).setVisibility(INVISIBLE);
         }
