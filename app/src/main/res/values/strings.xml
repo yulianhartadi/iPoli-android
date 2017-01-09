@@ -381,9 +381,13 @@
     <string name="morning">Morning</string>
     <string name="afternoon">Afternoon</string>
     <string name="evening">Evening</string>
-    <string name="at_exactly">At exactly...</string>
-    <string name="on">On...</string>
-    <string name="someday_by">Someday by...</string>
+    <string name="at_exactly">At exactly…</string>
+    <string name="on">On…</string>
+    <string name="someday_by">Someday by…</string>
     <string name="by_the_end_of_month">By the end of the month</string>
     <string name="by_the_end_of_week">By the end of the week</string>
+    <string name="important_urgent">Important \n Urgent</string>
+    <string name="important_not_urgent">Important \n Not Urgent</string>
+    <string name="not_important_urgent">Not Important \n Urgent</string>
+    <string name="not_important_not_urgent">Not Important \n Not Urgent</string>
 </resources>

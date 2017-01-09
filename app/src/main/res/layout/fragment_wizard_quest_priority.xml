@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
-            android:text="IMPORTANT \n URGENT"
+            android:text="@string/important_urgent"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
@@ -40,7 +40,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
-            android:text="IMPORTANT \n not urgent"
+            android:text="@string/important_not_urgent"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
@@ -65,7 +65,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
-            android:text="not important \n URGENT"
+            android:text="@string/not_important_urgent"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
@@ -82,7 +82,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:gravity="center"
-            android:text="not important \n not urgent"
+            android:text="@string/not_important_not_urgent"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_white" />
