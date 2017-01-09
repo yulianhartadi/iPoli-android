@@ -71,6 +71,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         fragmentPager.setAdapter(adapterViewPager);
         fragmentPager.addOnPageChangeListener(this);
         category = Category.LEARNING;
+
+        fragmentPager.setCurrentItem(4);
+        KeyboardUtils.hideKeyboard(this);
+
     }
 
 
