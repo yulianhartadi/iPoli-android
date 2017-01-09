@@ -2,6 +2,7 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -32,16 +33,26 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
     protected Context context;
     protected final Bus evenBus;
     protected List<SubQuest> subQuests;
+    private final Integer itemLayout;
 
     public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
+        this(context, evenBus, subQuests, null);
+    }
+
+    public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests, @LayoutRes Integer itemLayout) {
         this.context = context;
         this.evenBus = evenBus;
         this.subQuests = subQuests;
+        this.itemLayout = itemLayout;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.edit_quest_sub_quest_list_item, parent, false);
+        int layoutRes = R.layout.edit_quest_sub_quest_list_item;
+        if(itemLayout != null) {
+            layoutRes = itemLayout;
+        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new ViewHolder(v);
     }
 

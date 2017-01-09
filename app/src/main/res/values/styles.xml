@@ -85,4 +85,16 @@
     <style name="AgendaCalendarWeekDayTextAppearance" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
+
+    <style name="SubQuestEditTextTheme" parent="Base.TextAppearance.AppCompat.Small">
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/md_light_text_87</item>
+        <item name="colorControlNormal">@color/md_light_text_87</item>
+        <item name="colorControlActivated">@color/md_light_text_87</item>
+        <item name="android:textColorPrimary">@color/md_light_text_87</item>
+    </style>
+
+    <style name="SubQuestEditText">
+        <item name="android:theme">@style/SubQuestEditTextTheme</item>
+    </style>
 </resources>

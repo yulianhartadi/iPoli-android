@@ -165,7 +165,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subQuestsList.setLayoutManager(layoutManager);
 
-        subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>());
+        subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>(), R.layout.add_quest_sub_quest_list_item);
         subQuestsList.setAdapter(subQuestListAdapter);
 
         addSubQuestView.setSubQuestAddedListener(name -> addSubQuest(name));
