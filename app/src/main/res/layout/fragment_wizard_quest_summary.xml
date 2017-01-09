@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/add_quest_summary_name"
@@ -36,6 +36,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_date_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -67,6 +68,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_time_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -229,11 +231,11 @@
                     android:scrollbars="vertical" />
 
                 <io.ipoli.android.quest.ui.AddSubQuestView
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
                     android:id="@+id/add_sub_quest_container"
-                    app:showIcon="false"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:showIcon="false" />
             </LinearLayout>
 
             <View

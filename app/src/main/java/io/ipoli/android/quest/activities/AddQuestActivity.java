@@ -21,6 +21,8 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.ChangeDateRequestEvent;
+import io.ipoli.android.quest.events.ChangeTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
@@ -38,6 +40,10 @@ import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 
 public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
 
+    public static final int QUEST_NAME_FRAGMENT_INDEX = 0;
+    public static final int QUEST_DATE_FRAGMENT_INDEX = 1;
+    public static final int QUEST_TIME_FRAGMENT_INDEX = 2;
+    public static final int QUEST_PRIORITY_FRAGMENT_INDEX = 3;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -74,7 +80,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
         fragmentPager.setCurrentItem(4);
         KeyboardUtils.hideKeyboard(this);
-
     }
 
 
@@ -134,6 +139,16 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
     }
 
+    @Subscribe
+    public void onChangeDateRequest(ChangeDateRequestEvent e) {
+        fragmentPager.setCurrentItem(QUEST_DATE_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangeTimeRequest(ChangeTimeRequestEvent e) {
+        fragmentPager.setCurrentItem(QUEST_TIME_FRAGMENT_INDEX);
+    }
+
     private void colorLayout(Category category) {
         toolbar.setBackgroundResource(category.color500);
         findViewById(R.id.root_container).setBackgroundResource(category.color500);
@@ -150,18 +165,18 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onPageSelected(int position) {
         String title = "";
         switch (position) {
-            case 0:
+            case QUEST_NAME_FRAGMENT_INDEX:
                 title = getString(R.string.title_activity_add_quest);
                 break;
-            case 1:
+            case QUEST_DATE_FRAGMENT_INDEX:
                 title = "When will you do it?";
                 dateFragment.setCategory(category);
                 break;
-            case 2:
+            case QUEST_TIME_FRAGMENT_INDEX:
                 title = "At what time?";
                 timeFragment.setCategory(category);
                 break;
-            case 3:
+            case QUEST_PRIORITY_FRAGMENT_INDEX:
                 title = "How important is it?";
                 break;
             default:
@@ -189,13 +204,13 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:
+                case QUEST_NAME_FRAGMENT_INDEX:
                     return new AddQuestNameFragment();
-                case 1:
+                case QUEST_DATE_FRAGMENT_INDEX:
                     return new AddQuestDateFragment();
-                case 2:
+                case QUEST_TIME_FRAGMENT_INDEX:
                     return new AddQuestTimeFragment();
-                case 3:
+                case QUEST_PRIORITY_FRAGMENT_INDEX:
                     return new AddQuestPriorityFragment();
                 default:
                     return new AddQuestSummaryFragment();
@@ -205,11 +220,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            if (position == 0) {
+            if (position == QUEST_NAME_FRAGMENT_INDEX) {
                 nameFragment = (AddQuestNameFragment) createdFragment;
-            } else if (position == 1) {
+            } else if (position == QUEST_DATE_FRAGMENT_INDEX) {
                 dateFragment = (AddQuestDateFragment) createdFragment;
-            } else if (position == 2) {
+            } else if (position == QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
             }
             return createdFragment;

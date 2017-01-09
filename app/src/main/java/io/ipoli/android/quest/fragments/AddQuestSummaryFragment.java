@@ -30,6 +30,8 @@ import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.SubQuest;
+import io.ipoli.android.quest.events.ChangeDateRequestEvent;
+import io.ipoli.android.quest.events.ChangeTimeRequestEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
@@ -49,6 +51,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
     Bus eventBus;
 
     private Unbinder unbinder;
+
+    @BindView(R.id.add_quest_summary_date_container)
+    ViewGroup dateContainer;
 
     @BindView(R.id.add_quest_reminders_container)
     ViewGroup questRemindersContainer;
@@ -168,8 +173,18 @@ public class AddQuestSummaryFragment extends BaseFragment {
         subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>());
         subQuestsList.setAdapter(subQuestListAdapter);
 
-        addSubQuestView.setSubQuestAddedListener(name -> addSubQuest(name));
+        addSubQuestView.setSubQuestAddedListener(this::addSubQuest);
         addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
+    }
+
+    @OnClick(R.id.add_quest_summary_date_container)
+    public void onDateClicked(View v) {
+        postEvent(new ChangeDateRequestEvent());
+    }
+
+    @OnClick(R.id.add_quest_summary_time_container)
+    public void onTimeClicked(View v) {
+        postEvent(new ChangeTimeRequestEvent());
     }
 
     @OnClick(R.id.sub_quests_container)
