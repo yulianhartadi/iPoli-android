@@ -21,8 +21,9 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.ChangeDateRequestEvent;
-import io.ipoli.android.quest.events.ChangeTimeRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
@@ -44,7 +45,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public static final int QUEST_DATE_FRAGMENT_INDEX = 1;
     public static final int QUEST_TIME_FRAGMENT_INDEX = 2;
     public static final int QUEST_PRIORITY_FRAGMENT_INDEX = 3;
-    
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -141,12 +142,17 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     @Subscribe
-    public void onChangeDateRequest(ChangeDateRequestEvent e) {
+    public void onChangeQuestNameRequest(ChangeQuestNameRequestEvent e) {
+        fragmentPager.setCurrentItem(QUEST_NAME_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangeDateRequest(ChangeQuestDateRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_DATE_FRAGMENT_INDEX);
     }
 
     @Subscribe
-    public void onChangeTimeRequest(ChangeTimeRequestEvent e) {
+    public void onChangeTimeRequest(ChangeQuestTimeRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_TIME_FRAGMENT_INDEX);
     }
 

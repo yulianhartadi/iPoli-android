@@ -30,8 +30,9 @@ import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.SubQuest;
-import io.ipoli.android.quest.events.ChangeDateRequestEvent;
-import io.ipoli.android.quest.events.ChangeTimeRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
@@ -179,14 +180,19 @@ public class AddQuestSummaryFragment extends BaseFragment {
         addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
     }
 
+    @OnClick(R.id.add_quest_summary_name)
+    public void onNameClicked(View v) {
+        postEvent(new ChangeQuestNameRequestEvent());
+    }
+
     @OnClick(R.id.add_quest_summary_date_container)
     public void onDateClicked(View v) {
-        postEvent(new ChangeDateRequestEvent());
+        postEvent(new ChangeQuestDateRequestEvent());
     }
 
     @OnClick(R.id.add_quest_summary_time_container)
     public void onTimeClicked(View v) {
-        postEvent(new ChangeTimeRequestEvent());
+        postEvent(new ChangeQuestTimeRequestEvent());
     }
 
     @OnClick(R.id.add_quest_summary_duration_container)
