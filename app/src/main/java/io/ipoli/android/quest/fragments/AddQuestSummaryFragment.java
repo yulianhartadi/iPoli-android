@@ -197,8 +197,8 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_duration_container)
     public void onDurationClicked(View v) {
-        DurationPickerFragment fragment = DurationPickerFragment.newInstance(0, duration -> {
-            postEvent(new NewQuestDurationPickedEvent());
+        DurationPickerFragment fragment = DurationPickerFragment.newInstance(10, duration -> {
+            postEvent(new NewQuestDurationPickedEvent(duration));
         });
         fragment.show(getFragmentManager());
     }

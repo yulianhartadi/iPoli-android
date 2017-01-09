@@ -5,4 +5,10 @@ package io.ipoli.android.quest.events;
  * on 1/9/17.
  */
 public class NewQuestDurationPickedEvent {
+    public final int duration;
+
+    public NewQuestDurationPickedEvent(int duration) {
+
+        this.duration = duration;
+    }
 }

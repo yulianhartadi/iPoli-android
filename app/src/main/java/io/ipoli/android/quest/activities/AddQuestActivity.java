@@ -26,6 +26,7 @@ import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
+import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
@@ -139,6 +140,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         quest.setPriority(e.priority);
         fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
+    }
+
+    @Subscribe
+    public void onNewQuestDurationPicked(NewQuestDurationPickedEvent e) {
+        quest.setDuration(e.duration);
     }
 
     @Subscribe
