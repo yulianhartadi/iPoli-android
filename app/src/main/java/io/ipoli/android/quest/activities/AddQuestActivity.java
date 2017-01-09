@@ -90,7 +90,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                if (fragmentPager.getCurrentItem() == QUEST_NAME_FRAGMENT_INDEX) {
+                    finish();
+                } else {
+                    fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() - 1);
+                }
                 return true;
             case R.id.action_next:
                 KeyboardUtils.hideKeyboard(this);

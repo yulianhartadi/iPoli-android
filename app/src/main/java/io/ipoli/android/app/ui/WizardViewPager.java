@@ -21,12 +21,12 @@ public class WizardViewPager extends ViewPager {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev){
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
         return false;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev){
+    public boolean onTouchEvent(MotionEvent ev) {
         return false;
     }
 }
