@@ -27,6 +27,10 @@ import io.ipoli.android.reminder.data.Reminder;
 public class Quest extends PersistedObject implements RewardProvider, BaseQuest {
 
     public static final int PRIORITY_MOST_IMPORTANT_FOR_DAY = 4;
+    public static final int PRIORITY_IMPORTANT_URGENT = 3;
+    public static final int PRIORITY_IMPORTANT_NOT_URGENT = 2;
+    public static final int PRIORITY_NOT_IMPORTANT_URGENT = 1;
+    public static final int PRIORITY_NOT_IMPORTANT_NOT_URGENT = 0;
     public static final int DEFAULT_NO_PRIORITY_VALUE = -1;
 
     private String rawText;

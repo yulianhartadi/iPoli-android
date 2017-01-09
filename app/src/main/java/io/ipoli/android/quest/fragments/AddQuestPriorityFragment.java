@@ -12,6 +12,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 
 /**
@@ -49,6 +50,18 @@ public class AddQuestPriorityFragment extends BaseFragment {
             R.id.quest_priority_not_important_not_urgent
     })
     public void onPriorityClick(View view) {
-        postEvent(new NewQuestPriorityPickedEvent());
+        int priority = Quest.PRIORITY_IMPORTANT_URGENT;
+        switch (view.getId()) {
+            case R.id.quest_priority_important_not_urgent:
+                priority = Quest.PRIORITY_IMPORTANT_NOT_URGENT;
+                break;
+            case R.id.quest_priority_not_important_urgent:
+                priority = Quest.PRIORITY_NOT_IMPORTANT_URGENT;
+                break;
+            case R.id.quest_priority_not_important_not_urgent:
+                priority = Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT;
+                break;
+        }
+        postEvent(new NewQuestPriorityPickedEvent(priority));
     }
 }
