@@ -44,6 +44,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public static final int QUEST_DATE_FRAGMENT_INDEX = 1;
     public static final int QUEST_TIME_FRAGMENT_INDEX = 2;
     public static final int QUEST_PRIORITY_FRAGMENT_INDEX = 3;
+    
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 

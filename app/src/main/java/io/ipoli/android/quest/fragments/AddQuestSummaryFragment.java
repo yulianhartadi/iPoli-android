@@ -32,8 +32,10 @@ import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeTimeRequestEvent;
+import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
+import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
@@ -185,6 +187,14 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @OnClick(R.id.add_quest_summary_time_container)
     public void onTimeClicked(View v) {
         postEvent(new ChangeTimeRequestEvent());
+    }
+
+    @OnClick(R.id.add_quest_summary_duration_container)
+    public void onDurationClicked(View v) {
+        DurationPickerFragment fragment = DurationPickerFragment.newInstance(0, duration -> {
+            postEvent(new NewQuestDurationPickedEvent());
+        });
+        fragment.show(getFragmentManager());
     }
 
     @OnClick(R.id.sub_quests_container)

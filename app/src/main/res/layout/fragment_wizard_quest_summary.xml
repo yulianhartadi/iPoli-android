@@ -100,6 +100,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_duration_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -121,7 +122,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="For 15 minutes or less"
+                    android:text="For 10 minutes or less"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
