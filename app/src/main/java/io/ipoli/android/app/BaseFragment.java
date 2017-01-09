@@ -43,4 +43,5 @@ public abstract class BaseFragment extends Fragment{
     protected void postEvent(Object event) {
         eventBus.post(event);
     }
+
 }

@@ -9,10 +9,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -29,9 +25,6 @@ import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
  */
 
 public class AddQuestNameFragment extends BaseFragment implements CategoryView.OnCategoryChangedListener {
-
-    @Inject
-    Bus eventBus;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -59,7 +52,6 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
         inflater.inflate(R.menu.add_quest_wizard_name_menu, menu);
     }
 
-
     @Override
     public void onDestroyView() {
         category.removeCategoryChangedListener(this);
@@ -74,6 +66,10 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
 
     @Override
     public void onCategoryChanged(Category category) {
-        eventBus.post(new NewQuestCategoryChangedEvent(category));
+        postEvent(new NewQuestCategoryChangedEvent(category));
+    }
+
+    public String getName() {
+        return name.getText().toString();
     }
 }
