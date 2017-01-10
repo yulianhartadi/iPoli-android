@@ -67,4 +67,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void update(List<Quest> quests);
 
     void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener);
+
+    void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data);
 }
