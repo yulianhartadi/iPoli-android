@@ -60,6 +60,12 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
         Map<String, QuestData> questIds = challenge.getQuestsData();
         for (String questId : questIds.keySet()) {
             data.put("/quests/" + questId + "/challengeId", null);
+            QuestData qd = questIds.get(questId);
+            if (qd.getScheduledDate() != null) {
+                data.put("/dayQuests/" + qd.getScheduledDate() + "/" + questId + "/challengeId", null);
+            } else {
+                data.put("/inboxQuests/" + questId + "/challengeId", null);
+            }
         }
 
         Map<String, Boolean> repeatingQuestIds = challenge.getRepeatingQuestIds();
