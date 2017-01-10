@@ -30,7 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/add_quest_summary_name"
             android:layout_marginTop="32dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
             <View
                 android:layout_width="match_parent"
@@ -134,6 +136,54 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_priority_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_high_priority_white_24dp" />
+
+                <TextView
+                    android:id="@+id/add_quest_summary_priority"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Important &amp; Not Urgent"
+                    android:textColor="@color/md_white" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/md_light_text_54" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_quest_summary_misc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_quest_summary_date_time"
+            android:layout_marginTop="64dp"
+            android:orientation="vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/md_light_text_54" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -170,22 +220,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/add_quest_summary_misc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/add_quest_summary_date_time"
-            android:layout_marginTop="64dp"
-            android:orientation="vertical">
-
 
             <View
                 android:layout_width="match_parent"
@@ -238,8 +272,8 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:closeIcon="@drawable/ic_clear_white_24dp"
-                    app:showIcon="false"
-                    app:editTextLayout="@layout/sub_quest_item_white_edit_text"/>
+                    app:editTextLayout="@layout/sub_quest_item_white_edit_text"
+                    app:showIcon="false" />
             </LinearLayout>
 
             <View

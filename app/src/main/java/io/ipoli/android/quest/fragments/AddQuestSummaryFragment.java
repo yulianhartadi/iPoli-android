@@ -33,6 +33,7 @@ import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
@@ -208,6 +209,11 @@ public class AddQuestSummaryFragment extends BaseFragment {
             postEvent(new NewQuestDurationPickedEvent(duration));
         });
         fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.add_quest_summary_priority_container)
+    public void onPriorityClicked(View v) {
+        postEvent(new ChangeQuestPriorityRequestEvent());
     }
 
     @OnClick(R.id.add_quest_summary_challenge_container)

@@ -23,6 +23,7 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
@@ -168,6 +169,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onChangeTimeRequest(ChangeQuestTimeRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_TIME_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangePriorityRequest(ChangeQuestPriorityRequestEvent e) {
+        fragmentPager.setCurrentItem(QUEST_PRIORITY_FRAGMENT_INDEX);
     }
 
     private void colorLayout(Category category) {
