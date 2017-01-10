@@ -104,7 +104,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         Set<String> orphanQuestIds = repeatingQuest.getQuestsData().keySet();
         for (Quest quest : quests) {
             orphanQuestIds.remove(quest.getId());
-            questPersistenceService.populateDeleteQuestData(quest, data);
+            questPersistenceService.populateDeleteQuestDataFromRepeatingQuest(quest, data);
         }
 
         for (String questId : orphanQuestIds) {
@@ -120,7 +120,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         populateRepeatingQuestChallenge(repeatingQuest, data);
 
         for (Quest quest : questsToRemove) {
-            questPersistenceService.populateDeleteQuestData(quest, data);
+            questPersistenceService.populateDeleteQuestDataFromRepeatingQuest(quest, data);
             repeatingQuest.getQuestsData().remove(quest.getId());
         }
 

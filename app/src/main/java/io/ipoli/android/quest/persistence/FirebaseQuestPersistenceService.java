@@ -343,6 +343,15 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
+        populateDeleteQuestDataFromRepeatingQuest(quest, data);
+        if (quest.isFromRepeatingQuest()) {
+            data.put("/repeatingQuests/" + quest.getRepeatingQuestId() + "/questsData/" + quest.getId(), null);
+        }
+    }
+
+
+    @Override
+    public void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data) {
         data.put("/inboxQuests/" + quest.getId(), null);
         if (quest.getEndDate() != null) {
             data.put("/dayQuests/" + quest.getEnd() + "/" + quest.getId(), null);
@@ -355,10 +364,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         if (quest.isFromChallenge()) {
             data.put("/challenges/" + quest.getChallengeId() + "/questsData/" + quest.getId(), null);
             data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
-        }
-
-        if (quest.isFromRepeatingQuest()) {
-            data.put("/repeatingQuests/" + quest.getRepeatingQuestId() + "/questsData/" + quest.getId(), null);
         }
 
         data.put("/quests/" + quest.getId(), null);
