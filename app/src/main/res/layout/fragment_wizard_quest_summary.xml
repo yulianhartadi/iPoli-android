@@ -233,6 +233,12 @@
                 android:layout_gravity="center_horizontal"
                 android:orientation="vertical">
 
+                <View
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:layout_width="0px"
+                    android:layout_height="0px"/>
+
                 <LinearLayout
                     android:id="@+id/sub_quests_container"
                     android:layout_width="match_parent"

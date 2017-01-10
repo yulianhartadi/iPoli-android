@@ -628,4 +628,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void setCategoryType(Category category) {
         this.category = category.name();
     }
+
+    @Exclude
+    public void addReminder(Reminder reminder) {
+        getReminders().add(reminder);
+    }
 }

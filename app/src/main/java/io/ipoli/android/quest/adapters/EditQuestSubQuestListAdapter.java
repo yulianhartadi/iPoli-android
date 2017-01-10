@@ -30,9 +30,15 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
  * on 4/28/16.
  */
 public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuestSubQuestListAdapter.ViewHolder> {
-    protected Context context;
-    protected final Bus evenBus;
-    protected List<SubQuest> subQuests;
+    public interface ItemChangedListener {
+        void onItemChanged();
+    }
+
+    private ItemChangedListener itemChangedListener;
+
+    private Context context;
+    private final Bus evenBus;
+    private List<SubQuest> subQuests;
     private final Integer itemLayout;
 
     public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
@@ -63,6 +69,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
         holder.delete.setOnClickListener(v -> {
             removeSubquest(holder.getAdapterPosition());
             evenBus.post(new DeleteSubQuestEvent(sq, EventSource.EDIT_QUEST));
+            callItemChangedListener();
         });
 
         holder.name.setText(sq.getName());
@@ -75,6 +82,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
             } else {
                 hideUnderline(holder.name);
                 evenBus.post(new UpdateSubQuestNameEvent(sq, EventSource.EDIT_QUEST));
+                callItemChangedListener();
             }
         });
         holder.name.addTextChangedListener(new TextWatcher() {
@@ -117,6 +125,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
     public void addSubQuest(SubQuest subQuest) {
         subQuests.add(subQuest);
         notifyItemInserted(subQuests.size() - 1);
+        callItemChangedListener();
     }
 
     public void setSubQuests(List<SubQuest> subQuests) {
@@ -131,6 +140,15 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
         return subQuests;
     }
 
+    public void setItemChangeListener(ItemChangedListener listener) {
+        itemChangedListener = listener;
+    }
+
+    private void callItemChangedListener() {
+        if(itemChangedListener != null) {
+            itemChangedListener.onItemChanged();
+        }
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.sub_quest_name)

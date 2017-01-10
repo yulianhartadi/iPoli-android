@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
@@ -31,12 +33,15 @@ import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
+import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
+import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -49,6 +54,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public static final int QUEST_DATE_FRAGMENT_INDEX = 1;
     public static final int QUEST_TIME_FRAGMENT_INDEX = 2;
     public static final int QUEST_PRIORITY_FRAGMENT_INDEX = 3;
+    private static final int QUEST_SUMMARY_FRAGMENT_INDEX = 4;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -60,6 +66,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     private AddQuestDateFragment dateFragment;
     private AddQuestTimeFragment timeFragment;
+    private AddQuestSummaryFragment summaryFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,6 +124,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestNameAndCategoryPicked(NewQuestNameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
+        quest.addReminder(new Reminder(0, new Random().nextInt()));
         quest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
         goToNextPage();
@@ -149,6 +157,16 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestDurationPicked(NewQuestDurationPickedEvent e) {
         quest.setDuration(e.duration);
+    }
+
+    @Subscribe
+    public void onNewQuestRemindersPicked(NewQuestRemindersPickedEvent e) {
+        quest.setReminders(e.reminders);
+    }
+
+    @Subscribe
+    public void onNewQuestSubQuestsPicked(NewQuestSubQuestsPickedEvent e) {
+        quest.setSubQuests(e.subQuests);
     }
 
     @Subscribe
@@ -206,6 +224,9 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             case QUEST_PRIORITY_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_priority);
                 break;
+            case QUEST_SUMMARY_FRAGMENT_INDEX:
+                summaryFragment.updateQuest(quest);
+                break;
             default:
                 title = "";
         }
@@ -251,6 +272,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 dateFragment = (AddQuestDateFragment) createdFragment;
             } else if (position == QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
+            } else if (position == QUEST_SUMMARY_FRAGMENT_INDEX)  {
+                summaryFragment = (AddQuestSummaryFragment) createdFragment;
             }
             return createdFragment;
         }

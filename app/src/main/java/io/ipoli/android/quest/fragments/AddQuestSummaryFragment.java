@@ -15,7 +15,6 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -30,6 +29,7 @@ import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
@@ -37,7 +37,8 @@ import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
-import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
+import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
+import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
@@ -45,8 +46,6 @@ import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
-
-import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -80,8 +79,6 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @BindView(R.id.add_quest_summary_challenge)
     TextView challengeText;
 
-    private int notificationId;
-
     private EditQuestSubQuestListAdapter subQuestListAdapter;
 
     @Nullable
@@ -90,17 +87,6 @@ public class AddQuestSummaryFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
         View view = inflater.inflate(R.layout.fragment_wizard_quest_summary, container, false);
         unbinder = ButterKnife.bind(this, view);
-
-//        if (quest.getReminders() == null || quest.getReminders().isEmpty()) {
-        notificationId = new Random().nextInt();
-        addReminder(new Reminder(0, notificationId));
-        addReminder(new Reminder(10, notificationId));
-//        } else {
-//            notificationId = quest.getReminders().get(0).getNotificationId();
-//            for (Reminder reminder : quest.getReminders()) {
-//                addReminder(reminder);
-//            }
-//        }
 
         initSubQuestsUI();
 
@@ -121,7 +107,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
-        EditReminderFragment f = EditReminderFragment.newInstance(notificationId, (reminder, editMode) -> {
+        EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);
             }
@@ -133,20 +119,28 @@ public class AddQuestSummaryFragment extends BaseFragment {
         if (reminderWithSameTimeExists(reminder)) {
             return;
         }
+
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_quest_reminder_item, questRemindersContainer, false);
         populateReminder(reminder, v);
         questRemindersContainer.addView(v);
+        eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
 
         v.setOnClickListener(view -> {
             EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), (editedReminder, mode) -> {
                 if (editedReminder == null || reminderWithSameTimeExists(editedReminder)) {
                     questRemindersContainer.removeView(v);
+                    eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
                     return;
                 }
                 populateReminder(editedReminder, v);
+                eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
             });
             f.show(getFragmentManager());
         });
+    }
+
+    private void clearReminders() {
+        questRemindersContainer.removeAllViews();
     }
 
     private boolean reminderWithSameTimeExists(Reminder reminder) {
@@ -183,6 +177,8 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
         subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>(), R.layout.add_quest_sub_quest_list_item);
         subQuestsList.setAdapter(subQuestListAdapter);
+        subQuestListAdapter.setItemChangeListener(() ->
+                eventBus.post(new NewQuestSubQuestsPickedEvent(subQuestListAdapter.getSubQuests())));
 
         addSubQuestView.setSubQuestAddedListener(this::addSubQuest);
         addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
@@ -243,6 +239,12 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
         SubQuest sq = new SubQuest(name);
         subQuestListAdapter.addSubQuest(sq);
-        eventBus.post(new NewSubQuestEvent(sq, EDIT_QUEST));
+    }
+
+    public void updateQuest(Quest quest) {
+        clearReminders();
+        for (Reminder reminder : quest.getReminders()) {
+            addReminder(reminder);
+        }
     }
 }
