@@ -357,6 +357,10 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             data.put("/challenges/" + quest.getChallengeId() + "/challengeQuests/" + quest.getId(), null);
         }
 
+        if (quest.isFromRepeatingQuest()) {
+            data.put("/repeatingQuests/" + quest.getRepeatingQuestId() + "/questsData/" + quest.getId(), null);
+        }
+
         data.put("/quests/" + quest.getId(), null);
     }
 
