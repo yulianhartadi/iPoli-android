@@ -25,6 +25,7 @@ import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
@@ -147,6 +148,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestDurationPicked(NewQuestDurationPickedEvent e) {
         quest.setDuration(e.duration);
+    }
+
+    @Subscribe
+    public void onNewQuestChallengePicked(NewQuestChallengePickedEvent e) {
+        quest.setChallengeId(e.challenge == null ? null : e.challenge.getId());
     }
 
     @Subscribe

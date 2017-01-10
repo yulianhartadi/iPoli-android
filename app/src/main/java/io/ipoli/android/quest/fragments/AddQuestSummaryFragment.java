@@ -34,9 +34,11 @@ import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
+import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
+import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
@@ -74,7 +76,11 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @BindView(R.id.add_sub_quest_clear)
     ImageButton clearAddSubQuest;
 
+    @BindView(R.id.add_quest_summary_challenge)
+    TextView challengeText;
+
     private int notificationId;
+
     private EditQuestSubQuestListAdapter subQuestListAdapter;
 
     @Nullable
@@ -119,14 +125,14 @@ public class AddQuestSummaryFragment extends BaseFragment {
                 addReminder(reminder);
             }
         });
-        f.show(getActivity().getSupportFragmentManager());
+        f.show(getFragmentManager());
     }
 
     private void addReminder(Reminder reminder) {
         if (reminderWithSameTimeExists(reminder)) {
             return;
         }
-        View v = getActivity().getLayoutInflater().inflate(R.layout.add_quest_reminder_item, questRemindersContainer, false);
+        View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_quest_reminder_item, questRemindersContainer, false);
         populateReminder(reminder, v);
         questRemindersContainer.addView(v);
 
@@ -138,7 +144,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
                 }
                 populateReminder(editedReminder, v);
             });
-            f.show(getActivity().getSupportFragmentManager());
+            f.show(getFragmentManager());
         });
     }
 
@@ -200,6 +206,19 @@ public class AddQuestSummaryFragment extends BaseFragment {
     public void onDurationClicked(View v) {
         DurationPickerFragment fragment = DurationPickerFragment.newInstance(10, duration -> {
             postEvent(new NewQuestDurationPickedEvent(duration));
+        });
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.add_quest_summary_challenge_container)
+    public void onChallengeClicked(View v) {
+        ChallengePickerFragment fragment = ChallengePickerFragment.newInstance(challenge -> {
+            postEvent(new NewQuestChallengePickedEvent(challenge));
+            if (challenge != null) {
+                challengeText.setText(challenge.getName());
+            } else {
+                challengeText.setText(R.string.set_challenge);
+            }
         });
         fragment.show(getFragmentManager());
     }

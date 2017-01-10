@@ -248,6 +248,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_challenge_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"

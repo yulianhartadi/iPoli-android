@@ -393,4 +393,5 @@
     <string name="title_fragment_wizard_quest_date">When will you do it?</string>
     <string name="title_fragment_wizard_quest_time">At what time?</string>
     <string name="title_fragment_wizard_quest_priority">How important is it?</string>
+    <string name="set_challenge">Set Challenge</string>
 </resources>

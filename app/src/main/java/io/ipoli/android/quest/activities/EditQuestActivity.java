@@ -309,7 +309,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             } else {
                 populateEndDate(null);
             }
-            if(quest.isFromRepeatingQuest()) {
+            if (quest.isFromRepeatingQuest()) {
                 challengeContainer.setClickable(false);
             }
             categoryView.changeCategory(quest.getCategoryType());
@@ -830,12 +830,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     }
 
     @Override
-    public void onChallengePicked(String challengeId) {
-        challengePersistenceService.findById(challengeId, challenge -> {
-            populateChallenge(challenge);
-            String name = challenge != null ? challenge.getName() : getString(R.string.none);
-            eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
-        });
+    public void onChallengePicked(Challenge challenge) {
+        populateChallenge(challenge);
+        String name = challenge != null ? challenge.getName() : getString(R.string.none);
+        eventBus.post(new ChallengePickedEvent(editMode.name().toLowerCase(), name));
     }
 
     private void populateChallenge(Challenge challenge) {
@@ -859,7 +857,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     private void populateTimesADay(int timesADay) {
         timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
         timesADayText.setTag(timesADay);
-        if(timesADay > 1) {
+        if (timesADay > 1) {
             populateStartTime(-1);
         }
     }
