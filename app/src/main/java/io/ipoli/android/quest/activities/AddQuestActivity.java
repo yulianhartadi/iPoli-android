@@ -78,7 +78,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
         WizardFragmentPagerAdapter adapterViewPager = new WizardFragmentPagerAdapter(getSupportFragmentManager());
         fragmentPager.setAdapter(adapterViewPager);
         fragmentPager.addOnPageChangeListener(this);
-        KeyboardUtils.hideKeyboard(this);
+        setTitle(R.string.title_fragment_wizard_quest_name);
     }
 
     @Override
