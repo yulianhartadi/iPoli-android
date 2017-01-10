@@ -972,8 +972,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setNotes(notes);
         q.setChallengeId((String) challengeValue.getTag());
         q.setSubQuests(subQuestListAdapter.getSubQuests());
-
-        eventBus.post(new NewQuestEvent(q, getReminders(), EDIT_QUEST));
+        q.setReminders(getReminders());
+        eventBus.post(new NewQuestEvent(q, EDIT_QUEST));
         if (q.getEndDate() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {

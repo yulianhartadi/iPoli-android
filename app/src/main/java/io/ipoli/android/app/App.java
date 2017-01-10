@@ -581,7 +581,6 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
-        quest.setReminders(e.reminders);
         if (quest.isScheduledForThePast()) {
             setQuestCompletedAt(quest);
         }

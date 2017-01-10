@@ -38,6 +38,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     CategoryView category;
 
     private Unbinder unbinder;
+
     private Category currentCategory;
 
     @Nullable

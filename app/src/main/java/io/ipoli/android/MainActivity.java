@@ -474,7 +474,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         for (Reminder r : reminders) {
             newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
         }
-        eventBus.post(new NewQuestEvent(quest, newReminders, EventSource.CALENDAR));
+        quest.setReminders(newReminders);
+        eventBus.post(new NewQuestEvent(quest, EventSource.CALENDAR));
 
         Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
