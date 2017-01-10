@@ -151,7 +151,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
             String challengeId = repeatingQuest.getChallengeId();
             if (challengeId != null) {
                 data.put("/challenges/" + challengeId + "/questsData/" + questId, questData);
-
             }
             if (questData.getScheduledDate() == null) {
                 data.put("/inboxQuests/" + questId + "/challengeId", challengeId);
