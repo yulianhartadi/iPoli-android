@@ -222,7 +222,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="5 Sub Quests added"
+                        android:text="Sub Quests"
                         android:textColor="@color/md_white" />
                 </LinearLayout>
 
@@ -230,7 +230,6 @@
                     android:id="@+id/sub_quests_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
                     android:scrollbars="vertical" />
 
                 <io.ipoli.android.quest.ui.AddSubQuestView
@@ -238,7 +237,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:showIcon="false" />
+                    app:closeIcon="@drawable/ic_clear_white_24dp"
+                    app:showIcon="false"
+                    app:editTextLayout="@layout/sub_quest_item_white_edit_text"/>
             </LinearLayout>
 
             <View

@@ -3,6 +3,7 @@ package io.ipoli.android.quest.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -43,6 +44,9 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
     private TextView addButton;
 
     private boolean showIcon = true;
+    private Drawable closeIcon;
+    private int editTextLayout;
+
 
     public AddSubQuestView(Context context) {
         super(context);
@@ -61,6 +65,8 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
 
         try {
             showIcon = typedArray.getBoolean(R.styleable.AddSubQuestView_showIcon, true);
+            closeIcon = typedArray.getDrawable(R.styleable.AddSubQuestView_closeIcon);
+            editTextLayout = typedArray.getResourceId(R.styleable.AddSubQuestView_editTextLayout, R.layout.sub_quest_item_accent_edit_text);
         } finally {
             typedArray.recycle();
         }
@@ -71,15 +77,22 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
     }
 
     private void initUI(Context context) {
-        View view = LayoutInflater.from(context).inflate(
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(
                 R.layout.layout_add_sub_quest, this);
 
         container = (ViewGroup) view.findViewById(R.id.add_sub_quest_container);
-        editText = (TextInputEditText) view.findViewById(R.id.add_sub_quest);
+        ViewGroup editTextContainer = (ViewGroup) view.findViewById(R.id.edit_text_container);
+        editTextContainer = (ViewGroup) inflater.inflate(editTextLayout, editTextContainer, true);
+        editText = (TextInputEditText) editTextContainer.findViewById(R.id.add_sub_quest);
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
+
         if(!showIcon) {
             view.findViewById(R.id.add_icon).setVisibility(INVISIBLE);
+        }
+        if(closeIcon != null) {
+            clearAddSubQuest.setImageDrawable(closeIcon);
         }
 
         addButton.setOnClickListener(this);

@@ -9,5 +9,7 @@
     </declare-styleable>
     <declare-styleable name="AddSubQuestView">
         <attr name="showIcon" format="boolean" />
+        <attr name="closeIcon" format="reference" />
+        <attr name="editTextLayout" format="reference" />
     </declare-styleable>
 </resources>

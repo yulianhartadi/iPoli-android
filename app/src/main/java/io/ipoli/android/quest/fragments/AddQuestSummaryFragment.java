@@ -27,6 +27,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.SubQuest;
@@ -173,7 +174,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         subQuestsList.setLayoutManager(layoutManager);
 
-        subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>());
+        subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>(), R.layout.add_quest_sub_quest_list_item);
         subQuestsList.setAdapter(subQuestListAdapter);
 
         addSubQuestView.setSubQuestAddedListener(this::addSubQuest);
@@ -206,6 +207,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
         addSubQuestView.setVisibility(View.VISIBLE);
+        KeyboardUtils.showKeyboard(getContext());
         addSubQuestView.setInEditMode();
     }
 
