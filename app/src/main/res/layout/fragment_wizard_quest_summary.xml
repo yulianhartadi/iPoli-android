@@ -210,7 +210,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Remind me"
+                        android:text="@string/add_reminder"
                         android:textColor="@color/md_white" />
                 </LinearLayout>
 
@@ -262,7 +262,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Sub Quests"
+                        android:text="@string/add_sub_quest"
                         android:textColor="@color/md_white" />
                 </LinearLayout>
 

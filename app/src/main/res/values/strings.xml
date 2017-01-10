@@ -275,7 +275,7 @@
     <string name="title_activity_repeating_quest" />
     <string name="title_activity_challenge" />
     <string name="activity_quest_title">Quest</string>
-    <string name="add_sub_quest">Add sub quest</string>
+    <string name="add_sub_quest">Add Sub Quest</string>
     <string name="edit_quest_add_sub_quest">+ Add sub-quest</string>
     <string name="help_dialog_quest_title">Manage your quest</string>
     <string name="help_dialog_quest_text1">From this screen you can:</string>
@@ -394,4 +394,5 @@
     <string name="title_fragment_wizard_quest_time">At what time?</string>
     <string name="title_fragment_wizard_quest_priority">How important is it?</string>
     <string name="set_challenge">Set Challenge</string>
+    <string name="add_reminder">Add Reminder</string>
 </resources>
