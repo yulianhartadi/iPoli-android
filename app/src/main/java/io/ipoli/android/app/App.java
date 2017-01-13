@@ -13,6 +13,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -654,7 +655,7 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
-        updatePet((int) (Math.floor(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
+        updatePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
