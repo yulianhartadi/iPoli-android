@@ -13,7 +13,6 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -623,6 +622,7 @@ public class App extends MultiDexApplication {
         c.add(Calendar.MINUTE, completedAtMinute);
         quest.setCompletedAtDate(c.getTime());
         quest.setCompletedAtMinute(completedAtMinute);
+        quest.increaseCompletedCount();
     }
 
     @Subscribe

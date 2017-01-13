@@ -42,6 +42,7 @@ import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
+import io.ipoli.android.quest.events.SaveNewQuestRequestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
@@ -116,6 +117,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
+                eventBus.post(new SaveNewQuestRequestEvent());
                 return true;
         }
         return super.onOptionsItemSelected(item);
