@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -23,6 +25,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
@@ -35,6 +39,7 @@ import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
+import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
@@ -181,6 +186,16 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestChallengePicked(NewQuestChallengePickedEvent e) {
         quest.setChallengeId(e.challenge == null ? null : e.challenge.getId());
+    }
+
+    @Subscribe
+    public void onNewQuestNotePicked(NewQuestNotePickedEvent e) {
+        List<Note> notes = new ArrayList<>();
+        String txt = e.text;
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
+        quest.setNotes(notes);
     }
 
     @Subscribe
