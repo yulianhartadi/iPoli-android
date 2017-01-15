@@ -118,6 +118,7 @@ import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -140,6 +141,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
+
+    @Inject
+    QuestScheduler questScheduler;
 
     @Inject
     AnalyticsService analyticsService;
@@ -584,8 +588,13 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
 
-        if (quest.getEnd() != null && Objects.equals(quest.getEnd(), quest.getStart())) {
-            quest.setScheduled(quest.getEnd());
+        if (quest.getEnd() != null) {
+            if (Objects.equals(quest.getEnd(), quest.getStart())) {
+                quest.setScheduled(quest.getEnd());
+            } else {
+                Date scheduledDate = questScheduler.schedule(quest);
+                quest.setScheduled(scheduledDate.getTime());
+            }
             quest.setOriginalScheduled(quest.getScheduled());
         }
 

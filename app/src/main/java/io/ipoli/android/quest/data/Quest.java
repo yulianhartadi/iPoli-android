@@ -81,6 +81,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private SourceMapping sourceMapping;
 
+    private Integer completedCount;
+
     @Exclude
     private Long previousScheduledDate;
 
@@ -89,7 +91,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     private transient boolean isPlaceholder;
-    private Integer completedCount;
 
     public Quest() {
     }
