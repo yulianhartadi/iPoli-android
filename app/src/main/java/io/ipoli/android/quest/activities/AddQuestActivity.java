@@ -21,6 +21,7 @@ import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
@@ -138,6 +139,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
+        quest.setDuration(Constants.QUEST_MIN_DURATION);
         quest.addReminder(new Reminder(0, new Random().nextInt()));
         quest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
@@ -146,8 +148,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
-        quest.setStartDateFromLocal(e.start.toDate());
-        quest.setEndDateFromLocal(e.end.toDate());
+        if (e.end != null && e.start != null) {
+            quest.setStartDateFromLocal(e.start.toDate());
+            quest.setEndDateFromLocal(e.end.toDate());
+        }
         goToNextPage();
     }
 
@@ -307,7 +311,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 dateFragment = (AddQuestDateFragment) createdFragment;
             } else if (position == QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
-            } else if (position == QUEST_SUMMARY_FRAGMENT_INDEX)  {
+            } else if (position == QUEST_SUMMARY_FRAGMENT_INDEX) {
                 summaryFragment = (AddQuestSummaryFragment) createdFragment;
             }
             return createdFragment;

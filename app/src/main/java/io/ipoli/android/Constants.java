@@ -2,6 +2,7 @@ package io.ipoli.android;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -79,8 +80,8 @@ public interface Constants {
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
-    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Arrays.asList(TimeOfDay.MORNING));
-    Set<String> DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES = new HashSet<>(Arrays.asList(TimeOfDay.MORNING.name()));
+    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
+    Set<String> DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING.name()));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
     int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;

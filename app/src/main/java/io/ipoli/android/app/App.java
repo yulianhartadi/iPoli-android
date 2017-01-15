@@ -417,13 +417,14 @@ public class App extends MultiDexApplication {
     private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
+            FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             if (versionCode > 0) {
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             }
         }
-        FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
+
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();

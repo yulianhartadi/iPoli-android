@@ -70,7 +70,7 @@ public class AddQuestDateFragment extends BaseFragment {
                 postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now()))));
 
         options.add(new Pair<>(getString(R.string.tomorrow), v ->
-                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().plusDays(1)))));
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now().plusDays(1), LocalDate.now().plusDays(1)))));
 
         options.add(new Pair<>(getString(R.string.on), v -> {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
@@ -79,6 +79,10 @@ public class AddQuestDateFragment extends BaseFragment {
                         postEvent(new NewQuestDatePickedEvent(onDate, onDate));
                     });
             fragment.show(getFragmentManager());
+        }));
+
+        options.add(new Pair<>(getString(R.string.do_not_know), v -> {
+            postEvent(new NewQuestDatePickedEvent(null, null));
         }));
 
         dateOptions.setAdapter(new QuestOptionsAdapter(options));
