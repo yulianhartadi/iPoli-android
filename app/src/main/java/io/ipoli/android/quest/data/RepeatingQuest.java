@@ -86,6 +86,14 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
+    public void setStartTime(Time time) {
+        if (time != null) {
+            setStartMinute(time.toMinutesAfterMidnight());
+        } else {
+            setStartMinute(null);
+        }
+    }
+
     public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
         this.scheduledPeriodEndDates = scheduledPeriodEndDates;
     }
@@ -258,14 +266,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = category;
     }
 
-    public static void setStartTime(RepeatingQuest quest, Time time) {
-        if (time != null) {
-            quest.setStartMinute(time.toMinutesAfterMidnight());
-        } else {
-            quest.setStartMinute(null);
-        }
-    }
-
     public int getStartMinute() {
         return startMinute != null ? startMinute : -1;
     }
@@ -370,10 +370,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @Exclude
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
-    }
-
-    public static Category getCategory(RepeatingQuest repeatingQuest) {
-        return Category.valueOf(repeatingQuest.getCategory());
     }
 
     public Map<String, Boolean> getScheduledPeriodEndDates() {
@@ -494,5 +490,19 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public Integer getTimesADay() {
         return timesADay;
+    }
+
+    @Exclude
+    public Category getCategoryType() {
+        return Category.valueOf(getCategory());
+    }
+
+    @Exclude
+    public void setCategoryType(Category category) {
+        setCategory(category.name());
+    }
+
+    public void addReminder(Reminder reminder) {
+        getReminders().add(reminder);
     }
 }
