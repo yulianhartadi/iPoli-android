@@ -46,7 +46,6 @@ import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
-import io.ipoli.android.quest.events.SaveNewQuestRequestEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
@@ -116,8 +115,21 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                     fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() - 1);
                 }
                 return true;
+            case R.id.action_save:
+                onSaveQuest();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onSaveQuest() {
+        eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
+        if (quest.getScheduled() != null) {
+            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
+        }
+        finish();
     }
 
     @Override
@@ -224,17 +236,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onChangePriorityRequest(ChangeQuestPriorityRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_PRIORITY_FRAGMENT_INDEX);
-    }
-
-    @Subscribe
-    public void onSaveNewQuestRequest(SaveNewQuestRequestEvent e) {
-        eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
-        if (quest.getScheduled() != null) {
-            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
-        }
-        finish();
     }
 
     private void colorLayout(Category category) {
