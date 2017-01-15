@@ -335,7 +335,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
                 populateStartTime(rq.getStartMinute());
             }
             setFrequencyText(rq.getRecurrence());
-            categoryView.changeCategory(RepeatingQuest.getCategory(rq));
+            categoryView.changeCategory(rq.getCategoryType());
             List<Note> notes = rq.getTextNotes();
             populateNoteText(notes.isEmpty() ? null : notes.get(0).getText());
             subQuestListAdapter.setSubQuests(rq.getSubQuests());

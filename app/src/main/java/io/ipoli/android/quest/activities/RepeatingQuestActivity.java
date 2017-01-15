@@ -181,7 +181,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             getSupportActionBar().setTitle(repeatingQuest.getName());
         }
 
-        Category category = RepeatingQuest.getCategory(repeatingQuest);
+        Category category = repeatingQuest.getCategoryType();
         List<PeriodHistory> periodHistories = repeatingQuest.getPeriodHistories(LocalDate.now());
         showFrequencyProgress(category, periodHistories.get(periodHistories.size() - 1));
         displaySummaryStats(category);
@@ -331,7 +331,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, RepeatingQuest.getCategory(repeatingQuest).color100));
+        dataSet.setBarShadowColor(ContextCompat.getColor(this, repeatingQuest.getCategoryType().color100));
         return dataSet;
     }
 
@@ -357,7 +357,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private int[] getColors() {
         int[] colors = new int[Constants.DEFAULT_BAR_COUNT];
-        Category category = RepeatingQuest.getCategory(repeatingQuest);
+        Category category = repeatingQuest.getCategoryType();
         for (int i = 0; i < Constants.DEFAULT_BAR_COUNT; i++) {
             colors[i] = ContextCompat.getColor(this, category.color300);
         }
