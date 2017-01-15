@@ -30,7 +30,7 @@ import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
-import io.ipoli.android.quest.fragments.AddRepeatingQuestFrequencyFragment;
+import io.ipoli.android.quest.fragments.AddRepeatingQuestRecurrenceFragment;
 import io.ipoli.android.reminder.data.Reminder;
 
 /**
@@ -54,7 +54,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
 
     private RepeatingQuest repeatingQuest;
 
-    private AddRepeatingQuestFrequencyFragment frequencyFragment;
+    private AddRepeatingQuestRecurrenceFragment frequencyFragment;
     private AddQuestTimeFragment timeFragment;
     private AddQuestSummaryFragment summaryFragment;
 
@@ -198,7 +198,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
                 case REPEATING_QUEST_NAME_FRAGMENT_INDEX:
                     return AddNameFragment.newInstance(R.string.add_quest_name_hint);
                 case REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX:
-                    return new AddRepeatingQuestFrequencyFragment();
+                    return new AddRepeatingQuestRecurrenceFragment();
                 case REPEATING_QUEST_TIME_FRAGMENT_INDEX:
                     return new AddQuestTimeFragment();
                 case REPEATING_QUEST_PRIORITY_FRAGMENT_INDEX:
@@ -212,7 +212,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
             if (position == REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX) {
-                frequencyFragment = (AddRepeatingQuestFrequencyFragment) createdFragment;
+                frequencyFragment = (AddRepeatingQuestRecurrenceFragment) createdFragment;
             } else if (position == REPEATING_QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
             } else if (position == REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX)  {
