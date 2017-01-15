@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -30,24 +31,24 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
-import io.ipoli.android.quest.events.CategoryChangedEvent;
+import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.events.SaveNewQuestRequestEvent;
-import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddNameFragment;
+import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
@@ -149,8 +150,10 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
         if (e.end != null && e.start != null) {
-            quest.setStartDateFromLocal(e.start.toDate());
-            quest.setEndDateFromLocal(e.end.toDate());
+            Date startDate = e.start.toDate();
+            Date endDate = e.end.toDate();
+            quest.setStartDateFromLocal(startDate);
+            quest.setEndDateFromLocal(endDate);
         }
         goToNextPage();
     }
@@ -226,7 +229,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onSaveNewQuestRequest(SaveNewQuestRequestEvent e) {
         eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
-        if (quest.getEndDate() != null) {
+        if (quest.getScheduled() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();

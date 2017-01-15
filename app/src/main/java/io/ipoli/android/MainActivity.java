@@ -411,7 +411,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Quest q = e.quest;
-        String text = getString(q.getEndDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, e.experience, e.coins);
+        String text = getString(q.getScheduledDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, e.experience, e.coins);
         Snackbar
                 .make(contentContainer,
                         text,
@@ -456,7 +456,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void duplicateQuest(Quest quest, Date date, boolean showAction) {
-        boolean isForSameDay = DateUtils.isSameDay(quest.getEndDate(), date);
+        boolean isForSameDay = DateUtils.isSameDay(quest.getScheduledDate(), date);
         quest.setId(null);
         quest.setCreatedAt(new Date().getTime());
         quest.setUpdatedAt(new Date().getTime());
@@ -506,7 +506,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 int newMinutes = quest.getStartMinute() + e.minutes;
                 if (newMinutes >= Time.MINUTES_IN_A_DAY) {
                     newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
-                    quest.setEndDateFromLocal(new LocalDate(quest.getEndDate()).plusDays(1).toDate());
+                    quest.setEndDateFromLocal(new LocalDate(quest.getScheduled()).plusDays(1).toDate());
                     isDateChanged = true;
                 }
                 quest.setStartMinute(newMinutes);
@@ -537,7 +537,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
         questPersistenceService.update(quest);
         String message = getString(R.string.quest_snoozed);
-        if (quest.getEndDate() == null) {
+        if (quest.getScheduledDate() == null) {
             message = getString(R.string.quest_moved_to_inbox);
         }
 
@@ -546,14 +546,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
-                if (quest.getEndDate() == null) {
+                if (quest.getScheduledDate() == null) {
                     changeCurrentFragment(new InboxFragment());
                 } else {
                     Time scrollToTime = null;
                     if (quest.getStartMinute() > -1) {
                         scrollToTime = Time.of(quest.getStartMinute());
                     }
-                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getEndDate()), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));
+                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getScheduled()), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));
                 }
             });
         }

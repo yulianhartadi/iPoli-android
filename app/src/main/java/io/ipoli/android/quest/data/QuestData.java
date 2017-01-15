@@ -17,8 +17,8 @@ public class QuestData {
     public QuestData(Quest quest) {
         isComplete = quest.isCompleted();
         duration = quest.getActualDuration();
-        scheduledDate = quest.getEnd();
-        originalScheduledDate = quest.getOriginalStart();
+        scheduledDate = quest.getScheduled();
+        originalScheduledDate = quest.getOriginalScheduled();
     }
 
     public boolean isComplete() {

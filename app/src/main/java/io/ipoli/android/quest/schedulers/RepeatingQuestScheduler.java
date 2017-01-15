@@ -296,7 +296,8 @@ public class RepeatingQuestScheduler {
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
-        quest.setOriginalStartDate(endDate);
+        quest.setOriginalScheduledDate(endDate);
+        quest.setScheduledDate(endDate);
         quest.setCreatedAt(DateUtils.nowUTC().getTime());
         quest.setUpdatedAt(DateUtils.nowUTC().getTime());
         quest.setSource(Constants.API_RESOURCE_SOURCE);
@@ -305,6 +306,7 @@ public class RepeatingQuestScheduler {
         quest.setNotes(repeatingQuest.getNotes());
         quest.setRepeatingQuestId(repeatingQuest.getId());
         quest.setCompletedCount(0);
+        quest.setAllDay(false);
         quest.setTimesADay(repeatingQuest.getTimesADay());
         List<Reminder> questReminders = new ArrayList<>();
         if (repeatingQuest.getReminders() != null) {

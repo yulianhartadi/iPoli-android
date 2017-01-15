@@ -45,7 +45,7 @@ public class QuestViewModel {
     }
 
     public String getDueDateText() {
-        return DateFormatter.formatWithoutYear(quest.getEndDate());
+        return DateFormatter.formatWithoutYear(quest.getScheduledDate());
     }
 
     private Category getQuestCategory() {

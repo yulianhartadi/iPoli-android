@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -582,6 +583,12 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
+
+        if (quest.getEnd() != null && Objects.equals(quest.getEnd(), quest.getStart())) {
+            quest.setScheduled(quest.getEnd());
+            quest.setOriginalScheduled(quest.getScheduled());
+        }
+
         if (quest.isScheduledForThePast()) {
             setQuestCompletedAt(quest);
         }
@@ -612,7 +619,7 @@ public class App extends MultiDexApplication {
     }
 
     private void setQuestCompletedAt(Quest quest) {
-        Date completedAt = new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDate();
+        Date completedAt = new LocalDate(quest.getScheduledDate(), DateTimeZone.UTC).toDate();
         Calendar c = Calendar.getInstance();
         c.setTime(completedAt);
 

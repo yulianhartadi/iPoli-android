@@ -82,10 +82,10 @@ import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -302,8 +302,8 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             populateDuration(quest.getDuration());
             populateStartTime(quest.getStartMinute());
             populateTimesADay(quest.getTimesADay());
-            if (quest.getEndDate() != null) {
-                populateEndDate(toStartOfDay(new LocalDate(quest.getEndDate(), DateTimeZone.UTC)));
+            if (quest.getScheduled() != null) {
+                populateEndDate(toStartOfDay(new LocalDate(quest.getScheduled(), DateTimeZone.UTC)));
             } else {
                 populateEndDate(null);
             }
@@ -608,7 +608,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             q.setSubQuests(subQuestListAdapter.getSubQuests());
             q.setReminders(getReminders());
             eventBus.post(new UpdateQuestEvent(q, source));
-            if (q.getEndDate() != null) {
+            if (q.getScheduled() != null) {
                 Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
@@ -670,10 +670,10 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
             if (q == null) {
                 q = createEmptyQuest();
             }
-            if (q.getEndDate() == null) {
+            if (q.getScheduled() == null) {
                 populateEndDate(null);
             } else {
-                populateEndDate(toStartOfDay(new LocalDate(q.getEndDate(), DateTimeZone.UTC)));
+                populateEndDate(toStartOfDay(new LocalDate(q.getScheduled(), DateTimeZone.UTC)));
             }
             populateStartTime(q.getStartMinute());
             populateDuration(Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION));
@@ -945,6 +945,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setEndDateFromLocal((Date) endDateText.getTag());
+        q.setStart(q.getEnd());
         q.setDuration((int) durationText.getTag());
         q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
         q.setCategory(categoryView.getSelectedCategory().name());
@@ -959,7 +960,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
         q.setSubQuests(subQuestListAdapter.getSubQuests());
         q.setReminders(getReminders());
         eventBus.post(new NewQuestEvent(q, EDIT_QUEST));
-        if (q.getEndDate() != null) {
+        if (q.getScheduled() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();

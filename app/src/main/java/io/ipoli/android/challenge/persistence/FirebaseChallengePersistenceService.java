@@ -86,14 +86,14 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
             if (quest.isCompleted()) {
                 quest.setRepeatingQuestId(null);
                 quest.setChallengeId(null);
-                if (quest.getEndDate() != null) {
-                    data.put("/dayQuests/" + quest.getEnd() + "/" + quest.getId(), quest);
+                if (quest.getScheduled() != null) {
+                    data.put("/dayQuests/" + quest.getScheduled() + "/" + quest.getId(), quest);
                 } else {
                     data.put("/inboxQuests/" + quest.getId(), quest);
                 }
             } else {
-                if (quest.getEndDate() != null) {
-                    data.put("/dayQuests/" + quest.getEnd() + "/" + quest.getId(), null);
+                if (quest.getScheduled() != null) {
+                    data.put("/dayQuests/" + quest.getScheduled() + "/" + quest.getId(), null);
                 } else {
                     data.put("/inboxQuests/" + quest.getId(), null);
                 }
