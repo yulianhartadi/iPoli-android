@@ -85,7 +85,7 @@ import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -1099,7 +1099,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
     public void onCategoryChanged(Category category) {
         colorLayout(category);
         if (editMode == EDIT_NEW_QUEST) {
-            eventBus.post(new NewQuestCategoryChangedEvent(category));
+            eventBus.post(new CategoryChangedEvent(category));
         }
     }
 
