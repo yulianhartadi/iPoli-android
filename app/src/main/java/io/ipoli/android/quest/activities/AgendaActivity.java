@@ -29,6 +29,7 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -112,29 +113,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         overridePendingTransition(android.R.anim.fade_in, R.anim.slide_out_bottom);
     }
 
-    private String getDayNumberSuffix(int day) {
-        if (day >= 11 && day <= 13) {
-            return "th";
-        }
-        switch (day % 10) {
-            case 1:
-                return "st";
-            case 2:
-                return "nd";
-            case 3:
-                return "rd";
-            default:
-                return "th";
-        }
-    }
-
     private void showQuestsForDate(LocalDate date) {
         eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.AGENDA_CALENDAR));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(simpleDateFormat.format(date.toDate()));
         }
-        String dayNumberSuffix = getDayNumberSuffix(date.getDayOfMonth());
+        String dayNumberSuffix = DateUtils.getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
         journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(date.toDate())));
         questPersistenceService.findAllNonAllDayForDate(date, quests -> {

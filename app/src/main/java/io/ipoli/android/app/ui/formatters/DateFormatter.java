@@ -12,7 +12,7 @@ import io.ipoli.android.app.utils.DateUtils;
  * on 1/28/16.
  */
 public class DateFormatter {
-    public static final String DEFAULT_EMPTY_VALUE = "Don't know";
+    private static final String DEFAULT_EMPTY_VALUE = "Don't know";
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("dd MMM yy", Locale.getDefault());
     private static SimpleDateFormat DATE_NO_YEAR_FORMAT = new SimpleDateFormat("dd MMM", Locale.getDefault());
 

@@ -13,8 +13,13 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.joda.time.LocalDate;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -25,7 +30,10 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
@@ -58,8 +66,8 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.add_quest_summary_date_container)
-    ViewGroup dateContainer;
+    @BindView(R.id.add_quest_summary_name)
+    TextView name;
 
     @BindView(R.id.add_quest_reminders_container)
     ViewGroup questRemindersContainer;
@@ -78,6 +86,15 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_quest_summary_challenge)
     TextView challengeText;
+
+    @BindView(R.id.add_quest_summary_date)
+    TextView scheduledDate;
+
+    @BindView(R.id.add_quest_summary_time)
+    TextView startTime;
+
+    @BindView(R.id.add_quest_summary_duration)
+    TextView durationText;
 
     private EditQuestSubQuestListAdapter subQuestListAdapter;
 
@@ -203,6 +220,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     public void onDurationClicked(View v) {
         DurationPickerFragment fragment = DurationPickerFragment.newInstance(10, duration -> {
             postEvent(new NewQuestDurationPickedEvent(duration));
+            durationText.setText(DurationFormatter.formatReadable(duration));
         });
         fragment.show(getFragmentManager());
     }
@@ -242,9 +260,35 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     public void updateQuest(Quest quest) {
+        name.setText(quest.getName());
+        durationText.setText(DurationFormatter.formatReadable(quest.getDuration()));
+        showScheduledDate(quest);
+        showStartTime(quest);
         clearReminders();
         for (Reminder reminder : quest.getReminders()) {
             addReminder(reminder);
+        }
+    }
+
+    private void showStartTime(Quest quest) {
+
+    }
+
+    private void showScheduledDate(Quest quest) {
+        if (Objects.equals(quest.getStart(), quest.getEnd())) {
+            scheduledDate.setText(DateFormatter.formatWithoutYear(quest.getEndDate()));
+        } else {
+            LocalDate byDate = new LocalDate(quest.getEnd());
+            LocalDate today = LocalDate.now();
+            if (byDate.equals(today.dayOfWeek().withMaximumValue())) {
+                scheduledDate.setText(R.string.by_end_of_week);
+            } else if (byDate.equals(today.dayOfMonth().withMaximumValue())) {
+                scheduledDate.setText(R.string.by_end_of_month);
+            } else {
+                String dayNumberSuffix = DateUtils.getDayNumberSuffix(byDate.getDayOfMonth());
+                DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
+                scheduledDate.setText(getString(R.string.add_quest_by_date, dateFormat.format(byDate.toDate())));
+            }
         }
     }
 }
