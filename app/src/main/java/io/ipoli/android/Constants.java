@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -158,6 +159,8 @@ public interface Constants {
     String KEY_AVATAR_SLEEP_START_MINUTE = "KEY_AVATAR_SLEEP_START_MINUTE";
     String KEY_AVATAR_SLEEP_END_MINUTE = "KEY_AVATAR_SLEEP_END_MINUTE";
     String KEY_AVATAR_MOST_PRODUCTIVE_TIMES = "KEY_AVATAR_MOST_PRODUCTIVE_TIMES";
+
+    int DEFAULT_QUEST_PRIORITY = Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

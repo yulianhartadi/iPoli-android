@@ -95,6 +95,7 @@ import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
 import io.ipoli.android.quest.events.QuestDurationUpdatedEvent;
 import io.ipoli.android.quest.events.QuestNodePickedEvent;
+import io.ipoli.android.quest.events.QuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.QuestRecurrencePickedEvent;
 import io.ipoli.android.quest.events.QuestSnoozedEvent;
 import io.ipoli.android.quest.events.QuestStartTimePickedEvent;
@@ -607,6 +608,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onQuestRecurrencePicked(QuestRecurrencePickedEvent e) {
         log("quest_recurrence_picked", EventParams.of("mode", e.mode));
+    }
+
+    @Subscribe
+    public void onQuestPriorityPicked(QuestPriorityPickedEvent e) {
+        log("quest_priority_picked", EventParams.of("priority", e.priority));
     }
 
     @Subscribe

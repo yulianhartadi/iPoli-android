@@ -57,6 +57,8 @@ public class PriorityPickerFragment extends DialogFragment {
                 Quest.PRIORITY_NOT_IMPORTANT_URGENT, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT};
         String[] priorities = new String[availablePriorities.length];
         selectedPriorityIndex = -1;
+        priority = priority == -1 ? Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT : priority;
+
         for (int i = 0; i < availablePriorities.length; i++) {
             int p = availablePriorities[i];
             priorities[i] = PriorityFormatter.format(getContext(), p);
