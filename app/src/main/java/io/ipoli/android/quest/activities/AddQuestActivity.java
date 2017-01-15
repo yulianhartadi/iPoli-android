@@ -162,6 +162,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
 
     @Subscribe
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
+        quest.setStartTimePreference(e.timePreference);
         quest.setStartTime(e.time);
         goToNextPage();
     }
@@ -264,7 +265,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
                 title = getString(R.string.title_fragment_wizard_quest_priority);
                 break;
             case QUEST_SUMMARY_FRAGMENT_INDEX:
-                summaryFragment.updateQuest(quest);
+                summaryFragment.setQuest(quest);
                 break;
             default:
                 title = "";

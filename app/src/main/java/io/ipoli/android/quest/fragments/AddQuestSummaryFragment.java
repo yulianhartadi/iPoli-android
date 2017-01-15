@@ -36,10 +36,13 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.PriorityFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SubQuest;
@@ -101,6 +104,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_quest_summary_duration)
     TextView durationText;
+
+    @BindView(R.id.add_quest_summary_priority)
+    TextView priorityText;
 
     @BindView(R.id.add_quest_summary_note)
     TextView noteText;
@@ -242,9 +248,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_duration_container)
     public void onDurationClicked(View v) {
-        DurationPickerFragment fragment = DurationPickerFragment.newInstance(10, duration -> {
+        DurationPickerFragment fragment = DurationPickerFragment.newInstance((int) durationText.getTag(), duration -> {
             postEvent(new NewQuestDurationPickedEvent(duration));
-            durationText.setText(DurationFormatter.formatReadable(duration));
+            showDuration(duration);
         });
         fragment.show(getFragmentManager());
     }
@@ -297,18 +303,49 @@ public class AddQuestSummaryFragment extends BaseFragment {
         subQuestListAdapter.addSubQuest(sq);
     }
 
-    public void updateQuest(Quest quest) {
+    public void setQuest(Quest quest) {
         name.setText(quest.getName());
-        durationText.setText(DurationFormatter.formatReadable(quest.getDuration()));
         showScheduledDate(quest);
         showStartTime(quest);
+        showDuration(quest.getDuration());
+        showPriority(quest.getPriority());
+        showReminders(quest);
+    }
+
+    private void showReminders(Quest quest) {
         clearReminders();
         for (Reminder reminder : quest.getReminders()) {
             addReminder(reminder);
         }
     }
 
+    private void showDuration(int duration) {
+        durationText.setText("for " + DurationFormatter.formatReadable(duration));
+        durationText.setTag(duration);
+    }
+
+    private void showPriority(int priority) {
+        priorityText.setText(PriorityFormatter.format(getContext(), priority));
+    }
+
     private void showStartTime(Quest quest) {
+        Time questStartTime = quest.getStartTime();
+        if (questStartTime != null) {
+            startTime.setText("at " + questStartTime.toString());
+        } else {
+            TimePreference startPref = quest.getStartTimePreference();
+            switch (startPref) {
+                case PERSONAL_HOURS:
+                case WORK_HOURS:
+                case EVENING:
+                case MORNING:
+                case AFTERNOON:
+                    startTime.setText(StringUtils.capitalizeAndReplaceUnderscore(startPref.name()));
+                    break;
+                default:
+                    startTime.setText(R.string.at_any_reasonable_time);
+            }
+        }
 
     }
 

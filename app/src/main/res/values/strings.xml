@@ -391,6 +391,10 @@
     <string name="important_not_urgent">Important \n Not Urgent</string>
     <string name="not_important_urgent">Not Important \n Urgent</string>
     <string name="not_important_not_urgent">Not Important \n Not Urgent</string>
+    <string name="important_urgent_readable">Important &amp; Urgent</string>
+    <string name="important_not_urgent_readable">Important &amp; Not Urgent</string>
+    <string name="not_important_urgent_readable">Not Important &amp; Urgent</string>
+    <string name="not_important_not_urgent_readable">Not Important &amp; Not Urgent</string>
     <string name="title_fragment_wizard_quest_date">When will you do it?</string>
     <string name="title_fragment_wizard_quest_time">At what time?</string>
     <string name="title_fragment_wizard_quest_priority">How important is it?</string>
@@ -399,4 +403,5 @@
     <string name="by_end_of_week">By the end of the week</string>
     <string name="by_end_of_month">By the end of the month</string>
     <string name="note">Note</string>
+    <string name="at_any_reasonable_time">At any reasonable time</string>
 </resources>

@@ -102,7 +102,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         rv.setOnClickFillInIntent(R.id.widget_agenda_check, completeQuestIntent);
 
         int duration = q.getDuration();
-        Time startTime = Quest.getStartTime(q);
+        Time startTime = q.getStartTime();
         String questTime = "";
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
