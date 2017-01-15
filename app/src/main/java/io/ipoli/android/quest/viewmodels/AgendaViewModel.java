@@ -36,7 +36,7 @@ public class AgendaViewModel {
 
     public String getScheduleText() {
         int duration = quest.getDuration();
-        Time startTime = Quest.getStartTime(quest);
+        Time startTime = quest.getStartTime();
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
             return startTime + "\n" + endTime;

@@ -16,6 +16,7 @@ import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.reminder.data.Reminder;
@@ -46,7 +47,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Integer startMinute;
 
     private String preferredStartTime;
-    private Boolean flexibleStartTime;
 
     private Integer duration;
 
@@ -105,10 +105,17 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
         this.category = Category.PERSONAL.name();
-        this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
         this.setCompletedCount(0);
         this.setTimesADay(1);
+    }
+
+    @Exclude
+    public Time getStartTime() {
+        if (getStartMinute() < 0) {
+            return null;
+        }
+        return Time.of(getStartMinute());
     }
 
     @Exclude
@@ -278,13 +285,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void setEnd(Long end) {
         setPreviousScheduledDate(this.end);
         this.end = end;
-    }
-
-    public static Time getStartTime(Quest quest) {
-        if (quest.getStartMinute() < 0) {
-            return null;
-        }
-        return Time.of(quest.getStartMinute());
     }
 
     public void setDifficulty(Integer difficulty) {
@@ -471,14 +471,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.experience = experience;
     }
 
-    public void setFlexibleStartTime(Boolean flexibleStartTime) {
-        this.flexibleStartTime = flexibleStartTime;
-    }
-
-    public Boolean getFlexibleStartTime() {
-        return flexibleStartTime;
-    }
-
     @Exclude
     public boolean isPlaceholder() {
         return isPlaceholder;
@@ -632,5 +624,28 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public void addReminder(Reminder reminder) {
         getReminders().add(reminder);
+    }
+
+    public String getPreferredStartTime() {
+        return preferredStartTime;
+    }
+
+    public void setPreferredStartTime(String preferredStartTime) {
+        this.preferredStartTime = preferredStartTime;
+    }
+
+    @Exclude
+    public void setStartTimePreference(TimePreference timePreference) {
+        if (timePreference != null) {
+            this.preferredStartTime = timePreference.name();
+        }
+    }
+
+    @Exclude
+    public TimePreference getStartTimePreference() {
+        if (StringUtils.isEmpty(preferredStartTime)) {
+            return TimePreference.ANY;
+        }
+        return TimePreference.valueOf(preferredStartTime);
     }
 }

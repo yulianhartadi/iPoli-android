@@ -93,7 +93,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="At any reasonable time"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
@@ -125,7 +124,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="For 10 minutes or less"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
@@ -157,7 +155,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Important &amp; Not Urgent"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
@@ -233,10 +230,10 @@
                 android:orientation="vertical">
 
                 <View
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:layout_width="0px"
-                    android:layout_height="0px"/>
+                    android:layout_height="0px"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
 
                 <LinearLayout
                     android:id="@+id/sub_quests_container"

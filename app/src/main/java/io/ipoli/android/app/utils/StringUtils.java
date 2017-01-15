@@ -6,10 +6,7 @@ package io.ipoli.android.app.utils;
  */
 public class StringUtils {
     public static boolean isEmpty(String text) {
-        if(text == null) {
-            return true;
-        }
-        return text.trim().isEmpty();
+        return text == null || text.trim().isEmpty();
     }
 
     public static String cut(String text, int startIdx, int endIdx) {
