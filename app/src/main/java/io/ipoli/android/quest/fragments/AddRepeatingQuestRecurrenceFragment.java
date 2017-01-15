@@ -5,7 +5,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
+
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,19 +25,28 @@ import io.ipoli.android.quest.data.Category;
  * on 1/15/17.
  */
 
-public class AddRepeatingQuestFrequencyFragment extends BaseFragment {
+public class AddRepeatingQuestRecurrenceFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.new_repeating_quest_frequency_image)
+    @BindView(R.id.recurrence_frequency)
+    Spinner recurrenceFrequency;
+
+    @BindView(R.id.new_repeating_quest_recurrence_image)
     ImageView image;
+
+    private List<String> frequencies = Arrays.asList("Daily", "Weekly", "Monthly");
+    private List<String> flexibleFrequencies = Arrays.asList("Weekly", "Monthly");
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         App.getAppComponent(getContext()).inject(this);
-        View view = inflater.inflate(R.layout.fragment_wizard_repeating_quest_frequency, container, false);
+        View view = inflater.inflate(R.layout.fragment_wizard_repeating_quest_recurrence, container, false);
         unbinder = ButterKnife.bind(this, view);
+
+        recurrenceFrequency.setAdapter(new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_dropdown_item, frequencies));
 
         return view;
     }
