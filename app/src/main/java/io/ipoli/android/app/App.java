@@ -417,13 +417,14 @@ public class App extends MultiDexApplication {
     private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
+            FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             if (versionCode > 0) {
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             }
         }
-        FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
+
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
@@ -622,6 +623,7 @@ public class App extends MultiDexApplication {
         c.add(Calendar.MINUTE, completedAtMinute);
         quest.setCompletedAtDate(c.getTime());
         quest.setCompletedAtMinute(completedAtMinute);
+        quest.increaseCompletedCount();
     }
 
     @Subscribe
@@ -654,7 +656,7 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
-        updatePet((int) (Math.floor(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
+        updatePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
