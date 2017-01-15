@@ -2,7 +2,9 @@ package io.ipoli.android.quest.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,28 +22,52 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
-import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
+import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/17.
  */
 
-public class AddQuestNameFragment extends BaseFragment implements CategoryView.OnCategoryChangedListener {
+public class AddNameFragment extends BaseFragment implements CategoryView.OnCategoryChangedListener {
 
+    private static final String HINT_NAME_RES = "hint_name_resource";
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
 
-    @BindView(R.id.quest_name)
+    @BindView(R.id.wizard_item_name_layout)
+    TextInputLayout nameLayout;
+
+    @BindView(R.id.wizard_item_name)
     TextInputEditText name;
 
-    @BindView(R.id.quest_category)
+    @BindView(R.id.wizard_item_category)
     CategoryView category;
 
     private Unbinder unbinder;
 
     private Category currentCategory;
+
+    private int hintName;
+
+    public static AddNameFragment newInstance(@StringRes int hintName) {
+        AddNameFragment fragment = new AddNameFragment();
+        Bundle args = new Bundle();
+        args.putInt(HINT_NAME_RES, hintName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null && getArguments().containsKey(HINT_NAME_RES)) {
+            hintName = getArguments().getInt(HINT_NAME_RES);
+        } else {
+            hintName = R.string.add_quest_name_hint;
+        }
+    }
 
     @Nullable
     @Override
@@ -49,6 +75,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
         App.getAppComponent(getContext()).inject(this);
         View view = inflater.inflate(R.layout.fragment_wizard_quest_name, container, false);
         unbinder = ButterKnife.bind(this, view);
+        nameLayout.setHint(getString(hintName));
         category.addCategoryChangedListener(this);
         currentCategory = Category.LEARNING;
         return view;
@@ -64,9 +91,9 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
         switch (item.getItemId()) {
             case R.id.action_next:
                 if(StringUtils.isEmpty(name.getText().toString())) {
-                    Toast.makeText(getContext(), R.string.quest_name_validation, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.name_validation, Toast.LENGTH_LONG).show();
                 } else {
-                    postEvent(new NewQuestNameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
+                    postEvent(new NameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
                 }
                 return true;
         }
@@ -88,7 +115,7 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     @Override
     public void onCategoryChanged(Category category) {
         this.currentCategory = category;
-        postEvent(new NewQuestCategoryChangedEvent(category));
+        postEvent(new CategoryChangedEvent(category));
     }
 
     public String getName() {

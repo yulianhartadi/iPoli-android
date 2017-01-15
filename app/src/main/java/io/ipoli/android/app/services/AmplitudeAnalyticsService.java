@@ -84,7 +84,7 @@ import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -306,7 +306,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onNewQuestCategoryChanged(NewQuestCategoryChangedEvent e) {
+    public void onNewQuestCategoryChanged(CategoryChangedEvent e) {
         log("new_quest_category_changed", EventParams.of("category", e.category.name()));
     }
 

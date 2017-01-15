@@ -120,6 +120,7 @@ public class FabMenuView extends RelativeLayout {
     public void onAddRepeatingQuestClick(View view) {
         Intent intent = new Intent(getContext(), EditQuestActivity.class);
         intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, true);
+//        Intent intent = new Intent(getContext(), AddRepeatingQuestActivity.class);
         onFabClicked(intent, FabName.REPEATING_QUEST);
     }
 

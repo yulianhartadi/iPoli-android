@@ -300,6 +300,7 @@
     <string name="activity_quick_add_title">Quick Add</string>
     <string name="quick_add_hint">Enter name, duration, start time …</string>
     <string name="quest_name_validation">Please, add quest name</string>
+    <string name="name_validation">Please, add name</string>
 
     <string name="calendar">Calendar</string>
     <string name="overview">Journey Ahead</string>
@@ -396,4 +397,5 @@
     <string name="set_challenge">Set Challenge</string>
     <string name="add_reminder">Add Reminder</string>
     <string name="note">Note</string>
+    <string name="title_fragment_wizard_repeating_quest_name">New Repeating Quest</string>
 </resources>
