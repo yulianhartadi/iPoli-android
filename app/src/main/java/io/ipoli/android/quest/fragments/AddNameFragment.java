@@ -91,7 +91,7 @@ public class AddNameFragment extends BaseFragment implements CategoryView.OnCate
         switch (item.getItemId()) {
             case R.id.action_next:
                 if(StringUtils.isEmpty(name.getText().toString())) {
-                    Toast.makeText(getContext(), R.string.name_validation, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.name_validation, Toast.LENGTH_SHORT).show();
                 } else {
                     postEvent(new NameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
                 }
