@@ -406,4 +406,5 @@
     <string name="note">Note</string>
     <string name="at_any_reasonable_time">At any reasonable time</string>
     <string name="title_fragment_wizard_repeating_quest_name">New Repeating Quest</string>
+    <string name="quest_priority_question">How important it is?</string>
 </resources>
