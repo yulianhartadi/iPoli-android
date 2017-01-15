@@ -398,4 +398,5 @@
     <string name="add_reminder">Add Reminder</string>
     <string name="by_end_of_week">By the end of the week</string>
     <string name="by_end_of_month">By the end of the month</string>
+    <string name="note">Note</string>
 </resources>

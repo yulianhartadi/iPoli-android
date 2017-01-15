@@ -6,6 +6,9 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -30,6 +33,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
@@ -45,8 +49,10 @@ import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
+import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
+import io.ipoli.android.quest.events.SaveNewQuestRequestEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
@@ -96,6 +102,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @BindView(R.id.add_quest_summary_duration)
     TextView durationText;
 
+    @BindView(R.id.add_quest_summary_note)
+    TextView noteText;
+
     private EditQuestSubQuestListAdapter subQuestListAdapter;
 
     @Nullable
@@ -118,7 +127,22 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @Override
     protected boolean useOptionsMenu() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.add_quest_wizard_summary_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                postEvent(new SaveNewQuestRequestEvent());
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -140,17 +164,17 @@ public class AddQuestSummaryFragment extends BaseFragment {
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_quest_reminder_item, questRemindersContainer, false);
         populateReminder(reminder, v);
         questRemindersContainer.addView(v);
-        eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
+        postEvent(new NewQuestRemindersPickedEvent(getReminders()));
 
         v.setOnClickListener(view -> {
             EditReminderFragment f = EditReminderFragment.newInstance((Reminder) v.getTag(), (editedReminder, mode) -> {
                 if (editedReminder == null || reminderWithSameTimeExists(editedReminder)) {
                     questRemindersContainer.removeView(v);
-                    eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
+                    postEvent(new NewQuestRemindersPickedEvent(getReminders()));
                     return;
                 }
                 populateReminder(editedReminder, v);
-                eventBus.post(new NewQuestRemindersPickedEvent(getReminders()));
+                postEvent(new NewQuestRemindersPickedEvent(getReminders()));
             });
             f.show(getFragmentManager());
         });
@@ -195,7 +219,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         subQuestListAdapter = new EditQuestSubQuestListAdapter(getActivity(), eventBus, new ArrayList<>(), R.layout.add_quest_sub_quest_list_item);
         subQuestsList.setAdapter(subQuestListAdapter);
         subQuestListAdapter.setItemChangeListener(() ->
-                eventBus.post(new NewQuestSubQuestsPickedEvent(subQuestListAdapter.getSubQuests())));
+                postEvent(new NewQuestSubQuestsPickedEvent(subQuestListAdapter.getSubQuests())));
 
         addSubQuestView.setSubQuestAddedListener(this::addSubQuest);
         addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
@@ -238,6 +262,20 @@ public class AddQuestSummaryFragment extends BaseFragment {
                 challengeText.setText(challenge.getName());
             } else {
                 challengeText.setText(R.string.set_challenge);
+            }
+        });
+        fragment.show(getFragmentManager());
+    }
+
+    @OnClick(R.id.add_quest_summary_note_container)
+    public void onNoteClicked(View v) {
+        TextPickerFragment fragment = TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, text -> {
+            postEvent(new NewQuestNotePickedEvent(text));
+            noteText.setTag(text);
+            if (StringUtils.isEmpty(text)) {
+                noteText.setText(R.string.note);
+            } else {
+                noteText.setText(text);
             }
         });
         fragment.show(getFragmentManager());

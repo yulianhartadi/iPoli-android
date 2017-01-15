@@ -11,9 +11,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -21,7 +24,10 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
@@ -32,11 +38,14 @@ import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDatePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
+import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
+import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
+import io.ipoli.android.quest.events.SaveNewQuestRequestEvent;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
@@ -92,6 +101,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     @Override
+    protected boolean useOptionsMenu() {
+        return false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -135,8 +149,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
         if (e.end != null && e.start != null) {
-            quest.setStartDate(e.start.toDate());
-            quest.setEndDate(e.end.toDate());
+            quest.setStartDateFromLocal(e.start.toDate());
+            quest.setEndDateFromLocal(e.end.toDate());
         }
         goToNextPage();
     }
@@ -179,6 +193,16 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     @Subscribe
+    public void onNewQuestNotePicked(NewQuestNotePickedEvent e) {
+        List<Note> notes = new ArrayList<>();
+        String txt = e.text;
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
+        quest.setNotes(notes);
+    }
+
+    @Subscribe
     public void onChangeQuestNameRequest(ChangeQuestNameRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_NAME_FRAGMENT_INDEX);
     }
@@ -196,6 +220,17 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onChangePriorityRequest(ChangeQuestPriorityRequestEvent e) {
         fragmentPager.setCurrentItem(QUEST_PRIORITY_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onSaveNewQuestRequest(SaveNewQuestRequestEvent e) {
+        eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
+        if (quest.getEndDate() != null) {
+            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
+        }
+        finish();
     }
 
     private void colorLayout(Category category) {

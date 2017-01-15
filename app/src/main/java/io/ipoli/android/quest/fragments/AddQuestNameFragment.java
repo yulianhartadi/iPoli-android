@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,6 +18,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.CategoryView;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.NewQuestCategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestNameAndCategoryPickedEvent;
@@ -61,8 +63,11 @@ public class AddQuestNameFragment extends BaseFragment implements CategoryView.O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_next:
-
-                postEvent(new NewQuestNameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
+                if(StringUtils.isEmpty(name.getText().toString())) {
+                    Toast.makeText(getContext(), R.string.quest_name_validation, Toast.LENGTH_LONG).show();
+                } else {
+                    postEvent(new NewQuestNameAndCategoryPickedEvent(name.getText().toString(), currentCategory));
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
