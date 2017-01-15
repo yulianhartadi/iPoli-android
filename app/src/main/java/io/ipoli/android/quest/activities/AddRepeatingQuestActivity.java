@@ -160,7 +160,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
                 title = getString(R.string.title_fragment_wizard_quest_priority);
                 break;
             case QUEST_SUMMARY_FRAGMENT_INDEX:
-                summaryFragment.updateQuest(quest);
+                summaryFragment.setQuest(quest);
                 break;
             default:
                 title = "";
