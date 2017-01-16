@@ -86,14 +86,14 @@ public class MigrationActivity extends BaseActivity {
                         Map<String, Object> challengeData = (Map<String, Object>) challenge;
 
                         if (challengeData.containsKey("challengeQuests")) {
-                            Map<String, Object> quests = (Map<String, Object>) data.get("challengeQuests");
+                            Map<String, Object> quests = (Map<String, Object>) challengeData.get("challengeQuests");
                             for (Object q : quests.values()) {
                                 updateQuestData((Map<String, Object>) q);
                             }
                         }
 
                         if (challengeData.containsKey("challengeRepeatingQuests")) {
-                            Map<String, Object> quests = (Map<String, Object>) data.get("challengeRepeatingQuests");
+                            Map<String, Object> quests = (Map<String, Object>) challengeData.get("challengeRepeatingQuests");
                             for (Object q : quests.values()) {
                                 updateQuestData((Map<String, Object>) q);
                             }
@@ -141,6 +141,7 @@ public class MigrationActivity extends BaseActivity {
             questData.put("scheduled", questData.get("end"));
         }
         questData.put("preferredStartTime", "ANY");
+        questData.remove("flexibleStartTime");
     }
 
     @Override
