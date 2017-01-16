@@ -293,9 +293,7 @@ public class EditQuestActivity extends BaseActivity implements
             populateDuration(rq.getDuration());
             populatePriority(rq.getPriority());
             populateTimesADay(rq.getTimesADay());
-            if (rq.getStartMinute() >= 0) {
-                populateStartTime(rq.getStartMinute());
-            }
+            populateStartTime(rq.getStartMinute());
             setFrequencyText(rq.getRecurrence());
             categoryView.changeCategory(rq.getCategoryType());
             List<Note> notes = rq.getTextNotes();
