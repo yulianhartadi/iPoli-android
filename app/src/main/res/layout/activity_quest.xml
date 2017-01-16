@@ -59,6 +59,7 @@
                 android:layout_gravity="bottom"
                 android:max="100"
                 android:padding="0dp"
+                android:progress="0"
                 android:progressDrawable="@drawable/experience_progress_bar"
                 android:secondaryProgress="100" />
 
