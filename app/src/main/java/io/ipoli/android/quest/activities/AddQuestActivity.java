@@ -46,6 +46,7 @@ import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
+import io.ipoli.android.quest.events.NewQuestTimesADayPickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
@@ -179,6 +180,9 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
         quest.setStartTimePreference(e.timePreference);
         quest.setStartTime(e.time);
+        if(e.time != null) {
+            quest.setTimesADay(1);
+        }
         goToNextPage();
     }
 
@@ -196,6 +200,11 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestRemindersPicked(NewQuestRemindersPickedEvent e) {
         quest.setReminders(e.reminders);
+    }
+
+    @Subscribe
+    public void onNewQuestTimesADayPicked(NewQuestTimesADayPickedEvent e) {
+        quest.setTimesADay(e.timesADay);
     }
 
     @Subscribe

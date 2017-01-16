@@ -38,6 +38,7 @@ import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.app.ui.formatters.PriorityFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.ui.formatters.TimesADayFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -57,10 +58,12 @@ import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
 import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
+import io.ipoli.android.quest.events.NewQuestTimesADayPickedEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
+import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
@@ -88,8 +91,17 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @BindView(R.id.add_quest_summary_recurrence_container)
     ViewGroup recurrenceContainer;
 
+    @BindView(R.id.add_quest_summary_times_a_day_container)
+    ViewGroup timesADayContainer;
+
+    @BindView(R.id.add_quest_summary_times_a_day_horizontal_line)
+    View timesADayHorizontalLine;
+
     @BindView(R.id.add_quest_summary_recurrence)
     TextView recurrenceText;
+
+    @BindView(R.id.add_quest_summary_times_a_day)
+    TextView timesADayText;
 
     @BindView(R.id.sub_quests_container)
     ViewGroup subQuestsContainer;
@@ -237,7 +249,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     @OnClick(R.id.add_quest_summary_recurrence_container)
-    public void onRecurrenceClicked(View v) {postEvent(new ChangeQuestRecurrenceRequestEvent());}
+    public void onRecurrenceClicked(View v) {
+        postEvent(new ChangeQuestRecurrenceRequestEvent());
+    }
 
     @OnClick(R.id.add_quest_summary_date_container)
     public void onDateClicked(View v) {
@@ -261,6 +275,15 @@ public class AddQuestSummaryFragment extends BaseFragment {
     @OnClick(R.id.add_quest_summary_priority_container)
     public void onPriorityClicked(View v) {
         postEvent(new ChangeQuestPriorityRequestEvent());
+    }
+
+    @OnClick(R.id.add_quest_summary_times_a_day_container)
+    public void onTimesADayClicked(View v) {
+        TimesADayPickerFragment fragment = TimesADayPickerFragment.newInstance((int) timesADayText.getTag(), timesADay -> {
+            postEvent(new NewQuestTimesADayPickedEvent(timesADay));
+            showTimesADay(timesADay);
+        });
+        fragment.show(getFragmentManager());
     }
 
     @OnClick(R.id.add_quest_summary_challenge_container)
@@ -313,6 +336,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
         showDuration(quest.getDuration());
         showPriority(quest.getPriority());
         showReminders(quest.getReminders());
+        if (quest.getStartTime() == null) {
+            showTimesADay(quest.getTimesADay());
+        }
     }
 
     public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
@@ -322,6 +348,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
         showDuration(repeatingQuest.getDuration());
         showPriority(repeatingQuest.getPriority());
         showReminders(repeatingQuest.getReminders());
+        if (repeatingQuest.getStartTime() == null) {
+            showTimesADay(repeatingQuest.getTimesADay());
+        }
     }
 
     private void showRecurrence(RepeatingQuest repeatingQuest) {
@@ -340,6 +369,13 @@ public class AddQuestSummaryFragment extends BaseFragment {
     private void showDuration(int duration) {
         durationText.setText("For " + DurationFormatter.formatReadable(duration));
         durationText.setTag(duration);
+    }
+
+    private void showTimesADay(int timesADay) {
+        timesADayContainer.setVisibility(View.VISIBLE);
+        timesADayHorizontalLine.setVisibility(View.VISIBLE);
+        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay, "a day"));
+        timesADayText.setTag(timesADay);
     }
 
     private void showPriority(int priority) {

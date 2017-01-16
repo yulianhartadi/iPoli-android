@@ -42,6 +42,7 @@ import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
 import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
+import io.ipoli.android.quest.events.NewQuestTimesADayPickedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestRecurrencePickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
@@ -163,6 +164,9 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
         repeatingQuest.setStartTimePreference(e.timePreference);
         repeatingQuest.setStartTime(e.time);
+        if (e.time != null) {
+            repeatingQuest.setTimesADay(1);
+        }
         goToNextPage();
     }
 
@@ -200,6 +204,11 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
             notes.add(new Note(txt));
         }
         repeatingQuest.setNotes(notes);
+    }
+
+    @Subscribe
+    public void onNewQuestTimesADayPicked(NewQuestTimesADayPickedEvent e) {
+        repeatingQuest.setTimesADay(e.timesADay);
     }
 
     @Subscribe
