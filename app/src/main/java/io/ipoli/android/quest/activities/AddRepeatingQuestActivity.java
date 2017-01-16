@@ -193,7 +193,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
         String title = "";
         switch (position) {
             case REPEATING_QUEST_NAME_FRAGMENT_INDEX:
-                title = getString(R.string.title_fragment_wizard_quest_name);
+                title = getString(R.string.title_fragment_wizard_repeating_quest_name);
                 break;
             case REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_date);

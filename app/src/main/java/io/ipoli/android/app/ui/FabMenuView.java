@@ -26,7 +26,7 @@ import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
-import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 
 /**
@@ -118,9 +118,7 @@ public class FabMenuView extends RelativeLayout {
 
     @OnClick({R.id.fab_add_repeating_quest, R.id.fab_repeating_quest_label})
     public void onAddRepeatingQuestClick(View view) {
-        Intent intent = new Intent(getContext(), EditQuestActivity.class);
-        intent.putExtra(EditQuestActivity.KEY_NEW_REPEATING_QUEST, true);
-//        Intent intent = new Intent(getContext(), AddRepeatingQuestActivity.class);
+        Intent intent = new Intent(getContext(), AddRepeatingQuestActivity.class);
         onFabClicked(intent, FabName.REPEATING_QUEST);
     }
 
