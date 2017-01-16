@@ -25,6 +25,7 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
+import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestRecurrencePickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
@@ -139,6 +140,12 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
         goToNextPage();
     }
 
+    @Subscribe
+    public void onNewQuestPriorityPicked(NewQuestPriorityPickedEvent e) {
+        repeatingQuest.setPriority(e.priority);
+        goToNextPage();
+    }
+
     private void goToNextPage() {
         fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
@@ -175,7 +182,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
                 title = getString(R.string.title_fragment_wizard_quest_priority);
                 break;
             case REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX:
-//                summaryFragment.updateQuest(repeatingQuest);
+                summaryFragment.setRepeatingQuest(repeatingQuest);
                 break;
             default:
                 title = "";

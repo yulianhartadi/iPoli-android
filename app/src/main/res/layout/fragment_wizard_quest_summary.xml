@@ -20,7 +20,6 @@
             android:maxLines="2"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
-            android:text="Read a book"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="@color/md_white" />
 
@@ -40,7 +39,35 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
+                android:id="@+id/add_quest_summary_recurrence_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_repeat_white_24dp" />
+
+                <TextView
+                    android:id="@+id/add_quest_summary_recurrence"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/md_white" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/add_quest_summary_date_container"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -306,7 +333,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="No challenge selected"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 

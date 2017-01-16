@@ -44,6 +44,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
@@ -78,6 +79,12 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_quest_reminders_container)
     ViewGroup questRemindersContainer;
+
+    @BindView(R.id.add_quest_summary_date_container)
+    ViewGroup dateContainer;
+
+    @BindView(R.id.add_quest_summary_recurrence_container)
+    ViewGroup recurrenceContainer;
 
     @BindView(R.id.sub_quests_container)
     ViewGroup subQuestsContainer;
@@ -297,12 +304,21 @@ public class AddQuestSummaryFragment extends BaseFragment {
         showStartTime(quest);
         showDuration(quest.getDuration());
         showPriority(quest.getPriority());
-        showReminders(quest);
+        showReminders(quest.getReminders());
     }
 
-    private void showReminders(Quest quest) {
+    public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
+        name.setText(repeatingQuest.getName());
+        recurrenceContainer.setVisibility(View.VISIBLE);
+        dateContainer.setVisibility(View.GONE);
+        showDuration(repeatingQuest.getDuration());
+        showPriority(repeatingQuest.getPriority());
+        showReminders(repeatingQuest.getReminders());
+    }
+
+    private void showReminders(List<Reminder> reminders) {
         clearReminders();
-        for (Reminder reminder : quest.getReminders()) {
+        for (Reminder reminder : reminders) {
             addReminder(reminder);
         }
     }
@@ -338,6 +354,8 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     private void showScheduledDate(Quest quest) {
+        dateContainer.setVisibility(View.VISIBLE);
+        recurrenceContainer.setVisibility(View.GONE);
         if (Objects.equals(quest.getStart(), quest.getEnd())) {
             scheduledDate.setText(DateFormatter.formatWithoutYear(quest.getEndDate()));
         } else {
@@ -354,4 +372,5 @@ public class AddQuestSummaryFragment extends BaseFragment {
             }
         }
     }
+
 }
