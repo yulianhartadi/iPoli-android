@@ -209,8 +209,6 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
             case REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX:
                 summaryFragment.setRepeatingQuest(repeatingQuest);
                 break;
-            default:
-                title = "";
         }
         setTitle(title);
     }

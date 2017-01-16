@@ -271,8 +271,6 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
             case QUEST_SUMMARY_FRAGMENT_INDEX:
                 summaryFragment.setQuest(quest);
                 break;
-            default:
-                title = "";
         }
         setTitle(title);
     }
