@@ -3,7 +3,6 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
@@ -158,7 +157,8 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
             name.setSingleLine(true);
-            name.setEllipsize(TextUtils.TruncateAt.END);
+        } else if(q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_TWO_LINES_DURATION) {
+            name.setMaxLines(2);
         }
 
         v.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? View.VISIBLE : View.GONE);
