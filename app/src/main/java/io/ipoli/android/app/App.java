@@ -332,12 +332,6 @@ public class App extends MultiDexApplication {
 
         getAppComponent(this).inject(this);
 
-        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-
-        if (versionCode == 0 || versionCode > 102) {
-            localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
-        }
-
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         if (StringUtils.isEmpty(playerId)) {

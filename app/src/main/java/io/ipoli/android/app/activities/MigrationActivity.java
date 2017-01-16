@@ -53,80 +53,60 @@ public class MigrationActivity extends BaseActivity {
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         String playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        db.getReference("/v0/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
+        db.getReference("/v1/players/" + playerId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Map<String, Object> v0data = (Map<String, Object>) dataSnapshot.getValue();
-                Map<String, Map<String, Object>> oldQuests = (Map<String, Map<String, Object>>) v0data.get("quests");
-                if (oldQuests == null) {
-                    oldQuests = new HashMap<>();
-                }
-                Map<String, Map<String, Object>> oldRepeatingQuests = (Map<String, Map<String, Object>>) v0data.get("repeatingQuests");
-                if (oldRepeatingQuests == null) {
-                    oldRepeatingQuests = new HashMap<>();
-                }
-                v0data.remove("quests");
-                v0data.remove("repeatingQuests");
-                v0data.remove("reminders");
-                v0data.remove("uid");
-                final Map<String, Map<String, Object>> finalOldQuests = oldQuests;
-                final Map<String, Map<String, Object>> finalOldRepeatingQuests = oldRepeatingQuests;
-                db.getReference("/v1/players/" + playerId).setValue(v0data, (databaseError, databaseReference) -> {
+                Map<String, Object> data = (Map<String, Object>) dataSnapshot.getValue();
 
-                    if (databaseError != null) {
-                        eventBus.post(new AppErrorEvent(new MigrationException("Unable to create player in v1 : " + playerId, databaseError.toException())));
+                if (data.containsKey("quests")) {
+                    Map<String, Object> quests = (Map<String, Object>) data.get("quests");
+                    for (Object q : quests.values()) {
+                        updateQuestData((Map<String, Object>) q);
+                    }
+                }
+
+                if (data.containsKey("inboxQuests")) {
+                    Map<String, Object> quests = (Map<String, Object>) data.get("inboxQuests");
+                    for (Object q : quests.values()) {
+                        updateQuestData((Map<String, Object>) q);
+                    }
+                }
+
+                if (data.containsKey("dayQuests")) {
+                    Map<String, Object> dayQuests = (Map<String, Object>) data.get("dayQuests");
+                    for (Object dayQuestList : dayQuests.values()) {
+                        Map<String, Object> dayData = (Map<String, Object>) dayQuestList;
+                        for (Object q : dayData.values()) {
+                            updateQuestData((Map<String, Object>) q);
+                        }
+                    }
+                }
+
+                if (data.containsKey("repeatingQuests")) {
+                    Map<String, Object> quests = (Map<String, Object>) data.get("repeatingQuests");
+                    for (Object q : quests.values()) {
+                        updateQuestData((Map<String, Object>) q);
+                    }
+                }
+
+//                if (data.containsKey("challenges")) {
+//
+//                }
+
+                data.put("/schemaVersion", Constants.SCHEMA_VERSION);
+
+                db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
+
+                    if (error != null) {
+                        eventBus.post(new AppErrorEvent(new MigrationException("Unable to update player children: " + playerId, error.toException())));
                         Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
                         finish();
                         return;
                     }
-
-                    List<Map<String, Object>> simpleQuests = new ArrayList<>();
-                    List<Map<String, Object>> rqQuests = new ArrayList<>();
-                    for (Map<String, Object> q : finalOldQuests.values()) {
-                        if (q.containsKey("repeatingQuest")) {
-                            rqQuests.add(q);
-                        } else {
-                            simpleQuests.add(q);
-                        }
-                    }
-
-                    Map<String, Object> data = new HashMap<>();
-                    for (Map<String, Object> quest : simpleQuests) {
-                        quest = copyQuest(quest);
-                        populateQuest(quest, data);
-                        data.put("/quests/" + quest.get("id"), quest);
-                    }
-
-                    Map<String, List<Map<String, Object>>> rqIdToQuests = new HashMap<>();
-                    for (Map<String, Object> quest : rqQuests) {
-                        String rqId = ((Map<String, Object>) quest.get("repeatingQuest")).get("id").toString();
-                        if (!rqIdToQuests.containsKey(rqId)) {
-                            rqIdToQuests.put(rqId, new ArrayList<>());
-                        }
-                        rqIdToQuests.get(rqId).add(quest);
-                    }
-
-                    for (Map<String, Object> rq : finalOldRepeatingQuests.values()) {
-                        rq = copyRepeatingQuest(rq);
-                        populateRepeatingQuest(rq, rqIdToQuests.get(rq.get("id").toString()), data);
-                        data.put("/repeatingQuests/" + rq.get("id"), rq);
-                    }
-
-                    data.put("/schemaVersion", Constants.SCHEMA_VERSION);
-
-                    db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
-
-                        if (error != null) {
-                            eventBus.post(new AppErrorEvent(new MigrationException("Unable to update player children: " + playerId, error.toException())));
-                            Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
-                            finish();
-                            return;
-                        }
-                        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
-                        eventBus.post(new InitAppEvent());
-                        startActivity(new Intent(MigrationActivity.this, MainActivity.class));
-                        finish();
-                    });
+                    localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+                    eventBus.post(new InitAppEvent());
+                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+                    finish();
                 });
             }
 
@@ -137,6 +117,19 @@ public class MigrationActivity extends BaseActivity {
                 finish();
             }
         });
+    }
+
+    private void updateQuestData(Map<String, Object> questData) {
+        String originalStartKey = "originalStart";
+        if (questData.containsKey(originalStartKey)) {
+            Object originalStart = questData.get(originalStartKey);
+            questData.put("originalScheduled", originalStart);
+            questData.remove(originalStartKey);
+        }
+        if (questData.containsKey("end")) {
+            questData.put("scheduled", questData.get("end"));
+        }
+        questData.put("preferredStartTime", "ANY");
     }
 
     private void populateRepeatingQuest(Map<String, Object> repeatingQuest, List<Map<String, Object>> quests, Map<String, Object> data) {

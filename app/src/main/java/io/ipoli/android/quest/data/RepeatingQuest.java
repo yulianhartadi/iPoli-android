@@ -48,7 +48,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Integer startMinute;
 
     private String preferredStartTime;
-    private Boolean flexibleStartTime;
 
     private Integer duration;
     private List<Reminder> reminders;
@@ -82,7 +81,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         setUpdatedAt(nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         setTimesADay(1);
-        this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
@@ -352,14 +350,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setPreferredStartTime(String preferredStartTime) {
         this.preferredStartTime = preferredStartTime;
-    }
-
-    public Boolean getFlexibleStartTime() {
-        return flexibleStartTime;
-    }
-
-    public void setFlexibleStartTime(Boolean flexibleStartTime) {
-        this.flexibleStartTime = flexibleStartTime;
     }
 
     @Exclude
