@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,7 +18,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.InitAppEvent;
+import io.ipoli.android.app.exceptions.MigrationException;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -107,11 +110,10 @@ public class MigrationActivity extends BaseActivity {
                 db.getReference("/v1/players/" + playerId).updateChildren(data, (error, dbRef) -> {
 
                     if (error != null) {
-                        throw new RuntimeException(error.toException());
-//                        eventBus.post(new AppErrorEvent(new MigrationException("Unable to update player children: " + playerId, error.toException())));
-//                        Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
-//                        finish();
-//                        return;
+                        eventBus.post(new AppErrorEvent(new MigrationException("Unable to update player children: " + playerId, error.toException())));
+                        Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
                     }
                     localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
                     eventBus.post(new InitAppEvent());
@@ -122,10 +124,9 @@ public class MigrationActivity extends BaseActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                throw new RuntimeException(databaseError.toException());
-//                eventBus.post(new AppErrorEvent(new MigrationException("Unable to find player: " + playerId, databaseError.toException())));
-//                Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
-//                finish();
+                eventBus.post(new AppErrorEvent(new MigrationException("Unable to find player: " + playerId, databaseError.toException())));
+                Toast.makeText(MigrationActivity.this, R.string.migration_error_message, Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }
@@ -141,6 +142,7 @@ public class MigrationActivity extends BaseActivity {
             questData.put("scheduled", questData.get("end"));
         }
         questData.put("preferredStartTime", "ANY");
+        questData.put("allDay", false);
         questData.remove("flexibleStartTime");
     }
 
