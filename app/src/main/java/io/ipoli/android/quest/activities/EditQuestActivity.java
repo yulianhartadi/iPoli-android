@@ -64,16 +64,12 @@ import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
-import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.QuestDatePickedEvent;
 import io.ipoli.android.quest.events.QuestDurationPickedEvent;
 import io.ipoli.android.quest.events.QuestNodePickedEvent;
@@ -779,55 +775,6 @@ public class EditQuestActivity extends BaseActivity implements
         }
         frequencyText.setText(FrequencyTextFormatter.formatReadable(recurrence));
         frequencyText.setTag(recurrence);
-    }
-
-    private void createQuest(String name) {
-        Quest q = new Quest(name);
-        q.setEndDateFromLocal((Date) endDateText.getTag());
-        q.setStart(q.getEnd());
-        q.setDuration((int) durationText.getTag());
-        q.setPriority((int) priorityText.getTag());
-        q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-        q.setCategory(categoryView.getSelectedCategory().name());
-
-        List<Note> notes = new ArrayList<>();
-        String txt = (String) noteText.getTag();
-        if (!StringUtils.isEmpty(txt)) {
-            notes.add(new Note(txt));
-        }
-        q.setNotes(notes);
-        q.setChallengeId((String) challengeText.getTag());
-        q.setSubQuests(subQuestListAdapter.getSubQuests());
-        q.setReminders(getReminders());
-        eventBus.post(new NewQuestEvent(q, EDIT_QUEST));
-        if (q.getScheduled() != null) {
-            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void createRepeatingQuest(String name) {
-        RepeatingQuest rq = new RepeatingQuest("");
-        rq.setName(name);
-        rq.setDuration((int) durationText.getTag());
-        rq.setPriority((int) priorityText.getTag());
-        rq.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
-        Recurrence recurrence = frequencyText.getTag() != null ? (Recurrence) frequencyText.getTag() : Recurrence.create();
-        rq.setRecurrence(recurrence);
-        rq.setCategory(categoryView.getSelectedCategory().name());
-        rq.setChallengeId((String) challengeText.getTag());
-
-        List<Note> notes = new ArrayList<>();
-        String txt = (String) noteText.getTag();
-        if (!StringUtils.isEmpty(txt)) {
-            notes.add(new Note(txt));
-        }
-        rq.setNotes(notes);
-        rq.setSubQuests(subQuestListAdapter.getSubQuests());
-        rq.setReminders(getReminders());
-        eventBus.post(new NewRepeatingQuestEvent(rq));
-        Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
     }
 
     @OnEditorAction(R.id.quest_text)

@@ -11,16 +11,22 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
@@ -29,8 +35,14 @@ import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestRecurrenceRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
+import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
+import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
+import io.ipoli.android.quest.events.NewQuestNotePickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
+import io.ipoli.android.quest.events.NewQuestRemindersPickedEvent;
+import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestRecurrencePickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
@@ -101,8 +113,17 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
                     fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() - 1);
                 }
                 return true;
+            case R.id.action_save:
+                saveRepeatingQuest();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveRepeatingQuest() {
+        eventBus.post(new NewRepeatingQuestEvent(repeatingQuest, EventSource.ADD_REPEATING_QUEST));
+        Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
@@ -149,6 +170,36 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestPriorityPicked(NewQuestPriorityPickedEvent e) {
         repeatingQuest.setPriority(e.priority);
         goToNextPage();
+    }
+
+    @Subscribe
+    public void onNewQuestDurationPicked(NewQuestDurationPickedEvent e) {
+        repeatingQuest.setDuration(e.duration);
+    }
+
+    @Subscribe
+    public void onNewQuestRemindersPicked(NewQuestRemindersPickedEvent e) {
+        repeatingQuest.setReminders(e.reminders);
+    }
+
+    @Subscribe
+    public void onNewQuestSubQuestsPicked(NewQuestSubQuestsPickedEvent e) {
+        repeatingQuest.setSubQuests(e.subQuests);
+    }
+
+    @Subscribe
+    public void onNewQuestChallengePicked(NewQuestChallengePickedEvent e) {
+        repeatingQuest.setChallengeId(e.challenge == null ? null : e.challenge.getId());
+    }
+
+    @Subscribe
+    public void onNewQuestNotePicked(NewQuestNotePickedEvent e) {
+        List<Note> notes = new ArrayList<>();
+        String txt = e.text;
+        if (!StringUtils.isEmpty(txt)) {
+            notes.add(new Note(txt));
+        }
+        repeatingQuest.setNotes(notes);
     }
 
     @Subscribe
