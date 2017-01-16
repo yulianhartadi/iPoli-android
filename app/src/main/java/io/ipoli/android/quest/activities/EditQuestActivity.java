@@ -751,8 +751,7 @@ public class EditQuestActivity extends BaseActivity implements TextWatcher, OnSu
 
     @OnClick(R.id.quest_frequency_container)
     public void onFrequencyClick(View view) {
-        boolean disableNoRepeat = editMode == EditMode.EDIT_REPEATING_QUEST;
-        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance(disableNoRepeat, this, (Recurrence) frequencyText.getTag());
+        RecurrencePickerFragment recurrencePickerFragment = RecurrencePickerFragment.newInstance((Recurrence) frequencyText.getTag(), this);
         recurrencePickerFragment.show(getSupportFragmentManager());
     }
 

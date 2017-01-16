@@ -26,6 +26,7 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
+import io.ipoli.android.quest.events.NewRepeatingQuestRecurrencePickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
@@ -123,6 +124,12 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
         repeatingQuest.addReminder(new Reminder(0, new Random().nextInt()));
         repeatingQuest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
+        goToNextPage();
+    }
+
+    @Subscribe
+    public void onNewRepeatingQuestRecurrencePicked(NewRepeatingQuestRecurrencePickedEvent e) {
+        repeatingQuest.setRecurrence(e.recurrence);
         goToNextPage();
     }
 
