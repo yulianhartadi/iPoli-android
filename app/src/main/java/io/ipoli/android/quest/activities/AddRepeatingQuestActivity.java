@@ -122,6 +122,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     }
 
     private void saveRepeatingQuest() {
+        KeyboardUtils.hideKeyboard(this);
         eventBus.post(new NewRepeatingQuestEvent(repeatingQuest, EventSource.ADD_REPEATING_QUEST));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         finish();
