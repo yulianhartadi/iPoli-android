@@ -329,7 +329,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq1.getRawText(), rq1));
 
         RepeatingQuest rq2 = makeRepeatingQuest("Eat healthy breakfast every day", "Eat healthy breakfast", 30, category);
-        RepeatingQuest.setStartTime(rq2, Time.at(9, 30));
+        rq2.setStartTime(Time.at(9, 30));
         recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq2.setRecurrence(recurrence);

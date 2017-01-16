@@ -249,7 +249,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
             if (q.getCompletedAtDate() != null) {
                 QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getEndDate()))) {
+                if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getScheduled()))) {
                     event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
                 }
 

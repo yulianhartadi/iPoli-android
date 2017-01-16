@@ -56,13 +56,12 @@ public class RepeatingQuestViewModel {
     }
 
     private Category getQuestCategory() {
-        return RepeatingQuest.getCategory(repeatingQuest);
+        return repeatingQuest.getCategoryType();
     }
 
     public RepeatingQuest getRepeatingQuest() {
         return repeatingQuest;
     }
-
 
     public int getCompletedCount() {
         return completedCount;
@@ -85,7 +84,7 @@ public class RepeatingQuestViewModel {
         nextText += " ";
 
         int duration = repeatingQuest.getDuration();
-        Time startTime = RepeatingQuest.getStartTime(repeatingQuest);
+        Time startTime = repeatingQuest.getStartTime();
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
             nextText += startTime + " - " + endTime;

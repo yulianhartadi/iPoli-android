@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.TextInputEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_sub_quest"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerVertical="true"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="72dp"
+    android:layout_toStartOf="@+id/add_sub_quest_clear"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:imeOptions="actionDone"
+    android:inputType="textCapSentences"
+    android:maxLines="1"
+    android:text="@string/add_sub_quest"
+    android:textColor="@color/md_dark_text_87"
+    android:textSize="@dimen/sub_quest_item_text_size"
+    android:visibility="gone" />

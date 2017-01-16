@@ -2,6 +2,7 @@ package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -29,19 +30,35 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
  * on 4/28/16.
  */
 public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuestSubQuestListAdapter.ViewHolder> {
-    protected Context context;
-    protected final Bus evenBus;
-    protected List<SubQuest> subQuests;
+    public interface ItemChangedListener {
+        void onItemChanged();
+    }
+
+    private ItemChangedListener itemChangedListener;
+
+    private Context context;
+    private final Bus evenBus;
+    private List<SubQuest> subQuests;
+    private final Integer itemLayout;
 
     public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
+        this(context, evenBus, subQuests, null);
+    }
+
+    public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests, @LayoutRes Integer itemLayout) {
         this.context = context;
         this.evenBus = evenBus;
         this.subQuests = subQuests;
+        this.itemLayout = itemLayout;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.edit_quest_sub_quest_list_item, parent, false);
+        int layoutRes = R.layout.edit_quest_sub_quest_list_item;
+        if(itemLayout != null) {
+            layoutRes = itemLayout;
+        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
         return new ViewHolder(v);
     }
 
@@ -52,6 +69,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
         holder.delete.setOnClickListener(v -> {
             removeSubquest(holder.getAdapterPosition());
             evenBus.post(new DeleteSubQuestEvent(sq, EventSource.EDIT_QUEST));
+            callItemChangedListener();
         });
 
         holder.name.setText(sq.getName());
@@ -64,6 +82,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
             } else {
                 hideUnderline(holder.name);
                 evenBus.post(new UpdateSubQuestNameEvent(sq, EventSource.EDIT_QUEST));
+                callItemChangedListener();
             }
         });
         holder.name.addTextChangedListener(new TextWatcher() {
@@ -106,6 +125,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
     public void addSubQuest(SubQuest subQuest) {
         subQuests.add(subQuest);
         notifyItemInserted(subQuests.size() - 1);
+        callItemChangedListener();
     }
 
     public void setSubQuests(List<SubQuest> subQuests) {
@@ -120,6 +140,15 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
         return subQuests;
     }
 
+    public void setItemChangeListener(ItemChangedListener listener) {
+        itemChangedListener = listener;
+    }
+
+    private void callItemChangedListener() {
+        if(itemChangedListener != null) {
+            itemChangedListener.onItemChanged();
+        }
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.sub_quest_name)

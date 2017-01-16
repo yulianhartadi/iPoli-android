@@ -19,7 +19,9 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
 
@@ -48,7 +50,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Integer startMinute;
 
     private String preferredStartTime;
-    private Boolean flexibleStartTime;
 
     private Integer duration;
     private List<Reminder> reminders;
@@ -82,8 +83,23 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         setUpdatedAt(nowUTC().getTime());
         this.category = Category.PERSONAL.name();
         setTimesADay(1);
-        this.flexibleStartTime = false;
         this.source = Constants.API_RESOURCE_SOURCE;
+    }
+
+    @Exclude
+    public Time getStartTime() {
+        if (getStartMinute() < 0) {
+            return null;
+        }
+        return Time.of(getStartMinute());
+    }
+
+    public void setStartTime(Time time) {
+        if (time != null) {
+            setStartMinute(time.toMinutesAfterMidnight());
+        } else {
+            setStartMinute(null);
+        }
     }
 
     public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
@@ -219,13 +235,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.startMinute = startMinute;
     }
 
-    public static Time getStartTime(RepeatingQuest quest) {
-        if (quest.getStartMinute() < 0) {
-            return null;
-        }
-        return Time.of(quest.getStartMinute());
-    }
-
     public String getName() {
         return name;
     }
@@ -256,14 +265,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public static void setStartTime(RepeatingQuest quest, Time time) {
-        if (time != null) {
-            quest.setStartMinute(time.toMinutesAfterMidnight());
-        } else {
-            quest.setStartMinute(null);
-        }
     }
 
     public int getStartMinute() {
@@ -354,14 +355,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.preferredStartTime = preferredStartTime;
     }
 
-    public Boolean getFlexibleStartTime() {
-        return flexibleStartTime;
-    }
-
-    public void setFlexibleStartTime(Boolean flexibleStartTime) {
-        this.flexibleStartTime = flexibleStartTime;
-    }
-
     @Exclude
     public void addScheduledPeriodEndDate(Date date) {
         getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
@@ -370,10 +363,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @Exclude
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
-    }
-
-    public static Category getCategory(RepeatingQuest repeatingQuest) {
-        return Category.valueOf(repeatingQuest.getCategory());
     }
 
     public Map<String, Boolean> getScheduledPeriodEndDates() {
@@ -423,7 +412,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         for (QuestData qd : getQuestsData().values()) {
             for (PeriodHistory p : result) {
                 Long scheduledDate = qd.getScheduledDate();
-                if(scheduledDate == null) {
+                if (scheduledDate == null) {
                     continue;
                 }
                 if (DateUtils.isBetween(new Date(scheduledDate), new Date(p.getStart()), new Date(p.getEnd()))) {
@@ -494,5 +483,34 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public Integer getTimesADay() {
         return timesADay;
+    }
+
+    @Exclude
+    public Category getCategoryType() {
+        return Category.valueOf(getCategory());
+    }
+
+    @Exclude
+    public void setCategoryType(Category category) {
+        setCategory(category.name());
+    }
+
+    public void addReminder(Reminder reminder) {
+        getReminders().add(reminder);
+    }
+
+    @Exclude
+    public void setStartTimePreference(TimePreference timePreference) {
+        if (timePreference != null) {
+            this.preferredStartTime = timePreference.name();
+        }
+    }
+
+    @Exclude
+    public TimePreference getStartTimePreference() {
+        if (StringUtils.isEmpty(preferredStartTime)) {
+            return TimePreference.ANY;
+        }
+        return TimePreference.valueOf(preferredStartTime);
     }
 }

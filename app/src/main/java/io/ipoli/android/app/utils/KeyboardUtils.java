@@ -26,6 +26,7 @@ public class KeyboardUtils {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+
     public static void showKeyboard(Activity activity) {
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
@@ -36,7 +37,7 @@ public class KeyboardUtils {
 
     public static void hideKeyboard(Dialog dialog) {
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    }
+     }
 
     public static void showKeyboard(Context context) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);

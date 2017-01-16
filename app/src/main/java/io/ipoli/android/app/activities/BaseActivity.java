@@ -50,21 +50,25 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
-        Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
-        boolean isCompletedForToday = todayUtc.equals(lastCompleted);
+        if(useOptionsMenu()) {
+            Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
+            Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
+            boolean isCompletedForToday = todayUtc.equals(lastCompleted);
 
-        Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
-        if (isCompletedForToday || !challengeDays.contains(currentDayOfWeek)) {
-            menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+            Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+            int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+            if (isCompletedForToday || !challengeDays.contains(currentDayOfWeek)) {
+                menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        if(useOptionsMenu()) {
+            getMenuInflater().inflate(R.menu.main_menu, menu);
+        }
         return true;
     }
 
@@ -87,5 +91,9 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void showKeyboard() {
         KeyboardUtils.showKeyboard(this);
+    }
+
+    protected boolean useOptionsMenu() {
+        return true;
     }
 }

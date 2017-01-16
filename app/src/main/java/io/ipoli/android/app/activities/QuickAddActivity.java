@@ -166,8 +166,8 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         }
         quest.setCategory(categoryView.getSelectedCategory().name());
         quest.setReminders(reminders);
-        eventBus.post(new NewQuestEvent(quest, reminders, EventSource.QUICK_ADD));
-        if (quest.getEndDate() != null) {
+        eventBus.post(new NewQuestEvent(quest, EventSource.QUICK_ADD));
+        if (quest.getScheduled() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();

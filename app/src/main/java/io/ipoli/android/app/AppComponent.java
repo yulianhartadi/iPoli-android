@@ -36,14 +36,20 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
+import io.ipoli.android.quest.fragments.AddNameFragment;
+import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
+import io.ipoli.android.quest.fragments.AddQuestDateFragment;
+import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
@@ -185,5 +191,18 @@ public interface AppComponent {
 
     void inject(MigrationActivity migrationActivity);
 
+    void inject(AddQuestActivity addQuestActivity);
+
+    void inject(AddNameFragment addNameFragment);
+
+    void inject(AddQuestDateFragment addQuestDateFragment);
+
+    void inject(AddQuestTimeFragment addQuestTimeFragment);
+
+    void inject(AddQuestSummaryFragment addQuestSummaryFragment);
+
+    void inject(BaseFragment baseFragment);
+
+    void inject(AddRepeatingQuestActivity addRepeatingQuestActivity);
 }
 

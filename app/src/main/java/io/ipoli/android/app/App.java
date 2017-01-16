@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -117,6 +118,7 @@ import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -139,6 +141,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
+
+    @Inject
+    QuestScheduler questScheduler;
 
     @Inject
     AnalyticsService analyticsService;
@@ -326,12 +331,6 @@ public class App extends MultiDexApplication {
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         getAppComponent(this).inject(this);
-
-        int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
-
-        if (versionCode == 0 || versionCode > 102) {
-            localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
-        }
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
@@ -582,7 +581,17 @@ public class App extends MultiDexApplication {
     public void onNewQuest(NewQuestEvent e) {
         Quest quest = e.quest;
         quest.setDuration(Math.max(quest.getDuration(), Constants.QUEST_MIN_DURATION));
-        quest.setReminders(e.reminders);
+
+        if (quest.getEnd() != null) {
+            if (Objects.equals(quest.getEnd(), quest.getStart())) {
+                quest.setScheduled(quest.getEnd());
+            } else {
+                Date scheduledDate = questScheduler.schedule(quest);
+                quest.setScheduled(scheduledDate.getTime());
+            }
+            quest.setOriginalScheduled(quest.getScheduled());
+        }
+
         if (quest.isScheduledForThePast()) {
             setQuestCompletedAt(quest);
         }
@@ -613,7 +622,7 @@ public class App extends MultiDexApplication {
     }
 
     private void setQuestCompletedAt(Quest quest) {
-        Date completedAt = new LocalDate(quest.getEndDate(), DateTimeZone.UTC).toDate();
+        Date completedAt = new LocalDate(quest.getScheduledDate(), DateTimeZone.UTC).toDate();
         Calendar c = Calendar.getInstance();
         c.setTime(completedAt);
 

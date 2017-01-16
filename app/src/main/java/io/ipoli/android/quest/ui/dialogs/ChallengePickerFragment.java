@@ -40,7 +40,11 @@ public class ChallengePickerFragment extends DialogFragment {
     private List<Challenge> challenges;
 
     public interface OnChallengePickedListener {
-        void onChallengePicked(String challengeId);
+        void onChallengePicked(Challenge challenge);
+    }
+
+    public static ChallengePickerFragment newInstance(OnChallengePickedListener challengePickedListener) {
+        return newInstance(null, challengePickedListener);
     }
 
     public static ChallengePickerFragment newInstance(String challengeId, OnChallengePickedListener challengePickedListener) {
@@ -55,7 +59,6 @@ public class ChallengePickerFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         if (getArguments() != null) {
             challengeId = getArguments().getString(CHALLENGE_ID);
@@ -84,7 +87,7 @@ public class ChallengePickerFragment extends DialogFragment {
                 })
                 .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
                     if (selectedChallengeIndex >= 0) {
-                        challengePickedListener.onChallengePicked(challenges.get(selectedChallengeIndex).getId());
+                        challengePickedListener.onChallengePicked(challenges.get(selectedChallengeIndex));
                     }
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {

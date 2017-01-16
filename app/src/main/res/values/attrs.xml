@@ -2,8 +2,14 @@
 <resources>
     <declare-styleable name="CategoryView">
         <attr name="category_gap" format="dimension"/>
+        <attr name="categoryName_color" format="color"/>
     </declare-styleable>
     <declare-styleable name="IconButton">
         <attr name="iconPadding" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="AddSubQuestView">
+        <attr name="showIcon" format="boolean" />
+        <attr name="closeIcon" format="reference" />
+        <attr name="editTextLayout" format="reference" />
     </declare-styleable>
 </resources>

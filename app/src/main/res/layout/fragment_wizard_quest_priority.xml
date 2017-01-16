@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="2"
+    android:orientation="vertical"
+    android:paddingBottom="32dp"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    android:paddingTop="32dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/quest_priority_important_urgent"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/important_urgent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_white" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/md_light_text_54" />
+
+        <TextView
+            android:id="@+id/quest_priority_important_not_urgent"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/important_not_urgent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_white" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_light_text_54" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/quest_priority_not_important_urgent"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/not_important_urgent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_white" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/md_light_text_54" />
+
+        <TextView
+            android:id="@+id/quest_priority_not_important_not_urgent"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/not_important_not_urgent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_white" />
+    </LinearLayout>
+
+</LinearLayout>
