@@ -35,6 +35,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
+import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.app.ui.formatters.PriorityFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.utils.DateUtils;
@@ -49,6 +50,7 @@ import io.ipoli.android.quest.data.SubQuest;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestRecurrenceRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NewQuestChallengePickedEvent;
 import io.ipoli.android.quest.events.NewQuestDurationPickedEvent;
@@ -85,6 +87,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_quest_summary_recurrence_container)
     ViewGroup recurrenceContainer;
+
+    @BindView(R.id.add_quest_summary_recurrence)
+    TextView recurrenceText;
 
     @BindView(R.id.sub_quests_container)
     ViewGroup subQuestsContainer;
@@ -231,6 +236,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
         postEvent(new ChangeQuestNameRequestEvent());
     }
 
+    @OnClick(R.id.add_quest_summary_recurrence_container)
+    public void onRecurrenceClicked(View v) {postEvent(new ChangeQuestRecurrenceRequestEvent());}
+
     @OnClick(R.id.add_quest_summary_date_container)
     public void onDateClicked(View v) {
         postEvent(new ChangeQuestDateRequestEvent());
@@ -301,7 +309,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     public void setQuest(Quest quest) {
         name.setText(quest.getName());
         showScheduledDate(quest);
-        showStartTime(quest);
+        showStartTime(quest.getStartTime(), quest.getStartTimePreference());
         showDuration(quest.getDuration());
         showPriority(quest.getPriority());
         showReminders(quest.getReminders());
@@ -309,11 +317,17 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     public void setRepeatingQuest(RepeatingQuest repeatingQuest) {
         name.setText(repeatingQuest.getName());
-        recurrenceContainer.setVisibility(View.VISIBLE);
-        dateContainer.setVisibility(View.GONE);
+        showRecurrence(repeatingQuest);
+        showStartTime(repeatingQuest.getStartTime(), repeatingQuest.getStartTimePreference());
         showDuration(repeatingQuest.getDuration());
         showPriority(repeatingQuest.getPriority());
         showReminders(repeatingQuest.getReminders());
+    }
+
+    private void showRecurrence(RepeatingQuest repeatingQuest) {
+        recurrenceContainer.setVisibility(View.VISIBLE);
+        dateContainer.setVisibility(View.GONE);
+        recurrenceText.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
     }
 
     private void showReminders(List<Reminder> reminders) {
@@ -324,7 +338,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     private void showDuration(int duration) {
-        durationText.setText("for " + DurationFormatter.formatReadable(duration));
+        durationText.setText("For " + DurationFormatter.formatReadable(duration));
         durationText.setTag(duration);
     }
 
@@ -332,19 +346,17 @@ public class AddQuestSummaryFragment extends BaseFragment {
         priorityText.setText(PriorityFormatter.format(getContext(), priority));
     }
 
-    private void showStartTime(Quest quest) {
-        Time questStartTime = quest.getStartTime();
+    private void showStartTime(Time questStartTime, TimePreference startTimePreference) {
         if (questStartTime != null) {
-            startTime.setText("at " + questStartTime.toString());
+            startTime.setText("At " + questStartTime.toString());
         } else {
-            TimePreference startPref = quest.getStartTimePreference();
-            switch (startPref) {
+            switch (startTimePreference) {
                 case PERSONAL_HOURS:
                 case WORK_HOURS:
                 case EVENING:
                 case MORNING:
                 case AFTERNOON:
-                    startTime.setText(StringUtils.capitalizeAndReplaceUnderscore(startPref.name()));
+                    startTime.setText(StringUtils.capitalizeAndReplaceUnderscore(startTimePreference.name()));
                     break;
                 default:
                     startTime.setText(R.string.at_any_reasonable_time);

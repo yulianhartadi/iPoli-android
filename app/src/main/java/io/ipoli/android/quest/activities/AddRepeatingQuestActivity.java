@@ -24,6 +24,10 @@ import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
+import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestRecurrenceRequestEvent;
+import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.events.NewQuestPriorityPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimePickedEvent;
@@ -43,7 +47,7 @@ import io.ipoli.android.reminder.data.Reminder;
 public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
 
     public static final int REPEATING_QUEST_NAME_FRAGMENT_INDEX = 0;
-    public static final int REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX = 1;
+    public static final int REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX = 1;
     public static final int REPEATING_QUEST_TIME_FRAGMENT_INDEX = 2;
     public static final int REPEATING_QUEST_PRIORITY_FRAGMENT_INDEX = 3;
     private static final int REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX = 4;
@@ -56,7 +60,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
 
     private RepeatingQuest repeatingQuest;
 
-    private AddRepeatingQuestRecurrenceFragment frequencyFragment;
+    private AddRepeatingQuestRecurrenceFragment recurrenceFragment;
     private AddQuestTimeFragment timeFragment;
     private AddQuestSummaryFragment summaryFragment;
 
@@ -136,6 +140,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
 
     @Subscribe
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
+        repeatingQuest.setStartTimePreference(e.timePreference);
         repeatingQuest.setStartTime(e.time);
         goToNextPage();
     }
@@ -144,6 +149,26 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestPriorityPicked(NewQuestPriorityPickedEvent e) {
         repeatingQuest.setPriority(e.priority);
         goToNextPage();
+    }
+
+    @Subscribe
+    public void onChangeQuestNameRequest(ChangeQuestNameRequestEvent e) {
+        fragmentPager.setCurrentItem(REPEATING_QUEST_NAME_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangeRecurrenceRequest(ChangeQuestRecurrenceRequestEvent e) {
+        fragmentPager.setCurrentItem(REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangeTimeRequest(ChangeQuestTimeRequestEvent e) {
+        fragmentPager.setCurrentItem(REPEATING_QUEST_TIME_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangePriorityRequest(ChangeQuestPriorityRequestEvent e) {
+        fragmentPager.setCurrentItem(REPEATING_QUEST_PRIORITY_FRAGMENT_INDEX);
     }
 
     private void goToNextPage() {
@@ -170,9 +195,9 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
             case REPEATING_QUEST_NAME_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_name);
                 break;
-            case REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX:
+            case REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_date);
-                frequencyFragment.setCategory(repeatingQuest.getCategoryType());
+                recurrenceFragment.setCategory(repeatingQuest.getCategoryType());
                 break;
             case REPEATING_QUEST_TIME_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_time);
@@ -211,7 +236,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
             switch (position) {
                 case REPEATING_QUEST_NAME_FRAGMENT_INDEX:
                     return AddNameFragment.newInstance(R.string.add_quest_name_hint);
-                case REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX:
+                case REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX:
                     return new AddRepeatingQuestRecurrenceFragment();
                 case REPEATING_QUEST_TIME_FRAGMENT_INDEX:
                     return new AddQuestTimeFragment();
@@ -225,11 +250,11 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            if (position == REPEATING_QUEST_FREQUENCY_FRAGMENT_INDEX) {
-                frequencyFragment = (AddRepeatingQuestRecurrenceFragment) createdFragment;
+            if (position == REPEATING_QUEST_RECURRENCE_FRAGMENT_INDEX) {
+                recurrenceFragment = (AddRepeatingQuestRecurrenceFragment) createdFragment;
             } else if (position == REPEATING_QUEST_TIME_FRAGMENT_INDEX) {
                 timeFragment = (AddQuestTimeFragment) createdFragment;
-            } else if (position == REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX)  {
+            } else if (position == REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX) {
                 summaryFragment = (AddQuestSummaryFragment) createdFragment;
             }
             return createdFragment;

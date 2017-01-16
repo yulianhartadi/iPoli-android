@@ -19,7 +19,9 @@ import java.util.concurrent.TimeUnit;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
 
@@ -82,6 +84,14 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         setTimesADay(1);
         this.source = Constants.API_RESOURCE_SOURCE;
+    }
+
+    @Exclude
+    public Time getStartTime() {
+        if (getStartMinute() < 0) {
+            return null;
+        }
+        return Time.of(getStartMinute());
     }
 
     public void setStartTime(Time time) {
@@ -223,13 +233,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
-    }
-
-    public static Time getStartTime(RepeatingQuest quest) {
-        if (quest.getStartMinute() < 0) {
-            return null;
-        }
-        return Time.of(quest.getStartMinute());
     }
 
     public String getName() {
@@ -409,7 +412,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         for (QuestData qd : getQuestsData().values()) {
             for (PeriodHistory p : result) {
                 Long scheduledDate = qd.getScheduledDate();
-                if(scheduledDate == null) {
+                if (scheduledDate == null) {
                     continue;
                 }
                 if (DateUtils.isBetween(new Date(scheduledDate), new Date(p.getStart()), new Date(p.getEnd()))) {
@@ -494,5 +497,20 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void addReminder(Reminder reminder) {
         getReminders().add(reminder);
+    }
+
+    @Exclude
+    public void setStartTimePreference(TimePreference timePreference) {
+        if (timePreference != null) {
+            this.preferredStartTime = timePreference.name();
+        }
+    }
+
+    @Exclude
+    public TimePreference getStartTimePreference() {
+        if (StringUtils.isEmpty(preferredStartTime)) {
+            return TimePreference.ANY;
+        }
+        return TimePreference.valueOf(preferredStartTime);
     }
 }
