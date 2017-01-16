@@ -245,10 +245,44 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/add_quest_summary_times_a_day_horizontal_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/md_light_text_54"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/add_quest_summary_times_a_day_container"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/ic_clear_white_24dp" />
+
+                <TextView
+                    android:id="@+id/add_quest_summary_times_a_day"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/set_times_a_day"
+                    android:textColor="@color/md_white" />
+            </LinearLayout>
+
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/md_light_text_54" />
-
 
             <LinearLayout
                 android:layout_width="match_parent"
