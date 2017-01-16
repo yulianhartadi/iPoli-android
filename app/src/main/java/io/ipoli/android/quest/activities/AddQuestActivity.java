@@ -124,6 +124,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     private void onSaveQuest() {
+        KeyboardUtils.hideKeyboard(this);
         eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
         if (quest.getScheduled() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
