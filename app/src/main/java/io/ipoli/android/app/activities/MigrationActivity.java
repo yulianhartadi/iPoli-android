@@ -21,6 +21,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.exceptions.MigrationException;
+import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -144,6 +145,7 @@ public class MigrationActivity extends BaseActivity {
         questData.put("preferredStartTime", "ANY");
         questData.put("allDay", false);
         questData.remove("flexibleStartTime");
+        questData.put("priority", Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT);
     }
 
     @Override
