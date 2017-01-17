@@ -340,7 +340,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public Integer getPriority() {
-        return priority;
+        return priority != null ? priority : Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT;
     }
 
     public void setPriority(Integer priority) {
