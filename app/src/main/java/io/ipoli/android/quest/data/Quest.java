@@ -256,7 +256,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public int getPriority() {
-        return priority != null ? priority : DEFAULT_NO_PRIORITY_VALUE;
+        return priority != null ? priority : Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT;
     }
 
     public void setPriority(Integer priority) {
