@@ -217,6 +217,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         questText.setTextColor(ContextCompat.getColor(dragView.getContext(), R.color.md_light_text_87));
         dragView.findViewById(R.id.quest_more_menu_container).setVisibility(View.GONE);
         dragView.findViewById(R.id.quest_check).setVisibility(View.GONE);
+        dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(View.GONE);
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
         currentTimeIndicator.setText(time.toString());
     }
