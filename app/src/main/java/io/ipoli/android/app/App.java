@@ -357,7 +357,7 @@ public class App extends MultiDexApplication {
         }
 
         String text = totalCount == 0 ? getString(R.string.ongoing_notification_no_quests_text) : getString(R.string.ongoing_notification_progress_text, completedCount, totalCount);
-        boolean showWhen = quest != null && quest.getStartMinute() > -1;
+        boolean showWhen = quest != null && quest.isScheduled();
         long when = showWhen ? Quest.getStartDateTime(quest).getTime() : 0;
         String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
         int smallIcon = quest == null ? R.drawable.ic_notification_small : quest.getCategoryType().whiteImage;
