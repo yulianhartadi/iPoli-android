@@ -93,6 +93,11 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
         <activity
+            android:name=".challenge.activities.AddChallengeActivity"
+            android:label=""
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".challenge.activities.EditChallengeActivity"
             android:label="@string/title_activity_add_challenge"
             android:screenOrientation="portrait" />

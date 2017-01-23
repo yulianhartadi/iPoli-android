@@ -415,4 +415,6 @@
     <string name="every_day">Every day</string>
     <string name="more_options">More options…</string>
     <string name="set_times_a_day">Set times a day</string>
+    <string name="title_fragment_wizard_challenge_name">New Challenge</string>
+    <string name="title_fragment_wizard_challenge_results">Expected results</string>
 </resources>
