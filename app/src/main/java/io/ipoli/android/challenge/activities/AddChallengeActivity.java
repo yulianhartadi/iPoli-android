@@ -11,34 +11,28 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
-import java.util.Random;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
+import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.NewChallengeResultsPickedEvent;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
-import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
-import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.quest.activities.AddQuestActivity.QUEST_PRIORITY_FRAGMENT_INDEX;
 
@@ -52,7 +46,8 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     public static final int CHALLENGE_NAME_FRAGMENT_INDEX = 0;
     public static final int CHALLENGE_RESULTS_FRAGMENT_INDEX = 1;
     public static final int CHALLENGE_REASONS_FRAGMENT_INDEX = 2;
-    private static final int CHALLENGE_SUMMARY_FRAGMENT_INDEX = 3;
+    public static final int CHALLENGE_QUESTS_FRAGMENT_INDEX = 3;
+    private static final int CHALLENGE_SUMMARY_FRAGMENT_INDEX = 4;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -60,7 +55,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     @BindView(R.id.wizard_pager)
     ViewPager fragmentPager;
 
-    private Quest quest;
+    private Challenge challenge;
 
     private AddChallengeResultsFragment resultsFragment;
     private AddQuestTimeFragment timeFragment;
@@ -104,20 +99,20 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 }
                 return true;
             case R.id.action_save:
-                onSaveQuest();
+                onSaveChallenge();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSaveQuest() {
+    private void onSaveChallenge() {
         KeyboardUtils.hideKeyboard(this);
-        eventBus.post(new NewQuestEvent(quest, EventSource.ADD_QUEST));
-        if (quest.getScheduled() != null) {
-            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
-        }
+//        eventBus.post(new NewQuestEvent(challenge, EventSource.ADD_QUEST));
+//        if (challenge.getScheduled() != null) {
+//            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
+//        }
         finish();
     }
 
@@ -140,11 +135,17 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     @Subscribe
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
-        quest = new Quest(e.name);
-        quest.setDuration(Constants.QUEST_MIN_DURATION);
-        quest.addReminder(new Reminder(0, new Random().nextInt()));
-        quest.setCategoryType(e.category);
+        challenge = new Challenge(e.name);
+        challenge.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
+        goToNextPage();
+    }
+
+    @Subscribe
+    public void onNewChallengeResultsPicked(NewChallengeResultsPickedEvent e) {
+        challenge.setExpectedResult1(e.result1);
+        challenge.setExpectedResult2(e.result2);
+        challenge.setExpectedResult3(e.result3);
         goToNextPage();
     }
 
@@ -194,14 +195,14 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 break;
             case CHALLENGE_RESULTS_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_challenge_results);
-                resultsFragment.setCategory(quest.getCategoryType());
+                resultsFragment.setCategory(challenge.getCategoryType());
                 break;
             case CHALLENGE_REASONS_FRAGMENT_INDEX:
                 title = getString(R.string.title_fragment_wizard_quest_time);
-                timeFragment.setCategory(quest.getCategoryType());
+                timeFragment.setCategory(challenge.getCategoryType());
                 break;
             case CHALLENGE_SUMMARY_FRAGMENT_INDEX:
-//                summaryFragment.setQuest(quest);
+//                summaryFragment.setQuest(challenge);
                 break;
         }
         setTitle(title);
@@ -232,7 +233,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                     return new AddChallengeResultsFragment();
                 case CHALLENGE_REASONS_FRAGMENT_INDEX:
                     return new AddQuestTimeFragment();
-                case QUEST_PRIORITY_FRAGMENT_INDEX:
+                case CHALLENGE_QUESTS_FRAGMENT_INDEX:
                     return new AddQuestPriorityFragment();
                 default:
                     return new AddQuestSummaryFragment();

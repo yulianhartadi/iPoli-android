@@ -417,4 +417,7 @@
     <string name="set_times_a_day">Set times a day</string>
     <string name="title_fragment_wizard_challenge_name">New Challenge</string>
     <string name="title_fragment_wizard_challenge_results">Expected results</string>
+    <string name="add_challenge_result1_hint">1st result</string>
+    <string name="add_challenge_result2_hint">2nd result</string>
+    <string name="add_challenge_result3_hint">3rd result</string>
 </resources>
