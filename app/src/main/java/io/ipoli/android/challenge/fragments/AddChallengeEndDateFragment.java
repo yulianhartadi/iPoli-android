@@ -54,23 +54,25 @@ public class AddChallengeEndDateFragment extends BaseFragment {
 
         List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
 
-        options.add(new Pair<>(getString(R.string.one_month), v ->
-                postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusMonths(1)))));
+        LocalDate today = LocalDate.now();
+        options.add(new Pair<>(getString(R.string.one_month), v -> {
+            postEvent(new NewChallengeEndDatePickedEvent(today.plusMonths(1)));
+        }));
 
         options.add(new Pair<>(getString(R.string.one_week), v ->
-                postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusWeeks(1)))));
+                postEvent(new NewChallengeEndDatePickedEvent(today.plusWeeks(1)))));
 
         options.add(new Pair<>(getString(R.string.ten_days), v ->
-                postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusDays(10)))));
+                postEvent(new NewChallengeEndDatePickedEvent(today.plusDays(10)))));
 
         options.add(new Pair<>(getString(R.string.two_weeks), v ->
-                postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusWeeks(2)))));
+                postEvent(new NewChallengeEndDatePickedEvent(today.plusWeeks(2)))));
 
         options.add(new Pair<>(getString(R.string.three_months), v ->
-                postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusMonths(3)))));
+                postEvent(new NewChallengeEndDatePickedEvent(today.plusMonths(3)))));
 
         options.add(new Pair<>(getString(R.string.fifteen_days),
-                v -> postEvent(new NewChallengeEndDatePickedEvent(LocalDate.now().plusDays(15)))));
+                v -> postEvent(new NewChallengeEndDatePickedEvent(today.plusDays(15)))));
 
         options.add(new Pair<>(getString(R.string.exact_date), v -> {
             DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
