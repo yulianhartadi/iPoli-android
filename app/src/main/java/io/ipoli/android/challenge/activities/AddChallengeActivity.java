@@ -24,6 +24,7 @@ import io.ipoli.android.challenge.events.NewChallengeReasonsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeResultsPickedEvent;
 import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
+import io.ipoli.android.challenge.fragments.PickChallengeQuestsFragment;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
@@ -32,7 +33,6 @@ import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
-import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 
 import static io.ipoli.android.quest.activities.AddQuestActivity.QUEST_PRIORITY_FRAGMENT_INDEX;
@@ -60,6 +60,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     private AddChallengeResultsFragment resultsFragment;
     private AddChallengeReasonsFragment reasonsFragment;
+    private PickChallengeQuestsFragment questsFragment;
     private AddQuestSummaryFragment summaryFragment;
 
     @Override
@@ -210,6 +211,9 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 title = getString(R.string.title_fragment_wizard_challenge_reasons);
                 reasonsFragment.setCategory(challenge.getCategoryType());
                 break;
+            case CHALLENGE_QUESTS_FRAGMENT_INDEX:
+                title = getString(R.string.title_pick_challenge_quests_activity);
+                break;
             case CHALLENGE_SUMMARY_FRAGMENT_INDEX:
 //                summaryFragment.setQuest(challenge);
                 break;
@@ -243,7 +247,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 case CHALLENGE_REASONS_FRAGMENT_INDEX:
                     return new AddChallengeReasonsFragment();
                 case CHALLENGE_QUESTS_FRAGMENT_INDEX:
-                    return new AddQuestPriorityFragment();
+                    return new PickChallengeQuestsFragment();
                 default:
                     return new AddQuestSummaryFragment();
             }
@@ -256,6 +260,8 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 resultsFragment = (AddChallengeResultsFragment) createdFragment;
             } else if (position == CHALLENGE_REASONS_FRAGMENT_INDEX) {
                 reasonsFragment = (AddChallengeReasonsFragment) createdFragment;
+            } else if (position == CHALLENGE_QUESTS_FRAGMENT_INDEX) {
+                questsFragment = (PickChallengeQuestsFragment) createdFragment;
             } else if (position == CHALLENGE_SUMMARY_FRAGMENT_INDEX) {
                 summaryFragment = (AddQuestSummaryFragment) createdFragment;
             }

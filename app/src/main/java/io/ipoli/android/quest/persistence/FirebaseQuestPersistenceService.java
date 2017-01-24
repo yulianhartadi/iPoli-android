@@ -268,6 +268,14 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
+    public void findIncompleteNotRepeating(String searchText, OnDataChangedListener<List<Quest>> listener) {
+        listenForSingleListChange(getCollectionReference(), listener, q -> q.getCompletedAtDate() == null &&
+                !q.isFromRepeatingQuest() &&
+                q.getName().toLowerCase().contains(searchText.toLowerCase())
+        );
+    }
+
+    @Override
     public void listenForReminderChange(OnChangeListener<Void> onChangeListener) {
         Query query = getPlayerReference().child("questReminders");
 

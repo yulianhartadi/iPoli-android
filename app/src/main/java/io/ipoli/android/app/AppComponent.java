@@ -29,7 +29,10 @@ import io.ipoli.android.challenge.activities.PersonalizeChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
+import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
+import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.challenge.fragments.PickChallengeQuestsFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
@@ -204,5 +207,12 @@ public interface AppComponent {
     void inject(BaseFragment baseFragment);
 
     void inject(AddRepeatingQuestActivity addRepeatingQuestActivity);
+
+    void inject(AddChallengeResultsFragment addChallengeResultsFragment);
+
+    void inject(AddChallengeReasonsFragment addChallengeReasonsFragment);
+
+    void inject(PickChallengeQuestsFragment pickChallengeQuestsFragment);
+
 }
 
