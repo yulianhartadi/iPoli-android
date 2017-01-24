@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.amplitude.api.Amplitude;
 import com.facebook.FacebookSdk;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -110,7 +111,6 @@ import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.OnChangeListener;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
@@ -135,6 +135,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    Gson gson;
 
     @Inject
     LocalStorage localStorage;
@@ -169,44 +172,10 @@ public class App extends MultiDexApplication {
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
 
-    private OnDataChangedListener<List<Quest>> dailyQuestsChangedListener = quests -> {
-        if (quests.isEmpty()) {
-            updateOngoingNotification(null, 0, 0);
-            return;
-        }
-
-        List<Quest> uncompletedQuests = new ArrayList<>();
-        for (Quest q : quests) {
-            if (!q.isCompleted()) {
-                uncompletedQuests.add(q);
-            }
-        }
-
-        if (uncompletedQuests.isEmpty()) {
-            updateOngoingNotification(null, quests.size(), quests.size());
-            return;
-        }
-
-        Collections.sort(uncompletedQuests, (q1, q2) -> {
-            if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
-                return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
-            }
-
-            return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
-        });
-
-        Quest quest = uncompletedQuests.get(0);
-        updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
-    };
-
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
-        repeatingQuestPersistenceService.removeAllListeners();
-        listenForWidgetQuestsChange();
         listenForReminderChange();
-        if (localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
-            listenForDailyQuestsChange();
-        }
+        listenForDailyQuestsChange();
     }
 
     private void updatePet(int healthPoints, String tag) {
@@ -288,17 +257,44 @@ public class App extends MultiDexApplication {
     }
 
     private void listenForDailyQuestsChange() {
-        questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), dailyQuestsChangedListener);
+        questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
+
+            localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, gson.toJson(quests));
+            requestWidgetUpdate();
+
+            if (quests.isEmpty()) {
+                updateOngoingNotification(null, 0, 0);
+                return;
+            }
+
+            List<Quest> uncompletedQuests = new ArrayList<>();
+            for (Quest q : quests) {
+                if (!q.isCompleted()) {
+                    uncompletedQuests.add(q);
+                }
+            }
+
+            if (uncompletedQuests.isEmpty()) {
+                updateOngoingNotification(null, quests.size(), quests.size());
+                return;
+            }
+
+            Collections.sort(uncompletedQuests, (q1, q2) -> {
+                if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
+                    return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
+                }
+
+                return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
+            });
+
+            Quest quest = uncompletedQuests.get(0);
+            updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
+        });
     }
 
     @Subscribe
     public void onOngoingNotificationChange(OngoingNotificationChangeEvent e) {
-        if (e.isEnabled) {
-            listenForDailyQuestsChange();
-        } else {
-            NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
-            questPersistenceService.removeDataChangedListener(dailyQuestsChangedListener);
-        }
+        NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
     }
 
     private void listenForReminderChange() {
@@ -347,6 +343,10 @@ public class App extends MultiDexApplication {
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
+        if (!localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED)) {
+            return;
+        }
+
         String title = "";
         if (quest != null) {
             title = quest.getName();
@@ -813,25 +813,6 @@ public class App extends MultiDexApplication {
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
-    private void listenForWidgetQuestsChange() {
-        questPersistenceService.listenForDayQuestChange(LocalDate.now(), new OnChangeListener() {
-            @Override
-            public void onNew() {
-                requestWidgetUpdate();
-            }
-
-            @Override
-            public void onChanged() {
-                requestWidgetUpdate();
-            }
-
-            @Override
-            public void onDeleted() {
-                requestWidgetUpdate();
-            }
-        });
-    }
-
     private void requestWidgetUpdate() {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
@@ -869,7 +850,6 @@ public class App extends MultiDexApplication {
             scheduleQuestsFor4WeeksAhead();
             moveIncompleteQuestsToInbox();
             scheduleDateChanged();
-            requestWidgetUpdate();
             listenForChanges();
             eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
         });
