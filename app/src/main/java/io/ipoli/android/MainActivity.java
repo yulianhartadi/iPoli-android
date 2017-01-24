@@ -69,7 +69,6 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
-import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
@@ -189,8 +188,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        startActivity(new Intent(this, AddChallengeActivity.class));
     }
 
     private void onItemSelectedFromDrawer() {
