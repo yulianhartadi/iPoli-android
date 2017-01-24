@@ -12,4 +12,7 @@
         <attr name="closeIcon" format="reference" />
         <attr name="editTextLayout" format="reference" />
     </declare-styleable>
+    <declare-styleable name="FabMenuView">
+        <attr name="onlyQuests" format="boolean"/>
+    </declare-styleable>
 </resources>
