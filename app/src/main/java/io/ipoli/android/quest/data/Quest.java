@@ -408,8 +408,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @Exclude
-    public void setCompletedAtDate(Date completedAtDate) {
-        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    public void setCompletedAtDateFromLocal(Date completedAtDate) {
+        Date date = DateUtils.getDate(completedAtDate);
+        setCompletedAt(date == null ? null : date.getTime());
     }
 
     public Long getCompletedAt() {

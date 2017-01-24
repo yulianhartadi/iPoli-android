@@ -29,7 +29,6 @@ import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.reminder.data.Reminder;
 
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
@@ -116,7 +115,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
 
     @Override
     public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("completedAt").startAt(toStartOfDay(startDate).getTime()).endAt(toStartOfDay(endDate).getTime());
+        Query query = getCollectionReference().orderByChild("completedAt").startAt(toStartOfDayUTC(startDate).getTime()).endAt(toStartOfDayUTC(endDate).getTime());
         listenForSingleListChange(query, listener);
     }
 

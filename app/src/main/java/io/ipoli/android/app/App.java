@@ -29,7 +29,6 @@ import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -501,8 +500,8 @@ public class App extends MultiDexApplication {
         q.increaseCompletedCount();
         if (q.completedAllTimesForDay()) {
             QuestNotificationScheduler.cancelAll(q, this);
-            q.setCompletedAtDate(new Date());
             q.setScheduledDateFromLocal(new Date());
+            q.setCompletedAtDateFromLocal(new Date());
             q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
@@ -533,7 +532,7 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDifficulty(null);
         quest.setActualStartDate(null);
-        quest.setCompletedAtDate(null);
+        quest.setCompletedAtDateFromLocal(null);
         quest.setCompletedAtMinute(null);
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);
@@ -615,16 +614,13 @@ public class App extends MultiDexApplication {
     }
 
     private void setQuestCompletedAt(Quest quest) {
-        Date completedAt = new LocalDate(quest.getScheduledDate(), DateTimeZone.UTC).toDate();
-        Calendar c = Calendar.getInstance();
-        c.setTime(completedAt);
-
         int completedAtMinute = Time.now().toMinutesAfterMidnight();
         if (quest.hasStartTime()) {
             completedAtMinute = quest.getStartMinute();
         }
-        c.add(Calendar.MINUTE, completedAtMinute);
-        quest.setCompletedAtDate(c.getTime());
+
+        Date completedAt = new LocalDate(quest.getScheduledDate(), DateTimeZone.UTC).toDate();
+        quest.setCompletedAtDateFromLocal(completedAt);
         quest.setCompletedAtMinute(completedAtMinute);
         quest.increaseCompletedCount();
     }
