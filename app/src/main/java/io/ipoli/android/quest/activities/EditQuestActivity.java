@@ -461,8 +461,7 @@ public class EditQuestActivity extends BaseActivity implements
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
             q.setName(name);
-            q.setStartDateFromLocal((Date) endDateText.getTag());
-            q.setEndDateFromLocal((Date) endDateText.getTag());
+            q.setScheduledDateFromLocal((Date) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setPriority((int) priorityText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);

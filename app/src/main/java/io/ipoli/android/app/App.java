@@ -294,7 +294,9 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onOngoingNotificationChange(OngoingNotificationChangeEvent e) {
-        NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
+        if (!e.isEnabled) {
+            NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
+        }
     }
 
     private void listenForReminderChange() {
@@ -454,7 +456,7 @@ public class App extends MultiDexApplication {
         questPersistenceService.findAllIncompleteToDosBefore(new LocalDate(), quests -> {
             for (Quest q : quests) {
                 if (q.isStarted()) {
-                    q.setEndDateFromLocal(new Date());
+                    q.setScheduledDateFromLocal(new Date());
                     q.setStartMinute(0);
                 } else {
                     q.setEndDate(null);
@@ -509,7 +511,7 @@ public class App extends MultiDexApplication {
         if (q.completedAllTimesForDay()) {
             QuestNotificationScheduler.cancelAll(q, this);
             q.setCompletedAtDate(new Date());
-            q.setEndDateFromLocal(new Date());
+            q.setScheduledDateFromLocal(new Date());
             q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
