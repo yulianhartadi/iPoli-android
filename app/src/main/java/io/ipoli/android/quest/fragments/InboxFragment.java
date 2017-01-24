@@ -119,7 +119,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        q.setEndDateFromLocal(new Date());
+        q.setScheduledDateFromLocal(new Date());
         questPersistenceService.update(q);
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
     }
