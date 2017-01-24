@@ -459,7 +459,7 @@ public class App extends MultiDexApplication {
                     q.setScheduledDateFromLocal(new Date());
                     q.setStartMinute(0);
                 } else {
-                    q.setEndDate(null);
+                    q.setScheduledDate(null);
                 }
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     q.setPriority(null);
