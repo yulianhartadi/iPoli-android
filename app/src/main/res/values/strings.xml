@@ -433,4 +433,5 @@
     <string name="fifteen_days">15 days</string>
     <string name="exact_date">Exact date...</string>
     <string name="select_quests">Select quests</string>
+    <string name="title_edit_repeating_quest">Edit repeating quest</string>
 </resources>
