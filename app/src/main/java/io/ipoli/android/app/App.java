@@ -30,7 +30,6 @@ import org.joda.time.LocalDate;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -278,14 +277,6 @@ public class App extends MultiDexApplication {
                 updateOngoingNotification(null, quests.size(), quests.size());
                 return;
             }
-
-            Collections.sort(uncompletedQuests, (q1, q2) -> {
-                if (q1.getStartMinute() > -1 && q2.getStartMinute() > -1) {
-                    return Integer.compare(q1.getStartMinute(), q2.getStartMinute());
-                }
-
-                return q1.getStartMinute() >= q2.getStartMinute() ? -1 : 1;
-            });
 
             Quest quest = uncompletedQuests.get(0);
             updateOngoingNotification(quest, quests.size() - uncompletedQuests.size(), quests.size());
