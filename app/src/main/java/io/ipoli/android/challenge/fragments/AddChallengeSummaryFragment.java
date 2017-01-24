@@ -33,6 +33,7 @@ import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.events.ChangeChallengeEndDateRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeExpectedResultsRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeNameRequestEvent;
+import io.ipoli.android.challenge.events.ChangeChallengeQuestsRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeReasonsRequestEvent;
 import io.ipoli.android.challenge.events.NewChallengeDifficultyPickedEvent;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
@@ -76,6 +77,9 @@ public class AddChallengeSummaryFragment extends BaseFragment {
 
     @BindView(R.id.add_challenge_summary_date)
     TextView endDate;
+
+    @BindView(R.id.add_challenge_summary_quests_container)
+    ViewGroup questsContainer;
 
     @Nullable
     @Override
@@ -127,26 +131,15 @@ public class AddChallengeSummaryFragment extends BaseFragment {
         fragment.show(getFragmentManager());
     }
 
-
     @OnClick(R.id.add_challenge_summary_date_container)
     public void onDateClicked(View v) {
         postEvent(new ChangeChallengeEndDateRequestEvent());
     }
 
-//    @OnClick(R.id.add_quest_summary_duration_container)
-//    public void onDurationClicked(View v) {
-//        DurationPickerFragment fragment = DurationPickerFragment.newInstance((int) durationText.getTag(), duration -> {
-//            postEvent(new NewQuestDurationPickedEvent(duration));
-//            showDuration(duration);
-//        });
-//        fragment.show(getFragmentManager());
-//    }
-//
-//    @OnClick(R.id.add_quest_summary_priority_container)
-//    public void onPriorityClicked(View v) {
-//        postEvent(new ChangeQuestPriorityRequestEvent());
-//    }
-
+    @OnClick(R.id.add_challenge_summary_quests)
+    public void onQuestsClicked(View v) {
+        postEvent(new ChangeChallengeQuestsRequestEvent());
+    }
 
     public void setData(Challenge challenge, List<Quest> quests, List<RepeatingQuest> repeatingQuests) {
         name.setText(challenge.getName());
@@ -154,6 +147,29 @@ public class AddChallengeSummaryFragment extends BaseFragment {
         showReasons(challenge);
         showDifficulty(Difficulty.getByValue(challenge.getDifficulty()));
         showEndDate(challenge);
+        showQuests(quests, repeatingQuests);
+    }
+
+    private void showQuests(List<Quest> quests, List<RepeatingQuest> repeatingQuests) {
+        questsContainer.removeAllViews();
+
+        for(Quest q : quests) {
+            View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_challenge_quest_item, questsContainer, false);
+            populateQuestView(q.getName(), false, v);
+            questsContainer.addView(v);
+
+        }
+        for(RepeatingQuest rq : repeatingQuests) {
+            View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_challenge_quest_item, questsContainer, false);
+            populateQuestView(rq.getName(), true, v);
+            questsContainer.addView(v);
+        }
+    }
+
+    private void populateQuestView(String name, boolean isRepeating, View view) {
+        TextView nameView = (TextView) view.findViewById(R.id.quest_name);
+        nameView.setText(name);
+        view.findViewById(R.id.repeating_quest_indicator).setVisibility(isRepeating ? View.VISIBLE : View.GONE);
     }
 
     private void showReasons(Challenge challenge) {

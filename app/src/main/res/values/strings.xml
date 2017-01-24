@@ -432,4 +432,5 @@
     <string name="three_months">3 months</string>
     <string name="fifteen_days">15 days</string>
     <string name="exact_date">Exact date...</string>
+    <string name="select_quests">Select quests</string>
 </resources>

@@ -28,6 +28,7 @@ import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.events.ChangeChallengeEndDateRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeExpectedResultsRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeNameRequestEvent;
+import io.ipoli.android.challenge.events.ChangeChallengeQuestsRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeReasonsRequestEvent;
 import io.ipoli.android.challenge.events.NewChallengeDifficultyPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEndDatePickedEvent;
@@ -209,6 +210,11 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     @Subscribe
     public void onChangeEndDateRequest(ChangeChallengeEndDateRequestEvent e) {
         fragmentPager.setCurrentItem(CHALLENGE_END_FRAGMENT_INDEX);
+    }
+
+    @Subscribe
+    public void onChangeQuestsRequest(ChangeChallengeQuestsRequestEvent e) {
+        fragmentPager.setCurrentItem(CHALLENGE_QUESTS_FRAGMENT_INDEX);
     }
 
     private void colorLayout(Category category) {
