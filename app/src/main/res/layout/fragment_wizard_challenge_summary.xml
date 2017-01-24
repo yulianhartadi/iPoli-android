@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,7 +23,6 @@
             android:textColor="@color/md_white" />
 
         <LinearLayout
-            android:id="@+id/add_quest_summary_date_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/add_challenge_summary_name"
@@ -38,110 +36,70 @@
                 android:layout_height="1dp"
                 android:background="@color/md_light_text_54" />
 
-
             <LinearLayout
-                android:id="@+id/add_quest_summary_time_container"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_clock_white_24dp" />
+                <LinearLayout
+                    android:id="@+id/add_challenges_summary_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginStart="24dp"
+                        android:src="@drawable/ic_trophy_outline_white_24dp" />
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/challenge_expected_results_question"
+                        android:textColor="@color/md_white" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/add_quest_summary_time"
-                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:id="@+id/add_challenge_summary_result1"
+                    style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:textColor="@color/md_white" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54" />
-
-            <LinearLayout
-                android:id="@+id/add_quest_summary_duration_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_timer_white_24dp" />
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/add_quest_summary_duration"
-                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:id="@+id/add_challenge_summary_result2"
+                    style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:textColor="@color/md_white" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54" />
-
-            <LinearLayout
-                android:id="@+id/add_quest_summary_priority_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_high_priority_white_24dp" />
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/add_quest_summary_priority"
-                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:id="@+id/add_challenge_summary_result3"
+                    style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:textColor="@color/md_white" />
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/add_quest_summary_misc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/add_quest_summary_date_time"
-            android:layout_marginTop="64dp"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp">
 
             <View
                 android:layout_width="match_parent"
@@ -155,9 +113,9 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/add_quest_summary_reminders"
+                    android:id="@+id/add_challenges_summary_reasons"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="48dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="horizontal">
@@ -168,57 +126,49 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="24dp"
                         android:layout_marginStart="24dp"
-                        android:src="@drawable/ic_reminders_white_24dp" />
+                        android:src="@drawable/ic_question_outline_white_24dp" />
 
                     <TextView
                         style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/add_reminder"
+                        android:text="@string/challenge_reasons_question"
                         android:textColor="@color/md_white" />
                 </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/add_quest_reminders_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/add_quest_summary_times_a_day_horizontal_line"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:id="@+id/add_quest_summary_times_a_day_container"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_gravity="center_horizontal"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_clear_white_24dp" />
 
                 <TextView
-                    android:id="@+id/add_quest_summary_times_a_day"
-                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:id="@+id/add_challenge_summary_reason1"
+                    style="@style/TextAppearance.AppCompat.Body1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/set_times_a_day"
-                    android:textColor="@color/md_white" />
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/add_challenge_summary_reason2"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/add_challenge_summary_reason3"
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="72dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/md_light_text_87"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <View
@@ -227,67 +177,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="0px"
-                    android:layout_height="0px"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true" />
-
-                <LinearLayout
-                    android:id="@+id/sub_quests_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginStart="24dp"
-                        android:src="@drawable/ic_format_list_bulleted_white_24dp" />
-
-                    <TextView
-                        android:id="@+id/add_quest_summary_sub_quests"
-                        style="@style/TextAppearance.AppCompat.Subhead"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="@string/add_sub_quest"
-                        android:textColor="@color/md_white" />
-                </LinearLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/sub_quests_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scrollbars="vertical" />
-
-                <io.ipoli.android.quest.ui.AddSubQuestView
-                    android:id="@+id/add_sub_quest_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:closeIcon="@drawable/ic_clear_white_24dp"
-                    app:editTextLayout="@layout/sub_quest_item_white_edit_text"
-                    app:showIcon="false" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_light_text_54" />
-
-            <LinearLayout
-                android:id="@+id/add_quest_summary_challenge_container"
+                android:id="@+id/add_challenge_summary_date_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -301,15 +191,14 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_sword_white_24dp" />
+                    android:src="@drawable/ic_due_date_white_24dp" />
 
                 <TextView
-                    android:id="@+id/add_quest_summary_challenge"
+                    android:id="@+id/add_challenge_summary_date"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/set_challenge"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
@@ -319,7 +208,7 @@
                 android:background="@color/md_light_text_54" />
 
             <LinearLayout
-                android:id="@+id/add_quest_summary_note_container"
+                android:id="@+id/add_challenge_summary_difficulty_container"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
@@ -333,15 +222,14 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="24dp"
-                    android:src="@drawable/ic_note_white_24dp" />
+                    android:src="@drawable/ic_dumbbell_white_24dp" />
 
                 <TextView
-                    android:id="@+id/add_quest_summary_note"
+                    android:id="@+id/add_challenge_summary_difficulty"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/note"
                     android:textColor="@color/md_white" />
             </LinearLayout>
 
@@ -349,8 +237,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/md_light_text_54" />
-
         </LinearLayout>
-
     </RelativeLayout>
 </ScrollView>

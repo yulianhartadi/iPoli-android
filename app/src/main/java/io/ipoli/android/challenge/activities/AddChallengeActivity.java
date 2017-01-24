@@ -24,6 +24,12 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.data.Difficulty;
+import io.ipoli.android.challenge.events.ChangeChallengeEndDateRequestEvent;
+import io.ipoli.android.challenge.events.ChangeChallengeExpectedResultsRequestEvent;
+import io.ipoli.android.challenge.events.ChangeChallengeNameRequestEvent;
+import io.ipoli.android.challenge.events.ChangeChallengeReasonsRequestEvent;
+import io.ipoli.android.challenge.events.NewChallengeDifficultyPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEndDatePickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeReasonsPickedEvent;
@@ -32,19 +38,13 @@ import io.ipoli.android.challenge.fragments.AddChallengeEndDateFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeQuestsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
+import io.ipoli.android.challenge.fragments.AddChallengeSummaryFragment;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
-import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
-import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
-import io.ipoli.android.quest.events.ChangeQuestPriorityRequestEvent;
-import io.ipoli.android.quest.events.ChangeQuestTimeRequestEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
-import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
-
-import static io.ipoli.android.quest.activities.AddQuestActivity.QUEST_PRIORITY_FRAGMENT_INDEX;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,7 +74,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     private AddChallengeReasonsFragment reasonsFragment;
     private AddChallengeQuestsFragment questsFragment;
     private AddChallengeEndDateFragment endDateFragment;
-    private AddQuestSummaryFragment summaryFragment;
+    private AddChallengeSummaryFragment summaryFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -147,6 +147,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         challenge = new Challenge(e.name);
         challenge.setCategoryType(e.category);
+        challenge.setDifficultyType(Difficulty.NORMAL);
         KeyboardUtils.hideKeyboard(this);
         goToNextPage();
     }
@@ -180,29 +181,34 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         goToNextPage();
     }
 
+    @Subscribe
+    public void onNewChallengeDifficultyPicked(NewChallengeDifficultyPickedEvent e) {
+        challenge.setDifficultyType(e.difficulty);
+    }
+
     private void goToNextPage() {
         fragmentPager.postDelayed(() -> fragmentPager.setCurrentItem(fragmentPager.getCurrentItem() + 1),
                 getResources().getInteger(android.R.integer.config_shortAnimTime));
     }
 
     @Subscribe
-    public void onChangeQuestNameRequest(ChangeQuestNameRequestEvent e) {
+    public void onChangeChallengeNameRequest(ChangeChallengeNameRequestEvent e) {
         fragmentPager.setCurrentItem(CHALLENGE_NAME_FRAGMENT_INDEX);
     }
 
     @Subscribe
-    public void onChangeDateRequest(ChangeQuestDateRequestEvent e) {
+    public void onChangeExpectedResultsRequest(ChangeChallengeExpectedResultsRequestEvent e) {
         fragmentPager.setCurrentItem(CHALLENGE_RESULTS_FRAGMENT_INDEX);
     }
 
     @Subscribe
-    public void onChangeTimeRequest(ChangeQuestTimeRequestEvent e) {
+    public void onChangeReasonsRequest(ChangeChallengeReasonsRequestEvent e) {
         fragmentPager.setCurrentItem(CHALLENGE_REASONS_FRAGMENT_INDEX);
     }
 
     @Subscribe
-    public void onChangePriorityRequest(ChangeQuestPriorityRequestEvent e) {
-        fragmentPager.setCurrentItem(QUEST_PRIORITY_FRAGMENT_INDEX);
+    public void onChangeEndDateRequest(ChangeChallengeEndDateRequestEvent e) {
+        fragmentPager.setCurrentItem(CHALLENGE_END_FRAGMENT_INDEX);
     }
 
     private void colorLayout(Category category) {
@@ -241,7 +247,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 questsFragment.setSelectedQuests(quests, repeatingQuests);
                 break;
             case CHALLENGE_SUMMARY_FRAGMENT_INDEX:
-//                summaryFragment.setQuest(challenge);
+                summaryFragment.setData(challenge, quests, repeatingQuests);
                 break;
         }
         setTitle(title);
@@ -260,7 +266,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
         @Override
         public int getCount() {
-            return 5;
+            return 6;
         }
 
         @Override
@@ -277,7 +283,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 case CHALLENGE_QUESTS_FRAGMENT_INDEX:
                     return new AddChallengeQuestsFragment();
                 default:
-                    return new AddQuestSummaryFragment();
+                    return new AddChallengeSummaryFragment();
             }
         }
 
@@ -293,7 +299,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
             } else if (position == CHALLENGE_QUESTS_FRAGMENT_INDEX) {
                 questsFragment = (AddChallengeQuestsFragment) createdFragment;
             } else if (position == CHALLENGE_SUMMARY_FRAGMENT_INDEX) {
-                summaryFragment = (AddQuestSummaryFragment) createdFragment;
+                summaryFragment = (AddChallengeSummaryFragment) createdFragment;
             }
             return createdFragment;
         }
