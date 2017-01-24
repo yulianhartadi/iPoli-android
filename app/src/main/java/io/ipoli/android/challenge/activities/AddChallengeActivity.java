@@ -14,18 +14,24 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeReasonsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeResultsPickedEvent;
+import io.ipoli.android.challenge.fragments.AddChallengeQuestsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
-import io.ipoli.android.challenge.fragments.PickChallengeQuestsFragment;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChangeQuestDateRequestEvent;
 import io.ipoli.android.quest.events.ChangeQuestNameRequestEvent;
@@ -57,10 +63,12 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     ViewPager fragmentPager;
 
     private Challenge challenge;
+    private List<Quest> quests = new ArrayList<>();
+    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
 
     private AddChallengeResultsFragment resultsFragment;
     private AddChallengeReasonsFragment reasonsFragment;
-    private PickChallengeQuestsFragment questsFragment;
+    private AddChallengeQuestsFragment questsFragment;
     private AddQuestSummaryFragment summaryFragment;
 
     @Override
@@ -109,12 +117,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     private void onSaveChallenge() {
         KeyboardUtils.hideKeyboard(this);
-//        eventBus.post(new NewQuestEvent(challenge, EventSource.ADD_QUEST));
-//        if (challenge.getScheduled() != null) {
-//            Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(this, R.string.quest_moved_to_inbox, Toast.LENGTH_SHORT).show();
-//        }
+        //save challenge => set challengeId to quests and repeating quests and save them
         finish();
     }
 
@@ -156,6 +159,13 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         challenge.setReason1(e.reason1);
         challenge.setReason2(e.reason2);
         challenge.setReason3(e.reason3);
+        goToNextPage();
+    }
+
+    @Subscribe
+    public void onNewChallengeQuestsPicked(NewChallengeQuestsPickedEvent e) {
+        quests = e.quests;
+        repeatingQuests = e.repeatingQuests;
         goToNextPage();
     }
 
@@ -213,6 +223,8 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 break;
             case CHALLENGE_QUESTS_FRAGMENT_INDEX:
                 title = getString(R.string.title_pick_challenge_quests_activity);
+                questsFragment.setSelectedQuests(quests, repeatingQuests);
+
                 break;
             case CHALLENGE_SUMMARY_FRAGMENT_INDEX:
 //                summaryFragment.setQuest(challenge);
@@ -247,7 +259,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 case CHALLENGE_REASONS_FRAGMENT_INDEX:
                     return new AddChallengeReasonsFragment();
                 case CHALLENGE_QUESTS_FRAGMENT_INDEX:
-                    return new PickChallengeQuestsFragment();
+                    return AddChallengeQuestsFragment.newInstance(quests, repeatingQuests);
                 default:
                     return new AddQuestSummaryFragment();
             }
@@ -261,7 +273,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
             } else if (position == CHALLENGE_REASONS_FRAGMENT_INDEX) {
                 reasonsFragment = (AddChallengeReasonsFragment) createdFragment;
             } else if (position == CHALLENGE_QUESTS_FRAGMENT_INDEX) {
-                questsFragment = (PickChallengeQuestsFragment) createdFragment;
+                questsFragment = (AddChallengeQuestsFragment) createdFragment;
             } else if (position == CHALLENGE_SUMMARY_FRAGMENT_INDEX) {
                 summaryFragment = (AddQuestSummaryFragment) createdFragment;
             }

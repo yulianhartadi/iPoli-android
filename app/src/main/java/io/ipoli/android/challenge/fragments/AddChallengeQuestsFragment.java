@@ -32,7 +32,8 @@ import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
-import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
+import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -42,15 +43,12 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/22/16.
  */
-public class PickChallengeQuestsFragment extends BaseFragment {
+public class AddChallengeQuestsFragment extends BaseFragment {
 
-    public static final int MIN_FILTER_QUERY_LEN = 3;
+    public static final int MIN_FILTER_QUERY_LEN = 2;
 
     @Inject
     Bus eventBus;
-
-    @Inject
-    ChallengePersistenceService challengePersistenceService;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -66,12 +64,22 @@ public class PickChallengeQuestsFragment extends BaseFragment {
 
     private ChallengePickQuestListAdapter adapter;
 
+    private List<Quest> selectedQuests = new ArrayList<>();
+    private List<RepeatingQuest> selectedRepeatingQuests = new ArrayList<>();
+
     @Override
     protected boolean useOptionsMenu() {
         return true;
     }
 
     private Unbinder unbinder;
+
+    public static AddChallengeQuestsFragment newInstance(List<Quest> selectedQuests, List<RepeatingQuest> selectedRepeatingQuests) {
+        AddChallengeQuestsFragment fragment = new AddChallengeQuestsFragment();
+        fragment.selectedQuests = selectedQuests;
+        fragment.selectedRepeatingQuests = selectedRepeatingQuests;
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -84,10 +92,14 @@ public class PickChallengeQuestsFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        filter("", viewModels -> {
-            adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, viewModels, true);
+        if(adapter == null) {
+            filter("", viewModels -> {
+                adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, viewModels, true);
+                questList.setAdapter(adapter);
+            });
+        } else {
             questList.setAdapter(adapter);
-        });
+        }
 
         return view;
     }
@@ -95,9 +107,6 @@ public class PickChallengeQuestsFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        challengePersistenceService.removeAllListeners();
-        questPersistenceService.removeAllListeners();
-        repeatingQuestPersistenceService.removeAllListeners();
         super.onDestroyView();
     }
 
@@ -118,10 +127,10 @@ public class PickChallengeQuestsFragment extends BaseFragment {
             repeatingQuestPersistenceService.findActive(query.trim(), repeatingQuests -> {
                 List<PickQuestViewModel> viewModels = new ArrayList<>();
                 for (Quest q : quests) {
-                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), isSelected(q), false));
                 }
                 for (RepeatingQuest rq : repeatingQuests) {
-                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), isSelected(rq), true));
                 }
 
                 Collections.sort(viewModels, (vm1, vm2) -> {
@@ -154,10 +163,28 @@ public class PickChallengeQuestsFragment extends BaseFragment {
         });
     }
 
+    private boolean isSelected(Quest quest) {
+        for(Quest q : selectedQuests) {
+            if(q.getId().equals(quest.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSelected(RepeatingQuest repeatingQuest) {
+        for(RepeatingQuest rq : selectedRepeatingQuests) {
+            if(rq.getId().equals(repeatingQuest.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.pick_challenge_quests_menu, menu);
+        inflater.inflate(R.menu.add_challenge_wizard_quests_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -186,44 +213,30 @@ public class PickChallengeQuestsFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_save:
-//                saveQuests();
+            case R.id.action_next:
+                List<BaseQuest> baseQuests = adapter.getSelectedBaseQuests();
+                List<Quest> quests = new ArrayList<>();
+                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+                for (BaseQuest bq : baseQuests) {
+                    if (bq instanceof Quest) {
+                        quests.add((Quest) bq);
+                    } else {
+                        repeatingQuests.add((RepeatingQuest) bq);
+                    }
+                }
+
+                postEvent(new NewChallengeQuestsPickedEvent(quests, repeatingQuests));
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /*private void saveQuests() {
-        List<BaseQuest> baseQuests = adapter.getSelectedBaseQuests();
-        if (baseQuests.isEmpty()) {
-            return;
-        }
-
-        eventBus.post(new QuestsPickedForChallengeEvent(baseQuests.size()));
-
-        List<Quest> quests = new ArrayList<>();
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        for (BaseQuest bq : baseQuests) {
-            if (bq instanceof Quest) {
-                Quest q = (Quest) bq;
-                q.setChallengeId(challenge.getId());
-                quests.add(q);
-            } else {
-                RepeatingQuest rq = (RepeatingQuest) bq;
-                rq.setChallengeId(challenge.getId());
-                repeatingQuests.add(rq);
-            }
-        }
-
-        if (!quests.isEmpty()) {
-            questPersistenceService.update(quests);
-        }
-        if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.updateChallengeId(repeatingQuests);
-        }
-//        finish();
-    }*/
-
+    public void setSelectedQuests(List<Quest> quests, List<RepeatingQuest> repeatingQuests) {
+        selectedQuests = quests;
+        selectedRepeatingQuests = repeatingQuests;
+        filter("", viewModels -> adapter.setViewModels(viewModels));
+    }
+    
     public interface FilterListener {
         void onFilterCompleted(List<PickQuestViewModel> viewModels);
     }
