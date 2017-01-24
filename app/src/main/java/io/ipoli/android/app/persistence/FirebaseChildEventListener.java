@@ -1,7 +1,6 @@
 package io.ipoli.android.app.persistence;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +30,6 @@ public class FirebaseChildEventListener {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                Log.d("DailyQuestChange", "ChildAdded");
                 changeListener.onNew();
             }
 
