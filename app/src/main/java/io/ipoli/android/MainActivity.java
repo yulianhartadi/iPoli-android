@@ -458,7 +458,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         quest.setCreatedAt(new Date().getTime());
         quest.setUpdatedAt(new Date().getTime());
         quest.setActualStartDate(null);
+        quest.setStartDateFromLocal(date);
         quest.setEndDateFromLocal(date);
+        quest.setScheduledDateFromLocal(date);
         quest.setCompletedAtMinute(null);
         quest.setCompletedAtDate(null);
         quest.setCompletedCount(0);
@@ -503,14 +505,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 int newMinutes = quest.getStartMinute() + e.minutes;
                 if (newMinutes >= Time.MINUTES_IN_A_DAY) {
                     newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
-                    quest.setEndDateFromLocal(new LocalDate(quest.getScheduled()).plusDays(1).toDate());
+                    quest.setScheduledDateFromLocal(new LocalDate(quest.getScheduled()).plusDays(1).toDate());
                     isDateChanged = true;
                 }
                 quest.setStartMinute(newMinutes);
 
             } else {
                 isDateChanged = true;
-                quest.setEndDateFromLocal(e.date);
+                quest.setScheduledDateFromLocal(e.date);
             }
             saveSnoozedQuest(quest, isDateChanged, showAction);
         }

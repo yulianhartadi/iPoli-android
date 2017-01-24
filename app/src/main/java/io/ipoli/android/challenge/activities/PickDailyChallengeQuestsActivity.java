@@ -32,7 +32,7 @@ import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
-import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
@@ -84,7 +84,12 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         pickQuestsAdapter = new PickDailyChallengeQuestsAdapter(this, eventBus, new ArrayList<>());
         questList.setAdapter(pickQuestsAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        questPersistenceService.findAllIncompleteOrMostImportantForDate(LocalDate.now(), this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        questPersistenceService.listenForAllIncompleteOrMostImportantForDate(LocalDate.now(), this);
     }
 
     @Override
@@ -134,7 +139,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     @OnClick(R.id.add_quest)
     public void onAddQuest(View view) {
         eventBus.post(new AddQuestButtonTappedEvent(EventSource.PICK_DAILY_CHALLENGE_QUESTS));
-        startActivity(new Intent(this, EditQuestActivity.class));
+        startActivity(new Intent(this, AddQuestActivity.class));
     }
 
     private void saveQuests() {

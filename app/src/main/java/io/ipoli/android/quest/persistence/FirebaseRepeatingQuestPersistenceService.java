@@ -86,6 +86,14 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
+    public void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        listenForListChange(getCollectionReference(), listener, rq ->
+                rq.getRecurrence().getDtendDate() == null ||
+                        rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime()
+        );
+    }
+
+    @Override
     public void save(RepeatingQuest repeatingQuest, List<Quest> quests) {
         Map<String, Object> data = new HashMap<>();
         populateNewRepeatingQuest(data, repeatingQuest, quests);

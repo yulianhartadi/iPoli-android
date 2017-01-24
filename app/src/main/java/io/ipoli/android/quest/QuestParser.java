@@ -116,6 +116,7 @@ public class QuestParser {
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setDuration(duration);
+        q.setScheduledDateFromLocal(dueDate);
         q.setEndDateFromLocal(dueDate);
         q.setStartDateFromLocal(dueDate);
         q.setStartMinute(startTime);

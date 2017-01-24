@@ -2,6 +2,7 @@ package io.ipoli.android.app.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -24,7 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.challenge.activities.EditChallengeActivity;
+import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.reward.activities.EditRewardActivity;
@@ -79,6 +80,8 @@ public class FabMenuView extends RelativeLayout {
     private Animation rotateBackwardAnimation;
     private boolean isOpen = false;
 
+    private boolean onlyQuests = false;
+
     private List<FabClickListener> fabClickListeners;
 
     public FabMenuView(Context context) {
@@ -91,7 +94,20 @@ public class FabMenuView extends RelativeLayout {
     public FabMenuView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (!isInEditMode()) {
-            initUI(context);
+            TypedArray typedArray = context.getTheme().obtainStyledAttributes(
+                    attrs,
+                    R.styleable.FabMenuView,
+                    0, 0);
+
+            try {
+                onlyQuests = typedArray.getBoolean(R.styleable.FabMenuView_onlyQuests, false);
+            } finally {
+                typedArray.recycle();
+            }
+
+            if (!isInEditMode()) {
+                initUI(context);
+            }
         }
     }
 
@@ -107,6 +123,13 @@ public class FabMenuView extends RelativeLayout {
         fabCloseAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
         rotateForwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_forward);
         rotateBackwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_backward);
+
+        if(onlyQuests) {
+            challenge.setVisibility(GONE);
+            challengeLabel.setVisibility(GONE);
+            reward.setVisibility(GONE);
+            rewardLabel.setVisibility(GONE);
+        }
 
     }
 
@@ -124,7 +147,7 @@ public class FabMenuView extends RelativeLayout {
 
     @OnClick({R.id.fab_add_challenge, R.id.fab_challenge_label})
     public void onAddChallengeClick(View view) {
-        onFabClicked(new Intent(getContext(), EditChallengeActivity.class), FabName.CHALLENGE);
+        onFabClicked(new Intent(getContext(), AddChallengeActivity.class), FabName.CHALLENGE);
     }
 
     @OnClick({R.id.fab_add_reward, R.id.fab_reward_label})
@@ -203,10 +226,12 @@ public class FabMenuView extends RelativeLayout {
         questLabel.startAnimation(fabOpenAnimation);
         repeatingQuest.startAnimation(fabOpenAnimation);
         repeatingQuestLabel.startAnimation(fabOpenAnimation);
-        challenge.startAnimation(fabOpenAnimation);
-        challengeLabel.startAnimation(fabOpenAnimation);
-        reward.startAnimation(fabOpenAnimation);
-        rewardLabel.startAnimation(fabOpenAnimation);
+        if(!onlyQuests) {
+            challenge.startAnimation(fabOpenAnimation);
+            challengeLabel.startAnimation(fabOpenAnimation);
+            reward.startAnimation(fabOpenAnimation);
+            rewardLabel.startAnimation(fabOpenAnimation);
+        }
         quickAddQuest.startAnimation(fabOpenAnimation);
         quickAddLabel.startAnimation(fabOpenAnimation);
     }
@@ -249,10 +274,12 @@ public class FabMenuView extends RelativeLayout {
         quest.startAnimation(rotateBackwardAnimation);
         quickAddLabel.startAnimation(fabCloseAnimation);
         quickAddQuest.startAnimation(fabCloseAnimation);
-        rewardLabel.startAnimation(fabCloseAnimation);
-        reward.startAnimation(fabCloseAnimation);
-        challengeLabel.startAnimation(fabCloseAnimation);
-        challenge.startAnimation(fabCloseAnimation);
+        if(!onlyQuests) {
+            rewardLabel.startAnimation(fabCloseAnimation);
+            reward.startAnimation(fabCloseAnimation);
+            challengeLabel.startAnimation(fabCloseAnimation);
+            challenge.startAnimation(fabCloseAnimation);
+        }
         repeatingQuestLabel.startAnimation(fabCloseAnimation);
         repeatingQuest.startAnimation(fabCloseAnimation);
         questLabel.startAnimation(fabCloseAnimation);

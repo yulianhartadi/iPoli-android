@@ -317,14 +317,12 @@ public class EditQuestActivity extends BaseActivity implements
                 break;
         }
 
-        this.editMode = editMode;
-
         if (editMode == EditMode.EDIT_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
             frequencyContainer.setVisibility(View.GONE);
         }
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
-            toolbarTitle.setText(R.string.title_edit_quest);
+            toolbarTitle.setText(R.string.title_edit_repeating_quest);
             endDateContainer.setVisibility(View.GONE);
         }
     }
@@ -461,8 +459,7 @@ public class EditQuestActivity extends BaseActivity implements
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
             q.setName(name);
-            q.setStartDateFromLocal((Date) endDateText.getTag());
-            q.setEndDateFromLocal((Date) endDateText.getTag());
+            q.setScheduledDateFromLocal((Date) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setPriority((int) priorityText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);

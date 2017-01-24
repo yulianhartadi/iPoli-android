@@ -143,6 +143,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @Exclude
     public void setScheduledDate(Date scheduledDate) {
+        previousScheduledDate = scheduled;
         setScheduled(scheduledDate != null ? scheduledDate.getTime() : null);
     }
 

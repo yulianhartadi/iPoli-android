@@ -23,12 +23,16 @@ import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PersonalizeChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
+import io.ipoli.android.challenge.fragments.AddChallengeQuestsFragment;
+import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
+import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
@@ -203,6 +207,15 @@ public interface AppComponent {
 
     void inject(BaseFragment baseFragment);
 
+    void inject(AddChallengeActivity addChallengeActivity);
+
     void inject(AddRepeatingQuestActivity addRepeatingQuestActivity);
+
+    void inject(AddChallengeResultsFragment addChallengeResultsFragment);
+
+    void inject(AddChallengeReasonsFragment addChallengeReasonsFragment);
+
+    void inject(AddChallengeQuestsFragment addChallengeQuestsFragment);
+
 }
 

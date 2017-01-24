@@ -22,6 +22,8 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
+    void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener);
+
     void save(RepeatingQuest repeatingQuest, List<Quest> quests);
 
     void updateChallengeId(List<RepeatingQuest> repeatingQuests);
