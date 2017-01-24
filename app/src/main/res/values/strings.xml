@@ -416,14 +416,14 @@
     <string name="more_options">More options…</string>
     <string name="set_times_a_day">Set times a day</string>
     <string name="title_fragment_wizard_challenge_name">New Challenge</string>
-    <string name="title_fragment_wizard_challenge_results">What do you expect?</string>
+    <string name="title_fragment_wizard_challenge_results">What will you achieve?</string>
     <string name="add_challenge_result1_hint">1st result</string>
     <string name="add_challenge_result2_hint">2nd result</string>
     <string name="add_challenge_result3_hint">3rd result</string>
     <string name="add_challenge_reason1_hint">1st reason</string>
     <string name="add_challenge_reason2_hint">2nd reason</string>
     <string name="add_challenge_reason3_hint">3rd reason</string>
-    <string name="title_fragment_wizard_challenge_reasons">Why doing it?</string>
+    <string name="title_fragment_wizard_challenge_reasons">Why will you do it?</string>
     <string name="title_fragment_wizard_challenge_end_date">Achieve it in</string>
     <string name="one_month">1 month</string>
     <string name="one_week">1 week</string>
@@ -431,6 +431,6 @@
     <string name="two_weeks">2 weeks</string>
     <string name="three_months">3 months</string>
     <string name="fifteen_days">15 days</string>
-    <string name="exact_date">Exact date...</string>
+    <string name="exact_date">Exact date…</string>
     <string name="select_quests">Select quests</string>
 </resources>
