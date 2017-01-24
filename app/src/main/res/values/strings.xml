@@ -420,4 +420,8 @@
     <string name="add_challenge_result1_hint">1st result</string>
     <string name="add_challenge_result2_hint">2nd result</string>
     <string name="add_challenge_result3_hint">3rd result</string>
+    <string name="add_challenge_reason1_hint">1st reason</string>
+    <string name="add_challenge_reason2_hint">2nd reason</string>
+    <string name="add_challenge_reason3_hint">3rd reason</string>
+    <string name="title_fragment_wizard_challenge_reasons">Reasons</string>
 </resources>
