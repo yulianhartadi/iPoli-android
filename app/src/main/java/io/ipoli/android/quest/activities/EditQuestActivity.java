@@ -317,14 +317,12 @@ public class EditQuestActivity extends BaseActivity implements
                 break;
         }
 
-        this.editMode = editMode;
-
         if (editMode == EditMode.EDIT_QUEST) {
             toolbarTitle.setText(R.string.title_edit_quest);
             frequencyContainer.setVisibility(View.GONE);
         }
         if (editMode == EditMode.EDIT_REPEATING_QUEST) {
-            toolbarTitle.setText(R.string.title_edit_quest);
+            toolbarTitle.setText(R.string.title_edit_repeating_quest);
             endDateContainer.setVisibility(View.GONE);
         }
     }
