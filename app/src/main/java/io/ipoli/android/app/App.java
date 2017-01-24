@@ -294,7 +294,9 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onOngoingNotificationChange(OngoingNotificationChangeEvent e) {
-        NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
+        if (!e.isEnabled) {
+            NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
+        }
     }
 
     private void listenForReminderChange() {
