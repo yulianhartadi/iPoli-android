@@ -17,15 +17,8 @@ import io.ipoli.android.quest.persistence.OnChangeListener;
  */
 public class FirebaseChildEventListener {
 
-    private FirebaseChildEventListener(OnChangeListener changeListener, Query query, Map<ChildEventListener, Query> childListeners) {
-        query.orderByKey().limitToLast(1);
-        ChildEventListener childListener = createChildListener(changeListener);
-        childListeners.put(childListener, query);
-        query.addChildEventListener(childListener);
-    }
-
     @NonNull
-    private ChildEventListener createChildListener(final OnChangeListener changeListener) {
+    private static ChildEventListener createChildListener(final OnChangeListener changeListener) {
         return new ChildEventListener() {
 
             @Override
@@ -55,8 +48,11 @@ public class FirebaseChildEventListener {
         };
     }
 
-    public static void listenForChanges(OnChangeListener onChangeListener, Query query, Map<ChildEventListener, Query> childListeners) {
-        new FirebaseChildEventListener(onChangeListener, query, childListeners);
+    public static void listenForChanges(OnChangeListener changeListener, Query query, Map<ChildEventListener, Query> childListeners) {
+        query.orderByKey().limitToLast(1);
+        ChildEventListener childListener = createChildListener(changeListener);
+        childListeners.put(childListener, query);
+        query.addChildEventListener(childListener);
 
     }
 }
