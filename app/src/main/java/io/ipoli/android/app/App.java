@@ -302,14 +302,14 @@ public class App extends MultiDexApplication {
     }
 
     private void listenForReminderChange() {
-        questPersistenceService.listenForReminderChange(new OnChangeListener<Void>() {
+        questPersistenceService.listenForReminderChange(new OnChangeListener() {
             @Override
-            public void onNew(Void data) {
+            public void onNew() {
                 scheduleNextReminder();
             }
 
             @Override
-            public void onChanged(Void data) {
+            public void onChanged() {
                 scheduleNextReminder();
             }
 
@@ -814,14 +814,14 @@ public class App extends MultiDexApplication {
     }
 
     private void listenForWidgetQuestsChange() {
-        questPersistenceService.listenForDayQuestChange(LocalDate.now(), new OnChangeListener<Void>() {
+        questPersistenceService.listenForDayQuestChange(LocalDate.now(), new OnChangeListener() {
             @Override
-            public void onNew(Void data) {
+            public void onNew() {
                 requestWidgetUpdate();
             }
 
             @Override
-            public void onChanged(Void data) {
+            public void onChanged() {
                 requestWidgetUpdate();
             }
 

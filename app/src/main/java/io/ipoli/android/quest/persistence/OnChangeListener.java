@@ -4,11 +4,11 @@ package io.ipoli.android.quest.persistence;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/29/16.
  */
-public interface OnChangeListener<T> {
+public interface OnChangeListener {
 
-    void onNew(T data);
+    void onNew();
 
-    void onChanged(T data);
+    void onChanged();
 
     void onDeleted();
 }

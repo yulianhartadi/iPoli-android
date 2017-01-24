@@ -2,7 +2,6 @@ package io.ipoli.android.quest.persistence;
 
 import android.support.annotation.NonNull;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +22,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
+import io.ipoli.android.app.persistence.FirebaseChildEventListener;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
@@ -276,38 +276,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForReminderChange(OnChangeListener<Void> onChangeListener) {
+    public void listenForReminderChange(OnChangeListener onChangeListener) {
         Query query = getPlayerReference().child("questReminders");
-
-        ChildEventListener childListener = new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                onChangeListener.onNew(null);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
-                onChangeListener.onChanged(null);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                onChangeListener.onDeleted();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        childListeners.put(childListener, query);
-        query.addChildEventListener(childListener);
+        FirebaseChildEventListener.listenForChanges(onChangeListener, query, childListeners);
     }
 
     @Override
@@ -396,38 +367,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForDayQuestChange(LocalDate date, OnChangeListener<Void> onChangeListener) {
+    public void listenForDayQuestChange(LocalDate date, OnChangeListener onChangeListener) {
         Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(date));
-
-        ChildEventListener childListener = new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousName) {
-                onChangeListener.onNew(null);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousName) {
-                onChangeListener.onChanged(null);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                onChangeListener.onDeleted();
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        childListeners.put(childListener, query);
-        query.addChildEventListener(childListener);
+        FirebaseChildEventListener.listenForChanges(onChangeListener, query, childListeners);
     }
 
     @NonNull
