@@ -21,11 +21,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.challenge.events.NewChallengeEndDatePickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeReasonsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeResultsPickedEvent;
+import io.ipoli.android.challenge.fragments.AddChallengeEndDateFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeQuestsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
@@ -53,8 +56,9 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     public static final int CHALLENGE_NAME_FRAGMENT_INDEX = 0;
     public static final int CHALLENGE_RESULTS_FRAGMENT_INDEX = 1;
     public static final int CHALLENGE_REASONS_FRAGMENT_INDEX = 2;
-    public static final int CHALLENGE_QUESTS_FRAGMENT_INDEX = 3;
-    private static final int CHALLENGE_SUMMARY_FRAGMENT_INDEX = 4;
+    public static final int CHALLENGE_END_FRAGMENT_INDEX = 3;
+    public static final int CHALLENGE_QUESTS_FRAGMENT_INDEX = 4;
+    private static final int CHALLENGE_SUMMARY_FRAGMENT_INDEX = 5;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -69,6 +73,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     private AddChallengeResultsFragment resultsFragment;
     private AddChallengeReasonsFragment reasonsFragment;
     private AddChallengeQuestsFragment questsFragment;
+    private AddChallengeEndDateFragment endDateFragment;
     private AddQuestSummaryFragment summaryFragment;
 
     @Override
@@ -163,6 +168,12 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     }
 
     @Subscribe
+    public void onNewChallengeEndDatePicked(NewChallengeEndDatePickedEvent e) {
+        challenge.setEndDate(DateUtils.toStartOfDayUTC(e.date));
+        goToNextPage();
+    }
+
+    @Subscribe
     public void onNewChallengeQuestsPicked(NewChallengeQuestsPickedEvent e) {
         quests = e.quests;
         repeatingQuests = e.repeatingQuests;
@@ -221,10 +232,13 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 title = getString(R.string.title_fragment_wizard_challenge_reasons);
                 reasonsFragment.setCategory(challenge.getCategoryType());
                 break;
+            case CHALLENGE_END_FRAGMENT_INDEX:
+                title = getString(R.string.title_fragment_wizard_challenge_end_date);
+                endDateFragment.setCategory(challenge.getCategoryType());
+                break;
             case CHALLENGE_QUESTS_FRAGMENT_INDEX:
                 title = getString(R.string.title_pick_challenge_quests_activity);
                 questsFragment.setSelectedQuests(quests, repeatingQuests);
-
                 break;
             case CHALLENGE_SUMMARY_FRAGMENT_INDEX:
 //                summaryFragment.setQuest(challenge);
@@ -258,6 +272,8 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                     return new AddChallengeResultsFragment();
                 case CHALLENGE_REASONS_FRAGMENT_INDEX:
                     return new AddChallengeReasonsFragment();
+                case CHALLENGE_END_FRAGMENT_INDEX:
+                    return new AddChallengeEndDateFragment();
                 case CHALLENGE_QUESTS_FRAGMENT_INDEX:
                     return new AddChallengeQuestsFragment();
                 default:
@@ -272,6 +288,8 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 resultsFragment = (AddChallengeResultsFragment) createdFragment;
             } else if (position == CHALLENGE_REASONS_FRAGMENT_INDEX) {
                 reasonsFragment = (AddChallengeReasonsFragment) createdFragment;
+            } else if (position == CHALLENGE_END_FRAGMENT_INDEX) {
+                endDateFragment = (AddChallengeEndDateFragment) createdFragment;
             } else if (position == CHALLENGE_QUESTS_FRAGMENT_INDEX) {
                 questsFragment = (AddChallengeQuestsFragment) createdFragment;
             } else if (position == CHALLENGE_SUMMARY_FRAGMENT_INDEX) {
