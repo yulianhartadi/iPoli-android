@@ -55,7 +55,13 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     public void onDataSetChanged() {
         Type type = new TypeToken<List<Quest>>() {
         }.getType();
-        quests = gson.fromJson(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
+        List<Quest> allQuests = gson.fromJson(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
+        quests = new ArrayList<>();
+        for (Quest q : allQuests) {
+            if (!q.isCompleted()) {
+                quests.add(q);
+            }
+        }
     }
 
     @Override
