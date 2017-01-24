@@ -25,7 +25,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.challenge.activities.EditChallengeActivity;
+import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.reward.activities.EditRewardActivity;
@@ -147,7 +147,7 @@ public class FabMenuView extends RelativeLayout {
 
     @OnClick({R.id.fab_add_challenge, R.id.fab_challenge_label})
     public void onAddChallengeClick(View view) {
-        onFabClicked(new Intent(getContext(), EditChallengeActivity.class), FabName.CHALLENGE);
+        onFabClicked(new Intent(getContext(), AddChallengeActivity.class), FabName.CHALLENGE);
     }
 
     @OnClick({R.id.fab_add_reward, R.id.fab_reward_label})

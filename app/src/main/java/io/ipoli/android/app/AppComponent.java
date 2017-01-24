@@ -23,6 +23,7 @@ import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
 import io.ipoli.android.challenge.activities.PersonalizeChallengeActivity;
@@ -205,6 +206,8 @@ public interface AppComponent {
     void inject(AddQuestSummaryFragment addQuestSummaryFragment);
 
     void inject(BaseFragment baseFragment);
+
+    void inject(AddChallengeActivity addChallengeActivity);
 
     void inject(AddRepeatingQuestActivity addRepeatingQuestActivity);
 

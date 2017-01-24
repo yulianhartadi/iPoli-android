@@ -11,11 +11,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,12 +43,15 @@ import io.ipoli.android.challenge.fragments.AddChallengeQuestsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeReasonsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
 import io.ipoli.android.challenge.fragments.AddChallengeSummaryFragment;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NameAndCategoryPickedEvent;
 import io.ipoli.android.quest.fragments.AddNameFragment;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -60,6 +66,15 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     public static final int CHALLENGE_END_FRAGMENT_INDEX = 3;
     public static final int CHALLENGE_QUESTS_FRAGMENT_INDEX = 4;
     private static final int CHALLENGE_SUMMARY_FRAGMENT_INDEX = 5;
+
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -123,7 +138,23 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     private void onSaveChallenge() {
         KeyboardUtils.hideKeyboard(this);
-        //save challenge => set challengeId to quests and repeating quests and save them
+        challengePersistenceService.save(challenge);
+        String challengeId = challenge.getId();
+        for(Quest q : quests) {
+            q.setChallengeId(challengeId);
+        }
+        for(RepeatingQuest rq : repeatingQuests) {
+            rq.setChallengeId(challengeId);
+        }
+
+        if(!quests.isEmpty()) {
+            questPersistenceService.update(quests);
+        }
+        if(!repeatingQuests.isEmpty()) {
+            repeatingQuestPersistenceService.updateChallengeId(repeatingQuests);
+        }
+
+        Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
         finish();
     }
 
