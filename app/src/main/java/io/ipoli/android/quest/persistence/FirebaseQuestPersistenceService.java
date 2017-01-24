@@ -251,9 +251,9 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllIncompleteOrMostImportantForDate(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
+    public void listenForAllIncompleteOrMostImportantForDate(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("scheduled").equalTo(toStartOfDayUTC(date).getTime());
-        listenForSingleListChange(query, listener,
+        listenForListChange(query, listener,
                 q -> !q.isAllDay() && (q.getCompletedAtDate() == null || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY),
                 (q1, q2) -> Integer.compare(q1.getStartMinute(), q2.getStartMinute()));
     }

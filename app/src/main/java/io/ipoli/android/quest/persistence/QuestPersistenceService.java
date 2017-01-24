@@ -48,7 +48,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findNextReminderTime(OnDataChangedListener<Long> listener);
 
-    void findAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
+    void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
     void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener);
 
