@@ -66,6 +66,10 @@ public class AddChallengeQuestsFragment extends BaseFragment {
 
     private List<Quest> selectedQuests = new ArrayList<>();
     private List<RepeatingQuest> selectedRepeatingQuests = new ArrayList<>();
+    private List<Quest> quests = new ArrayList<>();
+    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+    private List<PickQuestViewModel> allViewModels = new ArrayList<>();
+    private SearchView searchView;
 
     @Override
     protected boolean useOptionsMenu() {
@@ -73,13 +77,6 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     }
 
     private Unbinder unbinder;
-
-    public static AddChallengeQuestsFragment newInstance(List<Quest> selectedQuests, List<RepeatingQuest> selectedRepeatingQuests) {
-        AddChallengeQuestsFragment fragment = new AddChallengeQuestsFragment();
-        fragment.selectedQuests = selectedQuests;
-        fragment.selectedRepeatingQuests = selectedRepeatingQuests;
-        return fragment;
-    }
 
     @Nullable
     @Override
@@ -92,16 +89,37 @@ public class AddChallengeQuestsFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        if(adapter == null) {
-            filter("", viewModels -> {
-                adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, viewModels, true);
-                questList.setAdapter(adapter);
-            });
-        } else {
-            questList.setAdapter(adapter);
-        }
+
+        adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, new ArrayList<>(), true);
+        questList.setAdapter(adapter);
+
+        questPersistenceService.listenForIncompleteNotRepeating(quests -> {
+            this.quests = quests;
+            questsUpdated();
+        });
+        repeatingQuestPersistenceService.listenForActive(repeatingQuests -> {
+            this.repeatingQuests = repeatingQuests;
+            questsUpdated();
+        });
 
         return view;
+    }
+
+    private void questsUpdated() {
+        List<PickQuestViewModel> viewModels = new ArrayList<>();
+        for (Quest q : quests) {
+            viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), isSelected(q), false));
+        }
+        for (RepeatingQuest rq : repeatingQuests) {
+            viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), isSelected(rq), true));
+        }
+        allViewModels = new ArrayList<>(viewModels);
+        String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
+        updateAdapter(searchQuery);
+    }
+
+    private void updateAdapter(String query) {
+        filter(query, vms -> adapter.setViewModels(vms));
     }
 
     @Override
@@ -123,14 +141,11 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     }
 
     private void filter(String query, FilterListener filterListener) {
-        questPersistenceService.findIncompleteNotRepeating(query.trim(), quests -> {
-            repeatingQuestPersistenceService.findActive(query.trim(), repeatingQuests -> {
                 List<PickQuestViewModel> viewModels = new ArrayList<>();
-                for (Quest q : quests) {
-                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), isSelected(q), false));
-                }
-                for (RepeatingQuest rq : repeatingQuests) {
-                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), isSelected(rq), true));
+                for(PickQuestViewModel vm : allViewModels) {
+                    if(vm.getText().toLowerCase().contains(query.toLowerCase())) {
+                        viewModels.add(vm);
+                    }
                 }
 
                 Collections.sort(viewModels, (vm1, vm2) -> {
@@ -159,13 +174,11 @@ public class AddChallengeQuestsFragment extends BaseFragment {
                     return 0;
                 });
                 filterListener.onFilterCompleted(viewModels);
-            });
-        });
     }
 
     private boolean isSelected(Quest quest) {
-        for(Quest q : selectedQuests) {
-            if(q.getId().equals(quest.getId())) {
+        for (Quest q : selectedQuests) {
+            if (q.getId().equals(quest.getId())) {
                 return true;
             }
         }
@@ -173,8 +186,8 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     }
 
     private boolean isSelected(RepeatingQuest repeatingQuest) {
-        for(RepeatingQuest rq : selectedRepeatingQuests) {
-            if(rq.getId().equals(repeatingQuest.getId())) {
+        for (RepeatingQuest rq : selectedRepeatingQuests) {
+            if (rq.getId().equals(repeatingQuest.getId())) {
                 return true;
             }
         }
@@ -187,7 +200,7 @@ public class AddChallengeQuestsFragment extends BaseFragment {
         inflater.inflate(R.menu.add_challenge_wizard_quests_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -197,14 +210,14 @@ public class AddChallengeQuestsFragment extends BaseFragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (StringUtils.isEmpty(newText)) {
-                    filter("", viewModels -> adapter.setViewModels(viewModels));
+                    updateAdapter("");
                     return true;
                 }
 
                 if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
-                filter(newText.trim(), viewModels -> adapter.setViewModels(viewModels));
+                updateAdapter(newText.trim());
                 return true;
             }
         });
@@ -214,17 +227,18 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_next:
-                List<BaseQuest> baseQuests = adapter.getSelectedBaseQuests();
                 List<Quest> quests = new ArrayList<>();
                 List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for (BaseQuest bq : baseQuests) {
-                    if (bq instanceof Quest) {
-                        quests.add((Quest) bq);
-                    } else {
-                        repeatingQuests.add((RepeatingQuest) bq);
+                for(PickQuestViewModel vm : allViewModels) {
+                    if(vm.isSelected()) {
+                        BaseQuest bq = vm.getBaseQuest();
+                        if (bq instanceof Quest) {
+                            quests.add((Quest) bq);
+                        } else {
+                            repeatingQuests.add((RepeatingQuest) bq);
+                        }
                     }
                 }
-
                 postEvent(new NewChallengeQuestsPickedEvent(quests, repeatingQuests));
                 return true;
         }
@@ -234,9 +248,10 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     public void setSelectedQuests(List<Quest> quests, List<RepeatingQuest> repeatingQuests) {
         selectedQuests = quests;
         selectedRepeatingQuests = repeatingQuests;
-        filter("", viewModels -> adapter.setViewModels(viewModels));
+        String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
+        updateAdapter(searchQuery);
     }
-    
+
     public interface FilterListener {
         void onFilterCompleted(List<PickQuestViewModel> viewModels);
     }

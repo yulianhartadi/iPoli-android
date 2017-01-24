@@ -259,7 +259,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
                 case CHALLENGE_REASONS_FRAGMENT_INDEX:
                     return new AddChallengeReasonsFragment();
                 case CHALLENGE_QUESTS_FRAGMENT_INDEX:
-                    return AddChallengeQuestsFragment.newInstance(quests, repeatingQuests);
+                    return new AddChallengeQuestsFragment();
                 default:
                     return new AddQuestSummaryFragment();
             }
