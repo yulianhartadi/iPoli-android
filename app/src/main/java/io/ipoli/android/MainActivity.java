@@ -521,7 +521,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void pickTimeAndSnoozeQuest(Quest quest, boolean showAction) {
         Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
         TimePickerFragment.newInstance(false, time, newTime -> {
-            quest.setStartMinute(newTime.toMinutesAfterMidnight());
+            quest.setStartMinute(newTime.toMinuteOfDay());
             saveSnoozedQuest(quest, false, showAction);
         }).show(getSupportFragmentManager());
     }

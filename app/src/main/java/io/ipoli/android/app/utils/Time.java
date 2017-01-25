@@ -78,11 +78,11 @@ public class Time {
         return Integer.parseInt(pieces[1]);
     }
 
-    public int toMinutesAfterMidnight() {
+    public int toMinuteOfDay() {
         return minutes;
     }
 
-    public long toMillisAfterMidnight() {
+    public long toMillisOfDay() {
         return TimeUnit.MINUTES.toMillis(minutes);
     }
 

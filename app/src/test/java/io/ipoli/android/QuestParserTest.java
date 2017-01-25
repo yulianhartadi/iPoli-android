@@ -91,42 +91,42 @@ public class QuestParserTest {
     public void addQuestWithStartTime() {
         Quest q = parse("Workout at 10:00");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
     }
 
     @Test
     public void addQuestWith2DigitStartTime() {
         Quest q = parse("Workout at 10 am");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
     }
 
     @Test
     public void addQuestWith4DigitStartTime() {
         Quest q = parse("Workout at 10:00");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
     }
 
     @Test
     public void addQuestWithPmStartTime() {
         Quest q = parse("Workout at 10pm");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(22).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(22).toMinuteOfDay()));
     }
 
     @Test
     public void addQuestWithDotStartTime() {
         Quest q = parse("Workout at 10.30pm");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.at(22, 30).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.at(22, 30).toMinuteOfDay()));
     }
 
     @Test
     public void addQuestWithStartTimeAndDuration() {
         Quest q = parse("Workout for 1h at 10:00");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
         assertThat(q.getDuration(), is(60));
     }
 
@@ -134,7 +134,7 @@ public class QuestParserTest {
     public void addQuestWithReversedStartTimeAndDuration() {
         Quest q = parse("Workout at 10:00 for 1h");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
         assertThat(q.getDuration(), is(60));
     }
 
@@ -142,7 +142,7 @@ public class QuestParserTest {
     public void addQuestWithHourAndMinuteDurationAndStartTime() {
         Quest q = parse("Workout for 1h and 10 minutes at 10:00");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
         assertThat(q.getDuration(), is(70));
     }
 
@@ -150,7 +150,7 @@ public class QuestParserTest {
     public void addQuestWithReversedHourAndMinuteDurationAndStartTime() {
         Quest q = parse("Workout at 10:00 for 1h and 10 minutes");
         assertThat(q.getName(), is("Workout"));
-        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(q.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
         assertThat(q.getDuration(), is(70));
     }
 

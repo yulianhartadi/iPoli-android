@@ -249,7 +249,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             if (q.getCompletedAtDate() != null) {
                 QuestCalendarViewModel event = new QuestCalendarViewModel(q);
                 if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getScheduled()))) {
-                    event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
+                    event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
                 }
 
                 completedEvents.add(event);
@@ -268,7 +268,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         for (Quest q : quests) {
             QuestCalendarViewModel event = new QuestCalendarViewModel(q);
             if (hasNoStartTime(q)) {
-                event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinutesAfterMidnight());
+                event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
             }
             calendarEvents.add(event);
             updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
@@ -370,7 +370,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
         DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
 
-        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, posterior);
+        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, Time.now(), posterior);
 
         TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
 

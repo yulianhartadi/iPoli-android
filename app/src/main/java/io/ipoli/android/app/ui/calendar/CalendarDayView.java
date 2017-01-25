@@ -338,7 +338,7 @@ public class CalendarDayView extends FrameLayout {
                 dragView.setLayoutParams(layoutParams);
                 CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
                 int oldStartTime = calendarEvent.getStartMinute();
-                calendarEvent.setStartMinute(Time.at(h, m).toMinutesAfterMidnight());
+                calendarEvent.setStartMinute(Time.at(h, m).toMinuteOfDay());
                 adapter.onStartTimeUpdated(calendarEvent, oldStartTime);
                 adapter.onDragEnded(dragView);
             }

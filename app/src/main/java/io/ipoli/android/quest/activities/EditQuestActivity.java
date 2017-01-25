@@ -640,7 +640,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Override
     public void onTimePicked(Time time) {
-        populateStartTime(time == null ? -1 : time.toMinutesAfterMidnight());
+        populateStartTime(time == null ? -1 : time.toMinuteOfDay());
         eventBus.post(new QuestStartTimePickedEvent(editMode.name().toLowerCase()));
     }
 

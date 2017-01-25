@@ -48,7 +48,7 @@ public class TimePickerFragment extends DialogFragment
             time = Time.now();
         }
         Bundle args = new Bundle();
-        args.putInt(MINUTES_AFTER_MIDNIGHT, time.toMinutesAfterMidnight());
+        args.putInt(MINUTES_AFTER_MIDNIGHT, time.toMinuteOfDay());
         args.putBoolean(ENABLE_UNKNOWN_TIME_SELECTION, enableUnknownTimeSelection);
         fragment.setArguments(args);
         fragment.timePickedListener = timePickedListener;

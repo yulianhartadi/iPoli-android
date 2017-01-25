@@ -414,7 +414,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         viewModels.add(new PredefinedChallengeQuestViewModel(rq3.getRawText(), rq3));
 
         RepeatingQuest rq4 = makeRepeatingQuest("Say 3 things that I am grateful for every morning", "Say 3 things that I am grateful", 15, category);
-        rq4.setStartMinute(Time.at(9, 30).toMinutesAfterMidnight());
+        rq4.setStartMinute(Time.at(9, 30).toMinuteOfDay());
         recurrence = Recurrence.create();
         recurrence.setRrule(Recurrence.RRULE_EVERY_DAY);
         rq4.setRecurrence(recurrence);

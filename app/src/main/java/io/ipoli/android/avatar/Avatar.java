@@ -188,7 +188,7 @@ public class Avatar extends PersistedObject {
     @Exclude
     public void setWorkStartTime(Time startTime) {
         if (startTime != null) {
-            setWorkStartMinute(startTime.toMinutesAfterMidnight());
+            setWorkStartMinute(startTime.toMinuteOfDay());
         } else {
             setWorkStartMinute(null);
         }
@@ -213,7 +213,7 @@ public class Avatar extends PersistedObject {
     @Exclude
     public void setWorkEndTime(Time endTime) {
         if (endTime != null) {
-            setWorkEndMinute(endTime.toMinutesAfterMidnight());
+            setWorkEndMinute(endTime.toMinuteOfDay());
         } else {
             setWorkEndMinute(null);
         }
@@ -238,7 +238,7 @@ public class Avatar extends PersistedObject {
     @Exclude
     public void setSleepStartTime(Time startTime) {
         if (startTime != null) {
-            setSleepStartMinute(startTime.toMinutesAfterMidnight());
+            setSleepStartMinute(startTime.toMinuteOfDay());
         } else {
             setSleepStartMinute(null);
         }
@@ -263,7 +263,7 @@ public class Avatar extends PersistedObject {
     @Exclude
     public void setSleepEndTime(Time endTime) {
         if (endTime != null) {
-            setSleepEndMinute(endTime.toMinutesAfterMidnight());
+            setSleepEndMinute(endTime.toMinuteOfDay());
         } else {
             setSleepEndMinute(null);
         }

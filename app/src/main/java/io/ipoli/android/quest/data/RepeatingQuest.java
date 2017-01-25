@@ -96,7 +96,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setStartTime(Time time) {
         if (time != null) {
-            setStartMinute(time.toMinutesAfterMidnight());
+            setStartMinute(time.toMinuteOfDay());
         } else {
             setStartMinute(null);
         }

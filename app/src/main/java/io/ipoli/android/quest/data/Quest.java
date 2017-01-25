@@ -163,7 +163,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public void setStartTime(Time time) {
         if (time != null) {
-            setStartMinute(time.toMinutesAfterMidnight());
+            setStartMinute(time.toMinuteOfDay());
         } else {
             setStartMinute(null);
         }

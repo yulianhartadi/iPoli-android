@@ -292,7 +292,7 @@ public class SettingsFragment extends BaseFragment implements
     @Override
     public void onTimePicked(Time time) {
         dailyChallengeStartTime.setText(time.toString());
-        localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinutesAfterMidnight());
+        localStorage.saveInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, time.toMinuteOfDay());
         eventBus.post(new DailyChallengeStartTimeChangedEvent(time));
     }
 

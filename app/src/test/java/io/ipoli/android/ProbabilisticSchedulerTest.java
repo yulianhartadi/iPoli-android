@@ -35,7 +35,7 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, Time.now(), dist);
         assertThat(slots.size(), is(3));
     }
 
@@ -52,7 +52,7 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, Time.now(), dist);
         assertThat(slots.get(0).getProbability(), greaterThan(0.183));
     }
 }

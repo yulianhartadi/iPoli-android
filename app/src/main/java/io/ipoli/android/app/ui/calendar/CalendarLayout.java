@@ -147,7 +147,7 @@ public class CalendarLayout extends FrameLayout {
                 } else {
                     int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                     int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
-                    calendarEvent.setStartMinute(Time.at(hours, minutes).toMinutesAfterMidnight());
+                    calendarEvent.setStartMinute(Time.at(hours, minutes).toMinuteOfDay());
 
                     if (calendarListener != null) {
                         calendarListener.onAcceptEvent(calendarEvent);

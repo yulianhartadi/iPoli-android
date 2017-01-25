@@ -53,7 +53,7 @@ public class RepeatingQuestParserTest {
     public void parseWithStartTime() {
         RepeatingQuest rq = parse("Workout every day at 10:00");
         assertEquals("Workout", rq.getName());
-        assertThat(rq.getStartMinute(), is(Time.atHours(10).toMinutesAfterMidnight()));
+        assertThat(rq.getStartMinute(), is(Time.atHours(10).toMinuteOfDay()));
     }
 
     @Test

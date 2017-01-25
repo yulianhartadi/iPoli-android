@@ -42,7 +42,7 @@ public class StartTimeMatcher extends BaseMatcher<Integer> {
         if (stm.find()) {
             List<Date> dates = parser.parse(stm.group());
             if (!dates.isEmpty()) {
-                return Time.of(dates.get(0)).toMinutesAfterMidnight();
+                return Time.of(dates.get(0)).toMinuteOfDay();
             }
         }
         return -1;

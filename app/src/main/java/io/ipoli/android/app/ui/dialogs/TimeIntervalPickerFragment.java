@@ -57,8 +57,8 @@ public class TimeIntervalPickerFragment extends DialogFragment {
             endTime = Time.now();
         }
         Bundle args = new Bundle();
-        args.putInt(START_MINUTES_AFTER_MIDNIGHT, startTime.toMinutesAfterMidnight());
-        args.putInt(END_MINUTES_AFTER_MIDNIGHT, endTime.toMinutesAfterMidnight());
+        args.putInt(START_MINUTES_AFTER_MIDNIGHT, startTime.toMinuteOfDay());
+        args.putInt(END_MINUTES_AFTER_MIDNIGHT, endTime.toMinuteOfDay());
         args.putInt(TITLE, title);
         fragment.setArguments(args);
         fragment.timePickedListener = timePickedListener;

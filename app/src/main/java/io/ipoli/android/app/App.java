@@ -502,7 +502,7 @@ public class App extends MultiDexApplication {
             QuestNotificationScheduler.cancelAll(q, this);
             q.setScheduledDateFromLocal(new Date());
             q.setCompletedAtDateFromLocal(new Date());
-            q.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+            q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
             questPersistenceService.update(q);
@@ -614,7 +614,7 @@ public class App extends MultiDexApplication {
     }
 
     private void setQuestCompletedAt(Quest quest) {
-        int completedAtMinute = Time.now().toMinutesAfterMidnight();
+        int completedAtMinute = Time.now().toMinuteOfDay();
         if (quest.hasStartTime()) {
             completedAtMinute = quest.getStartMinute();
         }

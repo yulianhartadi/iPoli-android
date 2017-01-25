@@ -183,7 +183,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder.name.setFocusable(false);
                 holder.name.setFocusableInTouchMode(false);
                 sq.setCompletedAtDate(new Date());
-                sq.setCompletedAtMinute(Time.now().toMinutesAfterMidnight());
+                sq.setCompletedAtMinute(Time.now().toMinuteOfDay());
                 eventBus.post(new CompleteSubQuestEvent(sq));
                 strike(holder);
             } else {
