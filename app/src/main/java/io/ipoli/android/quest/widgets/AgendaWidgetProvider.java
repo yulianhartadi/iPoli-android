@@ -75,6 +75,7 @@ public class AgendaWidgetProvider extends AppWidgetProvider {
     private void onViewQuest(Context context, String questId) {
         Intent i = new Intent(context, QuestActivity.class);
         i.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
     }
 
