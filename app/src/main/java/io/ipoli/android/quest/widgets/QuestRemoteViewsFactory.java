@@ -57,6 +57,9 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         }.getType();
         List<Quest> allQuests = gson.fromJson(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
         quests = new ArrayList<>();
+        if (allQuests == null) {
+            return;
+        }
         for (Quest q : allQuests) {
             if (!q.isCompleted()) {
                 quests.add(q);
