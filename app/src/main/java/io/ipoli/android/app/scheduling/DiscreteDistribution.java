@@ -37,6 +37,9 @@ public class DiscreteDistribution {
     }
 
     public double at(int position) {
+        if(position < 0 || position >= frequencies.size()) {
+            return 0;
+        }
         return frequencies.get(position);
     }
 

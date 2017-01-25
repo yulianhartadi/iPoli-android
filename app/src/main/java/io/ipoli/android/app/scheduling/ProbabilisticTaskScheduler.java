@@ -15,10 +15,6 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
         this.random = random;
     }
 
-    public ProbabilisticTaskScheduler(int startHour, int endHour, List<Task> tasks) {
-        this(startHour, endHour, tasks, new Random());
-    }
-
     public List<TimeBlock> chooseSlotsFor(Task task, int minTimeInterval, DiscreteDistribution posterior) {
         List<TimeBlock> availableSlots = getAvailableSlotsFor(task, minTimeInterval);
         List<TimeBlock> slotsToConsider = filterPossibleSlots(posterior, availableSlots);
@@ -45,8 +41,8 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
         List<TimeBlock> slotsToConsider = new ArrayList<>();
         for (TimeBlock slot : slots) {
             double slotProb = findSlotProbabilityDistribution(posterior, slot);
-            slot.setProbability(slotProb);
             if (slotProb > 0) {
+                slot.setProbability(slotProb);
                 slotsToConsider.add(slot);
             }
         }
