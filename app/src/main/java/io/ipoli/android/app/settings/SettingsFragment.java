@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,6 +86,9 @@ public class SettingsFragment extends BaseFragment implements
     @BindView(R.id.ongoing_notification)
     Switch ongoingNotification;
 
+    @BindView(R.id.time_format_current_time)
+    TextView currentTime;
+
     @BindView(R.id.most_productive_time)
     TextView mostProductiveTime;
 
@@ -144,6 +149,8 @@ public class SettingsFragment extends BaseFragment implements
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
+
+        currentTime.setText(DateFormat.getTimeFormat(getContext()).format(Calendar.getInstance().getTime()));
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
