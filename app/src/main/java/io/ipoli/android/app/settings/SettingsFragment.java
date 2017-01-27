@@ -89,6 +89,9 @@ public class SettingsFragment extends BaseFragment implements
     @BindView(R.id.time_format_current_time)
     TextView currentTime;
 
+    @BindView(R.id.time_format)
+    Switch timeFormat;
+
     @BindView(R.id.most_productive_time)
     TextView mostProductiveTime;
 

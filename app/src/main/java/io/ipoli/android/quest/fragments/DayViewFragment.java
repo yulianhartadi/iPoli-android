@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,6 +164,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
         calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
+        calendarDayView.setTimeFormat(DateFormat.is24HourFormat(getContext()));
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
