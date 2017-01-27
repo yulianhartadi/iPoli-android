@@ -384,7 +384,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     private void showStartTime(Time questStartTime, TimePreference startTimePreference) {
         if (questStartTime != null) {
-            startTime.setText("At " + questStartTime.toString());
+            startTime.setText("At " + questStartTime.toString(use24HourFormat));
         } else {
             switch (startTimePreference) {
                 case PERSONAL_HOURS:

@@ -125,7 +125,7 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         questPersistenceService.findAllNonAllDayForDate(date, quests -> {
             List<AgendaViewModel> vms = new ArrayList<>();
             for (Quest quest : quests) {
-                vms.add(new AgendaViewModel(this, quest));
+                vms.add(new AgendaViewModel(this, quest, use24HourFormat));
             }
             questList.setAdapter(new AgendaAdapter(this, eventBus, vms));
         });

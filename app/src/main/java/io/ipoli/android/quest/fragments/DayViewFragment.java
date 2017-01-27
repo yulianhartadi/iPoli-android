@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,7 +151,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, view);
-        boolean use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -74,8 +74,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
     private Unbinder unbinder;
 
-    private boolean use24HourFormat;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,8 +82,6 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.fragment_overview_title);
-
-        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
