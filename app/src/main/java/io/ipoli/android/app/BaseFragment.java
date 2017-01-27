@@ -24,7 +24,8 @@ public abstract class BaseFragment extends Fragment {
 
     @Inject
     LocalStorage localStorage;
-    public boolean use24HourFormat;
+
+    protected boolean use24HourFormat;
 
     protected abstract boolean useOptionsMenu();
 
