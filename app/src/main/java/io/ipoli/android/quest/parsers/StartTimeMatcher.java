@@ -27,6 +27,11 @@ public class StartTimeMatcher extends BaseMatcher<Integer> {
         this.parser = parser;
     }
 
+    public StartTimeMatcher(PrettyTimeParser parser, boolean use24HourFormat) {
+        super(new StartTimeSuggestionsProvider(use24HourFormat));
+        this.parser = parser;
+    }
+
     @Override
     public Match match(String text) {
         Matcher m = pattern.matcher(text);

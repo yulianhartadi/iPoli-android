@@ -50,15 +50,15 @@ public class SuggestionsManager {
 
     private Set<TextEntityType> excludedTypes = new HashSet<>();
 
-    public static SuggestionsManager createForQuest(PrettyTimeParser parser) {
-        return new SuggestionsManager(parser, true);
+    public static SuggestionsManager createForQuest(PrettyTimeParser parser, boolean use24HourFormat) {
+        return new SuggestionsManager(parser, true, use24HourFormat);
     }
 
-    public static SuggestionsManager createForRepeatingQuest(PrettyTimeParser parser) {
-        return new SuggestionsManager(parser, false);
+    public static SuggestionsManager createForRepeatingQuest(PrettyTimeParser parser, boolean use24HourFormat) {
+        return new SuggestionsManager(parser, false, use24HourFormat);
     }
 
-    private SuggestionsManager(PrettyTimeParser parser, boolean disableRepeating) {
+    private SuggestionsManager(PrettyTimeParser parser, boolean disableRepeating, boolean use24HourFormat) {
         Set<TextEntityType> disabledEntityTypes = new HashSet<>();
         if(disableRepeating) {
             disabledEntityTypes.add(TextEntityType.RECURRENT);
@@ -70,7 +70,7 @@ public class SuggestionsManager {
         typeToMatcher = new HashMap<TextEntityType, QuestTextMatcher>() {{
             put(TextEntityType.MAIN, new MainMatcher(disabledEntityTypes));
             put(TextEntityType.DURATION, new DurationMatcher());
-            put(TextEntityType.START_TIME, new StartTimeMatcher(parser));
+            put(TextEntityType.START_TIME, new StartTimeMatcher(parser, use24HourFormat));
             if(disableRepeating) {
                 put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
                 excludedTypes.add(TextEntityType.FLEXIBLE);
