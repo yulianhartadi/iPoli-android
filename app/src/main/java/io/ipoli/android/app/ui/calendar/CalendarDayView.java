@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.ipoli.android.Constants;
@@ -43,6 +42,7 @@ public class CalendarDayView extends FrameLayout {
     private RelativeLayout eventsContainer;
     private int hourHeight;
     private View timeLine;
+    private List<TextView> hourViews = new ArrayList<>();
 
     private BaseCalendarAdapter adapter;
     private Map<View, CalendarEvent> eventViewToCalendarEvent;
@@ -52,6 +52,8 @@ public class CalendarDayView extends FrameLayout {
     private int hourCellClickYPos;
 
     private OnHourCellLongClickListener hourCellListener;
+
+    private boolean use24HourFormat = true;
 
     public interface OnHourCellLongClickListener {
         void onLongClickHourCell(Time atTime);
@@ -86,6 +88,7 @@ public class CalendarDayView extends FrameLayout {
     }
 
     private void initUI(Context context) {
+        use24HourFormat = true;
 
         eventViewToCalendarEvent = new HashMap<>();
         hourHeight = getScreenHeight(context) / HOURS_PER_SCREEN;
@@ -143,14 +146,22 @@ public class CalendarDayView extends FrameLayout {
     @NonNull
     private View initHourCell(int hour, LinearLayout hourCellsContainer, LayoutInflater inflater) {
         View hourCell = inflater.inflate(R.layout.calendar_hour_cell, hourCellsContainer, false);
+        TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
+        hourViews.add(tv);
         if (hour > 0) {
-            TextView tv = (TextView) hourCell.findViewById(R.id.time_label);
-            tv.setText(String.format(Locale.getDefault(), "%02d:00", hour));
+            tv.setText(Time.atHours(hour).toString(use24HourFormat));
         }
         ViewGroup.LayoutParams hcp = hourCell.getLayoutParams();
         hcp.height = hourHeight;
         hourCell.setLayoutParams(hcp);
         return hourCell;
+    }
+
+    public void setTimeFormat(boolean use24HourFormat) {
+        this.use24HourFormat = use24HourFormat;
+        for (int i = 1; i < hourViews.size(); i++) {
+            hourViews.get(i).setText(Time.atHours(i).toString(use24HourFormat));
+        }
     }
 
     private RelativeLayout initEventsContainer(Context context) {

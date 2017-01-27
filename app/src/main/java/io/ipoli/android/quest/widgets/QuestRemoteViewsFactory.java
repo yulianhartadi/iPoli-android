@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -29,6 +30,7 @@ import io.ipoli.android.quest.data.Quest;
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final Context context;
+    private final boolean use24HourFormat;
     private List<Quest> quests;
 
     @Inject
@@ -44,6 +46,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         App.getAppComponent(context).inject(this);
         this.quests = new ArrayList<>();
         this.context = context;
+        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(context));
     }
 
     @Override
@@ -108,11 +111,11 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         String questTime = "";
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
-            questTime = startTime + " - " + endTime;
+            questTime = startTime.toString(use24HourFormat) + " - " + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
             questTime = "for " + DurationFormatter.formatReadable(duration);
         } else if (startTime != null) {
-            questTime = "at " + startTime;
+            questTime = "at " + startTime.toString(use24HourFormat);
         }
 
         if (TextUtils.isEmpty(questTime)) {

@@ -15,10 +15,12 @@ public class AgendaViewModel {
 
     private final Context context;
     private final Quest quest;
+    private final boolean use24HourFormat;
 
-    public AgendaViewModel(Context context, Quest quest) {
+    public AgendaViewModel(Context context, Quest quest, boolean use24HourFormat) {
         this.context = context;
         this.quest = quest;
+        this.use24HourFormat = use24HourFormat;
     }
 
     public String getName() {
@@ -39,11 +41,11 @@ public class AgendaViewModel {
         Time startTime = quest.getStartTime();
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
-            return startTime + "\n" + endTime;
+            return startTime.toString(use24HourFormat) + "\n" + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
             return "for\n" + DurationFormatter.format(context, duration);
         } else if (startTime != null) {
-            return "at\n" + startTime;
+            return "at\n" + startTime.toString(use24HourFormat);
         }
         return "";
     }

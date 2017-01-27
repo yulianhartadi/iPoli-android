@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -38,6 +39,8 @@ public class BaseActivity extends AppCompatActivity {
     @Inject
     protected LocalStorage localStorage;
 
+    protected boolean use24HourFormat;
+
     protected AppComponent appComponent() {
         return App.getAppComponent(this);
     }
@@ -46,6 +49,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
+        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(this));
     }
 
     @Override

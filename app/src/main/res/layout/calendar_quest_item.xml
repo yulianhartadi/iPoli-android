@@ -6,10 +6,9 @@
 
     <TextView
         android:id="@+id/quest_current_time_indicator"
-        style="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_width="wrap_content"
+        android:layout_width="72dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:textColor="?attr/colorAccent" />
 
     <RelativeLayout

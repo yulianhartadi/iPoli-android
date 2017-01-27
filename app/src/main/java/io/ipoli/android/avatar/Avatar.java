@@ -29,6 +29,7 @@ public class Avatar extends PersistedObject {
     private Integer workEndMinute;
     private Integer sleepStartMinute;
     private Integer sleepEndMinute;
+    private Boolean use24HourFormat;
 
     public Avatar() {
     }
@@ -46,6 +47,7 @@ public class Avatar extends PersistedObject {
         setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE);
         setSleepStartMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE);
         setSleepEndMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE);
+        setUse24HourFormat(true);
     }
 
     public Long getUpdatedAt() {
@@ -269,5 +271,11 @@ public class Avatar extends PersistedObject {
         }
     }
 
+    public Boolean getUse24HourFormat() {
+        return use24HourFormat;
+    }
 
+    public void setUse24HourFormat(Boolean use24HourFormat) {
+        this.use24HourFormat = use24HourFormat;
+    }
 }

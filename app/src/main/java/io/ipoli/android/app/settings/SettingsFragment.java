@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -34,6 +35,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -84,6 +86,12 @@ public class SettingsFragment extends BaseFragment implements
     @BindView(R.id.ongoing_notification)
     Switch ongoingNotification;
 
+    @BindView(R.id.time_format_current_time)
+    TextView currentTime;
+
+    @BindView(R.id.time_format)
+    Switch timeFormat;
+
     @BindView(R.id.most_productive_time)
     TextView mostProductiveTime;
 
@@ -132,6 +140,19 @@ public class SettingsFragment extends BaseFragment implements
             eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
         });
 
+        boolean use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
+        currentTime.setText(Time.now().toString(use24HourFormat));
+        timeFormat.setChecked(use24HourFormat);
+        timeFormat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            currentTime.setText(Time.now().toString(isChecked));
+            localStorage.saveBool(Constants.KEY_24_HOUR_TIME_FORMAT, isChecked);
+            eventBus.post(new TimeFormatChangedEvent(isChecked));
+            if(avatar != null) {
+                avatar.setUse24HourFormat(isChecked);
+                avatarPersistenceService.save(avatar);
+            }
+        });
+
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
@@ -144,6 +165,7 @@ public class SettingsFragment extends BaseFragment implements
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
+
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
@@ -175,6 +197,11 @@ public class SettingsFragment extends BaseFragment implements
     @OnClick(R.id.ongoing_notification_container)
     public void onOngoingNotificationClicked(View view) {
         ongoingNotification.setChecked(!ongoingNotification.isChecked());
+    }
+
+    @OnClick(R.id.time_format_container)
+    public void onTimeFormatClicked(View view) {
+        timeFormat.setChecked(!timeFormat.isChecked());
     }
 
     @OnClick(R.id.show_tutorial_container)

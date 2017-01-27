@@ -28,6 +28,7 @@ public class CalendarLayout extends FrameLayout {
     private CalendarDayView calendarDayView;
     private LayoutInflater inflater;
     private boolean isInEditMode = false;
+    private boolean use24HourFormat = true;
 
     private DragStrategy dragStrategy;
 
@@ -52,6 +53,7 @@ public class CalendarLayout extends FrameLayout {
     }
 
     private void initUI() {
+        use24HourFormat = true;
         setOnDragListener(dragListener);
     }
 
@@ -61,6 +63,10 @@ public class CalendarLayout extends FrameLayout {
         super.onAttachedToWindow();
         calendarDayView = (CalendarDayView) findViewById(R.id.calendar);
         inflater = LayoutInflater.from(getContext());
+    }
+
+    public void setTimeFormat(boolean use24HourFormat) {
+        this.use24HourFormat = use24HourFormat;
     }
 
     public void setCalendarListener(CalendarListener calendarListener) {
@@ -93,9 +99,6 @@ public class CalendarLayout extends FrameLayout {
             nameView.setEllipsize(TextUtils.TruncateAt.END);
         }
 
-        dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(calendarEvent.isRepeating() ? VISIBLE : GONE);
-        dragView.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? VISIBLE : GONE);
-        dragView.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? VISIBLE : GONE);
         addView(dragView);
 
         DragStrategy dragStrategy = new DragStrategy() {
@@ -131,7 +134,7 @@ public class CalendarLayout extends FrameLayout {
 
                 int hours = calendarDayView.getHoursFor(ViewUtils.getViewRawTop(dragView));
                 int minutes = calendarDayView.getMinutesFor(ViewUtils.getViewRawTop(dragView), 5);
-                ((TextView) dragView.findViewById(R.id.quest_current_time_indicator)).setText(Time.at(hours, minutes).toString());
+                ((TextView) dragView.findViewById(R.id.quest_current_time_indicator)).setText(Time.at(hours, minutes).toString(use24HourFormat));
             }
 
             @Override

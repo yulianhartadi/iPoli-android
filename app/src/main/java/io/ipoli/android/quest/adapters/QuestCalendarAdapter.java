@@ -56,14 +56,16 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         put(Category.CHORES, R.style.ChoresCheckbox);
     }};
 
+    private final boolean use24HourFormat;
+
     private List<QuestCalendarViewModel> questCalendarViewModels;
     private final Bus eventBus;
 
-    public QuestCalendarAdapter(List<QuestCalendarViewModel> questCalendarViewModels, Bus eventBus) {
+    public QuestCalendarAdapter(List<QuestCalendarViewModel> questCalendarViewModels, boolean use24HourFormat, Bus eventBus) {
         this.questCalendarViewModels = questCalendarViewModels;
+        this.use24HourFormat = use24HourFormat;
         this.eventBus = eventBus;
     }
-
 
     @Override
     public List<QuestCalendarViewModel> getEvents() {
@@ -219,13 +221,13 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         dragView.findViewById(R.id.quest_check).setVisibility(View.GONE);
         dragView.findViewById(R.id.quest_repeating_indicator).setVisibility(View.GONE);
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
-        currentTimeIndicator.setText(time.toString());
+        currentTimeIndicator.setText(time.toString(use24HourFormat));
     }
 
     @Override
     public void onDragMoved(View dragView, Time time) {
         TextView currentTimeIndicator = (TextView) dragView.findViewById(R.id.quest_current_time_indicator);
-        currentTimeIndicator.setText(time.toString());
+        currentTimeIndicator.setText(time.toString(use24HourFormat));
     }
 
     @Override

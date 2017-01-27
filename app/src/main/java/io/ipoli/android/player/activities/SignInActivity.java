@@ -3,6 +3,7 @@ package io.ipoli.android.player.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 
 import java.util.HashSet;
 
@@ -34,11 +35,13 @@ public class SignInActivity extends BaseActivity {
 
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Avatar avatar = new Avatar(String.valueOf(Constants.DEFAULT_PLAYER_XP), Constants.DEFAULT_AVATAR_LEVEL, Constants.DEFAULT_PLAYER_COINS, Constants.DEFAULT_PLAYER_PICTURE);
+        avatar.setUse24HourFormat(DateFormat.is24HourFormat(this));
         Player player = new Player(pet, avatar);
         playerPersistenceService.save(player);
         saveAvatarSettings(avatar);
         localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
         localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
+        localStorage.saveBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(this));
         eventBus.post(new PlayerCreatedEvent(player.getId()));
         startActivity(new Intent(this, MainActivity.class));
         finish();

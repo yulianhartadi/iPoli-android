@@ -22,12 +22,14 @@ public class QuestViewModel {
     private final Quest quest;
     private final int timesADay;
     private final int remainingCount;
+    private final boolean use24HourFormat;
 
-    public QuestViewModel(Context context, Quest quest) {
+    public QuestViewModel(Context context, Quest quest, boolean use24HourFormat) {
         this.context = context;
         this.quest = quest;
         this.timesADay = quest.getTimesADay();
         this.remainingCount = quest.getRemainingCount();
+        this.use24HourFormat = use24HourFormat;
     }
 
     public String getName() {
@@ -61,11 +63,11 @@ public class QuestViewModel {
         Time startTime = quest.getStartTime();
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
-            return startTime + " - " + endTime;
+            return startTime.toString(use24HourFormat) + " - " + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
             return "for " + DurationFormatter.format(context, duration);
         } else if (startTime != null) {
-            return "at " + startTime;
+            return "at " + startTime.toString(use24HourFormat);
         }
         return "";
     }
@@ -75,11 +77,11 @@ public class QuestViewModel {
         Time startTime = quest.getStartTime();
         if (duration > 0 && startTime != null) {
             Time endTime = Time.plusMinutes(startTime, duration);
-            return startTime + "\n" + endTime;
+            return startTime.toString(use24HourFormat) + "\n" + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
             return "for\n" + DurationFormatter.format(context, duration);
         } else if (startTime != null) {
-            return "at\n" + startTime;
+            return "at\n" + startTime.toString(use24HourFormat);
         }
         return "";
     }

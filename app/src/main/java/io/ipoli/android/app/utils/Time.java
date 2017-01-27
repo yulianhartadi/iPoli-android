@@ -1,5 +1,6 @@
 package io.ipoli.android.app.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -115,5 +116,17 @@ public class Time {
 
     public static Time plusMinutes(Time time, int minutes) {
         return Time.of(time.minutes + minutes);
+    }
+
+    public String toString(boolean use24HourFormat) {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.MINUTE, getMinutes());
+        c.set(Calendar.HOUR_OF_DAY, getHours());
+
+        String format = "HH:mm";
+        if (!use24HourFormat) {
+            format = getMinutes() > 0 ? "h:mm a" : "h a";
+        }
+        return new SimpleDateFormat(format).format(c.getTime());
     }
 }

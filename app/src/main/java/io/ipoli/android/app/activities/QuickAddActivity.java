@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
@@ -35,6 +36,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.CategoryView;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
@@ -54,6 +56,9 @@ import io.ipoli.android.reminder.data.Reminder;
  * on 8/4/16.
  */
 public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+
+    @Inject
+    LocalStorage localStorage;
 
     @BindView(R.id.quick_add_text)
     AddQuestAutocompleteTextView questText;
@@ -84,7 +89,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         questParser = new QuestParser(prettyTimeParser);
         String additionalText = getIntent().getStringExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT);
 
-        suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser);
+        suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser, localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(this)));
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         initSuggestions();

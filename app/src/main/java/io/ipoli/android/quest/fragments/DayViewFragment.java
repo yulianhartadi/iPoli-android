@@ -151,18 +151,21 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, view);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         unscheduledQuestList.setLayoutManager(layoutManager);
 
         calendarContainer.setCalendarListener(this);
+        calendarContainer.setTimeFormat(use24HourFormat);
 
         unscheduledQuestsAdapter = new UnscheduledQuestsAdapter(getContext(), new ArrayList<>(), eventBus);
 
         unscheduledQuestList.setAdapter(unscheduledQuestsAdapter);
         unscheduledQuestList.setNestedScrollingEnabled(false);
 
-        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), eventBus);
+        calendarAdapter = new QuestCalendarAdapter(new ArrayList<>(), use24HourFormat, eventBus);
+        calendarDayView.setTimeFormat(use24HourFormat);
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();

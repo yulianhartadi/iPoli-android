@@ -57,6 +57,7 @@ import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
 import io.ipoli.android.app.ui.formatters.PriorityFormatter;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
 import io.ipoli.android.app.ui.formatters.TimesADayFormatter;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
@@ -112,6 +113,9 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    LocalStorage localStorage;
 
     @BindView(R.id.appbar)
     AppBarLayout appBar;
@@ -692,7 +696,7 @@ public class EditQuestActivity extends BaseActivity implements
     private void populateStartTime(int startMinute) {
         if (startMinute >= 0) {
             populateTimesADay(1);
-            startTimeText.setText(Time.of(startMinute).toString());
+            startTimeText.setText(Time.of(startMinute).toString(use24HourFormat));
             startTimeText.setTag(startMinute);
         } else {
             startTimeText.setText(R.string.do_not_know);

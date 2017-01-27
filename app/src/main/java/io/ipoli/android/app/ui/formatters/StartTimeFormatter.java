@@ -11,6 +11,7 @@ import java.util.Locale;
 public class StartTimeFormatter {
     private static SimpleDateFormat DEFAULT_TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private static SimpleDateFormat SHORT_TIME_FORMAT = new SimpleDateFormat("H:mm", Locale.getDefault());
+    private static SimpleDateFormat SHORT_12_HOUR_TIME_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
     public static String format(Date time) {
         if(time == null) {
@@ -19,11 +20,14 @@ public class StartTimeFormatter {
         return DEFAULT_TIME_FORMAT.format(time);
     }
 
-    public static String formatShort(Date time) {
+    public static String formatShort(Date time, boolean use24HourFormat) {
         if(time == null) {
             formatEmptyTime();
         }
-        return SHORT_TIME_FORMAT.format(time);
+        if(use24HourFormat) {
+            return SHORT_TIME_FORMAT.format(time);
+        }
+        return SHORT_12_HOUR_TIME_FORMAT.format(time);
     }
 
     private static String formatEmptyTime() {
