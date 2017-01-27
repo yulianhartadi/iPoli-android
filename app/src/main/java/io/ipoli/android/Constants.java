@@ -162,6 +162,7 @@ public interface Constants {
     String KEY_AVATAR_MOST_PRODUCTIVE_TIMES = "KEY_AVATAR_MOST_PRODUCTIVE_TIMES";
 
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
+    String KEY_24_HOUR_TIME_FORMAT = "24_HOUR_TIME_FORMAT";
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
