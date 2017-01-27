@@ -18,7 +18,6 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +35,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -140,6 +140,19 @@ public class SettingsFragment extends BaseFragment implements
             eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
         });
 
+        boolean use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
+        currentTime.setText(Time.now().toString(use24HourFormat));
+        timeFormat.setChecked(use24HourFormat);
+        timeFormat.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            currentTime.setText(Time.now().toString(isChecked));
+            localStorage.saveBool(Constants.KEY_24_HOUR_TIME_FORMAT, isChecked);
+            eventBus.post(new TimeFormatChangedEvent(isChecked));
+            if(avatar != null) {
+                avatar.setUse24HourFormat(isChecked);
+                avatarPersistenceService.save(avatar);
+            }
+        });
+
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
@@ -153,7 +166,6 @@ public class SettingsFragment extends BaseFragment implements
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
 
-        currentTime.setText(DateFormat.getTimeFormat(getContext()).format(Calendar.getInstance().getTime()));
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;

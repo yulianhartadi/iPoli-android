@@ -22,6 +22,7 @@ import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
+import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.help.events.HelpDialogShownEvent;
@@ -735,6 +736,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("open_note", EventParams.create()
                 .add("type", e.note.getType())
                 .add("data", e.note.getData()));
+    }
+
+    @Subscribe
+    public void onTimeFormatChanged(TimeFormatChangedEvent e) {
+        log("time_format_changed", EventParams.of("use_24_hour_format", e.use24HourFormat));
     }
 
     @Subscribe
