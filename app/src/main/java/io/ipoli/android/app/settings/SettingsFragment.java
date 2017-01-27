@@ -199,6 +199,11 @@ public class SettingsFragment extends BaseFragment implements
         ongoingNotification.setChecked(!ongoingNotification.isChecked());
     }
 
+    @OnClick(R.id.time_format_container)
+    public void onTimeFormatClicked(View view) {
+        timeFormat.setChecked(!timeFormat.isChecked());
+    }
+
     @OnClick(R.id.show_tutorial_container)
     public void onShowTutorialClicked(View view) {
         eventBus.post(new ShowTutorialEvent());
