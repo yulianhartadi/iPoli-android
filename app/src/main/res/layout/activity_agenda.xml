@@ -25,13 +25,14 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
         android:orientation="vertical"
-        android:weightSum="8">
+        android:weightSum="9"
+        >
 
         <CalendarView
             android:id="@+id/agenda_calendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
+            android:layout_weight="5"
             android:weekDayTextAppearance="@style/AgendaCalendarWeekDayTextAppearance" />
 
         <TextView
@@ -54,10 +55,9 @@
             <io.ipoli.android.app.ui.EmptyStateRecyclerView
                 android:id="@+id/agenda_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:scrollbars="vertical" />
         </FrameLayout>
-
 
     </LinearLayout>
 
