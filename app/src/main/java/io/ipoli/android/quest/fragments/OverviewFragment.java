@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -37,6 +39,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
@@ -48,6 +51,9 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    LocalStorage localStorage;
 
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
@@ -68,6 +74,8 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
 
     private Unbinder unbinder;
 
+    private boolean use24HourFormat;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -76,6 +84,8 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         App.getAppComponent(getContext()).inject(this);
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.fragment_overview_title);
+
+        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -141,7 +151,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         for (Map.Entry<LocalDate, List<Quest>> entry : dateToQuests.entrySet()) {
             List<QuestViewModel> vms = new ArrayList<>();
             for (Quest quest : entry.getValue()) {
-                vms.add(new QuestViewModel(getContext(), quest));
+                vms.add(new QuestViewModel(getContext(), quest, use24HourFormat));
             }
             viewModels.put(entry.getKey(), vms);
         }
