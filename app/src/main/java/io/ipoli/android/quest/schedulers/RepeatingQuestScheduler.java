@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -148,7 +149,8 @@ public class RepeatingQuestScheduler {
         for (int i = start.dayOfMonth().withMinimumValue().getDayOfMonth(); i <= start.dayOfMonth().withMaximumValue().getDayOfMonth(); i++) {
             WeekDayList weekDayList = getWeekDayList(recurrence.getRrule());
             LocalDate date = start.withDayOfMonth(i);
-            WeekDay weekDay = new WeekDay(date.dayOfWeek().getAsShortText().substring(0, 2).toUpperCase());
+            String weekDayText = date.dayOfWeek().getAsShortText(Locale.ENGLISH).substring(0, 2).toUpperCase();
+            WeekDay weekDay = new WeekDay(weekDayText);
             if (weekDayList.contains(weekDay)) {
                 possibleDates.add(date);
             }
