@@ -68,9 +68,7 @@ public class RepeatingQuestScheduler {
         List<Quest> quests = new ArrayList<>();
         for (int i = 0; i < bounds.size(); i++) {
             Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
-            // Start date is relevant only for the current week. Next week starts (naturally) at the start of the next week.
-            LocalDate startDate = i == 0 ? currentDate : weekPair.first;
-            quests.addAll(saveQuestsInRange(rq, startDate, weekPair.second));
+            quests.addAll(saveQuestsInRange(rq, weekPair.first, weekPair.second));
         }
         return quests;
     }
@@ -104,7 +102,7 @@ public class RepeatingQuestScheduler {
         LocalDate endOfWeek = currentDate.dayOfWeek().withMaximumValue();
 
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(startOfWeek, endOfWeek));
+        weekBounds.add(new Pair<>(currentDate, endOfWeek));
         for (int i = 0; i < 3; i++) {
             startOfWeek = startOfWeek.plusDays(7);
             endOfWeek = endOfWeek.plusDays(7);
@@ -274,7 +272,8 @@ public class RepeatingQuestScheduler {
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
-            res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
+            java.util.Date scheduledDate = toJavaDate((Date) obj);
+            res.add(createQuestFromRepeating(repeatingQuest, scheduledDate));
         }
         return res;
     }
