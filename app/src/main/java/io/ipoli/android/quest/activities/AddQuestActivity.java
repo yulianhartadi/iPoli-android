@@ -102,7 +102,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     }
 
     @Override
-    protected boolean useOptionsMenu() {
+    protected boolean useParentOptionsMenu() {
         return false;
     }
 

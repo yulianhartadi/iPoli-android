@@ -100,7 +100,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     }
 
     @Override
-    protected boolean useOptionsMenu() {
+    protected boolean useParentOptionsMenu() {
         return false;
     }
 
