@@ -528,7 +528,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void pickDateAndSnoozeQuest(Quest quest, boolean showAction) {
         DatePickerFragment.newInstance(new Date(), true, date -> {
-            quest.setEndDateFromLocal(date);
+            quest.setScheduledDateFromLocal(date);
             saveSnoozedQuest(quest, true, showAction);
         }).show(getSupportFragmentManager());
     }
