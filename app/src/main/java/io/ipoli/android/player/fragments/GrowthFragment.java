@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -353,11 +352,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private int getDurationForCompletedQuest(Quest q) {
-        if (q.getActualStartDate() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(q.getCompletedAtDate().getTime() - q.getActualStartDate().getTime());
-        } else {
-            return Math.max(q.getDuration(), Constants.QUEST_MIN_DURATION);
-        }
+        return Math.max(q.getActualDuration(), Constants.QUEST_MIN_DURATION);
     }
 
     private int getColor(@ColorRes int color) {
