@@ -60,7 +60,7 @@ public class RepeatingQuestScheduler {
         } else {
             if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
                 quests.addAll(scheduleFixedForMonth(repeatingQuest, currentDate));
-            } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+            } else {
                 quests.addAll(scheduleFor4WeeksAhead(repeatingQuest, currentDate));
             }
         }
