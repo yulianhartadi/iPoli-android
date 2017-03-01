@@ -126,7 +126,6 @@
     <string name="help_explain_screen">Know this screen</string>
     <string name="help_dialog_calendar_title">What is calendar all about?</string>
     <string name="help_dialog_overview_title">What is overview all about?</string>
-    <string name="help_dialog_add_quest_title">How to add your quests?</string>
     <string name="help_dialog_pick_daily_challenge_quests_title">Why to accept daily challenge?</string>
     <string name="help_dialog_inbox_title">What is my inbox for?</string>
     <string name="help_dialog_repeating_quests_title">What are my repeating quests?</string>
@@ -134,14 +133,6 @@
     <string name="help_dialog_more_help">More help</string>
     <string name="help_wanted_email_subject">Help wanted</string>
     <string name="help_wanted_chooser_title">Ask us for help</string>
-    <string name="help_dialog_add_quest_text1">Create your quests using natural everyday language.</string>
-    <string name="help_dialog_add_quest_text2">You can create one time quest or repeating one.</string>
-    <string name="help_dialog_add_quest_text3">Start typing and use the smart suggestions from the dropdown to help you.</string>
-    <string name="help_dialog_add_quest_date">Choose date</string>
-    <string name="help_dialog_add_quest_start_time">Set start time</string>
-    <string name="help_dialog_add_quest_duration">Adjust the duration</string>
-    <string name="help_dialog_add_quest_repeating">Make your quest repeating. This will automatically categorize your task as Repeating Quest.</string>
-    <string name="help_dialog_add_quest_times_count">Set how many times a day/week/month you want to do the quest</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>

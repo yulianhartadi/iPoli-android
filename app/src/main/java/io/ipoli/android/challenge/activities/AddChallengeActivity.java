@@ -115,7 +115,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
     }
 
     @Override
-    protected boolean useOptionsMenu() {
+    protected boolean useParentOptionsMenu() {
         return false;
     }
 

@@ -38,7 +38,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
@@ -196,6 +195,11 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -228,9 +232,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
                     });
                     d.show();
                 });
-                return true;
-            case R.id.action_help:
-                HelpDialog.newInstance(R.layout.fragment_help_dialog_add_quest, R.string.help_dialog_add_quest_title, "add_quest").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);

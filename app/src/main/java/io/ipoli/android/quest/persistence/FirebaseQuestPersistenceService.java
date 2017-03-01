@@ -169,7 +169,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
             if (q2Start < 0) {
                 return 1;
             }
-            return q1Start - q2Start;
+            return Integer.compare(q1Start, q2Start);
         };
     }
 

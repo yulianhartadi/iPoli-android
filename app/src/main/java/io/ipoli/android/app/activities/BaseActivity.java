@@ -54,7 +54,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(useOptionsMenu()) {
+        if(useParentOptionsMenu()) {
             Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
             Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
             boolean isCompletedForToday = todayUtc.equals(lastCompleted);
@@ -70,7 +70,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(useOptionsMenu()) {
+        if(useParentOptionsMenu()) {
             getMenuInflater().inflate(R.menu.main_menu, menu);
         }
         return true;
@@ -97,7 +97,7 @@ public class BaseActivity extends AppCompatActivity {
         KeyboardUtils.showKeyboard(this);
     }
 
-    protected boolean useOptionsMenu() {
+    protected boolean useParentOptionsMenu() {
         return true;
     }
 }

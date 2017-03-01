@@ -526,7 +526,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     public int getActualDuration() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAtDate().getTime() - getActualStartDate().getTime());
+            long completedAtMillis = TimeUnit.MINUTES.toMillis(getCompletedAtMinute());
+            long completedAtDateMillis = new LocalDate(getCompletedAt(), DateTimeZone.UTC).toDate().getTime();
+            return (int) TimeUnit.MILLISECONDS.toMinutes(completedAtDateMillis + completedAtMillis - actualStart);
         }
         return getDuration();
     }
