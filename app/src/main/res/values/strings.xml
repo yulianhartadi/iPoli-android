@@ -302,7 +302,7 @@
     <string name="view">View</string>
     <string name="pick_date">Pick date</string>
     <string name="quest_snoozed">Quest snoozed</string>
-    <string name="quest_moved_to_inbox">Quest moved to inbox</string>
+    <string name="quest_moved_to_inbox">Quest moved to Inbox</string>
     <string name="turn_on_internet">Sorry, you need an internet connection to play with iPoli</string>
     <string name="title_no_internet">No internet</string>
     <string name="help_dialog_calendar_quick_add">Long tap on any free time slot to use quick add</string>
