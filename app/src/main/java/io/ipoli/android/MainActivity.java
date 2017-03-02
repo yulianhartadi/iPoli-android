@@ -252,7 +252,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
-                EmailUtils.send(MainActivity.this, getString(R.string.contact_us_email_subject), getString(R.string.contact_us_email_chooser_title));
+                EmailUtils.send(MainActivity.this, "Hi", localStorage.readString(Constants.KEY_PLAYER_ID), getString(R.string.contact_us_email_chooser_title));
                 break;
         }
 
