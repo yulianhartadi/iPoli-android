@@ -409,11 +409,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Quest q = e.quest;
         String text = getString(q.getScheduledDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, e.experience, e.coins);
-        Snackbar
-                .make(contentContainer,
-                        text,
-                        Snackbar.LENGTH_SHORT)
-                .show();
+        Snackbar.make(contentContainer, text, Snackbar.LENGTH_SHORT).show();
     }
 
     public void initToolbar(Toolbar toolbar, @StringRes int title) {
