@@ -60,6 +60,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     @BindView(R.id.agenda_journey_text)
     TextView journeyText;
 
+    private LocalDate selectedDate;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +70,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         ButterKnife.bind(this);
         appComponent().inject(this);
 
-        long selectedDate = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
-        if (selectedDate == 0) {
+        long selectedDateMillis = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
+        if (selectedDateMillis == 0) {
             finish();
             return;
         }
@@ -89,9 +91,15 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
 
         questList.setEmptyView(questListContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
 
-        calendar.setDate(selectedDate, true, true);
-        showQuestsForDate(new LocalDate(selectedDate));
+        calendar.setDate(selectedDateMillis, true, true);
         calendar.setOnDateChangeListener(this);
+        selectedDate = new LocalDate(selectedDateMillis);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showQuestsForDate(new LocalDate(selectedDate));
     }
 
     @Override
@@ -146,6 +154,7 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
 
     @Override
     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-        showQuestsForDate(new LocalDate(year, month + 1, dayOfMonth));
+        selectedDate = new LocalDate(year, month + 1, dayOfMonth);
+        showQuestsForDate(selectedDate);
     }
 }
