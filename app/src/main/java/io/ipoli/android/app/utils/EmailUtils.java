@@ -13,10 +13,17 @@ import io.ipoli.android.Constants;
 public class EmailUtils {
 
     public static void send(Context context, String subject, String chooserTitle) {
+        send(context, subject, "", chooserTitle);
+    }
+
+    public static void send(Context context, String subject, String playerId, String chooserTitle) {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                 "mailto", Constants.IPOLI_EMAIL, null));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (!StringUtils.isEmpty(playerId)) {
+            String body = "\n\nPlease, do not delete below this line\n=====================\nThis will help us fix the issue faster:\nPlayer id " + playerId;
+            emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+        }
         context.startActivity(Intent.createChooser(emailIntent, chooserTitle));
     }
-
 }

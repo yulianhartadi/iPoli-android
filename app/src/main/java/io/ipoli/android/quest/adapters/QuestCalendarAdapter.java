@@ -34,7 +34,6 @@ import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
 import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
-import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.ui.events.EditCalendarEventEvent;
 import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.QuestCalendarViewModel;
@@ -140,7 +139,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
                 } else {
                     if (q.isScheduledForThePast()) {
                         removeEvent(calendarEvent);
-                        eventBus.post(new UndoQuestForThePast(q));
                     }
                     eventBus.post(new UndoCompletedQuestRequestEvent(q));
                 }

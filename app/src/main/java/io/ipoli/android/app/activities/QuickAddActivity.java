@@ -12,6 +12,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -56,6 +58,8 @@ import io.ipoli.android.reminder.data.Reminder;
  * on 8/4/16.
  */
 public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+    private static final int SUGGESTION_ITEM_HEIGHT_DP = 40;
+    private static final int MAX_VISIBLE_SUGGESTION_ITEMS = 4;
 
     @Inject
     LocalStorage localStorage;
@@ -262,6 +266,11 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     @Override
     public void onSuggestionsUpdated() {
         if (adapter != null) {
+            if(suggestionsManager.getSuggestions().size() > MAX_VISIBLE_SUGGESTION_ITEMS) {
+                questText.setDropDownHeight((int) ViewUtils.dpToPx(MAX_VISIBLE_SUGGESTION_ITEMS * SUGGESTION_ITEM_HEIGHT_DP, getResources()));
+            } else {
+                questText.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
             adapter.setSuggestions(suggestionsManager.getSuggestions());
         }
     }

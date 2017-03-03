@@ -109,7 +109,7 @@ public class HelpDialog extends DialogFragment {
                 })
                 .setNeutralButton(getString(R.string.help_dialog_more_help), (dialog, which) -> {
                     eventBus.post(new MoreHelpTappedEvent(screen, appRun));
-                    EmailUtils.send(getContext(), getString(R.string.help_wanted_email_subject), getString(R.string.help_wanted_chooser_title));
+                    EmailUtils.send(getContext(), getString(R.string.help_wanted_email_subject), localStorage.readString(Constants.KEY_PLAYER_ID), getString(R.string.help_wanted_chooser_title));
                 });
         return builder.create();
     }

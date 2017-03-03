@@ -62,7 +62,6 @@ import io.ipoli.android.quest.events.QuestDraggedEvent;
 import io.ipoli.android.quest.events.RescheduleQuestEvent;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 import io.ipoli.android.quest.events.SuggestionAcceptedEvent;
-import io.ipoli.android.quest.events.UndoQuestForThePast;
 import io.ipoli.android.quest.events.UnscheduledQuestDraggedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -292,11 +291,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         if (e.viewModel.getQuest().isCompleted()) {
             calendarDayView.smoothScrollToTime(Time.now());
         }
-    }
-
-    @Subscribe
-    public void onUndoQuestForThePast(UndoQuestForThePast e) {
-        Toast.makeText(getContext(), "Quest moved to Inbox", Toast.LENGTH_LONG).show();
     }
 
     private void setUnscheduledQuestsHeight() {

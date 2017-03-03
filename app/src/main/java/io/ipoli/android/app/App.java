@@ -537,6 +537,7 @@ public class App extends MultiDexApplication {
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);
             quest.setStartDate(null);
+            quest.setScheduledDate(null);
         }
         quest.setCompletedCount(0);
         Long xp = quest.getExperience();
