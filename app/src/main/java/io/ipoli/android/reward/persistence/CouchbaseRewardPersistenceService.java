@@ -1,5 +1,8 @@
 package io.ipoli.android.reward.persistence;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -117,7 +120,7 @@ public class CouchbaseRewardPersistenceService implements RewardPersistenceServi
                 while (enumerator.hasNext()) {
                     result.add(toObject(enumerator.next().getValue(), Reward.class));
                 }
-                listener.onDataChanged(result);
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
             }
         };
         query.addChangeListener(changeListener);

@@ -1,5 +1,8 @@
 package io.ipoli.android.pet.persistence;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -142,7 +145,8 @@ public class CouchbasePetPersistenceService implements PetPersistenceService {
                 while (enumerator.hasNext()) {
                     result.add(toObject(enumerator.next().getValue(), Pet.class));
                 }
-                listener.onDataChanged(result.get(0));
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result.get(0)));
+
             }
         };
         query.addChangeListener(changeListener);
