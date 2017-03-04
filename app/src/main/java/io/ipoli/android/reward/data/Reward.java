@@ -1,7 +1,5 @@
 package io.ipoli.android.reward.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -13,8 +11,6 @@ public class Reward extends PersistedObject {
 
     public static final String TYPE = "reward";
 
-    @JsonProperty(value = "_id")
-    private String id;
     private String name;
 
     private String description;
@@ -23,8 +19,6 @@ public class Reward extends PersistedObject {
 
     private Long createdAt;
     private Long updatedAt;
-
-    private String type;
 
     public Reward() {
     }
@@ -69,27 +63,23 @@ public class Reward extends PersistedObject {
         this.price = price;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 
+    @Override
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }

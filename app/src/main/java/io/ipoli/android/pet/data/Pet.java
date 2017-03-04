@@ -3,7 +3,6 @@ package io.ipoli.android.pet.data;
 import android.support.annotation.ColorRes;
 
 import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
@@ -14,8 +13,9 @@ import io.ipoli.android.app.utils.DateUtils;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/24/16.
  */
-@IgnoreExtraProperties
 public class Pet extends PersistedObject {
+
+    public static final String TYPE = "pet";
 
     private String name;
     private Integer healthPointsPercentage;
@@ -35,6 +35,7 @@ public class Pet extends PersistedObject {
         setHealthPointsPercentage(healthPointsPercentage);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+        type = TYPE;
     }
 
     public String getPicture() {

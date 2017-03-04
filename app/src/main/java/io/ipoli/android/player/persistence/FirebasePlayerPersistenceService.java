@@ -32,7 +32,7 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
 
             DatabaseReference petsRef = objRef.child("pets");
             DatabaseReference petRef = petsRef.push();
-            player.getPet().setId(petRef.getKey());
+//            player.getPet().setId(petRef.getKey());
 
             DatabaseReference avatarsRef = objRef.child("avatars");
             DatabaseReference avatarRef = avatarsRef.push();
@@ -41,7 +41,7 @@ public class FirebasePlayerPersistenceService extends BaseFirebasePersistenceSer
             Map<String, Object> data = new HashMap<>();
             data.put("/id", player.getId());
             data.put("/avatars/" + player.getAvatar().getId(), player.getAvatar());
-            data.put("/pets/" + player.getPet().getId(), player.getPet());
+//            data.put("/pets/" + player.getPet().getId(), player.getPet());
             data.put("/schemaVersion", player.getSchemaVersion());
             data.put("/updatedAt", player.getUpdatedAt());
             data.put("/createdAt", player.getCreatedAt());

@@ -16,6 +16,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.avatar.Avatar;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
@@ -28,6 +29,9 @@ public class SignInActivity extends BaseActivity {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
+    @Inject
+    PetPersistenceService petPersistenceService;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,7 @@ public class SignInActivity extends BaseActivity {
         avatar.setUse24HourFormat(DateFormat.is24HourFormat(this));
         Player player = new Player(pet, avatar);
         playerPersistenceService.save(player);
+        petPersistenceService.save(pet);
         saveAvatarSettings(avatar);
         localStorage.saveInt(Constants.KEY_XP_BONUS_PERCENTAGE, pet.getExperienceBonusPercentage());
         localStorage.saveInt(Constants.KEY_COINS_BONUS_PERCENTAGE, pet.getCoinsBonusPercentage());
