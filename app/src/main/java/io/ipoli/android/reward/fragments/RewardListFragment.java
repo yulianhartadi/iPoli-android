@@ -92,7 +92,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();
 
-        rewardPersistenceService.findAll(this);
+        rewardPersistenceService.listenForAll(this);
 
         fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.REWARDS)));
         return view;

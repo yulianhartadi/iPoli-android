@@ -43,8 +43,8 @@ public class FirebaseRewardPersistenceService extends BaseFirebasePersistenceSer
     }
 
     @Override
-    public void findAll(OnDataChangedListener<List<Reward>> listener) {
-        listenForListChange(getCollectionReference(), listener);
+    public void listenForAll(OnDataChangedListener<List<Reward>> listener) {
+
     }
 
 }

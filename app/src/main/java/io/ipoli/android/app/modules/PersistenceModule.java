@@ -1,5 +1,7 @@
 package io.ipoli.android.app.modules;
 
+import com.couchbase.lite.Database;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
 import dagger.Module;
@@ -17,7 +19,7 @@ import io.ipoli.android.quest.persistence.FirebaseQuestPersistenceService;
 import io.ipoli.android.quest.persistence.FirebaseRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.reward.persistence.FirebaseRewardPersistenceService;
+import io.ipoli.android.reward.persistence.CouchbaseRewardPersistenceService;
 import io.ipoli.android.reward.persistence.RewardPersistenceService;
 
 /**
@@ -58,7 +60,7 @@ public class PersistenceModule {
     }
 
     @Provides
-    public RewardPersistenceService provideRewardPersistenceService(Bus eventBus) {
-        return new FirebaseRewardPersistenceService(eventBus);
+    public RewardPersistenceService provideRewardPersistenceService(Database database, ObjectMapper objectMapper) {
+        return new CouchbaseRewardPersistenceService(database, objectMapper);
     }
 }
