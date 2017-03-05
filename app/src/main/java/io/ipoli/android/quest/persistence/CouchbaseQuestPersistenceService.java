@@ -104,7 +104,7 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
 
     @Override
     public void findById(String id, OnDataChangedListener<Quest> listener) {
-
+        listener.onDataChanged(toObject(database.getExistingDocument(id).getProperties(), Quest.class));
     }
 
     @Override
@@ -125,7 +125,11 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
 
     @Override
     public void delete(Quest object) {
-
+        try {
+            database.getExistingDocument(object.getId()).delete();
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
