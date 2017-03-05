@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.firebase.database.Exclude;
 
 import org.joda.time.DateTimeZone;
@@ -55,7 +56,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private Long start;
     private Long end;
 
+    @JsonProperty
     private Long scheduled;
+
     private Long originalScheduled;
 
     private String repeatingQuestId;
