@@ -302,6 +302,7 @@ public class RepeatingQuestScheduler {
 
     private Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, java.util.Date endDate) {
         Quest quest = new Quest();
+        quest.setType(Quest.TYPE);
         quest.setName(repeatingQuest.getName());
         quest.setCategory(repeatingQuest.getCategory());
         quest.setDuration(repeatingQuest.getDuration());

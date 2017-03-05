@@ -57,8 +57,6 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
                 new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
             }
         };
-        query.addChangeListener(changeListener);
-        query.start();
-        queryToListener.put(query, changeListener);
+        startLiveQuery(query, changeListener);
     }
 }

@@ -16,7 +16,7 @@ import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.persistence.FirebasePlayerPersistenceService;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.CouchbaseQuestPersistenceService;
-import io.ipoli.android.quest.persistence.FirebaseRepeatingQuestPersistenceService;
+import io.ipoli.android.quest.persistence.CouchbaseRepeatingQuestPersistenceService;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.reward.persistence.CouchbaseRewardPersistenceService;
@@ -35,8 +35,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Bus eventBus, QuestPersistenceService questPersistenceService) {
-        return new FirebaseRepeatingQuestPersistenceService(eventBus, questPersistenceService);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
+        return new CouchbaseRepeatingQuestPersistenceService(database, objectMapper, questPersistenceService);
     }
 
     @Provides

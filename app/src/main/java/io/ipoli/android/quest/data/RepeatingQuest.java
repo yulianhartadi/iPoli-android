@@ -2,6 +2,7 @@ package io.ipoli.android.quest.data;
 
 import android.support.v4.util.Pair;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.Exclude;
 
 import org.joda.time.LocalDate;
@@ -37,6 +38,7 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
+    public static final String TYPE = "repeatingQuest";
     private String rawText;
 
     private String name;
@@ -70,6 +72,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Map<String, Boolean> scheduledPeriodEndDates;
 
     @Exclude
+    @JsonIgnore
     private String previousChallengeId;
 
     private Map<String, QuestData> questsData;
@@ -84,6 +87,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = Category.PERSONAL.name();
         setTimesADay(1);
         this.source = Constants.API_RESOURCE_SOURCE;
+        type = TYPE;
     }
 
     @Exclude

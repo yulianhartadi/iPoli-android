@@ -86,8 +86,6 @@ public class CouchbasePetPersistenceService extends BaseCouchbasePersistenceServ
 
             }
         };
-        query.addChangeListener(changeListener);
-        query.start();
-        queryToListener.put(query, changeListener);
+        startLiveQuery(query, changeListener);
     }
 }

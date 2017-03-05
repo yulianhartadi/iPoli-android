@@ -35,6 +35,12 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         this.documentToListener = new HashMap<>();
     }
 
+    protected void startLiveQuery(LiveQuery query, LiveQuery.ChangeListener changeListener) {
+        query.addChangeListener(changeListener);
+        query.start();
+        queryToListener.put(query, changeListener);
+    }
+
     protected abstract Class<T> getModelClass();
 
     @Override
@@ -45,7 +51,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
         if (StringUtils.isEmpty(obj.getId())) {
             try {
-                database.createDocument().putProperties(data);
+                Document document = database.createDocument();
+                document.putProperties(data);
+                obj.setId(document.getId());
             } catch (CouchbaseLiteException e) {
                 e.printStackTrace();
             }

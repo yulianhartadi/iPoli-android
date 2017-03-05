@@ -39,6 +39,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View inboxQuestsView;
     private final View questRemindersView;
     private final View startedQuestsView;
+    private final View uncompletedQuestsForRepeatingQuestView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
         super(database, objectMapper);
@@ -108,6 +109,22 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 return new Pair<>(key, questReminders);
             }, "1.0");
         }
+
+        uncompletedQuestsForRepeatingQuestView = database.getView("quests/uncompletedForRepeatingQuest");
+        if (uncompletedQuestsForRepeatingQuestView.getMap() == null) {
+            uncompletedQuestsForRepeatingQuestView.setMapReduce((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (Quest.TYPE.equals(type) && document.containsKey("repeatingQuestId") && !document.containsKey("completedAt")) {
+                    emitter.emit(document.get("repeatingQuestId"), document);
+                }
+            }, (keys, values, rereduce) -> {
+                List<Quest> quests = new ArrayList<>();
+                for (Object v : values) {
+                    quests.add(toObject(v));
+                }
+                return quests;
+            }, "1.0");
+        }
     }
 
     @Override
@@ -138,9 +155,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
         };
 
-        query.addChangeListener(changeListener);
-        query.start();
-        queryToListener.put(query, changeListener);
+        startLiveQuery(query, changeListener);
     }
 
     @Override
@@ -166,9 +181,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
         };
 
-        query.addChangeListener(changeListener);
-        query.start();
-        queryToListener.put(query, changeListener);
+        startLiveQuery(query, changeListener);
     }
 
     @Override
@@ -230,7 +243,26 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-
+        Query query = uncompletedQuestsForRepeatingQuestView.createQuery();
+        query.setGroupLevel(1);
+        query.setStartKey(repeatingQuestId);
+        query.setEndKey(repeatingQuestId);
+        try {
+            QueryEnumerator enumerator = query.run();
+            List<Quest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                for (Quest q : quests) {
+                    if (!q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null) {
+                        result.add(q);
+                    }
+                }
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -246,6 +278,10 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         query.setGroupLevel(1);
         try {
             QueryEnumerator enumerator = query.run();
+            if (enumerator.getCount() == 0) {
+                listener.onDataChanged(new ArrayList<>());
+                return;
+            }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 Pair<Long, List<QuestReminder>> pair = (Pair<Long, List<QuestReminder>>) row.getValue();
@@ -264,6 +300,10 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         query.setLimit(1);
         try {
             QueryEnumerator enumerator = query.run();
+            if (enumerator.getCount() == 0) {
+                listener.onDataChanged(null);
+                return;
+            }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 listener.onDataChanged((Long) row.getKey());
