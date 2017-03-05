@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
-import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.DocumentChange;
@@ -12,19 +11,17 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 
@@ -35,18 +32,13 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  * on 3/5/17.
  */
 
-public class CouchbaseQuestPersistenceService implements QuestPersistenceService {
+public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceService<Quest> implements QuestPersistenceService {
 
-    private final Database database;
-    private final ObjectMapper objectMapper;
-    private final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
-    private final Map<Document, Document.ChangeListener> documentToListener;
     private final View dayQuestsView;
     private final View inboxQuestsView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
-        this.database = database;
-        this.objectMapper = objectMapper;
+        super(database, objectMapper);
 
         dayQuestsView = database.getView("quests/byDay");
         if (dayQuestsView.getMap() == null) {
@@ -58,7 +50,7 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
             }, (keys, values, rereduce) -> {
                 List<Quest> quests = new ArrayList<>();
                 for (Object v : values) {
-                    quests.add(toObject(v, Quest.class));
+                    quests.add(toObject(v));
                 }
                 LocalDate key = new LocalDate((long) keys.get(0));
                 return new Pair<>(key, quests);
@@ -74,37 +66,11 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
                 }
             }, "1.0");
         }
-
-        queryToListener = new HashMap<>();
-        documentToListener = new HashMap<>();
     }
 
     @Override
-    public void save(Quest obj) {
-        Map<String, Object> data = new HashMap<>();
-        Document document;
-        if (StringUtils.isEmpty(obj.getId())) {
-            document = database.createDocument();
-        } else {
-            document = database.getExistingDocument(obj.getId());
-            data.putAll(document.getProperties());
-            obj.markUpdated();
-        }
-
-        TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
-        };
-        data.putAll(objectMapper.convertValue(obj, mapTypeReference));
-
-        try {
-            document.putProperties(data);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void findById(String id, OnDataChangedListener<Quest> listener) {
-        listener.onDataChanged(toObject(database.getExistingDocument(id).getProperties(), Quest.class));
+    protected Class<Quest> getModelClass() {
+        return Quest.class;
     }
 
     @Override
@@ -114,35 +80,13 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
             if (change.isDeletion()) {
                 listener.onDataChanged(null);
             } else {
-                listener.onDataChanged(toObject(change.getAddedRevision().getProperties(), Quest.class));
+                listener.onDataChanged(toObject(change.getAddedRevision().getProperties()));
             }
         };
         Document doc = database.getExistingDocument(id);
         doc.addChangeListener(changeListener);
         documentToListener.put(doc, changeListener);
-        listener.onDataChanged(toObject(doc.getProperties(), Quest.class));
-    }
-
-    @Override
-    public void delete(Quest object) {
-        try {
-            database.getExistingDocument(object.getId()).delete();
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void removeAllListeners() {
-        for (Map.Entry<LiveQuery, LiveQuery.ChangeListener> entry : queryToListener.entrySet()) {
-            LiveQuery liveQuery = entry.getKey();
-            liveQuery.removeChangeListener(entry.getValue());
-            liveQuery.stop();
-        }
-        for (Map.Entry<Document, Document.ChangeListener> entry : documentToListener.entrySet()) {
-            Document doc = entry.getKey();
-            doc.removeChangeListener(entry.getValue());
-        }
+        listener.onDataChanged(toObject(doc.getProperties()));
     }
 
     @Override
@@ -159,7 +103,7 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
                 List<Quest> result = new ArrayList<>();
                 QueryEnumerator enumerator = event.getRows();
                 while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue(), Quest.class));
+                    result.add(toObject(enumerator.next().getValue()));
                 }
                 new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
             }
@@ -196,10 +140,6 @@ public class CouchbaseQuestPersistenceService implements QuestPersistenceService
         query.addChangeListener(changeListener);
         query.start();
         queryToListener.put(query, changeListener);
-    }
-
-    private <T> T toObject(Object data, Class<T> clazz) {
-        return objectMapper.convertValue(data, clazz);
     }
 
     @Override
