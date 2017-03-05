@@ -370,7 +370,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Subscribe
     public void onNewSubQuestEvent(NewSubQuestEvent e) {
         quest.addSubQuest(e.subQuest);
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
