@@ -10,7 +10,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.avatar.persistence.FirebaseAvatarPersistenceService;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
-import io.ipoli.android.challenge.persistence.FirebaseChallengePersistenceService;
+import io.ipoli.android.challenge.persistence.CouchbaseChallengePersistenceService;
 import io.ipoli.android.pet.persistence.CouchbasePetPersistenceService;
 import io.ipoli.android.pet.persistence.PetPersistenceService;
 import io.ipoli.android.player.persistence.FirebasePlayerPersistenceService;
@@ -55,8 +55,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public ChallengePersistenceService provideChallengePersistenceService(Bus eventBus) {
-        return new FirebaseChallengePersistenceService(eventBus);
+    public ChallengePersistenceService provideChallengePersistenceService(Database database, ObjectMapper objectMapper) {
+        return new CouchbaseChallengePersistenceService(database, objectMapper);
     }
 
     @Provides

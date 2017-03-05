@@ -31,6 +31,8 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class Challenge extends PersistedObject implements RewardProvider {
 
+    public static final String TYPE = "challenge";
+
     private String name;
 
     private String category;
@@ -69,6 +71,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
+        type = TYPE;
     }
 
     public Long getCreatedAt() {

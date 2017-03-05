@@ -89,7 +89,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
         ChallengeListAdapter adapter = new ChallengeListAdapter(getActivity(), new ArrayList<>(), eventBus);
         challengeList.setAdapter(adapter);
 
-        challengePersistenceService.findAllNotCompleted(this);
+        challengePersistenceService.listenForAll(this);
 
         fabMenu.addFabClickListener(name -> eventBus.post(new FabMenuTappedEvent(name, EventSource.CHALLENGES)));
         return view;
