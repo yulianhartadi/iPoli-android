@@ -40,9 +40,20 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View dayQuestsView;
     private final View inboxQuestsView;
     private final View questRemindersView;
+    private final View startedQuestsView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
         super(database, objectMapper);
+
+        startedQuestsView = database.getView("quests/started");
+        if (startedQuestsView.getMap() == null) {
+            startedQuestsView.setMap((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (Quest.TYPE.equals(type) && document.containsKey("actualStart") && !document.containsKey("completedAt")) {
+                    emitter.emit(document.get("_id"), document);
+                }
+            }, "1.0");
+        }
 
         dayQuestsView = database.getView("quests/byDay");
         if (dayQuestsView.getMap() == null) {
@@ -77,7 +88,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 String type = (String) document.get("type");
                 if (Quest.TYPE.equals(type) && document.containsKey("scheduled") && document.containsKey("startMinute") && document.containsKey("reminders")) {
                     List<Map<String, Object>> reminders = (List<Map<String, Object>>) document.get("reminders");
-                    if(reminders.size() == 0){
+                    if (reminders.size() == 0) {
                         return;
                     }
                     for (Map<String, Object> r : reminders) {
@@ -190,7 +201,19 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener) {
-
+        Query query = startedQuestsView.createQuery();
+        QueryEnumerator enumerator = null;
+        List<Quest> result = new ArrayList<>();
+        try {
+            enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                result.add(toObject(row.getValue()));
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -248,7 +271,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             QueryEnumerator enumerator = query.run();
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
-                Pair<Long,List<QuestReminder>> pair = (Pair<Long, List<QuestReminder>>) row.getValue();
+                Pair<Long, List<QuestReminder>> pair = (Pair<Long, List<QuestReminder>>) row.getValue();
                 listener.onDataChanged(pair.second);
             }
         } catch (CouchbaseLiteException e) {
@@ -315,7 +338,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void save(List<Quest> quests) {
-
+        database.runInTransaction(() -> {
+            for (Quest q : quests) {
+                save(q);
+            }
+            return true;
+        });
     }
 
     @Override

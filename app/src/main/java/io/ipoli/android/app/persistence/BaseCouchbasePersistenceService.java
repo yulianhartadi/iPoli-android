@@ -4,6 +4,7 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.UnsavedRevision;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,25 +37,27 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     @Override
     public void save(T obj) {
-        Map<String, Object> data = new HashMap<>();
-        Document document;
-        if (StringUtils.isEmpty(obj.getId())) {
-            document = database.createDocument();
-        } else {
-            document = database.getExistingDocument(obj.getId());
-            data.putAll(document.getProperties());
-            obj.markUpdated();
-        }
-
         TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
         };
-        data.putAll(objectMapper.convertValue(obj, mapTypeReference));
+        Map<String, Object> data = objectMapper.convertValue(obj, mapTypeReference);
 
-        try {
-            document.putProperties(data);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+        if (StringUtils.isEmpty(obj.getId())) {
+            try {
+                database.createDocument().putProperties(data);
+            } catch (CouchbaseLiteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            obj.markUpdated();
+            UnsavedRevision revision = database.getExistingDocument(obj.getId()).createRevision();
+            revision.setProperties(data);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     @Override
@@ -63,7 +66,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected T toObject(Object data) {
-        return  toObject(data, getModelClass());
+        return toObject(data, getModelClass());
     }
 
     protected <T> T toObject(Object data, Class<T> clazz) {

@@ -50,7 +50,7 @@ public class StartTimeMatcher extends BaseMatcher<Integer> {
                 return Time.of(dates.get(0)).toMinuteOfDay();
             }
         }
-        return -1;
+        return null;
     }
 
     @Override

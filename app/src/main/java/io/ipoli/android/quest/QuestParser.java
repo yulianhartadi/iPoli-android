@@ -101,7 +101,7 @@ public class QuestParser {
         int duration = durationPair.first;
 
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
-        int startTime = startTimePair.first;
+        Integer startTime = startTimePair.first;
 
         Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
         Date dueDate = dueDatePair.first;
